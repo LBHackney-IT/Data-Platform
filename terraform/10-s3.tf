@@ -158,3 +158,30 @@ resource "aws_glue_job" "google_sheet_import_glue_job" {
     "--s3_bucket_target" = "s3://${aws_s3_bucket.data_platform_raw.id}/${aws_s3_bucket_object.test_folder.key}"
   }
 }
+
+resource "aws_glue_catalog_database" "raw_catalog_database" {
+  provider = aws.core
+  name = "raw-bucket-database"
+}
+
+resource "aws_glue_crawler" "raw_bucket_crawler" {
+  provider = aws.core
+  database_name = aws_glue_catalog_database.raw_catalog_database.name
+  name          = "data-platform-raw-bucket-crawler"
+  role          = aws_iam_role.glue.arn
+
+  s3_target {
+    path = "s3://${aws_s3_bucket.data_platform_raw.bucket}"
+  }
+}
+
+resource "aws_s3_bucket" "athena_query_result_location" {
+  provider = aws.core
+  bucket = "hackney-data-platform-athena-query-result-location"
+}
+
+resource "aws_athena_database" "raw-bucket-athena-database" {
+  provider = aws.core
+  name   = "data_platform_raw_bucket_athena_database"
+  bucket = aws_s3_bucket.athena_query_result_location.bucket
+}
