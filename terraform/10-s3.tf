@@ -1,4 +1,5 @@
-resource "aws_kms_key" "a" {
+resource "aws_kms_key" "raw" {
+  provider = aws.core
   description = "Data Platform - Raw Data KMS Key"
   deletion_window_in_days = 10
   enable_key_rotation = true
