@@ -15,7 +15,7 @@ module "tags" {
 }
 
 locals {
-
-  # Just an example of using a local variable
-  s3_bucket_name = lower("${var.team}-${var.project}-${var.environment}")
+  team_snake = lower(replace(var.team, " ", "-"))
+  application_snake = lower(replace(var.application, " ", "-"))
+  identifier_prefix = lower("${local.team_snake}-${local.application_snake}-${var.environment}")
 }
