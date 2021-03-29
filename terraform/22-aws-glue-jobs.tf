@@ -15,6 +15,8 @@ resource "aws_glue_job" "glue_job_google_sheet_import_test" {
   default_arguments = {
     "--TempDir"                   = "s3://${aws_s3_bucket.glue_temp_storage_bucket.id}"
     "--additional-python-modules" = "gspread==3.7.0, google-auth==1.27.1, pyspark==3.1.1"
-    "--s3_bucket_target"          = "s3://${aws_s3_bucket.raw_zone_bucket.id}/test"
+    "--document_key"              = "1yKAxzUGeGJulFEcVBxatow3jUdTeqfzGvvCgdshiN5g"
+    "--worksheet_name"            = "Sheet1"
+    "--s3_bucket_target"          = "s3://${aws_s3_bucket.raw_zone_bucket.id}/test2"
   }
 }
