@@ -85,14 +85,14 @@ resource "aws_s3_bucket" "glue_scripts_bucket" {
 
   bucket = lower("${local.identifier_prefix}-glue-scripts")
 
-//  server_side_encryption_configuration {
-//    rule {
-//      apply_server_side_encryption_by_default {
-//        kms_master_key_id = aws_kms_key.glue_scripts_key.arn
-//        sse_algorithm     = "aws:kms"
-//      }
-//    }
-//  }
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.glue_scripts_key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
 }
 
 /* ==== GLUE TEMP STORAGE =========================================================================================== */

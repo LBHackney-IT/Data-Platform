@@ -35,7 +35,7 @@ resource "aws_iam_policy" "glue_access_policy" {
           "iam:ListRolePolicies",
           "iam:GetRole",
           "iam:GetRolePolicy",
-          "cloudwatch:PutMetricData"
+          "cloudwatch:PutMetricData",
         ],
         Resource : [
           "*"
@@ -60,6 +60,18 @@ resource "aws_iam_policy" "glue_access_policy" {
         ],
         Resource : [
           "arn:aws:logs:*:*:/aws-glue/*"
+        ]
+      },
+      {
+        Effect : "Allow",
+        Action : [
+          "kms:Decrypt"
+        ],
+        Resource : [
+          aws_kms_key.glue_scripts_key.arn,
+          aws_kms_key.glue_temp_storage_bucket_key.arn,
+          aws_kms_key.athena_storage_bucket_key.arn,
+          aws_kms_key.raw_zone_key.arn
         ]
       }
     ]
