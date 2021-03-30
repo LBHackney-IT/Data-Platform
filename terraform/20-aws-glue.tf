@@ -67,7 +67,7 @@ resource "aws_iam_policy" "glue_access_policy" {
         Action : [
           "kms:Encrypt",
           "kms:Decrypt",
-          "kms:DescribeKey",
+          "kms:GenerateDataKey",          
         ],
         Resource : [
           aws_kms_key.glue_scripts_key.arn,
