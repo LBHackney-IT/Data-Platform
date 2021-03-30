@@ -7,6 +7,8 @@ import pandas as pd
 import sys
 import boto3
 import base64
+import logging
+import json
 from botocore.exceptions import ClientError
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import SQLContext
@@ -85,7 +87,16 @@ googleSheetsWorksheetName = get_glue_env_var('worksheet_name', 'Form responses 1
 s3BucketTarget = get_glue_env_var('s3_bucket_target', '')
 
 # No, this should not be here and in production this should be moved to something like AWS Secret and imported in at run time
-googleSheetsJsonCredentials = get_secret("dataengineers-dataplatform-stg-housing-json-credentials-secret", "eu-west-2")
+googleSheetsJsonCredentials = json.loads(get_secret("dataengineers-dataplatform-stg-housing-json-credentials-secret", "eu-west-2"))
+
+MSG_FORMAT = '%(asctime)s %(levelname)s %(name)s: %(message)s'
+DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+logging.basicConfig(format=MSG_FORMAT, datefmt=DATETIME_FORMAT)
+logger = logging.getLogger("glue logger")
+
+logger.setLevel(logging.INFO)
+
+logger.info(googleSheetsJsonCredentials)
 
 # {
 #   "type": "service_account",
