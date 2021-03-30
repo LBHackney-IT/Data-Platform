@@ -1,6 +1,6 @@
 resource "aws_iam_role" "glue_role" {
   provider = aws.core
-  tags     = module.tags.values
+  tags = module.tags.values
 
   name = "${local.identifier_prefix}-glue-role"
   assume_role_policy = jsonencode({
@@ -65,13 +65,24 @@ resource "aws_iam_policy" "glue_access_policy" {
       {
         Effect : "Allow",
         Action : [
-          "kms:Decrypt"
+          "kms:Decrypt",
+          "kms:Encrypt"
         ],
         Resource : [
           aws_kms_key.glue_scripts_key.arn,
           aws_kms_key.glue_temp_storage_bucket_key.arn,
           aws_kms_key.athena_storage_bucket_key.arn,
-          aws_kms_key.raw_zone_key.arn
+          aws_kms_key.raw_zone_key.arn,
+          aws_kms_key.sheets_credentials.arn,
+        ]
+      },
+      {
+        Effect : "Allow",
+        Action : [
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource : [
+          aws_secretsmanager_secret.sheets_credentials_housing.arn
         ]
       }
     ]
@@ -81,7 +92,7 @@ resource "aws_iam_policy" "glue_access_policy" {
 resource "aws_iam_role_policy_attachment" "attach_glue_access_policy_to_glue_role" {
   provider = aws.core
 
-  role       = aws_iam_role.glue_role.name
+  role = aws_iam_role.glue_role.name
   policy_arn = aws_iam_policy.glue_access_policy.arn
 }
 
@@ -93,11 +104,11 @@ resource "aws_glue_catalog_database" "raw_zone_catalog_database" {
 
 resource "aws_glue_crawler" "raw_zone_bucket_crawler" {
   provider = aws.core
-  tags     = module.tags.values
+  tags = module.tags.values
 
   database_name = aws_glue_catalog_database.raw_zone_catalog_database.name
-  name          = "${local.identifier_prefix}-raw-zone-bucket-crawler"
-  role          = aws_iam_role.glue_role.arn
+  name = "${local.identifier_prefix}-raw-zone-bucket-crawler"
+  role = aws_iam_role.glue_role.arn
 
   s3_target {
     path = "s3://${aws_s3_bucket.raw_zone_bucket.bucket}"

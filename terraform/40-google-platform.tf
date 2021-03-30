@@ -1,46 +1,14 @@
-resource "google_project" "data_platform_staging" {
+resource "google_project" "google_project" {
   name       = "${var.application} ${var.environment}"
-  project_id = local.identifier_prefix
+  project_id = lower("${local.application_snake}-${var.environment}")
   org_id     = "127397986651"
 }
 
-resource "google_project_service" "data_platform_sheets_api" {
-  project = google_project.data_platform_staging.id
+resource "google_project_service" "sheets_api" {
+  project = google_project.google_project.id
   service = "sheets.googleapis.com"
 
   disable_dependent_services = true
-}
-
-resource "google_service_account" "housing" {
-  account_id   = lower("${local.application_snake}-${var.environment}-housing")
-  display_name = "Dataplatform housing service account"
-  project      = google_project.data_platform_staging.project_id
-
-}
-
-resource "google_service_account_key" "housing_json_credentials" {
-  service_account_id = google_service_account.housing.name
-  public_key_type    = "TYPE_X509_PEM_FILE"
-}
-
-# data "google_iam_policy" "admin" {
-#   binding {
-#     role = "roles/iam.serviceAccountUser"
-
-#     members = [
-#       "serviceAccount:${google_service_account.housing.email}",
-#     ]
-#   }
-# }
-
-# resource "google_service_account_iam_policy" "admin_account_iam" {
-#   service_account_id = google_service_account.housing.name
-#   policy_data        = data.google_iam_policy.admin.policy_data
-# }
-
-resource "google_project_iam_policy" "project_iam" {
-  project     = google_project.data_platform_staging.project_id
-  policy_data = data.google_iam_policy.project_admin.policy_data
 }
 
 data "google_iam_policy" "project_admin" {
@@ -54,4 +22,9 @@ data "google_iam_policy" "project_admin" {
       "user:ben.dalton@hackney.gov.uk"
     ]
   }
+}
+
+resource "google_project_iam_policy" "project_iam" {
+  project     = google_project.google_project.project_id
+  policy_data = data.google_iam_policy.project_admin.policy_data
 }
