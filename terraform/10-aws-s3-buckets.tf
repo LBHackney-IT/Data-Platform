@@ -1,7 +1,6 @@
 /* ==== RAW ZONE ==================================================================================================== */
 # TODO: We will be creating a number of different S3 buckets with the same setup. We should consider making a module
 resource "aws_kms_key" "raw_zone_key" {
-  provider = aws.core
   tags = module.tags.values
 
   description = "${var.project} ${var.environment} - Raw Zone Bucket Key"
@@ -10,7 +9,6 @@ resource "aws_kms_key" "raw_zone_key" {
 }
 
 resource "aws_s3_bucket" "raw_zone_bucket" {
-  provider = aws.core
   tags = module.tags.values
 
   bucket = lower("${local.identifier_prefix}-raw-zone")
@@ -26,8 +24,6 @@ resource "aws_s3_bucket" "raw_zone_bucket" {
 }
 
 resource "aws_s3_bucket_policy" "raw_zone_bucket_policy" {
-  provider = aws.core
-
   bucket = aws_s3_bucket.raw_zone_bucket.id
   policy = jsonencode({
     "Version" : "2012-10-17",
@@ -71,7 +67,6 @@ resource "aws_s3_bucket_policy" "raw_zone_bucket_policy" {
 
 /* ==== GLUE SCRIPTS ================================================================================================ */
 resource "aws_kms_key" "glue_scripts_key" {
-  provider = aws.core
   tags = module.tags.values
 
   description = "${var.project} ${var.environment} - Glue Scripts Bucket Key"
@@ -80,7 +75,6 @@ resource "aws_kms_key" "glue_scripts_key" {
 }
 
 resource "aws_s3_bucket" "glue_scripts_bucket" {
-  provider = aws.core
   tags = module.tags.values
 
   bucket = lower("${local.identifier_prefix}-glue-scripts")
@@ -98,7 +92,6 @@ resource "aws_s3_bucket" "glue_scripts_bucket" {
 
 /* ==== GLUE TEMP STORAGE =========================================================================================== */
 resource "aws_kms_key" "glue_temp_storage_bucket_key" {
-  provider = aws.core
   tags = module.tags.values
 
   description = "${var.project} ${var.environment} - Glue Temp Storage Bucket Key"
@@ -107,7 +100,6 @@ resource "aws_kms_key" "glue_temp_storage_bucket_key" {
 }
 
 resource "aws_s3_bucket" "glue_temp_storage_bucket" {
-  provider = aws.core
   tags = module.tags.values
 
   bucket = lower("${local.identifier_prefix}-glue-temp-storage")
@@ -125,7 +117,6 @@ resource "aws_s3_bucket" "glue_temp_storage_bucket" {
 
 /* ==== ATHENA STORAGE ============================================================================================== */
 resource "aws_kms_key" "athena_storage_bucket_key" {
-  provider = aws.core
   tags = module.tags.values
 
   description = "${var.project} ${var.environment} - Glue Temp Storage Bucket Key"
@@ -134,7 +125,6 @@ resource "aws_kms_key" "athena_storage_bucket_key" {
 }
 
 resource "aws_s3_bucket" "athena_storage_bucket" {
-  provider = aws.core
   tags = module.tags.values
 
   bucket = lower("${local.identifier_prefix}-athena-storage")
