@@ -1,5 +1,4 @@
 resource "aws_iam_role" "glue_role" {
-  provider = aws.core
   tags = module.tags.values
 
   name = "${local.identifier_prefix}-glue-role"
@@ -19,8 +18,6 @@ resource "aws_iam_role" "glue_role" {
 }
 
 resource "aws_iam_policy" "glue_access_policy" {
-  provider = aws.core
-
   name = "${local.identifier_prefix}-glue-access-policy"
   policy = jsonencode({
     "Version" : "2012-10-17",
@@ -91,20 +88,15 @@ resource "aws_iam_policy" "glue_access_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "attach_glue_access_policy_to_glue_role" {
-  provider = aws.core
-
   role = aws_iam_role.glue_role.name
   policy_arn = aws_iam_policy.glue_access_policy.arn
 }
 
 resource "aws_glue_catalog_database" "raw_zone_catalog_database" {
-  provider = aws.core
-
   name = "${local.identifier_prefix}-raw-zone-database"
 }
 
 resource "aws_glue_crawler" "raw_zone_bucket_crawler" {
-  provider = aws.core
   tags = module.tags.values
 
   database_name = aws_glue_catalog_database.raw_zone_catalog_database.name
