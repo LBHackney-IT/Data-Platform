@@ -42,7 +42,7 @@ resource "aws_iam_policy" "glue_access_policy" {
         Effect : "Allow",
         Action : "s3:*",
         Resource : [
-          "${aws_s3_bucket.raw_zone_bucket.arn}/*",
+          "${module.landing_zone.bucket_arn}/*",
           "${aws_s3_bucket.glue_scripts_bucket.arn}/*",
           "${aws_s3_bucket.glue_temp_storage_bucket.arn}/*"
         ]
@@ -64,13 +64,13 @@ resource "aws_iam_policy" "glue_access_policy" {
         Action : [
           "kms:Encrypt",
           "kms:Decrypt",
-          "kms:GenerateDataKey",          
+          "kms:GenerateDataKey",
         ],
         Resource : [
           aws_kms_key.glue_scripts_key.arn,
           aws_kms_key.glue_temp_storage_bucket_key.arn,
           aws_kms_key.athena_storage_bucket_key.arn,
-          aws_kms_key.raw_zone_key.arn,
+          module.landing_zone.kms_key_arn,
           aws_kms_key.sheets_credentials.arn,
         ]
       },
@@ -92,18 +92,18 @@ resource "aws_iam_role_policy_attachment" "attach_glue_access_policy_to_glue_rol
   policy_arn = aws_iam_policy.glue_access_policy.arn
 }
 
-resource "aws_glue_catalog_database" "raw_zone_catalog_database" {
-  name = "${local.identifier_prefix}-raw-zone-database"
+resource "aws_glue_catalog_database" "landing_zone_catalog_database" {
+  name = "${local.identifier_prefix}-landing-zone-database"
 }
 
-resource "aws_glue_crawler" "raw_zone_bucket_crawler" {
+resource "aws_glue_crawler" "landing_zone_bucket_crawler" {
   tags = module.tags.values
 
-  database_name = aws_glue_catalog_database.raw_zone_catalog_database.name
-  name = "${local.identifier_prefix}-raw-zone-bucket-crawler"
+  database_name = aws_glue_catalog_database.landing_zone_catalog_database.name
+  name = "${local.identifier_prefix}-landing-zone-bucket-crawler"
   role = aws_iam_role.glue_role.arn
 
   s3_target {
-    path = "s3://${aws_s3_bucket.raw_zone_bucket.bucket}"
+    path = "s3://${module.landing_zone.bucket_id}"
   }
 }
