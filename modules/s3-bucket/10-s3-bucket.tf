@@ -1,9 +1,9 @@
 resource "aws_kms_key" "key" {
   tags = var.tags
 
-  description = "${var.project} ${var.environment} - ${var.bucket_name} Bucket Key"
+  description             = "${var.project} ${var.environment} - ${var.bucket_name} Bucket Key"
   deletion_window_in_days = 10
-  enable_key_rotation = true
+  enable_key_rotation     = true
 }
 
 resource "aws_s3_bucket" "bucket" {
@@ -15,7 +15,7 @@ resource "aws_s3_bucket" "bucket" {
     rule {
       apply_server_side_encryption_by_default {
         kms_master_key_id = aws_kms_key.key.arn
-        sse_algorithm = "aws:kms"
+        sse_algorithm     = "aws:kms"
       }
     }
   }
@@ -24,93 +24,85 @@ resource "aws_s3_bucket" "bucket" {
 resource "aws_s3_bucket_public_access_block" "block_public_access" {
   bucket = aws_s3_bucket.bucket.id
 
-  block_public_acls   = true
-  block_public_policy = true
-  ignore_public_acls = true
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+locals {
+  accounts = {
+    261219435789 = {
+      read_write = "social-care",
+      read       = []
+    }
+  }
+}
+
+data "aws_iam_policy_document" "bucket_policy_document" {
+
+  statement {
+    sid    = "ListBucket"
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = concat([
+        for account_id, v in local.accounts :
+        "arn:aws:iam::${account_id}:root"
+        ], [
+        for account_id, v in local.accounts :
+        "arn:aws:iam::${account_id}:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463"
+      ])
+    }
+    actions   = ["s3:ListBucket"]
+    resources = [aws_s3_bucket.bucket.arn]
+  }
+
+  dynamic "statement" {
+    for_each = local.accounts
+    iterator = account
+    content {
+      sid    = "WriteAccess${account.key}"
+      effect = "Allow"
+      principals {
+        type = "AWS"
+        identifiers = [
+          "arn:aws:iam::${account.key}:root",
+          "arn:aws:iam::${account.key}:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
+        ]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "s3:x-amz-acl"
+        values   = ["bucket-owner-full-control"]
+      }
+      actions   = ["s3:PutObject", "s3:PutObjectAcl", "s3:GetObject"]
+      resources = ["${aws_s3_bucket.bucket.arn}/${account.value["read_write"]}"]
+    }
+  }
+  dynamic "statement" {
+    for_each = [for value in local.accounts : value if value["read"] != []]
+    iterator = account
+    content {
+      sid    = "ReadAccess${account.key}"
+      effect = "Allow"
+      principals {
+        type = "AWS"
+        identifiers = [
+          "arn:aws:iam::${account.key}:root",
+          "arn:aws:iam::${account.key}:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
+        ]
+      }
+      actions = ["s3:GetObject"]
+      resources = [
+        for readable_folder in account.value["read"] :
+        "${aws_s3_bucket.bucket.arn}/${readable_folder}"
+      ]
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = aws_s3_bucket.bucket.id
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        Sid : "ListBucket",
-        Effect : "Allow",
-        Principal : {
-          "AWS" : [
-            "arn:aws:iam::261219435789:root",
-            "arn:aws:iam::261219435789:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
-            "arn:aws:iam::261219435789:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
-          ]
-        },
-        Action : [
-          "s3:ListBucket"
-        ],
-        Resource : aws_s3_bucket.bucket.arn
-      },
-      {
-        Sid : "AddCannedAcl",
-        Effect : "Allow",
-        Principal : {
-          "AWS" : [
-            "arn:aws:iam::261219435789:root",
-            "arn:aws:iam::261219435789:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
-          ]
-        },
-        Action : [
-          "s3:PutObject",
-          "s3:PutObjectAcl"],
-        Resource : "${aws_s3_bucket.bucket.arn}/social-care/*",
-        Condition : {
-          "StringEquals" : {
-            "s3:x-amz-acl" : "bucket-owner-full-control"
-          }
-        }
-      },
-      {
-        Sid : "AddCannedAcl",
-        Effect : "Allow",
-        Principal : {
-          "AWS" : [
-            "arn:aws:iam::261219435789:root",
-            "arn:aws:iam::261219435789:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
-          ]
-        },
-        Action : [
-          "s3:PutObject",
-          "s3:PutObjectAcl"],
-        Resource : "${aws_s3_bucket.bucket.arn}/housing/*",
-        Condition : {
-          "StringEquals" : {
-            "s3:x-amz-acl" : "bucket-owner-full-control"
-          }
-        }
-      },
-      {
-        Sid : "AddCannedAcl",
-        Effect : "Allow",
-        Principal : {
-          "AWS" : [
-            "arn:aws:iam::261219435789:root",
-            "arn:aws:iam::261219435789:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
-          ]
-        },
-        Action : [
-          "s3:GetObject"],
-        Resource : [
-          "${aws_s3_bucket.bucket.arn}/social-care/*",
-          "${aws_s3_bucket.bucket.arn}/social-care/*",
-          "${aws_s3_bucket.bucket.arn}/social-care/*",
-          "${aws_s3_bucket.bucket.arn}/social-care/*",
-        ],
-        Condition : {
-          "StringEquals" : {
-            "s3:x-amz-acl" : "bucket-owner-full-control"
-          }
-        }
-      }
-    ]
-  })
+  policy = data.aws_iam_policy_document.bucket_policy_document.json
 }
