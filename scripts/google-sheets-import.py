@@ -97,7 +97,7 @@ pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() f
 
 # Convert to SparkDynamicDataFrame
 sparkDynamicDataFrame = sqlContext.createDataFrame(pandasDataFrame)
-sparkDynamicDataFrame = sparkDynamicDataFrame.coalesce(1).withColumn('date', f.current_timestamp()).repartition('date')
+sparkDynamicDataFrame = sparkDynamicDataFrame.coalesce(1).withColumn('import_date', f.current_timestamp()).repartition('import_date')
 
 dataframe = DynamicFrame.fromDF(sparkDynamicDataFrame, glueContext, "googlesheets")
 
