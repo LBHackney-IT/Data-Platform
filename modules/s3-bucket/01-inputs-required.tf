@@ -31,7 +31,11 @@ variable "identifier_prefix" {
 variable "account_configuration" {
   description = "AWS account configuration"
   type = map(object({
-    read_write = string,
-    read = list(string)
+    account_to_share_data_with = string,
+    iam_role_name = string,
+    s3_read_write_directory = string,
+    s3_read_directories = list(string)
   }))
 }
+
+
