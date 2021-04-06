@@ -38,11 +38,11 @@ data "aws_iam_policy_document" "bucket_policy_document" {
     principals {
       type = "AWS"
       identifiers = concat([
-      for account_id, v in var.account_configuration :
-      "arn:aws:iam::${account_id}:root"
+      for department in var.account_configuration :
+      "arn:aws:iam::${department.account_to_share_data_with}:root"
       ], [
-      for account_id, v in var.account_configuration :
-      "arn:aws:iam::${account_id}:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463"
+      for department in var.account_configuration :
+      "arn:aws:iam::${department.account_to_share_data_with}:role/aws-reserved/sso.amazonaws.com/${department.iam_role_name}"
       ])
     }
     actions   = ["s3:ListBucket"]
@@ -53,13 +53,13 @@ data "aws_iam_policy_document" "bucket_policy_document" {
     for_each = var.account_configuration
     iterator = account
     content {
-      sid    = "WriteAccess${account.key}"
+      sid    = "WriteAccess${account.value.account_to_share_data_with}"
       effect = "Allow"
       principals {
         type = "AWS"
         identifiers = [
-          "arn:aws:iam::${account.key}:root",
-          "arn:aws:iam::${account.key}:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
+          "arn:aws:iam::${account.value.account_to_share_data_with}:root",
+          "arn:aws:iam::${account.value.account_to_share_data_with}:role/aws-reserved/sso.amazonaws.com/${account.value.iam_role_name}",
         ]
       }
       condition {
@@ -68,26 +68,26 @@ data "aws_iam_policy_document" "bucket_policy_document" {
         values   = ["bucket-owner-full-control"]
       }
       actions   = ["s3:PutObject", "s3:PutObjectAcl"]
-      resources = ["${aws_s3_bucket.bucket.arn}/${account.value["read_write"]}/*"]
+      resources = ["${aws_s3_bucket.bucket.arn}/${account.value["s3_read_write_directory"]}/*"]
     }
   }
   dynamic "statement" {
     for_each = var.account_configuration
     iterator = account
     content {
-      sid    = "ReadAccess${account.key}"
+      sid    = "ReadAccess${account.value.account_to_share_data_with}"
       effect = "Allow"
       principals {
         type = "AWS"
         identifiers = [
-          "arn:aws:iam::${account.key}:root",
-          "arn:aws:iam::${account.key}:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
+          "arn:aws:iam::${account.value.account_to_share_data_with}:root",
+          "arn:aws:iam::${account.value.account_to_share_data_with}:role/aws-reserved/sso.amazonaws.com/${account.value.iam_role_name}",
         ]
       }
       actions = ["s3:GetObject"]
       resources = concat(
-        [for readable_folder in account.value["read"]: "${aws_s3_bucket.bucket.arn}/${readable_folder}/*"],
-        ["${aws_s3_bucket.bucket.arn}/${account.value["read_write"]}/*"]
+        [for readable_folder in account.value["s3_read_directories"]: "${aws_s3_bucket.bucket.arn}/${readable_folder}/*"],
+        ["${aws_s3_bucket.bucket.arn}/${account.value["s3_read_write_directory"]}/*"]
       )
     }
   }

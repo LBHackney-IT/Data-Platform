@@ -4,7 +4,7 @@ module "landing_zone" {
   project               = var.project
   environment           = var.environment
   identifier_prefix     = local.identifier_prefix
-  account_configuration = local.accounts
+  account_configuration = local.departments
   bucket_name           = "Landing Zone"
   bucket_identifier     = "landing-zone"
 }
@@ -15,7 +15,7 @@ module "raw_zone" {
   project               = var.project
   environment           = var.environment
   identifier_prefix     = local.identifier_prefix
-  account_configuration = local.accounts
+  account_configuration = local.departments
   bucket_name           = "Raw Zone"
   bucket_identifier     = "raw-zone"
 }
@@ -26,7 +26,7 @@ module "refined_zone" {
   project               = var.project
   environment           = var.environment
   identifier_prefix     = local.identifier_prefix
-  account_configuration = local.accounts
+  account_configuration = local.departments
   bucket_name           = "Refined Zone"
   bucket_identifier     = "refined-zone"
 }
@@ -37,7 +37,7 @@ module "trusted_zone" {
   project               = var.project
   environment           = var.environment
   identifier_prefix     = local.identifier_prefix
-  account_configuration = local.accounts
+  account_configuration = local.departments
   bucket_name           = "Trusted Zone"
   bucket_identifier     = "trusted-zone"
 }
