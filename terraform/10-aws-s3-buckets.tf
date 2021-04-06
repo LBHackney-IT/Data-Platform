@@ -58,6 +58,18 @@ resource "aws_s3_bucket" "glue_scripts_bucket" {
   bucket        = lower("${local.identifier_prefix}-glue-scripts")
   force_destroy = true
 
+  versioning {
+    enabled = true
+  }
+
+  lifecycle_rule {
+    enabled = true
+
+    noncurrent_version_expiration {
+      days = 60
+    }
+  }
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
