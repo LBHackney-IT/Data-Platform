@@ -1,18 +1,21 @@
-var githubapi = require("github"),
-async = require("async"),
-AWS = require('aws-sdk'),
-// secrets = require('./secrets.js');
+const { spawnSync } = require("child_process");
 
 exports.handler = async (event) => {
-// TODO implement
-
-
-    // var referenceCommitSha,
-    //     newTreeSha, newCommitSha, code;
-    
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify('Hello from Lambda!'),
-    };
-    return response;
+  await require("lambda-git")();
+  const clone = spawnSync(
+    "git",
+    [
+      "clone",
+      "git@github.com:LBHackney-IT/coronavirus-here-to-help-frontend.git",
+    ],
+    {
+      cwd: "/tmp",
+    }
+  );
+  console.log(clone.output.toString());
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify(clone.output.toString()),
+  };
+  return response;
 };
