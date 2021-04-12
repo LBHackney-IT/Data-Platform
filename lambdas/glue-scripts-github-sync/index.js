@@ -21,14 +21,15 @@ const cloneRepo = async (directory) => {
     .promise();
   execSync(`ssh-keyscan github.com >> ${directory}/githubKey`);
   execSync(`ssh-keygen -lf ${directory}/githubKey`);
-
+  console.log(`Key:${key.SecretString}`);
   await fs.writeFile(`${directory}/id_rsa`, key.SecretString);
-  execSync(`chmod 400 ${directory}/id_rsa`, {
+  execSync(`chmod 600 ${directory}/id_rsa`, {
     encoding: "utf8",
     stdio: "inherit",
   });
 
-  process.env.GIT_SSH_COMMAND = `ssh -o UserKnownHostsFile=${directory}/githubKey -i ${directory}/id_rsa`;
+  process.env.HOME = directory;
+  process.env.GIT_SSH_COMMAND = `ssh -o UserKnownHostsFile=${directory}/githubKey -i ${directory}/id_rsa -v`;
 
   execSync(
     `git clone --depth 1 git@github.com:LBHackney-IT/data-platform.git -b temp_branch ${directory}/repo`,
@@ -57,13 +58,6 @@ const commitCustomScripts = (directory) => {
 };
 
 exports.handler = async (events) => {
-  await fs.chmod("/tmp", 0o777, (err) => {
-    if (err) {
-      console.log("Failed to execute chmod", err);
-    } else {
-      console.log("Success");
-    }
-  });
   if (await directoryExists(tempDirectory)) {
     await fs.rmdir(tempDirectory, { recursive: true });
   }
