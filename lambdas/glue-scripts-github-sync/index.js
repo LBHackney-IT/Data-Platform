@@ -2,19 +2,20 @@ const AWS = require("aws-sdk");
 const fs = require("fs/promises");
 const { execSync } = require("child_process");
 const path = require("path");
-const tempDirectory = process.env.TEMP_DIR || "/tmp";
+const tempDirectory = process.env.TEMP_DIR || "/tmp/lambda";
 const awsSecretClient = new AWS.SecretsManager({ region: "eu-west-2" });
+const awsS3Client = new AWS.S3({ region: "eu-west-2" });
 
-async function directoryExists(directoryPath) {
+const directoryExists = async (directoryPath) => {
   try {
     await fs.access(directoryPath);
     return true;
   } catch (error) {
     return false;
   }
-}
+};
 
-async function cloneRepo(directory) {
+const cloneRepo = async (directory) => {
   const key = await awsSecretClient
     .getSecretValue({ SecretId: "ben_lambda_key" })
     .promise();
@@ -33,9 +34,36 @@ async function cloneRepo(directory) {
     `git clone --depth 1 git@github.com:LBHackney-IT/data-platform.git -b temp_branch ${directory}/repo`,
     { encoding: "utf8", stdio: "inherit" }
   );
-}
+};
+
+const commitCustomScripts = (directory) => {
+  try {
+    execSync(`git -C ${directory}/repo add scripts/custom/\*`, {
+      encoding: "utf8",
+      stdio: "inherit",
+    });
+    execSync(`git -C ${directory}/repo commit -m "update script"`, {
+      encoding: "utf8",
+      stdio: "inherit",
+    });
+    execSync(`git -C ${directory}/repo push`, {
+      encoding: "utf8",
+      stdio: "inherit",
+    });
+  } catch (error) {
+    console.log(`Error committing custom scripts ${error}`);
+    throw error;
+  }
+};
 
 exports.handler = async (events) => {
+  await fs.chmod("/tmp", 0o777, (err) => {
+    if (err) {
+      console.log("Failed to execute chmod", err);
+    } else {
+      console.log("Success");
+    }
+  });
   if (await directoryExists(tempDirectory)) {
     await fs.rmdir(tempDirectory, { recursive: true });
   }
@@ -44,7 +72,6 @@ exports.handler = async (events) => {
 
   await cloneRepo(tempDirectory);
 
-  const awsS3Client = new AWS.S3({ region: "eu-west-2" });
   for (const eventRecord of events.Records) {
     const bucketName = eventRecord.s3.bucket.name;
     const fileKey = decodeURIComponent(
@@ -77,17 +104,5 @@ exports.handler = async (events) => {
       throw err;
     }
   }
-
-  execSync(`git -C ${tempDirectory}/repo add scripts/custom/\*`, {
-    encoding: "utf8",
-    stdio: "inherit",
-  });
-  execSync(`git -C ${tempDirectory}/repo commit -m "update script"`, {
-    encoding: "utf8",
-    stdio: "inherit",
-  });
-  execSync(`git -C ${tempDirectory}/repo push`, {
-    encoding: "utf8",
-    stdio: "inherit",
-  });
+  commitCustomScripts(tempDirectory);
 };
