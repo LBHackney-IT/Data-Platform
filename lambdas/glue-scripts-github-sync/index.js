@@ -2,9 +2,9 @@ const AWS = require("aws-sdk");
 const fs = require("fs/promises");
 const { execSync } = require("child_process");
 const path = require("path");
+
+const AWS_REGION = 'eu-west-2';
 const tempDirectory = process.env.TEMP_DIR || "/tmp/lambda";
-const awsSecretClient = new AWS.SecretsManager({ region: "eu-west-2" });
-const awsS3Client = new AWS.S3({ region: "eu-west-2" });
 
 const directoryExists = async (directoryPath) => {
   try {
@@ -16,13 +16,14 @@ const directoryExists = async (directoryPath) => {
 };
 
 const cloneRepo = async (directory) => {
+  const awsSecretClient = new AWS.SecretsManager({ region: AWS_REGION });
   const key = await awsSecretClient
     .getSecretValue({ SecretId: "ben_lambda_key" })
     .promise();
+  await fs.writeFile(`${directory}/id_rsa`, key.SecretString + '\n');
+
   execSync(`ssh-keyscan github.com >> ${directory}/githubKey`);
   execSync(`ssh-keygen -lf ${directory}/githubKey`);
-  console.log(`Key:${key.SecretString}`);
-  await fs.writeFile(`${directory}/id_rsa`, key.SecretString);
   execSync(`chmod 600 ${directory}/id_rsa`, {
     encoding: "utf8",
     stdio: "inherit",
@@ -66,6 +67,7 @@ exports.handler = async (events) => {
 
   await cloneRepo(tempDirectory);
 
+  const awsS3Client = new AWS.S3({ region: AWS_REGION });
   for (const eventRecord of events.Records) {
     const bucketName = eventRecord.s3.bucket.name;
     const fileKey = decodeURIComponent(

@@ -1,8 +1,17 @@
-const handler = require("./index");
+process.on('unhandledRejection', error => {
+  // Will print "unhandledRejection err is not defined"
+  console.log('[UnhandledRejection]', error.message);
+  console.log(error)
+});
+
 const AWS = require("aws-sdk");
 
-var credentials = new AWS.SharedIniFileCredentials({ profile: "madetech" });
+const credentials = new AWS.SharedIniFileCredentials({
+  profile: "madetech-sandbox"
+});
 AWS.config.credentials = credentials;
+
+const handler = require("./index");
 
 handler.handler({
   Records: [
@@ -34,7 +43,7 @@ handler.handler({
           arn: "arn:aws:s3:::hackney-jamesoates-glue-script-storage",
         },
         object: {
-          key: "Scripts/GoogleSheets+Test.py",
+          key: "Scripts/GoogleSheets+Test-test.py",
           size: 0,
           eTag: "d41d8cd98f00b204e9800998ecf8427e",
           sequencer: "00606EE2B763237ABE",
