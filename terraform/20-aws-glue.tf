@@ -43,6 +43,9 @@ resource "aws_iam_policy" "glue_access_policy" {
         Action : "s3:*",
         Resource : [
           "${module.landing_zone.bucket_arn}/*",
+          "${module.raw_zone.bucket_arn}/*",
+          "${module.refined_zone.bucket_arn}/*",
+          "${module.trusted_zone.bucket_arn}/*",
           "${aws_s3_bucket.glue_scripts_bucket.arn}/*",
           "${aws_s3_bucket.glue_temp_storage_bucket.arn}/*"
         ]
@@ -71,6 +74,9 @@ resource "aws_iam_policy" "glue_access_policy" {
           aws_kms_key.glue_temp_storage_bucket_key.arn,
           aws_kms_key.athena_storage_bucket_key.arn,
           module.landing_zone.kms_key_arn,
+          module.raw_zone.kms_key_arn,
+          module.refined_zone.kms_key_arn,
+          module.trusted_zone.kms_key_arn,
           aws_kms_key.sheets_credentials.arn,
         ]
       },
