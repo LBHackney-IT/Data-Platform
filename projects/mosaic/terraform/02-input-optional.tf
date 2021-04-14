@@ -48,6 +48,32 @@ variable "core_security_group_ingress" {
   default     = null
 }
 
+# VPC peering
+variable "production_api_vpc_cidr" {
+  description = "The CIDR of the Production APIs VPC for Cross Account DMS."
+  type        = string
+  default     = ""
+}
+
+# Platform and Service API
+variable "platform_api_id" {
+  description = "The API ID of the Residents Social Care Platform API."
+  type        = string
+  default     = ""
+}
+
+variable "platform_api_key_id" {
+  description = "The API key ID for the Residents Social Care Platform API."
+  type        = string
+  default     = ""
+}
+
+variable "service_api_show_historic_data_feature_flag" {
+  description = "Show historic data feature flag for Social Care Case Viewer API."
+  type        = string
+  default     = "false"
+}
+
 # Core Infrastructure - 30-bastion
 variable "bastion_instance_ami" {
   description = "Bastion EC2 AMI ID."
@@ -65,13 +91,6 @@ variable "bastion_instance_type" {
   description = "Bastion EC2 size."
   type        = string
   default     = "t3.medium"
-}
-
-# General
-variable "mosaic_profile" {
-  description = "The AWS profile used to authenticate to the Mosaic AWS account."
-  type        = string
-  default     = "default"
 }
 
 # Tags

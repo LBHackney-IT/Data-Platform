@@ -72,4 +72,3 @@ module "civica_app_ec2_instance" {
 
 #   tags = module.tags.values
 # }
-

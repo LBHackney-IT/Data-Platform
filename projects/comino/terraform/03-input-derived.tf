@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {
 }
 # Tags module
 module "tags" {
-  source = "../modules/audit/tags"
+  source = "../modules/tags"
 
   application          = var.application
   automation_build_url = var.automation_build_url
@@ -17,4 +17,3 @@ module "tags" {
   stack                = var.stack
   team                 = var.team
 }
-

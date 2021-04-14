@@ -1,7 +1,7 @@
 module "postgres_rds_db" {
   providers = { aws = aws.core }
   source    = "terraform-aws-modules/rds/aws"
-  version   = "~> 2.0"
+  version   = "2.23.0"
 
   identifier = "mosaic-postgres"
 
@@ -37,13 +37,15 @@ module "postgres_rds_db" {
 
   snapshot_identifier = "mosaic-postgres-encrypted"
 
+  multi_az = true
+
   tags = module.tags.values
 }
 
 resource "aws_secretsmanager_secret" "postgres_db_host" {
   provider = aws.core
 
-  name = format("%s_%s_postgres_db_host", var.application, lower(var.environment))
+  name = format("%s_%s_postgres_db_host", lower(var.application), lower(var.environment))
 }
 
 resource "aws_secretsmanager_secret_version" "postgres_db_host" {
@@ -56,7 +58,7 @@ resource "aws_secretsmanager_secret_version" "postgres_db_host" {
 resource "aws_secretsmanager_secret" "postgres_db_port" {
   provider = aws.core
 
-  name = format("%s_%s_postgres_db_port", var.application, lower(var.environment))
+  name = format("%s_%s_postgres_db_port", lower(var.application), lower(var.environment))
 }
 
 resource "aws_secretsmanager_secret_version" "postgres_db_port" {
@@ -69,7 +71,7 @@ resource "aws_secretsmanager_secret_version" "postgres_db_port" {
 resource "aws_secretsmanager_secret" "postgres_db_name" {
   provider = aws.core
 
-  name = format("%s_%s_postgres_db_name", var.application, lower(var.environment))
+  name = format("%s_%s_postgres_db_name", lower(var.application), lower(var.environment))
 }
 
 resource "aws_secretsmanager_secret_version" "postgres_db_name" {
@@ -82,7 +84,7 @@ resource "aws_secretsmanager_secret_version" "postgres_db_name" {
 resource "aws_secretsmanager_secret" "postgres_db_username" {
   provider = aws.core
 
-  name = format("%s_%s_postgres_db_username", var.application, lower(var.environment))
+  name = format("%s_%s_postgres_db_username", lower(var.application), lower(var.environment))
 }
 
 resource "aws_secretsmanager_secret_version" "postgres_db_username" {
@@ -100,7 +102,7 @@ resource "random_password" "postgres_db_password" {
 resource "aws_secretsmanager_secret" "postgres_db_password" {
   provider = aws.core
 
-  name = format("%s_%s_postgres_db_password", var.application, lower(var.environment))
+  name = format("%s_%s_postgres_db_password", lower(var.application), lower(var.environment))
 }
 
 resource "aws_secretsmanager_secret_version" "postgres_db_password" {

@@ -22,7 +22,7 @@ resource "aws_iam_role" "sequel_proval_iam_role" {
 }
 EOF
   name               = "sequel_proval_iam_role"
-  tags = module.tags.tags
+  # tags = module.tags.values
 }
 resource "aws_iam_role_policy_attachment" "sequel_proval_iam_role_attach" {
   provider = aws.core

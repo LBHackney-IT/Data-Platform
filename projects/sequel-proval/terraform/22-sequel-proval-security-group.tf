@@ -10,7 +10,7 @@ module "sequel_proval_security_group" {
   egress_rules        = ["all-all"]
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["http-80-tcp", "all-icmp"]
-  
+
   name   = format("%s-%s", var.application, var.environment)
   vpc_id = module.core_vpc.vpc_id
 

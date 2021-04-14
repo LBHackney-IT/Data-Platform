@@ -1,3 +1,19 @@
+# Required for GitHub Actions Terraform
+variable "aws_deploy_region" {
+  description = "AWS region to deploy to"
+  type        = string
+}
+
+variable "aws_deploy_account" {
+  description = "AWS account id to deploy to"
+  type        = string
+}
+
+variable "aws_deploy_iam_role_name" {
+  description = "AWS IAM role name to assume for deployment"
+  type        = string
+}
+
 # Core Infrastructure
 # Core Infrastructure - 10-network
 variable "core_azs" {
@@ -38,6 +54,6 @@ variable "department" {
 }
 
 variable "environment" {
-  description = "Environment e.g. development, testing, staging, production."
+  description = "Environment e.g. Dev, Stg, Prod."
   type        = string
 }

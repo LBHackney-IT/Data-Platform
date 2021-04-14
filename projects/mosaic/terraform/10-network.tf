@@ -22,4 +22,3 @@ module "core_vpc" {
   default_security_group_tags = module.tags.values
   tags                        = module.tags.values
 }
-
