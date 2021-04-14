@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {
 }
 
 module "tags" {
-  source = "../modules/audit/tags"
+  source = "../../../modules/tags"
 
   application          = var.application
   automation_build_url = var.automation_build_url

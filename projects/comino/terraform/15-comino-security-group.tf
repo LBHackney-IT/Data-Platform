@@ -15,4 +15,3 @@ module "comino_app_security_group" {
 
   tags = module.tags.values
 }
-

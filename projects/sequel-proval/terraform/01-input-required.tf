@@ -23,6 +23,8 @@ variable "appstream_public_subnets" {
 
 # Core Infrastructure
 # Core Infrastructure - 10-network
+
+
 variable "core_azs" {
   description = "A list of availability zones names or ids in the Core region."
   type        = list(string)
@@ -51,6 +53,25 @@ variable "key_name" {
   type        = string
 }
 
+variable "aws_deploy_region" {
+  description = "AWS region to deploy to"
+  type        = string
+}
+
+variable "aws_deploy_account" {
+  description = "AWS account id to deploy to"
+  type        = string
+}
+
+variable "aws_deploy_iam_role_name" {
+  description = "AWS IAM role name to assume for deployment"
+  type        = string
+}
+
+#variable "environment" {
+#  description = "Environment e.g. Dev, Stg, Prod, Mgmt."
+#  type        = string
+#}
 
 # Tags
 variable "application" {
@@ -64,6 +85,6 @@ variable "department" {
 }
 
 variable "environment" {
-  description = "Enviroment e.g. development, testing, staging, production."
+  description = "Environment e.g. development, testing, staging, production."
   type        = string
 }

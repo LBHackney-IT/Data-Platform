@@ -102,8 +102,8 @@ variable "core_security_group_ingress" {
 variable "sequel_proval_instance_ami" {
   description = "Sequel Proval EC2 AMI ID."
   type        = string
-  default     = "ami-0e6e8f60a5b42a4b5"
-  
+  default     = "ami-0d0ff6df453a81e02"
+
 }
 
 variable "sequel_proval_instance_number" {
@@ -115,7 +115,7 @@ variable "sequel_proval_instance_number" {
 variable "sequel_proval_instance_type" {
   description = "Sequel Proval EC2 size."
   type        = string
-  default     = "c5.2xlarge"
+  default     = "c4.xlarge"
 }
 
 
@@ -136,7 +136,7 @@ variable "automation_build_url" {
 variable "confidentiality" {
   description = "The project confidentiality status"
   type        = string
-  default     = "internal"
+  default     = "Internal"
 }
 
 variable "custom_tags" {

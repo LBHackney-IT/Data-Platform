@@ -42,3 +42,5 @@ terraform.rc
 !terraform-backend-setup/terraform.tfstate.d
 node_modules
 .idea
+
+.DS_Store

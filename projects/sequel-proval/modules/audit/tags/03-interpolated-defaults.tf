@@ -16,4 +16,3 @@ locals {
 
   tags_merged = merge(local.tags, var.custom_tags)
 }
-  
