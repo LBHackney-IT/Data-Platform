@@ -44,7 +44,6 @@ inputs:
     description: 'Terraform state rm statement'
     default: ''
     required: false
-    
 runs:
   using: "composite"
   steps:
@@ -60,7 +59,6 @@ runs:
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"
-  
     - name: Terraform Init
       id: init
       run: |
@@ -75,7 +73,6 @@ runs:
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"
-      
     - name: Terraform Import
       id: import
       run: |
@@ -89,7 +86,6 @@ runs:
         fi
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"
-      
     - name: Terraform Remove
       id: remove
       run: |
@@ -102,7 +98,7 @@ runs:
             fi
         fi
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"           
+      working-directory: "${{ inputs.build_path }}/terraform"
 
     - name: Terraform Validate
       id: validate
@@ -130,18 +126,18 @@ runs:
             if [ "${{ inputs.branch }}" == "master" ]; then
               terraform -auto-approve
               ${{ github.action_path }}/success_destroy.sh
-              echo -e "Terraform run completed successfully."              
+              echo -e "Terraform run completed successfully."
             else
               echo -e "Not on master branch, so skipping Terraform destroy."
             fi
         fi
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"      
+      working-directory: "${{ inputs.build_path }}/terraform"
 
     - name: Terraform Plan
       id: plan
       run: |
-        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then      
+        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
           ${{ github.action_path }}/box.sh "Running Terraform plan"
           terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
           echo -e "\n"
@@ -152,7 +148,7 @@ runs:
     - name: Terraform Apply
       id: apply
       run: |
-        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then 
+        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
           if [ "${{ inputs.branch }}" == "master" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform apply"
             terraform apply -auto-approve -input=false plan.out
@@ -161,6 +157,6 @@ runs:
           fi
           ${{ github.action_path }}/success.sh
           echo -e "Terraform run completed successfully."
-        fi          
+        fi
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"
