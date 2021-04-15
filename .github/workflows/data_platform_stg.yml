@@ -1,5 +1,5 @@
 # Name of your build. Please follow the Name Project/Platform (Environment) format. You will need to specify a build per environment.
-name: Data-Platform (Stg)
+name: Data-Platform (Staging)
 env:
   # AWS Account to deploy to. Account IDs are saved as secrets in this GitHub repository for convenience, using the naming convention AWS_ACCOUNT_ACCOUNT_NAME
   # where any spaces, dashes are converted to underscore (_). You can also use the Account Id value as literal string "12345679".
@@ -28,14 +28,14 @@ on:
       - "terraform/**"
   # This allows a manual trigger of the build, where a branch can be set. Please https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
   # or delete if you don't wish to allow manual triggers of the build
-#  workflow_dispatch:
-#    inputs:
-#      terraform_import:
-#        description: 'Terraform import statements'
-#        required: false
-#      terraform_remove:
-#        description: 'Terraform state rm statements'
-#        required: false
+  workflow_dispatch:
+    inputs:
+      terraform_import:
+        description: 'Terraform import statements'
+        required: false
+      terraform_remove:
+        description: 'Terraform state rm statements'
+        required: false
 
 # Nothing to change down from here!
 # Pay no attention to the man behind the curtain
