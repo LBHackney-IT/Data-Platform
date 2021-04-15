@@ -5,15 +5,8 @@ provider "aws" {
   region  = var.core_region
 }
 
-provider "google" {
-  region  = "europe-west2"
-  zone    = "europe-west2-a"
-}
-
 # General
 terraform {
-  required_version = "~> 0.14.3"
-
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -27,7 +20,7 @@ terraform {
   backend "s3" {
     region  = "eu-west-2"
     key     = "tf-remote-state"
-    bucket  = "dataplatform-internal-stg-tfstate"
+    bucket  = "dataplatform-dataplatform-staging-terraform-state"
     encrypt = true
   }
 }
