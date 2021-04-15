@@ -4,7 +4,7 @@ module "test_data" {
   glue_scripts_bucket_id = aws_s3_bucket.glue_scripts_bucket.id
   glue_temp_storage_bucket_id = aws_s3_bucket.glue_temp_storage_bucket.id
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id = module.landing_zone.bucket_id
+  landing_zone_bucket_id = aws_s3_bucket.raw_zone_bucket.id
   sheets_credentials_name = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags = module.tags.values
   glue_job_name = "Test"
@@ -20,7 +20,7 @@ module "housing_repair_data" {
   glue_scripts_bucket_id = aws_s3_bucket.glue_scripts_bucket.id
   glue_temp_storage_bucket_id = aws_s3_bucket.glue_temp_storage_bucket.id
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id = module.landing_zone.bucket_id
+  landing_zone_bucket_id = aws_s3_bucket.raw_zone_bucket.id
   sheets_credentials_name = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags = module.tags.values
   glue_job_name = "Housing Repair"
