@@ -27,11 +27,3 @@ variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type = string
 }
-
-variable "account_configuration" {
-  description = "AWS account configuration"
-  type = map(object({
-    read_write = string,
-    read = list(string)
-  }))
-}

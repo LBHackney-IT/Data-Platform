@@ -30,6 +30,15 @@ resource "aws_s3_bucket_public_access_block" "block_public_access" {
   restrict_public_buckets = true
 }
 
+locals {
+  accounts = {
+    261219435789 = {
+      read_write = "social-care",
+      read       = []
+    }
+  }
+}
+
 data "aws_iam_policy_document" "bucket_policy_document" {
 
   statement {
@@ -38,11 +47,11 @@ data "aws_iam_policy_document" "bucket_policy_document" {
     principals {
       type = "AWS"
       identifiers = concat([
-      for account_id, v in var.account_configuration :
-      "arn:aws:iam::${account_id}:root"
-      ], [
-      for account_id, v in var.account_configuration :
-      "arn:aws:iam::${account_id}:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463"
+        for account_id, v in local.accounts :
+        "arn:aws:iam::${account_id}:root"
+        ], [
+        for account_id, v in local.accounts :
+        "arn:aws:iam::${account_id}:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463"
       ])
     }
     actions   = ["s3:ListBucket"]
@@ -50,7 +59,7 @@ data "aws_iam_policy_document" "bucket_policy_document" {
   }
 
   dynamic "statement" {
-    for_each = var.account_configuration
+    for_each = local.accounts
     iterator = account
     content {
       sid    = "WriteAccess${account.key}"
@@ -67,12 +76,12 @@ data "aws_iam_policy_document" "bucket_policy_document" {
         variable = "s3:x-amz-acl"
         values   = ["bucket-owner-full-control"]
       }
-      actions   = ["s3:PutObject", "s3:PutObjectAcl"]
-      resources = ["${aws_s3_bucket.bucket.arn}/${account.value["read_write"]}/*"]
+      actions   = ["s3:PutObject", "s3:PutObjectAcl", "s3:GetObject"]
+      resources = ["${aws_s3_bucket.bucket.arn}/${account.value["read_write"]}"]
     }
   }
   dynamic "statement" {
-    for_each = var.account_configuration
+    for_each = [for value in local.accounts : value if value["read"] != []]
     iterator = account
     content {
       sid    = "ReadAccess${account.key}"
@@ -85,10 +94,10 @@ data "aws_iam_policy_document" "bucket_policy_document" {
         ]
       }
       actions = ["s3:GetObject"]
-      resources = concat(
-        [for readable_folder in account.value["read"]: "${aws_s3_bucket.bucket.arn}/${readable_folder}/*"],
-        ["${aws_s3_bucket.bucket.arn}/${account.value["read_write"]}/*"]
-      )
+      resources = [
+        for readable_folder in account.value["read"] :
+        "${aws_s3_bucket.bucket.arn}/${readable_folder}"
+      ]
     }
   }
 }
