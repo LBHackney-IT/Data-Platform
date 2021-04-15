@@ -81,10 +81,10 @@ runs:
       run: |
         if [ "${{ inputs.terraform_import }}" != "" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform import"
-            if [ "${{ inputs.branch }}" == "master" ]; then
+            if [ "${{ inputs.branch }}" == $default_branch ]; then
               terraform import -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' ${{ inputs.terraform_import }}
             else
-              echo -e "Not on master branch, so skipping Terraform import."
+              echo -e "Not on default branch branch, so skipping Terraform import."
             fi
         fi
       shell: bash
@@ -95,10 +95,10 @@ runs:
       run: |
         if [ "${{ inputs.terraform_remove }}" != "" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform remove"
-            if [ "${{ inputs.branch }}" == "master" ]; then
+            if [ "${{ inputs.branch }}" == $default_branch ]; then
               terraform state rm ${{ inputs.terraform_remove }}
             else
-              echo -e "Not on master branch, so skipping Terraform remove."
+              echo -e "Not on default branch branch, so skipping Terraform remove."
             fi
         fi
       shell: bash
@@ -127,12 +127,12 @@ runs:
       run: |
         if [ "${{ inputs.terraform_destroy }}" == "destroy_me" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform destroy"
-            if [ "${{ inputs.branch }}" == "master" ]; then
+            if [ "${{ inputs.branch }}" == $default_branch ]; then
               terraform -auto-approve
               ${{ github.action_path }}/success_destroy.sh
               echo -e "Terraform run completed successfully."              
             else
-              echo -e "Not on master branch, so skipping Terraform destroy."
+              echo -e "Not on default branch branch, so skipping Terraform destroy."
             fi
         fi
       shell: bash
@@ -153,11 +153,11 @@ runs:
       id: apply
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then 
-          if [ "${{ inputs.branch }}" == "master" ]; then
+          if [ "${{ inputs.branch }}" == $default_branch ]; then
             ${{ github.action_path }}/box.sh "Running Terraform apply"
             terraform apply -auto-approve -input=false plan.out
           else
-            echo -e "Not on master branch, so skipping Terraform apply."
+            echo -e "Not on default branch branch, so skipping Terraform apply."
           fi
           ${{ github.action_path }}/success.sh
           echo -e "Terraform run completed successfully."
