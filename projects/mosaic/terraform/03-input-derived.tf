@@ -1,6 +1,6 @@
 # General
 module "tags" {
-  source = "../../../modules/tags"
+  source = "../../../modules/audit/tags"
 
   application          = var.application
   automation_build_url = var.automation_build_url

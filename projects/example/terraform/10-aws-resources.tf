@@ -9,6 +9,6 @@ module "s3_bucket_example" {
   versioning = {
     enabled = true
   }
-
+  
   tags = module.tags.values
 }

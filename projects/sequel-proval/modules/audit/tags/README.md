@@ -7,7 +7,7 @@ This module ensures your AWS resources follow the Hackney standard for tags.
 Declare the module and provide the required inputs and optional inputs as needed:
 ``` terraform
 module "tags" {
-  source = "../../modules/tags"
+  source = "../../modules/audit/tags"
   environment = var.your_environment_variable
   department  = var.your_department_variable
   application = var.your_application_variable
@@ -18,7 +18,7 @@ module "tags" {
 There is a `custom_tags` variable exposed to allow you add any additional custom tags that you might wish to assign for your project specific purpose. This can be used as follows:
 ``` terraform
 module "tags" {
-  source = "../../modules/tags"
+  source = "../../modules/audit/tags"
   environment = var.your_environment_variable
   department  = var.your_department_variable
   application = var.your_application_variable

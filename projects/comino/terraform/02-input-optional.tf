@@ -105,7 +105,7 @@ variable "uh_app_instance_type" {
   default     = "t3.large"
 }
 
-# Core Infrastructure - Database Server - Microsoft Windows Server 2019 with SQL Server 2019 Standard
+# Core Infrastructure - Database Server - Microsoft Windows Server 2019 with SQL Server 2019 Standard 
 variable "db_instance_ami" {
   description = "Database Server Windows AMI ID."
   type        = string
@@ -192,3 +192,4 @@ variable "team" {
   type        = string
   default     = "cloud_deployment"
 }
+

@@ -19,7 +19,6 @@ module "sequel_proval_ec2_instance" {
   instance_count = var.sequel_proval_instance_number
   instance_type  = var.sequel_proval_instance_type
   key_name       = var.key_name
-  # key_name         = aws_key_pair.generated_key.key_name
   name           = format("%s-%s", var.application, var.environment)
   root_block_device = [
     {

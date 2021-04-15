@@ -3,10 +3,6 @@ provider "aws" {
   alias   = "appstream"
   profile = var.profile
   region  = var.appstream_region
-  assume_role {
-    role_arn     = "arn:aws:iam::${var.aws_deploy_account}:role/${var.aws_deploy_iam_role_name}"
-    session_name = "Terraform"
-  }
 }
 
 # Core Infrastructure
@@ -14,18 +10,6 @@ provider "aws" {
   alias   = "core"
   profile = var.profile
   region  = var.core_region
-  assume_role {
-    role_arn     = "arn:aws:iam::${var.aws_deploy_account}:role/${var.aws_deploy_iam_role_name}"
-    session_name = "Terraform"
-  }
-}
-
-provider "aws" {
-  region = var.aws_deploy_region
-  assume_role {
-    role_arn     = "arn:aws:iam::${var.aws_deploy_account}:role/${var.aws_deploy_iam_role_name}"
-    session_name = "Terraform"
-  }
 }
 
 # General

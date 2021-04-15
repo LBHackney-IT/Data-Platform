@@ -1,4 +1,4 @@
-/* Different tag outputs
+/* Different tag outputs 
 */
 output "values" {
   description = "Returns a map of all the tags, including custom tags"
