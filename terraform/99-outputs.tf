@@ -3,3 +3,8 @@ output "email_service_account" {
   description = "Email service account for housing"
   value       = google_service_account.service_account_housing.email
 }
+
+output "email_service_account_key" {
+  description = "Private Key for the Housing Google Service account"
+  value       = google_service_account_key.housing_json_credentials.private_key
+}
