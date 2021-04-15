@@ -12,7 +12,6 @@ module "test_data" {
   google_sheets_worksheet_name    = "Sheet1"
   department_folder_name          = "test"
   output_folder_name              = "test1"
-  enable_glue_trigger             = false
 }
 
 module "housing_repair_data" {

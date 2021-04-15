@@ -26,7 +26,6 @@ resource "aws_glue_trigger" "google_sheet_import_trigger" {
   name     = "Google Sheets Import Job Glue Trigger- ${var.glue_job_name}"
   schedule = var.google_sheet_import_schedule
   type     = "SCHEDULED"
-  enabled = var.enable_glue_trigger
 
   actions {
     job_name = aws_glue_job.glue_job_google_sheet_import.name
