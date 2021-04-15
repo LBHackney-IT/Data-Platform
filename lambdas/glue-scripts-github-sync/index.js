@@ -3,33 +3,11 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 
 const tempDirectory = process.env.TEMP_DIR || "/tmp";
+console.log(tempDirectory);
 exports.handler = async (event) => {
-
-    const awsS3Client = new AWS.S3({region: "eu-west-2"});
-    const bucket = event.Records[0].s3.bucket.name;
-    const key = decodeURIComponent(
-        event.Records[0].s3.object.key.replace(/\+/g, " ")
-    );
-    const params = {
-        Bucket: bucket,
-        Key: key,
-    };
-    try {
-        const s3Object = await awsS3Client.getObject(params).promise();
-        console.log('CONTENT TYPE:', JSON.stringify(s3Object));
-        return s3Object;
-    } catch (err) {
-        console.log(err);
-        const message = `Error getting object ${key} from bucket ${bucket}. Make sure they exist and your bucket is in the same region as this function.`;
-        console.log(message);
-        throw new Error(message);
-    }
-
-
-
-   /* const awsSecretClient = new AWS.SecretsManager({region: "eu-west-2"});
+    const awsSecretClient = new AWS.SecretsManager({region: "eu-west-2"});
     const key = await awsSecretClient.getSecretValue({SecretId: "ben_lambda_key"}).promise();
-    execSync(`rm -rf ${tempDirectory}/!*`, { encoding: 'utf8', stdio: 'inherit' })
+    execSync(`rm -rf ${tempDirectory}/*`, { encoding: 'utf8', stdio: 'inherit' })
 
     if (!fs.existsSync(tempDirectory)){
         fs.mkdirSync(tempDirectory);
@@ -44,7 +22,11 @@ exports.handler = async (event) => {
 
     execSync(`git clone --depth 1 git@github.com:LBHackney-IT/data-platform.git -b terraform-setup ${tempDirectory}/glue-script`, { encoding: 'utf8', stdio: 'inherit' })
 
-    return execSync(`ls ${tempDirectory}/glue-script`, { encoding: 'utf8' }).split('\n')*/
+    const awsS3Client = new AWS.S3({region: "eu-west-2"});
+
+
+    // awsS3Client.getBuck
+    return execSync(`ls ${tempDirectory}/glue-script`, { encoding: 'utf8' }).split('\n')
 };
 
 
