@@ -40,14 +40,6 @@ const cloneRepo = async (directory) => {
 
 const commitCustomScripts = (directory) => {
   try {
-    execSync(`git -C ${directory}/repo config --global user.email "lambda@example.com"`, {
-      encoding: "utf8",
-      stdio: "inherit",
-    });
-    execSync(`git -C ${directory}/repo config --global user.name "lambda"`, {
-      encoding: "utf8",
-      stdio: "inherit",
-    });
     execSync(`git -C ${directory}/repo add scripts/custom/\*`, {
       encoding: "utf8",
       stdio: "inherit",
