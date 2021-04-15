@@ -1,0 +1,64 @@
+# Name of your build. Please follow the Name Project/Platform (Environment) format. You will need to specify a build per environment.
+name: qlikview Project (Prod)
+env:
+  # AWS Account to deploy to. Account IDs are saved as secrets in this GitHub repository for convenience, using the naming convention AWS_ACCOUNT_ACCOUNT_NAME
+  # where any spaces, dashes are converted to underscore (_). You can also use the Account Id value as literal string "12345679".
+  aws_deploy_account: ${{ secrets.AWS_ACCOUNT_PRODUCTION_APIS}}
+  # AWS region to deploy to. London is eu-west-2, Ireland is eu-west-1. Unless you have a reason, keep region to eu-west-2.
+  aws_deploy_region: "eu-west-2"
+  # Set this to the environment. It will passed through to Terraform for using the correct configuraiton. Must be one of 'Dev', 'Stg', 'Prod' or 'Mgmt'
+  environment: "Prod"
+  terraform_state_s3_key_prefix: "project-qlikview"
+  # Set this to your project/platform Terraform code and config location!
+  build_path: "projects/qlikview"
+  # Set as a tag in AWS so resources can be linked back to CI/CD builds
+  automation_build_url: "https://github.com/LBHackney-IT/infrastructure/actions/workflows/project_qlikview_prod.yml"
+on:
+
+  # This controls when a build will be triggered for a push. Unless you have a specific use case, this should be sufficient!
+  push:
+    branches: [master]
+    paths:
+      # Set this to your project/platform Terraform code and config location, and file type (** is a wildcard for all files)
+      - "projects/qlikview/**"
+  # This controls for what branch a build will be triggered for a PR (useful to validate). Unless you have a specific use case, this should be sufficient!
+  pull_request:
+    branches: [master]
+    paths:
+      # Set this to your project/platform Terraform code and config location, and file type (** is a wildcard for all files)
+      - "projects/qlikview/**"
+  # This allows a manual trigger of the build, where a branch can be set. Please https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+  # or delete if you don't wish to allow manual triggers of the build
+  workflow_dispatch:
+    inputs:
+      terraform_import:
+        description: 'Terraform import statements'
+        required: false
+      terraform_remove:
+        description: 'Terraform state rm statements'
+        required: false
+
+# Nothing to change down from here!
+# Pay no attention to the man behind the curtain
+jobs:
+  build:
+    name: AWS Terraform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      - name: Run AWS Terraform
+        uses: ./.github/actions/aws-terraform
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_deploy_region: ${{ env.aws_deploy_region }}
+          terraform_state_s3_key_prefix: ${{ env.terraform_state_s3_key_prefix }}
+          build_path: ${{ env.build_path }}
+          environment: ${{ env.environment }}
+          automation_build_url: ${{ env.automation_build_url }}
+          aws_deploy_account: ${{ env.aws_deploy_account }}
+          aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          branch: ${GITHUB_REF##*/}
+          terraform_import: ${{ github.event.inputs.terraform_import }}
+          terraform_remove: ${{ github.event.inputs.terraform_remove }}
