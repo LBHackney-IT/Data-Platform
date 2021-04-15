@@ -88,7 +88,7 @@ resource "aws_iam_policy" "glue_access_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "attach_glue_access_policy_to_glue_role" {
-  role       = aws_iam_role.glue_role.name
+  role = aws_iam_role.glue_role.name
   policy_arn = aws_iam_policy.glue_access_policy.arn
 }
 
@@ -100,9 +100,9 @@ resource "aws_glue_crawler" "landing_zone_housing_crawler" {
   tags = module.tags.values
 
   database_name = aws_glue_catalog_database.landing_zone_catalog_database.name
-  name          = "${local.identifier_prefix}-landing-zone-housing-crawler"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "housing_"
+  name = "${local.identifier_prefix}-landing-zone-housing-crawler"
+  role = aws_iam_role.glue_role.arn
+  table_prefix = "housing_"
 
   s3_target {
     path = "s3://${module.landing_zone.bucket_id}/housing"
@@ -113,9 +113,9 @@ resource "aws_glue_crawler" "landing_zone_test_crawler" {
   tags = module.tags.values
 
   database_name = aws_glue_catalog_database.landing_zone_catalog_database.name
-  name          = "${local.identifier_prefix}-landing-zone-test-crawler"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "test_"
+  name = "${local.identifier_prefix}-landing-zone-test-crawler"
+  role = aws_iam_role.glue_role.arn
+  table_prefix = "test_"
 
   s3_target {
     path = "s3://${module.landing_zone.bucket_id}/test"
