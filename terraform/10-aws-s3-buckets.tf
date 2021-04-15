@@ -1,3 +1,5 @@
+/* ==== RAW ZONE ==================================================================================================== */
+# TODO: We will be creating a number of different S3 buckets with the same setup. We should consider making a module
 module "landing_zone" {
   source = "../modules/s3-bucket"
   tags = module.tags.values
