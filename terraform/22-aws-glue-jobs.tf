@@ -1,31 +1,25 @@
-module "test_data" {
-  source = "../modules/google-sheets-glue-job"
-  glue_role_arn = aws_iam_role.glue_role.arn
-  glue_scripts_bucket_id = aws_s3_bucket.glue_scripts_bucket.id
-  glue_temp_storage_bucket_id = aws_s3_bucket.glue_temp_storage_bucket.id
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id = aws_s3_bucket.raw_zone_bucket.id
-  sheets_credentials_name = aws_secretsmanager_secret.sheets_credentials_housing.name
+# Import test data
+resource "aws_glue_job" "glue_job_google_sheet_import_test" {
+  provider = aws.core
   tags = module.tags.values
-  glue_job_name = "Test"
-  google_sheets_document_id = "1yKAxzUGeGJulFEcVBxatow3jUdTeqfzGvvCgdshiN5g"
-  google_sheets_worksheet_name = "Sheet1"
-  department_folder_name = "test"
-  output_folder_name = "test1"
-}
 
-module "housing_repair_data" {
-  source = "../modules/google-sheets-glue-job"
-  glue_role_arn = aws_iam_role.glue_role.arn
-  glue_scripts_bucket_id = aws_s3_bucket.glue_scripts_bucket.id
-  glue_temp_storage_bucket_id = aws_s3_bucket.glue_temp_storage_bucket.id
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id = aws_s3_bucket.raw_zone_bucket.id
-  sheets_credentials_name = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags = module.tags.values
-  glue_job_name = "Housing Repair"
-  google_sheets_document_id = ""
-  google_sheets_worksheet_name = "Sheet1"
-  department_folder_name = "housing"
-  output_folder_name = "housing-repair"
+  name = "Google Sheets Import Job - Test"
+  number_of_workers = 10
+  worker_type = "G.1X"
+  role_arn = aws_iam_role.glue_role.arn
+  command {
+    python_version = "3"
+    script_location = "s3://${aws_s3_bucket.glue_scripts_bucket.id}/${aws_s3_bucket_object.google_sheets_import_script.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--TempDir" = "s3://${aws_s3_bucket.glue_temp_storage_bucket.id}"
+    "--additional-python-modules" = "gspread==3.7.0, google-auth==1.27.1, pyspark==3.1.1"
+    "--document_key" = "1yKAxzUGeGJulFEcVBxatow3jUdTeqfzGvvCgdshiN5g"
+    "--worksheet_name" = "Sheet1"
+    "--secret_id" = aws_secretsmanager_secret.sheets_credentials_housing.name
+    "--s3_bucket_target" = "s3://${aws_s3_bucket.raw_zone_bucket.id}/test2"
+  }
 }
