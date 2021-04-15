@@ -1,7 +1,10 @@
 # Core Infrastructure
 provider "aws" {
-  profile = var.aws_deploy_profile
-  region  = var.aws_deploy_region
+  region = var.aws_deploy_region
+  assume_role {
+    role_arn     = "arn:aws:iam::${var.aws_deploy_account}:role/${var.aws_deploy_iam_role_name}"
+    session_name = "Terraform"
+  }
 }
 
 provider "google" {
