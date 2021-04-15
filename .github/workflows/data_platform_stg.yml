@@ -10,22 +10,17 @@ env:
   environment: "Dev"
   terraform_state_s3_key_prefix: "data-platform-stg"
   # Set this to your project/platform Terraform code and config location!
-  build_path: "projects/example"
+  build_path: "."
   # Set as a tag in AWS so resources can be linked back to CI/CD builds
   automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
 on:
   # This controls when a build will be triggered for a push. Unless you have a specific use case, this should be sufficient!
   push:
     branches: [main]
-    paths:
-      # Set this to your project/platform Terraform code and config location, and file type (** is a wildcard for all files)
-      - "terraform/**"
-  # This controls for what branch a build will be triggered for a PR (useful to validate). Unless you have a specific use case, this should be sufficient!
-  pull_request:
-    branches: [main]
-    paths:
-      # Set this to your project/platform Terraform code and config location, and file type (** is a wildcard for all files)
-      - "terraform/**"
+    paths-ignore:
+      - "documentation/**"
+      - "infrastructure/projects/**"
+      - "infrastructure/platform/**"
   # This allows a manual trigger of the build, where a branch can be set. Please https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
   # or delete if you don't wish to allow manual triggers of the build
   workflow_dispatch:
