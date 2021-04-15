@@ -1,8 +1,8 @@
 # Core Infrastructure
 provider "aws" {
   alias   = "core"
-  profile = var.aws_deploy_profile
-  region  = var.aws_deploy_region
+  profile = var.dataplatform_profile
+  region  = var.core_region
 }
 
 provider "google" {
