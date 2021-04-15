@@ -36,8 +36,3 @@ terraform.rc
 # Lock file
 *.lock.hcl
 .idea/*
-.terraform*
-*.tfstate*
-
-!terraform-backend-setup/terraform.tfstate.d
-node_modules
