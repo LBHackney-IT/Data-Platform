@@ -1,23 +1,10 @@
-resource "aws_kms_key" "sheets_credentials" {
+resource "aws_secretsmanager_secret" "housing_json_credentials_secret" {
   provider = aws.core
-  tags = module.tags.values
-
-  description = "${var.project} ${var.environment} - Sheets Credentials"
-  deletion_window_in_days = 10
-  enable_key_rotation = true
-}
-
-resource "aws_secretsmanager_secret" "sheets_credentials_housing" {
-  provider = aws.core
-  tags = module.tags.values
-
-  name = "${local.identifier_prefix}-sheets-credentials-housing"
-  kms_key_id = aws_kms_key.sheets_credentials.id
+  name     = "${local.identifier_prefix}-housing-json-credentials-secret"
 }
 
 resource "aws_secretsmanager_secret_version" "housing_json_credentials_secret_version" {
-  provider = aws.core
-
-  secret_id = aws_secretsmanager_secret.sheets_credentials_housing.id
+  provider      = aws.core
+  secret_id     = aws_secretsmanager_secret.housing_json_credentials_secret.id
   secret_binary = google_service_account_key.housing_json_credentials.private_key
 }

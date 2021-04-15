@@ -6,7 +6,4 @@ Example Plan
 `terraform plan -var-file="../config/terraform/Staging.tfvars"`
 
 Example Apply
-`terraform plan -var-file="../config/terraform/Staging.tfvars"`
-
-Example Destory
-`terraform destroy -var-file="../config/terraform/Staging.tfvars"`
+``

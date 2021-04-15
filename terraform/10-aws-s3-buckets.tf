@@ -2,16 +2,16 @@
 # TODO: We will be creating a number of different S3 buckets with the same setup. We should consider making a module
 resource "aws_kms_key" "raw_zone_key" {
   provider = aws.core
-  tags = module.tags.values
+  tags     = module.tags.values
 
-  description = "${var.project} ${var.environment} - Raw Zone Bucket Key"
+  description             = "${var.project} ${var.environment} - Raw Zone Bucket Key"
   deletion_window_in_days = 10
-  enable_key_rotation = true
+  enable_key_rotation     = true
 }
 
 resource "aws_s3_bucket" "raw_zone_bucket" {
   provider = aws.core
-  tags = module.tags.values
+  tags     = module.tags.values
 
   bucket = lower("${local.identifier_prefix}-raw-zone")
 
@@ -19,7 +19,7 @@ resource "aws_s3_bucket" "raw_zone_bucket" {
     rule {
       apply_server_side_encryption_by_default {
         kms_master_key_id = aws_kms_key.raw_zone_key.arn
-        sse_algorithm = "aws:kms"
+        sse_algorithm     = "aws:kms"
       }
     }
   }
@@ -57,7 +57,7 @@ resource "aws_s3_bucket_policy" "raw_zone_bucket_policy" {
         },
         Action : [
           "s3:PutObject",
-          "s3:PutObjectAcl"],
+        "s3:PutObjectAcl"],
         Resource : "${aws_s3_bucket.raw_zone_bucket.arn}/social-care/*",
         Condition : {
           "StringEquals" : {
@@ -72,25 +72,24 @@ resource "aws_s3_bucket_policy" "raw_zone_bucket_policy" {
 /* ==== GLUE SCRIPTS ================================================================================================ */
 resource "aws_kms_key" "glue_scripts_key" {
   provider = aws.core
-  tags = module.tags.values
+  tags     = module.tags.values
 
-  description = "${var.project} ${var.environment} - Glue Scripts Bucket Key"
+  description             = "${var.project} ${var.environment} - Glue Scripts Bucket Key"
   deletion_window_in_days = 10
-  enable_key_rotation = true
+  enable_key_rotation     = true
 }
 
 resource "aws_s3_bucket" "glue_scripts_bucket" {
   provider = aws.core
-  tags = module.tags.values
+  tags     = module.tags.values
 
   bucket = lower("${local.identifier_prefix}-glue-scripts")
-  force_destroy = true
 
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
         kms_master_key_id = aws_kms_key.glue_scripts_key.arn
-        sse_algorithm = "aws:kms"
+        sse_algorithm     = "aws:kms"
       }
     }
   }
@@ -99,25 +98,24 @@ resource "aws_s3_bucket" "glue_scripts_bucket" {
 /* ==== GLUE TEMP STORAGE =========================================================================================== */
 resource "aws_kms_key" "glue_temp_storage_bucket_key" {
   provider = aws.core
-  tags = module.tags.values
+  tags     = module.tags.values
 
-  description = "${var.project} ${var.environment} - Glue Temp Storage Bucket Key"
+  description             = "${var.project} ${var.environment} - Glue Temp Storage Bucket Key"
   deletion_window_in_days = 10
-  enable_key_rotation = true
+  enable_key_rotation     = true
 }
 
 resource "aws_s3_bucket" "glue_temp_storage_bucket" {
   provider = aws.core
-  tags = module.tags.values
+  tags     = module.tags.values
 
   bucket = lower("${local.identifier_prefix}-glue-temp-storage")
-  force_destroy = true
 
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
         kms_master_key_id = aws_kms_key.glue_temp_storage_bucket_key.arn
-        sse_algorithm = "aws:kms"
+        sse_algorithm     = "aws:kms"
       }
     }
   }
@@ -126,25 +124,24 @@ resource "aws_s3_bucket" "glue_temp_storage_bucket" {
 /* ==== ATHENA STORAGE ============================================================================================== */
 resource "aws_kms_key" "athena_storage_bucket_key" {
   provider = aws.core
-  tags = module.tags.values
+  tags     = module.tags.values
 
-  description = "${var.project} ${var.environment} - Glue Temp Storage Bucket Key"
+  description             = "${var.project} ${var.environment} - Glue Temp Storage Bucket Key"
   deletion_window_in_days = 10
-  enable_key_rotation = true
+  enable_key_rotation     = true
 }
 
 resource "aws_s3_bucket" "athena_storage_bucket" {
   provider = aws.core
-  tags = module.tags.values
+  tags     = module.tags.values
 
   bucket = lower("${local.identifier_prefix}-athena-storage")
-  force_destroy = true
 
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
         kms_master_key_id = aws_kms_key.athena_storage_bucket_key.arn
-        sse_algorithm = "aws:kms"
+        sse_algorithm     = "aws:kms"
       }
     }
   }
