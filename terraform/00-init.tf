@@ -6,8 +6,8 @@ provider "aws" {
 }
 
 provider "google" {
-  region = "europe-west2"
-  zone   = "europe-west2-a"
+  region  = "europe-west2"
+  zone    = "europe-west2-a"
 }
 
 # General
