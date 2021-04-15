@@ -30,6 +30,18 @@ resource "aws_s3_bucket_public_access_block" "block_public_access" {
   restrict_public_buckets = true
 }
 
+locals {
+  accounts = {
+    261219435789 = {
+      write = 'housing',
+      read = [
+        'social-care',
+        'etc'
+      ]
+    }
+  }
+}
+
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = aws_s3_bucket.bucket.id
   policy = jsonencode({
