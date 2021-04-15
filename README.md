@@ -23,4 +23,4 @@ Adding the repository for the first time:
 `git subtree add --prefix infrastructure infrastructure master --squash`
 
 To update the sub-project:
-`git fetch infrastructure master; git subtree pull --prefix infrastructure infrastructure master --squash`
+`git fetch infrastructure master git subtree pull --prefix infrastructure infrastructure master --squash`
