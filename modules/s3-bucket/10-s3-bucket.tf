@@ -30,18 +30,6 @@ resource "aws_s3_bucket_public_access_block" "block_public_access" {
   restrict_public_buckets = true
 }
 
-locals {
-  accounts = {
-    261219435789 = {
-      write = 'housing',
-      read = [
-        'social-care',
-        'etc'
-      ]
-    }
-  }
-}
-
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = aws_s3_bucket.bucket.id
   policy = jsonencode({
@@ -53,7 +41,6 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
         Principal : {
           "AWS" : [
             "arn:aws:iam::261219435789:root",
-            "arn:aws:iam::261219435789:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
             "arn:aws:iam::261219435789:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
           ]
         },
@@ -75,48 +62,6 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
           "s3:PutObject",
           "s3:PutObjectAcl"],
         Resource : "${aws_s3_bucket.bucket.arn}/social-care/*",
-        Condition : {
-          "StringEquals" : {
-            "s3:x-amz-acl" : "bucket-owner-full-control"
-          }
-        }
-      },
-      {
-        Sid : "AddCannedAcl",
-        Effect : "Allow",
-        Principal : {
-          "AWS" : [
-            "arn:aws:iam::261219435789:root",
-            "arn:aws:iam::261219435789:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
-          ]
-        },
-        Action : [
-          "s3:PutObject",
-          "s3:PutObjectAcl"],
-        Resource : "${aws_s3_bucket.bucket.arn}/housing/*",
-        Condition : {
-          "StringEquals" : {
-            "s3:x-amz-acl" : "bucket-owner-full-control"
-          }
-        }
-      },
-      {
-        Sid : "AddCannedAcl",
-        Effect : "Allow",
-        Principal : {
-          "AWS" : [
-            "arn:aws:iam::261219435789:root",
-            "arn:aws:iam::261219435789:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_SandboxAdmin_772511f048f85463",
-          ]
-        },
-        Action : [
-          "s3:GetObject"],
-        Resource : [
-          "${aws_s3_bucket.bucket.arn}/social-care/*",
-          "${aws_s3_bucket.bucket.arn}/social-care/*",
-          "${aws_s3_bucket.bucket.arn}/social-care/*",
-          "${aws_s3_bucket.bucket.arn}/social-care/*",
-        ],
         Condition : {
           "StringEquals" : {
             "s3:x-amz-acl" : "bucket-owner-full-control"

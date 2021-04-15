@@ -23,9 +23,9 @@ module "housing_repair_data" {
   landing_zone_bucket_id = module.landing_zone.bucket_id
   sheets_credentials_name = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags = module.tags.values
-  glue_job_name = "Repair Orders"
-  google_sheets_document_id = "1i9q42Kkbugwi4f2S4zdyid2ZjoN1XLjuYvqYqfHyygs"
-  google_sheets_worksheet_name = "Form responses 1"
+  glue_job_name = "Housing Repair"
+  google_sheets_document_id = ""
+  google_sheets_worksheet_name = "Sheet1"
   department_folder_name = "housing"
-  output_folder_name = "repair-orders"
+  output_folder_name = "housing-repair"
 }

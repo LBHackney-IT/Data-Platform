@@ -87,15 +87,6 @@ googleSheetsWorksheet = googleSheetsDocument.worksheet(googleSheetsWorksheetName
 
 # Create a data frame from the google sheet data
 pandasDataFrame = pd.DataFrame(googleSheetsWorksheet.get_all_records())
-
-# Convert all columns to strings
-all_columns = list(pandasDataFrame)
-pandasDataFrame[all_columns] = pandasDataFrame[all_columns].astype(str)
-
-# Replace missing column names with valid names
-pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() for i, a in enumerate(pandasDataFrame.columns)]
-
-# Convert to SparkDynamicDataFrame
 sparkDynamicDataFrame = sqlContext.createDataFrame(pandasDataFrame)
 sparkDynamicDataFrame = sparkDynamicDataFrame.coalesce(1).withColumn('date', f.current_timestamp()).repartition('date')
 
