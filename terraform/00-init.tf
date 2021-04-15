@@ -17,10 +17,4 @@ terraform {
       version = "~> 3.0"
     }
   }
-  backend "s3" {
-    region  = "eu-west-2"
-    key     = "tf-remote-state"
-    bucket  = "hackeny-data-platform-terraform-state"
-    encrypt = true
-  }
 }
