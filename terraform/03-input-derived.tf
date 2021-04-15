@@ -1,6 +1,6 @@
 # Any internal local variables should be declared here. We also import the tag module for convenience
 module "tags" {
-  source = "../infrastructure/modules/tags"
+  source = "../infrastructure/modules/audit/tags"
 
   application          = var.application
   automation_build_url = var.automation_build_url
