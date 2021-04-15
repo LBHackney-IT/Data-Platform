@@ -20,7 +20,7 @@ terraform {
   backend "s3" {
     region  = "eu-west-2"
     key     = "tf-remote-state"
-    bucket  = "dataplatform-dataplatform-staging-terraform-state"
+    bucket  = "hackeny-data-platform-terraform-state"
     encrypt = true
   }
 }

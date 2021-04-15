@@ -4,7 +4,7 @@
 variable "application" {
   description = "Name of the application."
   type        = string
-  default     = "DataPlatform"
+  default     = "Platform"
 }
 
 variable "department" {
