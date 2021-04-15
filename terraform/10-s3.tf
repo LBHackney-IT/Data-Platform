@@ -146,14 +146,10 @@ resource "aws_glue_job" "google_sheet_import_glue_job" {
   name     = "Google Sheets Import Job"
   role_arn = aws_iam_role.glue.arn
   command {
-    python_version = "3"
     script_location = "s3://${aws_s3_bucket.data_platform_glue_script.id}/${aws_s3_bucket_object.google_sheets_import_script.key}"
   }
 
-  glue_version = "2.0"
-
   default_arguments = {
-    "--TempDir" = "s3://${aws_s3_bucket.data_platform_glue_temp_storage.id}"
     "--additional-python-modules" = "gspread==3.7.0, google-auth==1.27.1, pyspark==3.1.1"
     "--s3_bucket_target" = "s3://${aws_s3_bucket.data_platform_raw.id}/${aws_s3_bucket_object.test_folder.key}"
   }
