@@ -24,3 +24,6 @@ Adding the repository for the first time:
 
 To update the sub-project:
 `git fetch infrastructure master; git subtree pull --prefix infrastructure infrastructure master --squash`
+
+### Terraform Deployment
+The terraform will be deployed using Github Actions on push to main / when a Pull Request is merged into main
