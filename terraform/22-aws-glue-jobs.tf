@@ -31,37 +31,3 @@ module "housing_repair_data" {
   output_folder_name              = "repair-orders"
 }
 
-resource "aws_glue_security_configuration" "glue_job_security_configuration_to_raw" {
-  name = "glue-job-security-configuration-to-raw"
-
-  encryption_configuration {
-    cloudwatch_encryption {
-      cloudwatch_encryption_mode = "DISABLED"
-    }
-
-    job_bookmarks_encryption {
-      job_bookmarks_encryption_mode = "DISABLED"
-    }
-
-    s3_encryption {
-      kms_key_arn        = module.raw_zone.kms_key_arn
-      s3_encryption_mode = "SSE-KMS"
-    }
-  }
-}
-
-resource "aws_glue_job" "glue_job_template" {
-  tags = module.tags.values
-
-  name              = "Glue job template"
-  number_of_workers = 10
-  worker_type       = "G.2X"
-  role_arn          = aws_iam_role.glue_role.arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${module.raw_zone.bucket_id}/glue-job-template-script-to-raw.py"
-  }
-
-  glue_version = "2.0"
-  security_configuration = aws_glue_security_configuration.glue_job_security_configuration_to_raw.name
-}
