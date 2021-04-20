@@ -11,13 +11,17 @@ exports.handler = async (events) => {
     const dbInstanceId = snsMessage["Source ID"];
 
     const rds = new AWS.RDS({ region: AWS_REGION });
+    let marker;
+    let dbSnapshots;
+    do {
+      var params = {
+        DBInstanceIdentifier: dbInstanceId,
+        Marker: marker,
+      };
 
-    var params = {
-      DBInstanceIdentifier: dbInstanceId,
-    };
-
-    const dbSnapshots = await rds.describeDBSnapshots(params).promise();
-
-    console.log(dbSnapshots);
+      dbSnapshots = await rds.describeDBSnapshots(params).promise();
+      marker = dbSnapshots.Marker;
+    } while (marker);
+    const latestSnapshot = dbSnapshots.DBSnapshots.pop();
   }
 };
