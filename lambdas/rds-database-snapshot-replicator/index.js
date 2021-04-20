@@ -25,7 +25,7 @@ exports.handler = async (events) => {
     const latestSnapshot = dbSnapshots.DBSnapshots.pop();
     var params = {
       ExportTaskIdentifier: `${latestSnapshot.DBInstanceIdentifier}-export`,
-      IamRoleArn: "",
+      IamRoleArn: "arn:aws:iam::261219435789:role/rds-s3-export-role",
       KmsKeyId:
         "arn:aws:kms:eu-west-2:261219435789:key/60e9157b-458d-4ed7-9f5d-751769995d39",
       S3BucketName: "hackney-jamesoates-landing-zone",
