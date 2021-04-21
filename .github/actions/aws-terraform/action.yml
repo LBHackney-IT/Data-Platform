@@ -59,7 +59,7 @@ runs:
         mv tflint-ruleset-aws ./.tflint.d/plugins/
         echo -e "\n"
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"
   
     - name: Terraform Init
       id: init
@@ -74,7 +74,7 @@ runs:
         echo -e "Terraform state file: ${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.state"
         echo -e "\n"
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"
       
     - name: Terraform Import
       id: import
@@ -88,7 +88,7 @@ runs:
             fi
         fi
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"
       
     - name: Terraform Remove
       id: remove
@@ -102,7 +102,7 @@ runs:
             fi
         fi
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"           
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"           
 
     - name: Terraform Validate
       id: validate
@@ -111,7 +111,7 @@ runs:
         terraform validate
         echo -e "\n"
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"
 
     - name: TFLint
       id: lint
@@ -120,7 +120,7 @@ runs:
         ./tflint --var-file='../config/terraform/${{ inputs.environment }}.tfvars' --var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' --var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' --var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' --var 'environment=${{ inputs.environment }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --module --config=${{ github.action_path }}/../../../.tflint.hcl --loglevel=info .
         echo -e "\n"
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"
 
     - name: Terraform Destroy
       id: destroy
@@ -136,7 +136,7 @@ runs:
             fi
         fi
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"      
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"      
 
     - name: Terraform Plan
       id: plan
@@ -147,7 +147,7 @@ runs:
           echo -e "\n"
         fi
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"
 
     - name: Terraform Apply
       id: apply
@@ -163,4 +163,4 @@ runs:
           echo -e "Terraform run completed successfully."
         fi          
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"
