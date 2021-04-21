@@ -7,25 +7,23 @@ const AWS_REGION = "eu-west-2";
 
 exports.handler = async (events) => {
   let snsMessage;
-  console.log('Event Records:', events.Records)
   for (const eventRecord of events.Records) {
     try {
-      snsMessage = JSON.parse(eventRecord.Sns.Message)
+      snsMessage = JSON.parse(eventRecord.Sns.Message);
       console.log("event record:", eventRecord);
-    }
-    catch(err){
+    } catch (err) {
       console.log("event error:", err);
       console.log("event record:", eventRecord);
-      return
+      return;
     }
-    const dbInstanceId = snsMessage["Source ID"];
+    const dbSnapshotId = snsMessage["Source ID"];
 
     const rds = new AWS.RDS({ region: AWS_REGION });
     let marker;
     let dbSnapshots;
     do {
       var params = {
-        DBInstanceIdentifier: dbInstanceId,
+        DBSnapshotIdentifier: dbSnapshotId,
         Marker: marker,
       };
 
