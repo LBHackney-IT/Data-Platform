@@ -2,49 +2,49 @@ name: AWS Terraform
 description: Runs Terraform against Hackney AWS
 inputs:
   aws_access_key_id:
-    description: 'AWS access key to use'
+    description: "AWS access key to use"
     required: true
   aws_secret_access_key:
-    description: 'AWS secret access key to use'
+    description: "AWS secret access key to use"
     required: true
   aws_deploy_region:
-    description: 'AWS region to deploy to'
-    default: 'eu-west-2'
+    description: "AWS region to deploy to"
+    default: "eu-west-2"
     required: true
   terraform_state_s3_key_prefix:
-    description: 'S3 key prefix for Terraform state'
+    description: "S3 key prefix for Terraform state"
     required: true
   build_path:
-    description: 'Build path that contains the source'
+    description: "Build path that contains the source"
     required: true
   environment:
-    description: 'Name of the environemnt e.g. Dev, Stg, Prod, Mgmt'
+    description: "Name of the environemnt e.g. Dev, Stg, Prod, Mgmt"
     required: true
   automation_build_url:
-    description: 'URL of the GitHub Action Run to pass to Terraform'
+    description: "URL of the GitHub Action Run to pass to Terraform"
     required: true
   aws_deploy_account:
-    description: 'AWS account id to deploy to'
+    description: "AWS account id to deploy to"
     required: true
   aws_deploy_iam_role_name:
-    description: 'AWS IAM role name to assume for deployment'
+    description: "AWS IAM role name to assume for deployment"
     required: true
   branch:
-    description: 'Git branch being ran against'
+    description: "Git branch being ran against"
     required: true
   terraform_import:
-    description: 'Terraform import statement'
-    default: ''
+    description: "Terraform import statement"
+    default: ""
     required: true
   terraform_destroy:
     description: 'Runs a Terraform destroy if the value is set to "destroy_me". Else does nothing'
-    default: ''
+    default: ""
     required: false
   terraform_remove:
-    description: 'Terraform state rm statement'
-    default: ''
+    description: "Terraform state rm statement"
+    default: ""
     required: false
-    
+
 runs:
   using: "composite"
   steps:
@@ -60,7 +60,7 @@ runs:
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform_lambda"
-  
+
     - name: Terraform Init
       id: init
       run: |
@@ -75,7 +75,7 @@ runs:
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform_lambda"
-      
+
     - name: Terraform Import
       id: import
       run: |
@@ -89,7 +89,7 @@ runs:
         fi
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform_lambda"
-      
+
     - name: Terraform Remove
       id: remove
       run: |
@@ -102,7 +102,7 @@ runs:
             fi
         fi
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform_lambda"           
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"
 
     - name: Terraform Validate
       id: validate
@@ -136,14 +136,14 @@ runs:
             fi
         fi
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform_lambda"      
+      working-directory: "${{ inputs.build_path }}/terraform_lambda"
 
     - name: Terraform Plan
       id: plan
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then      
           ${{ github.action_path }}/box.sh "Running Terraform plan"
-          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
+          terraform plan -var-sfile='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
           echo -e "\n"
         fi
       shell: bash
@@ -153,7 +153,7 @@ runs:
       id: apply
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
-          if [ "${{ inputs.branch }}" == $default-branch ]; then
+          if [ "${{ inputs.branch }}" == "rds-snapshot-replicator"]; then
             ${{ github.action_path }}/box.sh "Running Terraform apply"
             terraform apply -auto-approve -input=false plan.out
           else
@@ -161,6 +161,6 @@ runs:
           fi
           ${{ github.action_path }}/success.sh
           echo -e "Terraform run completed successfully."
-        fi          
+        fi
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform_lambda"
