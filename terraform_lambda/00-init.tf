@@ -29,7 +29,7 @@ terraform {
   backend "s3" {
     region  = "eu-west-2"
     key     = "tf-remote-state"
-    bucket  = "dataplatform-internal-stg-tfstate"
+    bucket  = "dataplatform-test-lambda"
     encrypt = true
   }
 }
