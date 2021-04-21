@@ -6,11 +6,15 @@ const AWS_REGION = "eu-west-2";
 // Start export task to export Snapshot to S3 (using RDS instance?)
 
 exports.handler = async (events) => {
+  let snsMessage;
+  console.log('Event Records:', events.Records)
   for (const eventRecord of events.Records) {
     try {
-      const snsMessage = JSON.parse(eventRecord.Sns.Message)
+      snsMessage = JSON.parse(eventRecord.Sns.Message)
+      console.log("event record:", eventRecord);
     }
     catch(err){
+      console.log("event error:", err);
       console.log("event record:", eventRecord);
       return
     }
@@ -26,11 +30,15 @@ exports.handler = async (events) => {
       };
 
       dbSnapshots = await rds.describeDBSnapshots(params).promise();
+      console.log("All Snapshot:", dbSnapshots);
+
       marker = dbSnapshots.Marker;
     } while (marker);
     const latestSnapshot = dbSnapshots.DBSnapshots.pop();
+    console.log("Latest Snapshot:", latestSnapshot);
+
     var params = {
-      ExportTaskIdentifier: `${latestSnapshot.DBInstanceIdentifier}-export`,
+      ExportTaskIdentifier: `${latestSnapshot.DBInstanceIdentifier}-${latestSnapshot.DBSnapshotIdentifier}-export`,
       IamRoleArn: "arn:aws:iam::261219435789:role/rds-s3-export-role",
       KmsKeyId:
         "arn:aws:kms:eu-west-2:261219435789:key/60e9157b-458d-4ed7-9f5d-751769995d39",
