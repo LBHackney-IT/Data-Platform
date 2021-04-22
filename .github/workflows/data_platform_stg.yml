@@ -16,7 +16,7 @@ env:
 on:
   # This controls when a build will be triggered for a push. Unless you have a specific use case, this should be sufficient!
   push:
-    branches: [$default-branch, rds-snapshot-replicator]
+    branches: [$default-branch]
     paths-ignore:
       - "documentation/**"
       - "infrastructure/projects/**"
@@ -26,10 +26,10 @@ on:
   workflow_dispatch:
     inputs:
       terraform_import:
-        description: 'Terraform import statements'
+        description: "Terraform import statements"
         required: false
       terraform_remove:
-        description: 'Terraform state rm statements'
+        description: "Terraform state rm statements"
         required: false
 
 # Nothing to change down from here!
