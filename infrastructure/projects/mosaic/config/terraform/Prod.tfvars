@@ -42,7 +42,7 @@ application = "Mosaic"
 
 department = "Social Care"
 
-environment = "Prod"
+environment = "prod"
 
 whitelist = ["86.139.244.37/32"]
 

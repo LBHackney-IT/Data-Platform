@@ -1,5 +1,5 @@
 module "uk_org_hackney" {
-  source = "./zones/uk-org-hackney"
+  source = "./zones/uk-gov-hackney"
   tags   = module.tags.values
 }
 

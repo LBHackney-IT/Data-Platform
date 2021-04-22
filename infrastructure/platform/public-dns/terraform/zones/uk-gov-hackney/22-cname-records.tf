@@ -432,6 +432,13 @@ resource "aws_route53_record" "repairshubstaging_hackney_gov_uk_cname" {
   ttl     = "3600"
   records = ["d3kjnecca5vuxz.cloudfront.net"]
 }
+resource "aws_route53_record" "repairshubdevelopment_hackney_gov_uk_cname" {
+  zone_id = aws_route53_zone.hackney_gov_uk.zone_id
+  name    = "repairs-hub-development.hackney.gov.uk"
+  type    = "CNAME"
+  ttl     = "3600"
+  records = ["d2hddhcab4ynhs.cloudfront.net"]
+}
 resource "aws_route53_record" "rentaccount_hackney_gov_uk_cname" {
   zone_id = aws_route53_zone.hackney_gov_uk.zone_id
   name    = "rentaccount.hackney.gov.uk"
@@ -1044,6 +1051,13 @@ resource "aws_route53_record" "dev_etra_dot_manageatenancy_hackney_gov_uk_cname"
 resource "aws_route53_record" "designsystem_hackney_gov_uk_cname" {
   zone_id = aws_route53_zone.hackney_gov_uk.zone_id
   name    = "design-system.hackney.gov.uk"
+  type    = "CNAME"
+  ttl     = "3600"
+  records = ["lbhackney-it.github.io."]
+}
+resource "aws_route53_record" "playbook_hackney_gov_uk_cname" {
+  zone_id = aws_route53_zone.hackney_gov_uk.zone_id
+  name    = "playbook.hackney.gov.uk"
   type    = "CNAME"
   ttl     = "3600"
   records = ["lbhackney-it.github.io."]

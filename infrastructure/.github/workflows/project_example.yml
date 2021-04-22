@@ -1,5 +1,5 @@
 # Name of your build. Please follow the Name Project/Platform (Environment) format. You will need to specify a build per environment.
-name: Example Project (Dev)
+name: Example Giraffe Project (Dev)
 env:
   # AWS Account to deploy to. Account IDs are saved as secrets in this GitHub repository for convenience, using the naming convention AWS_ACCOUNT_ACCOUNT_NAME
   # where any spaces, dashes are converted to underscore (_). You can also use the Account Id value as literal string "12345679".

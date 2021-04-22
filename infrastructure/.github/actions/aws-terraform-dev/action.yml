@@ -1,50 +1,54 @@
-name: AWS Terraform
-description: Runs Terraform against Hackney AWS
+name: AWS Terraform Dev Only
+description: Runs Terraform against Hackney AWS not in Master
 inputs:
   aws_access_key_id:
-    description: 'AWS access key to use'
+    description: "AWS access key to use"
     required: true
   aws_secret_access_key:
-    description: 'AWS secret access key to use'
+    description: "AWS secret access key to use"
     required: true
   aws_deploy_region:
-    description: 'AWS region to deploy to'
-    default: 'eu-west-2'
+    description: "AWS region to deploy to"
+    default: "eu-west-2"
     required: true
   terraform_state_s3_key_prefix:
-    description: 'S3 key prefix for Terraform state'
+    description: "S3 key prefix for Terraform state"
     required: true
   build_path:
-    description: 'Build path that contains the source'
+    description: "Build path that contains the source"
     required: true
   environment:
-    description: 'Name of the environemnt e.g. Dev, Stg, Prod, Mgmt'
+    description: "Name of the environemnt e.g. Dev, Stg, Prod, Mgmt"
     required: true
   automation_build_url:
-    description: 'URL of the GitHub Action Run to pass to Terraform'
+    description: "URL of the GitHub Action Run to pass to Terraform"
     required: true
   aws_deploy_account:
-    description: 'AWS account id to deploy to'
+    description: "AWS account id to deploy to"
     required: true
   aws_deploy_iam_role_name:
-    description: 'AWS IAM role name to assume for deployment'
+    description: "AWS IAM role name to assume for deployment"
     required: true
   branch:
-    description: 'Git branch being ran against'
+    description: "Git branch being ran against"
     required: true
   terraform_import:
-    description: 'Terraform import statement'
-    default: ''
+    description: "Terraform import statement"
+    default: ""
     required: true
   terraform_destroy:
     description: 'Runs a Terraform destroy if the value is set to "destroy_me". Else does nothing'
-    default: ''
+    default: ""
     required: false
   terraform_remove:
-    description: 'Terraform state rm statement'
-    default: ''
+    description: "Terraform state rm statement"
+    default: ""
     required: false
-    
+  terraform_apply:
+    description: "Terraform apply"
+    default: ""
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -56,7 +60,7 @@ runs:
         echo -e "\n"
       shell: bash
       working-directory: "${{ github.action_path }}"
-      
+
     - name: Setup build environment
       id: setup
       run: |
@@ -69,7 +73,7 @@ runs:
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"
-  
+
     - name: Terraform Init
       id: init
       run: |
@@ -85,31 +89,29 @@ runs:
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"
 
-    - name: Terraform Remove
-      id: remove
+    - name: Terraform Import
+      id: import
       run: |
-        export TF_VAR_environment=${environment,,}
-        if [ "${{ inputs.terraform_remove }}" != "" ]; then
-            ${{ github.action_path }}/box.sh "Running Terraform remove"
-            if [ "${{ inputs.branch }}" == "master" ]; then
-              terraform state rm ${{ inputs.terraform_remove }}
+        if [ "${{ inputs.terraform_import }}" != "" ]; then
+            ${{ github.action_path }}/box.sh "Running Terraform import"
+            if [ "${{ inputs.branch }}" != "master" ]; then
+              terraform import -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' ${{ inputs.terraform_import }}
             else
-              echo -e "Not on master branch, so skipping Terraform remove."
+              echo -e "Master branch, so skipping Terraform import."
             fi
         fi
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"
 
-    - name: Terraform Import
-      id: import
+    - name: Terraform Remove
+      id: remove
       run: |
-        export TF_VAR_environment=${environment,,}
-        if [ "${{ inputs.terraform_import }}" != "" ]; then
-            ${{ github.action_path }}/box.sh "Running Terraform import"
-            if [ "${{ inputs.branch }}" == "master" ]; then
-              terraform import -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' ${{ inputs.terraform_import }}
+        if [ "${{ inputs.terraform_remove }}" != "" ]; then
+            ${{ github.action_path }}/box.sh "Running Terraform remove"
+            if [ "${{ inputs.branch }}" != "master" ]; then
+              terraform state rm ${{ inputs.terraform_remove }}
             else
-              echo -e "Not on master branch, so skipping Terraform import."
+              echo -e "Master branch, so skipping Terraform remove."
             fi
         fi
       shell: bash
@@ -128,7 +130,7 @@ runs:
       id: lint
       run: |
         ${{ github.action_path }}/box.sh "Running TFLint"
-        ./tflint --var-file='../config/terraform/${{ inputs.environment }}.tfvars' --var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' --var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' --var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --module --config=${{ github.action_path }}/../../../.tflint.hcl --loglevel=info .
+        ./tflint --var-file='../config/terraform/${{ inputs.environment }}.tfvars' --var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' --var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' --var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' --var 'environment=${{ inputs.environment }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --module --config=${{ github.action_path }}/../../../.tflint.hcl --loglevel=info .
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"
@@ -136,27 +138,25 @@ runs:
     - name: Terraform Destroy
       id: destroy
       run: |
-        export TF_VAR_environment=${environment,,}
         if [ "${{ inputs.terraform_destroy }}" == "destroy_me" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform destroy"
-            if [ "${{ inputs.branch }}" == "master" ]; then
-              terraform destroy -auto-approve -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' 
+            if [ "${{ inputs.branch }}" != "master" ]; then
+              terraform -auto-approve
               ${{ github.action_path }}/success_destroy.sh
-              echo -e "Terraform run completed successfully."              
+              echo -e "Terraform run completed successfully."
             else
-              echo -e "Not on master branch, so skipping Terraform destroy."
+              echo -e "Master branch, so skipping Terraform destroy."
             fi
         fi
       shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"      
+      working-directory: "${{ inputs.build_path }}/terraform"
 
     - name: Terraform Plan
       id: plan
       run: |
-        export TF_VAR_environment=${environment,,}
-        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then      
+        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
           ${{ github.action_path }}/box.sh "Running Terraform plan"
-          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
+          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
           echo -e "\n"
         fi
       shell: bash
@@ -165,15 +165,15 @@ runs:
     - name: Terraform Apply
       id: apply
       run: |
-        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then 
-          if [ "${{ inputs.branch }}" == "master" ]; then
+        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
+          if [ "${{ inputs.terraform_apply }}" = "apply" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform apply"
             terraform apply -auto-approve -input=false plan.out
           else
-            echo -e "Not on master branch, so skipping Terraform apply."
+            echo -e "The apply is ${{ inputs.terraform_apply }} not apply, so skipping Terraform apply."
           fi
           ${{ github.action_path }}/success.sh
           echo -e "Terraform run completed successfully."
-        fi          
+        fi
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"

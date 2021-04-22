@@ -64,7 +64,7 @@ variable "aws_deploy_iam_role_name" {
 }
 
 variable "environment" {
-  description = "Enviroment e.g. Dev, Stg, Prod, Mgmt."
+  description = "Environment e.g. Dev, stg, Prod, Mgmt."
   type        = string
 }
 

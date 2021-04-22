@@ -23,7 +23,7 @@ data "archive_file" "lambda_zip_file" {
 }
 
 resource "aws_s3_bucket" "s3_deployment_artefacts" {
-  bucket        = "data-platform-db-snapshot-script-${var.stage}"
+  bucket        = "data-platform-db-snapshot-script-${var.environment}"
   acl           = "private"
   force_destroy = true
 }
