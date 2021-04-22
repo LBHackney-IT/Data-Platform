@@ -7,7 +7,7 @@ env:
   # AWS region to deploy to. London is eu-west-2, Ireland is eu-west-1. Unless you have a reason, keep region to eu-west-2.
   aws_deploy_region: "eu-west-2"
   # Set this to the environment. It will passed through to Terraform for using the correct configuraiton. Must be one of 'Dev', 'Stg', 'Prod' or 'Mgmt'
-  environment: "Stg"
+  environment: "stg"
   terraform_state_s3_key_prefix: "data-platform"
   # Set this to your project/platform Terraform code and config location!
   build_path: "."
