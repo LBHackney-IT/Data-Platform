@@ -48,12 +48,9 @@
         "Id": "TASK_MANAGER",
         "Severity": "LOGGER_SEVERITY_DEFAULT"
       }
-    ],
-    "CloudWatchLogGroup": null,
-    "CloudWatchLogStream": null
+    ]
   },
   "ControlTablesSettings": {
-    "historyTimeslotInMinutes": 5,
     "ControlSchema": "",
     "HistoryTimeslotInMinutes": 5,
     "HistoryTableEnabled": false,

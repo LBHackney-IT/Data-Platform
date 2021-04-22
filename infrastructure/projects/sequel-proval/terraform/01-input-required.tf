@@ -47,12 +47,6 @@ variable "core_public_subnets" {
 }
 
 # General
-
-variable "key_name" {
-  description = "Key to access EC2 instances."
-  type        = string
-}
-
 variable "aws_deploy_region" {
   description = "AWS region to deploy to"
   type        = string
@@ -67,11 +61,6 @@ variable "aws_deploy_iam_role_name" {
   description = "AWS IAM role name to assume for deployment"
   type        = string
 }
-
-#variable "environment" {
-#  description = "Environment e.g. Dev, Stg, Prod, Mgmt."
-#  type        = string
-#}
 
 # Tags
 variable "application" {

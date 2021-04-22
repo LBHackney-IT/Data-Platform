@@ -59,6 +59,4 @@ department = "corporate"
 
 environment = "prod"
 
-key_name = "sequel-proval-prod"
-
 whitelist = []

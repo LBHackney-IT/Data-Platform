@@ -1,11 +1,5 @@
 # AppStream Infrastructure
 # AppStream Infrastructure - 10-network
-variable "appstream_create_igw" {
-  description = "Controls if an Internet Gateway is created for public subnets and the related routes that connect them."
-  type        = bool
-  default     = true
-}
-
 variable "appstream_enable_dns_hostnames" {
   description = "Should be true to enable DNS hostnames in the VPC."
   type        = bool
@@ -18,22 +12,10 @@ variable "appstream_enable_dns_support" {
   default     = true
 }
 
-variable "appstream_enable_nat_gateway" {
-  description = "Should be true if you want to provision NAT Gateways for each of your private networks."
-  type        = bool
-  default     = false
-}
-
 variable "appstream_region" {
   description = "The AWS region the resources will be deployed into."
   type        = string
   default     = "eu-west-1"
-}
-
-variable "appstream_single_nat_gateway" {
-  description = "Should be true if you want to provision a single shared NAT Gateway across all of your private networks."
-  type        = bool
-  default     = false
 }
 
 variable "appstream_security_group_egress" {
@@ -50,12 +32,6 @@ variable "appstream_security_group_ingress" {
 
 # Core Infrastructure
 # Core Infrastructure - 10-network
-variable "core_create_igw" {
-  description = "Controls if an Internet Gateway is created for public subnets and the related routes that connect them."
-  type        = bool
-  default     = true
-}
-
 variable "core_enable_dns_hostnames" {
   description = "Should be true to enable DNS hostnames in the VPC."
   type        = bool
@@ -68,22 +44,10 @@ variable "core_enable_dns_support" {
   default     = true
 }
 
-variable "core_enable_nat_gateway" {
-  description = "Should be true if you want to provision NAT Gateways for each of your private networks."
-  type        = bool
-  default     = false
-}
-
 variable "core_region" {
   description = "The AWS region the resources will be deployed into."
   type        = string
   default     = "eu-west-2"
-}
-
-variable "core_single_nat_gateway" {
-  description = "Should be true if you want to provision a single shared NAT Gateway across all of your private networks."
-  type        = bool
-  default     = false
 }
 
 variable "core_security_group_egress" {
@@ -115,7 +79,7 @@ variable "sequel_proval_instance_number" {
 variable "sequel_proval_instance_type" {
   description = "Sequel Proval EC2 size."
   type        = string
-  default     = "c4.xlarge"
+  default     = "c5.2xlarge"
 }
 
 

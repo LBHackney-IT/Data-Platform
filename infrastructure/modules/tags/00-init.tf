@@ -3,7 +3,7 @@
    will be inherited from the parent Terraform.
 */
 terraform {
-  required_version = "~> 0.14.3"
+  required_version = ">= 0.14.3"
 
   required_providers {
     aws = {

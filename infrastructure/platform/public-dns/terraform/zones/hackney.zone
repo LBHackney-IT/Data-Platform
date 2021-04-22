@@ -524,7 +524,7 @@ mobilesam.hackney.gov.uk. 3600  IN      A       156.61.16.80
 
 mobiletest.hackney.gov.uk. 3600 IN      A       156.61.16.99
 
-mosaic.hackney.gov.uk.  3600    IN      A       156.61.16.115
+mosaic.hackney.gov.uk.  3600    IN      A       62.192.129.150
 
 mosaictest.hackney.gov.uk. 3600 IN      CNAME   mosaictest-hackneygovuk.msappproxy.net.
 

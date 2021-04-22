@@ -37,14 +37,14 @@ ss_primary_ram_principals = ["arn:aws:organizations::338027813792:ou/o-xel8phtnm
 
 ss_secondary_ram_principals = ["arn:aws:organizations::338027813792:ou/o-xel8phtnme/ou-ovxv-8leq6lpa"]
 
-ss_secondary_routes_tgw = ["10.137.0.0/16", "10.131.0.0/16", "10.135.0.0/16", "10.120.13.0/24", "10.129.0.0/16"]
+ss_secondary_routes_tgw = ["10.137.0.0/16", "10.131.0.0/16", "10.135.0.0/16", "10.120.13.0/24", "10.129.0.0/16", "10.143.0.0/16"]
 
 # Tags
-application = "Hub"
+application = "hub"
 
 department = "cloud-deployment"
 
-environment = "Stg"
+environment = "stg"
 
 # Palo Alto
 key_name = "palo-alto-stg"
