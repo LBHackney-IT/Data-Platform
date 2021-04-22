@@ -152,12 +152,12 @@ runs:
     - name: Terraform Apply
       id: apply
       run: |
-        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
-          if [ "${{ inputs.branch }}" ==  "main"]; then
+        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then 
+          if [ "${{ inputs.branch }}" == "main" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform apply"
             terraform apply -auto-approve -input=false plan.out
           else
-            echo -e "Not on default branch, so skipping Terraform apply."
+            echo -e "Not on main branch, so skipping Terraform apply."
           fi
           ${{ github.action_path }}/success.sh
           echo -e "Terraform run completed successfully."
