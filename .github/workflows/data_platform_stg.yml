@@ -41,10 +41,10 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
-      - name: Run AWS Terraform
-        uses: ./.github/actions/aws-terraform
       - name: Branch name
         run: echo running on branch ${GITHUB_REF##*/}
+      - name: Run AWS Terraform
+        uses: ./.github/actions/aws-terraform
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
