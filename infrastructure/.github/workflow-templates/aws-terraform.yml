@@ -17,13 +17,13 @@ on:
 
   # This controls when a build will be triggered for a push. Unless you have a specific use case, this should be sufficient!
   push:
-    branches: [ $default-branch ]
+    branches: [main]
     paths:
       # Set this to your project/platform Terraform code and config location, and file type (** is a wildcard for all files)
       - "projects/example/**"
   # This controls for what branch a build will be triggered for a PR (useful to validate). Unless you have a specific use case, this should be sufficient!
   pull_request:
-    branches: [ $default-branch ]
+    branches: [main]
     paths:
       # Set this to your project/platform Terraform code and config location, and file type (** is a wildcard for all files)
       - "projects/example/**"
