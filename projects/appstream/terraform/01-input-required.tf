@@ -11,14 +11,30 @@ variable "appstream_cidr" {
   type        = string
 }
 
-variable "appstream_private_subnets" {
-  description = "A list of private subnets inside the AppStream VPC."
+variable "appstream_subnets" {
+  description = "Appstream application subnets inside the AppStream VPC."
+  type        = map(map(any))
+}
+
+variable "appstream_tgw_subnets" {
+  description = "A list of private subnets inside the AppStream VPC used for Transit Gateway connection."
   type        = list(string)
 }
 
-variable "appstream_public_subnets" {
-  description = "A list of public subnets inside the AppStream VPC."
-  type        = list(string)
+# General
+variable "aws_deploy_region" {
+  description = "AWS region to deploy to"
+  type        = string
+}
+
+variable "aws_deploy_account" {
+  description = "AWS account id to deploy to"
+  type        = string
+}
+
+variable "aws_deploy_iam_role_name" {
+  description = "AWS IAM role name to assume for deployment"
+  type        = string
 }
 
 # Tags

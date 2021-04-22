@@ -4,14 +4,14 @@
 
 // SDLC Meta-data
 variable "environment" {
-  description = "Name of the environment, must be one of 'Dev', 'Stg', 'Prod' or 'Mgmt'."
+  description = "Name of the environment, must be one of 'dev', 'stg', 'prod' or 'mgmt'."
   type        = string
 
   validation {
     condition = (
-      var.environment == "Dev" || var.environment == "Stg" || var.environment == "Prod" || var.environment == "Mgmt"
+      var.environment == "dev" || var.environment == "stg" || var.environment == "prod" || var.environment == "mgmt"
     )
-    error_message = "The environment must be one of 'Dev', 'Stg', 'Prod' or 'Mgmt'."
+    error_message = "The environment must be one of 'dev', 'stg', 'prod' or 'mgmt'."
   }
 }
 

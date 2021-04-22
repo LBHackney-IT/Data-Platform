@@ -81,6 +81,6 @@ resource "aws_dms_replication_task" "docdb_prod_apis_to_docdb_mosaic_prod" {
 
   tags = merge(map("Name", "docdb-prod-apis-to-docdb-mosaic-${lower(var.environment)}-dms-task"), module.tags.values)
 
-  replication_task_settings = file("${path.module}/dms_cdc_task_settings.json")
-  table_mappings            = file("${path.module}/dms_docdb_table_mappings.json")
+  replication_task_settings = file("${path.module}/docdb_task_settings.json")
+  table_mappings            = file("${path.module}/docdb_table_mappings.json")
 }

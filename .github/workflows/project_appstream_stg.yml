@@ -1,38 +1,40 @@
 # Name of your build. Please follow the Name Project/Platform (Environment) format. You will need to specify a build per environment.
-name: Lunch and Learn Project (Dev)
+name: AppStream (Stg)
 env:
   # AWS Account to deploy to. Account IDs are saved as secrets in this GitHub repository for convenience, using the naming convention AWS_ACCOUNT_ACCOUNT_NAME
   # where any spaces, dashes are converted to underscore (_). You can also use the Account Id value as literal string "12345679".
-  aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DEVSCRATCH}}
+  aws_deploy_account: ${{ secrets.AWS_ACCOUNT_APPSTREAM_STAGING}}
   # AWS region to deploy to. London is eu-west-2, Ireland is eu-west-1. Unless you have a reason, keep region to eu-west-2.
-  aws_deploy_region: "eu-west-2"
+  aws_deploy_region: "eu-west-1"
   # Set this to the environment. It will passed through to Terraform for using the correct configuraiton. Must be one of 'Dev', 'Stg', 'Prod' or 'Mgmt'
-  environment: "Dev"
-  terraform_state_s3_key_prefix: "project-lunch-learn"
+  environment: "Stg"
+  terraform_state_s3_key_prefix: "project-appstream"
   # Set this to your project/platform Terraform code and config location!
-  build_path: "projects/lunch-learn"
+  build_path: "projects/appstream"
   # Set as a tag in AWS so resources can be linked back to CI/CD builds
-  automation_build_url: "https://github.com/LBHackney-IT/infrastructure/actions/workflows/project_lunch_learn.yml"
+  automation_build_url: "https://github.com/LBHackney-IT/infrastructure/actions/workflows/project_appstream_stg.yml"
 on:
-
   # This controls when a build will be triggered for a push. Unless you have a specific use case, this should be sufficient!
   push:
     branches: [master]
     paths:
       # Set this to your project/platform Terraform code and config location, and file type (** is a wildcard for all files)
-      - "projects/lunch-learn/**"
+      - "projects/appstream/**"
   # This controls for what branch a build will be triggered for a PR (useful to validate). Unless you have a specific use case, this should be sufficient!
   pull_request:
     branches: [master]
     paths:
       # Set this to your project/platform Terraform code and config location, and file type (** is a wildcard for all files)
-      - "projects/lunch-learn/**"
+      - "projects/appstream/**"
   # This allows a manual trigger of the build, where a branch can be set. Please https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
   # or delete if you don't wish to allow manual triggers of the build
   workflow_dispatch:
     inputs:
       terraform_import:
-        description: 'Terraform import statements'
+        description: "Terraform import statements"
+        required: false
+      terraform_remove:
+        description: "Terraform state rm statements"
         required: false
 
 # Nothing to change down from here!
@@ -57,4 +59,11 @@ jobs:
           aws_deploy_account: ${{ env.aws_deploy_account }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           branch: ${GITHUB_REF##*/}
-          terraform_destroy: 'destroy_me'
+          terraform_import: ${{ github.event.inputs.terraform_import }}
+          terraform_remove:
+            ${{ github.event.inputs.terraform_remove }}
+            # DANGER ZONE
+          # In order to allow you to run a Terraform destroy (that will delete all AWS resources managed by Terraform,
+          # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
+          # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
+          terraform_destroy: false
