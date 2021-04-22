@@ -16,7 +16,7 @@ env:
 on:
   # This controls when a build will be triggered for a push. Unless you have a specific use case, this should be sufficient!
   push:
-    branches: [$default-branch]
+    branches: [main]
     paths-ignore:
       - "documentation/**"
       - "infrastructure/projects/**"

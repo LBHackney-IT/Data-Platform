@@ -81,7 +81,7 @@ runs:
       run: |
         if [ "${{ inputs.terraform_import }}" != "" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform import"
-            if [ "${{ inputs.branch }}" == $default-branch ]; then
+            if [ "${{ inputs.branch }}" == "main" ]; then
               terraform import -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' ${{ inputs.terraform_import }}
             else
               echo -e "Not on default branch branch, so skipping Terraform import."
@@ -95,7 +95,7 @@ runs:
       run: |
         if [ "${{ inputs.terraform_remove }}" != "" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform remove"
-            if [ "${{ inputs.branch }}" == $default-branch ]; then
+            if [ "${{ inputs.branch }}" == "main" ]; then
               terraform state rm ${{ inputs.terraform_remove }}
             else
               echo -e "Not on default branch branch, so skipping Terraform remove."
@@ -127,7 +127,7 @@ runs:
       run: |
         if [ "${{ inputs.terraform_destroy }}" == "destroy_me" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform destroy"
-            if [ "${{ inputs.branch }}" == $default-branch ]; then
+            if [ "${{ inputs.branch }}" == "main" ]; then
               terraform -auto-approve
               ${{ github.action_path }}/success_destroy.sh
               echo -e "Terraform run completed successfully."
@@ -153,7 +153,7 @@ runs:
       id: apply
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
-          if [ "${{ inputs.branch }}" ==  $default-branch]; then
+          if [ "${{ inputs.branch }}" ==  "main"]; then
             ${{ github.action_path }}/box.sh "Running Terraform apply"
             terraform apply -auto-approve -input=false plan.out
           else
