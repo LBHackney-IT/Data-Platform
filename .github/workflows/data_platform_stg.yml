@@ -26,10 +26,10 @@ on:
   workflow_dispatch:
     inputs:
       terraform_import:
-        description: 'Terraform import statements'
+        description: "Terraform import statements"
         required: false
       terraform_remove:
-        description: 'Terraform state rm statements'
+        description: "Terraform state rm statements"
         required: false
 
 # Nothing to change down from here!
