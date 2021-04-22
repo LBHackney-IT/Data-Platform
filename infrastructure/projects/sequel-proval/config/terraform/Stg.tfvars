@@ -4,19 +4,26 @@ appstream_azs = ["eu-west-1a", "eu-west-1b"]
 
 appstream_cidr = "10.143.0.0/16"
 
-appstream_enable_nat_gateway = true
-
 appstream_private_subnets = ["10.143.0.0/24", "10.143.1.0/24"]
 
 appstream_public_subnets  = ["10.143.2.0/24", "10.143.3.0/24"]
 
-appstream_security_group_ingress = [{}]
+appstream_security_group_ingress = [
+    {
+        from_port   = 0
+        to_port     = 0
+        protocol    = "TCP"
+        cidr_blocks = "10.144.26.0/24"
+        description = "Allow Ingress from Core VPC."
+    }
+]
 
 appstream_security_group_egress = [
     {
         from_port   = 0
         to_port     = 0
         protocol    = "-1"
+        cidr_blocks = "0.0.0.0/0"
         description = "Allow egress anywhere."
     }
 ]
@@ -27,19 +34,17 @@ core_azs = ["eu-west-2a", "eu-west-2b"]
 
 core_cidr = "10.144.26.0/24"
 
-core_enable_nat_gateway = true
-
 core_private_subnets = ["10.144.26.0/25"]
 
 core_public_subnets  = ["10.144.26.128/25"]
 
 core_security_group_ingress = [
     {
-        from_port   = 21064
-        to_port     = 21064
+        from_port   = 0
+        to_port     = 0
         protocol    = "TCP"
-        cidr_blocks = "10.144.26.0/25"
-        description = "Allow Ingres from private subnets in the AppStream VPC."
+        cidr_blocks = "10.143.0.0/16"
+        description = "Allow Ingress from Appstream VPC."
     }
 ]
 
@@ -48,6 +53,7 @@ core_security_group_egress = [
         from_port   = 0
         to_port     = 0
         protocol    = "-1"
+        cidr_blocks = "0.0.0.0/0"
         description = "Allow egress anywhere."
     }
 ]
@@ -57,8 +63,6 @@ application = "sequel-proval"
 
 department = "corporate"
 
-environment = "Stg"
-
-key_name = "sequel-proval-stg"
+environment = "stg"
 
 #whitelist = []

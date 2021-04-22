@@ -223,3 +223,11 @@ resource "aws_ec2_transit_gateway_route_table_association" "secondary_transit_ga
   transit_gateway_attachment_id  = each.value.TransitGatewayAttachmentId
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.secondary_transit_gateway_route_table_spoke.id
 }
+
+resource "aws_ec2_transit_gateway_route_table_propagation" "secondary_tgw_propagation_security" {
+  for_each = { for attachment in local.secondary_remote_vpc_attachments : attachment.TransitGatewayAttachmentId => attachment }
+  provider = aws.ss_secondary
+
+  transit_gateway_attachment_id  = each.value.TransitGatewayAttachmentId
+  transit_gateway_route_table_id = module.secondary_tgw.this_ec2_transit_gateway_route_table_id
+}

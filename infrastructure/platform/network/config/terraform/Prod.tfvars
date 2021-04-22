@@ -40,11 +40,11 @@ ss_secondary_ram_principals = ["arn:aws:organizations::338027813792:ou/o-xel8pht
 ss_secondary_routes_tgw = ["10.138.0.0/16", "10.132.0.0/16", "10.136.0.0/16", "10.120.14.0/24", "10.130.0.0/16"]
 
 # Tags
-application = "Hub"
+application = "hub"
 
 department = "cloud-deployment"
 
-environment = "Prod"
+environment = "prod"
 
 # Palo Alto
 key_name = "palo-alto-prod"

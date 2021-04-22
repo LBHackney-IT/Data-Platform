@@ -21,7 +21,7 @@ appstream_security_group_egress = [
 ]
 
 # Core Infrastructure
-# Core Infrastructure - 10-network
+# Core Infrastructure - 10-network  
 core_azs = ["eu-west-2a", "eu-west-2b"]
 
 core_cidr = "10.147.26.0/24"
@@ -56,7 +56,7 @@ department = "HackIT"
 phase = "Default"
 automation_build_url = "https://github.com/LBHackney-IT/infrastructure/actions/workflows/project_sam_staging.yml"
 confidentiality = "Public"
-environment = "Stg"
+environment = "stg"
 team = "CloudEngineering"
 application = "sam"
 stack = "Core"
