@@ -35,7 +35,7 @@ resource "aws_iam_role" "appstream_autoscaling_service_access" {
   name = "ApplicationAutoScalingForAmazonAppStreamAccess"
   path = "/service-role/"
 
-  tags = module.tags.tags
+  tags = module.tags.values
 }
 
 resource "aws_iam_role" "appstream_service_access" {
@@ -57,7 +57,7 @@ resource "aws_iam_role" "appstream_service_access" {
   name = "AmazonAppStreamServiceAccess"
   path = "/service-role/"
 
-  tags = module.tags.tags
+  tags = module.tags.values
 }
 
 ## AppStream Infrastructure - IAM Service Linked Roles

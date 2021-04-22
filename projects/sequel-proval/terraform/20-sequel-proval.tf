@@ -9,18 +9,20 @@ module "sequel_proval_ec2_instance" {
   ami = var.sequel_proval_instance_ami
   ebs_block_device = [
     {
-      encrypted   = true
-      device_name = "/dev/sdb"
-      volume_size = "100"
+      encrypted             = true
+      delete_on_termination = false
+      device_name           = "/dev/sdb"
+      snapshot_id           = "snap-06888283ba093b512"
+      volume_size           = "100"
     }
   ]
-  ebs_optimized  = true
+  ebs_optimized        = true
   iam_instance_profile = aws_iam_instance_profile.sequel_proval_instance_profile.name
-  instance_count = var.sequel_proval_instance_number
-  instance_type  = var.sequel_proval_instance_type
-  key_name       = var.key_name
-  # key_name         = aws_key_pair.generated_key.key_name
-  name           = format("%s-%s", var.application, var.environment)
+  instance_count       = var.sequel_proval_instance_number
+  instance_type        = var.sequel_proval_instance_type
+  #key_name       = var.key_name
+  key_name = aws_key_pair.generated_key.key_name
+  name     = format("%s-%s", var.application, var.environment)
   root_block_device = [
     {
       encrypted   = true
