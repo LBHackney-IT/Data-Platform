@@ -52,6 +52,38 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   ]
 }
 
+resource "aws_iam_role" "rds_export_process_role" {
+  provider = aws.aws_api_account
+  name = "rds_export_process_role"
+  assume_role_policy = jsonencode({
+     Version: "2012-10-17",
+     Statement: [
+        {
+          Effect: "Allow",
+          Action: [
+              "s3:ListBucket",
+              "s3:GetBucketLocation"
+          ],
+          Resource: [
+              "arn:aws:s3:::*"
+          ]
+        },
+        {
+          Effect: "Allow",
+          Action: [
+              "s3:PutObject*",
+              "s3:GetObject*",
+              "s3:CopyObject*",
+              "s3:DeleteObject*"
+          ],
+          Resource: [
+              "arn:aws:s3:::data-platform-snapshot-export-test",
+              "arn:aws:s3:::data-platform-snapshot-export-test/*"
+          ]
+        }
+     ]
+  })
+}
 // set up SNS topic
 
 // set up event subscription
