@@ -42,7 +42,7 @@ resource "aws_s3_bucket_object" "handler" {
 resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   role             = aws_iam_role.iam_for_lambda.arn
   handler          = "exports.handler"
-  runtime          = "nodejs12.x"
+  runtime          = "nodejs14.x"
   function_name    = "rds_snapshot_to_s3_lambda"
   s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
   s3_key           = aws_s3_bucket_object.handler.key
