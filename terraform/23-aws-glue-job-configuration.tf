@@ -37,7 +37,7 @@ resource "aws_glue_security_configuration" "glue_job_security_configuration_to_r
 }
 
 resource "aws_glue_security_configuration" "glue_job_security_configuration_to_trusted" {
-  name = "glue-job-security-configuration-to-refined"
+  name = "glue-job-security-configuration-to-trusted"
 
   encryption_configuration {
     cloudwatch_encryption {
