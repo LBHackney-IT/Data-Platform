@@ -56,33 +56,46 @@ resource "aws_iam_role" "rds_export_process_role" {
   provider = aws.aws_api_account
   name = "rds_export_process_role"
   assume_role_policy = jsonencode({
-     Version: "2012-10-17",
-     Statement: [
-        {
-          Effect: "Allow",
-          Action: [
-              "s3:ListBucket",
-              "s3:GetBucketLocation"
-          ],
-          Resource: [
-              "arn:aws:s3:::*"
-          ]
-        },
-        {
-          Effect: "Allow",
-          Action: [
-              "s3:PutObject*",
-              "s3:GetObject*",
-              "s3:CopyObject*",
-              "s3:DeleteObject*"
-          ],
-          Resource: [
-              "arn:aws:s3:::data-platform-snapshot-export-test",
-              "arn:aws:s3:::data-platform-snapshot-export-test/*"
-          ]
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
         }
-     ]
+      },
+    ]
   })
+}
+
+data "aws_iam_policy_document" "export_bucket_policy_document" {
+  statement {
+    sid    = "ListBucket"
+    effect = "Allow"
+    actions   = ["s3:ListBucket", "s3:GetBucketLocation"]
+    resources = ["arn:aws:s3:::*"]
+  }
+  statement {
+    sid    = "PutBucket"
+    effect = "Allow"
+    actions   = [
+      "s3:PutObject*",
+      "s3:GetObject*",
+      "s3:CopyObject*",
+      "s3:DeleteObject*"
+    ]
+    resources = [
+      "arn:aws:s3:::data-platform-snapshot-export-test",
+      "arn:aws:s3:::data-platform-snapshot-export-test/*"
+    ]
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "export_bucket_policy_attachment" {
+  role = aws_iam_role.rds_export_process_role.name
+  policy_arn = data.aws_iam_policy_document.export_bucket_policy_document.arn
 }
 // set up SNS topic
 
