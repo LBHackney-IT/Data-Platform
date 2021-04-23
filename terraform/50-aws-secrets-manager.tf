@@ -9,7 +9,7 @@ resource "aws_kms_key" "sheets_credentials" {
 resource "aws_secretsmanager_secret" "sheets_credentials_housing" {
   tags = module.tags.values
 
-  name       = "${local.identifier_prefix}-sheets-credentials-housing"
+  name       = "${local.identifier_prefix}-sheets-credential-housing"
   kms_key_id = aws_kms_key.sheets_credentials.id
 }
 
