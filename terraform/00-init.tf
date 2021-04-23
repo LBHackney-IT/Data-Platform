@@ -7,6 +7,15 @@ provider "aws" {
   }
 }
 
+provider "aws" {
+  alias = "aws_api_account"
+  region = var.aws_deploy_region
+  assume_role {
+    role_arn     = "arn:aws:iam::${var.aws_api_account}:role/${var.aws_deploy_iam_role_name}"
+    session_name = "Terraform"
+  }
+}
+
 provider "google" {
   region = "europe-west2"
   zone   = "europe-west2-a"
