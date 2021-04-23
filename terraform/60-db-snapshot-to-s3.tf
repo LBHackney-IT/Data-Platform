@@ -95,7 +95,7 @@ data "aws_iam_policy_document" "export_bucket_policy_document" {
 
 resource "aws_iam_role_policy_attachment" "export_bucket_policy_attachment" {
   role = aws_iam_role.rds_export_process_role.name
-  policy_arn = data.aws_iam_policy_document.export_bucket_policy_document.arn
+  policy = data.aws_iam_policy_document.export_bucket_policy_document.json
 }
 // set up SNS topic
 
