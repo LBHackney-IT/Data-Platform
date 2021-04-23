@@ -41,8 +41,9 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
-      - name: Branch name
-        run: echo running on branch ${GITHUB_REF##*/}
+      - name: Install dependencies in rds-database-snapshot-replicator lambda
+        run: npm install
+          working-directory: "./data-platform/lambdas/rds-database-snapshot-replicator/lambda"
       - name: Run AWS Terraform
         uses: ./.github/actions/aws-terraform
         with:
