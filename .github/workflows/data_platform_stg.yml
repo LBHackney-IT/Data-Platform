@@ -41,9 +41,13 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
+      - name: Set Node.js 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
       - name: Install dependencies in rds-database-snapshot-replicator lambda
+        working-directory: "./data-platform/lambdas/rds-database-snapshot-replicator/lambda"
         run: npm install
-          working-directory: "./data-platform/lambdas/rds-database-snapshot-replicator/lambda"
       - name: Run AWS Terraform
         uses: ./.github/actions/aws-terraform
         with:
