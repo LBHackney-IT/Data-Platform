@@ -26,6 +26,9 @@ inputs:
   aws_deploy_account:
     description: "AWS account id to deploy to"
     required: true
+  aws_api_account:
+    description: "AWS api account id to deploy to"
+    required: true
   aws_deploy_iam_role_name:
     description: "AWS IAM role name to assume for deployment"
     required: true
@@ -143,7 +146,7 @@ runs:
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
           ${{ github.action_path }}/box.sh "Running Terraform plan"
-          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
+          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}'  -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
           echo -e "\n"
         fi
       shell: bash

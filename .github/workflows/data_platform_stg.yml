@@ -4,6 +4,8 @@ env:
   # AWS Account to deploy to. Account IDs are saved as secrets in this GitHub repository for convenience, using the naming convention AWS_ACCOUNT_ACCOUNT_NAME
   # where any spaces, dashes are converted to underscore (_). You can also use the Account Id value as literal string "12345679".
   aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+  aws_api_account: ${{ secrets.AWS_API_ACCOUNT_STG }}
+
   # AWS region to deploy to. London is eu-west-2, Ireland is eu-west-1. Unless you have a reason, keep region to eu-west-2.
   aws_deploy_region: "eu-west-2"
   # Set this to the environment. It will passed through to Terraform for using the correct configuraiton. Must be one of 'Dev', 'Stg', 'Prod' or 'Mgmt'
@@ -59,6 +61,7 @@ jobs:
           environment: ${{ env.environment }}
           automation_build_url: ${{ env.automation_build_url }}
           aws_deploy_account: ${{ env.aws_deploy_account }}
+          aws_api_account: ${{ env.aws_api_account }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           branch: ${GITHUB_REF##*/}
           terraform_import: ${{ github.event.inputs.terraform_import }}

@@ -9,6 +9,11 @@ variable "aws_deploy_account" {
   type        = string
 }
 
+variable "aws_api_account" {
+  description = "AWS api account id"
+  type        = string
+}
+
 variable "aws_deploy_iam_role_name" {
   description = "AWS IAM role name to assume for deployment"
   type        = string
