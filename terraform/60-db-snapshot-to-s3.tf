@@ -56,8 +56,8 @@ resource "aws_iam_role" "rds_export_process_role" {
   provider = aws.aws_api_account
   name = "rds_export_process_role"
   assume_role_policy = jsonencode({
-     Version: "2012-10-17",
-     Statement: [
+     "Version": "2012-10-17",
+     "Statement": [
         {
           Effect: "Allow",
           Action: [
