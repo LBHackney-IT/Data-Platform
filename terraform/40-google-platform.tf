@@ -13,7 +13,8 @@ data "google_iam_policy" "project_admin" {
       "user:maysa.kanoni@hackney.gov.uk",
       "user:matt.bee@hackney.gov.uk",
       "user:james.oates@hackney.gov.uk",
-      "user:ben.dalton@hackney.gov.uk"
+      "user:ben.dalton@hackney.gov.uk",
+      "user:elena.vilimaite@hackney.gov.uk"
     ]
   }
 }
