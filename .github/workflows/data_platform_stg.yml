@@ -53,9 +53,10 @@ jobs:
       - name: Set up Google Cloud Credentials
         run: |
             echo $GOOGLE_CREDENTIALS_STG >> ./google_service_account_creds.json
+            cat ./google_service_account_creds.json
         shell: bash
         env:
-          GOOGLE_CREDENTIALS_STG: ${{secrets.GOOGLE_CREDENTIALS_STG}}
+          GOOGLE_CREDENTIALS_STG: ${{secrets.TEST_CREDS}}
       - name: Run AWS Terraform
         uses: ./.github/actions/aws-terraform
         with:
