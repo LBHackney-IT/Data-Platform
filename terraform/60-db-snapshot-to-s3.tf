@@ -74,7 +74,7 @@ resource "aws_iam_policy" "export_bucket_policy_document" {
   provider = aws.aws_api_account
   name = "rds_export_process_policy"
   description = "A rds  export processpolicy"
-  policy =  = jsonencode({
+  policy = jsonencode({
     "Version": "2012-10-17",
      "Statement": [
          {
