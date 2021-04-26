@@ -19,6 +19,7 @@ provider "aws" {
 provider "google" {
   region = "europe-west2"
   zone   = "europe-west2-a"
+  credentials = "../google_service_account_creds.json"
 }
 
 # General
