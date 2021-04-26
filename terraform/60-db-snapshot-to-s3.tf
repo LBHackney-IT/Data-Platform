@@ -105,6 +105,7 @@ resource "aws_iam_policy" "export_bucket_policy_document" {
 }
 
 resource "aws_iam_role_policy_attachment" "export_bucket_policy_attachment" {
+  provider = aws.aws_api_account
   role = aws_iam_role.rds_export_process_role.name
   policy_arn = aws_iam_policy.export_bucket_policy_document.arn
 }
