@@ -63,7 +63,7 @@ resource "aws_iam_role" "rds_export_process_role" {
         Effect = "Allow"
         Sid    = ""
         Principal = {
-          Service = "rds.amazonaws.com"
+          Service = "export.rds.amazonaws.com"
         }
       },
     ]
