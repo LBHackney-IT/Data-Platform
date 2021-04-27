@@ -58,7 +58,7 @@ jobs:
           aws_deploy_account: ${{ env.aws_deploy_account }}
           aws_api_account: ${{ env.aws_api_account }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          branch: ${GITHUB_REF##*/}
+          branch: "main"
           terraform_import: ${{ github.event.inputs.terraform_import }}
           terraform_remove: ${{ github.event.inputs.terraform_remove }}
           # DANGER ZONE
