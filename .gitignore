@@ -2,3 +2,4 @@
 .terraform*
 *.tfstate*
 lambdas/*/node_modules
+env.tfvars
