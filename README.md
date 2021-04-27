@@ -33,3 +33,17 @@ To update the sub-project:
 The terraform will be deployed using Github Actions on push to main / when a Pull Request is merged into main
 
 ### Terraform Development
+
+### Local deployment
+
+1. For local deployment AWS needs a profile (assumed to be called `hackney-dev-scratch`) and some profile configuration (which can be set in `~/.aws/config`):
+
+```
+[profile hackney-dev-scratch]
+region = eu-west-2
+output = json
+```
+
+2. Next run `make init` in the `/terraform`directory.
+This will initialize terraform using the AWS profile `hackney-dev-scratch`.
+3. 
