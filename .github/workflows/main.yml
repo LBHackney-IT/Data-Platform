@@ -19,14 +19,3 @@ jobs:
         run: |
           terraform init -backend=false
           terraform validate
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install TFLint
-        uses: lablabs/setup-tflint@v1.0.2
-        with:
-          tflint_version: latest
-      - name: Run linter
-        run: ./scripts/lint_terraform.sh
