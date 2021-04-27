@@ -1,30 +1,19 @@
-# Name of your build. Please follow the Name Project/Platform (Environment) format. You will need to specify a build per environment.
-name: Data-Platform (Staging)
+name: Data-Platform (Production)
 env:
-  # AWS Account to deploy to. Account IDs are saved as secrets in this GitHub repository for convenience, using the naming convention AWS_ACCOUNT_ACCOUNT_NAME
-  # where any spaces, dashes are converted to underscore (_). You can also use the Account Id value as literal string "12345679".
   aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
   aws_api_account: ${{ secrets.AWS_API_ACCOUNT_STG }}
-
-  # AWS region to deploy to. London is eu-west-2, Ireland is eu-west-1. Unless you have a reason, keep region to eu-west-2.
   aws_deploy_region: "eu-west-2"
-  # Set this to the environment. It will passed through to Terraform for using the correct configuraiton. Must be one of 'Dev', 'Stg', 'Prod' or 'Mgmt'
   environment: "stg"
   terraform_state_s3_key_prefix: "data-platform"
-  # Set this to your project/platform Terraform code and config location!
   build_path: "."
-  # Set as a tag in AWS so resources can be linked back to CI/CD builds
-  automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+  automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
 on:
-  # This controls when a build will be triggered for a push. Unless you have a specific use case, this should be sufficient!
-  push:
-    branches: [main]
+  release:
+    types: [published]
     paths-ignore:
       - "documentation/**"
       - "infrastructure/projects/**"
       - "infrastructure/platform/**"
-  # This allows a manual trigger of the build, where a branch can be set. Please https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
-  # or delete if you don't wish to allow manual triggers of the build
   workflow_dispatch:
     inputs:
       terraform_import:
@@ -34,8 +23,6 @@ on:
         description: "Terraform state rm statements"
         required: false
 
-# Nothing to change down from here!
-# Pay no attention to the man behind the curtain
 jobs:
   build:
     name: AWS Terraform
