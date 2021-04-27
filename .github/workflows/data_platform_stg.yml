@@ -5,6 +5,7 @@ env:
   # where any spaces, dashes are converted to underscore (_). You can also use the Account Id value as literal string "12345679".
   aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
   aws_api_account: ${{ secrets.AWS_API_ACCOUNT_STG }}
+  google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
 
   # AWS region to deploy to. London is eu-west-2, Ireland is eu-west-1. Unless you have a reason, keep region to eu-west-2.
   aws_deploy_region: "eu-west-2"
@@ -52,10 +53,10 @@ jobs:
         run: npm install
       - name: Set up Google Cloud Credentials
         run: |
-            echo $GOOGLE_CREDENTIALS_STG >> ./google_service_account_creds.json
+            echo $GOOGLE_CREDENTIALS >> ./google_service_account_creds.json
         shell: bash
         env:
-          GOOGLE_CREDENTIALS_STG: ${{secrets.GOOGLE_CREDENTIALS_STG}}
+          GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS_STG}}
       - name: Run AWS Terraform
         uses: ./.github/actions/aws-terraform
         with:
@@ -67,6 +68,7 @@ jobs:
           environment: ${{ env.environment }}
           automation_build_url: ${{ env.automation_build_url }}
           aws_deploy_account: ${{ env.aws_deploy_account }}
+          google_project_id: ${{ env.google_project_id }}
           aws_api_account: ${{ env.aws_api_account }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           branch: ${GITHUB_REF##*/}

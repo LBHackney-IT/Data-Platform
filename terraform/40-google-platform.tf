@@ -1,5 +1,5 @@
 resource "google_project_service" "sheets_api" {
-  project = "dataplatform-stg"
+  project = var.google_project_id
   service = "sheets.googleapis.com"
 
   disable_dependent_services = true
@@ -20,6 +20,6 @@ resource "google_project_service" "sheets_api" {
 # }
 
 # resource "google_project_iam_policy" "project_iam" {
-#   project     = "dataplatform-stg"
+#   project     = var.google_project_id
 #   policy_data = data.google_iam_policy.project_admin.policy_data
 # }

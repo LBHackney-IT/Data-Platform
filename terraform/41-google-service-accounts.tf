@@ -2,7 +2,7 @@
 resource "google_service_account" "service_account_housing" {
   account_id   = lower("${local.application_snake}-${var.environment}-housing")
   display_name = "${var.application} - Housing"
-  project      = "dataplatform-stg"
+  project      = var.google_project_id
 }
 
 resource "time_rotating" "key_rotation_housing" {

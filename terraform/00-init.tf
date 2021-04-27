@@ -20,7 +20,7 @@ provider "google" {
   region = "europe-west2"
   zone   = "europe-west2-a"
   credentials = "../google_service_account_creds.json"
-  project = "dataplatform-stg"
+  project = var.google_project_id
 }
 
 # General

@@ -20,6 +20,9 @@ inputs:
   environment:
     description: "Name of the environemnt e.g. dev, stg, prod, mgmt"
     required: true
+  google_project_id:
+    description: "Id of google project to which service accounts will be deployed to"
+    required: true
   automation_build_url:
     description: "URL of the GitHub Action Run to pass to Terraform"
     required: true
@@ -85,7 +88,7 @@ runs:
         if [ "${{ inputs.terraform_import }}" != "" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform import"
             if [ "${{ inputs.branch }}" == "main" ]; then
-              terraform import -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' ${{ inputs.terraform_import }}
+              terraform import -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}'  -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' ${{ inputs.terraform_import }}
             else
               echo -e "Not on default branch branch, so skipping Terraform import."
             fi
@@ -120,7 +123,7 @@ runs:
       id: lint
       run: |
         ${{ github.action_path }}/box.sh "Running TFLint"
-        ./tflint --var-file='../config/terraform/${{ inputs.environment }}.tfvars' --var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' --var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' --var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' --var 'environment=${{ inputs.environment }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --module --config=${{ github.action_path }}/../../../.tflint.hcl --loglevel=info .
+        ./tflint --var-file='../config/terraform/${{ inputs.environment }}.tfvars' --var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' --var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' --var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ inputs.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --module --config=${{ github.action_path }}/../../../.tflint.hcl --loglevel=info .
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"
@@ -146,7 +149,7 @@ runs:
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
           ${{ github.action_path }}/box.sh "Running Terraform plan"
-          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}'  -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
+          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}'  -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
           echo -e "\n"
         fi
       shell: bash

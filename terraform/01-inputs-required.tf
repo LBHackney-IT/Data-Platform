@@ -24,6 +24,11 @@ variable "environment" {
   type        = string
 }
 
+variable "google_project_id" {
+  description = "Id of google project to which service accounts will be deployed to"
+  type        = string
+}
+
 /* Mandatory variables, that should be override in the config/terraform/*.tfvars. Please feel free to add as you need!
  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

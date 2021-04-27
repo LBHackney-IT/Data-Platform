@@ -1,9 +1,10 @@
 name: Data-Platform (Production)
 env:
-  aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
-  aws_api_account: ${{ secrets.AWS_API_ACCOUNT_STG }}
+  aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
+  aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
   aws_deploy_region: "eu-west-2"
-  environment: "stg"
+  google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
+  environment: "prod"
   terraform_state_s3_key_prefix: "data-platform"
   build_path: "."
   automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
@@ -39,10 +40,10 @@ jobs:
         run: npm install
       - name: Set up Google Cloud Credentials
         run: |
-            echo $GOOGLE_CREDENTIALS_STG >> ./google_service_account_creds.json
+            echo $GOOGLE_CREDENTIALS >> ./google_service_account_creds.json
         shell: bash
         env:
-          GOOGLE_CREDENTIALS_STG: ${{secrets.GOOGLE_CREDENTIALS_STG}}
+          GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS_PROD}}
       - name: Run AWS Terraform
         uses: ./.github/actions/aws-terraform
         with:
@@ -52,6 +53,7 @@ jobs:
           terraform_state_s3_key_prefix: ${{ env.terraform_state_s3_key_prefix }}
           build_path: ${{ env.build_path }}
           environment: ${{ env.environment }}
+          google_project_id: ${{ env.google_project_id }}
           automation_build_url: ${{ env.automation_build_url }}
           aws_deploy_account: ${{ env.aws_deploy_account }}
           aws_api_account: ${{ env.aws_api_account }}
