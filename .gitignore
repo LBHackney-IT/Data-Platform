@@ -3,3 +3,4 @@
 *.tfstate*
 lambdas/*/node_modules
 env.tfvars
+google_service_account_creds.json
