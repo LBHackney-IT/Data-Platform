@@ -38,7 +38,15 @@ The terraform will be deployed using Github Actions on push to main / when a Pul
 
 #### Set up
 
-1. For local deployment AWS needs a profile (assumed to be called `hackney-dev-scratch`) and some profile configuration (which can be set in `~/.aws/config`):
+1. Create a env.tfvars file for local deployment, i.e run `cp config/terraform/env.tfvars.example config/terraform/env.tfvars` from the project root directory.
+2. Update the following required variables in the newly created file:
+  - `environment` - Environment you're working in (ususally one of dev, stg, prod or mgmt)
+  - `aws_api_account` - API AWS Account to deploy RDS Export Lambda to (for instance ProductionAPIs account)
+  - `aws_deploy_account` Primary AWS Account to deploy to (for instance DataPlatform AWS Account)
+  - `aws_deploy_iam_role_name` - (can be left blank if assume_roles is set)
+  - `google_project_id` - The Google Project to create service accounts in (for DevScratch `dataplatform-dev0`)
+  - `assume_roles` - leave as an empty list if you want to deploy using SSO credentials locally (dev), or add `[true]` (keeping the value in a list) to deploy using Github Actions (Staging and Production)
+3. For local deployment AWS needs a profile (assumed to be called `hackney-dev-scratch`) in and some profile configuration (which can be set in `~/.aws/config`). Read [documentation on Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for more guidance setting up AWS credentials and named profiles.
 
 ```
 [profile hackney-dev-scratch]
@@ -46,7 +54,7 @@ region = eu-west-2
 output = json
 ```
 
-2. Next run `make init` in the `/terraform`directory.
+4. Next run `make init` in the `/terraform`directory.
 This will initialize terraform using the AWS profile `hackney-dev-scratch`.
 
 #### Terraform commands
