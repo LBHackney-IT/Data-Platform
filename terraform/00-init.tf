@@ -46,7 +46,7 @@ terraform {
   backend "s3" {
     region  = "eu-west-2"
     key     = "tf-remote-state"
-    bucket  = "dataplatform-internal-dev-tfstate"
+    bucket  = "dataengineers-dataplatform-dev-tfstate"
     encrypt = true
   }
 }
