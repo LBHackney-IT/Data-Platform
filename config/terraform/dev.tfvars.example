@@ -12,3 +12,4 @@ aws_api_account = ""
 aws_deploy_account = ""
 aws_deploy_iam_role_name = ""
 google_project_id = ""
+assume_roles = []

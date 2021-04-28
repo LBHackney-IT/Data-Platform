@@ -7,3 +7,4 @@ environment = "stg"
 team = "DataEngineers"
 application = "DataPlatform"
 stack = "Core"
+assume_roles = [true]

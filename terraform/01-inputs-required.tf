@@ -29,6 +29,11 @@ variable "google_project_id" {
   type        = string
 }
 
+variable "assume_roles" {
+  description = "Used to dynamically assume a role for staging and production deploys, while allowing assume role to be skipped in local terraform plan/apply."
+  type        = list
+}
+
 /* Mandatory variables, that should be override in the config/terraform/*.tfvars. Please feel free to add as you need!
  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
