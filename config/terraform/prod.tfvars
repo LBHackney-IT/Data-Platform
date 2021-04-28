@@ -7,3 +7,4 @@ environment = "prod"
 team = "DataEngineers"
 application = "DataPlatform"
 stack = "Core"
+assume_roles = [true]
