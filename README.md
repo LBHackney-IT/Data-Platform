@@ -36,6 +36,8 @@ The terraform will be deployed using Github Actions on push to main / when a Pul
 
 ### Local deployment
 
+#### Set up
+
 1. For local deployment AWS needs a profile (assumed to be called `hackney-dev-scratch`) and some profile configuration (which can be set in `~/.aws/config`):
 
 ```
@@ -46,4 +48,7 @@ output = json
 
 2. Next run `make init` in the `/terraform`directory.
 This will initialize terraform using the AWS profile `hackney-dev-scratch`.
-3. 
+
+#### Terraform commands
+
+After runnning you can run `make plan`, `make apply` and `make destroy` to run the terraform deploy/destroy commands with the development `env.tfvars` set for you.
