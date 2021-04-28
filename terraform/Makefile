@@ -1,4 +1,4 @@
-.PHONY: init
+.PHONY: init plan apply destroy
 
 init:
 	terraform init -backend-config="profile=hackney-dev-scratch"
@@ -6,3 +6,9 @@ init:
 
 plan:
 	AWS_PROFILE=hackney-dev-scratch terraform plan -var-file="../config/terraform/env.tfvars"
+
+apply: 
+	AWS_PROFILE=hackney-dev-scratch terraform apply -var-file="../config/terraform/env.tfvars"
+
+destroy: 
+	AWS_PROFILE=hackney-dev-scratch terraform destroy -var-file="../config/terraform/env.tfvars"
