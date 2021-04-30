@@ -40,7 +40,7 @@ variable "transit_gateway_cidr" {
 }
 
 
-variable "core_private_subnets" {
+variable "transit_gateway_private_subnets" {
   description = "A list of private subnets inside the transit gateway  VPC."
   type        = list(string)
 }
