@@ -39,6 +39,11 @@ variable "transit_gateway_cidr" {
   type        = string
 }
 
+
+variable "core_private_subnets" {
+  description = "A list of private subnets inside the transit gateway  VPC."
+  type        = list(string)
+}
 /* Mandatory variables, that should be override in the config/terraform/*.tfvars. Please feel free to add as you need!
  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
