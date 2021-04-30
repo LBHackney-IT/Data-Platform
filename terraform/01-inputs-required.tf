@@ -34,6 +34,11 @@ variable "assume_roles" {
   type        = list
 }
 
+variable "transit_gateway_cidr" {
+  description = "The CIDR block for the transit gateway VPC."
+  type        = string
+}
+
 /* Mandatory variables, that should be override in the config/terraform/*.tfvars. Please feel free to add as you need!
  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

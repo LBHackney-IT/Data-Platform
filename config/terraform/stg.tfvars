@@ -8,3 +8,4 @@ team = "DataEngineers"
 application = "DataPlatform"
 stack = "Core"
 assume_roles = [true]
+transit_gateway_cidr = 10.120.31.0/24
