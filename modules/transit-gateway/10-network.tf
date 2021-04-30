@@ -1,6 +1,5 @@
 # Core Infrastructure
 module "core_vpc" {
-  providers = { aws = aws.core }
   source    = "terraform-aws-modules/vpc/aws"
   version   = "2.64.0"
 
@@ -20,7 +19,6 @@ module "core_vpc" {
 # Resource -  VPC Routes
 resource "aws_route" "hub_tgw_routes" {
   count    = length(module.core_vpc.private_route_table_ids)
-  provider = aws.core
 
   destination_cidr_block = "0.0.0.0/0"
   route_table_id         = module.core_vpc.private_route_table_ids[count.index]

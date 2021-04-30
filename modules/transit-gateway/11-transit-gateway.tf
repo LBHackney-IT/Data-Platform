@@ -12,7 +12,6 @@ locals {
 
 #eu-west-1 - values = ["64513"]
 data "aws_ec2_transit_gateway" "hub_tgw" {
-  provider = aws.core
 
   filter {
     name   = "options.amazon-side-asn"
@@ -23,7 +22,6 @@ data "aws_ec2_transit_gateway" "hub_tgw" {
 # VPC Attachments
 resource "aws_ec2_transit_gateway_vpc_attachment" "hub_tgw_attachment" {
   for_each = local.vpc_attachments
-  provider = aws.core
 
   dns_support                                     = lookup(each.value, "dns_support", true) ? "enable" : "disable"
   ipv6_support                                    = lookup(each.value, "ipv6_support", false) ? "enable" : "disable"
