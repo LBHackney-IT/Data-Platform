@@ -41,8 +41,7 @@ resource "aws_s3_bucket_object" "handler" {
   acl    = "private"
   etag   = filemd5(data.archive_file.lambda_zip_file.output_path)
   depends_on = [
-    data.archive_file.lambda_zip_file,
-    aws_s3_bucket.s3_deployment_artefacts
+    data.archive_file.lambda_zip_file
   ]
 }
 
