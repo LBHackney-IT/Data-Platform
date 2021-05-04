@@ -2,6 +2,7 @@
 .terraform*
 *.tfstate*
 lambdas/*/node_modules
+lambdas/*/*.zip
 env.tfvars
 dev.tfvars
 google_service_account_creds.json
