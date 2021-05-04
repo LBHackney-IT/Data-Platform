@@ -9,6 +9,7 @@ import boto3
 import base64
 import logging
 import json
+import datetime
 from botocore.exceptions import ClientError
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import SQLContext
@@ -26,6 +27,7 @@ glueContext = GlueContext(sparkContext)
 sqlContext = SQLContext(sparkContext)
 
 logger = glueContext.get_logger()
+now = datetime.datetime.now()
 
 # HELPER FUNCTIONS
 def get_glue_env_var(key, default="none"):
@@ -97,7 +99,12 @@ pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() f
 
 # Convert to SparkDynamicDataFrame
 sparkDynamicDataFrame = sqlContext.createDataFrame(pandasDataFrame)
-sparkDynamicDataFrame = sparkDynamicDataFrame.coalesce(1).withColumn('import_date', f.current_timestamp()).repartition('import_date')
+sparkDynamicDataFrame = sparkDynamicDataFrame.coalesce(1)
+sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_date', f.current_timestamp())
+sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_timestamp', f.lit(str(now.timestamp())))
+sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_year', f.lit(str(now.year)))
+sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_month', f.lit(str(now.month).zfill(2)))
+sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_day', f.lit(str(now.day).zfill(2)))
 
 dataframe = DynamicFrame.fromDF(sparkDynamicDataFrame, glueContext, "googlesheets")
 
@@ -108,7 +115,7 @@ dataframe = DynamicFrame.fromDF(sparkDynamicDataFrame, glueContext, "googlesheet
 parquetData = glueContext.write_dynamic_frame.from_options(
     frame = dataframe,
     connection_type = "s3",
-    connection_options = {"path":s3BucketTarget},
+    connection_options = {"path":s3BucketTarget, "partitionKeys": ['import_year', 'import_month', 'import_day']},
     format = "parquet",
 )
 
