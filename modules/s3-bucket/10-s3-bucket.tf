@@ -34,10 +34,6 @@ data "aws_iam_policy_document" "kms_key_role" {
       "kms:GenerateDataKey*",
       "kms:DescribeKey"
     ]
-
-    resources = [
-      "*"
-    ]
   }
 }
 
