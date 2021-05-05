@@ -6,6 +6,16 @@ resource "aws_kms_key" "key" {
   enable_key_rotation     = true
 }
 
+locals {
+  iam_arns = concat([
+  for department in var.account_configuration :
+  "arn:aws:iam::${department.account_to_share_data_with}:root"
+  ], [
+  for department in var.account_configuration :
+  "arn:aws:iam::${department.account_to_share_data_with}:role/rds_export_process_role}"
+  ])
+}
+
 resource "aws_iam_role" "kms_key_role" {
   name = "iam-role-for-grant"
 
@@ -17,10 +27,7 @@ resource "aws_iam_role" "kms_key_role" {
         "Sid": "Allow an external account to use this CMK",
         "Effect": "Allow",
         "Principal": {
-            "AWS": [
-                "arn:aws:iam::${department.account_to_share_data_with}:root",
-                "arn:aws:iam::${department.account_to_share_data_with}:role/rds_export_process_role"
-            ]
+            "AWS": ${local.iam_arns}
         },
         "Action": [
             "kms:Encrypt",
