@@ -14,7 +14,7 @@ locals {
     # },
     "staging" = {
       account_to_share_data_with = "715003523189",
-      iam_role_name              = "eu-west-2/AWSReservedSSO_AWSPowerUserAccess_72aa46dd14fd865e",
+      iam_role_name              = "eu-west-1/AWSReservedSSO_AWSPowerUserAccess_72aa46dd14fd865e",
       s3_read_write_directory    = "stagingAPI",
       s3_read_directories        = []
     }
