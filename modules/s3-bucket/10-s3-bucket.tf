@@ -24,7 +24,11 @@ data "aws_iam_policy_document" "kms_key_role" {
 
     principals {
       type        = "AWS"
-      identifiers = local.iam_arns
+      # identifiers = local.iam_arns
+      identifiers = [
+        "arn:aws:iam::715003523189:root",
+        "arn:aws:iam::715003523189:role/rds_export_process_role"
+      ]
     }
 
     actions = [
