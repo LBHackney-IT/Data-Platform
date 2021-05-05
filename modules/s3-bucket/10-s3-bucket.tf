@@ -27,7 +27,7 @@ resource "aws_iam_role" "kms_key_role" {
         "Sid": "Allow an external account to use this CMK",
         "Effect": "Allow",
         "Principal": {
-            "AWS": ${local.iam_arns}
+            "AWS": [${join.(", ", local.iam_arns)}]
         },
         "Action": [
             "kms:Encrypt",
