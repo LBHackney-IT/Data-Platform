@@ -16,31 +16,32 @@ locals {
   ])
 }
 
+data "aws_iam_policy_document" "kms_key_role" {
+
+  statement {
+    sid = "Allow an external account to use this CMK"
+    effect: "Allow"
+    Principal: {
+      aws: local.iam_arns
+    }
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+}
+
 resource "aws_iam_role" "kms_key_role" {
   name = "iam-role-for-grant"
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-        "Sid": "Allow an external account to use this CMK",
-        "Effect": "Allow",
-        "Principal": {
-            "AWS": [${join.(", ", local.iam_arns)}]
-        },
-        "Action": [
-            "kms:Encrypt",
-            "kms:Decrypt",
-            "kms:ReEncrypt*",
-            "kms:GenerateDataKey*",
-            "kms:DescribeKey"
-        ],
-        "Resource": "*"
-    }
-  ]
-}
-EOF
+  assume_role_policy = data.aws_iam_policy_document.kms_key_role.json
 }
 
 resource "aws_kms_grant" "kms_key" {
