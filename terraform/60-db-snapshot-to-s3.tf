@@ -55,6 +55,15 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
   s3_key           = aws_s3_bucket_object.handler.key
   source_code_hash = data.archive_file.lambda_zip_file.output_base64sha256
+
+  environment {
+    variables = {
+      IAMROLEARN = aws_iam_role.rds_export_process_role.arn,
+      KMSKEYID = module.landing_zone.kms_key_arn,
+      S3BUCKETNAME =  module.landing_zone.bucket_name,
+    }
+  }
+
   depends_on = [
     aws_s3_bucket_object.handler,
   ]

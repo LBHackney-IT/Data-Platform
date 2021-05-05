@@ -6,6 +6,43 @@ resource "aws_kms_key" "key" {
   enable_key_rotation     = true
 }
 
+resource "aws_iam_role" "kms_key_role" {
+  name = "iam-role-for-grant"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+        "Sid": "Allow an external account to use this CMK",
+        "Effect": "Allow",
+        "Principal": {
+            "AWS": [
+                "arn:aws:iam::${department.account_to_share_data_with}:root",
+                "arn:aws:iam::${department.account_to_share_data_with}:role/rds_export_process_role"
+            ]
+        },
+        "Action": [
+            "kms:Encrypt",
+            "kms:Decrypt",
+            "kms:ReEncrypt*",
+            "kms:GenerateDataKey*",
+            "kms:DescribeKey"
+        ],
+        "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_kms_grant" "kms_key" {
+  name              = "kms-key-grant"
+  key_id            = aws_kms_key.key.key_id
+  grantee_principal = aws_iam_role.kms_key_role.arn
+  operations        = ["Encrypt", "Decrypt", "GenerateDataKey"]
+}
+
 resource "aws_s3_bucket" "bucket" {
   tags = var.tags
 
