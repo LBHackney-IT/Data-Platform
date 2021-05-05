@@ -60,7 +60,7 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
     variables = {
       IAMROLEARN = aws_iam_role.rds_export_process_role.arn,
       KMSKEYID = module.landing_zone.kms_key_arn,
-      S3BUCKETNAME =  module.landing_zone.bucket_name,
+      S3BUCKETNAME =  module.landing_zone.bucket_id,
     }
   }
 
