@@ -22,8 +22,9 @@ data "aws_iam_policy_document" "kms_key_role" {
 
     effect = "Allow"
 
-    Principal = {
-      aws: local.iam_arns
+    principals {
+      type        = "AWS"
+      identifiers = local.iam_arns
     }
 
     actions = [
