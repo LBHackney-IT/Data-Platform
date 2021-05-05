@@ -17,13 +17,15 @@ locals {
 }
 
 data "aws_iam_policy_document" "kms_key_role" {
-
   statement {
     sid = "Allow an external account to use this CMK"
-    effect: "Allow"
-    Principal: {
+
+    effect = "Allow"
+
+    Principal = {
       aws: local.iam_arns
     }
+
     actions = [
       "kms:Encrypt",
       "kms:Decrypt",
