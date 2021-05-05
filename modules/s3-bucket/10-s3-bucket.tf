@@ -18,7 +18,7 @@ locals {
 
 data "aws_iam_policy_document" "kms_key_role" {
   statement {
-    sid = "Allow an external account to use this CMK"
+    sid = "AllowExternalAccountsToUseCMK"
 
     effect = "Allow"
 
