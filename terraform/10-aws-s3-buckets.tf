@@ -7,6 +7,8 @@ module "landing_zone" {
   account_configuration = local.departments
   bucket_name           = "Landing Zone"
   bucket_identifier     = "landing-zone"
+
+  depends_on = [aws_iam_role.rds_export_process_role]
 }
 
 module "raw_zone" {

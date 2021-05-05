@@ -27,7 +27,7 @@ module "housing_repair_data" {
   glue_job_name                   = "Repair Orders"
   google_sheets_document_id       = "1i9q42Kkbugwi4f2S4zdyid2ZjoN1XLjuYvqYqfHyygs"
   google_sheets_worksheet_name    = "Form responses 1"
-  department_folder_name          = local.departments.housing.s3_read_write_directory
+  # department_folder_name          = local.departments.housing.s3_read_write_directory
+  department_folder_name          = "housing"
   output_folder_name              = "repair-orders"
 }
-
