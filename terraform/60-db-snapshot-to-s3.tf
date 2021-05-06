@@ -46,7 +46,7 @@ resource "aws_iam_role_policy_attachment" "lambda_role_attachment" {
 data "archive_file" "lambda_zip_file" {
   type        = "zip"
   source_dir = "../lambdas/rds-database-snapshot-replicator"
-  output_path = "../lambdas/rds-database-snapshot-replicator/lambda_function.zip"
+  output_path = "../lambdas/rds-database-snapshot-replicator.zip"
 }
 
 resource "aws_s3_bucket" "s3_deployment_artefacts" {
