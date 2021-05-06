@@ -15,73 +15,73 @@ locals {
   "arn:aws:iam::${department.account_to_share_data_with}:role/rds_export_process_role}"
   ])
 }
-# 
-# data "aws_iam_policy_document" "kms_key_policy" {
-#   statement {
-#     sid = "AllowExternalAccountsToUseCMK"
-#
-#     effect = "Allow"
-#
-#     principals {
-#       type        = "AWS"
-#       # identifiers = local.iam_arns
-#       identifiers = [
-#         "arn:aws:iam::715003523189:root",
-#         "arn:aws:iam::715003523189:role/rds_export_process_role"
-#       ]
-#     }
-#
-#     actions = [
-#       "kms:Encrypt",
-#       "kms:Decrypt",
-#       "kms:ReEncrypt*",
-#       "kms:GenerateDataKey*",
-#       "kms:DescribeKey"
-#     ]
-#   }
-# }
-#
-# data "aws_iam_policy_document" "assume_key_role" {
-#
-#   statement {
-#     actions =  ["sts:AssumeRole"]
-#     principals {
-#       type        = "AWS"
-#       # identifiers = local.iam_arns
-#       identifiers = [
-#         "arn:aws:iam::715003523189:root",
-#         "arn:aws:iam::715003523189:role/rds_export_process_role"
-#       ]
-#     }
-#     effect = "Allow"
-#   }
-# }
-#
-# resource "aws_iam_role" "kms_key_role" {
-#   name = "iam-role-for-grant"
-#
-#   assume_role_policy = data.aws_iam_policy_document.assume_key_role.json
-# }
-#
-# resource "aws_iam_policy" "kms_key_policy" {
-#   name        = "allow_external_accounts_to_use_CMK"
-#   path        = "/"
-#   description = "Allow an external account to use this CMK"
-#
-#   policy = data.aws_iam_policy_document.kms_key_policy.json
-# }
-#
-# resource "aws_iam_role_policy_attachment" "kms_key_iam_policy_attachment" {
-#   role       = aws_iam_role.kms_key_role.name
-#   policy_arn = aws_iam_policy.kms_key_policy.arn
-# }
-#
-# resource "aws_kms_grant" "kms_key" {
-#   name              = "kms-key-grant"
-#   key_id            = aws_kms_key.key.key_id
-#   grantee_principal = aws_iam_role.kms_key_role.arn
-#   operations        = ["Encrypt", "Decrypt", "GenerateDataKey"]
-# }
+
+data "aws_iam_policy_document" "kms_key_policy" {
+  statement {
+    sid = "AllowExternalAccountsToUseCMK"
+
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      # identifiers = local.iam_arns
+      identifiers = [
+        "arn:aws:iam::715003523189:root",
+        "arn:aws:iam::715003523189:role/rds_export_process_role"
+      ]
+    }
+
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "assume_key_role" {
+
+  statement {
+    actions =  ["sts:AssumeRole"]
+    principals {
+      type        = "AWS"
+      # identifiers = local.iam_arns
+      identifiers = [
+        "arn:aws:iam::715003523189:root",
+        "arn:aws:iam::715003523189:role/rds_export_process_role"
+      ]
+    }
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_role" "kms_key_role" {
+  name = "iam-role-for-grant"
+
+  assume_role_policy = data.aws_iam_policy_document.assume_key_role.json
+}
+
+resource "aws_iam_policy" "kms_key_policy" {
+  name        = "allow_external_accounts_to_use_CMK"
+  path        = "/"
+  description = "Allow an external account to use this CMK"
+
+  policy = data.aws_iam_policy_document.kms_key_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "kms_key_iam_policy_attachment" {
+  role       = aws_iam_role.kms_key_role.name
+  policy_arn = aws_iam_policy.kms_key_policy.arn
+}
+
+resource "aws_kms_grant" "kms_key" {
+  name              = "kms-key-grant"
+  key_id            = aws_kms_key.key.key_id
+  grantee_principal = aws_iam_role.kms_key_role.arn
+  operations        = ["Encrypt", "Decrypt", "GenerateDataKey"]
+}
 
 resource "aws_s3_bucket" "bucket" {
   tags = var.tags
