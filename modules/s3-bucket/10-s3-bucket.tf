@@ -16,7 +16,7 @@ locals {
   ])
 }
 
-data "aws_iam_policy_document" "kms_key_policy" {
+  data "aws_iam_policy_document" "kms_key_policy" {
   statement {
     sid = "AllowExternalAccountsToUseCMK"
 
@@ -37,6 +37,9 @@ data "aws_iam_policy_document" "kms_key_policy" {
       "kms:ReEncrypt*",
       "kms:GenerateDataKey*",
       "kms:DescribeKey"
+    ]
+    resources = [
+      "arn:aws:kms:::*",
     ]
   }
 }
