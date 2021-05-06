@@ -66,8 +66,12 @@ resource "aws_iam_role" "kms_key_role" {
   assume_role_policy = data.aws_iam_policy_document.assume_key_role.json
 }
 
+resource "random_pet" "policy" {
+
+}
+
 resource "aws_iam_policy" "kms_key_policy" {
-  name        = "allow_external_accounts_to_use_CMK"
+  name        = "allow_external_accounts_to_use_CMK_${random_pet.policy}"
   path        = "/"
   description = "Allow an external account to use this CMK"
 
