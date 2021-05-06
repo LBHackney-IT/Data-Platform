@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "lambda_policy" {
 }
 
 resource "aws_iam_policy" "lambda_policy" {
-  name   = "rds-snapshot-to-s3-lambda-policy"
+  name   = "rds-snapshot-ingestion-lambda-policy"
   policy = data.aws_iam_policy_document.lambda_policy.json
 }
 
