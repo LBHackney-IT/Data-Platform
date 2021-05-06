@@ -37,6 +37,10 @@ resource "aws_iam_policy" "lambda_policy" {
 resource "aws_iam_role_policy_attachment" "lambda_role_attachment" {
   role       = aws_iam_role.iam_for_lambda.name
   policy_arn = aws_iam_policy.lambda_policy.arn
+
+  depends_on = [
+    aws_iam_role.iam_for_lambda
+  ]
 }
 
 data "archive_file" "lambda_zip_file" {
