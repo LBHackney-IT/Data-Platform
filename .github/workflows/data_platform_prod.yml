@@ -36,7 +36,7 @@ jobs:
         with:
           node-version: "14"
       - name: Install dependencies in rds-database-snapshot-replicator lambda
-        working-directory: "./lambdas/rds-database-snapshot-replicator/lambda"
+        working-directory: "./lambdas/rds-database-snapshot-replicator"
         run: npm install
       - name: Set up Google Cloud Credentials
         run: |
