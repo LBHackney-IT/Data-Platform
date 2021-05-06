@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "assume_key_role" {
 }
 
 resource "aws_iam_role" "kms_key_role" {
-  name = "iam-role-for-grant"
+  name = "iam-role-for-grant-key"
 
   assume_role_policy = data.aws_iam_policy_document.assume_key_role.json
 }
