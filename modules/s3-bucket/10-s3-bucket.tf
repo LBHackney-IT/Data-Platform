@@ -84,7 +84,7 @@ resource "aws_iam_role_policy_attachment" "kms_key_iam_policy_attachment" {
 }
 
 resource "aws_kms_grant" "kms_key" {
-  name              = "kms-key-grant"
+  name              = "kms-key-grant_${random_pet.policy.id}"
   key_id            = aws_kms_key.key.key_id
   grantee_principal = aws_iam_role.kms_key_role.arn
   operations        = ["Encrypt", "Decrypt", "GenerateDataKey"]
