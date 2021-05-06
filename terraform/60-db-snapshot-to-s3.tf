@@ -74,7 +74,7 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   provider = aws.aws_api_account
 
   role             = aws_iam_role.iam_for_lambda.arn
-  handler          = "exports.handler"
+  handler          = "index.handler"
   runtime          = "nodejs14.x"
   function_name    = "rds_snapshot_to_s3_lambda"
   s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
