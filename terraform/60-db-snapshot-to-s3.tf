@@ -25,11 +25,7 @@ data "aws_iam_policy_document" "lambda_policy" {
       "logs:PutLogEvents"
     ]
     effect  = "Allow"
-
-    principals {
-      type        = "Resource"
-      identifiers = ["arn:aws:logs:*:*:*"]
-    }
+    resources = ["arn:aws:logs:*:*:*"]
   }
 }
 
