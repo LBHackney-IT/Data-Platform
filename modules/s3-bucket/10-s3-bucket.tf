@@ -61,7 +61,7 @@ data "aws_iam_policy_document" "assume_key_role" {
 }
 
 resource "aws_iam_role" "kms_key_role" {
-  name = "iam-role-for-grant-key"
+  name = "iam-role-for-grant-key_${random_pet.policy.id}"
 
   assume_role_policy = data.aws_iam_policy_document.assume_key_role.json
 }
@@ -84,7 +84,7 @@ resource "aws_iam_role_policy_attachment" "kms_key_iam_policy_attachment" {
 }
 
 resource "aws_kms_grant" "kms_key" {
-  name              = "kms-key-grant_${random_pet.policy.id}"
+  name              = "kms-key-grant"
   key_id            = aws_kms_key.key.key_id
   grantee_principal = aws_iam_role.kms_key_role.arn
   operations        = ["Encrypt", "Decrypt", "GenerateDataKey"]
