@@ -23,11 +23,25 @@ data "aws_iam_policy_document" "lambda_policy" {
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
+    ]
+    effect  = "Allow"
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+
+  statement {
+    actions = [
       "rds:DescribeDBSnapshots",
+    ]
+    effect  = "Allow"
+    resources = ["arn:aws:rds:*:*:snapshot:*"]
+  }
+
+  statement {
+    actions = [
       "rds:StartExportTask"
     ]
     effect  = "Allow"
-    resources = ["arn:aws:logs:*:*:*", "arn:aws:rds:*:*:snapshot:*"]
+    resources = ["arn:aws:rds:*:*:*:*"]
   }
 }
 
