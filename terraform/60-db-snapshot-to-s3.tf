@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "lambda_policy" {
 
     principals {
       type        = "Resource"
-      identifiers = "arn:aws:logs:*:*:*"
+      identifiers = ["arn:aws:logs:*:*:*"]
     }
   }
 }
