@@ -22,10 +22,11 @@ data "aws_iam_policy_document" "lambda_policy" {
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "logs:PutLogEvents",
+      "rds:DescribeDBSnapshots"
     ]
     effect  = "Allow"
-    resources = ["arn:aws:logs:*:*:*"]
+    resources = ["arn:aws:logs:*:*:*", "arn:aws:rds:*:*:snapshot:*"]
   }
 }
 
