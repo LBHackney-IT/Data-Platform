@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "lambda_policy" {
       "rds:StartExportTask"
     ]
     effect  = "Allow"
-    resources = ["arn:aws:rds:*:*:*:*"]
+    resources = ["*"]
   }
 }
 
