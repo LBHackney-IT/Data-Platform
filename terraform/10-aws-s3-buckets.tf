@@ -4,11 +4,8 @@ module "landing_zone" {
   project               = var.project
   environment           = var.environment
   identifier_prefix     = local.identifier_prefix
-  account_configuration = local.departments
   bucket_name           = "Landing Zone"
   bucket_identifier     = "landing-zone"
-
-  depends_on = [aws_iam_role.rds_snapshot_export_service]
 }
 
 module "raw_zone" {
@@ -17,7 +14,6 @@ module "raw_zone" {
   project               = var.project
   environment           = var.environment
   identifier_prefix     = local.identifier_prefix
-  account_configuration = local.departments
   bucket_name           = "Raw Zone"
   bucket_identifier     = "raw-zone"
 }
@@ -28,7 +24,6 @@ module "refined_zone" {
   project               = var.project
   environment           = var.environment
   identifier_prefix     = local.identifier_prefix
-  account_configuration = local.departments
   bucket_name           = "Refined Zone"
   bucket_identifier     = "refined-zone"
 }
@@ -39,7 +34,6 @@ module "trusted_zone" {
   project               = var.project
   environment           = var.environment
   identifier_prefix     = local.identifier_prefix
-  account_configuration = local.departments
   bucket_name           = "Trusted Zone"
   bucket_identifier     = "trusted-zone"
 }
