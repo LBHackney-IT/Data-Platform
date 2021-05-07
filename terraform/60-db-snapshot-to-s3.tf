@@ -186,22 +186,19 @@ resource "aws_sqs_queue" "ingestion_queue" {
   name = "ingestion-queue"
 }
 
+resource "aws_lambda_event_source_mapping" "event_source_mapping" {
+  event_source_arn = aws_sqs_queue.ingestion_queue.arn
+  enabled          = true
+  function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.name
+  batch_size       = 1
+}
+
 resource "aws_sns_topic_subscription" "ingestion_sqs_target" {
   provider = aws.aws_api_account
 
   topic_arn = aws_sns_topic.ingestion_topic.arn
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.ingestion_queue.arn
-}
-
-resource "aws_lambda_permission" "with_sns" {
-  provider = aws.aws_api_account
-
-  statement_id  = "AllowExecutionFromSNS"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.rds_snapshot_to_s3_lambda.function_name
-  principal     = "sns.amazonaws.com"
-  source_arn    = aws_sns_topic.ingestion_topic.arn
 }
 
 resource "aws_sns_topic_subscription" "lambda" {
