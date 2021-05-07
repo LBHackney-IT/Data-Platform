@@ -118,8 +118,8 @@ resource "aws_iam_role" "rds_snapshot_to_s3_lambda" {
   provider = aws.aws_api_account
   tags = module.tags.values
 
-  name = lower("${local.identifier_prefix}-rds-snapshots-lambda")
-  assume_role_policy = data.aws_iam_policy_document.rds_snapshot_to_s3_lambda.json
+  name = lower("${local.identifier_prefix}-rds-snapshot-to-s3-lambda")
+  assume_role_policy = data.aws_iam_policy_document.rds_snapshot_to_s3_lambda_assume_role.json
 }
 
 data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
