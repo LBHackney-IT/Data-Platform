@@ -395,6 +395,18 @@ resource "aws_sns_topic" "rds_snapshot_to_s3" {
 
 
 // ==== SQS TOPIC =================================================================================================== //
+resource "aws_sqs_queue" "rds_snapshot_to_s3" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.rds_snapshot_to_s3_deadletter.arn
+    maxReceiveCount     = 4
+  })
+
+  name = lower("${local.identifier_prefix}-rds-snapshot-to-s3")
+}
+
 data "aws_iam_policy_document" "rds_snapshot_to_s3" {
   statement {
     effect = "Allow"
@@ -416,18 +428,9 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3" {
   }
 }
 
-resource "aws_sqs_queue" "rds_snapshot_to_s3" {
-  provider = aws.aws_api_account
-  tags = module.tags.values
-
+resource "aws_sqs_queue_policy" "rds_snapshot_to_s3" {
+  queue_url = aws_sqs_queue.rds_snapshot_to_s3.id
   policy = data.aws_iam_policy_document.rds_snapshot_to_s3.json
-
-  redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.rds_snapshot_to_s3_deadletter.arn
-    maxReceiveCount     = 4
-  })
-
-  name = lower("${local.identifier_prefix}-rds-snapshot-to-s3")
 }
 
 resource "aws_sqs_queue" "rds_snapshot_to_s3_deadletter" {
