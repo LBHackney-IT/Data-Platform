@@ -429,6 +429,7 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3" {
 }
 
 resource "aws_sqs_queue_policy" "rds_snapshot_to_s3" {
+  provider = aws.aws_api_account
   queue_url = aws_sqs_queue.rds_snapshot_to_s3.id
   policy = data.aws_iam_policy_document.rds_snapshot_to_s3.json
 }
@@ -441,7 +442,7 @@ resource "aws_sqs_queue" "rds_snapshot_to_s3_deadletter" {
 }
 
 
-resource "aws_sns_topic_subscription" "ingestion_sqs_target" {
+resource "aws_sns_topic_subscription" "subscribe_sqs_to_sns_topic" {
   provider = aws.aws_api_account
 
   topic_arn = aws_sns_topic.rds_snapshot_to_s3.arn
