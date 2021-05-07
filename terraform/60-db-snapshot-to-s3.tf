@@ -181,6 +181,7 @@ resource "aws_iam_policy" "export_bucket_policy_document" {
 
 resource "aws_iam_role_policy_attachment" "export_bucket_policy_attachment" {
   provider = aws.aws_api_account
+
   role = aws_iam_role.rds_export_process_role.name
   policy_arn = aws_iam_policy.export_bucket_policy_document.arn
 }
@@ -197,6 +198,8 @@ resource "aws_sqs_queue" "ingestion_queue" {
 }
 
 resource "aws_lambda_event_source_mapping" "event_source_mapping" {
+  provider = aws.aws_api_account
+
   event_source_arn = aws_sqs_queue.ingestion_queue.arn
   enabled          = true
   function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
