@@ -29,6 +29,16 @@ data "aws_iam_policy_document" "lambda_policy" {
   }
 
   statement {
+    actions = [
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes"
+    ]
+    effect    = "Allow"
+    resources = [aws_sqs_queue.ingestion_queue]
+  }
+
+  statement {
     actions   = ["iam:PassRole"]
     effect    = "Allow"
     resources = [aws_iam_role.rds_export_process_role.arn]
@@ -204,6 +214,10 @@ resource "aws_sns_topic_subscription" "ingestion_sqs_target" {
 resource "aws_lambda_function_event_invoke_config" "example" {
   function_name                = aws_lambda_function.rds_snapshot_to_s3_lambda.function_name
   maximum_retry_attempts       = 0
+
+  depends_on = [
+    aws_lambda_function.rds_snapshot_to_s3_lambda
+  ]
 }
 
 resource "aws_sns_topic_subscription" "lambda" {
