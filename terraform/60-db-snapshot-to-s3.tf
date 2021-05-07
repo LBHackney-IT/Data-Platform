@@ -1,5 +1,5 @@
 // ==== LAMBDA ====================================================================================================== //
-data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
+data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda_assume_role" {
   statement {
     effect = "Allow"
     actions = ["sts:AssumeRole"]
