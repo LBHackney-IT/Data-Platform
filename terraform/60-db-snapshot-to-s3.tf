@@ -189,7 +189,7 @@ resource "aws_sqs_queue" "ingestion_queue" {
 resource "aws_lambda_event_source_mapping" "event_source_mapping" {
   event_source_arn = aws_sqs_queue.ingestion_queue.arn
   enabled          = true
-  function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.name
+  function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.function_name
   batch_size       = 1
 }
 
@@ -202,7 +202,7 @@ resource "aws_sns_topic_subscription" "ingestion_sqs_target" {
 }
 
 resource "aws_lambda_function_event_invoke_config" "example" {
-  function_name                = aws_lambda_function.rds_snapshot_to_s3_lambda.name
+  function_name                = aws_lambda_function.rds_snapshot_to_s3_lambda.function_name
   maximum_retry_attempts       = 0
 }
 
