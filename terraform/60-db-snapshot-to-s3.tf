@@ -24,8 +24,14 @@ data "aws_iam_policy_document" "lambda_policy" {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
-    effect  = "Allow"
+    effect    = "Allow"
     resources = ["arn:aws:logs:*:*:*"]
+  }
+
+  statement {
+    actions   = ["iam:PassRole"]
+    effect    = "Allow"
+    resources = [aws_iam_role.rds_export_process_role.arn]
   }
 
   statement {
