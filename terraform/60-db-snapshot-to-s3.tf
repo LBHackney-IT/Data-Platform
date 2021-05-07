@@ -109,7 +109,7 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda_assume_role" {
       identifiers = [
         "lambda.amazonaws.com"
       ]
-      type = "service"
+      type = "Service"
     }
   }
 }
@@ -268,7 +268,7 @@ data "aws_iam_policy_document" "rds_snapshot_export_service_assume_role" {
       identifiers = [
         "export.rds.amazonaws.com"
       ]
-      type = "service"
+      type = "Service"
     }
   }
 }
