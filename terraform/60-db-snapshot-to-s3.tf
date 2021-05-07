@@ -202,7 +202,7 @@ resource "aws_iam_role_policy_attachment" "export_bucket_policy_attachment" {
 // ==== SNS TOPIC =================================================================================================== //
 data "aws_iam_policy_document" "sns_cloudwatch_logging_policy" {
   statement {
-    effect = "Allow",
+    effect = "Allow"
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
