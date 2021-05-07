@@ -231,6 +231,7 @@ data "aws_iam_policy_document" "sns_cloudwatch_logging_assume_role" {
 }
 
 resource "aws_iam_role" "sns_cloudwatch_logging" {
+  tags = module.tags.values
   name = lower("${local.identifier_prefix}-sns-cloudwatch-logging")
   assume_role_policy = data.aws_iam_policy_document.sns_cloudwatch_logging_assume_role.json
 }
@@ -242,8 +243,13 @@ resource "aws_iam_policy_attachment" "sns_cloudwatch_policy_attachment" {
 }
 
 resource "aws_sns_topic" "ingestion_topic" {
+  tags = module.tags.values
+
   provider = aws.aws_api_account
   name = lower("${local.identifier_prefix}-rds-snapshots")
+  sqs_success_feedback_role_arn = aws_iam_role.sns_cloudwatch_logging.arn
+  sqs_success_feedback_sample_rate = 100
+  sqs_failure_feedback_role_arn = aws_iam_role.sns_cloudwatch_logging.arn
 }
 
 
