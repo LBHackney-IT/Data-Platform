@@ -15,7 +15,7 @@ resource "aws_iam_role" "rds_snapshot_to_s3_lambda" {
   tags = module.tags.values
 
   name = lower("${local.identifier_prefix}-rds-snapshots-lambda")
-  assume_role_policy = data.aws_iam_policy_document.rds_snapshot_to_s3_lambda
+  assume_role_policy = data.aws_iam_policy_document.rds_snapshot_to_s3_lambda.json
 }
 
 data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
@@ -159,7 +159,7 @@ resource "aws_iam_role" "rds_snapshot_export_service" {
   tags = module.tags.values
 
   name = "rds_export_process_role"
-  assume_role_policy = data.aws_iam_policy_document.rds_snapshot_export_service_assume_role
+  assume_role_policy = data.aws_iam_policy_document.rds_snapshot_export_service_assume_role.json
 }
 
 data "aws_iam_policy_document" "rds_snapshot_export_service" {
@@ -193,7 +193,7 @@ resource "aws_iam_policy" "rds_snapshot_export_service" {
 
   name = "rds_export_process_policy"
   description = "A policy that allows the RDS Snapshot Service to write to the Data Platform S3 Landing Zone"
-  policy = data.aws_iam_policy_document.rds_snapshot_export_service
+  policy = data.aws_iam_policy_document.rds_snapshot_export_service.json
 }
 
 resource "aws_iam_role_policy_attachment" "rds_snapshot_export_service" {
