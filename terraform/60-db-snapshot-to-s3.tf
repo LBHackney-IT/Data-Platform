@@ -383,7 +383,7 @@ resource "aws_iam_policy_attachment" "sns_cloudwatch_policy_attachment" {
   policy_arn = aws_iam_policy.sns_cloudwatch_logging.arn
 }
 
-resource "aws_sns_topic" "ingestion_topic" {
+resource "aws_sns_topic" "rds_snapshot_to_s3" {
   provider = aws.aws_api_account
   tags = module.tags.values
 
@@ -395,12 +395,48 @@ resource "aws_sns_topic" "ingestion_topic" {
 
 
 // ==== SQS TOPIC =================================================================================================== //
+data "aws_iam_policy_document" "rds_snapshot_to_s3" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:SendMessage"
+    ]
+    condition {
+      test = "ArnEquals"
+      values = [aws_sns_topic.rds_snapshot_to_s3.arn]
+      variable = "aws:SourceArn"
+    }
+    principals {
+      identifiers = ["sns.amazonaws.com"]
+      type = "Service"
+    }
+    resources = [
+      aws_sqs_queue.rds_snapshot_to_s3.arn
+    ]
+  }
+}
+
 resource "aws_sqs_queue" "rds_snapshot_to_s3" {
   provider = aws.aws_api_account
   tags = module.tags.values
 
+  policy = data.aws_iam_policy_document.rds_snapshot_to_s3.json
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.rds_snapshot_to_s3_deadletter.arn
+    maxReceiveCount     = 4
+  })
+
   name = lower("${local.identifier_prefix}-rds-snapshot-to-s3")
 }
+
+resource "aws_sqs_queue" "rds_snapshot_to_s3_deadletter" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  name = lower("${local.identifier_prefix}-rds-snapshot-to-s3-deadletter")
+}
+
 
 resource "aws_sns_topic_subscription" "ingestion_sqs_target" {
   provider = aws.aws_api_account
