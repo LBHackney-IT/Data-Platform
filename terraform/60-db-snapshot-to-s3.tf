@@ -226,10 +226,10 @@ resource "aws_lambda_function_event_invoke_config" "example" {
   ]
 }
 
-resource "aws_sns_topic_subscription" "lambda" {
-  provider = aws.aws_api_account
-
-  topic_arn = aws_sns_topic.ingestion_topic.arn
-  protocol  = "lambda"
-  endpoint  = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
-}
+//resource "aws_sns_topic_subscription" "lambda" {
+//  provider = aws.aws_api_account
+//
+//  topic_arn = aws_sns_topic.ingestion_topic.arn
+//  protocol  = "lambda"
+//  endpoint  = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
+//}
