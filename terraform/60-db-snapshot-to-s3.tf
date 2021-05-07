@@ -237,7 +237,7 @@ resource "aws_iam_role" "sns_cloudwatch_logging" {
 
 resource "aws_iam_policy_attachment" "sns_cloudwatch_policy_attachment" {
   name = lower("${local.identifier_prefix}-sns-cloudwatch-logging-policy")
-  roles = [aws_iam_role.sns_cloudwatch_logging]
+  roles = [aws_iam_role.sns_cloudwatch_logging.name]
   policy_arn = aws_iam_policy.sns_cloudwatch_logging.arn
 }
 
