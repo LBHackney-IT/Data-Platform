@@ -8,7 +8,7 @@ module "landing_zone" {
   bucket_name           = "Landing Zone"
   bucket_identifier     = "landing-zone"
 
-  depends_on = [aws_iam_role.rds_export_process_role]
+  depends_on = [aws_iam_role.rds_snapshot_export_service]
 }
 
 module "raw_zone" {
