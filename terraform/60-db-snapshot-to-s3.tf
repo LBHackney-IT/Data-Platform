@@ -215,8 +215,9 @@ resource "aws_sns_topic_subscription" "ingestion_sqs_target" {
 }
 
 resource "aws_lambda_function_event_invoke_config" "example" {
-  function_name                = aws_lambda_function.rds_snapshot_to_s3_lambda.function_name
-  maximum_retry_attempts       = 0
+  function_name          = aws_lambda_function.rds_snapshot_to_s3_lambda.function_name
+  maximum_retry_attempts = 0
+  qualifier              = "$LATEST"
 
   depends_on = [
     aws_lambda_function.rds_snapshot_to_s3_lambda
