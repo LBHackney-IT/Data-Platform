@@ -158,7 +158,7 @@ resource "aws_iam_role" "rds_snapshot_export_service" {
   provider = aws.aws_api_account
   tags = module.tags.values
 
-  name = "rds_export_process_role"
+  name = lower("${local.identifier_prefix}-rds-snapshot-export-service")
   assume_role_policy = data.aws_iam_policy_document.rds_snapshot_export_service_assume_role.json
 }
 
@@ -191,7 +191,7 @@ resource "aws_iam_policy" "rds_snapshot_export_service" {
   provider = aws.aws_api_account
   tags = module.tags.values
 
-  name = "rds_export_process_policy"
+  name = lower("${local.identifier_prefix}-rds-snapshot-export-service")
   description = "A policy that allows the RDS Snapshot Service to write to the Data Platform S3 Landing Zone"
   policy = data.aws_iam_policy_document.rds_snapshot_export_service.json
 }
