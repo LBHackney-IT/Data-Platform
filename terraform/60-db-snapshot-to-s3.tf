@@ -444,7 +444,7 @@ resource "aws_sqs_queue" "rds_snapshot_to_s3_deadletter" {
 resource "aws_sns_topic_subscription" "ingestion_sqs_target" {
   provider = aws.aws_api_account
 
-  topic_arn = aws_sns_topic.ingestion_topic.arn
+  topic_arn = aws_sns_topic.rds_snapshot_to_s3.arn
   protocol = "sqs"
   endpoint = aws_sqs_queue.rds_snapshot_to_s3.arn
 }
