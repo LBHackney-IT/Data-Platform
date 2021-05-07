@@ -9,6 +9,11 @@ output "bucket_arn" {
   value = aws_s3_bucket.bucket.arn
 }
 
+output "kms_key_id" {
+  description = "KMS Key id"
+  value = aws_kms_key.key.id
+}
+
 output "kms_key_arn" {
   description = "KMS Key arn"
   value = aws_kms_key.key.arn
