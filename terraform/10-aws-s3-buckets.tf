@@ -55,7 +55,7 @@ resource "aws_kms_key" "glue_scripts_key" {
 }
 
 resource "aws_kms_alias" "glue_scripts_key_alias" {
-  name = lower("${local.identifier_prefix}-s3-glue-scripts")
+  name = lower("alias/${local.identifier_prefix}-s3-glue-scripts")
   target_key_id = aws_kms_key.glue_scripts_key.key_id
 }
 
