@@ -126,6 +126,18 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   ]
 }
 
+resource "aws_lambda_function_event_invoke_config" "example" {
+  provider = aws.aws_api_account
+
+  function_name          = aws_lambda_function.rds_snapshot_to_s3_lambda.function_name
+  maximum_retry_attempts = 0
+  qualifier              = "$LATEST"
+
+  depends_on = [
+    aws_lambda_function.rds_snapshot_to_s3_lambda
+  ]
+}
+
 resource "aws_iam_role" "rds_export_process_role" {
   provider = aws.aws_api_account
 
@@ -186,25 +198,73 @@ resource "aws_iam_role_policy_attachment" "export_bucket_policy_attachment" {
   policy_arn = aws_iam_policy.export_bucket_policy_document.arn
 }
 
+
+// ==== SNS TOPIC =================================================================================================== //
+data "aws_iam_policy_document" "sns_cloudwatch_logging_policy" {
+  statement {
+    effect = "Allow",
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:PutMetricFilter",
+      "logs:PutRetentionPolicy"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "sns_cloudwatch_logging" {
+  name = lower("${local.identifier_prefix}-sns-cloudwatch-logging")
+  policy = data.aws_iam_policy_document.sns_cloudwatch_logging_policy
+}
+
+data "aws_iam_policy_document" "sns_cloudwatch_logging_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["sns.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "sns_cloudwatch_logging" {
+  name = lower("${local.identifier_prefix}-sns-cloudwatch-logging")
+  assume_role_policy = data.aws_iam_policy_document.sns_cloudwatch_logging_assume_role
+}
+
+resource "aws_iam_policy_attachment" "sns_cloudwatch_policy_attachment" {
+  name = lower("${local.identifier_prefix}-sns-cloudwatch-logging-policy")
+  roles = [aws_iam_role.sns_cloudwatch_logging]
+  policy_arn = aws_iam_policy.sns_cloudwatch_logging.arn
+}
+
 resource "aws_sns_topic" "ingestion_topic" {
   provider = aws.aws_api_account
-  name = "ingestion-topic"
+  name = lower("${local.identifier_prefix}-rds-snapshots")
 }
+
+
+
+
+
 
 resource "aws_sqs_queue" "ingestion_queue" {
   provider = aws.aws_api_account
 
-  name = "ingestion-queue"
+  name = lower("${local.identifier_prefix}-rds-snapshots")
 }
 
-resource "aws_lambda_event_source_mapping" "event_source_mapping" {
-  provider = aws.aws_api_account
-
-  event_source_arn = aws_sqs_queue.ingestion_queue.arn
-  enabled          = true
-  function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
-  batch_size       = 1
-}
+//resource "aws_lambda_event_source_mapping" "event_source_mapping" {
+//  provider = aws.aws_api_account
+//
+//  event_source_arn = aws_sqs_queue.ingestion_queue.arn
+//  enabled          = true
+//  function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
+//  batch_size       = 1
+//}
 
 resource "aws_sns_topic_subscription" "ingestion_sqs_target" {
   provider = aws.aws_api_account
@@ -212,18 +272,6 @@ resource "aws_sns_topic_subscription" "ingestion_sqs_target" {
   topic_arn = aws_sns_topic.ingestion_topic.arn
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.ingestion_queue.arn
-}
-
-resource "aws_lambda_function_event_invoke_config" "example" {
-  provider = aws.aws_api_account
-
-  function_name          = aws_lambda_function.rds_snapshot_to_s3_lambda.function_name
-  maximum_retry_attempts = 0
-  qualifier              = "$LATEST"
-
-  depends_on = [
-    aws_lambda_function.rds_snapshot_to_s3_lambda
-  ]
 }
 
 //resource "aws_sns_topic_subscription" "lambda" {
