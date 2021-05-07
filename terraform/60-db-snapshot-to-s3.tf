@@ -216,7 +216,7 @@ data "aws_iam_policy_document" "sns_cloudwatch_logging_policy" {
 
 resource "aws_iam_policy" "sns_cloudwatch_logging" {
   name = lower("${local.identifier_prefix}-sns-cloudwatch-logging")
-  policy = data.aws_iam_policy_document.sns_cloudwatch_logging_policy
+  policy = data.aws_iam_policy_document.sns_cloudwatch_logging_policy.json
 }
 
 data "aws_iam_policy_document" "sns_cloudwatch_logging_assume_role" {
@@ -232,7 +232,7 @@ data "aws_iam_policy_document" "sns_cloudwatch_logging_assume_role" {
 
 resource "aws_iam_role" "sns_cloudwatch_logging" {
   name = lower("${local.identifier_prefix}-sns-cloudwatch-logging")
-  assume_role_policy = data.aws_iam_policy_document.sns_cloudwatch_logging_assume_role
+  assume_role_policy = data.aws_iam_policy_document.sns_cloudwatch_logging_assume_role.json
 }
 
 resource "aws_iam_policy_attachment" "sns_cloudwatch_policy_attachment" {
