@@ -201,6 +201,11 @@ resource "aws_sns_topic_subscription" "ingestion_sqs_target" {
   endpoint  = aws_sqs_queue.ingestion_queue.arn
 }
 
+resource "aws_lambda_function_event_invoke_config" "example" {
+  function_name                = aws_lambda_function.rds_snapshot_to_s3_lambda.name
+  maximum_retry_attempts       = 0
+}
+
 resource "aws_sns_topic_subscription" "lambda" {
   provider = aws.aws_api_account
 
