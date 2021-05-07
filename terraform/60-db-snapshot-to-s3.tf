@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "lambda_policy" {
       "sqs:GetQueueAttributes"
     ]
     effect    = "Allow"
-    resources = [aws_sqs_queue.ingestion_queue]
+    resources = [aws_sqs_queue.ingestion_queue.arn]
   }
 
   statement {
