@@ -2,9 +2,9 @@ const AWS = require("aws-sdk");
 
 const AWS_REGION = "eu-west-2";
 
-let iamRoleArn = process.env.IAMROLEARN
-let kmsKeyId = process.env.KMSKEYID
-let s3BucketName = process.env.S3BUCKETNAME
+let iamRoleArn = process.env.IAM_ROLE_ARN
+let kmsKeyId = process.env.KMS_KEY_ID
+let s3BucketName = process.env.S3_BUCKET_NAME
 
 // Find newest back up
 
