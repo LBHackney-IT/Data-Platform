@@ -54,6 +54,11 @@ resource "aws_kms_key" "glue_scripts_key" {
   enable_key_rotation     = true
 }
 
+resource "aws_kms_alias" "glue_scripts_key_alias" {
+  name = lower("${local.identifier_prefix}-s3-glue-scripts")
+  target_key_id = aws_kms_key.glue_scripts_key.key_id
+}
+
 resource "aws_s3_bucket" "glue_scripts_bucket" {
   tags = module.tags.values
 
