@@ -53,8 +53,7 @@ resource "aws_iam_role_policy_attachment" "kms_key_iam_policy_attachment" {
 resource "aws_kms_grant" "kms_key" {
   name = "kms-key-grant"
   key_id = module.landing_zone.kms_key_id
-  # grantee_principal = aws_iam_role.kms_key_role.arn
-  grantee_principal = aws_iam_role.rds_snapshot_to_s3_lambda.arn
+  grantee_principal = aws_iam_role.kms_key_role.arn
   operations = [
     "Encrypt",
     "Decrypt",

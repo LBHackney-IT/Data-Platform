@@ -4,6 +4,22 @@ resource "aws_kms_key" "key" {
   description             = "${var.project} ${var.environment} - ${var.bucket_name} Bucket Key"
   deletion_window_in_days = 10
   enable_key_rotation     = true
+
+  policy = jsonencode({
+      "Version": "2012-10-17",
+      "Id": "CustomMainKeyPolicy",
+      "Statement": [
+          {
+              "Sid": "Enable IAM User Permissions",
+              "Effect": "Allow",
+              "Principal": {
+                  "AWS": "arn:aws:iam::120038763019:root"
+              },
+              "Action": "kms:*",
+              "Resource": "*"
+          }
+      ]
+  })
 }
 
 
