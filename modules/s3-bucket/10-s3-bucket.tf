@@ -37,7 +37,6 @@ data "aws_iam_policy_document" "key_policy" {
   }
 }
 
-
 resource "aws_kms_key" "key" {
   tags = var.tags
 
@@ -45,7 +44,7 @@ resource "aws_kms_key" "key" {
   deletion_window_in_days = 10
   enable_key_rotation     = true
 
-  policy = aws_iam_policy_document.key_policy.json
+  policy = data.aws_iam_policy_document.key_policy.json
 }
 
 
