@@ -10,18 +10,17 @@ let s3BucketName = process.env.S3_BUCKET_NAME
 
 // Start export task to export Snapshot to S3 (using RDS instance?)
 
-exports.handler = async (events) => {
-  let snsMessage;
-  for (const eventRecord of events.Records) {
+exports.handler = async (event) => {
+  let sqsMessage;
     try {
-      snsMessage = JSON.parse(eventRecord.Sns.Message);
-      console.log("event record:", eventRecord);
+      sqsMessage = JSON.parse(event.Message);
+      console.log("sqs message:", sqsMessage);
     } catch (err) {
       console.log("event error:", err);
-      console.log("event record:", eventRecord);
+      console.log("sqs message:", sqsMessage);
       return;
     }
-    const dbSnapshotId = snsMessage["Source ID"];
+    const dbSnapshotId = sqsMessage["Source ID"];
 
     const rds = new AWS.RDS({ region: AWS_REGION });
     let marker;
@@ -52,5 +51,4 @@ exports.handler = async (events) => {
     };
     let response = await rds.startExportTask(startExportTaskParams).promise();
     console.log(response);
-  }
 };
