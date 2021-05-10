@@ -1,13 +1,8 @@
 // ==== API ACCOUNT ACCESS KMS ====================================================================================== //
 data "aws_iam_policy_document" "kms_key_policy" {
   statement {
+    sid = "CrossAccountShare"
     effect = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = [
-        aws_iam_role.rds_snapshot_export_service.arn
-      ]
-    }
     actions = [
       "kms:Encrypt",
       "kms:Decrypt",
