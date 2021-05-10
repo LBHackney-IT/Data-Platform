@@ -149,6 +149,16 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
 
   statement {
     actions = [
+      "kms:CreateGrant"
+    ]
+    effect = "Allow"
+    resources = [
+      module.landing_zone.kms_key_arn,
+    ]
+  }
+
+  statement {
+    actions = [
       "iam:PassRole"
     ]
     effect = "Allow"
