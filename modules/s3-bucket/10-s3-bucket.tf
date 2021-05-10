@@ -18,6 +18,7 @@ data "aws_iam_policy_document" "key_policy" {
   }
 
   statement {
+    count = length(var.role_arns_to_share_access_with)
     sid = "CrossAccountShare"
     effect = "Allow"
     actions = [
@@ -32,7 +33,7 @@ data "aws_iam_policy_document" "key_policy" {
     ]
     principals {
       type = "AWS"
-      identifiers = var.role_arns_to_share_access_with
+      identifiers = [var.role_arns_to_share_access_with[count.index]]
     }
   }
 }
