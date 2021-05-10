@@ -41,8 +41,11 @@ exports.handler = async (event) => {
     const latestSnapshot = dbSnapshots.DBSnapshots.pop();
     console.log("Latest Snapshot:", latestSnapshot);
 
+    const identifier = latestSnapshot.DBSnapshotIdentifier.replace(':', '-');
+    console.log("new identifier:", identifier);
+
     const startExportTaskParams = {
-      ExportTaskIdentifier: `${latestSnapshot.DBSnapshotIdentifier}-export`,
+      ExportTaskIdentifier: `${identifier}-export`,
       IamRoleArn: iamRoleArn,
       KmsKeyId: kmsKeyId,
       S3BucketName: s3BucketName,
