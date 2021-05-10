@@ -8,7 +8,7 @@ resource "aws_kms_key" "key" {
 
 
 resource "aws_kms_alias" "key_alias" {
-  name = lower("alias/${local.identifier_prefix}-s3-${var.bucket_identifier}")
+  name = lower("alias/${var.identifier_prefix}-s3-${var.bucket_identifier}")
   target_key_id = aws_kms_key.key.key_id
 }
 
