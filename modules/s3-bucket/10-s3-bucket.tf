@@ -1,5 +1,11 @@
 data "aws_caller_identity" "current" {}
 
+locals {
+  default_arn = [
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+  ]
+}
+
 data "aws_iam_policy_document" "key_policy" {
   statement {
     effect = "Allow"
@@ -11,14 +17,11 @@ data "aws_iam_policy_document" "key_policy" {
     ]
     principals {
       type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-      ]
+      identifiers = local.default_arn
     }
   }
 
   statement {
-    count = length(var.role_arns_to_share_access_with)
     sid = "CrossAccountShare"
     effect = "Allow"
     actions = [
@@ -33,7 +36,7 @@ data "aws_iam_policy_document" "key_policy" {
     ]
     principals {
       type = "AWS"
-      identifiers = [var.role_arns_to_share_access_with[count.index]]
+      identifiers = concat(var.role_arns_to_share_access_with, local.default_arn)
     }
   }
 }
