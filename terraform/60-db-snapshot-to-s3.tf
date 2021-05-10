@@ -2,7 +2,12 @@
 data "aws_iam_policy_document" "kms_key_policy" {
   statement {
     effect = "Allow"
-
+    principals {
+      type = "AWS"
+      identifiers = [
+        aws_iam_role.rds_snapshot_export_service.arn
+      ]
+    }
     actions = [
       "kms:Encrypt",
       "kms:Decrypt",
@@ -85,23 +90,6 @@ data "aws_iam_policy_document" "share_landing_zone_with_api_account" {
     ]
     resources = [
       "${module.landing_zone.bucket_arn}/uprn/*"
-    ]
-  }
-
-  statement {
-    effect = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = [
-        aws_iam_role.rds_snapshot_export_service.arn
-      ]
-    }
-    actions = [
-      "kms:CreateGrant",
-      "kms:DescribeKey"
-    ]
-    resources = [
-      module.landing_zone.kms_key_arn,
     ]
   }
 }
