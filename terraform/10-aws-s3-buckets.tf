@@ -6,7 +6,10 @@ module "landing_zone" {
   identifier_prefix              = local.identifier_prefix
   bucket_name                    = "Landing Zone"
   bucket_identifier              = "landing-zone"
-  role_arns_to_share_access_with = [aws_iam_role.rds_snapshot_export_service.arn]
+  role_arns_to_share_access_with = [
+    aws_iam_role.rds_snapshot_export_service.arn,
+    aws_iam_role.rds_snapshot_to_s3_lambda.arn
+  ]
 }
 
 module "raw_zone" {
