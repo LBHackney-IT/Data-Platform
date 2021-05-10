@@ -1,41 +1,42 @@
 module "landing_zone" {
-  source                = "../modules/s3-bucket"
-  tags                  = module.tags.values
-  project               = var.project
-  environment           = var.environment
-  identifier_prefix     = local.identifier_prefix
-  bucket_name           = "Landing Zone"
-  bucket_identifier     = "landing-zone"
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Landing Zone"
+  bucket_identifier              = "landing-zone"
+  role_arns_to_share_access_with = [aws_iam_role.rds_snapshot_export_service.arn]
 }
 
 module "raw_zone" {
-  source                = "../modules/s3-bucket"
-  tags                  = module.tags.values
-  project               = var.project
-  environment           = var.environment
-  identifier_prefix     = local.identifier_prefix
-  bucket_name           = "Raw Zone"
-  bucket_identifier     = "raw-zone"
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Raw Zone"
+  bucket_identifier              = "raw-zone"
 }
 
 module "refined_zone" {
-  source                = "../modules/s3-bucket"
-  tags                  = module.tags.values
-  project               = var.project
-  environment           = var.environment
-  identifier_prefix     = local.identifier_prefix
-  bucket_name           = "Refined Zone"
-  bucket_identifier     = "refined-zone"
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Refined Zone"
+  bucket_identifier              = "refined-zone"
 }
 
 module "trusted_zone" {
-  source                = "../modules/s3-bucket"
-  tags                  = module.tags.values
-  project               = var.project
-  environment           = var.environment
-  identifier_prefix     = local.identifier_prefix
-  bucket_name           = "Trusted Zone"
-  bucket_identifier     = "trusted-zone"
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Trusted Zone"
+  bucket_identifier              = "trusted-zone"
 }
 
 

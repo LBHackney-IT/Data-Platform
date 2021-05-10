@@ -1,3 +1,43 @@
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy_document" "key_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:*"
+    ]
+    resources = [
+      aws_kms_key.key.arn
+    ]
+    principals {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      ]
+    }
+  }
+
+  statement {
+    sid = "CrossAccountShare"
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    resources = [
+      aws_kms_key.key.arn
+    ]
+    principals {
+      type = "AWS"
+      identifiers = var.role_arns_to_share_access_with
+    }
+  }
+}
+
+
 resource "aws_kms_key" "key" {
   tags = var.tags
 
@@ -5,21 +45,7 @@ resource "aws_kms_key" "key" {
   deletion_window_in_days = 10
   enable_key_rotation     = true
 
-  policy = jsonencode({
-      "Version": "2012-10-17",
-      "Id": "CustomMainKeyPolicy",
-      "Statement": [
-          {
-              "Sid": "Enable IAM User Permissions",
-              "Effect": "Allow",
-              "Principal": {
-                  "AWS": "arn:aws:iam::120038763019:root"
-              },
-              "Action": "kms:*",
-              "Resource": "*"
-          }
-      ]
-  })
+  policy = aws_iam_policy_document.key_policy.json
 }
 
 
