@@ -97,7 +97,8 @@ data "aws_iam_policy_document" "share_landing_zone_with_api_account" {
       ]
     }
     actions = [
-      "kms:*"
+      "kms:CreateGrant",
+      "kms:DescribeKey"
     ]
     resources = [
       module.landing_zone.kms_key_arn,
