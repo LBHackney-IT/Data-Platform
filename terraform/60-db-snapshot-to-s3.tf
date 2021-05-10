@@ -149,16 +149,6 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
 
   statement {
     actions = [
-      "kms:*"
-    ]
-    effect = "Allow"
-    resources = [
-      module.landing_zone.kms_key_arn,
-    ]
-  }
-
-  statement {
-    actions = [
       "iam:PassRole"
     ]
     effect = "Allow"
@@ -280,6 +270,15 @@ data "aws_iam_policy_document" "rds_snapshot_export_service_assume_role" {
       ]
       type = "Service"
     }
+  }
+  statement {
+    actions = [
+      "kms:*"
+    ]
+    effect = "Allow"
+    resources = [
+      module.landing_zone.kms_key_arn,
+    ]
   }
 }
 
