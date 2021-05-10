@@ -7,7 +7,7 @@ data "aws_iam_policy_document" "key_policy" {
       "kms:*"
     ]
     resources = [
-      aws_kms_key.key.arn
+      "*"
     ]
     principals {
       type = "AWS"
@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "key_policy" {
       "kms:DescribeKey"
     ]
     resources = [
-      aws_kms_key.key.arn
+      "*"
     ]
     principals {
       type = "AWS"
