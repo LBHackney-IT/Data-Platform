@@ -87,6 +87,22 @@ data "aws_iam_policy_document" "share_landing_zone_with_api_account" {
       "${module.landing_zone.bucket_arn}/uprn/*"
     ]
   }
+
+  statement {
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = [
+        aws_iam_role.rds_snapshot_export_service.arn
+      ]
+    }
+    actions = [
+      "kms:*"
+    ]
+    resources = [
+      module.landing_zone.kms_key_arn,
+    ]
+  }
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
