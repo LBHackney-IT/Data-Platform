@@ -271,15 +271,6 @@ data "aws_iam_policy_document" "rds_snapshot_export_service_assume_role" {
       type = "Service"
     }
   }
-  statement {
-    actions = [
-      "kms:*"
-    ]
-    effect = "Allow"
-    resources = [
-      module.landing_zone.kms_key_arn,
-    ]
-  }
 }
 
 resource "aws_iam_role" "rds_snapshot_export_service" {
@@ -313,6 +304,16 @@ data "aws_iam_policy_document" "rds_snapshot_export_service" {
     resources = [
       "arn:aws:s3:::data-platform-snapshot-export-test",
       "arn:aws:s3:::data-platform-snapshot-export-test/*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "kms:*"
+    ]
+    effect = "Allow"
+    resources = [
+      module.landing_zone.kms_key_arn,
     ]
   }
 }
