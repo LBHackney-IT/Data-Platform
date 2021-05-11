@@ -6,18 +6,15 @@ let iamRoleArn = process.env.IAM_ROLE_ARN
 let kmsKeyId = process.env.KMS_KEY_ID
 let s3BucketName = process.env.S3_BUCKET_NAME
 
-// Find newest back up
-
-// Start export task to export Snapshot to S3 (using RDS instance?)
-
 exports.handler = async (event) => {
   console.log(event);
-  // TODO: check how many snapshots are currentlt being processed,
+  // TODO: check how many snapshots are currently being processed,
   //       if it's more than 5 return message back to queue
-  event.Records.forEach( async (record) => {
+  await Promise.all(event.Records.map(async (record) => {
     let sqsMessage;
       try {
-        sqsMessage = JSON.parse(record.body.Message);
+        const snsMessage = JSON.parse(record.body);
+        sqsMessage = JSON.parse(snsMessage.Message);
         console.log("sqs message:", sqsMessage);
       } catch (err) {
         console.log("event error:", err);
@@ -61,5 +58,5 @@ exports.handler = async (event) => {
       };
       let response = await rds.startExportTask(startExportTaskParams).promise();
       console.log(response);
-  });
+  }));
 };
