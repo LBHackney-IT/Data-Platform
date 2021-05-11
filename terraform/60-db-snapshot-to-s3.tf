@@ -8,7 +8,9 @@ data "aws_iam_policy_document" "kms_key_policy" {
       "kms:Decrypt",
       "kms:ReEncrypt*",
       "kms:GenerateDataKey*",
-      "kms:DescribeKey"
+      "kms:DescribeKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
     ]
     resources = [
       module.landing_zone.kms_key_arn,
