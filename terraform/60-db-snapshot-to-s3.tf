@@ -142,11 +142,17 @@ resource "aws_kms_alias" "key_alias" {
 }
 
 // ==== BUCKET EXPORT =============================================================================================== //
+// TODO: Replace this with the s3 module as we a repeating ourselves, repeating ourselves
+
 data "aws_iam_policy_document" "rds_export_storage" {
   statement {
     effect = "Allow"
     actions = [
       "s3:*"
+    ]
+    resources = [
+      aws_s3_bucket.rds_export_storage.arn,
+      "${aws_s3_bucket.rds_export_storage.arn}/*"
     ]
     principals {
       type = "AWS"
@@ -169,7 +175,10 @@ resource "aws_s3_bucket" "rds_export_storage" {
       }
     }
   }
+}
 
+resource "aws_s3_bucket_policy" "rds_export_storage" {
+  bucket = aws_s3_bucket.rds_export_storage.id
   policy = data.aws_iam_policy_document.rds_export_storage.json
 }
 
