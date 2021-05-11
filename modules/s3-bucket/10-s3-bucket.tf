@@ -66,9 +66,6 @@ data "aws_iam_policy_document" "bucket_policy" {
     actions = [
       "s3:*"
     ]
-    resources = [
-      "*"
-    ]
     principals {
       type = "AWS"
       identifiers = concat(var.role_arns_to_share_access_with, local.default_arn)
