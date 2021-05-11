@@ -11,6 +11,7 @@ let s3BucketName = process.env.S3_BUCKET_NAME
 // Start export task to export Snapshot to S3 (using RDS instance?)
 
 exports.handler = async (event) => {
+  console.dir(event);
   let sqsMessage;
     try {
       sqsMessage = JSON.parse(event.Message);
