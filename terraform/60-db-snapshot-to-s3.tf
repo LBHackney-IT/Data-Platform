@@ -121,6 +121,7 @@ data "aws_iam_policy_document" "snapshot_to_s3" {
 }
 
 resource "aws_kms_key" "snapshot_to_s3" {
+  provider = aws.aws_api_account
   tags = module.tags.values
 
   description             = "${var.project} ${var.environment} - RDS backup export key"
@@ -132,6 +133,8 @@ resource "aws_kms_key" "snapshot_to_s3" {
 
 
 resource "aws_kms_alias" "key_alias" {
+  provider = aws.aws_api_account
+
   name = lower("alias/${local.identifier_prefix}-snapshot-to-s3")
   target_key_id = aws_kms_key.snapshot_to_s3.key_id
 }
@@ -145,12 +148,16 @@ data "aws_iam_policy_document" "rds_export_storage" {
     ]
     principals {
       type = "AWS"
-      identifiers = [aws_iam_role.rds_snapshot_export_service.arn]
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.api_account.account_id}:root",
+        aws_iam_role.rds_snapshot_export_service.arn
+      ]
     }
   }
 }
 
 resource "aws_s3_bucket" "rds_export_storage" {
+  provider = aws.aws_api_account
   tags = module.tags.values
 
   bucket = lower("${local.identifier_prefix}-rds-snapshot-export")
