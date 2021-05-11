@@ -47,7 +47,7 @@ exports.handler = async (event) => {
     const startExportTaskParams = {
       ExportTaskIdentifier: `${identifier}-export`,
       IamRoleArn: iamRoleArn,
-      KmsKeyId: kmsKeyId,
+      KmsKeyId: kmsKeyId.toString(),
       S3BucketName: s3BucketName,
       SourceArn: latestSnapshot.DBSnapshotArn,
       S3Prefix: `uprn/${latestSnapshot.DBInstanceIdentifier}`,
