@@ -145,7 +145,7 @@ data "aws_iam_policy_document" "rds_export_storage" {
     ]
     principals {
       type = "AWS"
-      identifiers = aws_iam_role.rds_snapshot_export_service.arn
+      identifiers = [aws_iam_role.rds_snapshot_export_service.arn]
     }
   }
 }
