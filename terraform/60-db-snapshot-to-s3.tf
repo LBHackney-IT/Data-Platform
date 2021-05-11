@@ -249,7 +249,9 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   environment {
     variables = {
       IAM_ROLE_ARN = aws_iam_role.rds_snapshot_export_service.arn,
-      KMS_KEY_ID = module.landing_zone.kms_key_arn,
+      # KMS_KEY_ID = module.landing_zone.kms_key_arn,
+      KMS_KEY_ID = "arn:aws:kms:eu-west-2:715003523189:key/77ad75b0-522e-4b8d-9f5e-6d034bf33f38
+",
       S3_BUCKET_NAME = module.landing_zone.bucket_id,
     }
   }
@@ -314,8 +316,8 @@ data "aws_iam_policy_document" "rds_snapshot_export_service" {
       "s3:DeleteObject*"
     ]
     resources = [
-      "arn:aws:s3:::data-platform-snapshot-export-test",
-      "arn:aws:s3:::data-platform-snapshot-export-test/*"
+      module.landing_zone.bucket_arn
+      "${module.landing_zone.bucket_arn}/*"
     ]
   }
 

@@ -59,6 +59,23 @@ resource "aws_kms_alias" "key_alias" {
   target_key_id = aws_kms_key.key.key_id
 }
 
+data "aws_iam_policy_document" "bucket_policy" {
+  statement {
+    sid = "CrossAccountShare"
+    effect = "Allow"
+    actions = [
+      "s3:*"
+    ]
+    resources = [
+      "*"
+    ]
+    principals {
+      type = "AWS"
+      identifiers = concat(var.role_arns_to_share_access_with, local.default_arn)
+    }
+  }
+}
+
 resource "aws_s3_bucket" "bucket" {
   tags = var.tags
 
@@ -72,6 +89,8 @@ resource "aws_s3_bucket" "bucket" {
       }
     }
   }
+
+  policy = data.aws_iam_policy_document.bucket_policy.json
 }
 
 resource "aws_s3_bucket_public_access_block" "block_public_access" {
