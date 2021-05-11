@@ -12,7 +12,9 @@ let s3BucketName = process.env.S3_BUCKET_NAME
 
 exports.handler = async (event) => {
   console.log(event);
-  event.Records.forEach(record => {
+  // TODO: check how many snapshots are currentlt being processed,
+  //       if it's more than 5 return message back to queue
+  event.Records.forEach( async (record) => {
     let sqsMessage;
       try {
         sqsMessage = JSON.parse(record.body.Message);
