@@ -21,7 +21,7 @@ exports.handler = async (event) => {
         console.log("sqs message:", sqsMessage);
         return;
       }
-      const dbInstanceId = sqsMessage["Source ID"];
+      const dbSnapshotId = sqsMessage["Source ID"].split(':').pop();
 
       const rds = new AWS.RDS({ region: AWS_REGION });
       let marker = undefined;
@@ -29,7 +29,7 @@ exports.handler = async (event) => {
 
       do {
         const describeDBSnapshotsParams = {
-          DBInstanceIdentifier: dbInstanceId,
+          DBSnapshotIdentifier: dbSnapshotId,
           Marker: marker,
         };
 
