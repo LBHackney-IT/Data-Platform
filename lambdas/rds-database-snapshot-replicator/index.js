@@ -57,4 +57,7 @@ exports.handler = async (event) => {
     };
     let response = await rds.startExportTask(startExportTaskParams).promise();
     console.log(response);
+
+    // Add a new message to the SQS Queue
+    // Queue for 10mins
 };
