@@ -315,7 +315,7 @@ data "aws_iam_policy_document" "rds_snapshot_export_service" {
       "s3:DeleteObject*"
     ]
     resources = [
-      module.landing_zone.bucket_arn
+      module.landing_zone.bucket_arn,
       "${module.landing_zone.bucket_arn}/*"
     ]
   }
