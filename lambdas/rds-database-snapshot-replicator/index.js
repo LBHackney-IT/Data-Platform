@@ -22,6 +22,11 @@ exports.handler = async (event) => {
     }
     const dbSnapshotId = sqsMessage["Source ID"];
 
+    console.log("variables:");
+    console.log(iamRoleArn);
+    console.log(kmsKeyId);
+    console.log(s3BucketName);
+
     const rds = new AWS.RDS({ region: AWS_REGION });
     let marker;
     let dbSnapshots;
