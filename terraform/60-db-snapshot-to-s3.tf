@@ -178,11 +178,15 @@ resource "aws_s3_bucket" "rds_export_storage" {
 }
 
 resource "aws_s3_bucket_policy" "rds_export_storage" {
+  provider = aws.aws_api_account
+
   bucket = aws_s3_bucket.rds_export_storage.id
   policy = data.aws_iam_policy_document.rds_export_storage.json
 }
 
 resource "aws_s3_bucket_public_access_block" "rds_export_storage" {
+  provider = aws.aws_api_account
+
   bucket = aws_s3_bucket.rds_export_storage.id
   depends_on = [aws_s3_bucket.rds_export_storage]
 
