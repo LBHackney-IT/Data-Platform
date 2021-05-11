@@ -23,7 +23,7 @@ exports.handler = async (event) => {
     const dbSnapshotId = sqsMessage["Source ID"];
 
     const rds = new AWS.RDS({ region: AWS_REGION });
-    let marker;
+    let marker = undefined;
     let dbSnapshots;
 
     do {
@@ -41,16 +41,19 @@ exports.handler = async (event) => {
     const latestSnapshot = dbSnapshots.DBSnapshots.pop();
     console.log("Latest Snapshot:", latestSnapshot);
 
-    const identifier = latestSnapshot.DBSnapshotIdentifier.replace(':', '-');
-    console.log("new identifier:", identifier);
+    const snapshotIdentifier = latestSnapshot.DBSnapshotIdentifier.replace(':', '-');
+    console.log("new snapshotIdentifier:", snapshotIdentifier);
+
+    const databaseName = latestSnapshot.DBInstanceIdentifier;
+    console.log("databaseName:", databaseName);
 
     const startExportTaskParams = {
-      ExportTaskIdentifier: `${identifier}-export`,
+      ExportTaskIdentifier: snapshotIdentifier.substr(0, 60),
       IamRoleArn: iamRoleArn,
-      KmsKeyId: kmsKeyId.toString(),
+      KmsKeyId: kmsKeyId,
       S3BucketName: s3BucketName,
       SourceArn: latestSnapshot.DBSnapshotArn,
-      S3Prefix: `uprn/${latestSnapshot.DBInstanceIdentifier}`,
+      S3Prefix: `${databaseName}/${snapshotIdentifier}`,
     };
     let response = await rds.startExportTask(startExportTaskParams).promise();
     console.log(response);

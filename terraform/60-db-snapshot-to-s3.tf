@@ -1,105 +1,181 @@
 // ==== API ACCOUNT ACCESS KMS ====================================================================================== //
-data "aws_iam_policy_document" "kms_key_policy" {
-  statement {
-    sid = "CrossAccountShare"
-    effect = "Allow"
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey",
-      "kms:CreateGrant",
-      "kms:RetireGrant"
-    ]
-    resources = [
-      module.landing_zone.kms_key_arn,
-    ]
-  }
-}
-
-resource "aws_iam_policy" "kms_key_policy" {
-  tags = module.tags.values
-
-  name = lower("${local.identifier_prefix}-hackney-account-kms-access")
-  description = "Allow a Hackeny AWS account to use a KMS key"
-
-  policy = data.aws_iam_policy_document.kms_key_policy.json
-}
-
-data "aws_iam_policy_document" "assume_key_role" {
-  statement {
-    actions = [
-      "sts:AssumeRole"
-    ]
-    principals {
-      type = "AWS"
-      identifiers = [
-        aws_iam_role.rds_snapshot_export_service.arn
-      ]
-    }
-    effect = "Allow"
-  }
-}
-
-resource "aws_iam_role" "kms_key_role" {
-  name = lower("${local.identifier_prefix}-hackney-account-kms-access")
-  assume_role_policy = data.aws_iam_policy_document.assume_key_role.json
-}
-
-resource "aws_iam_role_policy_attachment" "kms_key_iam_policy_attachment" {
-  role = aws_iam_role.kms_key_role.name
-  policy_arn = aws_iam_policy.kms_key_policy.arn
-}
-
-resource "aws_kms_grant" "kms_key" {
-  name = "kms-key-grant"
-  key_id = module.landing_zone.kms_key_id
-  grantee_principal = aws_iam_role.kms_key_role.arn
-  operations = [
-    "Encrypt",
-    "Decrypt",
-    "GenerateDataKey"
-  ]
-}
+//data "aws_iam_policy_document" "kms_key_policy" {
+//  statement {
+//    sid = "CrossAccountShare"
+//    effect = "Allow"
+//    actions = [
+//      "kms:Encrypt",
+//      "kms:Decrypt",
+//      "kms:ReEncrypt*",
+//      "kms:GenerateDataKey*",
+//      "kms:DescribeKey",
+//      "kms:CreateGrant",
+//      "kms:RetireGrant"
+//    ]
+//    resources = [
+//      module.landing_zone.kms_key_arn,
+//    ]
+//  }
+//}
+//
+//resource "aws_iam_policy" "kms_key_policy" {
+//  tags = module.tags.values
+//
+//  name = lower("${local.identifier_prefix}-hackney-account-kms-access")
+//  description = "Allow a Hackeny AWS account to use a KMS key"
+//
+//  policy = data.aws_iam_policy_document.kms_key_policy.json
+//}
+//
+//data "aws_iam_policy_document" "assume_key_role" {
+//  statement {
+//    actions = [
+//      "sts:AssumeRole"
+//    ]
+//    principals {
+//      type = "AWS"
+//      identifiers = [
+//        aws_iam_role.rds_snapshot_export_service.arn
+//      ]
+//    }
+//    effect = "Allow"
+//  }
+//}
+//
+//resource "aws_iam_role" "kms_key_role" {
+//  name = lower("${local.identifier_prefix}-hackney-account-kms-access")
+//  assume_role_policy = data.aws_iam_policy_document.assume_key_role.json
+//}
+//
+//resource "aws_iam_role_policy_attachment" "kms_key_iam_policy_attachment" {
+//  role = aws_iam_role.kms_key_role.name
+//  policy_arn = aws_iam_policy.kms_key_policy.arn
+//}
+//
+//resource "aws_kms_grant" "kms_key" {
+//  name = "kms-key-grant"
+//  key_id = module.landing_zone.kms_key_id
+//  grantee_principal = aws_iam_role.kms_key_role.arn
+//  operations = [
+//    "Encrypt",
+//    "Decrypt",
+//    "GenerateDataKey"
+//  ]
+//}
 
 
 // ==== API ACCOUNT ACCESS BUCKET =================================================================================== //
-data "aws_iam_policy_document" "share_landing_zone_with_api_account" {
+//data "aws_iam_policy_document" "share_landing_zone_with_api_account" {
+//  statement {
+//    effect = "Allow"
+//    principals {
+//      type = "AWS"
+//      identifiers = [
+//        aws_iam_role.rds_snapshot_export_service.arn
+//      ]
+//    }
+//    condition {
+//      test = "StringEquals"
+//      variable = "s3:x-amz-acl"
+//      values = [
+//        "bucket-owner-full-control"
+//      ]
+//    }
+//    actions = [
+//      "s3:PutObject",
+//      "s3:PutObjectAcl"
+//    ]
+//    resources = [
+//      "${module.landing_zone.bucket_arn}/uprn/*"
+//    ]
+//  }
+//}
+//
+//resource "aws_s3_bucket_policy" "bucket_policy" {
+//  bucket = module.landing_zone.bucket_id
+//  policy = data.aws_iam_policy_document.share_landing_zone_with_api_account.json
+//
+//  depends_on = [
+//    module.landing_zone
+//  ]
+//}
+
+// ==== KMS EXPORT ================================================================================================== //
+data "aws_iam_policy_document" "snapshot_to_s3" {
   statement {
     effect = "Allow"
+    actions = [
+      "kms:*"
+    ]
+    resources = [
+      "*"
+    ]
     principals {
       type = "AWS"
       identifiers = [
+        aws_iam_role.rds_snapshot_to_s3_lambda.arn,
         aws_iam_role.rds_snapshot_export_service.arn
       ]
     }
-    condition {
-      test = "StringEquals"
-      variable = "s3:x-amz-acl"
-      values = [
-        "bucket-owner-full-control"
-      ]
-    }
-    actions = [
-      "s3:PutObject",
-      "s3:PutObjectAcl"
-    ]
-    resources = [
-      "${module.landing_zone.bucket_arn}/uprn/*"
-    ]
   }
 }
 
-resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = module.landing_zone.bucket_id
-  policy = data.aws_iam_policy_document.share_landing_zone_with_api_account.json
+resource "aws_kms_key" "snapshot_to_s3" {
+  tags = module.tags.values
 
-  depends_on = [
-    module.landing_zone
-  ]
+  description             = "${var.project} ${var.environment} - RDS backup export key"
+  deletion_window_in_days = 10
+  enable_key_rotation     = true
+
+  policy = data.aws_iam_policy_document.snapshot_to_s3.json
 }
 
+
+resource "aws_kms_alias" "key_alias" {
+  name = lower("alias/${local.identifier_prefix}-snapshot-to-s3")
+  target_key_id = aws_kms_key.snapshot_to_s3.key_id
+}
+
+// ==== BUCKET EXPORT =============================================================================================== //
+data "aws_iam_policy_document" "rds_export_storage" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:*"
+    ]
+    principals {
+      type = "AWS"
+      identifiers = aws_iam_role.rds_snapshot_export_service
+    }
+  }
+}
+
+resource "aws_s3_bucket" "rds_export_storage" {
+  tags = module.tags.values
+
+  bucket = lower("${local.identifier_prefix}-rds-snapshot-export")
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.snapshot_to_s3.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+
+  policy = data.aws_iam_policy_document.rds_export_storage.json
+}
+
+resource "aws_s3_bucket_public_access_block" "rds_export_storage" {
+  bucket = aws_s3_bucket.rds_export_storage.id
+  depends_on = [aws_s3_bucket.rds_export_storage]
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
 
 // ==== LAMBDA ====================================================================================================== //
 data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda_assume_role" {
@@ -249,9 +325,8 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   environment {
     variables = {
       IAM_ROLE_ARN = aws_iam_role.rds_snapshot_export_service.arn,
-      # KMS_KEY_ID = module.landing_zone.kms_key_arn,
-      KMS_KEY_ID = "arn:aws:kms:eu-west-2:715003523189:key/77ad75b0-522e-4b8d-9f5e-6d034bf33f38",
-      S3_BUCKET_NAME = module.landing_zone.bucket_id,
+      KMS_KEY_ID = aws_kms_key.snapshot_to_s3.arn,
+      S3_BUCKET_NAME = aws_s3_bucket.rds_export_storage.bucket,
     }
   }
 
