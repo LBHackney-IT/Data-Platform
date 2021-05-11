@@ -567,19 +567,11 @@ resource "aws_sns_topic_subscription" "subscribe_sqs_to_sns_topic" {
   endpoint = aws_sqs_queue.rds_snapshot_to_s3.arn
 }
 
-//resource "aws_lambda_event_source_mapping" "event_source_mapping" {
-//  provider = aws.aws_api_account
-//
-//  event_source_arn = aws_sqs_queue.ingestion_queue.arn
-//  enabled          = true
-//  function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
-//  batch_size       = 1
-//}
+resource "aws_lambda_event_source_mapping" "event_source_mapping" {
+  provider = aws.aws_api_account
 
-//resource "aws_sns_topic_subscription" "lambda" {
-//  provider = aws.aws_api_account
-//
-//  topic_arn = aws_sns_topic.ingestion_topic.arn
-//  protocol  = "lambda"
-//  endpoint  = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
-//}
+  event_source_arn = aws_sqs_queue.rds_snapshot_to_s3.arn
+  enabled          = true
+  function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
+  batch_size       = 1
+}
