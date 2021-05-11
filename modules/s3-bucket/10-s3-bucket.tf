@@ -64,7 +64,10 @@ data "aws_iam_policy_document" "bucket_policy_document" {
     actions = [
       "s3:*"
     ]
-    resources = [aws_s3_bucket.bucket.arn]
+    resources = [
+      aws_s3_bucket.bucket.arn,
+      "${aws_s3_bucket.bucket.arn}/*"
+    ]
     principals {
       type = "AWS"
       identifiers = concat(var.role_arns_to_share_access_with, local.default_arn)
@@ -88,7 +91,7 @@ resource "aws_s3_bucket" "bucket" {
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = aws_s3_bucket.bucket.arn
+  bucket = aws_s3_bucket.bucket.id
   policy = data.aws_iam_policy_document.bucket_policy_document.json
 }
 

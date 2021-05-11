@@ -101,6 +101,7 @@
 //}
 
 // ==== KMS EXPORT ================================================================================================== //
+// TODO: Separate the root user that can do everything from the roles that should only be able to use the key.
 data "aws_iam_policy_document" "snapshot_to_s3" {
   statement {
     effect = "Allow"
@@ -113,6 +114,7 @@ data "aws_iam_policy_document" "snapshot_to_s3" {
     principals {
       type = "AWS"
       identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.api_account.account_id}:root",
         aws_iam_role.rds_snapshot_to_s3_lambda.arn,
         aws_iam_role.rds_snapshot_export_service.arn
       ]
@@ -148,10 +150,7 @@ data "aws_iam_policy_document" "rds_export_storage" {
     ]
     principals {
       type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.api_account.account_id}:root",
-        aws_iam_role.rds_snapshot_export_service.arn
-      ]
+      identifiers = [aws_iam_role.rds_snapshot_export_service.arn]
     }
   }
 }
