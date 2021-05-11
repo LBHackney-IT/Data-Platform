@@ -8,7 +8,8 @@ module "landing_zone" {
   bucket_identifier              = "landing-zone"
   role_arns_to_share_access_with = [
     aws_iam_role.rds_snapshot_export_service.arn,
-    aws_iam_role.rds_snapshot_to_s3_lambda.arn
+    aws_iam_role.rds_snapshot_to_s3_lambda.arn,
+    "arn:aws:kms:eu-west-2:120038763019:root"
   ]
 }
 
