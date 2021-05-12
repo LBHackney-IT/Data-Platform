@@ -134,8 +134,7 @@ runs:
         if [ "${{ inputs.terraform_destroy }}" == "destroy_me" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform destroy"
             if [ "${{ inputs.branch }}" == "main" ]; then
-              terraform force-unlock -force bfc933ac-ec83-87fd-a623-dcae26283651
-              terraform destroy -auto-approve
+              terraform destroy -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}'  -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -auto-approve
               ${{ github.action_path }}/success_destroy.sh
               echo -e "Terraform run completed successfully."
             else
