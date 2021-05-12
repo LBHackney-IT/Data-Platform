@@ -78,4 +78,4 @@ jobs:
           # In order to allow you to run a Terraform destroy (that will delete all AWS resources managed by Terraform,
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
-          terraform_destroy: 'destroy_me'
+          terraform_destroy: false
