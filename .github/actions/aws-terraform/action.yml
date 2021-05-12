@@ -172,7 +172,7 @@ runs:
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
           if [ "${{ inputs.branch }}" == "main" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform apply"
-            terraform apply -auto-approve -input=false plan.out
+            terraform apply -auto-approve -input=false -lock=false
           else
             echo -e "Not on main branch, so skipping Terraform apply."
           fi
