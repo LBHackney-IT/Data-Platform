@@ -1,199 +1,12 @@
-// ==== API ACCOUNT ACCESS KMS ====================================================================================== //
-//data "aws_iam_policy_document" "kms_key_policy" {
-//  statement {
-//    sid = "CrossAccountShare"
-//    effect = "Allow"
-//    actions = [
-//      "kms:Encrypt",
-//      "kms:Decrypt",
-//      "kms:ReEncrypt*",
-//      "kms:GenerateDataKey*",
-//      "kms:DescribeKey",
-//      "kms:CreateGrant",
-//      "kms:RetireGrant"
-//    ]
-//    resources = [
-//      module.landing_zone.kms_key_arn,
-//    ]
-//  }
-//}
-//
-//resource "aws_iam_policy" "kms_key_policy" {
-//  tags = module.tags.values
-//
-//  name = lower("${local.identifier_prefix}-hackney-account-kms-access")
-//  description = "Allow a Hackeny AWS account to use a KMS key"
-//
-//  policy = data.aws_iam_policy_document.kms_key_policy.json
-//}
-//
-//data "aws_iam_policy_document" "assume_key_role" {
-//  statement {
-//    actions = [
-//      "sts:AssumeRole"
-//    ]
-//    principals {
-//      type = "AWS"
-//      identifiers = [
-//        aws_iam_role.rds_snapshot_export_service.arn
-//      ]
-//    }
-//    effect = "Allow"
-//  }
-//}
-//
-//resource "aws_iam_role" "kms_key_role" {
-//  name = lower("${local.identifier_prefix}-hackney-account-kms-access")
-//  assume_role_policy = data.aws_iam_policy_document.assume_key_role.json
-//}
-//
-//resource "aws_iam_role_policy_attachment" "kms_key_iam_policy_attachment" {
-//  role = aws_iam_role.kms_key_role.name
-//  policy_arn = aws_iam_policy.kms_key_policy.arn
-//}
-//
-//resource "aws_kms_grant" "kms_key" {
-//  name = "kms-key-grant"
-//  key_id = module.landing_zone.kms_key_id
-//  grantee_principal = aws_iam_role.kms_key_role.arn
-//  operations = [
-//    "Encrypt",
-//    "Decrypt",
-//    "GenerateDataKey"
-//  ]
-//}
-
-
-// ==== API ACCOUNT ACCESS BUCKET =================================================================================== //
-//data "aws_iam_policy_document" "share_landing_zone_with_api_account" {
-//  statement {
-//    effect = "Allow"
-//    principals {
-//      type = "AWS"
-//      identifiers = [
-//        aws_iam_role.rds_snapshot_export_service.arn
-//      ]
-//    }
-//    condition {
-//      test = "StringEquals"
-//      variable = "s3:x-amz-acl"
-//      values = [
-//        "bucket-owner-full-control"
-//      ]
-//    }
-//    actions = [
-//      "s3:PutObject",
-//      "s3:PutObjectAcl"
-//    ]
-//    resources = [
-//      "${module.landing_zone.bucket_arn}/uprn/*"
-//    ]
-//  }
-//}
-//
-//resource "aws_s3_bucket_policy" "bucket_policy" {
-//  bucket = module.landing_zone.bucket_id
-//  policy = data.aws_iam_policy_document.share_landing_zone_with_api_account.json
-//
-//  depends_on = [
-//    module.landing_zone
-//  ]
-//}
-
-// ==== KMS EXPORT ================================================================================================== //
-// TODO: Separate the root user that can do everything from the roles that should only be able to use the key.
-data "aws_iam_policy_document" "snapshot_to_s3" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "kms:*"
-    ]
-    resources = [
-      "*"
-    ]
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.api_account.account_id}:root",
-        aws_iam_role.rds_snapshot_to_s3_lambda.arn,
-        aws_iam_role.rds_snapshot_export_service.arn
-      ]
-    }
-  }
-}
-
-resource "aws_kms_key" "snapshot_to_s3" {
-  provider = aws.aws_api_account
-  tags = module.tags.values
-
-  description             = "${var.project} ${var.environment} - RDS backup export key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
-
-  policy = data.aws_iam_policy_document.snapshot_to_s3.json
-}
-
-
-resource "aws_kms_alias" "key_alias" {
-  provider = aws.aws_api_account
-
-  name = lower("alias/${local.identifier_prefix}-snapshot-to-s3")
-  target_key_id = aws_kms_key.snapshot_to_s3.key_id
-}
-
-// ==== BUCKET EXPORT =============================================================================================== //
-// TODO: Replace this with the s3 module as we a repeating ourselves, repeating ourselves
-
-data "aws_iam_policy_document" "rds_export_storage" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "s3:*"
-    ]
-    resources = [
-      aws_s3_bucket.rds_export_storage.arn,
-      "${aws_s3_bucket.rds_export_storage.arn}/*"
-    ]
-    principals {
-      type = "AWS"
-      identifiers = [aws_iam_role.rds_snapshot_export_service.arn]
-    }
-  }
-}
-
-resource "aws_s3_bucket" "rds_export_storage" {
-  provider = aws.aws_api_account
-  tags = module.tags.values
-
-  bucket = lower("${local.identifier_prefix}-rds-snapshot-export")
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.snapshot_to_s3.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
-}
-
-resource "aws_s3_bucket_policy" "rds_export_storage" {
-  provider = aws.aws_api_account
-
-  bucket = aws_s3_bucket.rds_export_storage.id
-  policy = data.aws_iam_policy_document.rds_export_storage.json
-}
-
-resource "aws_s3_bucket_public_access_block" "rds_export_storage" {
-  provider = aws.aws_api_account
-
-  bucket = aws_s3_bucket.rds_export_storage.id
-  depends_on = [aws_s3_bucket.rds_export_storage]
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+// ==== Storage Bucket ============================================================================================== //
+module "rds_export_storage" {
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "RDS Export Storage"
+  bucket_identifier              = "rds-export-storage-1"
 }
 
 // ==== LAMBDA ====================================================================================================== //
@@ -344,8 +157,8 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   environment {
     variables = {
       IAM_ROLE_ARN = aws_iam_role.rds_snapshot_export_service.arn,
-      KMS_KEY_ID = aws_kms_key.snapshot_to_s3.arn,
-      S3_BUCKET_NAME = aws_s3_bucket.rds_export_storage.bucket,
+      KMS_KEY_ID = module.rds_export_storage.kms_key_id,
+      S3_BUCKET_NAME = module.rds_export_storage.bucket_id,
     }
   }
 
@@ -410,7 +223,9 @@ data "aws_iam_policy_document" "rds_snapshot_export_service" {
     ]
     resources = [
       module.landing_zone.bucket_arn,
-      "${module.landing_zone.bucket_arn}/*"
+      "${module.landing_zone.bucket_arn}/*",
+      module.rds_export_storage.bucket_arn,
+      "${module.rds_export_storage.bucket_arn}/*"
     ]
   }
 
@@ -557,7 +372,6 @@ resource "aws_sqs_queue" "rds_snapshot_to_s3_deadletter" {
 
   name = lower("${local.identifier_prefix}-rds-snapshot-to-s3-deadletter")
 }
-
 
 resource "aws_sns_topic_subscription" "subscribe_sqs_to_sns_topic" {
   provider = aws.aws_api_account

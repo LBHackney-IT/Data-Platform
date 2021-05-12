@@ -1,4 +1,4 @@
-# /* ==== SERVICE ACCOUNT - HOUSING =================================================================================== */
+/* ==== SERVICE ACCOUNT - HOUSING =================================================================================== */
 resource "google_service_account" "service_account_housing" {
   count = terraform.workspace == "default" ? 1 : 0
   account_id   = lower("${local.application_snake}-${var.environment}-housing")

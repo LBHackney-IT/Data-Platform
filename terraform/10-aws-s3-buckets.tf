@@ -42,35 +42,35 @@ module "trusted_zone" {
   bucket_identifier              = "trusted-zone"
 }
 
-//module "glue_scripts" {
-//  source                         = "../modules/s3-bucket"
-//  tags                           = module.tags.values
-//  project                        = var.project
-//  environment                    = var.environment
-//  identifier_prefix              = local.identifier_prefix
-//  bucket_name                    = "Glue Scripts"
-//  bucket_identifier              = "glue-scripts"
-//}
+module "glue_scripts" {
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Glue Scripts"
+  bucket_identifier              = "glue-scripts-1"
+}
 
-//module "glue_temp_storage" {
-//  source                         = "../modules/s3-bucket"
-//  tags                           = module.tags.values
-//  project                        = var.project
-//  environment                    = var.environment
-//  identifier_prefix              = local.identifier_prefix
-//  bucket_name                    = "Glue Temp Storage"
-//  bucket_identifier              = "glue-temp-storage"
-//}
+module "glue_temp_storage" {
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Glue Temp Storage"
+  bucket_identifier              = "glue-temp-storage-1"
+}
 
-//module "glue_temp_storage" {
-//  source                         = "../modules/s3-bucket"
-//  tags                           = module.tags.values
-//  project                        = var.project
-//  environment                    = var.environment
-//  identifier_prefix              = local.identifier_prefix
-//  bucket_name                    = "Athena Storage"
-//  bucket_identifier              = "athena-storage"
-//}
+module "athena_storage" {
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Athena Storage"
+  bucket_identifier              = "athena-storage-1"
+}
 
 
 /* ==== GLUE SCRIPTS ================================================================================================ */
@@ -109,56 +109,6 @@ resource "aws_s3_bucket" "glue_scripts_bucket" {
     rule {
       apply_server_side_encryption_by_default {
         kms_master_key_id = aws_kms_key.glue_scripts_key.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
-}
-
-/* ==== GLUE TEMP STORAGE =========================================================================================== */
-resource "aws_kms_key" "glue_temp_storage_bucket_key" {
-  tags = module.tags.values
-
-  description             = "${var.project} ${var.environment} - Glue Temp Storage Bucket Key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
-}
-
-resource "aws_s3_bucket" "glue_temp_storage_bucket" {
-  tags = module.tags.values
-
-  bucket        = lower("${local.identifier_prefix}-glue-temp-storage")
-  force_destroy = true
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.glue_temp_storage_bucket_key.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
-}
-
-/* ==== ATHENA STORAGE ============================================================================================== */
-resource "aws_kms_key" "athena_storage_bucket_key" {
-  tags = module.tags.values
-
-  description             = "${var.project} ${var.environment} - Glue Temp Storage Bucket Key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
-}
-
-resource "aws_s3_bucket" "athena_storage_bucket" {
-  tags = module.tags.values
-
-  bucket        = lower("${local.identifier_prefix}-athena-storage")
-  force_destroy = true
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.athena_storage_bucket_key.arn
         sse_algorithm     = "aws:kms"
       }
     }

@@ -93,12 +93,12 @@ resource "aws_s3_bucket" "bucket" {
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = aws_s3_bucket.bucket.id
   policy = data.aws_iam_policy_document.bucket_policy_document.json
-  depends_on = [aws_s3_bucket.bucket, aws_s3_bucket_public_access_block.block_public_access]
+  depends_on = [aws_s3_bucket.bucket]
 }
 
 resource "aws_s3_bucket_public_access_block" "block_public_access" {
   bucket = aws_s3_bucket.bucket.id
-  depends_on = [aws_s3_bucket.bucket]
+  depends_on = [aws_s3_bucket.bucket, aws_s3_bucket_public_access_block.block_public_access]
 
   block_public_acls       = true
   block_public_policy     = true
