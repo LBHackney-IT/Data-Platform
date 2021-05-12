@@ -1,4 +1,4 @@
-.PHONY: init plan apply destroy
+.PHONY: init plan apply destroy new
 
 init:
 	aws-vault exec hackney-dataplatform-development -- terraform init
@@ -11,3 +11,6 @@ apply:
 
 destroy: 
 	aws-vault exec hackney-dataplatform-development -- terraform destroy -var-file="../config/terraform/env.tfvars"
+
+new:
+	aws-vault exec hackney-dataplatform-development -- terraform workspace new ${WORKSPACE}
