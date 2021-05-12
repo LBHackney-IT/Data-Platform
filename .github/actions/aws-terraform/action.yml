@@ -148,23 +148,23 @@ runs:
       id: plan
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
-          ${{ github.action_path }}/box.sh "Running Terraform plan"
-          terraform refresh -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}'  -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
+          ${{ github.action_path }}/box.sh "Running Terraform refresh"
+          terraform refresh -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}'  -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false
           echo -e "\n"
         fi
       shell: bash
       working-directory: "${{ inputs.build_path }}/terraform"
 
-    - name: Terraform Plan
-      id: plan
-      run: |
-        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
-          ${{ github.action_path }}/box.sh "Running Terraform plan"
-          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}'  -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
-          echo -e "\n"
-        fi
-      shell: bash
-      working-directory: "${{ inputs.build_path }}/terraform"
+    # - name: Terraform Plan
+    #   id: plan
+    #   run: |
+    #     if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
+    #       ${{ github.action_path }}/box.sh "Running Terraform plan"
+    #       terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}'  -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
+    #       echo -e "\n"
+    #     fi
+    #   shell: bash
+    #   working-directory: "${{ inputs.build_path }}/terraform"
 
     - name: Terraform Apply
       id: apply
