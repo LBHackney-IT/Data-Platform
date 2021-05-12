@@ -46,7 +46,7 @@ resource "aws_iam_policy" "glue_access_policy" {
           "${module.raw_zone.bucket_arn}/*",
           "${module.refined_zone.bucket_arn}/*",
           "${module.trusted_zone.bucket_arn}/*",
-          "${aws_s3_bucket.glue_scripts_bucket.arn}/*",
+          "${module.glue_scripts.bucket_arn}/*",
           "${module.glue_temp_storage.bucket_arn}/*"
         ]
       },
@@ -70,9 +70,9 @@ resource "aws_iam_policy" "glue_access_policy" {
           "kms:GenerateDataKey",
         ],
         Resource : [
-          aws_kms_key.glue_scripts_key.arn,
-          module.glue_temp_storage.bucket_arn,
-          module.athena_storage.bucket_arn,
+          module.glue_scripts.kms_key_arn,
+          module.glue_temp_storage.kms_key_arn,
+          module.athena_storage.kms_key_arn,
           module.landing_zone.kms_key_arn,
           module.raw_zone.kms_key_arn,
           module.refined_zone.kms_key_arn,

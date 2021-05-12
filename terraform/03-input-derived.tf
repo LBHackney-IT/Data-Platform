@@ -15,9 +15,10 @@ module "tags" {
 }
 
 locals {
-  team_snake        = lower(replace(terraform.workspace == "default" ? var.team : terraform.workspace, " ", "-"))
+  team_snake        = lower(replace(var.team, " ", "-"))
+  environment       = lower(replace(terraform.workspace == "default" ? var.environment : terraform.workspace, " ", "-"))
   application_snake = lower(replace(var.application, " ", "-"))
-  identifier_prefix = lower("${local.team_snake}-${local.application_snake}-${var.environment}")
+  identifier_prefix = lower("${local.application_snake}-${local.environment}")
 }
 
 data "aws_caller_identity" "data_platform" {}
