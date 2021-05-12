@@ -1,4 +1,5 @@
 module "test_data" {
+  count = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = aws_s3_bucket.glue_scripts_bucket.id
@@ -16,6 +17,7 @@ module "test_data" {
 }
 
 module "housing_repair_data" {
+  count = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = aws_s3_bucket.glue_scripts_bucket.id

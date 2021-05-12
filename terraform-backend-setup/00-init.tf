@@ -1,9 +1,5 @@
 # Core Infrastructure
-provider "aws" {
-  alias   = "core"
-  profile = var.dataplatform_profile
-  region  = var.core_region
-}
+provider "aws" {}
 
 # General
 terraform {

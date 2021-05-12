@@ -13,9 +13,3 @@ module "tags" {
   stack                = var.stack
   team                 = var.team
 }
-
-locals {
-
-  # Just an example of using a local variable
-  s3_bucket_name = lower("${var.team}-${var.project}-${var.environment}")
-}

@@ -42,6 +42,36 @@ module "trusted_zone" {
   bucket_identifier              = "trusted-zone"
 }
 
+//module "glue_scripts" {
+//  source                         = "../modules/s3-bucket"
+//  tags                           = module.tags.values
+//  project                        = var.project
+//  environment                    = var.environment
+//  identifier_prefix              = local.identifier_prefix
+//  bucket_name                    = "Glue Scripts"
+//  bucket_identifier              = "glue-scripts"
+//}
+
+//module "glue_temp_storage" {
+//  source                         = "../modules/s3-bucket"
+//  tags                           = module.tags.values
+//  project                        = var.project
+//  environment                    = var.environment
+//  identifier_prefix              = local.identifier_prefix
+//  bucket_name                    = "Glue Temp Storage"
+//  bucket_identifier              = "glue-temp-storage"
+//}
+
+//module "glue_temp_storage" {
+//  source                         = "../modules/s3-bucket"
+//  tags                           = module.tags.values
+//  project                        = var.project
+//  environment                    = var.environment
+//  identifier_prefix              = local.identifier_prefix
+//  bucket_name                    = "Athena Storage"
+//  bucket_identifier              = "athena-storage"
+//}
+
 
 /* ==== GLUE SCRIPTS ================================================================================================ */
 resource "aws_kms_key" "glue_scripts_key" {

@@ -15,7 +15,7 @@ module "tags" {
 }
 
 locals {
-  team_snake        = lower(replace(var.team, " ", "-"))
+  team_snake        = lower(replace(terraform.workspace == "default" ? var.team : terraform.workspace, " ", "-"))
   application_snake = lower(replace(var.application, " ", "-"))
   identifier_prefix = lower("${local.team_snake}-${local.application_snake}-${var.environment}")
 }

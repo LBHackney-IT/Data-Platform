@@ -7,6 +7,5 @@ environment = "stg"
 team = "DataEngineers"
 application = "DataPlatform"
 stack = "Core"
-assume_roles = [true]
 transit_gateway_cidr = "10.120.31.0/24"
 transit_gateway_private_subnets = ["10.120.31.0/26", "10.120.31.64/26", "10.120.31.128/26"]

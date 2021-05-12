@@ -1,14 +1,13 @@
 .PHONY: init plan apply destroy
 
 init:
-	terraform init -backend-config="profile=hackney-dev-scratch"
-	aws ssm get-parameter --name "/data_platform/dev/google_service_account_creds" --output text --query Parameter.Value > ../google_service_account_creds.json --profile=hackney-dev-scratch
+	aws-vault exec hackney-dataplatform-development -- terraform init
 
 plan:
-	AWS_PROFILE=hackney-dev-scratch terraform plan -var-file="../config/terraform/env.tfvars"
+	aws-vault exec hackney-dataplatform-development -- terraform plan -var-file="../config/terraform/env.tfvars"
 
 apply: 
-	AWS_PROFILE=hackney-dev-scratch terraform apply -var-file="../config/terraform/env.tfvars"
+	aws-vault exec hackney-dataplatform-development -- terraform apply -var-file="../config/terraform/env.tfvars"
 
 destroy: 
-	AWS_PROFILE=hackney-dev-scratch terraform destroy -var-file="../config/terraform/env.tfvars"
+	aws-vault exec hackney-dataplatform-development -- terraform destroy -var-file="../config/terraform/env.tfvars"
