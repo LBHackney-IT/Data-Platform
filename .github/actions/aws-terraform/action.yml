@@ -134,6 +134,7 @@ runs:
         if [ "${{ inputs.terraform_destroy }}" == "destroy_me" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform destroy"
             if [ "${{ inputs.branch }}" == "main" ]; then
+              terraform force-unlock bfc933ac-ec83-87fd-a623-dcae26283651
               terraform destroy -auto-approve
               ${{ github.action_path }}/success_destroy.sh
               echo -e "Terraform run completed successfully."
