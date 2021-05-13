@@ -6,15 +6,57 @@ let iamRoleArn = process.env.IAM_ROLE_ARN;
 let kmsKeyId = process.env.KMS_KEY_ID;
 let s3BucketName = process.env.S3_BUCKET_NAME;
 
+async function returnMessageToQueue(eventSourceARN, messageBody, reason, sqsClient, delay = 60) {
+  const queueName = eventSourceARN.split(':').pop();
+
+  const getQueueUrlResponse = await sqsClient.getQueueUrl({
+    QueueName: queueName
+  }).promise();
+
+  const newMsg = {
+    QueueUrl: getQueueUrlResponse.QueueUrl,
+    MessageBody: messageBody,
+    DelaySeconds: delay
+  }
+
+  await sqsClient.sendMessage(newMsg).promise();
+  console.log(reason + ', message queued:', newMsg);
+}
+
 exports.handler = async (event) => {
   console.log(event);
 
   const rdsClient = new AWS.RDS({region: AWS_REGION});
   const sqsClient = new AWS.SQS({region: AWS_REGION});
 
-  // TODO: check how many snapshots are currently being processed,
-  //       if it's more than 5 return message back to queue
   await Promise.all(event.Records.map(async (record) => {
+    let taskMarker = undefined;
+    let exportTasks = [];
+    do {
+      const params = {
+        Marker: taskMarker,
+      };
+
+      const response = await rdsClient.describeExportTasks(params).promise();
+
+      exportTasks = exportTasks.concat(response.ExportTasks)
+
+      taskMarker = response.Marker;
+    } while (taskMarker);
+
+    const runningTaskCount = exportTasks.filter(task => task.Status === 'STARTING').length
+
+    if (runningTaskCount >= 5) {
+      await returnMessageToQueue(
+        record.eventSourceARN,
+        record.body,
+        'Too many export tasks still processing',
+        sqsClient,
+        300
+      );
+      return null;
+    }
+
     let sqsMessage;
     try {
       const snsMessage = JSON.parse(record.body);
@@ -23,17 +65,17 @@ exports.handler = async (event) => {
     } catch (err) {
       console.log("event error:", err);
       console.log("sqs message:", sqsMessage);
-      return;
+      return null;
     }
 
     const dbSnapshotId = sqsMessage["Source ID"].split(':').pop();
 
-    let marker = undefined;
+    let snapshotMarker = undefined;
     let dbSnapshots = [];
     do {
       const describeDBSnapshotsParams = {
         DBInstanceIdentifier: dbSnapshotId,
-        Marker: marker,
+        Marker: snapshotMarker,
       };
 
       const response = await rdsClient.describeDBSnapshots(describeDBSnapshotsParams).promise();
@@ -41,28 +83,19 @@ exports.handler = async (event) => {
 
       dbSnapshots = dbSnapshots.concat(response.DBSnapshots)
 
-      marker = response.Marker;
-    } while (marker);
+      snapshotMarker = response.Marker;
+    } while (snapshotMarker);
 
     const found = dbSnapshots.find( ({ Status }) => Status === 'creating' );
 
     if (found) {
-      const queueName = record.eventSourceARN.split(':').pop();
-
-      const getQueueUrlResponse = await sqsClient.getQueueUrl({
-       QueueName: queueName
-      }).promise();
-
-      const newMsg = {
-        QueueUrl: getQueueUrlResponse.QueueUrl,
-        MessageBody: record.body,
-        DelaySeconds: 30
-      }
-
-      await sqsClient.sendMessage(newMsg).promise();
-      console.log('Snapshot not ready, message queued:', newMsg);
-
-      return;
+      await returnMessageToQueue(
+        record.eventSourceARN,
+        record.body,
+        'Snapshot not ready',
+        sqsClient
+      );
+      return null;
     }
 
     const sortedDbSnapshots = dbSnapshots.sort((a, b) => {return a.SnapshotCreateTime - b.SnapshotCreateTime;});
@@ -91,7 +124,7 @@ exports.handler = async (event) => {
       console.log(response);
     } catch (err) {
       console.log("startExportTask error:", err);
-      return;
+      return null;
     }
   }));
 };

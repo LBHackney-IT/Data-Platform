@@ -88,7 +88,8 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
 
   statement {
     actions = [
-      "rds:StartExportTask"
+      "rds:StartExportTask",
+      "rds:DescribeExportTasks"
     ]
     effect = "Allow"
     resources = [
