@@ -7,10 +7,11 @@ process.on('unhandledRejection', error => {
 const AWS = require("aws-sdk");
 
 const credentials = new AWS.SharedIniFileCredentials({
-  profile: "madetech-sandbox"
+  profile: "hackney-api-staging"
 });
 AWS.config.credentials = credentials;
 
+process.env.BUCKET_DESTINATION = "dataplatform-stg-landing-zone";
 const handler = require("./index");
 
 handler.handler({
@@ -19,7 +20,8 @@ handler.handler({
       "messageId": "2e1424d4-f796-459a-8184-9c92662be6da",
       "receiptHandle": "AQEBzWwaftRI0KuVm4tP+/7q1rGgNqicHq...",
       "body": JSON.stringify({
-
+        ExportTaskIdentifier: "dataplatform-el-tests-fss-again",
+        ExportBucket: "dataplatform-stg-rds-export-storage"
       }),
       "attributes": {
         "ApproximateReceiveCount": "1",
