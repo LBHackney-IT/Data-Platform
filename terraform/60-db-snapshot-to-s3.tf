@@ -330,7 +330,7 @@ resource "aws_sns_topic" "rds_snapshot_to_s3" {
 }
 
 
-// ==== SQS TOPIC =================================================================================================== //
+// ==== SQS QUEUE - RDS TO S3 ======================================================================================= //
 resource "aws_sqs_queue" "rds_snapshot_to_s3" {
   provider = aws.aws_api_account
   tags = module.tags.values
@@ -392,4 +392,52 @@ resource "aws_lambda_event_source_mapping" "event_source_mapping" {
   enabled          = true
   function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
   batch_size       = 1
+}
+
+
+// ==== SQS QUEUE - COPIER ========================================================================================== //
+resource "aws_sqs_queue" "s3_to_s3_copier" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.s3_to_s3_copier_deadletter.arn
+    maxReceiveCount     = 4
+  })
+
+  name = lower("${local.identifier_prefix}-s3-to-s3-copier")
+}
+
+//data "aws_iam_policy_document" "s3_to_s3_copier" {
+//  statement {
+//    effect = "Allow"
+//    actions = [
+//      "sqs:SendMessage"
+//    ]
+//    condition {
+//      test = "ArnEquals"
+//      values = [aws_sns_topic.rds_snapshot_to_s3.arn]
+//      variable = "aws:SourceArn"
+//    }
+//    principals {
+//      identifiers = ["sns.amazonaws.com"]
+//      type = "Service"
+//    }
+//    resources = [
+//      aws_sqs_queue.rds_snapshot_to_s3.arn
+//    ]
+//  }
+//}
+//
+//resource "aws_sqs_queue_policy" "rds_snapshot_to_s3" {
+//  provider = aws.aws_api_account
+//  queue_url = aws_sqs_queue.rds_snapshot_to_s3.id
+//  policy = data.aws_iam_policy_document.rds_snapshot_to_s3.json
+//}
+
+resource "aws_sqs_queue" "s3_to_s3_copier_deadletter" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  name = lower("${local.identifier_prefix}-s3-to-s3-copier-deadletter")
 }

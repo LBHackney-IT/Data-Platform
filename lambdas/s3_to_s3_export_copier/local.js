@@ -4,13 +4,6 @@ process.on('unhandledRejection', error => {
   console.log(error)
 });
 
-const AWS = require("aws-sdk");
-
-const credentials = new AWS.SharedIniFileCredentials({
-  profile: "hackney-api-staging"
-});
-AWS.config.credentials = credentials;
-
 process.env.BUCKET_DESTINATION = "dataplatform-stg-landing-zone";
 const handler = require("./index");
 
@@ -20,8 +13,8 @@ handler.handler({
       "messageId": "2e1424d4-f796-459a-8184-9c92662be6da",
       "receiptHandle": "AQEBzWwaftRI0KuVm4tP+/7q1rGgNqicHq...",
       "body": JSON.stringify({
-        ExportTaskIdentifier: "dataplatform-el-tests-fss-again",
-        ExportBucket: "dataplatform-stg-rds-export-storage"
+        ExportTaskIdentifier: "dataplatform-export-test",
+        ExportBucket: "dataplatform-joates-rds-export-storage"
       }),
       "attributes": {
         "ApproximateReceiveCount": "1",
@@ -32,7 +25,7 @@ handler.handler({
       "messageAttributes": {},
       "md5OfBody": "e4e68fb7bd0e697a0ae8f1bb342846b3",
       "eventSource": "aws:sqs",
-      "eventSourceARN": "arn:aws:sqs:us-east-2:123456789012:my-queue",
+      "eventSourceARN": "arn:aws:sqs:eu-west-2:937934410339:dataplatform-joates-s3-to-s3-copier",
       "awsRegion": "us-east-2"
     }
   ]

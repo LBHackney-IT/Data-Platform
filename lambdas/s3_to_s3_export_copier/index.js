@@ -68,11 +68,20 @@ exports.handler = async (events) => {
     // Check to see if the export has finished
     if(exportTaskStatus.Status !== 'COMPLETE') {
       // If NOT then requeue the event with an extended delay
-      sqsClient.sendMessage({
-        QueueUrl: event.eventSourceARN,
-        MessageBody: event.Message,
+      console.log(event.eventSourceARN);
+
+      const queueName = event.eventSourceARN.split(':').pop();
+
+      const getQueueUrlResponse = await sqsClient.getQueueUrl({
+        QueueName: queueName
+      }).promise();
+
+      console.log(getQueueUrlResponse);
+      await sqsClient.sendMessage({
+        QueueUrl: getQueueUrlResponse.QueueUrl,
+        MessageBody: event.body,
         DelaySeconds: 300
-      })
+      }).promise();
       return;
     }
 
