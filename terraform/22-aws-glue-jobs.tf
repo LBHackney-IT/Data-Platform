@@ -12,7 +12,7 @@ module "test_data" {
   google_sheets_document_id       = "13PfT9f56g2yQTdyU0wadILeT6L337CTtOHyRAtNuVR8"
   google_sheets_worksheet_name    = "Form responses 1"
   department_folder_name          = "test"
-  output_folder_name              = "repair-orders"
+  output_folder_name              = "repair-orders-v2"
   enable_glue_trigger             = false
 }
 
