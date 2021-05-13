@@ -25,23 +25,26 @@ exports.handler = async (event) => {
       console.log("sqs message:", sqsMessage);
       return;
     }
+
     const dbSnapshotId = sqsMessage["Source ID"].split(':').pop();
 
     let marker = undefined;
-    let dbSnapshots;
+    let dbSnapshots = [];
     do {
       const describeDBSnapshotsParams = {
         DBInstanceIdentifier: dbSnapshotId,
         Marker: marker,
       };
 
-      dbSnapshots = await rdsClient.describeDBSnapshots(describeDBSnapshotsParams).promise();
-      console.log("Describe DB Snapshot (Page):", dbSnapshots);
+      const response = await rdsClient.describeDBSnapshots(describeDBSnapshotsParams).promise();
+      console.log("Describe DB Snapshot (Page):", response);
 
-      marker = dbSnapshots.Marker;
+      dbSnapshots = dbSnapshots.concat(response.DBSnapshots)
+
+      marker = response.Marker;
     } while (marker);
 
-    const found = dbSnapshots.DBSnapshots.find( ({ Status }) => Status === 'creating' );
+    const found = dbSnapshots.find( ({ Status }) => Status === 'creating' );
 
     if (found) {
       const queueName = record.eventSourceARN.split(':').pop();
@@ -62,7 +65,7 @@ exports.handler = async (event) => {
       return;
     }
 
-    const sortedDbSnapshots = dbSnapshots.DBSnapshots.sort((a, b) => {return a.SnapshotCreateTime - b.SnapshotCreateTime;});
+    const sortedDbSnapshots = dbSnapshots.sort((a, b) => {return a.SnapshotCreateTime - b.SnapshotCreateTime;});
     console.log('Sorted DB snapshots:', dbSnapshots);
 
     const latestSnapshot = sortedDbSnapshots.pop();
@@ -81,7 +84,14 @@ exports.handler = async (event) => {
       S3BucketName: s3BucketName,
       SourceArn: latestSnapshot.DBSnapshotArn
     };
-    let response = await rdsClient.startExportTask(startExportTaskParams).promise();
-    console.log(response);
+
+    let response;
+    try {
+      response = await rdsClient.startExportTask(startExportTaskParams).promise();
+      console.log(response);
+    } catch (err) {
+      console.log("startExportTask error:", err);
+      return;
+    }
   }));
 };
