@@ -10,6 +10,7 @@ exports.handler = async (event) => {
   console.log(event);
 
   const rdsClient = new AWS.RDS({region: AWS_REGION});
+  const sqsClient = new AWS.SQS({region: AWS_REGION});
 
   // TODO: check how many snapshots are currently being processed,
   //       if it's more than 5 return message back to queue
@@ -40,16 +41,31 @@ exports.handler = async (event) => {
       marker = dbSnapshots.Marker;
     } while (marker);
 
-      // else order by SnapshotCreateTime: 2021-05-13T10:46:45.176Z, and get latest
-
     const found = dbSnapshots.DBSnapshots.find( ({ Status }) => Status === 'creating' );
 
     if (found) {
-      // if there's a snapshot to be created, rescedule,
-      return ''
+      const queueName = record.eventSourceARN.split(':').pop();
+
+      const getQueueUrlResponse = await sqsClient.getQueueUrl({
+       QueueName: queueName
+      }).promise();
+
+      const newMsg = {
+        QueueUrl: getQueueUrlResponse.QueueUrl,
+        MessageBody: record.body,
+        DelaySeconds: 30
+      }
+
+      await sqsClient.sendMessage(newMsg).promise();
+      console.log('Snapshot not ready, message queued:', newMsg);
+
+      return;
     }
-    dbSnapshots = dbSnapshots.sort((a, b) => {return a.SnapshotCreateTime - b.SnapshotCreateTime;});
-    const latestSnapshot = dbSnapshots.DBSnapshots[0];
+
+    const sortedDbSnapshots = dbSnapshots.DBSnapshots.sort((a, b) => {return a.SnapshotCreateTime - b.SnapshotCreateTime;});
+    console.log('Sorted DB snapshots:', dbSnapshots);
+
+    const latestSnapshot = sortedDbSnapshots.pop();
     console.log("Latest Snapshot:", latestSnapshot);
 
     const snapshotIdentifier = latestSnapshot.DBSnapshotIdentifier.replace(':', '-');

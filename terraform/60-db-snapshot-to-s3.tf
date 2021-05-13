@@ -56,7 +56,9 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
     actions = [
       "sqs:ReceiveMessage",
       "sqs:DeleteMessage",
-      "sqs:GetQueueAttributes"
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl",
+      "sqs:SendMessage"
     ]
     effect = "Allow"
     resources = [
