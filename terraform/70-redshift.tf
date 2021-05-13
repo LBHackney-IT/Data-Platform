@@ -1,4 +1,5 @@
 module "transit_gateway" {
+  count = terraform.workspace == "default" ? 1 : 0
   source               = "../modules/transit-gateway"
   core_azs             = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
   core_cidr            = var.transit_gateway_cidr

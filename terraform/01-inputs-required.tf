@@ -29,11 +29,6 @@ variable "google_project_id" {
   type        = string
 }
 
-variable "assume_roles" {
-  description = "Used to dynamically assume a role for staging and production deploys, while allowing assume role to be skipped in local terraform plan/apply."
-  type        = list
-}
-
 variable "transit_gateway_cidr" {
   description = "The CIDR block for the transit gateway VPC."
   type        = string
@@ -44,8 +39,3 @@ variable "transit_gateway_private_subnets" {
   description = "A list of private subnets inside the transit gateway  VPC."
   type        = list(string)
 }
-/* Mandatory variables, that should be override in the config/terraform/*.tfvars. Please feel free to add as you need!
- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
- VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
- */

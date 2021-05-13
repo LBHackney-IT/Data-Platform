@@ -3,6 +3,7 @@
 *.tfstate*
 lambdas/*/node_modules
 lambdas/*/*.zip
+lambdas/*.zip
 env.tfvars
 dev.tfvars
 google_service_account_creds.json

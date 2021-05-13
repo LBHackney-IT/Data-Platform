@@ -46,17 +46,68 @@ The terraform will be deployed using Github Actions on push to main / when a Pul
   - `aws_deploy_iam_role_name` - (can be left blank if assume_roles is set)
   - `google_project_id` - The Google Project to create service accounts in (for DevScratch `dataplatform-dev0`)
   - `assume_roles` - leave as an empty list if you want to deploy using SSO credentials locally (dev), or add `[true]` (keeping the value in a list) to deploy using Github Actions (Staging and Production)
+
 3. For local deployment AWS needs a profile (assumed to be called `hackney-dev-scratch`) in and some profile configuration (which can be set in `~/.aws/config`). Read [documentation on Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for more guidance setting up AWS credentials and named profiles.
 
 ```
-[profile hackney-dev-scratch]
-region = eu-west-2
-output = json
+$ aws configure sso
+```
+Your terminal should look like this:
+```
+SSO start URL [None]: https://hackney.awsapps.com/start
+SSO Region [None]: eu-west-1
+Attempting to automatically open the SSO authorization page in your default browser.
+If the browser does not open or you wish to use a different device to authorize this request, open the following URL:
+
+https://device.sso.eu-west-1.amazonaws.com/
+
+Then enter the code:
+LDHD-CKXW
+
+There are 18 AWS accounts available to you.
+Using the account ID 937934410339
+There are 2 roles available to you.
+Using the role name "AWSAdministratorAccess"
+CLI default client Region [eu-west-2]:
+CLI default output format [json]:
+CLI profile name [AWSAdministratorAccess-937934410339]: hackney-dataplatform-development
 ```
 
-4. Next run `make init` in the `/terraform`directory.
-This will initialize terraform using the AWS profile `hackney-dev-scratch`.
+Install AWS-Vault
+```
+$ brew install --cask aws-vault
+```
+
+Generate Credentials for Vault
+```
+$ aws-vault exec hackney-dataplatform-development -- aws sts get-caller-identity
+```
+
+Initialise the Project
+```
+$ aws-vault exec hackney-dataplatform-development -- terraform init
+```
+
+Initialise your Workspace
+```
+$ aws-vault exec hackney-dataplatform-development -- terraform workspace new {developer}
+```
+
+4. Set up Google credentials
+
+- Run `brew install --cask google-cloud-sdk` to install *Google Cloud SDK* 
+- Log in into Google Cloud by running `gcloud auth application-default login`
+- The full path of where the file is saved will be displayed, for example `/Users/*/.config/gcloud/application_default_credentials.json`
+   - Copy this file to the root of the project by running the following command in the root of the project `cp /Users/*/.config/gcloud/application_default_credentials.json ./google_service_account_creds.json` 
+
+5. Next run `make init` in the `/terraform`directory.
+This will initialize terraform using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
+   - You remove *hackney-dataplatform-development* aws credentials if they exist in your AWS credentials file
+   - You remove the *.terraform* directory, and the *.terraform.lock.hcl* file if they exist in the project's terraform directory
 
 #### Terraform commands
 
 After runnning you can run `make plan`, `make apply` and `make destroy` to run the terraform deploy/destroy commands with the development `env.tfvars` set for you.
+
+
+

@@ -9,11 +9,11 @@ resource "aws_athena_workgroup" "workgroup" {
     publish_cloudwatch_metrics_enabled = true
 
     result_configuration {
-      output_location = "s3://${aws_s3_bucket.athena_storage_bucket.bucket}/output/"
+      output_location = "s3://${module.athena_storage.bucket_id}/output/"
 
       encryption_configuration {
         encryption_option = "SSE_KMS"
-        kms_key_arn       = aws_kms_key.athena_storage_bucket_key.arn
+        kms_key_arn       = module.athena_storage.kms_key_arn
       }
     }
   }
