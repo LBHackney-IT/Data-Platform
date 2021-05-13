@@ -80,7 +80,7 @@ exports.handler = async (events) => {
       const pathPrefix = `${message.ExportTaskIdentifier}`;
 
       // If it has copy the files from s3 bucket A => s3 bucket B
-      await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, 'joates-test-copy');
+      await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, 'rds-backups');
     })
   );
 };
