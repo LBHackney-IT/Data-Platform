@@ -4,7 +4,7 @@ process.on('unhandledRejection', error => {
   console.log(error)
 });
 
-process.env.BUCKET_DESTINATION = "dataplatform-stg-landing-zone";
+process.env.BUCKET_DESTINATION = "dataplatform-joates-landing-zone";
 const handler = require("./index");
 
 handler.handler({
