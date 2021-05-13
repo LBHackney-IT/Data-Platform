@@ -30,7 +30,7 @@ exports.handler = async (event) => {
     let dbSnapshots;
     do {
       const describeDBSnapshotsParams = {
-        DBSnapshotIdentifier: dbSnapshotId,
+        DBInstanceIdentifier: dbSnapshotId,
         Marker: marker,
       };
 
@@ -40,7 +40,16 @@ exports.handler = async (event) => {
       marker = dbSnapshots.Marker;
     } while (marker);
 
-    const latestSnapshot = dbSnapshots.DBSnapshots.pop();
+      // else order by SnapshotCreateTime: 2021-05-13T10:46:45.176Z, and get latest
+
+    const found = dbSnapshots.DBSnapshots.find( ({ Status }) => Status === 'creating' );
+
+    if (found) {
+      // if there's a snapshot to be created, rescedule,
+      return ''
+    }
+    dbSnapshots = dbSnapshots.sort((a, b) => {return a.SnapshotCreateTime - b.SnapshotCreateTime;});
+    const latestSnapshot = dbSnapshots.DBSnapshots[0];
     console.log("Latest Snapshot:", latestSnapshot);
 
     const snapshotIdentifier = latestSnapshot.DBSnapshotIdentifier.replace(':', '-');
