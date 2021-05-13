@@ -4,12 +4,9 @@ process.on('unhandledRejection', error => {
   console.log(error)
 });
 
-const AWS = require("aws-sdk");
-
-const credentials = new AWS.SharedIniFileCredentials({
-  profile: "madetech-sandbox"
-});
-AWS.config.credentials = credentials;
+process.env.IAM_ROLE_ARN = 'arn:aws:iam::715003523189:role/dataplatform-stg-rds-snapshot-export-service';
+process.env.KMS_KEY_ID = '7ca452a6-e414-4556-8f29-cb46c35c18e8';
+process.env.S3_BUCKET_NAME = 'dataplatform-stg-rds-export-storage';
 
 const handler = require("./index");
 
@@ -49,7 +46,7 @@ handler.handler({
           "Event Time": "2021-05-11 15:29:31.058",
           "Identifier Link": "https://console.aws.amazon.com/rds/home?region=eu-west-2#snapshot:id=dataplatform-el-tests-fss",
           "Source ID": "dataplatform-el-tests-fss",
-          "Source ARN": "arn:aws:rds:eu-west-2:715003523189:snapshot:dataplatform-el-tests-fss",
+          "Source ARN": "arn:aws:rds:eu-west-2:715003523189:dataplatform-el-tests-fss",
           "Event ID": "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html#RDS-EVENT-0040",
           "Event Message": "Creating manual snapshot"
         }),
