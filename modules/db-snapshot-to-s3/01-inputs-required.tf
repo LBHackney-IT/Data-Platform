@@ -33,3 +33,7 @@ variable "landing_zone_bucket_arn" {
 variable "landing_zone_bucket_id" {
   type = string
 }
+
+variable "rds_instance_ids" {
+  type = list(string)
+}
