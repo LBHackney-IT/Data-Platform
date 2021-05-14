@@ -2,12 +2,13 @@ const AWS = require("aws-sdk");
 
 const AWS_REGION = "eu-west-2";
 
-let iamRoleArn = process.env.IAM_ROLE_ARN;
-let kmsKeyId = process.env.KMS_KEY_ID;
-let s3BucketName = process.env.S3_BUCKET_NAME;
+const iamRoleArn = process.env.IAM_ROLE_ARN;
+const kmsKeyId = process.env.KMS_KEY_ID;
+const s3BucketName = process.env.S3_BUCKET_NAME;
+const copierQueueName = process.env.COPIER_QUEUE_ARN.split(':').pop();
 
-async function returnMessageToQueue(eventSourceARN, messageBody, reason, sqsClient, delay = 60) {
-  const queueName = eventSourceARN.split(':').pop();
+async function queueMessage(queueName, messageBody, reason, delay = 60) {
+  const sqsClient = new AWS.SQS({region: AWS_REGION});
 
   const getQueueUrlResponse = await sqsClient.getQueueUrl({
     QueueName: queueName
@@ -27,9 +28,11 @@ exports.handler = async (event) => {
   console.log(event);
 
   const rdsClient = new AWS.RDS({region: AWS_REGION});
-  const sqsClient = new AWS.SQS({region: AWS_REGION});
 
   await Promise.all(event.Records.map(async (record) => {
+
+    const queueName = record.eventSourceARN.split(':').pop();
+
     let taskMarker = undefined;
     let exportTasks = [];
     do {
@@ -47,11 +50,10 @@ exports.handler = async (event) => {
     const runningTaskCount = exportTasks.filter(task => task.Status === 'STARTING').length
 
     if (runningTaskCount >= 5) {
-      await returnMessageToQueue(
-        record.eventSourceARN,
+      await queueMessage(
+        queueName,
         record.body,
         'Too many export tasks still processing',
-        sqsClient,
         300
       );
       return null;
@@ -89,11 +91,10 @@ exports.handler = async (event) => {
     const found = dbSnapshots.find( ({ Status }) => Status === 'creating' );
 
     if (found) {
-      await returnMessageToQueue(
-        record.eventSourceARN,
+      await queueMessage(
+        queueName,
         record.body,
-        'Snapshot not ready',
-        sqsClient
+        'Snapshot not ready'
       );
       return null;
     }
@@ -110,8 +111,10 @@ exports.handler = async (event) => {
     const databaseName = latestSnapshot.DBInstanceIdentifier;
     console.log("databaseName:", databaseName);
 
+    const exportTaskIdentifier = snapshotIdentifier.substr(0, 60);
+
     const startExportTaskParams = {
-      ExportTaskIdentifier: snapshotIdentifier.substr(0, 60),
+      ExportTaskIdentifier: exportTaskIdentifier,
       IamRoleArn: iamRoleArn,
       KmsKeyId: kmsKeyId,
       S3BucketName: s3BucketName,
@@ -122,6 +125,15 @@ exports.handler = async (event) => {
     try {
       response = await rdsClient.startExportTask(startExportTaskParams).promise();
       console.log(response);
+      await queueMessage(
+        copierQueueName,
+        JSON.stringify({
+            ExportTaskIdentifier: exportTaskIdentifier,
+            ExportBucket: s3BucketName
+        }),
+        'Export started',
+        900
+      );
     } catch (err) {
       console.log("startExportTask error:", err);
       return null;

@@ -16,7 +16,17 @@ module "rds_export_storage" {
   ]
 }
 
-// ==== LAMBDA ====================================================================================================== //
+// ==== LAMBDAS ===================================================================================================== //
+resource "aws_s3_bucket" "lambda_artefact_storage" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  bucket = lower("${local.identifier_prefix}-lambda-artefact-storage")
+  acl = "private"
+  force_destroy = true
+}
+
+// ==== LAMBDA - RDS SNAPSHOT TO S3 ================================================================================= //
 data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda_assume_role" {
   statement {
     actions = [
@@ -63,6 +73,18 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
     effect = "Allow"
     resources = [
       aws_sqs_queue.rds_snapshot_to_s3.arn
+    ]
+  }
+
+  statement {
+    actions = [
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl",
+      "sqs:SendMessage"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_sqs_queue.s3_to_s3_copier.arn
     ]
   }
 
@@ -116,20 +138,11 @@ resource "aws_iam_policy" "rds_snapshot_to_s3_lambda" {
   policy = data.aws_iam_policy_document.rds_snapshot_to_s3_lambda.json
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_role_attachment" {
+resource "aws_iam_role_policy_attachment" "rds_snapshot_to_s3_lambda" {
   provider = aws.aws_api_account
 
   role = aws_iam_role.rds_snapshot_to_s3_lambda.name
   policy_arn = aws_iam_policy.rds_snapshot_to_s3_lambda.arn
-}
-
-resource "aws_s3_bucket" "lambda_artefact_storage" {
-  provider = aws.aws_api_account
-  tags = module.tags.values
-
-  bucket = lower("${local.identifier_prefix}-lambda-artefact-storage")
-  acl = "private"
-  force_destroy = true
 }
 
 data "archive_file" "rds_snapshot_to_s3_lambda" {
@@ -159,7 +172,7 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   role = aws_iam_role.rds_snapshot_to_s3_lambda.arn
   handler = "index.handler"
   runtime = "nodejs14.x"
-  function_name = "${local.identifier_prefix}_rds_snapshot_to_s3_lambda"
+  function_name = "${local.identifier_prefix}_rds_snapshot_to_s3"
   s3_bucket = aws_s3_bucket.lambda_artefact_storage.bucket
   s3_key = aws_s3_bucket_object.rds_snapshot_to_s3_lambda.key
   source_code_hash = data.archive_file.rds_snapshot_to_s3_lambda.output_base64sha256
@@ -169,6 +182,7 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
       IAM_ROLE_ARN = aws_iam_role.rds_snapshot_export_service.arn,
       KMS_KEY_ID = module.rds_export_storage.kms_key_id,
       S3_BUCKET_NAME = module.rds_export_storage.bucket_id,
+      COPIER_QUEUE_ARN = aws_sqs_queue.s3_to_s3_copier.arn
     }
   }
 
@@ -189,6 +203,173 @@ resource "aws_lambda_function_event_invoke_config" "rds_snapshot_to_s3_lambda" {
   ]
 }
 
+// ==== LAMBDA - S3 TO S3 COPIER ==================================================================================== //
+data "aws_iam_policy_document" "s3_to_s3_copier_lambda_assume_role" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "lambda.amazonaws.com"
+      ]
+      type = "Service"
+    }
+  }
+}
+
+resource "aws_iam_role" "s3_to_s3_copier_lambda" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  name = lower("${local.identifier_prefix}-s3-to-s3-copier-lambda")
+  assume_role_policy = data.aws_iam_policy_document.s3_to_s3_copier_lambda_assume_role.json
+}
+
+data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "sqs:SendMessage",
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_sqs_queue.s3_to_s3_copier.arn
+    ]
+  }
+
+  statement {
+    actions = [
+      "kms:*",
+      "s3:*"
+    ]
+    effect = "Allow"
+    resources = [
+      module.rds_export_storage.kms_key_arn,
+      "${module.rds_export_storage.bucket_arn}/*",
+      module.landing_zone.kms_key_arn,
+      module.landing_zone.bucket_arn,
+      "${module.landing_zone.bucket_arn}/*",
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:CopyObject*",
+      "s3:ListBucketVersions",
+      "s3:ListBucket"
+    ]
+    effect = "Allow"
+    resources = [
+      module.landing_zone.bucket_arn,
+      "${module.landing_zone.bucket_arn}/*",
+      module.rds_export_storage.bucket_arn,
+      "${module.rds_export_storage.bucket_arn}/*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "rds:DescribeExportTasks",
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+
+}
+
+resource "aws_iam_policy" "s3_to_s3_copier_lambda" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  name = lower("${local.identifier_prefix}-s3-to-s3-copier-lambda")
+  policy = data.aws_iam_policy_document.s3_to_s3_copier_lambda.json
+}
+
+resource "aws_iam_role_policy_attachment" "s3_to_s3_copier_lambda" {
+  provider = aws.aws_api_account
+
+  role = aws_iam_role.s3_to_s3_copier_lambda.name
+  policy_arn = aws_iam_policy.s3_to_s3_copier_lambda.arn
+}
+
+data "archive_file" "s3_to_s3_copier_lambda" {
+  type = "zip"
+  source_dir = "../lambdas/s3_to_s3_export_copier"
+  output_path = "../lambdas/s3-to-s3-export-copier.zip"
+}
+
+resource "aws_s3_bucket_object" "s3_to_s3_copier_lambda" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  bucket = aws_s3_bucket.lambda_artefact_storage.bucket
+  key = "s3-to-s3-export-copier.zip"
+  source = data.archive_file.s3_to_s3_copier_lambda.output_path
+  acl = "private"
+  etag = filemd5(data.archive_file.s3_to_s3_copier_lambda.output_path)
+  depends_on = [
+    data.archive_file.s3_to_s3_copier_lambda
+  ]
+}
+
+resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  role = aws_iam_role.s3_to_s3_copier_lambda.arn
+  handler = "index.handler"
+  runtime = "nodejs14.x"
+  function_name = "${local.identifier_prefix}-s3-to-s3-copier"
+  s3_bucket = aws_s3_bucket.lambda_artefact_storage.bucket
+  s3_key = aws_s3_bucket_object.s3_to_s3_copier_lambda.key
+  source_code_hash = data.archive_file.s3_to_s3_copier_lambda.output_base64sha256
+
+  environment {
+    variables = {
+      BUCKET_DESTINATION = module.landing_zone.bucket_id,
+    }
+  }
+
+  depends_on = [
+    aws_s3_bucket_object.s3_to_s3_copier_lambda,
+  ]
+}
+
+resource "aws_lambda_function_event_invoke_config" "s3_to_s3_copier_lambda" {
+  provider = aws.aws_api_account
+
+  function_name = aws_lambda_function.s3_to_s3_copier_lambda.function_name
+  maximum_retry_attempts = 0
+  qualifier = "$LATEST"
+
+  depends_on = [
+    aws_lambda_function.s3_to_s3_copier_lambda
+  ]
+}
+
+
+// ==== RDS EXPORT SERVICE ========================================================================================== //
 data "aws_iam_policy_document" "rds_snapshot_export_service_assume_role" {
   statement {
     actions = [
@@ -235,7 +416,7 @@ data "aws_iam_policy_document" "rds_snapshot_export_service" {
       module.rds_export_storage.bucket_arn,
       "${module.rds_export_storage.bucket_arn}/*",
       module.rds_export_storage.bucket_arn,
-      "${module.rds_export_storage.bucket_arn}/*"
+      "${module.rds_export_storage.bucket_arn}/*",
     ]
   }
 
@@ -336,7 +517,7 @@ resource "aws_sns_topic" "rds_snapshot_to_s3" {
 }
 
 
-// ==== SQS TOPIC =================================================================================================== //
+// ==== SQS QUEUE - RDS TO S3 ======================================================================================= //
 resource "aws_sqs_queue" "rds_snapshot_to_s3" {
   provider = aws.aws_api_account
   tags = module.tags.values
@@ -397,5 +578,82 @@ resource "aws_lambda_event_source_mapping" "event_source_mapping" {
   event_source_arn = aws_sqs_queue.rds_snapshot_to_s3.arn
   enabled          = true
   function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
+  batch_size       = 1
+}
+
+
+// ==== SQS QUEUE - COPIER ========================================================================================== //
+resource "aws_sns_topic" "s3_copier_to_s3" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  name = lower("${local.identifier_prefix}-s3-to-s3-copier")
+  sqs_success_feedback_role_arn = aws_iam_role.sns_cloudwatch_logging.arn
+  sqs_success_feedback_sample_rate = 100
+  sqs_failure_feedback_role_arn = aws_iam_role.sns_cloudwatch_logging.arn
+}
+
+resource "aws_sqs_queue" "s3_to_s3_copier" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.s3_to_s3_copier_deadletter.arn
+    maxReceiveCount     = 4
+  })
+
+  name = lower("${local.identifier_prefix}-s3-to-s3-copier")
+}
+
+data "aws_iam_policy_document" "s3_to_s3_copier" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:SendMessage",
+      "sqs:ReceiveMessage",
+      "sqs:GetQueueAttributes"
+    ]
+    condition {
+      test = "ArnEquals"
+      values = [aws_sns_topic.s3_copier_to_s3.arn]
+      variable = "aws:SourceArn"
+    }
+    principals {
+      identifiers = ["sns.amazonaws.com"]
+      type = "Service"
+    }
+    resources = [
+      aws_sqs_queue.s3_to_s3_copier.arn
+    ]
+  }
+}
+
+resource "aws_sqs_queue_policy" "s3_copier_to_s3" {
+  provider = aws.aws_api_account
+  queue_url = aws_sqs_queue.s3_to_s3_copier.id
+  policy = data.aws_iam_policy_document.s3_to_s3_copier.json
+}
+
+resource "aws_sqs_queue" "s3_to_s3_copier_deadletter" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  name = lower("${local.identifier_prefix}-s3-to-s3-copier-deadletter")
+}
+
+resource "aws_sns_topic_subscription" "subscribe_s3_copier_to_s3_sqs_to_sns_topic" {
+  provider = aws.aws_api_account
+
+  topic_arn = aws_sns_topic.s3_copier_to_s3.arn
+  protocol = "sqs"
+  endpoint = aws_sqs_queue.s3_to_s3_copier.arn
+}
+
+resource "aws_lambda_event_source_mapping" "s3_to_s3_copier_mapping" {
+  provider = aws.aws_api_account
+
+  event_source_arn = aws_sqs_queue.s3_to_s3_copier.arn
+  enabled          = true
+  function_name    = aws_lambda_function.s3_to_s3_copier_lambda.arn
   batch_size       = 1
 }
