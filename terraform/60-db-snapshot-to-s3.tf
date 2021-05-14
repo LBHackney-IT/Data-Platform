@@ -244,7 +244,8 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
       "sqs:SendMessage",
       "sqs:ReceiveMessage",
       "sqs:DeleteMessage",
-      "sqs:GetQueueAttributes"
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl"
     ]
     effect = "Allow"
     resources = [
