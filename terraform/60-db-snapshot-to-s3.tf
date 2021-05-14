@@ -241,7 +241,10 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
 
   statement {
     actions = [
-      "sqs:SendMessage"
+      "sqs:SendMessage",
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes"
     ]
     effect = "Allow"
     resources = [
@@ -257,21 +260,41 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
     effect = "Allow"
     resources = [
       module.rds_export_storage.kms_key_arn,
+      "${module.rds_export_storage.bucket_arn}/*",
       module.landing_zone.kms_key_arn,
       module.landing_zone.bucket_arn,
+      "${module.landing_zone.bucket_arn}/*",
     ]
   }
 
   statement {
     actions = [
       "s3:GetObject",
-      "s3:GetObjectVersion"
+      "s3:GetObjectVersion",
+      "s3:CopyObject*",
+      "s3:ListBucketVersions",
+      "s3:ListBucket"
     ]
     effect = "Allow"
     resources = [
-      '${module.rds_export_storage.bucket_arn}/*'
+      module.landing_zone.bucket_arn,
+      "${module.landing_zone.bucket_arn}/*",
+      module.rds_export_storage.bucket_arn,
+      "${module.rds_export_storage.bucket_arn}/*"
     ]
   }
+
+  statement {
+    actions = [
+      "rds:DescribeExportTasks",
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+
 }
 
 resource "aws_iam_policy" "s3_to_s3_copier_lambda" {
@@ -323,7 +346,7 @@ resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
 
   environment {
     variables = {
-      BUCKET_DESTINATION = module.landing_zone.bucket_arn,
+      BUCKET_DESTINATION = module.landing_zone.bucket_id,
     }
   }
 
@@ -392,7 +415,7 @@ data "aws_iam_policy_document" "rds_snapshot_export_service" {
       module.rds_export_storage.bucket_arn,
       "${module.rds_export_storage.bucket_arn}/*",
       module.rds_export_storage.bucket_arn,
-      "${module.rds_export_storage.bucket_arn}/*"
+      "${module.rds_export_storage.bucket_arn}/*",
     ]
   }
 
@@ -559,6 +582,16 @@ resource "aws_lambda_event_source_mapping" "event_source_mapping" {
 
 
 // ==== SQS QUEUE - COPIER ========================================================================================== //
+resource "aws_sns_topic" "s3_copier_to_s3" {
+  provider = aws.aws_api_account
+  tags = module.tags.values
+
+  name = lower("${local.identifier_prefix}-s3-to-s3-copier")
+  sqs_success_feedback_role_arn = aws_iam_role.sns_cloudwatch_logging.arn
+  sqs_success_feedback_sample_rate = 100
+  sqs_failure_feedback_role_arn = aws_iam_role.sns_cloudwatch_logging.arn
+}
+
 resource "aws_sqs_queue" "s3_to_s3_copier" {
   provider = aws.aws_api_account
   tags = module.tags.values
@@ -571,9 +604,55 @@ resource "aws_sqs_queue" "s3_to_s3_copier" {
   name = lower("${local.identifier_prefix}-s3-to-s3-copier")
 }
 
+data "aws_iam_policy_document" "s3_to_s3_copier" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:SendMessage",
+      "sqs:ReceiveMessage",
+      "sqs:GetQueueAttributes"
+    ]
+    condition {
+      test = "ArnEquals"
+      values = [aws_sns_topic.s3_copier_to_s3.arn]
+      variable = "aws:SourceArn"
+    }
+    principals {
+      identifiers = ["sns.amazonaws.com"]
+      type = "Service"
+    }
+    resources = [
+      aws_sqs_queue.s3_to_s3_copier.arn
+    ]
+  }
+}
+
+resource "aws_sqs_queue_policy" "s3_copier_to_s3" {
+  provider = aws.aws_api_account
+  queue_url = aws_sqs_queue.s3_to_s3_copier.id
+  policy = data.aws_iam_policy_document.s3_to_s3_copier.json
+}
+
 resource "aws_sqs_queue" "s3_to_s3_copier_deadletter" {
   provider = aws.aws_api_account
   tags = module.tags.values
 
   name = lower("${local.identifier_prefix}-s3-to-s3-copier-deadletter")
+}
+
+resource "aws_sns_topic_subscription" "subscribe_s3_copier_to_s3_sqs_to_sns_topic" {
+  provider = aws.aws_api_account
+
+  topic_arn = aws_sns_topic.s3_copier_to_s3.arn
+  protocol = "sqs"
+  endpoint = aws_sqs_queue.s3_to_s3_copier.arn
+}
+
+resource "aws_lambda_event_source_mapping" "s3_to_s3_copier_mapping" {
+  provider = aws.aws_api_account
+
+  event_source_arn = aws_sqs_queue.s3_to_s3_copier.arn
+  enabled          = true
+  function_name    = aws_lambda_function.s3_to_s3_copier_lambda.arn
+  batch_size       = 1
 }
