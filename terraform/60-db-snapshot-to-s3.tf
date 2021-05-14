@@ -11,6 +11,9 @@ module "rds_export_storage" {
   identifier_prefix              = local.identifier_prefix
   bucket_name                    = "RDS Export Storage"
   bucket_identifier              = "rds-export-storage"
+  role_arns_to_share_access_with = [
+    aws_iam_role.rds_snapshot_to_s3_lambda.arn
+  ]
 }
 
 // ==== LAMBDAS ===================================================================================================== //
@@ -63,7 +66,9 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
     actions = [
       "sqs:ReceiveMessage",
       "sqs:DeleteMessage",
-      "sqs:GetQueueAttributes"
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl",
+      "sqs:SendMessage"
     ]
     effect = "Allow"
     resources = [
@@ -93,7 +98,8 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
 
   statement {
     actions = [
-      "rds:StartExportTask"
+      "rds:StartExportTask",
+      "rds:DescribeExportTasks"
     ]
     effect = "Allow"
     resources = [
@@ -370,8 +376,8 @@ data "aws_iam_policy_document" "rds_snapshot_export_service" {
       "s3:DeleteObject*"
     ]
     resources = [
-      module.landing_zone.bucket_arn,
-      "${module.landing_zone.bucket_arn}/*",
+      module.rds_export_storage.bucket_arn,
+      "${module.rds_export_storage.bucket_arn}/*",
       module.rds_export_storage.bucket_arn,
       "${module.rds_export_storage.bucket_arn}/*"
     ]
@@ -383,7 +389,7 @@ data "aws_iam_policy_document" "rds_snapshot_export_service" {
     ]
     effect = "Allow"
     resources = [
-      module.landing_zone.kms_key_arn,
+      module.rds_export_storage.kms_key_arn
     ]
   }
 }
