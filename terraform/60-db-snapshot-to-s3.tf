@@ -78,6 +78,18 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
 
   statement {
     actions = [
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl",
+      "sqs:SendMessage"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_sqs_queue.s3_to_s3_copier.arn
+    ]
+  }
+
+  statement {
+    actions = [
       "iam:PassRole"
     ]
     effect = "Allow"
@@ -170,6 +182,7 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
       IAM_ROLE_ARN = aws_iam_role.rds_snapshot_export_service.arn,
       KMS_KEY_ID = module.rds_export_storage.kms_key_id,
       S3_BUCKET_NAME = module.rds_export_storage.bucket_id,
+      COPIER_QUEUE_ARN = aws_sqs_queue.s3_to_s3_copier.arn
     }
   }
 
