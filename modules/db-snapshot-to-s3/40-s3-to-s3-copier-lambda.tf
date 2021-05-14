@@ -1,0 +1,157 @@
+data "aws_iam_policy_document" "s3_to_s3_copier_lambda_assume_role" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "lambda.amazonaws.com"
+      ]
+      type = "Service"
+    }
+  }
+}
+
+resource "aws_iam_role" "s3_to_s3_copier_lambda" {
+  tags = var.tags
+
+  name               = lower("${var.identifier_prefix}-s3-to-s3-copier-lambda")
+  assume_role_policy = data.aws_iam_policy_document.s3_to_s3_copier_lambda_assume_role.json
+}
+
+data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "sqs:SendMessage",
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_sqs_queue.s3_to_s3_copier.arn
+    ]
+  }
+
+  statement {
+    actions = [
+      "kms:*",
+      "s3:*"
+    ]
+    effect = "Allow"
+    resources = [
+      module.rds_export_storage.kms_key_arn,
+      "${module.rds_export_storage.bucket_arn}/*",
+      var.landing_zone_kms_key_arn,
+      var.landing_zone_bucket_arn,
+      "${var.landing_zone_bucket_arn}/*",
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:CopyObject*",
+      "s3:ListBucketVersions",
+      "s3:ListBucket"
+    ]
+    effect = "Allow"
+    resources = [
+      var.landing_zone_bucket_arn,
+      "${var.landing_zone_bucket_arn}/*",
+      module.rds_export_storage.bucket_arn,
+      "${module.rds_export_storage.bucket_arn}/*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "rds:DescribeExportTasks",
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+
+}
+
+resource "aws_iam_policy" "s3_to_s3_copier_lambda" {
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}-s3-to-s3-copier-lambda")
+  policy = data.aws_iam_policy_document.s3_to_s3_copier_lambda.json
+}
+
+resource "aws_iam_role_policy_attachment" "s3_to_s3_copier_lambda" {
+
+  role       = aws_iam_role.s3_to_s3_copier_lambda.name
+  policy_arn = aws_iam_policy.s3_to_s3_copier_lambda.arn
+}
+
+data "archive_file" "s3_to_s3_copier_lambda" {
+  type        = "zip"
+  source_dir  = "../lambdas/s3_to_s3_export_copier"
+  output_path = "../lambdas/s3-to-s3-export-copier.zip"
+}
+
+resource "aws_s3_bucket_object" "s3_to_s3_copier_lambda" {
+  tags = var.tags
+
+  bucket = var.lambda_artefact_storage_bucket
+  key    = "s3-to-s3-export-copier.zip"
+  source = data.archive_file.s3_to_s3_copier_lambda.output_path
+  acl    = "private"
+  etag   = filemd5(data.archive_file.s3_to_s3_copier_lambda.output_path)
+  depends_on = [
+    data.archive_file.s3_to_s3_copier_lambda
+  ]
+}
+
+resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
+  tags = var.tags
+
+  role             = aws_iam_role.s3_to_s3_copier_lambda.arn
+  handler          = "index.handler"
+  runtime          = "nodejs14.x"
+  function_name    = "${var.identifier_prefix}-s3-to-s3-copier"
+  s3_bucket        = var.lambda_artefact_storage_bucket
+  s3_key           = aws_s3_bucket_object.s3_to_s3_copier_lambda.key
+  source_code_hash = data.archive_file.s3_to_s3_copier_lambda.output_base64sha256
+
+  environment {
+    variables = {
+      BUCKET_DESTINATION = var.landing_zone_bucket_id,
+    }
+  }
+
+  depends_on = [
+    aws_s3_bucket_object.s3_to_s3_copier_lambda,
+  ]
+}
+
+resource "aws_lambda_function_event_invoke_config" "s3_to_s3_copier_lambda" {
+
+  function_name          = aws_lambda_function.s3_to_s3_copier_lambda.function_name
+  maximum_retry_attempts = 0
+  qualifier              = "$LATEST"
+
+  depends_on = [
+    aws_lambda_function.s3_to_s3_copier_lambda
+  ]
+}
