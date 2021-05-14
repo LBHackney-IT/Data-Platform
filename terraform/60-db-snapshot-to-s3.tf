@@ -583,16 +583,6 @@ resource "aws_lambda_event_source_mapping" "event_source_mapping" {
 
 
 // ==== SQS QUEUE - COPIER ========================================================================================== //
-resource "aws_sns_topic" "s3_copier_to_s3" {
-  provider = aws.aws_api_account
-  tags = module.tags.values
-
-  name = lower("${local.identifier_prefix}-s3-to-s3-copier")
-  sqs_success_feedback_role_arn = aws_iam_role.sns_cloudwatch_logging.arn
-  sqs_success_feedback_sample_rate = 100
-  sqs_failure_feedback_role_arn = aws_iam_role.sns_cloudwatch_logging.arn
-}
-
 resource "aws_sqs_queue" "s3_to_s3_copier" {
   provider = aws.aws_api_account
   tags = module.tags.values
@@ -613,11 +603,6 @@ data "aws_iam_policy_document" "s3_to_s3_copier" {
       "sqs:ReceiveMessage",
       "sqs:GetQueueAttributes"
     ]
-    condition {
-      test = "ArnEquals"
-      values = [aws_sns_topic.s3_copier_to_s3.arn]
-      variable = "aws:SourceArn"
-    }
     principals {
       identifiers = ["sns.amazonaws.com"]
       type = "Service"
@@ -639,14 +624,6 @@ resource "aws_sqs_queue" "s3_to_s3_copier_deadletter" {
   tags = module.tags.values
 
   name = lower("${local.identifier_prefix}-s3-to-s3-copier-deadletter")
-}
-
-resource "aws_sns_topic_subscription" "subscribe_s3_copier_to_s3_sqs_to_sns_topic" {
-  provider = aws.aws_api_account
-
-  topic_arn = aws_sns_topic.s3_copier_to_s3.arn
-  protocol = "sqs"
-  endpoint = aws_sqs_queue.s3_to_s3_copier.arn
 }
 
 resource "aws_lambda_event_source_mapping" "s3_to_s3_copier_mapping" {
