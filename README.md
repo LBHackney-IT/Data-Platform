@@ -40,19 +40,23 @@ The terraform will be deployed using Github Actions on push to main / when a Pul
 
 1. Create a env.tfvars file for local deployment, i.e run `cp config/terraform/env.tfvars.example config/terraform/env.tfvars` from the project root directory.
 2. Update the following required variables in the newly created file:
-  - `environment` - Environment you're working in (ususally one of dev, stg, prod or mgmt)
-  - `aws_api_account` - API AWS Account to deploy RDS Export Lambda to (for instance ProductionAPIs account)
-  - `aws_deploy_account` Primary AWS Account to deploy to (for instance DataPlatform AWS Account)
-  - `aws_deploy_iam_role_name` - (can be left blank if assume_roles is set)
-  - `google_project_id` - The Google Project to create service accounts in (for DevScratch `dataplatform-dev0`)
-  - `assume_roles` - leave as an empty list if you want to deploy using SSO credentials locally (dev), or add `[true]` (keeping the value in a list) to deploy using Github Actions (Staging and Production)
 
-3. For local deployment AWS needs a profile (assumed to be called `hackney-dev-scratch`) in and some profile configuration (which can be set in `~/.aws/config`). Read [documentation on Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for more guidance setting up AWS credentials and named profiles.
+- `environment` - Environment you're working in (this is normally dev)
+- `aws_api_account` - API AWS Account to deploy RDS Export Lambda to (for developement purpouses this is normally dev-scratch)
+- `aws_deploy_account` Primary AWS Account to deploy to (for developement purpouses this is normally dataplatform-development)
+- `aws_deploy_iam_role_name` - This is the role that will be used to deploy the infrastructure (for development purpouses this is normally LBH_Automation_Deployment_Role)
+- `google_project_id` - The Google Project to create service accounts in (for DevScratch `dataplatform-dev0`)
+
+3. For local deployment AWS needs a AWS CLI profile (assumed to be called `hackney-dev-scratch`) in the profile configuration file (which can be set in `~/.aws/config`). Read [documentation on Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for more guidance setting up AWS credentials and named profiles.
+
+To set up this profile, you can use the AWS CLI using the following command:
 
 ```
 $ aws configure sso
 ```
+
 Your terminal should look like this:
+
 ```
 SSO start URL [None]: https://hackney.awsapps.com/start
 SSO Region [None]: eu-west-1
@@ -74,40 +78,45 @@ CLI profile name [AWSAdministratorAccess-937934410339]: hackney-dataplatform-dev
 ```
 
 Install AWS-Vault
+
 ```
 $ brew install --cask aws-vault
 ```
 
 Generate Credentials for Vault
+
 ```
 $ aws-vault exec hackney-dataplatform-development -- aws sts get-caller-identity
 ```
 
 Initialise the Project
+
+- Before you run, ensure:
+  - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
+  - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform directory
+
 ```
 $ aws-vault exec hackney-dataplatform-development -- terraform init
 ```
 
 Initialise your Workspace
+
 ```
 $ aws-vault exec hackney-dataplatform-development -- terraform workspace new {developer}
 ```
 
 4. Set up Google credentials
 
-- Run `brew install --cask google-cloud-sdk` to install *Google Cloud SDK* 
+- Run `brew install --cask google-cloud-sdk` to install _Google Cloud SDK_
 - Log in into Google Cloud by running `gcloud auth application-default login`
 - The full path of where the file is saved will be displayed, for example `/Users/*/.config/gcloud/application_default_credentials.json`
-   - Copy this file to the root of the project by running the following command in the root of the project `cp /Users/*/.config/gcloud/application_default_credentials.json ./google_service_account_creds.json` 
+  - Copy this file to the root of the project by running the following command in the root of the project `cp /Users/*/.config/gcloud/application_default_credentials.json ./google_service_account_creds.json`
 
-5. Next run `make init` in the `/terraform`directory.
-This will initialize terraform using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
-   - You remove *hackney-dataplatform-development* aws credentials if they exist in your AWS credentials file
-   - You remove the *.terraform* directory, and the *.terraform.lock.hcl* file if they exist in the project's terraform directory
+5. Next run `make init` in the `/terraform` directory.
+   This will initialize terraform using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
+   - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
+   - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform directory
 
 #### Terraform commands
 
 After runnning you can run `make plan`, `make apply` and `make destroy` to run the terraform deploy/destroy commands with the development `env.tfvars` set for you.
-
-
-
