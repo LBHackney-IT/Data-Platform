@@ -7,7 +7,9 @@ const kmsKeyId = process.env.KMS_KEY_ID;
 const s3BucketName = process.env.S3_BUCKET_NAME;
 const copierQueueName = process.env.COPIER_QUEUE_ARN.split(':').pop();
 
-async function queueMessage(queueName, messageBody, reason, delay = 60) {
+async function queueMessage({queueName , messageBody, reason, delay = 60}) {
+  console.log(queueName,  messageBody, reason, delay);
+
   const sqsClient = new AWS.SQS({region: AWS_REGION});
 
   const getQueueUrlResponse = await sqsClient.getQueueUrl({
@@ -37,7 +39,7 @@ exports.handler = async (event) => {
     let exportTasks = [];
     do {
       const params = {
-        Marker: taskMarker,
+        Marker: taskMarker
       };
 
       const response = await rdsClient.describeExportTasks(params).promise();
@@ -50,12 +52,12 @@ exports.handler = async (event) => {
     const runningTaskCount = exportTasks.filter(task => task.Status === 'STARTING').length
 
     if (runningTaskCount >= 5) {
-      await queueMessage(
-        queueName,
-        record.body,
-        'Too many export tasks still processing',
-        300
-      );
+      await queueMessage({
+        queueName: queueName,
+        messageBody: record.body,
+        reason: 'Too many export tasks still processing',
+        delay: 300
+      });
       return null;
     }
 
@@ -77,7 +79,7 @@ exports.handler = async (event) => {
     do {
       const describeDBSnapshotsParams = {
         DBInstanceIdentifier: dbSnapshotId,
-        Marker: snapshotMarker,
+        Marker: snapshotMarker
       };
 
       const response = await rdsClient.describeDBSnapshots(describeDBSnapshotsParams).promise();
@@ -91,11 +93,11 @@ exports.handler = async (event) => {
     const found = dbSnapshots.find( ({ Status }) => Status === 'creating' );
 
     if (found) {
-      await queueMessage(
-        queueName,
-        record.body,
-        'Snapshot not ready'
-      );
+      await queueMessage({
+        queueName: queueName,
+        messageBody: record.body,
+        reason: 'Snapshot not ready'
+      });
       return null;
     }
 
@@ -125,15 +127,15 @@ exports.handler = async (event) => {
     try {
       response = await rdsClient.startExportTask(startExportTaskParams).promise();
       console.log(response);
-      await queueMessage(
-        copierQueueName,
-        JSON.stringify({
+      await queueMessage({
+        queueName: copierQueueName,
+        messageBody: JSON.stringify({
             ExportTaskIdentifier: exportTaskIdentifier,
             ExportBucket: s3BucketName
         }),
-        'Export started',
-        900
-      );
+        reason: 'Export started',
+        delay: 900
+      });
     } catch (err) {
       console.log("startExportTask error:", err);
       return null;
