@@ -51,3 +51,20 @@ module "housing_repair_data" {
   output_folder_name              = "order-form"
   enable_glue_trigger             = false
 }
+    
+  module "test-repairs-herts-heritage-data" {
+  count = terraform.workspace == "default" ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  glue_role_arn                   = aws_iam_role.glue_role.arn
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  landing_zone_bucket_id          = module.landing_zone.bucket_id
+  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
+  tags                            = module.tags.values
+  glue_job_name                   = "Test Herts Heritage Repairs"
+  google_sheets_document_id       = "1GfnEH4OAdmwQYxrYvlSNjoFl6yRgSztf3JlAMdSxU3g"
+  google_sheets_worksheet_name    = "Form responses 1"
+  department_folder_name          = "housing"
+  output_folder_name              = "test-repairs-herts-heritage"
+}
