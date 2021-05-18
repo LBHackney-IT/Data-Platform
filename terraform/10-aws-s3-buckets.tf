@@ -7,9 +7,7 @@ module "landing_zone" {
   bucket_name                    = "Landing Zone"
   bucket_identifier              = "landing-zone"
   role_arns_to_share_access_with = [
-    "arn:aws:iam::715003523189:root",
-    aws_iam_role.s3_to_s3_copier_lambda.arn,
-//    "arn:aws:iam::937934410339:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AWSAdministratorAccess_6f134ab2a9517e67"
+    module.db_snapshot_to_s3.s3_to_s3_copier_lambda_role_arn
   ]
 }
 
