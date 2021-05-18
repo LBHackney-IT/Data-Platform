@@ -67,5 +67,4 @@ module "housing_repair_data" {
   google_sheets_worksheet_name    = "Form responses 1"
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-herts-heritage"
-  enable_glue_trigger             = false
 }
