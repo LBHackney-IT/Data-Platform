@@ -17,8 +17,10 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
     Prefix: sourcePath
   };
   const listResponse = await s3Client.listObjectsV2(listObjectsParams).promise();
-  console.log("snapshot time full", snapshotTime);
-  const [year, month, day] = [snapshotTime.getFullYear(), snapshotTime.getMonth(), snapshotTime.getDate() ];
+  
+  const day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
+  const month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
+  const year = snapshotTime.getFullYear();
 
   //console.log("list response", listResponse);
   console.log("list response contents", listResponse.Contents);
