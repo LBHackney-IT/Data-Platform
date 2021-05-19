@@ -127,3 +127,16 @@ resource "aws_glue_crawler" "landing_zone_test_crawler" {
     path = "s3://${module.landing_zone.bucket_id}/test"
   }
 }
+
+resource "aws_glue_crawler" "landing_zone_parking_crawler" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.landing_zone_catalog_database.name
+  name          = "${local.identifier_prefix}-landing-zone-parking-crawler"
+  role          = aws_iam_role.glue_role.arn
+  table_prefix  = "parking_"
+
+  s3_target {
+    path = "s3://${module.landing_zone.bucket_id}/parking"
+  }
+}
