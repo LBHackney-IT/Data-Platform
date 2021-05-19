@@ -32,12 +32,12 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
       }
       const [snapShotName, databaseName, tableName] = file.Key.split("/", 3);
 
-      const fileKey = file.Key.substr(`${snapShotName}/${databaseName}/${tableName}`.length + 1);
-      console.log("fileKey====", fileKey);
+      const fileName = file.Key.substr(`${snapShotName}/${databaseName}/${tableName}`.length + 1);
+      console.log("fileName====", fileName);
       const copyObjectParams = {
         Bucket: targetBucketName,
         CopySource: `${sourceBucketName}/${file.Key}`,
-        Key: `${targetPath}/${databaseName}/table_name=${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/`,
+        Key: `${targetPath}/${databaseName}/table_name=${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/${fileName}`,
       };
       console.log("copyObjectParams",copyObjectParams)
 
