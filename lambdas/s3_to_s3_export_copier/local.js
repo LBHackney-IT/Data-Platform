@@ -4,7 +4,7 @@ process.on('unhandledRejection', error => {
   console.log(error)
 });
 
-process.env.BUCKET_DESTINATION = "dataplatform-joates-landing-zone";
+process.env.BUCKET_DESTINATION = "dataplatform-b-dalton-landing-zone";
 const handler = require("./index");
 
 handler.handler({
@@ -13,8 +13,8 @@ handler.handler({
       "messageId": "2e1424d4-f796-459a-8184-9c92662be6da",
       "receiptHandle": "AQEBzWwaftRI0KuVm4tP+/7q1rGgNqicHq...",
       "body": JSON.stringify({
-        ExportTaskIdentifier: "dataplatform-export-test",
-        ExportBucket: "dataplatform-joates-rds-export-storage"
+        ExportTaskIdentifier: "dataplatform-test-export2",
+        ExportBucket: "dataplatform-b-dalton-rds-export-storage"
       }),
       "attributes": {
         "ApproximateReceiveCount": "1",
@@ -30,3 +30,7 @@ handler.handler({
     }
   ]
 });
+
+
+// /housing/databases   / name of the database / name of the table /
+// import_year{todays year} / import_month={todays month} / import_day={todays day} / parquet filename
