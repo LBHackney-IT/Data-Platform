@@ -2,6 +2,9 @@
 
 Hackney Data Platform Infrastructure and Code
 
+![Dataplatform](https://user-images.githubusercontent.com/8051117/118786691-fd9eb880-b889-11eb-97cc-e0b5fbf56d6b.jpg)
+
+
 ## Data Dictionary & Playbook
 
 The Data Dictionary & Playbook can be found on the [Document Site](http://playbook.hackney.gov.uk/Data-Platform-Playbook/) and it's related [GitHub Repository](https://github.com/LBHackney-IT/Data-Platform-Playbook/)
