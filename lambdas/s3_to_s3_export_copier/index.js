@@ -17,7 +17,7 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
     Prefix: sourcePath
   };
   const listResponse = await s3Client.listObjectsV2(listObjectsParams).promise();
-  
+
   const day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
   const month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
   const year = snapshotTime.getFullYear();
@@ -66,6 +66,11 @@ exports.handler = async (events) => {
       }
 
       const exportTaskStatus = describeExportTasks.ExportTasks.pop();
+
+      // Don't re-queue if status is cancelled
+      if (exportTaskStatus.Status === 'CANCELED') {
+        return;
+      }
 
       // Check to see if the export has finished
       if (exportTaskStatus.Status !== 'COMPLETE') {
