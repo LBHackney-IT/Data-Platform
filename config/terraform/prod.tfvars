@@ -9,4 +9,4 @@ application = "DataPlatform"
 stack = "Core"
 transit_gateway_cidr = "10.120.32.0/24"
 transit_gateway_private_subnets = ["10.120.32.0/26", "10.120.32.64/26", "10.120.32.128/26"]
-rds_instance_ids = ["addresses-api-db-production"]
+rds_instance_ids = ["addresses-api-db-production", "geolive-db"]
