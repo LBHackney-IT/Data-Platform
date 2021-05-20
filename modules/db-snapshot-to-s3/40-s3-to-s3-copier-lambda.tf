@@ -133,6 +133,7 @@ resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_bucket_object.s3_to_s3_copier_lambda.key
   source_code_hash = data.archive_file.s3_to_s3_copier_lambda.output_base64sha256
+  timeout          = 900
 
   environment {
     variables = {
