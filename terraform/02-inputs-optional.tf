@@ -58,5 +58,5 @@ variable "team" {
 variable "rds_instance_ids" {
   description = "Array of rds instance ids"
   type        = list(string)
-  default     = ["ChangeMe"]
+  default     = []
 }
