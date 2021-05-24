@@ -1,6 +1,7 @@
 locals {
   default_arn = [
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+    // "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_DataPlatformPowerUserParking_69e2f4336bbab37f"
   ]
 }
 
