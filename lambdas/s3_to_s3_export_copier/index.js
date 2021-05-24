@@ -1,3 +1,5 @@
+import {NextToken} from "aws-sdk/clients/s3";
+
 const AWS = require("aws-sdk");
 
 const AWS_REGION = "eu-west-2";
@@ -12,38 +14,44 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
   console.log();
 
   // plan, list through the source, if got continuation token, recursive
-  const listObjectsParams = {
-    Bucket: sourceBucketName,
-    Prefix: sourcePath
-  };
-  const listResponse = await s3Client.listObjectsV2(listObjectsParams).promise();
 
-  const day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
-  const month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
-  const year = snapshotTime.getFullYear();
+  let listResponse;
+  do {
+    const listObjectsParams = {
+      Bucket: sourceBucketName,
+      Prefix: sourcePath,
+      ContinuationToken: listResponse?.NextContinuationToken
+    };
+    console.log("continuation token", listResponse?.NextContinuationToken);
 
-  //console.log("list response", listResponse);
-  console.log("list response contents", listResponse.Contents);
+    listResponse = await s3Client.listObjectsV2(listObjectsParams).promise();
 
-  await Promise.all(
-    listResponse.Contents.map(async (file) => {
-      if (!file.Key.endsWith("parquet")){
-        return;
-      }
-      const [snapShotName, databaseName, tableName] = file.Key.split("/", 3);
+    const day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
+    const month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
+    const year = snapshotTime.getFullYear();
 
-      const fileName = file.Key.substr(`${snapShotName}/${databaseName}/${tableName}`.length + 1);
-      console.log("fileName====", fileName);
-      const copyObjectParams = {
-        Bucket: targetBucketName,
-        CopySource: `${sourceBucketName}/${file.Key}`,
-        Key: `${targetPath}/${databaseName}/table_name=${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/${fileName}`,
-      };
-      console.log("copyObjectParams",copyObjectParams)
+    console.log("list response contents", listResponse.Contents);
 
-      await s3Client.copyObject(copyObjectParams).promise().catch(console.log);
-    })
-  );
+    await Promise.all(
+      listResponse.Contents.map(async (file) => {
+        if (!file.Key.endsWith("parquet")) {
+          return;
+        }
+        const [snapShotName, databaseName, tableName] = file.Key.split("/", 3);
+
+        const fileName = file.Key.substr(`${snapShotName}/${databaseName}/${tableName}`.length + 1);
+        console.log("fileName====", fileName);
+        const copyObjectParams = {
+          Bucket: targetBucketName,
+          CopySource: `${sourceBucketName}/${file.Key}`,
+          Key: `${targetPath}/${databaseName}/table_name=${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/${fileName}`,
+        };
+        console.log("copyObjectParams", copyObjectParams)
+
+        await s3Client.copyObject(copyObjectParams).promise().catch(console.log);
+      })
+    );
+  } while (listResponse.IsTruncated && listResponse.NextContinuationToken)
 }
 
 exports.handler = async (events) => {
