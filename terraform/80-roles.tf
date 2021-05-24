@@ -28,14 +28,75 @@ data "aws_iam_policy_document" "power_user_parking" {
       "logs:FilterLogEvents",
       "logs:DescribeLogGroups",
       "logs:DescribeLogStreams",
-      "tag:GetResources"
+      "tag:GetResources",
+      "iam:ListRoles",
     ]
     resources = ["*"]
   }
 
   statement {
+    sid = "RolePermissions"
+    actions = [
+      "iam:GetRole",
+      "iam:PassRole",
+    ]
+    resources = [
+      aws_iam_role.glue_role.arn
+    ]
+  }
+
+  statement {
+    sid = "KmsKeyAccess"
     effect = "Allow"
     actions = [
+//      CancelKeyDeletion
+//      ConnectCustomKeyStore
+//      CreateAlias
+//      CreateCustomKeyStore
+//      CreateGrant
+//      CreateKey
+//      Decrypt
+//      DeleteAlias
+//      DeleteCustomKeyStore
+//      DeleteImportedKeyMaterial
+//      DescribeCustomKeyStores
+//      DescribeKey
+//      DisableKey
+//      DisableKeyRotation
+//      DisconnectCustomKeyStore
+//      EnableKey
+//      EnableKeyRotation
+//      Encrypt
+//      GenerateDataKey
+//      GenerateDataKeyPair
+//      GenerateDataKeyPairWithoutPlaintext
+//      GenerateDataKeyWithoutPlaintext
+//      GenerateRandom
+//      GetKeyPolicy
+//      GetKeyRotationStatus
+//      GetParametersForImport
+//      GetPublicKey
+//      ImportKeyMaterial
+//      ListAliases
+//      ListGrants
+//      ListKeyPolicies
+//      ListKeys
+//      ListResourceTags
+//      ListRetirableGrants
+//      PutKeyPolicy
+//      ReEncryptFrom
+//      ReEncryptTo
+//      RetireGrant
+//      RevokeGrant
+//      ScheduleKeyDeletion
+//      Sign
+//      TagResource
+//      UntagResource
+//      UpdateAlias
+//      UpdateCustomKeyStore
+//      UpdateKeyDescription
+//      Verify
+
       "kms:Encrypt",
       "kms:Decrypt",
       "kms:ReEncrypt*",
@@ -49,6 +110,7 @@ data "aws_iam_policy_document" "power_user_parking" {
       module.raw_zone.kms_key_arn,
       module.refined_zone.kms_key_arn,
       module.trusted_zone.kms_key_arn,
+      module.athena_storage.kms_key_arn
     ]
   }
 
@@ -74,7 +136,7 @@ data "aws_iam_policy_document" "power_user_parking" {
       "glue:BatchGetTriggers",
       "glue:BatchGetWorkflows",
       "glue:BatchStopJobRun",
-      "glue:CancelMLTaskRun",
+//      "glue:CancelMLTaskRun",
       "glue:CheckSchemaVersionValidity",
 //      "glue:CreateClassifier",
 //      "glue:CreateConnection",
@@ -310,12 +372,10 @@ data "aws_iam_policy_document" "power_user_parking" {
       // "s3:PutStorageLensConfigurationTagging",
     ]
     resources = [
-      module.raw_zone.bucket_arn,
       "${module.raw_zone.bucket_arn}/parking/*",
-      module.refined_zone.bucket_arn,
       "${module.refined_zone.bucket_arn}/parking/*",
-      module.trusted_zone.bucket_arn,
-      "${module.trusted_zone.bucket_arn}/parking/*"
+      "${module.trusted_zone.bucket_arn}/parking/*",
+      "${module.athena_storage.bucket_arn}/parking/*"
     ]
   }
 
@@ -327,8 +387,19 @@ data "aws_iam_policy_document" "power_user_parking" {
       "s3:List*"
     ]
     resources = [
-      module.landing_zone.bucket_arn,
       "${module.landing_zone.bucket_arn}/parking/*",
+    ]
+  }
+
+  statement {
+    sid = "FullAccess"
+    effect = "Allow"
+    actions = [
+      "s3:*"
+    ]
+    resources = [
+      "${module.glue_temp_storage.bucket_arn}/*",
+      "${module.glue_scripts.bucket_arn}/custom/*",
     ]
   }
 }
