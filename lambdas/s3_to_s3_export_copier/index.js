@@ -1,5 +1,3 @@
-import {NextToken} from "aws-sdk/clients/s3";
-
 const AWS = require("aws-sdk");
 
 const AWS_REGION = "eu-west-2";
