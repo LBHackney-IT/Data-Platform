@@ -6,7 +6,10 @@ data "aws_iam_policy_document" "sso_trusted_relationship" {
       type = "Federated"
     }
     principals {
-      identifiers = ["arn:aws:iam::484466746276:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AWSAdministratorAccess_2cff52f8dbae1fd6"]
+      identifiers = [
+        "arn:aws:iam::484466746276:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AWSAdministratorAccess_2cff52f8dbae1fd6",
+        "arn:aws:iam::120038763019:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AWSAdministratorAccess_89cef605035aecd1"
+      ]
       type = "AWS"
     }
     actions = [
