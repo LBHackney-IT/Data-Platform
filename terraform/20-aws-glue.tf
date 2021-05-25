@@ -125,6 +125,11 @@ resource "aws_glue_crawler" "landing_zone_test_crawler" {
 
   s3_target {
     path = "s3://${module.landing_zone.bucket_id}/test"
+    exclusions = [
+      "*.json",
+      "*.txt",
+      "*.zip"
+    ]
   }
 }
 
@@ -138,6 +143,11 @@ resource "aws_glue_crawler" "landing_zone_parking_crawler" {
 
   s3_target {
     path = "s3://${module.landing_zone.bucket_id}/parking"
+    exclusions = [
+      "*.json",
+      "*.txt",
+      "*.zip"
+    ]
   }
 }
 
@@ -156,5 +166,10 @@ resource "aws_glue_crawler" "raw_zone_parking_crawler" {
 
   s3_target {
     path = "s3://${module.raw_zone.bucket_id}/parking"
+    exclusions = [
+      "*.json",
+      "*.txt",
+      "*.zip"
+    ]
   }
 }
