@@ -372,9 +372,11 @@ data "aws_iam_policy_document" "power_user_parking" {
       // "s3:PutStorageLensConfigurationTagging",
     ]
     resources = [
-      "${module.raw_zone.bucket_arn}/parking/*",
+      module.refined_zone.bucket_arn,
       "${module.refined_zone.bucket_arn}/parking/*",
+      module.trusted_zone.bucket_arn,
       "${module.trusted_zone.bucket_arn}/parking/*",
+      module.athena_storage.bucket_arn,
       "${module.athena_storage.bucket_arn}/parking/*"
     ]
   }
@@ -387,6 +389,9 @@ data "aws_iam_policy_document" "power_user_parking" {
       "s3:List*"
     ]
     resources = [
+      module.raw_zone.bucket_arn,
+      "${module.raw_zone.bucket_arn}/parking/*",
+      module.landing_zone.bucket_arn,
       "${module.landing_zone.bucket_arn}/parking/*",
     ]
   }
