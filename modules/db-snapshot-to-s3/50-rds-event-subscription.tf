@@ -63,6 +63,7 @@ resource "aws_sns_topic" "rds_snapshot_to_s3" {
 }
 
 resource "aws_db_event_subscription" "snapshot_to_s3" {
+  count = length(var.rds_instance_ids) > 0 ? 1 : 0
   tags = var.tags
 
   name      = lower("${var.identifier_prefix}-snapshot-to-s3")

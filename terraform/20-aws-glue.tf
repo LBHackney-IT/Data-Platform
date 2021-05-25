@@ -1,3 +1,12 @@
+locals {
+  crawler_excluded_blogs = [
+    "*.json",
+    "*.txt",
+    "*.zip",
+    "*.xlsx"
+  ]
+}
+
 resource "aws_iam_role" "glue_role" {
   tags = module.tags.values
 
@@ -112,6 +121,7 @@ resource "aws_glue_crawler" "landing_zone_housing_crawler" {
 
   s3_target {
     path = "s3://${module.landing_zone.bucket_id}/housing"
+    exclusions = local.crawler_excluded_blogs
   }
 }
 
@@ -125,6 +135,7 @@ resource "aws_glue_crawler" "landing_zone_test_crawler" {
 
   s3_target {
     path = "s3://${module.landing_zone.bucket_id}/test"
+    exclusions = local.crawler_excluded_blogs
   }
 }
 
@@ -138,5 +149,25 @@ resource "aws_glue_crawler" "landing_zone_parking_crawler" {
 
   s3_target {
     path = "s3://${module.landing_zone.bucket_id}/parking"
+    exclusions = local.crawler_excluded_blogs
+  }
+}
+
+// ==== RAW ZONE ===========
+resource "aws_glue_catalog_database" "raw_zone_catalog_database" {
+  name = "${local.identifier_prefix}-raw-zone-database"
+}
+
+resource "aws_glue_crawler" "raw_zone_parking_crawler" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.raw_zone_catalog_database.name
+  name          = "${local.identifier_prefix}-raw-zone-parking-crawler"
+  role          = aws_iam_role.glue_role.arn
+  table_prefix  = "parking_"
+
+  s3_target {
+    path = "s3://${module.raw_zone.bucket_id}/parking"
+    exclusions = local.crawler_excluded_blogs
   }
 }
