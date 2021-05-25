@@ -25,9 +25,7 @@ data "aws_iam_policy_document" "power_user_parking" {
       "athena:*",
       "s3:ListAllMyBuckets",
       "kms:ListAliases",
-      "logs:FilterLogEvents",
       "logs:DescribeLogGroups",
-      "logs:DescribeLogStreams",
       "tag:GetResources",
       "iam:ListRoles",
     ]
@@ -35,14 +33,41 @@ data "aws_iam_policy_document" "power_user_parking" {
   }
 
   statement {
+    effect = "Allow"
+    actions = [
+      "logs:FilterLogEvents",
+      "logs:DescribeLogStreams",
+      "logs:GetLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:/aws-glue/*"
+    ]
+  }
+
+  statement {
     sid = "RolePermissions"
+    effect = "Allow"
     actions = [
       "iam:GetRole",
+    ]
+    resources = [
+      aws_iam_role.glue_role.arn
+    ]
+  }
+
+  statement {
+    sid = "AllowRolePassingToGlueJobs"
+    actions = [
       "iam:PassRole",
     ]
     resources = [
       aws_iam_role.glue_role.arn
     ]
+    condition {
+      test = "StringLike"
+      values = ["glue.amazonaws.com"]
+      variable = "iam:PassedToService"
+    }
   }
 
   statement {
@@ -113,12 +138,6 @@ data "aws_iam_policy_document" "power_user_parking" {
       module.athena_storage.kms_key_arn
     ]
   }
-
-//  statement {
-//    actions = [
-//    ]
-//    resources = ["*"]
-//  }
 
   // Glue Access
   statement {
