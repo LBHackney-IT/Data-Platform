@@ -129,7 +129,6 @@ resource "aws_s3_bucket_object" "rds_snapshot_to_s3_lambda" {
   key    = "rds_snapshot_to_s3_lambda.zip"
   source = data.archive_file.rds_snapshot_to_s3_lambda.output_path
   acl    = "private"
-  etag   = filemd5(data.archive_file.rds_snapshot_to_s3_lambda.output_path)
   depends_on = [
     data.archive_file.rds_snapshot_to_s3_lambda
   ]
