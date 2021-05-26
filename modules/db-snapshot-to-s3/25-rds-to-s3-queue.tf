@@ -7,6 +7,8 @@ resource "aws_sqs_queue" "rds_snapshot_to_s3" {
     maxReceiveCount     = 4
   })
 
+  visibility_timeout_seconds = local.lambda_timeout
+
   name = lower("${var.identifier_prefix}-rds-snapshot-to-s3")
 }
 

@@ -6,6 +6,8 @@ resource "aws_sqs_queue" "s3_to_s3_copier" {
     maxReceiveCount     = 4
   })
 
+  visibility_timeout_seconds = local.lambda_timeout
+
   name = lower("${var.identifier_prefix}-s3-to-s3-copier")
 }
 
