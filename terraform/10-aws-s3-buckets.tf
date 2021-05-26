@@ -7,7 +7,7 @@ module "landing_zone" {
   bucket_name       = "Landing Zone"
   bucket_identifier = "landing-zone"
   role_arns_to_share_access_with = [
-    # module.db_snapshot_to_s3.s3_to_s3_copier_lambda_role_arn
+    module.db_snapshot_to_s3.s3_to_s3_copier_lambda_role_arn
   ]
 }
 
