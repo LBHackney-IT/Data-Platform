@@ -117,6 +117,7 @@ resource "aws_s3_bucket_object" "s3_to_s3_copier_lambda" {
   key    = "s3-to-s3-export-copier.zip"
   source = data.archive_file.s3_to_s3_copier_lambda.output_path
   acl    = "private"
+  etag   = filemd5(data.archive_file.s3_to_s3_copier_lambda.output_path)
   depends_on = [
     data.archive_file.s3_to_s3_copier_lambda
   ]
