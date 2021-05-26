@@ -53,18 +53,18 @@ resource "aws_iam_policy_attachment" "sns_cloudwatch_policy_attachment" {
   policy_arn = aws_iam_policy.sns_cloudwatch_logging.arn
 }
 
-resource "aws_sns_topic" "rds_snapshot_to_s3" {
-  tags = var.tags
+# resource "aws_sns_topic" "rds_snapshot_to_s3" {
+#   tags = var.tags
 
-  name                             = lower("${var.identifier_prefix}-rds-snapshot-to-s3")
-  sqs_success_feedback_role_arn    = aws_iam_role.sns_cloudwatch_logging.arn
-  sqs_success_feedback_sample_rate = 100
-  sqs_failure_feedback_role_arn    = aws_iam_role.sns_cloudwatch_logging.arn
-}
+#   name                             = lower("${var.identifier_prefix}-rds-snapshot-to-s3")
+#   sqs_success_feedback_role_arn    = aws_iam_role.sns_cloudwatch_logging.arn
+#   sqs_success_feedback_sample_rate = 100
+#   sqs_failure_feedback_role_arn    = aws_iam_role.sns_cloudwatch_logging.arn
+# }
 
 resource "aws_db_event_subscription" "snapshot_to_s3" {
   count = length(var.rds_instance_ids) > 0 ? 1 : 0
-  tags = var.tags
+  tags  = var.tags
 
   name      = lower("${var.identifier_prefix}-snapshot-to-s3")
   sns_topic = aws_sns_topic.rds_snapshot_to_s3.arn

@@ -37,12 +37,12 @@ resource "aws_sqs_queue_policy" "rds_snapshot_to_s3" {
   policy    = data.aws_iam_policy_document.rds_snapshot_to_s3.json
 }
 
-resource "aws_sqs_queue" "rds_snapshot_to_s3_deadletter" {
+# resource "aws_sqs_queue" "rds_snapshot_to_s3_deadletter" {
 
-  tags = var.tags
+#   tags = var.tags
 
-  name = lower("${var.identifier_prefix}-rds-snapshot-to-s3-deadletter")
-}
+#   name = lower("${var.identifier_prefix}-rds-snapshot-to-s3-deadletter")
+# }
 
 resource "aws_sns_topic_subscription" "subscribe_sqs_to_sns_topic" {
 
