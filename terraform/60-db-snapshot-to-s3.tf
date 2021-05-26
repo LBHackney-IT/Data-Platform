@@ -22,4 +22,7 @@ module "db_snapshot_to_s3" {
   providers = {
     aws = aws.aws_api_account
   }
+  depends_on = [
+    aws_s3_bucket.lambda_artefact_storage
+  ]
 }
