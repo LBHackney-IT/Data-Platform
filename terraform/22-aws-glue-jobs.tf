@@ -52,7 +52,7 @@ module "housing_repair_data" {
   enable_glue_trigger             = false
 }
     
-  module "test-repairs-herts-heritage-data" {
+module "test-repairs-herts-heritage-data" {
   count = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
@@ -69,7 +69,7 @@ module "housing_repair_data" {
   output_folder_name              = "test-repairs-herts-heritage"
 }
     
-      module "test-repairs-purdy-data" {
+module "test-repairs-purdy-data" {
   count = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
