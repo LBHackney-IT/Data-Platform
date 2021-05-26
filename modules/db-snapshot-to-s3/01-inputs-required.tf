@@ -37,7 +37,3 @@ variable "landing_zone_bucket_id" {
 variable "rds_instance_ids" {
   type = list(string)
 }
-
-locals {
-  lambda_timeout = 900
-}
