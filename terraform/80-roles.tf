@@ -432,7 +432,7 @@ data "aws_iam_policy_document" "power_user_parking" {
 }
 
 resource "aws_iam_role" "power_user_parking" {
-  name = "AWS_SSO_${upper(local.application_snake)}_POWER_USER_PARKING"
+  name = "AWS_SSO_${upper(local.identifier_prefix)}_POWER_USER_PARKING"
   assume_role_policy = data.aws_iam_policy_document.sso_trusted_relationship.json
 }
 
