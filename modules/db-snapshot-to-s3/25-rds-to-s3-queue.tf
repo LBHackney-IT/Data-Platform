@@ -7,7 +7,11 @@ resource "aws_sqs_queue" "rds_snapshot_to_s3" {
     maxReceiveCount     = 4
   })
 
-  visibility_timeout_seconds = local.lambda_timeout
+  // To allow your function time to process each batch of records, set the source queue's visibility timeout to at
+  // least 6 times the timeout that you configure on your function. The extra time allows for Lambda to retry if your
+  // function execution is throttled while your function is processing a previous batch.
+  // See: https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html
+  visibility_timeout_seconds = local.lambda_timeout * 6
 
   name = lower("${var.identifier_prefix}-rds-snapshot-to-s3")
 }
