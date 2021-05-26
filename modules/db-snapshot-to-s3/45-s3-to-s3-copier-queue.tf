@@ -32,11 +32,11 @@ resource "aws_sqs_queue_policy" "s3_copier_to_s3" {
   policy    = data.aws_iam_policy_document.s3_to_s3_copier.json
 }
 
-# resource "aws_sqs_queue" "s3_to_s3_copier_deadletter" {
-#   tags = var.tags
+resource "aws_sqs_queue" "s3_to_s3_copier_deadletter" {
+  tags = var.tags
 
-#   name = lower("${var.identifier_prefix}-s3-to-s3-copier-deadletter")
-# }
+  name = lower("${var.identifier_prefix}-s3-to-s3-copier-deadletter")
+}
 
 resource "aws_lambda_event_source_mapping" "s3_to_s3_copier_mapping" {
 

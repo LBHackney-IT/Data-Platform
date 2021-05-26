@@ -1,11 +1,11 @@
-# resource "aws_s3_bucket" "lambda_artefact_storage" {
-#   provider = aws.aws_api_account
-#   tags     = module.tags.values
+resource "aws_s3_bucket" "lambda_artefact_storage" {
+  provider = aws.aws_api_account
+  tags     = module.tags.values
 
-#   bucket        = lower("${local.identifier_prefix}-lambda-artefact-storage")
-#   acl           = "private"
-#   force_destroy = true
-# }
+  bucket        = lower("${local.identifier_prefix}-lambda-artefact-storage")
+  acl           = "private"
+  force_destroy = true
+}
 
 # module "db_snapshot_to_s3" {
 #   source                         = "../modules/db-snapshot-to-s3"
