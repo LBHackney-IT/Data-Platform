@@ -149,7 +149,7 @@ runs:
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
           ${{ github.action_path }}/box.sh "Running Terraform plan"
-          terraform force-unlock c323b0b1-6dd4-ced0-c1f4-7e884e2901d5
+          terraform force-unlock -auto-approve c323b0b1-6dd4-ced0-c1f4-7e884e2901d5
           terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}'  -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
           echo -e "\n"
         fi
