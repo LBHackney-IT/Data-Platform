@@ -161,7 +161,7 @@ runs:
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
           if [ "${{ inputs.branch }}" == "main" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform apply"
-            terraform apply -auto-approve -input=false plan.out -replace="module.db_snapshot_to_s3.aws_sns_topic.rds_snapshot_to_s3"
+            terraform apply -auto-approve -input=false plan.out
           else
             echo -e "Not on main branch, so skipping Terraform apply."
           fi

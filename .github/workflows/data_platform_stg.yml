@@ -4,7 +4,7 @@ env:
   # AWS Account to deploy to. Account IDs are saved as secrets in this GitHub repository for convenience, using the naming convention AWS_ACCOUNT_ACCOUNT_NAME
   # where any spaces, dashes are converted to underscore (_). You can also use the Account Id value as literal string "12345679".
   aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
-  aws_api_account: ${{ secrets.AWS_API_ACCOUNT_STG }}
+  aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
   google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
 
   # AWS region to deploy to. London is eu-west-2, Ireland is eu-west-1. Unless you have a reason, keep region to eu-west-2.
