@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
 const sftpClient = require('ssh2-sftp-client');
+const { PassThrough } = require("stream");
 
 const AWS_REGION = "eu-west-2";
 
@@ -11,81 +12,84 @@ let config = {
   port: 22
 };
 
-async function findFile(conn, filePath) {
+const filePathOnServer = 'LogiXML'
+
+function fileNamePattern() {
   const today = new Date();
   const year = today.getFullYear().toString().substring(2, 4);
   const month = (today.getMonth() + 1).toString().padStart(2, '0')
   const day = today.getDate().toString().padStart(2, '0');
+  
+  return `data_warehouse${year}${month}${day}*`;
+}
 
-  return conn.exists(filePath)
+async function findFiles(sftpConn) {
+  return sftpConn.exists(filePathOnServer)
     .then(() => {
-      const patternToLookFor = `data_warehouse${year}${month}${day}*`;
-      console.log(`Looking for pattern ${patternToLookFor}`)
+      console.log(`Looking for pattern ${fileNamePattern()} in path ${filePathOnServer}`)
 
-      return conn.list(filePath, patternToLookFor);
+      return sftpConn.list(filePathOnServer, fileNamePattern());
     })
     .then((fileList) => {
       if(fileList.length === 0){
         console.log("couldn't find any files")
-        throw Error("no file exists today")
+        throw Error("no files were found matching the given pattern")
       }
-      if (fileList.length > 1){
-        // warn more than one file has been uploaded
-        console.log("found more than one file")
-        fileList.forEach((file, index) => {
-          console.log(`File ${index + 1}: ${file.name}`);
-        });
-      }
-      const fileName = fileList[0].name;
-      console.log(`Found file: ${fileName}`)
-      return {fileName: fileName};
-    })
-    .catch(err => {
-      console.log(`Error: ${err.message}`);
-    });;
-}
-
-async function putFile(fileName, fileStream) {
-  const s3Client = new AWS.S3({region: AWS_REGION});
-  console.log(`Putting file in ${s3Bucket} at key parking/${fileName}`)
-  console.log("stream object", fileStream)
-
-  const params = {
-    Bucket: s3Bucket,
-    Key: `parking/${fileName}`,
-    Body: fileStream
-  };
-
-  return s3Client.putObject(params).promise()
-}
-
-exports.handler = async () => {
-  const filePath = 'LogiXML'
-  const sftp = new sftpClient();
-
-  await sftp.connect(config)
-    .then(() => {
-      console.log("Connected...Finding file")
-      return findFile(sftp, filePath);
-    })
-    .then(({ fileName }) => {
-      console.log("getting file")
-      return {
-        fileStream: sftp.get(`${filePath}/${fileName}`),
-        fileName: fileName
-      }
-    })
-    .then(({ fileStream, fileName }) => {
-      return putFile(fileName, fileStream)
-    })
-    .then((s3response) => {
-      console.log("upload completed")
-      console.log(`uploaded file ${fileName} into s3 bucket ${BUCKET_DESTINATION}`)
-    })
-    .then(() => {
-      sftp.end();
+      const fileNames = fileList.map(file => file.name);
+      console.log("Found files: ", fileNames)
+      return { files: fileNames };
     })
     .catch(err => {
       console.log(`Error: ${err.message}`);
     });
+}
+
+function putFile(fileName) {
+  const s3Client = new AWS.S3({region: AWS_REGION});
+  const stream = new PassThrough();
+
+  const params = {
+    Bucket: s3Bucket,
+    Key: `parking/${fileName}`,
+    Body: stream
+  };
+  const upload = s3Client.upload(params, (err, data) => (err ? reject(err) : resolve(data)));
+
+  return { stream, upload }
+}
+
+function getFile(sftpConn, fileName, filePath, stream) {
+  return sftpConn.get(`${filePath}/${fileName}`, stream)
+}
+
+async function streamFileFromSftpToS3(sftp, fileName) {
+  const {stream, upload} = putFile(fileName);
+  getFile(sftp, fileName, filePathOnServer, stream);
+
+  return upload.promise()
+    .then(response => {
+      console.log("Successfully upload to S3 with response:", response)
+    })
+    .catch(err => {
+      console.log("Error", err.message);
+    });
+}
+
+exports.handler = async () => {
+  const sftp = new sftpClient();
+
+  return await sftp.connect(config)
+  .then(() => {
+    console.log("Connected to server...Looking for todays file")
+    return findFiles(sftp, filePathOnServer);
+  })
+  .then(({ files }) => {
+    return Promise.all(files.map(file => streamFileFromSftpToS3(sftp, file)));
+  })
+  .then(() => sftp.end())
+  .catch(err => {
+    console.log("Error", err.message);
+  });
 };
+
+
