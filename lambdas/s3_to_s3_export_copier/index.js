@@ -43,6 +43,7 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
           Bucket: targetBucketName,
           CopySource: `${sourceBucketName}/${file.Key}`,
           Key: `${targetPath}/${databaseName}/table_name=${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/${fileName}`,
+          ACL: "bucket-owner-full-control",
         };
         console.log("copyObjectParams", copyObjectParams)
 
