@@ -110,7 +110,6 @@ resource "aws_iam_policy" "rds_snapshot_to_s3_lambda" {
 
 resource "aws_iam_role_policy_attachment" "rds_snapshot_to_s3_lambda" {
 
-
   role       = aws_iam_role.rds_snapshot_to_s3_lambda.name
   policy_arn = aws_iam_policy.rds_snapshot_to_s3_lambda.arn
 }
@@ -121,6 +120,10 @@ data "archive_file" "rds_snapshot_to_s3_lambda" {
   output_path = "../lambdas/rds-database-snapshot-replicator.zip"
 }
 
+locals {
+  etag = filemd5(data.archive_file.rds_snapshot_to_s3_lambda.output_path)
+}
+
 resource "aws_s3_bucket_object" "rds_snapshot_to_s3_lambda" {
 
   tags = var.tags
@@ -129,7 +132,7 @@ resource "aws_s3_bucket_object" "rds_snapshot_to_s3_lambda" {
   key    = "rds_snapshot_to_s3_lambda.zip"
   source = data.archive_file.rds_snapshot_to_s3_lambda.output_path
   acl    = "private"
-  etag   = filemd5(data.archive_file.rds_snapshot_to_s3_lambda.output_path)
+  etag   = local.etag
   depends_on = [
     data.archive_file.rds_snapshot_to_s3_lambda
   ]
