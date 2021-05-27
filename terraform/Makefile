@@ -9,6 +9,9 @@ plan:
 apply: 
 	aws-vault exec hackney-dataplatform-development -- terraform apply -var-file="../config/terraform/env.tfvars"
 
+validate:
+	terraform validate
+
 destroy: 
 	aws-vault exec hackney-dataplatform-development -- terraform destroy -var-file="../config/terraform/env.tfvars"
 
