@@ -113,7 +113,7 @@ exports.handler = async (event) => {
     const databaseName = latestSnapshot.DBInstanceIdentifier;
     console.log("databaseName:", databaseName);
 
-    const exportTaskIdentifier = snapshotIdentifier.substr(0, 60);
+    const exportTaskIdentifier = snapshotIdentifier.substr(0, 100);
 
     const startExportTaskParams = {
       ExportTaskIdentifier: exportTaskIdentifier,
