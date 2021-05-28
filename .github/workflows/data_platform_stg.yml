@@ -51,6 +51,9 @@ jobs:
       - name: Install dependencies in rds-database-snapshot-replicator lambda
         working-directory: "./lambdas/rds-database-snapshot-replicator"
         run: npm install
+      - name: Install dependencies in liberator_sftp_to_s3 lambda
+        working-directory: "./lambdas/liberator_sftp_to_s3"
+        run: npm install
       - name: Set up Google Cloud Credentials
         run: |
           echo $GOOGLE_CREDENTIALS >> ./google_service_account_creds.json
