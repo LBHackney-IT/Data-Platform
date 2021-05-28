@@ -83,7 +83,7 @@ exports.handler = async () => {
   return await sftp.connect(config)
   .then(() => {
     console.log("Connected to server...Looking for todays file")
-    return findFiles(sftp, filePathOnServer);
+    return findFiles(sftp);
   })
   .then(({ files }) => {
     return Promise.all(files.map(file => streamFileFromSftpToS3(sftp, file)));
