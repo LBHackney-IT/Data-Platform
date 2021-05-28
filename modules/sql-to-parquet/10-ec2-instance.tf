@@ -109,20 +109,6 @@ data "aws_iam_policy_document" "fargate_assume_role" {
   }
 }
 
-resource "aws_ecs_service" "worker" {
-  tags = var.tags
-
-  name            = "${var.instance_name}"
-  cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = 1
-  launch_type = "FARGATE"
-  network_configuration {
-    subnets          = [aws_subnet.pub_subnet.id]
-    assign_public_ip = true
-  }
-}
-
 resource "aws_cloudwatch_log_group" "ecs" {
   tags = var.tags
 
@@ -150,27 +136,52 @@ resource "aws_db_instance" "ingestion_db" {
 
 resource "random_password" "rds_password" {
   length           = 40
-  special          = true
-  override_special = "_%@"
+  special          = false
 }
 
 resource "aws_cloudwatch_event_target" "yada" {
   target_id = var.instance_name
   arn       = aws_ecs_cluster.ecs_cluster.arn
   rule      = aws_cloudwatch_event_rule.new_s3_object.name
-  role_arn  = "" //TODO: Role which can run the ECS Task.
+  role_arn  = aws_iam_role.execute_task.arn
 
 
   ecs_target {
     task_count          = 1
+    launch_type         = "FARGATE"
     task_definition_arn = aws_ecs_task_definition.task_definition.arn
+    # name            = "${var.instance_name}"
+    network_configuration {
+        subnets          = [aws_subnet.pub_subnet.id]
+        assign_public_ip = true
+    }
   }
 }
 
 resource "aws_cloudwatch_event_rule" "new_s3_object" {
   name        = "${var.instance_name}-new-s3-object"
   description = "Fires when a new S3 Object is placed in a bucket"
-  // TODO: Rule
+  event_pattern = jsonencode({
+    "source": [
+      "aws.s3"
+    ],
+    "detail-type": [
+      "AWS API Call via CloudTrail"
+    ],
+    "detail": {
+      "eventSource": [
+        "s3.amazonaws.com"
+      ],
+      "eventName": [
+        "PutObject"
+      ],
+      "requestParameters": {
+        "bucketName": [
+          var.watched_bucket_name
+        ]
+      }
+    }
+  })
 }
 
 resource "aws_iam_role" "execute_task" {

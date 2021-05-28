@@ -14,11 +14,21 @@ variable "environment" {
 }
 
 variable "instance_name" {
-  description = "nNme of instance"
+  description = "Nme of instance"
   type = string
 }
 
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
+  type = string
+}
+
+variable "watched_bucket_name" {
+  description = "Name of bucket which will be watched for new objects to convert"
+  type = string
+}
+
+variable "aws_caller_identity" {
+  description = "FIX ME"
   type = string
 }
