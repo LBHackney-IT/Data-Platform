@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "parking_liberator_data_upload_lambda_assume_role" {
+data "aws_iam_policy_document" "liberator_data_upload_lambda_assume_role" {
   statement {
     actions = [
       "sts:AssumeRole"
@@ -12,14 +12,14 @@ data "aws_iam_policy_document" "parking_liberator_data_upload_lambda_assume_role
   }
 }
 
-resource "aws_iam_role" "parking_liberator_data_upload_lambda" {
+resource "aws_iam_role" "liberator_data_upload_lambda" {
   tags = var.tags
 
   name               = lower("${var.identifier_prefix}-liberator-data-upload-lambda")
-  assume_role_policy = data.aws_iam_policy_document.parking_liberator_data_upload_lambda_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.liberator_data_upload_lambda_assume_role.json
 }
 
-data "aws_iam_policy_document" "parking_liberator_data_upload_lambda" {
+data "aws_iam_policy_document" "liberator_data_upload_lambda" {
   statement {
     actions = [
       "logs:CreateLogGroup",
@@ -48,7 +48,7 @@ data "aws_iam_policy_document" "parking_liberator_data_upload_lambda" {
     ]
     effect = "Allow"
     resources = [
-      aws_iam_role.parking_liberator_data_upload_lambda.arn
+      aws_iam_role.liberator_data_upload_lambda.arn
     ]
   }
 
@@ -63,14 +63,14 @@ data "aws_iam_policy_document" "parking_liberator_data_upload_lambda" {
   }
 }
 
-resource "aws_iam_policy" "parking_liberator_data_upload_lambda" {
+resource "aws_iam_policy" "liberator_data_upload_lambda" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-parking-liberator-data-file-upload-lambda")
-  policy = data.aws_iam_policy_document.parking_liberator_data_upload_lambda.json
+  name   = lower("${var.identifier_prefix}-liberator-data-file-upload-lambda")
+  policy = data.aws_iam_policy_document.liberator_data_upload_lambda.json
 }
 
-resource "aws_iam_role_policy_attachment" "parking_liberator_data_upload_lambda" {
-  role       = aws_iam_role.parking_liberator_data_upload_lambda.name
-  policy_arn = aws_iam_policy.parking_liberator_data_upload_lambda.arn
+resource "aws_iam_role_policy_attachment" "liberator_data_upload_lambda" {
+  role       = aws_iam_role.liberator_data_upload_lambda.name
+  policy_arn = aws_iam_policy.liberator_data_upload_lambda.arn
 }

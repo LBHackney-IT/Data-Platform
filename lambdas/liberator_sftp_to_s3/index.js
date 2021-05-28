@@ -5,6 +5,7 @@ const { PassThrough } = require("stream");
 const AWS_REGION = "eu-west-2";
 
 let s3Bucket = process.env.S3_BUCKET;
+let objectKeyPrefix = process.env.OBJECT_KEY_PREFIX;
 let config = {
   host: process.env.SFTP_HOST,
   username: process.env.SFTP_USERNAME,
@@ -14,21 +15,22 @@ let config = {
 
 const filePathOnServer = 'LogiXML'
 
-function fileNamePattern() {
+const YYMMDD = () => {
   const today = new Date();
   const year = today.getFullYear().toString().substring(2, 4);
   const month = (today.getMonth() + 1).toString().padStart(2, '0')
   const day = today.getDate().toString().padStart(2, '0');
-  
-  return `data_warehouse${year}${month}${day}*`;
+  return `${year}${month}${day}`;
 }
+
+const fileNamePattern = `data_warehouse${YYMMDD()}*`;
 
 async function findFiles(sftpConn) {
   return sftpConn.exists(filePathOnServer)
     .then(() => {
-      console.log(`Looking for pattern ${fileNamePattern()} in path ${filePathOnServer}`)
+      console.log(`Looking for pattern ${fileNamePattern} in path ${filePathOnServer}`)
 
-      return sftpConn.list(filePathOnServer, fileNamePattern());
+      return sftpConn.list(filePathOnServer, fileNamePattern);
     })
     .then((fileList) => {
       if(fileList.length === 0){
@@ -50,7 +52,7 @@ function putFile(fileName) {
 
   const params = {
     Bucket: s3Bucket,
-    Key: `parking/${fileName}`,
+    Key: `${objectKeyPrefix}${fileName}`,
     Body: stream
   };
   const upload = s3Client.upload(params, (err, data) => (err ? reject(err) : resolve(data)));
