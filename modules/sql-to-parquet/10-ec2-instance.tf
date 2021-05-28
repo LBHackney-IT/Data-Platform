@@ -16,6 +16,22 @@ resource "aws_subnet" "pub_subnet" {
     cidr_block              = "10.0.0.0/24"
 }
 
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+resource "aws_subnet" "priv_subnet_a" {
+    vpc_id                  = aws_vpc.vpc.id
+    cidr_block              = "10.0.1.0/24"
+    availability_zone       = data.aws_availability_zones.available.names[0]
+}
+
+resource "aws_subnet" "priv_subnet_b" {
+    vpc_id                  = aws_vpc.vpc.id
+    cidr_block              = "10.0.2.0/24"
+    availability_zone       = data.aws_availability_zones.available.names[1]
+}
+
 resource "aws_route_table" "egress_only" {
     vpc_id = aws_vpc.vpc.id
 
@@ -105,11 +121,35 @@ resource "aws_ecs_service" "worker" {
     subnets          = [aws_subnet.pub_subnet.id]
     assign_public_ip = true
   }
-
 }
 
 resource "aws_cloudwatch_log_group" "ecs" {
   tags = var.tags
 
   name = "${var.instance_name}-ecs"
+}
+
+resource "aws_db_subnet_group" "default" {
+  tags       = var.tags
+  name       = var.instance_name
+  subnet_ids = [aws_subnet.priv_subnet_a.id, aws_subnet.priv_subnet_b.id]
+}
+
+resource "aws_db_instance" "ingestion_db" {
+  allocated_storage     = 5
+  engine                = "mysql"
+  engine_version        = "8.0"
+  instance_class        = "db.t3.micro"
+  identifier            = var.instance_name
+  db_subnet_group_name  = aws_db_subnet_group.default.name
+
+  // FIXME: Use something better for passwords here.
+  username              = "thisisalsowhymysqlsucks"
+  password              = random_password.rds_password.result
+}
+
+resource "random_password" "rds_password" {
+  length           = 40
+  special          = true
+  override_special = "_%@"
 }
