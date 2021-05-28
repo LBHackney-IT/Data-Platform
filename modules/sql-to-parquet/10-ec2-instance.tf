@@ -153,3 +153,29 @@ resource "random_password" "rds_password" {
   special          = true
   override_special = "_%@"
 }
+
+resource "aws_cloudwatch_event_target" "yada" {
+  target_id = var.instance_name
+  arn       = aws_ecs_cluster.ecs_cluster.arn
+  rule      = aws_cloudwatch_event_rule.new_s3_object.name
+  role_arn  = "" //TODO: Role which can run the ECS Task.
+
+
+  ecs_target {
+    task_count          = 1
+    task_definition_arn = aws_ecs_task_definition.task_definition.arn
+  }
+}
+
+resource "aws_cloudwatch_event_rule" "new_s3_object" {
+  name        = "${var.instance_name}-new-s3-object"
+  description = "Fires when a new S3 Object is placed in a bucket"
+  // TODO: Rule
+}
+
+resource "aws_iam_role" "execute_task" {
+  tags = var.tags
+
+  name               = lower("${var.identifier_prefix}-execute-task")
+  assume_role_policy = data.aws_iam_policy_document.fargate_assume_role.json
+}
