@@ -25,25 +25,29 @@ const YYMMDD = () => {
 
 const fileNamePattern = `data_warehouse${YYMMDD()}*`;
 
-async function findFiles(sftpConn) {
-  return sftpConn.exists(filePathOnServer)
-    .then(() => {
-      console.log(`Looking for pattern ${fileNamePattern} in path ${filePathOnServer}`)
+function throwNotFound(message){
+  console.log(message);
+  throw Error(message);
+}
 
-      return sftpConn.list(filePathOnServer, fileNamePattern);
-    })
-    .then((fileList) => {
-      if(fileList.length === 0){
-        console.log("couldn't find any files")
-        throw Error("no files were found matching the given pattern")
-      }
-      const fileNames = fileList.map(file => file.name);
-      console.log("Found files: ", fileNames)
-      return { files: fileNames };
-    })
-    .catch(err => {
-      console.log(`Error: ${err.message}`);
-    });
+async function findFiles(sftpConn) {
+  try {
+    const validPath = await sftpConn.exists(filePathOnServer);
+    if (!validPath) throwNotFound(`Path ${filePathOnServer} doesn't exist on SFTP server`)
+
+    console.log(`Looking for pattern ${fileNamePattern} in path ${filePathOnServer}`)
+    const fileList = await sftpConn.list(filePathOnServer, fileNamePattern);
+
+    if(fileList.length === 0)
+      throwNotFound(`no files were found matching the pattern ${fileNamePattern} in path ${filePathOnServer}`);
+
+    const fileNames = fileList.map(file => file.name);
+    console.log("Found files: ", fileNames)
+    return fileNames;
+
+  } catch(err) {
+    console.log("Error", err.message);
+  }
 }
 
 function putFile(fileName) {
@@ -55,8 +59,8 @@ function putFile(fileName) {
     Key: `${objectKeyPrefix}${fileName}`,
     Body: stream
   };
-  const upload = s3Client.upload(params, (err, data) => (err ? reject(err) : resolve(data)));
 
+  const upload = s3Client.upload(params);
   return { stream, upload }
 }
 
@@ -68,30 +72,30 @@ async function streamFileFromSftpToS3(sftp, fileName) {
   const {stream, upload} = putFile(fileName);
   getFile(sftp, fileName, filePathOnServer, stream);
 
-  return upload.promise()
-    .then(response => {
-      console.log("Successfully upload to S3 with response:", response)
-    })
-    .catch(err => {
-      console.log("Error", err.message);
-    });
+  try {
+    const response = await upload.promise();
+    console.log("Successfully upload to S3 with response:", response)
+  } catch (err) {
+    console.log("Error", err.message);
+  }
 }
 
 exports.handler = async () => {
   const sftp = new sftpClient();
 
-  return await sftp.connect(config)
-  .then(() => {
+  try {
+    await sftp.connect(config)
+
     console.log("Connected to server...Looking for todays file")
-    return findFiles(sftp);
-  })
-  .then(({ files }) => {
-    return Promise.all(files.map(file => streamFileFromSftpToS3(sftp, file)));
-  })
-  .then(() => sftp.end())
-  .catch(err => {
+    const files = await findFiles(sftp);
+
+    await Promise.all(files.map(file => streamFileFromSftpToS3(sftp, file)));
+
+  } catch(err) {
     console.log("Error", err.message);
-  });
+  }
+
+  sftp.end()
 };
 
 
