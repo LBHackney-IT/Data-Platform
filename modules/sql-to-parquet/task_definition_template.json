@@ -1,0 +1,19 @@
+[
+  {
+    "essential": true,
+    "memory": 512,
+    "name": "sql-to-parquet",
+    "cpu": 2,
+    "image": "${REPOSITORY_URL}:latest",
+    "environment": [],
+    "LogConfiguration": {
+      "LogDriver": "awslogs",
+      "Options": {
+        "awslogs-group": "${LOG_GROUP}",
+        "awslogs-region": "eu-west-2",
+        "awslogs-stream-prefix": "sql-to-parquet"
+      }
+    }
+
+  }
+]

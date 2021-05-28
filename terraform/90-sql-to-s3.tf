@@ -1,0 +1,15 @@
+
+module "liberator_to_parquet" {
+  source            = "../modules/sql-to-parquet"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  instance_name     = lower("${local.identifier_prefix}-liberator-to-parquet")
+}
+
+// TODO: Understand if this is a generic docker image for all jobs like this, or specific to
+// the data source.
+output "ecr_repository_worker_endpoint" {
+    value = module.liberator_to_parquet.ecr_repository_worker_endpoint
+}
