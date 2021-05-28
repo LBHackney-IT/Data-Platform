@@ -53,9 +53,27 @@ variable "team" {
   default     = "ChangeMe"
 }
 
-# Project Variable
-variable "rds_instance_ids" {
-  description = "Array of rds instance ids"
-  type        = list(string)
-  default     = []
+# Project Variables
+variable "core_profile" {
+  description = "The AWS profile used to authenticate to the Cedar Advanced AWS account."
+  type        = string
+  default     = "default"
+}
+
+variable "core_enable_dns_hostnames" {
+  description = "Should be true to enable DNS hostnames in the VPC."
+  type        = bool
+  default     = true
+}
+
+variable "core_enable_dns_support" {
+  description = "Should be true to enable DNS support in the VPC."
+  type        = bool
+  default     = true
+}
+
+variable "core_region" {
+  description = "The AWS region the resources will be deployed into."
+  type        = string
+  default     = "eu-west-2"
 }
