@@ -28,17 +28,29 @@ const fileNamePattern = `data_warehouse${YYMMDD()}*`;
 async function findFiles(sftpConn) {
   const validPath = await sftpConn.exists(filePathOnServer);
   if (!validPath)
-    return { succes: false, message: `Path ${filePathOnServer} doesn't exist on SFTP server` };
+    return {
+      succes: false,
+      message: `Path ${filePathOnServer} doesn't exist on SFTP server`,
+      fileNames: []
+    };
 
   console.log(`Looking for pattern ${fileNamePattern} in path ${filePathOnServer}`)
   const fileList = await sftpConn.list(filePathOnServer, fileNamePattern);
 
   if (fileList.length === 0)
-    return { success: false, message: `no files were found matching the pattern ${fileNamePattern} in path ${filePathOnServer}` };
+    return {
+      success: false,
+      message: `no files were found matching the pattern ${fileNamePattern} in path ${filePathOnServer}`,
+      fileNames: [],
+    };
 
   const fileNames = fileList.map(file => file.name);
   console.log("Found files: ", fileNames)
-  return { success: true, fileNames };
+  return {
+    success: true,
+    fileNames,
+    message: ""
+  };
 }
 
 function putFile(fileName) {
@@ -77,7 +89,10 @@ exports.handler = async () => {
 
   if (!findFilesResponse.success) {
     console.log(findFilesResponse);
-    return findFilesResponse
+    return {
+      success: findFilesResponse.succes,
+      message: findFilesResponse.message
+    }
   }
 
   await Promise.all(findFilesResponse.fileNames.map(file => streamFileFromSftpToS3(sftp, file)));
@@ -85,5 +100,5 @@ exports.handler = async () => {
   sftp.end()
 
   console.log("Success!")
-  return { success: true }
+  return { success: true, message: `Successfully uploaded ${fileNames.length} file(s) to s3` }
 };
