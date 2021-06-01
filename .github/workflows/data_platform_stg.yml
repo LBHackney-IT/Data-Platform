@@ -71,6 +71,11 @@ jobs:
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
+      - name: Assign Network Properties
+        run: |
+          VPC_ID=$(terraform output vpc_id)
+          echo "vpc_id=${VPC_ID}" >> ../config/terraform/stg.tfvars
+        working-directory: "./terraform-networking"
       - name: Deploy Data Platform Infastructure
         uses: ./.github/actions/aws-terraform
         with:
