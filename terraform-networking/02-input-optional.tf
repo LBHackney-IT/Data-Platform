@@ -77,3 +77,11 @@ variable "core_region" {
   type        = string
   default     = "eu-west-2"
 }
+
+variable "google_project_id" {
+  description = "Not need for this module, declared to prevent terraform from throwing errors"
+  # github actions provides this variable as part of the deployment step as it is used by the main terraform
+  # please see https://www.terraform.io/docs/language/values/variables.html#values-for-undeclared-variables
+  type        = string
+  default     = ""
+}
