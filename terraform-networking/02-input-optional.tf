@@ -78,10 +78,17 @@ variable "core_region" {
   default     = "eu-west-2"
 }
 
+# github actions provides these vars below as part of the deployment step as it is used by the main terraform
+# please see https://www.terraform.io/docs/language/values/variables.html#values-for-undeclared-variables
+
 variable "google_project_id" {
   description = "Not need for this module, declared to prevent terraform from throwing errors"
-  # github actions provides this variable as part of the deployment step as it is used by the main terraform
-  # please see https://www.terraform.io/docs/language/values/variables.html#values-for-undeclared-variables
+  type        = string
+  default     = ""
+}
+
+variable "aws_api_account" {
+  description = "Not need for this module, declared to prevent terraform from throwing errors"
   type        = string
   default     = ""
 }
