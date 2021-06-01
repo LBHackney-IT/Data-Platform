@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "liberator_data_upload_lambda" {
     ]
     effect = "Allow"
     resources = [
-      "${var.landing_zone_bucket_arn}/parking/*"
+      "${var.s3_bucket_arn}/parking/*"
     ]
   }
 
@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "liberator_data_upload_lambda" {
     ]
     effect = "Allow"
     resources = [
-      var.landing_zone_kms_key_arn
+      var.s3_bucket_kms_key_arn
     ]
   }
 }

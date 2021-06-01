@@ -70,3 +70,21 @@ module "athena_storage" {
   bucket_name       = "Athena Storage"
   bucket_identifier = "athena-storage"
 }
+
+module "liberator_data_storage" {
+  source            = "../modules/s3-bucket"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "Liberator Data Storage"
+  bucket_identifier = "liberator-data-storage"
+}
+
+resource "aws_s3_bucket" "data_platform_lambda_artefact_storage" {
+  tags = module.tags.values
+
+  bucket        = lower("${local.identifier_prefix}-data-platform-lambda-artefact-storage")
+  acl           = "private"
+  force_destroy = true
+}

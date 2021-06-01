@@ -1,8 +1,10 @@
 module "liberator_data_sftp_to_s3" {
-  source                   = "../modules/liberator-sftp-to-s3"
-  tags                     = module.tags.values
-  identifier_prefix        = local.identifier_prefix
-  landing_zone_kms_key_arn = module.landing_zone.kms_key_arn
-  landing_zone_bucket_arn  = module.landing_zone.bucket_arn
-  landing_zone_bucket_id   = module.landing_zone.bucket_id
+  source                = "../modules/liberator-sftp-to-s3"
+  tags                  = module.tags.values
+  identifier_prefix     = local.identifier_prefix
+  s3_bucket_kms_key_arn = module.liberator_data_storage.kms_key_arn
+  s3_bucket_arn         = module.liberator_data_storage.bucket_arn
+  s3_bucket_id          = module.liberator_data_storage.bucket_id
+
+  lambda_artefact_storage_bucket_name = aws_s3_bucket.data_platform_lambda_artefact_storage.bucket
 }

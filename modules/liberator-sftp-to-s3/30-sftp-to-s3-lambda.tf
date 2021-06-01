@@ -5,7 +5,7 @@ resource "aws_lambda_function" "liberator_data_upload_lambda" {
   handler          = "index.handler"
   runtime          = "nodejs14.x"
   function_name    = "${var.identifier_prefix}-liberator-data-upload"
-  s3_bucket        = aws_s3_bucket.liberator_lambda_artefact_storage.id
+  s3_bucket        = var.lambda_artefact_storage_bucket_name
   s3_key           = aws_s3_bucket_object.liberator_data_upload_lambda.key
   source_code_hash = data.archive_file.liberator_data_upload_lambda.output_base64sha256
   timeout          = local.lambda_timeout
@@ -15,7 +15,7 @@ resource "aws_lambda_function" "liberator_data_upload_lambda" {
       SFTP_HOST         = local.liberator_data_sftp_server_host.value
       SFTP_USERNAME     = local.liberator_data_sftp_server_username.value
       SFTP_PASSWORD     = local.liberator_data_sftp_server_password.value
-      S3_BUCKET         = var.landing_zone_bucket_id
+      S3_BUCKET         = var.s3_bucket_id
       OBJECT_KEY_PREFIX = "parking/"
     }
   }
@@ -29,7 +29,7 @@ resource "aws_cloudwatch_event_rule" "every_day_at_six" {
 
 resource "aws_cloudwatch_event_target" "run_liberator_uploader_every_day" {
   rule      = aws_cloudwatch_event_rule.every_day_at_six.name
-  target_id = "liberator_data_upload_lambda"
+  target_id = aws_lambda_function.liberator_data_upload_lambda.function_name
   arn       = aws_lambda_function.liberator_data_upload_lambda.arn
 }
 

@@ -8,18 +8,23 @@ variable "identifier_prefix" {
   type        = string
 }
 
-variable "landing_zone_bucket_id" {
-  description = "Bucket ID (Name) for the landing zone s3 bucket"
+variable "lambda_artefact_storage_bucket_name" {
+  description = "Name of bucket to storage the lambda code in"
   type        = string
 }
 
-variable "landing_zone_bucket_arn" {
-  description = "Bucket ARN for the landing zone s3 bucket"
+variable "s3_bucket_id" {
+  description = "Bucket ID (Name) for the destination s3 bucket"
   type        = string
 }
 
-variable "landing_zone_kms_key_arn" {
-  description = "KMS Key ARN for the key that encrypts the landing zone s3 bucket"
+variable "s3_bucket_arn" {
+  description = "Bucket ARN for the destination s3 bucket"
+  type        = string
+}
+
+variable "s3_bucket_kms_key_arn" {
+  description = "KMS Key ARN for the key that encrypts the destination s3 bucket"
   type        = string
 }
 
