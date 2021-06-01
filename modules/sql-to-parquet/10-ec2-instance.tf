@@ -1,3 +1,5 @@
+// This below can't be merged into staging, this depends on a common staging VPC
+
 resource "aws_vpc" "vpc" {
     cidr_block = "10.0.0.0/16"
     enable_dns_support   = true
@@ -56,6 +58,7 @@ resource "aws_security_group" "ecs_sg" {
         cidr_blocks     = ["0.0.0.0/0"]
     }
 }
+// Above is common VPC stuff.
 
 resource "aws_ecr_repository" "worker" {
     name  = "${var.instance_name}"
@@ -69,7 +72,7 @@ data "template_file" "task_definition_template" {
   template = file("${path.module}/task_definition_template.json")
   vars = {
     REPOSITORY_URL = aws_ecr_repository.worker.repository_url
-    LOG_GROUP = aws_cloudwatch_log_group.ecs.name
+    LOG_GROUP = aws_cloudwatch_log_group.ecs_task_logs.name
   }
 }
 
@@ -109,127 +112,8 @@ data "aws_iam_policy_document" "fargate_assume_role" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "ecs" {
+resource "aws_cloudwatch_log_group" "ecs_task_logs" {
   tags = var.tags
 
-  name = "${var.instance_name}-ecs"
+  name = "${var.instance_name}-ecs-task-logs"
 }
-
-resource "aws_db_subnet_group" "default" {
-  tags       = var.tags
-  name       = var.instance_name
-  subnet_ids = [aws_subnet.priv_subnet_a.id, aws_subnet.priv_subnet_b.id]
-}
-
-resource "aws_db_instance" "ingestion_db" {
-  allocated_storage     = 5
-  engine                = "mysql"
-  engine_version        = "8.0"
-  instance_class        = "db.t3.micro"
-  identifier            = var.instance_name
-  db_subnet_group_name  = aws_db_subnet_group.default.name
-
-  // FIXME: Use something better for passwords here.
-  username              = "thisisalsowhymysqlsucks"
-  password              = random_password.rds_password.result
-}
-
-resource "random_password" "rds_password" {
-  length           = 40
-  special          = false
-}
-
-resource "aws_iam_role" "ecs_events" {
-  name = "${var.instance_name}-run-ecs-task"
-
-  assume_role_policy = <<DOC
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "events.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-DOC
-}
-
-resource "aws_iam_role_policy" "ecs_events_run_task_with_any_role" {
-  name = "ecs_events_run_task_with_any_role"
-  role = aws_iam_role.ecs_events.id
-
-  policy = <<DOC
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": "iam:PassRole",
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": "ecs:RunTask",
-            "Resource": "${replace(aws_ecs_task_definition.task_definition.arn, "/:\\d+$/", ":*")}"
-        }
-    ]
-}
-DOC
-}
-
-resource "aws_cloudwatch_event_target" "yada" {
-  target_id = var.instance_name
-  arn       = aws_ecs_cluster.ecs_cluster.arn
-  rule      = aws_cloudwatch_event_rule.new_s3_object.name
-  role_arn  = aws_iam_role.ecs_events.arn
-
-
-  ecs_target {
-    task_count          = 1
-    launch_type         = "FARGATE"
-    task_definition_arn = aws_ecs_task_definition.task_definition.arn
-    # name            = "${var.instance_name}"
-    network_configuration {
-        subnets          = [aws_subnet.pub_subnet.id]
-        assign_public_ip = true
-    }
-  }
-}
-
-resource "aws_cloudwatch_event_rule" "new_s3_object" {
-  name        = "${var.instance_name}-new-s3-object"
-  description = "Fires when a new S3 Object is placed in a bucket"
-  event_pattern = jsonencode({
-    "source": [
-      "aws.s3"
-    ],
-    "detail-type": [
-      "AWS API Call via CloudTrail"
-    ],
-    "detail": {
-      "eventSource": [
-        "s3.amazonaws.com"
-      ],
-      "eventName": [
-        "PutObject"
-      ],
-      "requestParameters": {
-        "bucketName": [
-          var.watched_bucket_name
-        ]
-      }
-    }
-  })
-}
-
-# resource "aws_iam_role" "execute_task" {
-#   tags = var.tags
-
-#   name               = lower("${var.identifier_prefix}-execute-task")
-#   assume_role_policy = data.aws_iam_policy_document.fargate_assume_role.json
-# }

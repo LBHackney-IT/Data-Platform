@@ -1,0 +1,23 @@
+resource "aws_db_subnet_group" "default" {
+  tags       = var.tags
+  name       = var.instance_name
+  subnet_ids = [aws_subnet.priv_subnet_a.id, aws_subnet.priv_subnet_b.id]
+}
+
+resource "aws_db_instance" "ingestion_db" {
+  allocated_storage     = 5
+  engine                = "mysql"
+  engine_version        = "8.0"
+  instance_class        = "db.t3.micro"
+  identifier            = var.instance_name
+  db_subnet_group_name  = aws_db_subnet_group.default.name
+
+  // FIXME: Use something better for passwords here.
+  username              = "thisisalsowhymysqlsucks"
+  password              = random_password.rds_password.result
+}
+
+resource "random_password" "rds_password" {
+  length           = 40
+  special          = false
+}

@@ -36,8 +36,8 @@ resource "aws_iam_role" "cloudtrail_cloudwatch_events_role" {
 
 resource "aws_iam_role_policy" "policy" {
   name_prefix = "cloudtrail_cloudwatch_events_policy"
-  role        = "${aws_iam_role.cloudtrail_cloudwatch_events_role.id}"
-  policy      = "${data.aws_iam_policy_document.policy.json}"
+  role        = aws_iam_role.cloudtrail_cloudwatch_events_role.id
+  policy      = data.aws_iam_policy_document.policy.json
 }
 
 data "aws_iam_policy_document" "policy" {
@@ -70,34 +70,33 @@ resource "aws_s3_bucket" "foo" {
   bucket        = "${var.identifier_prefix}-cloudtrail"
   force_destroy = true
 
-  policy = <<POLICY
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AWSCloudTrailAclCheck",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "cloudtrail.amazonaws.com"
-            },
-            "Action": "s3:GetBucketAcl",
-            "Resource": "arn:aws:s3:::${var.identifier_prefix}-cloudtrail"
-        },
-        {
-            "Sid": "AWSCloudTrailWrite",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "cloudtrail.amazonaws.com"
-            },
-            "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::${var.identifier_prefix}-cloudtrail/prefix/AWSLogs/${var.aws_caller_identity}/*",
-            "Condition": {
-                "StringEquals": {
-                    "s3:x-amz-acl": "bucket-owner-full-control"
-                }
-            }
-        }
-    ]
+  policy = data.aws_iam_policy_document.cloudtrail_bucket_policy.json
 }
-POLICY
+
+
+data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
+  statement {
+    effect = "Allow"
+    actions = ["s3:GetBucketAcl"]
+    resources = ["arn:aws:s3:::${var.identifier_prefix}-cloudtrail"]
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+  }
+
+  statement {
+    effect = "Allow"
+    actions = ["s3:PutObject"]
+    resources = ["arn:aws:s3:::${var.identifier_prefix}-cloudtrail/prefix/AWSLogs/${var.aws_caller_identity}/*"]
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values = ["bucket-owner-full-control"]
+    }
+  }
 }

@@ -14,7 +14,7 @@ variable "environment" {
 }
 
 variable "instance_name" {
-  description = "Nme of instance"
+  description = "Name of instance"
   type = string
 }
 
