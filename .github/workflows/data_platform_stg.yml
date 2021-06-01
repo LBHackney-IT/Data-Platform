@@ -72,10 +72,12 @@ jobs:
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
       - name: Assign Network Properties
+        working-directory: "./terraform-networking"
         run: |
           VPC_ID=$(terraform output vpc_id)
-          echo "vpc_id=${VPC_ID}" >> ../config/terraform/stg.tfvars
-        working-directory: "./terraform-networking"
+          echo "vpc_id=$VPC_ID" >> ../config/terraform/stg.tfvars
+          cat ../config/terraform/stg.tfvars
+          pwd
       - name: Deploy Data Platform Infastructure
         uses: ./.github/actions/aws-terraform
         with:
