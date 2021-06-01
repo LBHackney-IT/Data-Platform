@@ -14,7 +14,7 @@ The Data Dictionary & Playbook can be found on the [Document Site](http://playbo
 We use Architecture Decision Records (ADRs) to document architecture decisions that we make. They can be found in
 `documentation/architecture-decisions` and contributed to with [adr-tools](https://github.com/npryce/adr-tools).
 
-### Hackney Infrastructure (Copy)
+## Hackney Infrastructure (Copy)
 
 While in the initial phase of development, we have decided to manage our terraform in our own repository with the
 future intention of potentially merging it into the infrastructure project in the future if there is relevant value add.
@@ -31,11 +31,11 @@ Adding the repository for the first time:
 To update the sub-project:
 `git fetch infrastructure master; git subtree pull --prefix infrastructure infrastructure master --squash`
 
-### Terraform Deployment
+## Terraform Deployment
 
 The terraform will be deployed using Github Actions on push to main / when a Pull Request is merged into main
 
-### Terraform Development
+## Terraform Development
 
 ### Local deployment
 
@@ -122,4 +122,23 @@ $ aws-vault exec hackney-dataplatform-development -- terraform workspace new {de
 
 #### Terraform commands
 
-After runnning you can run `make plan`, `make apply` and `make destroy` to run the terraform deploy/destroy commands with the development `env.tfvars` set for you.
+After running, you can run `make plan`, `make apply` and `make destroy` to run the Terraform deploy/destroy commands with the development `env.tfvars` set for you.
+
+
+## Networking
+
+As part of the Terraform deployment, we deploy out a VPC which connects to Hackney's Hub account. Hackney use a Hub &
+Spoke pattern for interconnecting their accounts and to provide internet access to those spoke accounts. External
+traffic is routed to the Hub account and scanned before being passed to the Spoke accounts. Outbound traffic follows the
+opposite flow.
+
+### Development Networking
+
+Due to the above described setup only a single VPC can be created within the AWS Development account. As a consequence
+we have created a separate Terraform module which will deploy the VPC out to each account. The VPC is then referenced
+by the main Terraform script by providing the VPC ID as an input variable.
+
+For new developers coming onto project, the VPC should have already been established and associated with the default
+workspace state stored in S3. The ID of the VPC has also already been included in the example env.tsvars file. Unless
+you intend to modify the network configuration, you should not need to modify or deploy the network to run your own
+personal development environment.

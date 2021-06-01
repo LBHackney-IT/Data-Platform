@@ -1,9 +1,12 @@
-module "transit_gateway" {
-  source               = "../modules/transit-gateway"
-  core_azs             = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
-  core_cidr            = var.transit_gateway_cidr
-  core_private_subnets = var.transit_gateway_private_subnets
-  application          = local.identifier_prefix
-  department           = var.department
-  environment          = var.environment
+data "aws_vpc" "network" {
+  id = var.aws_vpc_id
+}
+
+data "aws_subnet_ids" "network" {
+  vpc_id = var.aws_vpc_id
+}
+
+data "aws_subnet" "network" {
+  for_each = data.aws_subnet_ids.network.ids
+  id       = each.value
 }

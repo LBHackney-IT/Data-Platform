@@ -5,9 +5,14 @@ env:
   aws_deploy_region: "eu-west-2"
   google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
   environment: "prod"
-  terraform_state_s3_key_prefix: "data-platform"
-  build_path: "."
   automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
+
+  network_state_prefix: "data-platform-network"
+  network_build_path: "./terraform-networking"
+
+  main_state_prefix: "data-platform"
+  main_build_path: "./terraform"
+
 on:
   release:
     types: [published]
@@ -31,7 +36,7 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
-      - name: Set Node.js 14
+      - name: Setup Node.js 14
         uses: actions/setup-node@v2
         with:
           node-version: "14"
@@ -40,21 +45,43 @@ jobs:
         run: npm install
       - name: Set up Google Cloud Credentials
         run: |
-            echo $GOOGLE_CREDENTIALS >> ./google_service_account_creds.json
+          echo $GOOGLE_CREDENTIALS >> ./google_service_account_creds.json
         shell: bash
         env:
-          GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS_PROD}}
-      - name: Run AWS Terraform
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_PROD }}
+      - name: Deploy Data Platform Network
         uses: ./.github/actions/aws-terraform
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_deploy_region: ${{ env.aws_deploy_region }}
-          terraform_state_s3_key_prefix: ${{ env.terraform_state_s3_key_prefix }}
-          build_path: ${{ env.build_path }}
+          terraform_state_s3_key_prefix: ${{ env.network_state_prefix }}
+          build_path: ${{ env.network_build_path }}
+          automation_build_url: ${{ env.automation_build_url }}
           environment: ${{ env.environment }}
           google_project_id: ${{ env.google_project_id }}
+          aws_deploy_account: ${{ env.aws_deploy_account }}
+          aws_api_account: ${{ env.aws_api_account }}
+          aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          branch: ${GITHUB_REF##*/}
+          terraform_import: ${{ github.event.inputs.terraform_import }}
+          terraform_remove: ${{ github.event.inputs.terraform_remove }}
+          # DANGER ZONE
+          # In order to allow you to run a Terraform destroy (that will delete all AWS resources managed by Terraform,
+          # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
+          # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
+          terraform_destroy: false
+      - name: Deploy Data Platform Infastructure
+        uses: ./.github/actions/aws-terraform
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_deploy_region: ${{ env.aws_deploy_region }}
+          terraform_state_s3_key_prefix: ${{ env.main_state_prefix }}
+          build_path: ${{ env.main_build_path }}
           automation_build_url: ${{ env.automation_build_url }}
+          environment: ${{ env.environment }}
+          google_project_id: ${{ env.google_project_id }}
           aws_deploy_account: ${{ env.aws_deploy_account }}
           aws_api_account: ${{ env.aws_api_account }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
