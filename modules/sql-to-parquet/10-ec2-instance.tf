@@ -139,11 +139,54 @@ resource "random_password" "rds_password" {
   special          = false
 }
 
+resource "aws_iam_role" "ecs_events" {
+  name = "${var.instance_name}-run-ecs-task"
+
+  assume_role_policy = <<DOC
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "events.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+DOC
+}
+
+resource "aws_iam_role_policy" "ecs_events_run_task_with_any_role" {
+  name = "ecs_events_run_task_with_any_role"
+  role = aws_iam_role.ecs_events.id
+
+  policy = <<DOC
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "ecs:RunTask",
+            "Resource": "${replace(aws_ecs_task_definition.task_definition.arn, "/:\\d+$/", ":*")}"
+        }
+    ]
+}
+DOC
+}
+
 resource "aws_cloudwatch_event_target" "yada" {
   target_id = var.instance_name
   arn       = aws_ecs_cluster.ecs_cluster.arn
   rule      = aws_cloudwatch_event_rule.new_s3_object.name
-  role_arn  = aws_iam_role.execute_task.arn
+  role_arn  = aws_iam_role.ecs_events.arn
 
 
   ecs_target {
@@ -184,9 +227,9 @@ resource "aws_cloudwatch_event_rule" "new_s3_object" {
   })
 }
 
-resource "aws_iam_role" "execute_task" {
-  tags = var.tags
+# resource "aws_iam_role" "execute_task" {
+#   tags = var.tags
 
-  name               = lower("${var.identifier_prefix}-execute-task")
-  assume_role_policy = data.aws_iam_policy_document.fargate_assume_role.json
-}
+#   name               = lower("${var.identifier_prefix}-execute-task")
+#   assume_role_policy = data.aws_iam_policy_document.fargate_assume_role.json
+# }

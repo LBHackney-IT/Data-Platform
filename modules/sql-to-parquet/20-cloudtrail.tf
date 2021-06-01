@@ -7,6 +7,19 @@ resource "aws_cloudtrail" "events" {
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.cloud_trail_events.arn}:*" # CloudTrail requires the Log Stream wildcard
   cloud_watch_logs_role_arn  = aws_iam_role.cloudtrail_cloudwatch_events_role.arn
 
+  event_selector {
+    read_write_type           = "All"
+    include_management_events = true
+
+    data_resource {
+      type   = "AWS::S3::Object"
+
+      # Make sure to append a trailing '/' to your ARN if you want
+      # to monitor all objects in a bucket.
+      values = ["arn:aws:s3:::${var.watched_bucket_name}/"]
+    }
+  }
+
   depends_on = [
     aws_cloudwatch_log_group.cloud_trail_events
   ]
