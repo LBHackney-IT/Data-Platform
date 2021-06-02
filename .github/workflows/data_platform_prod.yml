@@ -17,7 +17,6 @@ on:
   release:
     types: [published]
     paths-ignore:
-      - "documentation/**"
       - "infrastructure/projects/**"
       - "infrastructure/platform/**"
   workflow_dispatch:
@@ -75,10 +74,10 @@ jobs:
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
       - name: Assign Network Properties
+        working-directory: "./terraform-networking"
         run: |
           VPC_ID=$(terraform output vpc_id)
-          echo "vpc_id=${VPC_ID}" >> ../config/terraform/prod.tfvars
-        working-directory: "./terraform-networking"
+          echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/prod.tfvars
       - name: Deploy Data Platform Infastructure
         uses: ./.github/actions/aws-terraform
         with:
