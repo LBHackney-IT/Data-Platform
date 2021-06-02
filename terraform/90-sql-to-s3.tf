@@ -17,6 +17,7 @@ module "liberator_to_parquet" {
   instance_name       = lower("${local.identifier_prefix}-liberator-to-parquet")
   watched_bucket_name = module.liberator_bucket.bucket_id
   aws_caller_identity = data.aws_caller_identity.data_platform.account_id
+  aws_subnet_ids      = data.aws_subnet_ids.network.ids
 }
 
 // TODO: Understand if this is a generic docker image for all jobs like this, or specific to

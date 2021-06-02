@@ -32,3 +32,8 @@ variable "aws_caller_identity" {
   description = "FIX ME"
   type = string
 }
+
+variable "aws_subnet_ids" {
+  description = "Array of subnet IDs"
+  type = list(string)
+}

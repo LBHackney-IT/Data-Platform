@@ -1,7 +1,7 @@
 resource "aws_db_subnet_group" "default" {
   tags       = var.tags
   name       = var.instance_name
-  subnet_ids = [aws_subnet.priv_subnet_a.id, aws_subnet.priv_subnet_b.id]
+  subnet_ids = var.aws_subnet_ids
 }
 
 resource "aws_db_instance" "ingestion_db" {

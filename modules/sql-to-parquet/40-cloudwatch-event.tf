@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "event_run_policy" {
   statement {
     effect    = "Allow"
     actions   = ["ecs:RunTask"]
-    resources = ["${replace(aws_ecs_task_definition.task_definition.arn, "/:\\d+$/", ":*")}"]
+    resources = [replace(aws_ecs_task_definition.task_definition.arn, "/:\\d+$/", ":*")]
   }
 }
 
@@ -53,7 +53,7 @@ resource "aws_cloudwatch_event_target" "run_ingestor_task" {
     task_definition_arn = aws_ecs_task_definition.task_definition.arn
 
     network_configuration {
-        subnets          = [aws_subnet.pub_subnet.id]
+        subnets          = var.aws_subnet_ids
         assign_public_ip = true
     }
   }
