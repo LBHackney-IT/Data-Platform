@@ -1,6 +1,6 @@
 resource "aws_cloudtrail" "events" {
   name                          = var.identifier_prefix
-  s3_bucket_name                = aws_s3_bucket.foo.id
+  s3_bucket_name                = aws_s3_bucket.cloudtrail.id
   s3_key_prefix                 = "prefix"
   include_global_service_events = false
 
@@ -71,6 +71,13 @@ resource "aws_s3_bucket" "cloudtrail" {
   force_destroy = true
 
   policy = data.aws_iam_policy_document.cloudtrail_bucket_policy.json
+
+  lifecycle_rule {
+    enabled = true
+    expiration {
+      days = 30
+    }
+  }
 }
 
 
