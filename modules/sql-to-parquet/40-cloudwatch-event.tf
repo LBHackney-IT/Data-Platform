@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "cloudwatch_run_ecs_events" {
-  name = "${var.instance_name}-run-ecs-task"
+  name               = "${var.instance_name}-run-ecs-task"
   assume_role_policy = data.aws_iam_policy_document.cloudwatch_assume_role.json
 }
 
@@ -19,8 +19,8 @@ data "aws_iam_policy_document" "cloudwatch_assume_role" {
 }
 
 resource "aws_iam_role_policy" "ecs_events_run_task_with_any_role" {
-  name = "${var.instance_name}-ecs_events_run_task_with_any_role"
-  role = aws_iam_role.cloudwatch_run_ecs_events.id
+  name   = "${var.instance_name}-ecs_events_run_task_with_any_role"
+  role   = aws_iam_role.cloudwatch_run_ecs_events.id
   policy = data.aws_iam_policy_document.event_run_policy.json
 }
 
@@ -30,9 +30,9 @@ data "aws_iam_policy_document" "event_run_policy" {
     actions   = ["iam:PassRole"]
     resources = ["*"] // TODO: When we use this "PassRole", restrict this "resources" to just that.
     condition {
-      test = "StringLike"
+      test     = "StringLike"
       variable = "iam:PassedToService"
-      values = ["ecs-tasks.amazonaws.com"]
+      values   = ["ecs-tasks.amazonaws.com"]
     }
   }
 
@@ -57,8 +57,8 @@ resource "aws_cloudwatch_event_target" "run_ingestor_task" {
     task_definition_arn = aws_ecs_task_definition.task_definition.arn
 
     network_configuration {
-        subnets          = var.aws_subnet_ids
-        assign_public_ip = true
+      subnets          = var.aws_subnet_ids
+      assign_public_ip = true
     }
   }
 }
@@ -67,21 +67,21 @@ resource "aws_cloudwatch_event_rule" "new_s3_object" {
   name        = "${var.instance_name}-new-s3-object"
   description = "Fires when a new S3 Object is placed in the SQL bucket"
   event_pattern = jsonencode({
-    "source": [
+    "source" : [
       "aws.s3"
     ],
-    "detail-type": [
+    "detail-type" : [
       "AWS API Call via CloudTrail"
     ],
-    "detail": {
-      "eventSource": [
+    "detail" : {
+      "eventSource" : [
         "s3.amazonaws.com"
       ],
-      "eventName": [
+      "eventName" : [
         "PutObject"
       ],
-      "requestParameters": {
-        "bucketName": [
+      "requestParameters" : {
+        "bucketName" : [
           var.watched_bucket_name
         ]
       }

@@ -15,20 +15,20 @@ variable "environment" {
 
 variable "instance_name" {
   description = "Name of instance"
-  type = string
+  type        = string
 }
 
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
-  type = string
+  type        = string
 }
 
 variable "watched_bucket_name" {
   description = "Name of bucket which will be watched for new objects to convert"
-  type = string
+  type        = string
 }
 
 variable "aws_subnet_ids" {
   description = "Array of subnet IDs"
-  type = list(string)
+  type        = list(string)
 }

@@ -12,7 +12,7 @@ resource "aws_cloudtrail" "events" {
     include_management_events = true
 
     data_resource {
-      type   = "AWS::S3::Object"
+      type = "AWS::S3::Object"
 
       # Make sure to append a trailing '/' to your ARN if you want
       # to monitor all objects in a bucket.
@@ -83,8 +83,8 @@ resource "aws_s3_bucket" "cloudtrail" {
 
 data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
   statement {
-    effect = "Allow"
-    actions = ["s3:GetBucketAcl"]
+    effect    = "Allow"
+    actions   = ["s3:GetBucketAcl"]
     resources = ["arn:aws:s3:::${var.identifier_prefix}-cloudtrail"]
     principals {
       type        = "Service"
@@ -93,17 +93,17 @@ data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
   }
 
   statement {
-    effect = "Allow"
-    actions = ["s3:PutObject"]
+    effect    = "Allow"
+    actions   = ["s3:PutObject"]
     resources = ["arn:aws:s3:::${var.identifier_prefix}-cloudtrail/prefix/AWSLogs/*"]
     principals {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "s3:x-amz-acl"
-      values = ["bucket-owner-full-control"]
+      values   = ["bucket-owner-full-control"]
     }
   }
 }
