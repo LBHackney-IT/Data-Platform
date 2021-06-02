@@ -25,11 +25,15 @@ resource "aws_iam_role_policy" "ecs_events_run_task_with_any_role" {
 }
 
 data "aws_iam_policy_document" "event_run_policy" {
-  // TODO: Do we even use this "PassRole" yet?  What's this "PassRole" needed for?
   statement {
     effect    = "Allow"
     actions   = ["iam:PassRole"]
-    resources = ["*"]
+    resources = ["*"] // TODO: When we use this "PassRole", restrict this "resources" to just that.
+    condition {
+      test = "StringLike"
+      variable = "iam:PassedToService"
+      values = ["ecs-tasks.amazonaws.com"]
+    }
   }
 
   statement {
