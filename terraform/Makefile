@@ -1,4 +1,4 @@
-.PHONY: init plan apply destroy new push-ecr
+.PHONY: init plan apply destroy new push-ecr format validate
 
 init:
 	aws-vault exec hackney-dataplatform-development -- terraform init
@@ -20,3 +20,7 @@ new:
 
 push-ecr:
 	aws-vault exec hackney-dataplatform-development -- ../docker/deploy.sh
+
+format:
+	terraform fmt .
+	terraform fmt -recursive ../modules

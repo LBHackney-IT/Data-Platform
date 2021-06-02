@@ -100,3 +100,6 @@ jobs:
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
+      - name: Build and delpoy image to ECR
+        working-directory: "./terraform"
+        run: ../docker/deploy.sh

@@ -15,17 +15,17 @@ variable "environment" {
 
 variable "bucket_name" {
   description = "S3 Bucket name"
-  type = string
+  type        = string
 }
 
 variable "bucket_identifier" {
   description = "URL safe bucket identifier"
-  type = string
+  type        = string
 }
 
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
-  type = string
+  type        = string
 }
 
 

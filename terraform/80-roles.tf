@@ -3,7 +3,7 @@ data "aws_iam_policy_document" "sso_trusted_relationship" {
     effect = "Allow"
     principals {
       identifiers = ["arn:aws:iam::120038763019:saml-provider/AWSSSO_9040e5ede958c40d_DO_NOT_DELETE"]
-      type = "Federated"
+      type        = "Federated"
     }
     principals {
       identifiers = [
@@ -48,7 +48,7 @@ data "aws_iam_policy_document" "power_user_parking" {
   }
 
   statement {
-    sid = "RolePermissions"
+    sid    = "RolePermissions"
     effect = "Allow"
     actions = [
       "iam:GetRole",
@@ -67,63 +67,63 @@ data "aws_iam_policy_document" "power_user_parking" {
       aws_iam_role.glue_role.arn
     ]
     condition {
-      test = "StringLike"
-      values = ["glue.amazonaws.com"]
+      test     = "StringLike"
+      values   = ["glue.amazonaws.com"]
       variable = "iam:PassedToService"
     }
   }
 
   statement {
-    sid = "KmsKeyAccess"
+    sid    = "KmsKeyAccess"
     effect = "Allow"
     actions = [
-//      CancelKeyDeletion
-//      ConnectCustomKeyStore
-//      CreateAlias
-//      CreateCustomKeyStore
-//      CreateGrant
-//      CreateKey
-//      Decrypt
-//      DeleteAlias
-//      DeleteCustomKeyStore
-//      DeleteImportedKeyMaterial
-//      DescribeCustomKeyStores
-//      DescribeKey
-//      DisableKey
-//      DisableKeyRotation
-//      DisconnectCustomKeyStore
-//      EnableKey
-//      EnableKeyRotation
-//      Encrypt
-//      GenerateDataKey
-//      GenerateDataKeyPair
-//      GenerateDataKeyPairWithoutPlaintext
-//      GenerateDataKeyWithoutPlaintext
-//      GenerateRandom
-//      GetKeyPolicy
-//      GetKeyRotationStatus
-//      GetParametersForImport
-//      GetPublicKey
-//      ImportKeyMaterial
-//      ListAliases
-//      ListGrants
-//      ListKeyPolicies
-//      ListKeys
-//      ListResourceTags
-//      ListRetirableGrants
-//      PutKeyPolicy
-//      ReEncryptFrom
-//      ReEncryptTo
-//      RetireGrant
-//      RevokeGrant
-//      ScheduleKeyDeletion
-//      Sign
-//      TagResource
-//      UntagResource
-//      UpdateAlias
-//      UpdateCustomKeyStore
-//      UpdateKeyDescription
-//      Verify
+      //      CancelKeyDeletion
+      //      ConnectCustomKeyStore
+      //      CreateAlias
+      //      CreateCustomKeyStore
+      //      CreateGrant
+      //      CreateKey
+      //      Decrypt
+      //      DeleteAlias
+      //      DeleteCustomKeyStore
+      //      DeleteImportedKeyMaterial
+      //      DescribeCustomKeyStores
+      //      DescribeKey
+      //      DisableKey
+      //      DisableKeyRotation
+      //      DisconnectCustomKeyStore
+      //      EnableKey
+      //      EnableKeyRotation
+      //      Encrypt
+      //      GenerateDataKey
+      //      GenerateDataKeyPair
+      //      GenerateDataKeyPairWithoutPlaintext
+      //      GenerateDataKeyWithoutPlaintext
+      //      GenerateRandom
+      //      GetKeyPolicy
+      //      GetKeyRotationStatus
+      //      GetParametersForImport
+      //      GetPublicKey
+      //      ImportKeyMaterial
+      //      ListAliases
+      //      ListGrants
+      //      ListKeyPolicies
+      //      ListKeys
+      //      ListResourceTags
+      //      ListRetirableGrants
+      //      PutKeyPolicy
+      //      ReEncryptFrom
+      //      ReEncryptTo
+      //      RetireGrant
+      //      RevokeGrant
+      //      ScheduleKeyDeletion
+      //      Sign
+      //      TagResource
+      //      UntagResource
+      //      UpdateAlias
+      //      UpdateCustomKeyStore
+      //      UpdateKeyDescription
+      //      Verify
 
       "kms:Encrypt",
       "kms:Decrypt",
@@ -158,47 +158,47 @@ data "aws_iam_policy_document" "power_user_parking" {
       "glue:BatchGetTriggers",
       "glue:BatchGetWorkflows",
       "glue:BatchStopJobRun",
-//      "glue:CancelMLTaskRun",
+      //      "glue:CancelMLTaskRun",
       "glue:CheckSchemaVersionValidity",
-//      "glue:CreateClassifier",
-//      "glue:CreateConnection",
-//      "glue:CreateCrawler",
-//      "glue:CreateDatabase",
-//      "glue:CreateDevEndpoint",
+      //      "glue:CreateClassifier",
+      //      "glue:CreateConnection",
+      //      "glue:CreateCrawler",
+      //      "glue:CreateDatabase",
+      //      "glue:CreateDevEndpoint",
       "glue:CreateJob",
-//      "glue:CreateMLTransform",
-//      "glue:CreatePartition",
-//      "glue:CreateRegistry",
-//      "glue:CreateSchema",
-//      "glue:CreateScript",
-//      "glue:CreateSecurityConfiguration",
-//      "glue:CreateTable",
-//      "glue:CreateTrigger",
-//      "glue:CreateUserDefinedFunction",
-//      "glue:CreateWorkflow",
-//      "glue:DeleteClassifier",
-//      "glue:DeleteConnection",
-//      "glue:DeleteCrawler",
-//      "glue:DeleteDatabase",
-//      "glue:DeleteDevEndpoint",
+      //      "glue:CreateMLTransform",
+      //      "glue:CreatePartition",
+      //      "glue:CreateRegistry",
+      //      "glue:CreateSchema",
+      //      "glue:CreateScript",
+      //      "glue:CreateSecurityConfiguration",
+      //      "glue:CreateTable",
+      //      "glue:CreateTrigger",
+      //      "glue:CreateUserDefinedFunction",
+      //      "glue:CreateWorkflow",
+      //      "glue:DeleteClassifier",
+      //      "glue:DeleteConnection",
+      //      "glue:DeleteCrawler",
+      //      "glue:DeleteDatabase",
+      //      "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
-//      "glue:DeleteMLTransform",
-//      "glue:DeletePartition",
-//      "glue:DeleteRegistry",
-//      "glue:DeleteResourcePolicy",
-//      "glue:DeleteSchema",
-//      "glue:DeleteSchemaVersions",
-//      "glue:DeleteSecurityConfiguration",
-//      "glue:DeleteTable",
-//      "glue:DeleteTableVersion",
-//      "glue:DeleteTrigger",
-//      "glue:DeleteUserDefinedFunction",
-//      "glue:DeleteWorkflow",
+      //      "glue:DeleteMLTransform",
+      //      "glue:DeletePartition",
+      //      "glue:DeleteRegistry",
+      //      "glue:DeleteResourcePolicy",
+      //      "glue:DeleteSchema",
+      //      "glue:DeleteSchemaVersions",
+      //      "glue:DeleteSecurityConfiguration",
+      //      "glue:DeleteTable",
+      //      "glue:DeleteTableVersion",
+      //      "glue:DeleteTrigger",
+      //      "glue:DeleteUserDefinedFunction",
+      //      "glue:DeleteWorkflow",
       "glue:GetCatalogImportStatus",
       "glue:GetClassifier",
       "glue:GetClassifiers",
-//      "glue:GetConnection",
-//      "glue:GetConnections",
+      //      "glue:GetConnection",
+      //      "glue:GetConnections",
       "glue:GetCrawler",
       "glue:GetCrawlerMetrics",
       "glue:GetCrawlers",
@@ -213,10 +213,10 @@ data "aws_iam_policy_document" "power_user_parking" {
       "glue:GetJobRun",
       "glue:GetJobRuns",
       "glue:GetJobs",
-//      "glue:GetMLTaskRun",
-//      "glue:GetMLTaskRuns",
-//      "glue:GetMLTransform",
-//      "glue:GetMLTransforms",
+      //      "glue:GetMLTaskRun",
+      //      "glue:GetMLTaskRuns",
+      //      "glue:GetMLTransform",
+      //      "glue:GetMLTransforms",
       "glue:GetMapping",
       "glue:GetPartition",
       "glue:GetPartitions",
@@ -243,7 +243,7 @@ data "aws_iam_policy_document" "power_user_parking" {
       "glue:GetWorkflowRun",
       "glue:GetWorkflowRunProperties",
       "glue:GetWorkflowRuns",
-//      "glue:ImportCatalogToGlue",
+      //      "glue:ImportCatalogToGlue",
       "glue:ListCrawlers",
       "glue:ListDevEndpoints",
       "glue:ListJobs",
@@ -253,53 +253,53 @@ data "aws_iam_policy_document" "power_user_parking" {
       "glue:ListSchemas",
       "glue:ListTriggers",
       "glue:ListWorkflows",
-//      "glue:PutDataCatalogEncryptionSettings",
-//      "glue:PutResourcePolicy",
-//      "glue:PutSchemaVersionMetadata",
-//      "glue:PutWorkflowRunProperties",
-//      "glue:QuerySchemaVersionMetadata",
-//      "glue:RegisterSchemaVersion",
-//      "glue:RemoveSchemaVersionMetadata",
+      //      "glue:PutDataCatalogEncryptionSettings",
+      //      "glue:PutResourcePolicy",
+      //      "glue:PutSchemaVersionMetadata",
+      //      "glue:PutWorkflowRunProperties",
+      //      "glue:QuerySchemaVersionMetadata",
+      //      "glue:RegisterSchemaVersion",
+      //      "glue:RemoveSchemaVersionMetadata",
       "glue:ResetJobBookmark",
-//      "glue:ResumeWorkflowRun",
+      //      "glue:ResumeWorkflowRun",
       "glue:SearchTables",
       "glue:StartCrawler",
       "glue:StartCrawlerSchedule",
       "glue:StartExportLabelsTaskRun",
       "glue:StartImportLabelsTaskRun",
       "glue:StartJobRun",
-//      "glue:StartMLEvaluationTaskRun",
-//      "glue:StartMLLabelingSetGenerationTaskRun",
-//      "glue:StartTrigger",
-//      "glue:StartWorkflowRun",
+      //      "glue:StartMLEvaluationTaskRun",
+      //      "glue:StartMLLabelingSetGenerationTaskRun",
+      //      "glue:StartTrigger",
+      //      "glue:StartWorkflowRun",
       "glue:StopCrawler",
       "glue:StopCrawlerSchedule",
       "glue:StopTrigger",
       "glue:StopWorkflowRun",
       "glue:TagResource",
-//      "glue:UntagResource",
-//      "glue:UpdateClassifier",
-//      "glue:UpdateConnection",
-//      "glue:UpdateCrawler",
-//      "glue:UpdateCrawlerSchedule",
-//      "glue:UpdateDatabase",
-//      "glue:UpdateDevEndpoint",
+      //      "glue:UntagResource",
+      //      "glue:UpdateClassifier",
+      //      "glue:UpdateConnection",
+      //      "glue:UpdateCrawler",
+      //      "glue:UpdateCrawlerSchedule",
+      //      "glue:UpdateDatabase",
+      //      "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
-//      "glue:UpdateMLTransform",
-//      "glue:UpdatePartition",
-//      "glue:UpdateRegistry",
-//      "glue:UpdateSchema",
-//      "glue:UpdateTable",
-//      "glue:UpdateTrigger",
-//      "glue:UpdateUserDefinedFunction",
-//      "glue:UpdateWorkflow",
-//      "glue:UseMLTransforms",
+      //      "glue:UpdateMLTransform",
+      //      "glue:UpdatePartition",
+      //      "glue:UpdateRegistry",
+      //      "glue:UpdateSchema",
+      //      "glue:UpdateTable",
+      //      "glue:UpdateTrigger",
+      //      "glue:UpdateUserDefinedFunction",
+      //      "glue:UpdateWorkflow",
+      //      "glue:UseMLTransforms",
     ]
     resources = ["*"]
   }
 
   statement {
-    sid = "ReadAndWrite"
+    sid    = "ReadAndWrite"
     effect = "Allow"
     actions = [
       "s3:AbortMultipartUpload",
@@ -404,7 +404,7 @@ data "aws_iam_policy_document" "power_user_parking" {
   }
 
   statement {
-    sid = "ReadOnly"
+    sid    = "ReadOnly"
     effect = "Allow"
     actions = [
       "s3:Get*",
@@ -419,7 +419,7 @@ data "aws_iam_policy_document" "power_user_parking" {
   }
 
   statement {
-    sid = "FullAccess"
+    sid    = "FullAccess"
     effect = "Allow"
     actions = [
       "s3:*"
@@ -432,7 +432,7 @@ data "aws_iam_policy_document" "power_user_parking" {
 }
 
 resource "aws_iam_role" "power_user_parking" {
-  name = "AWS_SSO_${upper(local.identifier_prefix)}_POWER_USER_PARKING"
+  name               = "AWS_SSO_${upper(local.identifier_prefix)}_POWER_USER_PARKING"
   assume_role_policy = data.aws_iam_policy_document.sso_trusted_relationship.json
 }
 

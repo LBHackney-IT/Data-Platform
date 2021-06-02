@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 provider "aws" {
-  alias = "aws_api_account"
+  alias  = "aws_api_account"
   region = var.aws_deploy_region
   assume_role {
     role_arn     = "arn:aws:iam::${var.aws_api_account}:role/${var.aws_deploy_iam_role_name}"
@@ -17,10 +17,10 @@ provider "aws" {
 }
 
 provider "google" {
-  region = "europe-west2"
-  zone   = "europe-west2-a"
+  region      = "europe-west2"
+  zone        = "europe-west2-a"
   credentials = "../google_service_account_creds.json"
-  project = var.google_project_id
+  project     = var.google_project_id
 }
 
 # General

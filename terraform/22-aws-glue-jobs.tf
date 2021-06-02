@@ -1,5 +1,5 @@
 module "housing_repair_data" {
-  count = terraform.workspace == "default" ? 1 : 0
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -14,9 +14,9 @@ module "housing_repair_data" {
   department_folder_name          = "housing"
   output_folder_name              = "repair-orders"
 }
-    
+
 module "test-repairs-herts-heritage-data" {
-  count = terraform.workspace == "default" ? 1 : 0
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -31,9 +31,9 @@ module "test-repairs-herts-heritage-data" {
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-herts-heritage"
 }
-    
+
 module "test-repairs-purdy-data" {
-  count = terraform.workspace == "default" ? 1 : 0
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
