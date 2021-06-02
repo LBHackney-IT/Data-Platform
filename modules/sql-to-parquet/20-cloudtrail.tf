@@ -95,7 +95,7 @@ data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
   statement {
     effect = "Allow"
     actions = ["s3:PutObject"]
-    resources = ["arn:aws:s3:::${var.identifier_prefix}-cloudtrail/prefix/AWSLogs/${var.aws_caller_identity}/*"]
+    resources = ["arn:aws:s3:::${var.identifier_prefix}-cloudtrail/prefix/AWSLogs/*"]
     principals {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
