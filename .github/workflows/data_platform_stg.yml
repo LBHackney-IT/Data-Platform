@@ -103,5 +103,4 @@ jobs:
       - name: Build and delpoy image to ECR
         working-directory: "./terraform"
         run: |
-          eval $(aws sts assume-role --role-arn arn:aws:iam::${{env.aws_deploy_account}}:role/${{secrets.AWS_ROLE_TO_ASSUME}} --role-session-name deploy-image-to-ecr | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
           ../docker/deploy.sh
