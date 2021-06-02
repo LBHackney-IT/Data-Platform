@@ -12,8 +12,7 @@ resource "aws_db_instance" "ingestion_db" {
   identifier            = var.instance_name
   db_subnet_group_name  = aws_db_subnet_group.default.name
 
-  // FIXME: Use something better for passwords here.
-  username              = "thisisalsowhymysqlsucks"
+  username              = "dataplatform"
   password              = random_password.rds_password.result
 }
 
