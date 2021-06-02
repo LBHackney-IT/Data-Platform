@@ -102,4 +102,5 @@ jobs:
           terraform_destroy: false
       - name: Build and delpoy image to ECR
         working-directory: "./terraform"
-        run: ../docker/deploy.sh
+        run: |
+          ROLE_ARN=arn:aws:iam::${{ env.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }} ../docker/deploy.sh
