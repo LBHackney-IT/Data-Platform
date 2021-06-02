@@ -2,8 +2,11 @@ name: CI
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - "./terraform-networking"
+      - "./terraform-backend-setup"
+      - "./terraform"
 
 jobs:
   validate:
@@ -15,7 +18,18 @@ jobs:
         uses: hashicorp/setup-terraform@v1.2.1
         with:
           terraform_version: 0.14.9
-      - name: Run `terraform validate`
+      - name: Run `terraform validate` on Terraform Networking
+        working-directory: "./terraform-networking"
+        run: |
+          terraform init -backend=false
+          terraform validate
+      - name: Run `terraform validate` on Backend Setup
+        working-directory: "./terraform-backend-setup"
+        run: |
+          terraform init -backend=false
+          terraform validate
+      - name: Run `terraform validate` on Terraform
+        working-directory: "./terraform"
         run: |
           terraform init -backend=false
           terraform validate
