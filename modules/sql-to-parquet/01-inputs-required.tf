@@ -28,6 +28,11 @@ variable "watched_bucket_name" {
   type        = string
 }
 
+variable "watched_bucket_kms_key_arn" {
+  description = "KMS Key ARN for the watched bucket where new objects to convert are placed"
+  type        = string
+}
+
 variable "aws_subnet_ids" {
   description = "Array of subnet IDs"
   type        = list(string)

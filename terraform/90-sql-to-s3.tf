@@ -16,6 +16,7 @@ module "liberator_to_parquet" {
   identifier_prefix   = local.identifier_prefix
   instance_name       = lower("${local.identifier_prefix}-liberator-to-parquet")
   watched_bucket_name = module.liberator_bucket.bucket_id
+  watched_bucket_kms_key_arn = module.liberator_bucket.kms_key_arn
   aws_subnet_ids      = data.aws_subnet_ids.network.ids
 }
 

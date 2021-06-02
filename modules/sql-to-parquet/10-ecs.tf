@@ -22,6 +22,34 @@ resource "aws_ecs_task_definition" "task_definition" {
   memory                   = 512
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.fargate.arn
+  task_role_arn            = aws_iam_role.task_role.arn
+}
+
+resource "aws_iam_role" "task_role" {
+  tags = var.tags
+
+  name               = lower("${var.instance_name}-task-role")
+  assume_role_policy = data.aws_iam_policy_document.fargate_assume_role.json
+}
+
+resource "aws_iam_role_policy" "task_role" {
+  name_prefix = "${var.instance_name}-task-role"
+  role        = aws_iam_role.task_role.id
+  policy      = data.aws_iam_policy_document.task_role.json
+}
+
+data "aws_iam_policy_document" "task_role" {
+  statement {
+    effect    = "Allow"
+    actions   = ["s3:GetObject"]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = ["kms:*"]
+    effect = "Allow"
+    resources = [var.watched_bucket_kms_key_arn]
+  }
 }
 
 resource "aws_iam_role" "fargate" {
