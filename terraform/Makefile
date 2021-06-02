@@ -19,4 +19,4 @@ new:
 	aws-vault exec hackney-dataplatform-development -- terraform workspace new ${WORKSPACE}
 
 push-ecr:
-	aws-vault exec hackney-dataplatform-development -- ../docker/./deploy.sh
+	aws-vault exec hackney-dataplatform-development -- ../docker/deploy.sh
