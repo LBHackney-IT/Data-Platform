@@ -1,9 +1,9 @@
 resource "aws_ecr_repository" "worker" {
-    name  = "${var.instance_name}"
+    name  = var.instance_name
 }
 
 resource "aws_ecs_cluster" "ecs_cluster" {
-    name  = "${var.instance_name}"
+    name  = var.instance_name
 }
 
 data "template_file" "task_definition_template" {
@@ -15,7 +15,7 @@ data "template_file" "task_definition_template" {
 }
 
 resource "aws_ecs_task_definition" "task_definition" {
-  family                = "${var.instance_name}"
+  family                = var.instance_name
   container_definitions = data.template_file.task_definition_template.rendered
   requires_compatibilities = ["FARGATE"]
   cpu = 256

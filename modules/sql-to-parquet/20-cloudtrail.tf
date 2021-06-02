@@ -31,7 +31,7 @@ resource "aws_cloudwatch_log_group" "cloud_trail_events" {
 
 resource "aws_iam_role" "cloudtrail_cloudwatch_events_role" {
   name_prefix        = "cloudtrail_events_role"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_policy.json}"
+  assume_role_policy = data.aws_iam_policy_document.assume_policy.json
 }
 
 resource "aws_iam_role_policy" "policy" {
