@@ -35,27 +35,27 @@ variable "landing_zone_bucket_id" {
 
 variable "glue_job_name" {
   description = "Name of AWS Glue job"
-  type = string
+  type        = string
 }
 
 variable "google_sheets_document_id" {
   description = "Google sheets document id"
-  type = string
+  type        = string
 }
 
 variable "google_sheets_worksheet_name" {
   description = "Google sheets worksheet name"
-  type = string
+  type        = string
 }
 
 variable "department_folder_name" {
   description = "Department folder name"
-  type = string
+  type        = string
 }
 
 variable "output_folder_name" {
   description = "Output folder name"
-  type = string
+  type        = string
 }
 
 

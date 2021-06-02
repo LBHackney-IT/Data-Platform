@@ -120,7 +120,7 @@ resource "aws_glue_crawler" "landing_zone_housing_crawler" {
   table_prefix  = "housing_"
 
   s3_target {
-    path = "s3://${module.landing_zone.bucket_id}/housing"
+    path       = "s3://${module.landing_zone.bucket_id}/housing"
     exclusions = local.crawler_excluded_blogs
   }
 }
@@ -134,7 +134,7 @@ resource "aws_glue_crawler" "landing_zone_test_crawler" {
   table_prefix  = "test_"
 
   s3_target {
-    path = "s3://${module.landing_zone.bucket_id}/test"
+    path       = "s3://${module.landing_zone.bucket_id}/test"
     exclusions = local.crawler_excluded_blogs
   }
 }
@@ -148,7 +148,7 @@ resource "aws_glue_crawler" "landing_zone_parking_crawler" {
   table_prefix  = "parking_"
 
   s3_target {
-    path = "s3://${module.landing_zone.bucket_id}/parking"
+    path       = "s3://${module.landing_zone.bucket_id}/parking"
     exclusions = local.crawler_excluded_blogs
   }
 }
@@ -167,7 +167,7 @@ resource "aws_glue_crawler" "raw_zone_parking_crawler" {
   table_prefix  = "parking_"
 
   s3_target {
-    path = "s3://${module.raw_zone.bucket_id}/parking"
+    path       = "s3://${module.raw_zone.bucket_id}/parking"
     exclusions = local.crawler_excluded_blogs
   }
 }
