@@ -77,7 +77,7 @@ jobs:
       - name: Assign Network Properties
         run: |
           VPC_ID=$(terraform output vpc_id)
-          echo "vpc_id=${VPC_ID}" >> ../config/terraform/stg.tfvars
+          echo "vpc_id=${VPC_ID}" >> ../config/terraform/prod.tfvars
         working-directory: "./terraform-networking"
       - name: Deploy Data Platform Infastructure
         uses: ./.github/actions/aws-terraform
