@@ -32,8 +32,3 @@ variable "aws_subnet_ids" {
   description = "Array of subnet IDs"
   type        = list(string)
 }
-
-variable "deployment_user_arn" {
-  description = "ARN for the deployment user"
-  type        = string
-}
