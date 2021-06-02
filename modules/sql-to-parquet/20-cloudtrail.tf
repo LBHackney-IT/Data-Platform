@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "assume_policy" {
   }
 }
 
-resource "aws_s3_bucket" "foo" {
+resource "aws_s3_bucket" "cloudtrail" {
   bucket        = "${var.identifier_prefix}-cloudtrail"
   force_destroy = true
 
