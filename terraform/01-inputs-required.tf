@@ -20,6 +20,11 @@ variable "aws_deploy_iam_role_name" {
   type        = string
 }
 
+variable "deployment_user_arn" {
+  description = "ARN for the deployment user"
+  type        = string
+}
+
 variable "aws_api_account" {
   description = "AWS api account id"
   type        = string

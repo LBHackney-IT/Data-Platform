@@ -2,6 +2,34 @@ resource "aws_ecr_repository" "worker" {
   name = var.instance_name
 }
 
+data "aws_iam_policy_document" "deployment_user_ecr_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:PutImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload"
+    ]
+    principals {
+      identifiers = [
+        var.deployment_user_arn
+      ]
+      type = "AWS"
+    }
+  }
+}
+
+resource "aws_ecr_repository_policy" "deployment_push_pull_policy" {
+  repository = aws_ecr_repository.worker.name
+
+  policy = data.aws_iam_policy_document.deployment_user_ecr_access.json
+}
+
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.instance_name
 }

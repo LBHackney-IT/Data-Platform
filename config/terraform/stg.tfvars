@@ -11,3 +11,4 @@ transit_gateway_availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 transit_gateway_cidr = "10.120.31.0/24"
 transit_gateway_private_subnets = ["10.120.31.0/26", "10.120.31.64/26", "10.120.31.128/26"]
 rds_instance_ids = ["addresses-api-db-production-emergency-temp"]
+deployment_user_arn = "arn:aws:iam::338027813792:user/automation_deployer"
