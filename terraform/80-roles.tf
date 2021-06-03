@@ -163,6 +163,7 @@ data "aws_iam_policy_document" "power_user_parking" {
       //      "glue:CreateClassifier",
       //      "glue:CreateConnection",
       //      "glue:CreateCrawler",
+      "glue:CreateDag",
       //      "glue:CreateDatabase",
       //      "glue:CreateDevEndpoint",
       "glue:CreateJob",
@@ -170,7 +171,7 @@ data "aws_iam_policy_document" "power_user_parking" {
       //      "glue:CreatePartition",
       //      "glue:CreateRegistry",
       //      "glue:CreateSchema",
-      //      "glue:CreateScript",
+      "glue:CreateScript",
       //      "glue:CreateSecurityConfiguration",
       //      "glue:CreateTable",
       //      "glue:CreateTrigger",
@@ -197,8 +198,8 @@ data "aws_iam_policy_document" "power_user_parking" {
       "glue:GetCatalogImportStatus",
       "glue:GetClassifier",
       "glue:GetClassifiers",
-      //      "glue:GetConnection",
-      //      "glue:GetConnections",
+      "glue:GetConnection",
+      "glue:GetConnections",
       "glue:GetCrawler",
       "glue:GetCrawlerMetrics",
       "glue:GetCrawlers",
@@ -419,13 +420,24 @@ data "aws_iam_policy_document" "power_user_parking" {
   }
 
   statement {
+    sid    = "List"
+    effect = "Allow"
+    actions = [
+      "s3:List*"
+    ]
+    resources = [
+      module.glue_temp_storage.bucket_arn,
+      module.glue_scripts.bucket_arn,
+    ]
+  }
+
+  statement {
     sid    = "FullAccess"
     effect = "Allow"
     actions = [
       "s3:*"
     ]
     resources = [
-      "${module.glue_temp_storage.bucket_arn}/*",
       "${module.glue_scripts.bucket_arn}/custom/*",
     ]
   }
