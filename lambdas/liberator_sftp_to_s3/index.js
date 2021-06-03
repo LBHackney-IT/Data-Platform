@@ -55,13 +55,13 @@ async function findFiles(sftpConn) {
   };
 }
 
-function putFile(fileName) {
+function putFile() {
   const s3Client = new AWS.S3({ region: AWS_REGION });
   const stream = new PassThrough();
 
   const params = {
     Bucket: s3Bucket,
-    Key: `${objectKeyPrefix}${fileName}`,
+    Key: `${objectKeyPrefix}liberator_dump_${YYMMDD()}.zip`,
     Body: stream
   };
 
@@ -74,7 +74,7 @@ function getFile(sftpConn, fileName, filePath, stream) {
 }
 
 async function streamFileFromSftpToS3(sftp, fileName) {
-  const { stream, upload } = putFile(fileName);
+  const { stream, upload } = putFile();
   getFile(sftp, fileName, filePathOnServer, stream);
 
   const response = await upload.promise();
@@ -101,7 +101,7 @@ exports.handler = async () => {
     await Promise.all(findFilesResponse.fileNames.map(file => streamFileFromSftpToS3(sftp, file)));
 
     console.log("Success!");
-    return { success: true, message: `Successfully uploaded ${fileNames.length} file(s) to s3` };
+    return { success: true, message: `Successfully uploaded ${findFilesResponse.fileNames.length} file(s) to s3` };
   } catch (error) {
     console.error(error.message, error.stack);
   } finally {
