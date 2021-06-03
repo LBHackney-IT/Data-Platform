@@ -12,8 +12,8 @@ resource "aws_db_instance" "ingestion_db" {
   identifier           = var.instance_name
   db_subnet_group_name = aws_db_subnet_group.default.name
 
-  username = "dataplatform"
-  password = random_password.rds_password.result
+  username            = "dataplatform"
+  password            = random_password.rds_password.result
   skip_final_snapshot = true
 }
 

@@ -34,6 +34,11 @@ variable "landing_zone_bucket_id" {
   type = string
 }
 
+variable "service_area" {
+  description = "Name of service area where data is to be sent, e.g. 'housing'"
+  type        = string
+}
+
 variable "rds_instance_ids" {
   type = list(string)
 }

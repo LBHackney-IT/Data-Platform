@@ -2,7 +2,8 @@ const AWS = require("aws-sdk");
 
 const AWS_REGION = "eu-west-2";
 
-let bucketDestination = process.env.BUCKET_DESTINATION;
+const bucketDestination = process.env.BUCKET_DESTINATION;
+const targetServiceArea = process.env.SERVICE_AREA;
 
 async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucketName, targetPath, snapshotTime) {
   console.log("sourceBucketName", sourceBucketName);
@@ -105,7 +106,7 @@ exports.handler = async (events) => {
       const snapshotTime = exportTaskStatus.SnapshotTime;
 
       // If it has copy the files from s3 bucket A => s3 bucket B
-      await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, 'housing', snapshotTime);
+      await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, targetServiceArea, snapshotTime);
     })
   );
 };
