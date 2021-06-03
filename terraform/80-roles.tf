@@ -2,10 +2,6 @@ data "aws_iam_policy_document" "sso_trusted_relationship" {
   statement {
     effect = "Allow"
     principals {
-      identifiers = ["arn:aws:iam::120038763019:saml-provider/AWSSSO_9040e5ede958c40d_DO_NOT_DELETE"]
-      type        = "Federated"
-    }
-    principals {
       identifiers = [
         "arn:aws:iam::484466746276:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AWSAdministratorAccess_2cff52f8dbae1fd6",
         "arn:aws:iam::120038763019:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AWSAdministratorAccess_89cef605035aecd1"
@@ -432,7 +428,7 @@ data "aws_iam_policy_document" "power_user_parking" {
 }
 
 resource "aws_iam_role" "power_user_parking" {
-  name               = "AWS_SSO_${upper(local.identifier_prefix)}_POWER_USER_PARKING"
+  name               = lower("${local.identifier_prefix}-power-user-parking")
   assume_role_policy = data.aws_iam_policy_document.sso_trusted_relationship.json
 }
 
