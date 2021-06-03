@@ -1,13 +1,3 @@
-module "liberator_bucket" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Liberator Zone"
-  bucket_identifier = "liberator-bucket"
-}
-
 module "liberator_to_parquet" {
   source              = "../modules/sql-to-parquet"
   tags                = module.tags.values
@@ -15,7 +5,7 @@ module "liberator_to_parquet" {
   environment         = var.environment
   identifier_prefix   = local.identifier_prefix
   instance_name       = lower("${local.identifier_prefix}-liberator-to-parquet")
-  watched_bucket_name = module.liberator_bucket.bucket_id
+  watched_bucket_name = module.liberator_data_storage.bucket_id
   aws_subnet_ids      = data.aws_subnet_ids.network.ids
 }
 
