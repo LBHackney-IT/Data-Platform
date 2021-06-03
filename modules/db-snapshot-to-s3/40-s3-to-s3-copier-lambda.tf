@@ -138,6 +138,7 @@ resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
   environment {
     variables = {
       BUCKET_DESTINATION = var.landing_zone_bucket_id,
+      SERVICE_AREA       = var.service_area
     }
   }
 

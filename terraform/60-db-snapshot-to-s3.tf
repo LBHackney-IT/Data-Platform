@@ -17,6 +17,7 @@ module "db_snapshot_to_s3" {
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
   landing_zone_bucket_id         = module.landing_zone.bucket_id
+  service_area                   = "housing"
   rds_instance_ids               = var.rds_instance_ids
 
   providers = {
