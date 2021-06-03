@@ -5,7 +5,7 @@ resource "aws_db_subnet_group" "default" {
 }
 
 resource "aws_db_instance" "ingestion_db" {
-  allocated_storage    = 5
+  allocated_storage    = 15
   engine               = "mysql"
   engine_version       = "8.0"
   instance_class       = "db.t3.micro"
@@ -14,6 +14,7 @@ resource "aws_db_instance" "ingestion_db" {
 
   username = "dataplatform"
   password = random_password.rds_password.result
+  skip_final_snapshot = true
 }
 
 resource "random_password" "rds_password" {
