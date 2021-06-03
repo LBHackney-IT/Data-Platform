@@ -9,11 +9,11 @@ locals {
 
 data "aws_iam_policy_document" "glue_role" {
   statement {
-    actions = [ "sts:AssumeRole" ]
+    actions = ["sts:AssumeRole"]
 
     principals {
-      identifiers = [ "glue.amazonaws.com" ]
-      type = "Service"
+      identifiers = ["glue.amazonaws.com"]
+      type        = "Service"
     }
   }
 }
@@ -21,7 +21,7 @@ data "aws_iam_policy_document" "glue_role" {
 resource "aws_iam_role" "glue_role" {
   tags = module.tags.values
 
-  name = "${local.identifier_prefix}-glue-role"
+  name               = "${local.identifier_prefix}-glue-role"
   assume_role_policy = data.aws_iam_policy_document.glue_role.json
 }
 
