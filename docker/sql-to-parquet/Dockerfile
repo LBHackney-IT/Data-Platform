@@ -14,7 +14,8 @@ RUN apk add --no-cache \
     && pip3 install awscli boto3 \
     && rm -rf /var/cache/apk/*
 
-COPY ./entrypoint.sh ./delete_db_snapshots_in_db.py .
+COPY ./entrypoint.sh .
+COPY ./delete_db_snapshots_in_db.py .
 
 RUN chmod +x entrypoint.sh
 
