@@ -9,8 +9,13 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 data "template_file" "task_definition_template" {
   template = file("${path.module}/task_definition_template.json")
   vars = {
-    REPOSITORY_URL = aws_ecr_repository.worker.repository_url
-    LOG_GROUP      = aws_cloudwatch_log_group.ecs_task_logs.name
+    REPOSITORY_URL  = aws_ecr_repository.worker.repository_url
+    LOG_GROUP       = aws_cloudwatch_log_group.ecs_task_logs.name
+    MYSQL_HOST      = aws_db_instance.ingestion_db.address
+    MYSQL_USER      = aws_db_instance.ingestion_db.username
+    MYSQL_PASS      = random_password.rds_password.result
+    RDS_INSTANCE_ID = aws_db_instance.ingestion_db.id
+    BUCKET_NAME     = var.watched_bucket_name
   }
 }
 
@@ -22,6 +27,40 @@ resource "aws_ecs_task_definition" "task_definition" {
   memory                   = 512
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.fargate.arn
+  task_role_arn            = aws_iam_role.task_role.arn
+}
+
+resource "aws_iam_role" "task_role" {
+  tags = var.tags
+
+  name               = lower("${var.instance_name}-task-role")
+  assume_role_policy = data.aws_iam_policy_document.fargate_assume_role.json
+}
+
+resource "aws_iam_role_policy" "task_role" {
+  name_prefix = "${var.instance_name}-task-role"
+  role        = aws_iam_role.task_role.id
+  policy      = data.aws_iam_policy_document.task_role.json
+}
+
+data "aws_iam_policy_document" "task_role" {
+  statement {
+    effect    = "Allow"
+    actions   = ["s3:GetObject"]
+    resources = ["arn:aws:s3:::${var.watched_bucket_name}/*"]
+  }
+
+  statement {
+    actions = ["kms:*"]
+    effect = "Allow"
+    resources = [var.watched_bucket_kms_key_arn]
+  }
+
+  statement {
+    actions   = ["rds:CreateDBSnapshot", "rds:DeleteDBSnapshot", "rds:DescribeDBSnapshots"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_role" "fargate" {
