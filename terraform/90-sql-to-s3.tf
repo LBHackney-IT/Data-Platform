@@ -1,13 +1,13 @@
 module "liberator_to_parquet" {
-  source              = "../modules/sql-to-parquet"
-  tags                = module.tags.values
-  project             = var.project
-  environment         = var.environment
-  identifier_prefix   = local.identifier_prefix
-  instance_name       = lower("${local.identifier_prefix}-liberator-to-parquet")
-  watched_bucket_name = module.liberator_data_storage.bucket_id
+  source                     = "../modules/sql-to-parquet"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  instance_name              = lower("${local.identifier_prefix}-liberator-to-parquet")
+  watched_bucket_name        = module.liberator_data_storage.bucket_id
   watched_bucket_kms_key_arn = module.liberator_data_storage.kms_key_arn
-  aws_subnet_ids      = data.aws_subnet_ids.network.ids
+  aws_subnet_ids             = data.aws_subnet_ids.network.ids
 }
 
 module "liberator_db_snapshot_to_s3" {

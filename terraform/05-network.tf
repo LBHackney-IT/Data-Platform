@@ -87,8 +87,8 @@ resource "aws_iam_instance_profile" "bastion" {
 }
 
 resource "aws_security_group" "bastion" {
-  name                   = "${local.identifier_prefix}-service-endpoint"
-  description            = "Group Description"
+  name                   = "${local.identifier_prefix}-bastion"
+  description            = "Restricts access to Bastion EC2 instances by only allowing SSH access"
   vpc_id                 = data.aws_vpc.network.id
   revoke_rules_on_delete = true
 

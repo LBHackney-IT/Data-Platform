@@ -6,5 +6,5 @@ lambdas/*/*.zip
 lambdas/*.zip
 env.tfvars
 dev.tfvars
-google_service_account_creds.json
+google_service_account_creds*.json
 .DS_Store

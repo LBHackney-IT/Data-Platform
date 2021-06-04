@@ -51,8 +51,8 @@ data "aws_iam_policy_document" "task_role" {
   }
 
   statement {
-    actions = ["kms:*"]
-    effect = "Allow"
+    actions   = ["kms:*"]
+    effect    = "Allow"
     resources = [var.watched_bucket_kms_key_arn]
   }
 

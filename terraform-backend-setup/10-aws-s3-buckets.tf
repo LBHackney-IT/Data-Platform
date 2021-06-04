@@ -1,7 +1,7 @@
 resource "aws_kms_key" "kms_key" {
-  description = "${var.project} - ${var.environment} KMS Key"
+  description             = "${var.project} - ${var.environment} KMS Key"
   deletion_window_in_days = 10
-  enable_key_rotation = true
+  enable_key_rotation     = true
 }
 
 resource "aws_s3_bucket" "terraform_state_storage" {
