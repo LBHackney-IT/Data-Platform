@@ -7,23 +7,22 @@ locals {
   ]
 }
 
+data "aws_iam_policy_document" "glue_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      identifiers = ["glue.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
 resource "aws_iam_role" "glue_role" {
   tags = module.tags.values
 
-  name = "${local.identifier_prefix}-glue-role"
-  assume_role_policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        Action : "sts:AssumeRole",
-        Principal : {
-          Service : "glue.amazonaws.com"
-        },
-        Effect : "Allow",
-        Sid : ""
-      }
-    ]
-  })
+  name               = "${local.identifier_prefix}-glue-role"
+  assume_role_policy = data.aws_iam_policy_document.glue_role.json
 }
 
 resource "aws_iam_policy" "glue_access_policy" {

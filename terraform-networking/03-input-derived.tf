@@ -13,3 +13,10 @@ module "tags" {
   stack                = var.stack
   team                 = var.team
 }
+
+locals {
+  team_snake        = lower(replace(var.team, " ", "-"))
+  environment       = lower(replace(var.environment, " ", "-"))
+  application_snake = lower(replace(var.application, " ", "-"))
+  identifier_prefix = lower("${local.application_snake}-${local.environment}")
+}
