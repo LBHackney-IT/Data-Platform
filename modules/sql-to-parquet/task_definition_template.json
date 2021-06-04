@@ -5,7 +5,13 @@
     "name": "sql-to-parquet",
     "cpu": 2,
     "image": "${REPOSITORY_URL}:latest",
-    "environment": [],
+    "environment": [
+      { "name": "MYSQL_HOST",      "value": ${jsonencode(MYSQL_HOST)} },
+      { "name": "MYSQL_USER",      "value": ${jsonencode(MYSQL_USER)} },
+      { "name": "MYSQL_PASS",      "value": ${jsonencode(MYSQL_PASS)} },
+      { "name": "BUCKET_NAME",     "value": ${jsonencode(BUCKET_NAME)} },
+      { "name": "RDS_INSTANCE_ID", "value": ${jsonencode(RDS_INSTANCE_ID)} }
+    ],
     "LogConfiguration": {
       "LogDriver": "awslogs",
       "Options": {

@@ -2,7 +2,7 @@
 
 ecr_url=$(terraform output -raw ecr_repository_worker_endpoint)
 
-docker build -f ../docker/Dockerfile -t $ecr_url ../docker
+docker build -f ../docker/sql-to-parquet/Dockerfile -t $ecr_url ../docker/sql-to-parquet
 TEMP_ROLE=`aws sts assume-role --role-arn $ROLE_ARN --role-session-name deploy-image-to-ecr`
 
 access_key=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')

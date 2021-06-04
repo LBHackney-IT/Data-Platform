@@ -1,0 +1,21 @@
+FROM alpine
+
+RUN apk add --update --no-cache \
+                bash \
+                unzip \
+                mariadb-connector-c-dev \
+                mysql mysql-client
+
+# Install AWS CLI
+RUN apk add --no-cache \
+        python3 \
+        py3-pip \
+    && pip3 install --upgrade pip \
+    && pip3 install awscli boto3 \
+    && rm -rf /var/cache/apk/*
+
+COPY ./entrypoint.sh ./delete_db_snapshots_in_db.py .
+
+RUN chmod +x entrypoint.sh
+
+CMD ./entrypoint.sh
