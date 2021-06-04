@@ -103,4 +103,4 @@ jobs:
       - name: Build and delpoy image to ECR
         working-directory: "./terraform"
         run: |
-          ROLE_ARN=arn:aws:iam::${{ env.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }} ../docker/deploy.sh
+          ROLE_ARN=arn:aws:iam::${{ env.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }} ../docker/sql-to-parquet/deploy.sh
