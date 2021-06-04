@@ -27,9 +27,3 @@ module "liberator_db_snapshot_to_s3" {
     aws_s3_bucket.data_platform_lambda_artefact_storage
   ]
 }
-
-// TODO: Understand if this is a generic docker image for all jobs like this, or specific to
-// the data source.
-output "ecr_repository_worker_endpoint" {
-  value = module.liberator_to_parquet.ecr_repository_worker_endpoint
-}

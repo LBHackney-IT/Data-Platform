@@ -21,3 +21,7 @@ output "spirit_animal" {
   description = "Your terrafrom assigned spirit animal"
   value       = random_pet.name.id
 }
+
+output "ecr_repository_worker_endpoint" {
+  value = module.liberator_to_parquet.ecr_repository_worker_endpoint
+}
