@@ -43,7 +43,7 @@ resource "tls_private_key" "bastion_key" {
 }
 
 resource "aws_ssm_parameter" "bastion_key" {
-  name        = "/ec2/bastion_key"
+  name        = "/${local.identifier_prefix}/ec2/bastion_key"
   type        = "SecureString"
   description = "The private key for the EC2 bastion instance"
   value       = tls_private_key.bastion_key.private_key_pem
