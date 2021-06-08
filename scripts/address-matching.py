@@ -31,7 +31,6 @@ sc = SparkContext()
 glueContext = GlueContext(sc)
 logger = glueContext.get_logger()
 
-spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
