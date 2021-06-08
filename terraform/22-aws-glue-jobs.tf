@@ -31,7 +31,7 @@ module "repairs_herts_heritage" {
   department_folder_name          = "housing"
   output_folder_name              = "repairs-herts-heritage"
 }
-    
+
 module "repairs_avonline" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -47,8 +47,8 @@ module "repairs_avonline" {
   google_sheets_worksheet_name    = "Form responses 1"
   department_folder_name          = "housing"
   output_folder_name              = "repairs-avonline"
-}    
-    
+}
+
 module "repairs_alpha_track" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -64,9 +64,9 @@ module "repairs_alpha_track" {
   google_sheets_worksheet_name    = "Form responses 1"
   department_folder_name          = "housing"
   output_folder_name              = "repairs-alpha-track"
-}      
-    
- module "repairs_stannah" {
+}
+
+module "repairs_stannah" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
@@ -81,7 +81,7 @@ module "repairs_alpha_track" {
   google_sheets_worksheet_name    = "Form responses 1"
   department_folder_name          = "housing"
   output_folder_name              = "repairs-stannah"
-}        
+}
 
 module "test-repairs-purdy-data" {
   count                           = terraform.workspace == "default" ? 1 : 0
