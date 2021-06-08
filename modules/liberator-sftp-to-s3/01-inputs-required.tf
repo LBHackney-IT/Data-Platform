@@ -28,3 +28,8 @@ variable "s3_bucket_kms_key_arn" {
   type        = string
 }
 
+variable "run_daily" {
+  description = "If set to true the lambda will run on a daily schedule"
+  type        = bool
+}
+

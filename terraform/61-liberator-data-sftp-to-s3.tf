@@ -5,6 +5,7 @@ module "liberator_data_sftp_to_s3" {
   s3_bucket_kms_key_arn = module.liberator_data_storage.kms_key_arn
   s3_bucket_arn         = module.liberator_data_storage.bucket_arn
   s3_bucket_id          = module.liberator_data_storage.bucket_id
+  run_daily             = var.environment != "dev"
 
   lambda_artefact_storage_bucket_name = aws_s3_bucket.data_platform_lambda_artefact_storage.bucket
 }

@@ -25,6 +25,7 @@ resource "aws_cloudwatch_event_rule" "every_day_at_six" {
   name                = "every-day-at-six"
   description         = "Runs every day at 6am"
   schedule_expression = "cron(0 06 * * ? *)"
+  is_enabled          = var.run_daily
 }
 
 resource "aws_cloudwatch_event_target" "run_liberator_uploader_every_day" {
