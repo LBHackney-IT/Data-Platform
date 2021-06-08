@@ -3,10 +3,6 @@ set -eu -o pipefail
 
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-echo $AWS_PROFILE
-cat ~/.aws/config
-aws configure list-profiles
-
 terraform_dir="${script_dir}/../../terraform"
 ecr_url=$(AWS_PROFILE="" terraform -chdir=${terraform_dir} output -raw ecr_repository_worker_endpoint)
 
