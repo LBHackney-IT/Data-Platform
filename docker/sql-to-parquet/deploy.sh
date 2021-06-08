@@ -1,15 +1,13 @@
 #!/bin/bash
+set -eu -o pipefail
 
-ecr_url=$(terraform output -raw ecr_repository_worker_endpoint)
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-docker build -f ../docker/sql-to-parquet/Dockerfile -t $ecr_url ../docker/sql-to-parquet
-TEMP_ROLE=`aws sts assume-role --role-arn $ROLE_ARN --role-session-name deploy-image-to-ecr`
+terraform_dir="${script_dir}/../../terraform"
+ecr_url=$(terraform -chdir=${terraform_dir} output -raw ecr_repository_worker_endpoint)
 
-access_key=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
-secret_access_key=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
-session_token=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
+docker build -f ${script_dir}/Dockerfile -t ${ecr_url} ${script_dir}
 
-AWS_ACCESS_KEY_ID=$access_key AWS_SECRET_ACCESS_KEY=$secret_access_key AWS_SESSION_TOKEN=$session_token \
 aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin $ecr_url
 
 docker push $ecr_url
