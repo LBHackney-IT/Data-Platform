@@ -49,7 +49,7 @@ module "test-repairs-purdy-data" {
   output_folder_name              = "test-repairs-purdy"
 }
 
-resource "aws_glue_job" "glue_job_google_sheet_import" {
+resource "aws_glue_job" "address_matching_glue_job" {
   count = terraform.workspace == "default" ? 1 : 0
 
   tags = module.tags.values
