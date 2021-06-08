@@ -99,7 +99,7 @@ module "test-repairs-purdy-data" {
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-purdy"
 }
-    
+
 module "test-multiple-headers-in-xlsx" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -115,8 +115,8 @@ module "test-multiple-headers-in-xlsx" {
   google_sheets_worksheet_name    = "Fire Alarm/AOV"
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-fire-alarm-aov"
-}  
-    
+}
+
 module "test-multiple-headers-in-xlsx2" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -127,12 +127,12 @@ module "test-multiple-headers-in-xlsx2" {
   landing_zone_bucket_id          = module.landing_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
-  glue_job_name                   = "Testing Multiple Headers in XLSX format"
+  glue_job_name                   = "Testing Multiple Headers in XLSX format 2"
   google_sheets_document_id       = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
   google_sheets_worksheet_name    = "Door Entry"
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-door-entry"
-}     
+}
 
 resource "aws_glue_job" "address_matching_glue_job" {
   count = terraform.workspace == "default" ? 1 : 0
