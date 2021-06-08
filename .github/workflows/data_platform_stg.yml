@@ -101,6 +101,6 @@ jobs:
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
       - name: Build and delpoy image to ECR
-        working-directory: "./terraform"
         run: |
-          ROLE_ARN=arn:aws:iam::${{ env.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }} ../docker/sql-to-parquet/deploy.sh
+          echo "[profile deploy_role]\nrole_arn=arn:aws:iam::${{ env.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}\ncredential_source=Environment\nrole_session_name=deploy-image-to-ecr" >> ~/.aws/config
+          AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
