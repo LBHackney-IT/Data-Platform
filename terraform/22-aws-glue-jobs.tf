@@ -117,7 +117,7 @@ module "test-multiple-headers-in-xlsx" {
   output_folder_name              = "test-repairs-fire-alarm-aov"
 }  
     
-module "test-multiple-headers-in-xlsx" {
+module "test-multiple-headers-in-xlsx2" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
