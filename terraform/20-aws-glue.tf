@@ -152,6 +152,36 @@ resource "aws_glue_crawler" "landing_zone_parking_crawler" {
   }
 }
 
+resource "aws_glue_catalog_database" "landing_zone_liberator" {
+  name = "${local.identifier_prefix}-liberator-landing-zone"
+}
+
+resource "aws_glue_crawler" "landing_zone_liberator" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.landing_zone_liberator.name
+  name          = "${local.identifier_prefix}-landing-zone-liberator"
+  role          = aws_iam_role.glue_role.arn
+
+  s3_target {
+    path       = "s3://${module.landing_zone.bucket_id}/parking/liberator"
+    exclusions = local.crawler_excluded_blogs
+  }
+}
+
+resource "aws_glue_trigger" "landing_zone_liberator_crawler_trigger" {
+  tags = module.tags.values
+
+  name     = "${local.identifier_prefix} Landing Zone Liberator Crawler"
+  schedule = "cron(0 * * * ? *)"
+  type     = "SCHEDULED"
+  enabled  = true
+
+  actions {
+    crawler_name = aws_glue_crawler.landing_zone_liberator.name
+  }
+}
+
 // ==== RAW ZONE ===========
 resource "aws_glue_catalog_database" "raw_zone_catalog_database" {
   name = "${local.identifier_prefix}-raw-zone-database"
@@ -189,3 +219,4 @@ resource "aws_glue_crawler" "landing_zone_data_and_insight_address_matching" {
     exclusions = local.crawler_excluded_blogs
   }
 }
+
