@@ -170,3 +170,22 @@ resource "aws_glue_crawler" "raw_zone_parking_crawler" {
     exclusions = local.crawler_excluded_blogs
   }
 }
+
+resource "aws_glue_catalog_database" "landing_zone_data_and_insight_address_matching" {
+  count = terraform.workspace == "default" ? 1 : 0
+  name  = "${local.identifier_prefix}-data-and-insight-address-matching-landing-zone"
+}
+
+resource "aws_glue_crawler" "landing_zone_data_and_insight_address_matching" {
+  count = terraform.workspace == "default" ? 1 : 0
+  tags  = module.tags.values
+
+  database_name = aws_glue_catalog_database.landing_zone_data_and_insight_address_matching[count.index].name
+  name          = "${local.identifier_prefix}-landing-zone-data-and-insight-address-matching"
+  role          = aws_iam_role.glue_role.arn
+
+  s3_target {
+    path       = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-glue-job-output/"
+    exclusions = local.crawler_excluded_blogs
+  }
+}

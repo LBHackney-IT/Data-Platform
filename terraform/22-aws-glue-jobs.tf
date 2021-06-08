@@ -66,8 +66,8 @@ resource "aws_glue_job" "glue_job_google_sheet_import" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--s3_bucket_target"     = "s3://${var.landing_zone_bucket_id}/data-and-insight/address-matching-glue-job-output/"
-    "--query_addresses_url"  = "s3://${var.landing_zone_bucket_id}/data-and-insight/address-matching-test/test_addresses.gz.parquet"
-    "--target_addresses_url" = "s3://${var.landing_zone_bucket_id}/data-and-insight/address-matching-test/addresses_api_full.gz.parquet"
+    "--s3_bucket_target"     = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-glue-job-output/"
+    "--query_addresses_url"  = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-test/test_addresses.gz.parquet"
+    "--target_addresses_url" = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-test/addresses_api_full.gz.parquet"
   }
 }
