@@ -48,3 +48,26 @@ module "test-repairs-purdy-data" {
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-purdy"
 }
+
+resource "aws_glue_job" "glue_job_google_sheet_import" {
+  count = terraform.workspace == "default" ? 1 : 0
+
+  tags = module.tags.values
+
+  name              = "Address Matching"
+  number_of_workers = 10
+  worker_type       = "G.1X"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.address_matching.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--s3_bucket_target"     = "s3://${var.landing_zone_bucket_id}/data-and-insight/address-matching-glue-job-output/"
+    "--query_addresses_url"  = "s3://${var.landing_zone_bucket_id}/data-and-insight/address-matching-test/test_addresses.gz.parquet"
+    "--target_addresses_url" = "s3://${var.landing_zone_bucket_id}/data-and-insight/address-matching-test/addresses_api_full.gz.parquet"
+  }
+}
