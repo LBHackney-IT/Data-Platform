@@ -102,5 +102,5 @@ jobs:
           terraform_destroy: false
       - name: Build and delpoy image to ECR
         run: |
-          echo "[profile deploy_role]\nrole_arn=arn:aws:iam::${{ env.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}\nsource_profile=default\nrole_session_name=deploy-image-to-ecr" >> ~/.aws/config
+          echo "[profile deploy_role]\\nrole_arn=arn:aws:iam::${{ env.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}\\nsource_profile=default\\nrole_session_name=deploy-image-to-ecr" >> ~/.aws/config
           AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
