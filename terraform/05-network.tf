@@ -43,7 +43,7 @@ resource "tls_private_key" "bastion_key" {
 }
 
 resource "aws_ssm_parameter" "bastion_key" {
-  name        = "/ec2/bastion_key"
+  name        = "/${local.identifier_prefix}/ec2/bastion_key"
   type        = "SecureString"
   description = "The private key for the EC2 bastion instance"
   value       = tls_private_key.bastion_key.private_key_pem
@@ -120,8 +120,8 @@ resource "aws_instance" "bastion" {
   key_name             = aws_key_pair.generated_key.key_name
   iam_instance_profile = aws_iam_instance_profile.bastion.name
 
-  subnet_id       = local.instance_subnet_id
-  security_groups = [aws_security_group.bastion.id]
+  subnet_id              = local.instance_subnet_id
+  vpc_security_group_ids = [aws_security_group.bastion.id]
 
   lifecycle {
     ignore_changes = [subnet_id]
