@@ -7,3 +7,13 @@ resource "aws_s3_bucket_object" "google_sheets_import_script" {
   source = "../scripts/google-sheets-import.py"
   etag   = filemd5("../scripts/google-sheets-import.py")
 }
+
+resource "aws_s3_bucket_object" "address_matching" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/address-matching.py"
+  acl    = "private"
+  source = "../scripts/address-matching.py"
+  etag   = filemd5("../scripts/address-matching.py")
+}
