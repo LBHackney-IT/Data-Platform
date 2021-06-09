@@ -89,6 +89,7 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   cluster_type       = "single-node"
   iam_roles          = [aws_iam_role.redshift_role.arn]
   cluster_subnet_group_name = aws_redshift_subnet_group.redshift.name
+  publicly_accessible = false
   tags              = module.tags.values
 
 }
@@ -99,4 +100,10 @@ resource "aws_redshift_subnet_group" "redshift" {
 
   tags = module.tags.values
 
+}
+
+resource "aws_internet_gateway" "data_platform_internet_gateway" {
+  vpc_id = data.aws_vpc.network.id
+
+  tags = module.tags.values
 }
