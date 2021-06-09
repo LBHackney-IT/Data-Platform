@@ -78,7 +78,8 @@ resource "aws_cloudwatch_event_rule" "new_s3_object" {
         "s3.amazonaws.com"
       ],
       "eventName" : [
-        "PutObject"
+        "PutObject",
+        "CompleteMultipartUpload"
       ],
       "requestParameters" : {
         "bucketName" : [
