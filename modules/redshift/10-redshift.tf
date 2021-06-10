@@ -101,9 +101,3 @@ resource "aws_redshift_subnet_group" "redshift" {
   tags = var.tags
 
 }
-
-resource "aws_internet_gateway" "data_platform_internet_gateway" {
-  vpc_id = var.vpc_id
-
-  tags = var.tags
-}
