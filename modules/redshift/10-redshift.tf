@@ -30,7 +30,7 @@ resource "aws_iam_policy" "redshift_access_policy" {
           "glue:GetTable"
         ],
         Resource : [
-          "*" # to do: restric access so it's not to everything
+          "*"
         ]
       },
       {
@@ -50,7 +50,6 @@ resource "aws_iam_policy" "redshift_access_policy" {
       {
         Effect : "Allow",
         Action : [
-          "s3:ListAccessPointsForObjectLambda",
           "s3:GetAccessPoint",
           "s3:GetAccountPublicAccessBlock",
           "s3:ListAccessPoints"
