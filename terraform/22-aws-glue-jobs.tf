@@ -172,7 +172,7 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--s3_bucket_target" = "s3://${module.landing_zone.bucket_id}"
-    "--s3_bucket_source" = "s3://${module.raw_zone.bucket_id}"
+    "--s3_bucket_target" = "s3://${module.raw_zone.bucket_id}"
+    "--s3_bucket_source" = "s3://${module.landing_zone.bucket_id}"
   }
 }
