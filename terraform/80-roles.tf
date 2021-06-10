@@ -396,7 +396,20 @@ data "aws_iam_policy_document" "power_user_parking" {
       module.trusted_zone.bucket_arn,
       "${module.trusted_zone.bucket_arn}/parking/*",
       module.athena_storage.bucket_arn,
-      "${module.athena_storage.bucket_arn}/parking/*"
+      "${module.athena_storage.bucket_arn}/parking/*",
+      "${module.landing_zone.bucket_arn}/parking/manual/*"
+    ]
+  }
+
+  statement {
+    sid    = "DeleteObject"
+    effect = "Allow"
+    actions = [
+      "s3:DeleteObject"
+    ]
+    resources = [
+      "${module.landing_zone.bucket_arn}/parking/manual/*",
+      "${module.raw_zone.bucket_arn}/parking/manual/*"
     ]
   }
 
