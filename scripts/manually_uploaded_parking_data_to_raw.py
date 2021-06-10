@@ -39,7 +39,7 @@ def data_source_landing_to_raw(bucketSource, bucketTarget, object_path, glue_con
     connection_options = {"paths": [bucketSource + "/" + object_path]},
     transformation_ctx = "data_source"
   )
-  logger.info("Retrieved data source from s3 path {bucketSource}/{object_path}")
+  logger.info(f"Retrieved data source from s3 path {bucketSource}/{object_path}")
 
   logger.info("Converted into data frame")
   data_frame = data_source.toDF()
@@ -58,7 +58,7 @@ def data_source_landing_to_raw(bucketSource, bucketTarget, object_path, glue_con
     connection_options = {"path": bucketTarget + "/" + object_path, "partitionKeys": ["import_year" ,"import_month" ,"import_day"]},
     transformation_ctx = "data_sink"
   )
-  logger.info("Finished writing to s3 at path {bucketTarget}/{object_path}")
+  logger.info(f"Finished writing to s3 at path {bucketTarget}/{object_path}")
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
