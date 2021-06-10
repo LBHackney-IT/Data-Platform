@@ -89,6 +89,7 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   iam_roles                 = [aws_iam_role.redshift_role.arn]
   cluster_subnet_group_name = aws_redshift_subnet_group.redshift.name
   publicly_accessible       = false
+  final_snapshot_identifier = "${var.identifier_prefix}-redshift-cluste-final"
   tags                      = var.tags
 
 }
