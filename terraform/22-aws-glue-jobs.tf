@@ -160,7 +160,7 @@ resource "aws_glue_job" "address_matching_glue_job" {
 resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
   tags = module.tags.values
 
-  name              = "Copying manually uploaded parking data from landing zone to raw zone"
+  name              = "${local.identifier_prefix} Copying manually uploaded parking data from landing zone to raw zone"
   number_of_workers = 2
   worker_type       = "G.1X"
   role_arn          = aws_iam_role.glue_role.arn
