@@ -45,7 +45,7 @@ def data_source_landing_to_raw(bucketSource, bucketTarget, object_path, glue_con
   data_frame = data_source.toDF()
   data_frame = remove_empty_columns(data_frame)
   logger.info("Using Columns:")
-  logger.info(data_frame.columns)
+  logger.info(str(data_frame.columns))
   data_frame = add_import_time_columns(data_frame)
 
   data_output = DynamicFrame.fromDF(data_frame, glue_context, "cedar_data")
