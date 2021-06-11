@@ -69,10 +69,10 @@ s3BucketTarget = get_glue_env_var('s3_bucket_target', '')
 s3BucketSource = get_glue_env_var('s3_bucket_source', '')
 
 
-logger.info("Starting parking/manual-cedar/markets-expenditure/")
-data_source_landing_to_raw(s3BucketSource, s3BucketTarget, "parking/manual-cedar/markets-expenditure/", glue_context)
+logger.info("Starting parking/manual/cedar-markets-expenditure/")
+data_source_landing_to_raw(s3BucketSource, s3BucketTarget, "parking/manual/cedar-markets-expenditure/", glue_context)
 
-logger.info("Starting parking/manual-cedar/markets-income/")
-data_source_landing_to_raw(s3BucketSource, s3BucketTarget, "parking/manual-cedar/markets-income/", glue_context)
+logger.info("Starting parking/manual/cedar-markets-income/")
+data_source_landing_to_raw(s3BucketSource, s3BucketTarget, "parking/manual/cedar-markets-income/", glue_context)
 
 job.commit()

@@ -199,7 +199,7 @@ resource "aws_glue_crawler" "raw_zone_parking_manual_uploads_crawler" {
   role          = aws_iam_role.glue_role.arn
 
   s3_target {
-    path       = "s3://${module.raw_zone.bucket_id}/parking/manual-*"
+    path       = "s3://${module.raw_zone.bucket_id}/parking/manual/"
     exclusions = local.crawler_excluded_blogs
   }
 
@@ -229,4 +229,3 @@ resource "aws_glue_crawler" "landing_zone_data_and_insight_address_matching" {
     exclusions = local.crawler_excluded_blogs
   }
 }
-
