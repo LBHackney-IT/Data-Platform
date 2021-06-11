@@ -17,3 +17,13 @@ resource "aws_s3_bucket_object" "address_matching" {
   source = "../scripts/address-matching.py"
   etag   = filemd5("../scripts/address-matching.py")
 }
+
+resource "aws_s3_bucket_object" "manually_uploaded_parking_data_to_raw" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/manually_uploaded_parking_data_to_raw.py"
+  acl    = "private"
+  source = "../scripts/manually_uploaded_parking_data_to_raw.py"
+  etag   = filemd5("../scripts/manually_uploaded_parking_data_to_raw.py")
+}
