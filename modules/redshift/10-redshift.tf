@@ -24,10 +24,7 @@ resource "aws_iam_policy" "redshift_access_policy" {
       {
         Effect : "Allow",
         Action : [
-          "glue:GetDatabase",
-          "glue:CreateDatabase",
-          "glue:CreateTable",
-          "glue:GetTable"
+          "glue:*"
         ],
         Resource : [
           "*"
