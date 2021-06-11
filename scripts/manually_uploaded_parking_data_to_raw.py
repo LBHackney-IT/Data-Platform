@@ -64,12 +64,13 @@ job = Job(glue_context)
 job.init(args['JOB_NAME'], args)
 
 s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
+s3_prefix = get_glue_env_var('s3_prefix', '')
 s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 
 folders = s3_client.list_objects_v2(
     Bucket=s3_bucket_source,
     Delimiter='/',
-    Prefix='parking/manual/'
+    Prefix=s3_prefix
 )
 
 for folder in folders['CommonPrefixes']:
