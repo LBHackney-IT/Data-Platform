@@ -15,60 +15,52 @@ resource "aws_iam_role" "redshift_role" {
   name               = "${var.identifier_prefix}-redshift-role"
   assume_role_policy = data.aws_iam_policy_document.redshift_role.json
 }
+data "aws_iam_policy_document" "redshift" {
+  statement {
 
-resource "aws_iam_policy" "redshift_access_policy" {
-  name = "${var.identifier_prefix}-redshift-access-policy"
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        Effect : "Allow",
-        Action : [
-          "glue:*"
-        ],
-        Resource : [
-          "*"
-        ]
-      },
-      {
-        Effect : "Allow",
-        Action : "s3:*",
-        Resource : [
-          "${var.landing_zone_bucket_arn}/*",
-          var.landing_zone_bucket_arn,
-          "${var.refined_zone_bucket_arn}/*",
-          var.refined_zone_bucket_arn,
-          "${var.trusted_zone_bucket_arn}/*",
-          var.trusted_zone_bucket_arn,
-          "${var.raw_zone_bucket_arn}/*",
-          var.raw_zone_bucket_arn
-        ]
-      },
-      {
-        Effect : "Allow",
-        Action : [
-          "s3:GetAccessPoint",
-          "s3:GetAccountPublicAccessBlock",
-          "s3:ListAccessPoints"
-        ],
-        Resource : [
-          "*"
-        ]
-      },
-      {
-        Effect : "Allow",
-        Action : [
-          "kms:DescribeCustomKeyStores"
-        ],
-        Resource : [
-          var.landing_zone_kms_key_arn,
-          var.raw_zone_kms_key_arn,
-          var.refined_zone_kms_key_arn,
-          var.trusted_zone_kms_key_arn,
-        ]
-      }
+    actions = [
+      "glue:*"
     ]
-  })
+
+    resources = [
+      "*",
+    ]
+  }
+  statement {
+    actions = ["s3:*"]
+    resources = [
+      "${var.landing_zone_bucket_arn}/*",
+      var.landing_zone_bucket_arn,
+      "${var.refined_zone_bucket_arn}/*",
+      var.refined_zone_bucket_arn,
+      "${var.trusted_zone_bucket_arn}/*",
+      var.trusted_zone_bucket_arn,
+      "${var.raw_zone_bucket_arn}/*",
+      var.raw_zone_bucket_arn
+    ]
+  }
+  statement {
+    actions = [
+      "kms:DescribeCustomKeyStores",
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
+    ]
+    resources = [
+      var.landing_zone_kms_key_arn,
+      var.raw_zone_kms_key_arn,
+      var.refined_zone_kms_key_arn,
+      var.trusted_zone_kms_key_arn,
+    ]
+  }
+}
+resource "aws_iam_policy" "redshift_access_policy" {
+  name   = "${var.identifier_prefix}-redshift-access-policy"
+  policy = data.aws_iam_policy_document.redshift.json
 }
 
 resource "aws_iam_role_policy_attachment" "attach_redshift_role" {
