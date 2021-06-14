@@ -93,12 +93,12 @@ resource "aws_redshift_subnet_group" "redshift" {
 }
 
 resource "aws_security_group" "redshift_cluster_security_group" {
-  name        = "allow_tls"
-  description = "Allow TLS inbound traffic"
+  name        = "${var.identifier_prefix}-redshift-secuirty-group"
+  description = "specifies the rules for inbound traffic to the Redshift cluster"
   vpc_id      = var.vpc_id
 
   ingress {
-    description      = "TLS from VPC"
+    description      = "allows inbound traffic from BI tools using PostgreSQL protocol"
     from_port        = 5439
     to_port          = 5439
     protocol         = "tcp"
