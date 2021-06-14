@@ -79,6 +79,7 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   cluster_subnet_group_name = aws_redshift_subnet_group.redshift.name
   publicly_accessible       = false
   final_snapshot_identifier = "${var.identifier_prefix}-redshift-cluster-final"
+  vpc_security_group_ids    = [aws_security_group.redshift_cluster_security_group.id]
   tags                      = var.tags
 
 }
@@ -89,4 +90,29 @@ resource "aws_redshift_subnet_group" "redshift" {
 
   tags = var.tags
 
+}
+
+resource "aws_security_group" "redshift_cluster_security_group" {
+  name        = "${var.identifier_prefix}-redshift"
+  description = "Specifies the rules for inbound traffic to the Redshift cluster"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description      = "Allows inbound traffic from BI tools using PostgreSQL protocol"
+    from_port        = 5439
+    to_port          = 5439
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "Allows all outbound traffic"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = var.tags
 }
