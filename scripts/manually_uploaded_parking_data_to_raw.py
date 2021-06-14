@@ -39,7 +39,7 @@ def data_source_landing_to_raw(bucket_source, bucket_target, key, glue_context):
     connection_type = "s3",
     format = "csv",
     connection_options = {"paths": [bucket_source + "/" + key]},
-    transformation_ctx = "data_source"
+    transformation_ctx = "data_source_" + key
   )
   logger.info(f"Retrieved data source from s3 path {bucket_source}/{key}")
 
@@ -55,7 +55,7 @@ def data_source_landing_to_raw(bucket_source, bucket_target, key, glue_context):
     connection_type = "s3",
     format = "parquet",
     connection_options = {"path": bucket_target + "/" + key, "partitionKeys": ["import_year" ,"import_month" ,"import_day"]},
-    transformation_ctx = "data_sink"
+    transformation_ctx = "data_sink_" + key
   )
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
@@ -64,12 +64,13 @@ job = Job(glue_context)
 job.init(args['JOB_NAME'], args)
 
 s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
+s3_prefix = get_glue_env_var('s3_prefix', '')
 s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 
 folders = s3_client.list_objects_v2(
     Bucket=s3_bucket_source,
     Delimiter='/',
-    Prefix='parking/manual/'
+    Prefix=s3_prefix
 )
 
 for folder in folders['CommonPrefixes']:
