@@ -59,7 +59,7 @@ data "aws_iam_policy_document" "dms_assume_role" {
     actions = ["sts:AssumeRole"]
 
     principals {
-      identifiers = ["dms.amazonaws.com"]
+      identifiers = ["ec2.amazonaws.com"]
       type        = "Service"
     }
   }
@@ -92,21 +92,18 @@ resource "aws_security_group" "bastion" {
   vpc_id                 = data.aws_vpc.network.id
   revoke_rules_on_delete = true
 
+  egress {
+    description      = "Allow all outbound traffic"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
   tags = merge(module.tags.values, {
     "Name" : "Bastion"
   })
-}
-
-resource "aws_security_group_rule" "bastion" {
-  security_group_id = aws_security_group.bastion.id
-  type              = "ingress"
-
-  cidr_blocks = ["0.0.0.0/0"]
-  description = ""
-
-  from_port = "22"
-  to_port   = "22"
-  protocol  = "TCP"
 }
 
 resource "aws_instance" "bastion" {
