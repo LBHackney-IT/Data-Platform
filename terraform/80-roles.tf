@@ -410,7 +410,8 @@ data "aws_iam_policy_document" "power_user_parking" {
     ]
     resources = [
       "${module.landing_zone.bucket_arn}/parking/manual/*",
-      "${module.raw_zone.bucket_arn}/parking/manual/*"
+      "${module.raw_zone.bucket_arn}/parking/manual/*",
+      "${module.refined_zone.bucket_arn}/parking/*"
     ]
   }
 
