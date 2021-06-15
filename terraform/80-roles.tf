@@ -199,6 +199,7 @@ data "aws_iam_policy_document" "power_user_parking" {
       "glue:GetCrawler",
       "glue:GetCrawlerMetrics",
       "glue:GetCrawlers",
+      "glue:GetDag",
       "glue:GetDataCatalogEncryptionSettings",
       "glue:GetDatabase",
       "glue:GetDatabases",
