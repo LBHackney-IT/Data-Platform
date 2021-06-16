@@ -38,9 +38,9 @@ resource "aws_iam_role" "task_role" {
 }
 
 resource "aws_iam_role_policy" "task_role" {
-  name_prefix = "${var.instance_name}-task-role"
-  role        = aws_iam_role.task_role.id
-  policy      = data.aws_iam_policy_document.task_role.json
+  name   = "${var.instance_name}-task-role"
+  role   = aws_iam_role.task_role.id
+  policy = data.aws_iam_policy_document.task_role.json
 }
 
 data "aws_iam_policy_document" "task_role" {
