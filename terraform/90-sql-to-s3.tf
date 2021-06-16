@@ -16,14 +16,10 @@ module "liberator_db_snapshot_to_s3" {
   project                        = var.project
   environment                    = var.environment
   identifier_prefix              = "${local.identifier_prefix}-dp"
-  lambda_artefact_storage_bucket = aws_s3_bucket.data_platform_lambda_artefact_storage.bucket
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   service_area                   = "parking"
   rds_instance_ids               = [module.liberator_to_parquet.rds_instance_id]
-
-  depends_on = [
-    aws_s3_bucket.data_platform_lambda_artefact_storage
-  ]
 }
