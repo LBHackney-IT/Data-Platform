@@ -181,5 +181,6 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
     "--s3_bucket_target"    = module.raw_zone.bucket_id
     "--s3_bucket_source"    = module.landing_zone.bucket_id
     "--s3_prefix"           = "parking/manual/"
+    "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.get_s3_subfolders.key}"
   }
 }

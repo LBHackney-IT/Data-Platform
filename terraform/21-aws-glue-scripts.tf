@@ -27,3 +27,13 @@ resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
   source = "../scripts/copy-manually-uploaded-csv-data-to-raw.py"
   etag   = filemd5("../scripts/copy-manually-uploaded-csv-data-to-raw.py")
 }
+
+resource "aws_s3_bucket_object" "get_s3_subfolders" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/get_s3_subfolders.py"
+  acl    = "private"
+  source = "../scripts/get_s3_subfolders.py"
+  etag   = filemd5("../scripts/get_s3_subfolders.py")
+}
