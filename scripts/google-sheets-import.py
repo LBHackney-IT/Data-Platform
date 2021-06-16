@@ -57,6 +57,7 @@ def get_secret(logger, secret_name, region_name):
 # SETTINGS
 googleSheetsDocumentKey = get_glue_env_var('document_key', '')
 googleSheetsWorksheetName = get_glue_env_var('worksheet_name', '')
+headerRowNumber = get_glue_env_var('header_row_number', 1)
 # OR
 #googleSheetsWorksheetIndex = 0
 s3BucketTarget = get_glue_env_var('s3_bucket_target', '')
@@ -88,7 +89,9 @@ googleSheetsWorksheet = googleSheetsDocument.worksheet(googleSheetsWorksheetName
 #googleSheetsWorksheet = googleSheetsDocument.get_worksheet(googleSheetsWorksheetIndex)
 
 # Create a data frame from the google sheet data
-pandasDataFrame = pd.DataFrame(googleSheetsWorksheet.get_all_records())
+pandasDataFrame = pd.DataFrame(googleSheetsWorksheet.get_all_records(
+    head = headerRowNumber
+))
 
 # Convert all columns to strings
 all_columns = list(pandasDataFrame)

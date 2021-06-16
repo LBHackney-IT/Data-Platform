@@ -18,10 +18,12 @@ resource "aws_glue_job" "glue_job_google_sheet_import" {
     "--additional-python-modules" = "gspread==3.7.0, google-auth==1.27.1, pyspark==3.1.1"
     "--document_key"              = var.google_sheets_document_id
     "--worksheet_name"            = var.google_sheets_worksheet_name
+    "--header_row_number"         = var.google_sheet_header_row_number
     "--secret_id"                 = var.sheets_credentials_name
     "--s3_bucket_target"          = "s3://${var.landing_zone_bucket_id}/${var.department_folder_name}/${var.output_folder_name}"
   }
 }
+
 resource "aws_glue_trigger" "google_sheet_import_trigger" {
   name     = "Google Sheets Import Job Glue Trigger- ${var.glue_job_name}"
   schedule = var.google_sheet_import_schedule

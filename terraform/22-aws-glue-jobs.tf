@@ -113,6 +113,7 @@ module "test-multiple-headers-in-xlsx" {
   glue_job_name                   = "Testing Multiple Headers in XLSX format"
   google_sheets_document_id       = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
   google_sheets_worksheet_name    = "Fire Alarm/AOV"
+  google_sheet_header_row_number  = 2
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-fire-alarm-aov"
 }
@@ -130,6 +131,7 @@ module "test-multiple-headers-in-xlsx2" {
   glue_job_name                   = "Testing Multiple Headers in XLSX format 2"
   google_sheets_document_id       = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
   google_sheets_worksheet_name    = "Door Entry"
+  google_sheet_header_row_number  = 2
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-door-entry"
 }
