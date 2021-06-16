@@ -98,7 +98,7 @@ imperfectMatchframe = DynamicFrame.fromDF(imperfectMatch, glueContext, "imperfec
 perfectMatchframe = DynamicFrame.fromDF(perfectMatch, glueContext, "perfectMatch")
 
 parquetData = glueContext.write_dynamic_frame.from_options(
-    frame=perfectMatch,
+    frame=perfectMatchframe,
     connection_type="s3",
     format="parquet",
     connection_options={"path": perfect_match_s3_bucket_target, "partitionKeys": []},
@@ -113,7 +113,7 @@ parquetData = glueContext.write_dynamic_frame.from_options(
 
 
 parquetData = glueContext.write_dynamic_frame.from_options(
-    frame=imperfectMatch,
+    frame=imperfectMatchframe,
     connection_type="s3",
     format="parquet",
     connection_options={"path": imperfect_s3_bucket_target, "partitionKeys": []},
