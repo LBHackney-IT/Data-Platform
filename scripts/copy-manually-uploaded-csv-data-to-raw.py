@@ -9,6 +9,8 @@ from pyspark.sql import functions as f
 from awsglue.dynamicframe import DynamicFrame
 import boto3
 
+from get_s3_subfolders import get_s3_subfolders
+
 s3_client = boto3.client('s3')
 sc = SparkContext()
 glue_context = GlueContext(sc)
@@ -67,15 +69,7 @@ s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
 s3_prefix = get_glue_env_var('s3_prefix', '')
 s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 
-folders = s3_client.list_objects_v2(
-    Bucket=s3_bucket_source,
-    Delimiter='/',
-    Prefix=s3_prefix
-)
-
-for folder in folders['CommonPrefixes']:
-  key = folder['Prefix']
-
+for key in get_s3_subfolders(s3_client, s3_bucket_source, s3_prefix):
   logger.info(f"Starting {key}")
   data_source_landing_to_raw("s3://" + s3_bucket_source, "s3://" + s3_bucket_target, key, glue_context)
   logger.info(f"Finished {key}")
