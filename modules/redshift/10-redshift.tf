@@ -98,11 +98,11 @@ resource "aws_security_group" "redshift_cluster_security_group" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description      = "Allows inbound traffic from BI tools using PostgreSQL protocol"
-    from_port        = 5439
-    to_port          = 5439
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "Allows inbound traffic from BI tools using PostgreSQL protocol"
+    from_port   = 5439
+    to_port     = 5439
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {

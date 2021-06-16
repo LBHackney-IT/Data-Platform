@@ -30,14 +30,14 @@ resource "aws_cloudwatch_log_group" "cloud_trail_events" {
 }
 
 resource "aws_iam_role" "cloudtrail_cloudwatch_events_role" {
-  name_prefix        = "cloudtrail_events_role"
+  name               = "${var.identifier_prefix}-cloudtrail-events"
   assume_role_policy = data.aws_iam_policy_document.assume_policy.json
 }
 
 resource "aws_iam_role_policy" "policy" {
-  name_prefix = "cloudtrail_cloudwatch_events_policy"
-  role        = aws_iam_role.cloudtrail_cloudwatch_events_role.id
-  policy      = data.aws_iam_policy_document.policy.json
+  name   = "${var.identifier_prefix}-cloudtrail-events"
+  role   = aws_iam_role.cloudtrail_cloudwatch_events_role.id
+  policy = data.aws_iam_policy_document.policy.json
 }
 
 data "aws_iam_policy_document" "policy" {

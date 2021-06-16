@@ -141,7 +141,7 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   role             = aws_iam_role.rds_snapshot_to_s3_lambda.arn
   handler          = "index.handler"
   runtime          = "nodejs14.x"
-  function_name    = "${var.identifier_prefix}_rds_snapshot_to_s3"
+  function_name    = "${var.identifier_prefix}-rds-snapshot-to-s3"
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_bucket_object.rds_snapshot_to_s3_lambda.key
   source_code_hash = data.archive_file.rds_snapshot_to_s3_lambda.output_base64sha256
