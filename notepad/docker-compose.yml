@@ -9,7 +9,7 @@ services:
       - "4040:4040"
     entrypoint: /home/jupyter/jupyter_start.sh
     volumes:
-      - ./aws-config:/root/.aws:rw
+#      - ./aws-config:/root/.aws:rw
       - ./scripts:/home/jupyter/jupyter_default_dir
   cli:
     container_name: test_glue_jupyter
@@ -20,5 +20,5 @@ services:
       - "4040:4040"
     # entrypoint: /home/jupyter/jupyter_start.sh
     volumes:
-      - ./aws-config:/root/.aws:rw
+#      - ./aws-config:/root/.aws:rw
       - ./src:/home/jupyter/jupyter_default_dir
