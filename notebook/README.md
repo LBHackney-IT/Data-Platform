@@ -25,7 +25,7 @@ docker-compose up notebook
 
 ## Test connection to AWS
 
-1. Within the notebook open `scripts/test-s3-connection`.
+1. Within the notebook open `test-s3-connection`.
 1. Change the `s3_url` variable to be an s3 bucket that exists in the AWS account you are using.
 1. Click "Run"
 1. You should get some data back from the s3 bucket and no errors.
