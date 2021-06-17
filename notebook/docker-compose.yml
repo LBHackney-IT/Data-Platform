@@ -9,16 +9,5 @@ services:
       - "4040:4040"
     entrypoint: /home/jupyter/jupyter_start.sh
     volumes:
-#      - ./aws-config:/root/.aws:rw
+      - ./aws-config:/root/.aws:rw
       - ./scripts:/home/jupyter/jupyter_default_dir
-  cli:
-    container_name: test_glue_jupyter
-    image: amazon/aws-glue-libs:glue_libs_1.0.0_image_01
-    env_file: .env
-    ports:
-      - "8888:8888"
-      - "4040:4040"
-    # entrypoint: /home/jupyter/jupyter_start.sh
-    volumes:
-#      - ./aws-config:/root/.aws:rw
-      - ./src:/home/jupyter/jupyter_default_dir
