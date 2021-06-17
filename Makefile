@@ -1,4 +1,4 @@
-.PHONY: push-ecr format
+.PHONY: $(MAKECMDGOALS)
 
 push-ecr:
 	aws-vault exec hackney-dataplatform-development -- ./docker/sql-to-parquet/deploy.sh

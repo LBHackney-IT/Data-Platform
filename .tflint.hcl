@@ -5,4 +5,13 @@ config {
 
 plugin "aws" {
   enabled = true
+  version = "0.5.0"
+  source  = "github.com/terraform-linters/tflint-ruleset-aws"
+
+  deep_check = true
+}
+
+rule "aws_resource_missing_tags" {
+  enabled = true
+  tags = ["AutomationBuildUrl", "Environment", "Team", "Department", "Application", "Phase", "Stack", "Project", "Confidentiality"]
 }

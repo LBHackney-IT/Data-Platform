@@ -15,14 +15,9 @@ validate:
 destroy:
 	aws-vault exec hackney-dataplatform-development -- terraform destroy -var-file="../config/terraform/env.tfvars"
 
-new:
-	aws-vault exec hackney-dataplatform-development -- terraform workspace new ${WORKSPACE}
-
-format:
-	terraform fmt .
-
 lint-init:
 	tflint --init --config="../.tflint.hcl"
 
 lint:
 	aws-vault exec hackney-dataplatform-development -- tflint --var-file='../config/terraform/env.tfvars' --module --config="../.tflint.hcl" --loglevel=warn .
+
