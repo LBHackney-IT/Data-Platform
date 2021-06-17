@@ -90,7 +90,7 @@ googleSheetsWorksheet = googleSheetsDocument.worksheet(googleSheetsWorksheetName
 
 # Create a data frame from the google sheet data
 pandasDataFrame = pd.DataFrame(googleSheetsWorksheet.get_all_records(
-    head = headerRowNumber
+    head = int(headerRowNumber)
 ))
 
 # Convert all columns to strings
