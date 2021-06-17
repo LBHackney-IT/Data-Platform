@@ -100,7 +100,7 @@ module "test-repairs-purdy-data" {
   output_folder_name              = "test-repairs-purdy"
 }
 
-module "test-multiple-headers-in-xlsx" {
+module "test-multiple-headers-v1" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
@@ -110,31 +110,32 @@ module "test-multiple-headers-in-xlsx" {
   landing_zone_bucket_id          = module.landing_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
-  glue_job_name                   = "Testing Multiple Headers in XLSX format"
-  google_sheets_document_id       = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
-  google_sheets_worksheet_name    = "Fire Alarm/AOV"
-  google_sheet_header_row_number  = 2
-  department_folder_name          = "housing"
-  output_folder_name              = "test-repairs-fire-alarm-aov"
-}
-
-module "test-multiple-headers-in-xlsx2" {
-  count                           = terraform.workspace == "default" ? 1 : 0
-  source                          = "../modules/google-sheets-glue-job"
-  glue_role_arn                   = aws_iam_role.glue_role.arn
-  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id          = module.landing_zone.bucket_id
-  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = module.tags.values
-  glue_job_name                   = "Testing Multiple Headers in XLSX format 2"
-  google_sheets_document_id       = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
+  glue_job_name                   = "Testing Multiple Headers v1"
+  google_sheets_document_id       = "17Yfj2-8EDh7qnhJwVtkjDlhOGQ18R1nvlBzu1RRKL-M"
   google_sheets_worksheet_name    = "Door Entry"
   google_sheet_header_row_number  = 2
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-door-entry"
 }
+    
+  module "test-multiple-headers-v2" {
+  count                           = terraform.workspace == "default" ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  glue_role_arn                   = aws_iam_role.glue_role.arn
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  landing_zone_bucket_id          = module.landing_zone.bucket_id
+  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
+  tags                            = module.tags.values
+  glue_job_name                   = "Testing Multiple Headers v2"
+  google_sheets_document_id       = "17Yfj2-8EDh7qnhJwVtkjDlhOGQ18R1nvlBzu1RRKL-M"
+  google_sheets_worksheet_name    = "Lightning Protection"
+  google_sheet_header_row_number  = 2
+  department_folder_name          = "housing"
+  output_folder_name              = "test-repairs-lightning-protection"
+}
+
 
 resource "aws_glue_job" "address_matching_glue_job" {
   count = terraform.workspace == "default" ? 1 : 0
