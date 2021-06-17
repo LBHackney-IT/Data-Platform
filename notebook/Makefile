@@ -1,5 +1,5 @@
 run-notebook:
-	(aws-vault exec hackney-dataplatform-development -- env | grep  ^AWS_)  > ./.env
+	-(aws-vault exec hackney-dataplatform-development -- env | grep  ^AWS_)  > ./.env
 	docker compose up -d notebook
 
 script_name = "manually_uploaded_parking_data_to_raw.py"
@@ -14,6 +14,7 @@ run-script:
 	--s3_bucket_source $(s3_bucket_source)
 
 remove-images:
-	docker kill glue_jupyter && docker rm glue_jupyter
+	-docker kill glue_jupyter
+	docker rm glue_jupyter
 
 .PHONY: run-notebook
