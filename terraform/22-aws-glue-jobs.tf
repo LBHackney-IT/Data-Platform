@@ -117,8 +117,8 @@ module "test-multiple-headers-v1" {
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-door-entry"
 }
-    
-  module "test-multiple-headers-v2" {
+
+module "test-multiple-headers-v2" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
@@ -135,7 +135,7 @@ module "test-multiple-headers-v1" {
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-lightning-protection"
 }
-    
+
 module "test-multiple-headers-in-xlsx-file-format" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -178,6 +178,30 @@ resource "aws_glue_job" "address_matching_glue_job" {
     "--imperfect_s3_bucket_target"     = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-glue-job-output/imperfect_s3_bucket_target"
     "--query_addresses_url"            = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-test/test_addresses.gz.parquet"
     "--target_addresses_url"           = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-test/addresses_api_full.gz.parquet"
+  }
+}
+
+resource "aws_glue_job" "address_cleaning_glue_job" {
+  count = terraform.workspace == "default" ? 1 : 0
+
+  tags = module.tags.values
+
+  name              = "Address Cleaning"
+  number_of_workers = 10
+  worker_type       = "G.1X"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.address_cleaning.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--cleaned_addresses_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing/repairs-DLO/cleanedAddresses"
+    "--source_address_column"              = "address_of_repair"
+    "--source_dataset"                     = "s3://${module.landing_zone.bucket_id}/housing/repairs-DLO/import_year=2021/import_month=06/import_day=15/part-00000-3146163c-cd41-4b98-b0fb-4c29350a1adf.c000.snappy.parquet"
+    "--source_postcode_column"             = "postcode_of_property"
   }
 }
 
