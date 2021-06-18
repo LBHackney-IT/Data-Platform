@@ -124,6 +124,24 @@ resource "aws_glue_crawler" "landing_zone_housing_crawler" {
   }
 }
 
+resource "aws_glue_catalog_database" "refined_zone_catalog_database" {
+  name = "${local.identifier_prefix}-refined-zone-database"
+}
+
+resource "aws_glue_crawler" "refined_zone_housing_crawler" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.refined_zone_catalog_database.name
+  name          = "${local.identifier_prefix}-refined-zone-housing-crawler"
+  role          = aws_iam_role.glue_role.arn
+  table_prefix  = "housing_"
+
+  s3_target {
+    path       = "s3://${module.refined_zone.bucket_id}/housing"
+    exclusions = local.crawler_excluded_blogs
+  }
+}
+
 resource "aws_glue_crawler" "landing_zone_test_crawler" {
   tags = module.tags.values
 
