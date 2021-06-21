@@ -10,7 +10,10 @@ If you have make and aws-vault installed and setup with credentials for `hackney
 To install and setup aws-vault follow the instructions in step 3 of the [setup section in the project README](https://github.com/LBHackney-IT/Data-Platform/blob/main/README.md#set-up).
 
 ### Option 1. Using make and aws-vault (Preferred)
-  - make `run-notebook`
+Run
+```sh
+make run-notebook
+```
 
 ### Option 2. Using access keys and docker
 1. Navigate to [the hackney SSO](https://hackney.awsapps.com/start#/), click on the account you want to use then click "Command line or programmatic access".
@@ -26,6 +29,6 @@ docker-compose up notebook
 ## Test connection to AWS
 
 1. Within the notebook open `test-s3-connection`.
-1. Change the `s3_url` variable to be an s3 bucket that exists in the AWS account you are using.
+1. Change the `s3_url` variable to be a s3 bucket that exists in the AWS account you are using.
 1. Click "Run"
 1. You should get some data back from the s3 bucket and no errors.
