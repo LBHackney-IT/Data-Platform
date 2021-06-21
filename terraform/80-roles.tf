@@ -281,6 +281,7 @@ data "aws_iam_policy_document" "power_user_parking" {
       //      "glue:UpdateConnection",
       //      "glue:UpdateCrawler",
       //      "glue:UpdateCrawlerSchedule",
+      "glue:UpdateDag",
       //      "glue:UpdateDatabase",
       //      "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
