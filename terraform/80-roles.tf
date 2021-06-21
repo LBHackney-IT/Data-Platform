@@ -206,6 +206,7 @@ data "aws_iam_policy_document" "power_user_parking" {
       "glue:GetDataflowGraph",
       "glue:GetDevEndpoint",
       "glue:GetDevEndpoints",
+      "glue:GetInferredSchema",
       "glue:GetJob",
       "glue:GetJobBookmark",
       "glue:GetJobRun",
