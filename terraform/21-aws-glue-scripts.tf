@@ -37,3 +37,13 @@ resource "aws_s3_bucket_object" "get_s3_subfolders" {
   source = "../scripts/get_s3_subfolders.py"
   etag   = filemd5("../scripts/get_s3_subfolders.py")
 }
+
+resource "aws_s3_bucket_object" "xlsx_import_script" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/xlsx-import.py"
+  acl    = "private"
+  source = "../scripts/xlsx-import.py"
+  etag   = filemd5("../scripts/xlsx-import.py")
+}

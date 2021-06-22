@@ -117,8 +117,8 @@ module "test-multiple-headers-v1" {
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-door-entry"
 }
-    
-  module "test-multiple-headers-v2" {
+
+module "test-multiple-headers-v2" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
@@ -135,7 +135,7 @@ module "test-multiple-headers-v1" {
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-lightning-protection"
 }
-    
+
 module "test-multiple-headers-in-xlsx-file-format" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -154,6 +154,21 @@ module "test-multiple-headers-in-xlsx-file-format" {
   output_folder_name              = "test-repairs-fire-alarm-aov"
 }
 
+module "import-xlsx-file-format" {
+  count                       = terraform.workspace == "default" ? 1 : 0
+  source                      = "../modules/xlsx-import-job"
+  glue_role_arn               = aws_iam_role.glue_role.arn
+  glue_scripts_bucket_id      = module.glue_scripts.bucket_id
+  glue_temp_storage_bucket_id = module.glue_temp_storage.bucket_arn
+  xlsx_import_script_key      = aws_s3_bucket_object.xlsx_import_script.key
+  landing_zone_bucket_id      = module.landing_zone.bucket_id
+  tags                        = module.tags.values
+  glue_job_name               = "XLSX import job"
+  department_folder_name      = "test_xlsx"
+  output_folder_name          = "test_xlsx"
+  raw_zone_bucket_id          = module.raw_zone.bucket_id
+  input_file_name             = "pets.xlsx"
+}
 
 resource "aws_glue_job" "address_matching_glue_job" {
   count = terraform.workspace == "default" ? 1 : 0
