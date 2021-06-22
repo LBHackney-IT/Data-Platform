@@ -17,16 +17,17 @@ resource "aws_glue_job" "xlsx_import" {
     "--s3_bucket_source"          = "s3://${var.raw_zone_bucket_id}/${var.department_folder_name}/${var.input_file_name}"
     "--additional-python-modules" = "openpyxl"
     "--s3_bucket_target"          = "s3://${var.landing_zone_bucket_id}/${var.department_folder_name}/${var.output_folder_name}"
+    "--header_row_number"         = var.header_row_number
   }
 }
 
-# resource "aws_glue_trigger" "google_sheet_import_trigger" {
-#   name     = "Xlsx Import Job Glue Trigger- ${var.glue_job_name}"
-#   schedule = var.xlsx_import_schedule
-#   type     = "SCHEDULED"
-#   enabled  = var.enable_glue_trigger
+resource "aws_glue_trigger" "google_sheet_import_trigger" {
+  name     = "Xlsx Import Job Glue Trigger- ${var.glue_job_name}"
+  schedule = var.xlsx_import_schedule
+  type     = "SCHEDULED"
+  enabled  = var.enable_glue_trigger
 
-#   actions {
-#     job_name = aws_glue_job.xlsx_import.name
-#   }
-# }
+  actions {
+    job_name = aws_glue_job.xlsx_import.name
+  }
+}

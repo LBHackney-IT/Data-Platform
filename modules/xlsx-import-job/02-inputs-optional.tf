@@ -7,6 +7,12 @@ variable "xlsx_import_schedule" {
 variable "enable_glue_trigger" {
   description = "Enable AWS glue trigger"
   type        = string
-  default     = true
+  default     = false
 }
 
+
+variable "header_row_number" {
+  description = "Header row number (0-indexed)"
+  type        = number
+  default     = 0
+}
