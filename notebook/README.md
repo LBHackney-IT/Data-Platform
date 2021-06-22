@@ -20,7 +20,7 @@ make run-notebook
 2. Copy the aws access key, aws secret access key and aws session token into the file `/aws-config/credentials`.
 3. Run 
 ```sh
-docker-compose up notebook
+docker compose up notebook
 ```
 
 ## Open Jupyter Notebook
