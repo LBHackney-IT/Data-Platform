@@ -117,8 +117,8 @@ module "test-multiple-headers-v1" {
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-door-entry"
 }
-    
-  module "test-multiple-headers-v2" {
+
+module "test-multiple-headers-v2" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   glue_role_arn                   = aws_iam_role.glue_role.arn
@@ -135,7 +135,7 @@ module "test-multiple-headers-v1" {
   department_folder_name          = "housing"
   output_folder_name              = "test-repairs-lightning-protection"
 }
-    
+
 module "test-multiple-headers-in-xlsx-file-format" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -201,5 +201,43 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
     "--s3_bucket_source"    = module.landing_zone.bucket_id
     "--s3_prefix"           = "parking/manual/"
     "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.get_s3_subfolders.key}"
+  }
+}
+
+resource "aws_glue_job" "job_to_trigger_liberator_jobs_trigger" {
+  tags = module.tags.values
+
+  name              = "${local.environment} Job to trigger liberator jobs"
+  number_of_workers = 2
+  worker_type       = "Standard"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.empty_job.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {}
+}
+
+resource "aws_glue_workflow" "liberator_data" {
+  name = "${local.identifier_prefix}-liberator-data-workflow"
+}
+
+resource "aws_glue_trigger" "trigger_job_that_triggers_liberator_jobs" {
+  name          = "${local.identifier_prefix}-job-to-trigger-liberator-jobs-trigger"
+  type          = "CONDITIONAL"
+  workflow_name = aws_glue_workflow.liberator_data.name
+
+  actions {
+    job_name = aws_glue_job.job_to_trigger_liberator_jobs_trigger.name
+  }
+
+  predicate {
+    conditions {
+      crawl_state  = "SUCCEEDED"
+      crawler_name = aws_glue_crawler.landing_zone_liberator.name
+    }
   }
 }
