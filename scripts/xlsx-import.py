@@ -1,4 +1,6 @@
 import sys
+import datetime
+import pandas as pd
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -6,8 +8,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql import SQLContext
-
-import pandas as pd
+from pyspark.sql import functions as f
 
 def get_glue_env_var(key, default="none"):
     if f'--{key}' in sys.argv:
@@ -35,22 +36,39 @@ panada_df = pd.read_excel(
     skiprows=range(0, int(header_row_number))
 )
 
-panada_df = panada_df.apply(lambda x: x.str.strip())
+# Replace missing column names with valid names
+panada_df.columns = ["column" + str(i) if a.strip() == "" else a.strip() for i, a in enumerate(panada_df.columns)]
 
+# Strip trainling spaces from data cells
+panada_df = panada_df.apply(lambda x:  x.str.strip() if type(x) is str else x)
+
+# Replace any nulls with empty strings
 panada_df.fillna(value='', inplace=True)
 
 sqlContext = SQLContext(sc)
 
+now = datetime.datetime.now()
+# Convert to SparkDynamicDataFrame
 spark_df = sqlContext.createDataFrame(panada_df)
+spark_df = spark_df.coalesce(1)
+spark_df = spark_df.withColumn('import_date', f.current_timestamp())
+spark_df = spark_df.withColumn('import_timestamp', f.lit(str(now.timestamp())))
+spark_df = spark_df.withColumn('import_year', f.lit(str(now.year)))
+spark_df = spark_df.withColumn('import_month', f.lit(str(now.month).zfill(2)))
+spark_df = spark_df.withColumn('import_day', f.lit(str(now.day).zfill(2)))
+
 
 frame = DynamicFrame.fromDF(spark_df, glueContext, "DataFrame")
 
-DataSink0 = glueContext.write_dynamic_frame.from_options(
+parquet_data = glueContext.write_dynamic_frame.from_options(
     frame = frame,
     connection_type = "s3",
     format = "parquet",
-    connection_options = {"path": s3_bucket_target, "partitionKeys": []},
-    transformation_ctx = "DataSink0"
+    connection_options = {"path": s3_bucket_target, "partitionKeys": ['import_year', 'import_month', 'import_day']},
+    transformation_ctx = "parquet_data"
 )
 
 job.commit()
+
+
+# s3://dataplatform-el-glue-temp-storage/
