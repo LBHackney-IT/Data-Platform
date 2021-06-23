@@ -208,7 +208,7 @@ resource "aws_glue_job" "job_to_trigger_liberator_jobs_trigger" {
   tags = module.tags.values
 
   name              = "${local.environment} Job to trigger liberator jobs"
-  description = <<EOT
+  description       = <<EOT
     We need to configure a trigger in the AWS console to activate after the landing zone crawler succeeded,
     so that we can schedule Glue jobs to run afterwards.
     However, when using triggers in the AWS console you can only configure them to watch jobs, not crawlers.

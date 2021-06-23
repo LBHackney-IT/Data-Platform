@@ -1,14 +1,38 @@
-module "department_housing" {
-  source = "../modules/department"
-  tags   = module.tags.values
+module "department_housing-repairs" {
+  source                 = "../modules/department"
+  tags                   = module.tags.values
+  identifier_prefix      = local.short_identifier_prefix
+  identifier             = "housing-repairs"
+  landing_zone_bucket_id = module.landing_zone.bucket_id
+  raw_zone_bucket_id     = module.raw_zone.bucket_id
+  refined_zone_bucket_id = module.refined_zone.bucket_id
+  trusted_zone_bucket_id = module.trusted_zone.bucket_id
 }
 
-module "department_parking" {
-  source = "../modules/department"
-  tags   = module.tags.values
-}
+#module "department_parking" {
+#  source = "../modules/department"
+#  tags   = module.tags.values
+#  identifier = "parking"
+#}
 
 module "department_finance" {
-  source = "../modules/department"
-  tags   = module.tags.values
+  source                 = "../modules/department"
+  tags                   = module.tags.values
+  identifier_prefix      = local.short_identifier_prefix
+  identifier             = "finance"
+  landing_zone_bucket_id = module.landing_zone.bucket_id
+  raw_zone_bucket_id     = module.raw_zone.bucket_id
+  refined_zone_bucket_id = module.refined_zone.bucket_id
+  trusted_zone_bucket_id = module.trusted_zone.bucket_id
+}
+
+module "department_data_and_insights" {
+  source                 = "../modules/department"
+  tags                   = module.tags.values
+  identifier_prefix      = local.short_identifier_prefix
+  identifier             = "data_and_insights"
+  landing_zone_bucket_id = module.landing_zone.bucket_id
+  raw_zone_bucket_id     = module.raw_zone.bucket_id
+  refined_zone_bucket_id = module.refined_zone.bucket_id
+  trusted_zone_bucket_id = module.trusted_zone.bucket_id
 }
