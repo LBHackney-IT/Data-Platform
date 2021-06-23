@@ -173,8 +173,7 @@ resource "aws_glue_trigger" "landing_zone_liberator_crawler_trigger" {
   tags = module.tags.values
 
   name          = "${local.identifier_prefix} Landing Zone Liberator Crawler"
-  schedule      = "cron(0 * * * ? *)"
-  type          = "SCHEDULED"
+  type          = "ON_DEMAND"
   enabled       = true
   workflow_name = aws_glue_workflow.liberator_data.name
 
