@@ -139,6 +139,7 @@ resource "aws_glue_crawler" "landing_zone_test_crawler" {
 }
 
 resource "aws_glue_crawler" "landing_zone_parking_crawler" {
+  count = terraform.workspace == "default" ? 1 : 0
   tags = module.tags.values
 
   database_name = aws_glue_catalog_database.landing_zone_catalog_database.name
@@ -157,6 +158,7 @@ resource "aws_glue_catalog_database" "landing_zone_liberator" {
 }
 
 resource "aws_glue_crawler" "landing_zone_liberator" {
+  count = terraform.workspace == "default" ? 1 : 0
   tags = module.tags.values
 
   database_name = aws_glue_catalog_database.landing_zone_liberator.name
@@ -170,6 +172,7 @@ resource "aws_glue_crawler" "landing_zone_liberator" {
 }
 
 resource "aws_glue_trigger" "landing_zone_liberator_crawler_trigger" {
+  count = terraform.workspace == "default" ? 1 : 0
   tags = module.tags.values
 
   name          = "${local.identifier_prefix} Landing Zone Liberator Crawler"
@@ -192,6 +195,7 @@ resource "aws_glue_catalog_database" "raw_zone_parking_manual_uploads" {
 }
 
 resource "aws_glue_crawler" "raw_zone_parking_manual_uploads_crawler" {
+  count = terraform.workspace == "default" ? 1 : 0
   tags = module.tags.values
 
   database_name = aws_glue_catalog_database.raw_zone_parking_manual_uploads.name
@@ -237,6 +241,7 @@ resource "aws_glue_catalog_database" "refined_zone_liberator" {
 }
 
 resource "aws_glue_crawler" "refined_zone_liberator_crawler" {
+  count = terraform.workspace == "default" ? 1 : 0
   tags = module.tags.values
 
   database_name = aws_glue_catalog_database.refined_zone_liberator.name
