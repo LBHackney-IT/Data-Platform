@@ -88,14 +88,18 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
     ]
   }
 
-  statement {
-    actions = [
-      "glue:StartWorkflowRun",
-    ]
-    effect = "Allow"
-    resources = [
-      var.workflow_arn
-    ]
+  dynamic "statement" {
+    for_each = var.workflow_arn == "" ? [] : [1]
+
+    content {
+      actions = [
+        "glue:StartWorkflowRun",
+      ]
+      effect = "Allow"
+      resources = [
+        var.workflow_arn
+      ]
+    }
   }
 }
 

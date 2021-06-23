@@ -122,6 +122,6 @@ exports.handler = async (events) => {
     )
 
     if (workflowName) {
-      return await startWorkflowRun(workflowName);
+      await startWorkflowRun(workflowName);
     }
 };
