@@ -28,6 +28,7 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
     const day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
     const month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
     const year = snapshotTime.getFullYear();
+    const date = year + month + day;
 
     console.log("list response contents", listResponse.Contents);
 
@@ -43,7 +44,7 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
         const copyObjectParams = {
           Bucket: targetBucketName,
           CopySource: `${sourceBucketName}/${file.Key}`,
-          Key: `${targetPath}/${databaseName}/${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/${fileName}`,
+          Key: `${targetPath}/${databaseName}/${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/import_date=${date}/${fileName}`,
           ACL: "bucket-owner-full-control",
         };
         console.log("copyObjectParams", copyObjectParams)
