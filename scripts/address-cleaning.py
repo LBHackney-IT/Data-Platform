@@ -7,7 +7,7 @@ from awsglue.job import Job
 from pyspark.ml import Pipeline
 from pyspark.ml.feature import RegexTokenizer, NGram, HashingTF, MinHashLSH
 from pyspark.sql.window import Window
-from pyspark.sql.functions import rank, col
+from pyspark.sql.functions import rank, col, trim, when, max
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 
@@ -16,35 +16,42 @@ def get_glue_env_var(key, default="none"):
         return getResolvedOptions(sys.argv, [key])[key]
     else:
         return default
+
+def getLatestPartitions(dfa):
+   dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
+   dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
+   dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
+   return dfa
 ## write into the log file with:
 ## @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
-source_dataset = get_glue_env_var('source_dataset', '')
-source_address_column = get_glue_env_var('source_address_column', '')
-source_postcode_column = get_glue_env_var('source_postcode_column', '')
+
 cleaned_addresses_s3_bucket_target = get_glue_env_var('cleaned_addresses_s3_bucket_target', '')
+source_catalog_database = get_glue_env_var('source_catalog_database', '')
+source_catalog_table = get_glue_env_var('source_catalog_table', '')
+source_address_column_header = get_glue_env_var('source_address_column_header', '')
+source_postcode_column_header = get_glue_env_var('source_postcode_column_header', '')
 
 
-sc = SparkContext()
+sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
 logger = glueContext.get_logger()
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
-logger.info('fetch source data')
 
-source_dataset = glueContext.create_dynamic_frame.from_options(
-    connection_type="s3",
-    format="parquet",
-    connection_options={
-        "paths": [source_dataset],
-        "recurse": True
-    },
-    transformation_ctx="source_dataset"
+logger.info('Fetch Source Data')
+source_dataset = glueContext.create_dynamic_frame.from_catalog(
+    name_space=source_catalog_database,
+    table_name=source_catalog_table,
 )
 
 df = source_dataset.toDF()
+source_dataset.printSchema()
+
+tmp = getLatestPartitions(df)
+
 logger.info('adding new column')
-df = df.withColumn('address', F.col(source_address_column))
+df = df.withColumn('address', F.col(source_address_column_header))
 
 logger.info('extract postcode into a new column')
 df = df.withColumn('postcode', F.regexp_extract(F.col('address'), '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})', 1))
@@ -57,13 +64,13 @@ df = df.withColumn("postcode", \
        F.when(F.col("postcode")=="" ,None) \
           .otherwise(F.col("postcode")))
 
-if source_postcode_column:
-    df = df.withColumn("postcode", F.coalesce(F.col('postcode'),F.col(source_postcode_column)))
+if source_postcode_column_header:
+    df = df.withColumn("postcode", F.coalesce(F.col('postcode'),F.col(source_postcode_column_header)))
 
 logger.info('postcode formatting')
 df = df.withColumn("postcode", F.upper(F.col("postcode")))
 df = df.withColumn("postcode_nospace", F.regexp_replace(F.col("postcode"), " +", ""))
-df = df.withColumn("postcode_length", F.length(F.col("postcode_nospace"))) 
+df = df.withColumn("postcode_length", F.length(F.col("postcode_nospace")))
 df = df.withColumn("postcode_start", F.expr("substring(postcode_nospace, 1, postcode_length -3)"))
 df = df.withColumn("postcode_end", F.expr("substring(postcode_nospace, -3, 3)"))
 df = df.withColumn("postcode", F.concat_ws(" ", "postcode_start", "postcode_end"))
@@ -77,14 +84,14 @@ df = df.withColumn("address", F.regexp_replace(F.col("address"), " ?- ?\z", ""))
 
 logger.info('address line formatting - remove LONDON at the end (dont do this for out of London matching)')
 df = df.withColumn("address", F.trim(F.col("address")))
-df = df.withColumn("address_length", F.length(F.col("address"))) 
+df = df.withColumn("address_length", F.length(F.col("address")))
 df = df.withColumn("address", \
        F.when(F.col("address").endswith(" LONDON"), F.expr("substring(address, 1, address_length -7)")) \
           .otherwise(F.col("address")))
-                   
+
 logger.info('address line formatting - remove HACKNEY at the end (dont necessarily this for out of borough matching)')
 df = df.withColumn("address", F.trim(F.col("address")))
-df = df.withColumn("address_length", F.length(F.col("address"))) 
+df = df.withColumn("address_length", F.length(F.col("address")))
 df = df.withColumn("address", \
        F.when(F.col("address").endswith(" HACKNEY"), F.expr("substring(address, 1, address_length -8)")) \
           .otherwise(F.col("address")))
@@ -92,7 +99,7 @@ df = df.withColumn("address", \
 logger.info('address line formatting - dashes between numbers: remove extra spaces')
 df = df.withColumn("address", F.regexp_replace(F.col("address"), '(\\d+) ?- ?(\\d+)', '$1-$2'))
 
-logger.info('deal with abreviations')
+logger.info('deal with abbreviations')
 
 logger.info('for \'street\': we only replace st if it is at the end of the string, if not there is a risk of confusion with saint')
 df = df.withColumn("address", F.regexp_replace(F.col("address"), " ST.?\z", " STREET"))
@@ -123,7 +130,7 @@ parquetData = glueContext.write_dynamic_frame.from_options(
     frame=cleanedDataframe,
     connection_type="s3",
     format="parquet",
-    connection_options={"path": cleaned_addresses_s3_bucket_target, "partitionKeys": []},
+    connection_options={"path": cleaned_addresses_s3_bucket_target, "partitionKeys": ["import_year", "import_month", "import_day"]},
     transformation_ctx="parquetData")
 
 job.commit()

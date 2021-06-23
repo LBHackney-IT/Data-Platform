@@ -199,9 +199,10 @@ resource "aws_glue_job" "address_cleaning_glue_job" {
 
   default_arguments = {
     "--cleaned_addresses_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing/repairs-DLO/cleanedAddresses"
-    "--source_address_column"              = "address_of_repair"
-    "--source_dataset"                     = "s3://${module.landing_zone.bucket_id}/housing/repairs-DLO/import_year=2021/import_month=06/import_day=15/part-00000-3146163c-cd41-4b98-b0fb-4c29350a1adf.c000.snappy.parquet"
-    "--source_postcode_column"             = "postcode_of_property"
+    "--source_catalog_database"            = aws_glue_catalog_database.landing_zone_catalog_database.name
+    "--source_catalog_table"               = "housing_repairs_dlo"
+    "--source_address_column_header"       = "address_of_repair"
+    "--source_postcode_column_header"      = "postcode_of_property"
   }
 }
 
