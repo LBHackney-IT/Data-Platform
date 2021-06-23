@@ -4,6 +4,7 @@ const AWS_REGION = "eu-west-2";
 
 const bucketDestination = process.env.BUCKET_DESTINATION;
 const targetServiceArea = process.env.SERVICE_AREA;
+const workflowName = process.env.WORKFLOW_NAME
 
 async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucketName, targetPath, snapshotTime) {
   console.log("sourceBucketName", sourceBucketName);
@@ -52,6 +53,16 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
       })
     );
   } while (listResponse.IsTruncated && listResponse.NextContinuationToken)
+}
+
+async function startWorkflowRun(workflowName) {
+  const glue = new AWS.Glue({apiVersion: '2017-03-31'});
+  const params = {
+    Name: workflowName
+  };
+  console.log("starting workflow run with params", params)
+
+  await glue.startWorkflowRun(params).promise();
 }
 
 exports.handler = async (events) => {
@@ -108,5 +119,9 @@ exports.handler = async (events) => {
       // If it has copy the files from s3 bucket A => s3 bucket B
       await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, targetServiceArea, snapshotTime);
     })
-  );
+    )
+
+    if (workflowName) {
+      await startWorkflowRun(workflowName);
+    }
 };
