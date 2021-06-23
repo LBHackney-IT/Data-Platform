@@ -182,7 +182,6 @@ resource "aws_glue_job" "address_matching_glue_job" {
 }
 
 resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
-  count = terraform.workspace == "default" ? 1 : 0
   tags = module.tags.values
 
   name              = "${local.environment} Parking copy manually uploaded CSVs to raw"
@@ -206,7 +205,6 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
 }
 
 resource "aws_glue_job" "job_to_trigger_liberator_jobs_trigger" {
-  count = terraform.workspace == "default" ? 1 : 0
   tags = module.tags.values
 
   name              = "${local.environment} Job to trigger liberator jobs"
@@ -235,7 +233,6 @@ resource "aws_glue_workflow" "liberator_data" {
 }
 
 resource "aws_glue_trigger" "trigger_job_that_triggers_liberator_jobs" {
-  count = terraform.workspace == "default" ? 1 : 0
   name          = "${local.identifier_prefix}-job-to-trigger-liberator-jobs-trigger"
   type          = "CONDITIONAL"
   workflow_name = aws_glue_workflow.liberator_data.name
