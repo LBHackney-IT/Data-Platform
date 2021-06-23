@@ -18,6 +18,7 @@ resource "aws_glue_job" "xlsx_import" {
     "--additional-python-modules" = "openpyxl"
     "--s3_bucket_target"          = "s3://${var.landing_zone_bucket_id}/${var.department_folder_name}/${var.output_folder_name}"
     "--header_row_number"         = var.header_row_number
+    "--worksheet_name"            = var.worksheet_name
   }
 }
 
