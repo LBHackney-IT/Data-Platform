@@ -1,139 +1,163 @@
 module "repairs_DLO_data" {
-  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id          = module.landing_zone.bucket_id
+  bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
   glue_job_name                   = "DLO Repairs"
   google_sheets_document_id       = "1i9q42Kkbugwi4f2S4zdyid2ZjoN1XLjuYvqYqfHyygs"
   google_sheets_worksheet_name    = "Form responses 1"
-  department_folder_name          = "housing"
-  output_folder_name              = "repairs-DLO"
+  department_name                 = "housing-repairs"
+  dataset_name                    = "repairs-dlo"
 }
 
 module "repairs_herts_heritage" {
-  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id          = module.landing_zone.bucket_id
+  bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
   glue_job_name                   = "Herts Heritage Repairs"
   google_sheets_document_id       = "1Psw8i2qooASPLjaBfGKNX7upiX7BeQSiMeJ8dQngSJI"
   google_sheets_worksheet_name    = "Form responses 1"
-  department_folder_name          = "housing"
-  output_folder_name              = "repairs-herts-heritage"
+  department_name                 = "housing-repairs"
+  dataset_name                    = "repairs-herts-heritage"
 }
 
 module "repairs_avonline" {
-  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id          = module.landing_zone.bucket_id
+  bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
   glue_job_name                   = "Avonline Repairs"
   google_sheets_document_id       = "1nM99bPaOPvg5o_cz9_yJR6jlnMB0oSHdFhAMKQkPJi4"
   google_sheets_worksheet_name    = "Form responses 1"
-  department_folder_name          = "housing"
-  output_folder_name              = "repairs-avonline"
+  department_name                 = "housing-repairs"
+  dataset_name                    = "repairs-avonline"
 }
 
 module "repairs_alpha_track" {
-  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id          = module.landing_zone.bucket_id
+  bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
   glue_job_name                   = "Alpha Track Repairs"
   google_sheets_document_id       = "1cbeVvMuNNinVQDeVfsUWalRpY6zK9oZPa3ebLtLSiAc"
   google_sheets_worksheet_name    = "Form responses 1"
-  department_folder_name          = "housing"
-  output_folder_name              = "repairs-alpha-track"
+  department_name                 = "housing-repairs"
+  dataset_name                    = "repairs-alpha-track"
 }
 
 module "repairs_stannah" {
-  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id          = module.landing_zone.bucket_id
+  bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
   glue_job_name                   = "Stannah Repairs"
   google_sheets_document_id       = "1CpC_Dn4aM8MSFb5a6HJ_FEsVYcahRsis9YIATcfArhw"
   google_sheets_worksheet_name    = "Form responses 1"
-  department_folder_name          = "housing"
-  output_folder_name              = "repairs-stannah"
+  department_name                 = "housing-repairs"
+  dataset_name                    = "repairs-stannah"
 }
 
 module "test-repairs-purdy-data" {
-  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id          = module.landing_zone.bucket_id
+  bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
   glue_job_name                   = "Test Purdy Repair"
   google_sheets_document_id       = "1-PpKPnaPMA6AogsNXT5seqQk3VUB-naFnFJYhROkl2o"
   google_sheets_worksheet_name    = "FormresponsesPUR"
-  department_folder_name          = "housing"
-  output_folder_name              = "test-repairs-purdy"
+  department_name                 = "housing-repairs"
+  dataset_name                    = "test-repairs-purdy"
 }
 
 module "test-multiple-headers-v1" {
-  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id          = module.landing_zone.bucket_id
+  bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
   glue_job_name                   = "Testing Multiple Headers v1"
   google_sheets_document_id       = "17Yfj2-8EDh7qnhJwVtkjDlhOGQ18R1nvlBzu1RRKL-M"
   google_sheets_worksheet_name    = "Door Entry"
   google_sheet_header_row_number  = 2
-  department_folder_name          = "housing"
-  output_folder_name              = "test-repairs-door-entry"
+  department_name                 = "housing-repairs"
+  dataset_name                    = "test-repairs-door-entry"
 }
 
 module "test-multiple-headers-v2" {
-  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id          = module.landing_zone.bucket_id
+  bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
   glue_job_name                   = "Testing Multiple Headers v2"
   google_sheets_document_id       = "17Yfj2-8EDh7qnhJwVtkjDlhOGQ18R1nvlBzu1RRKL-M"
   google_sheets_worksheet_name    = "Lightning Protection"
   google_sheet_header_row_number  = 2
-  department_folder_name          = "housing"
-  output_folder_name              = "test-repairs-lightning-protection"
+  department_name                 = "housing-repairs"
+  dataset_name                    = "test-repairs-lightning-protection"
 }
 
 module "import-repairs-fire-alarms-xlsx-file-format" {
@@ -205,47 +229,6 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
   }
 }
 
-resource "aws_glue_job" "job_to_trigger_liberator_jobs_trigger" {
-  tags = module.tags.values
-
-  name              = "${local.environment} Job to trigger liberator jobs"
-  description       = <<EOT
-    We need to configure a trigger in the AWS console to activate after the landing zone crawler succeeded,
-    so that we can schedule Glue jobs to run afterwards.
-    However, when using triggers in the AWS console you can only configure them to watch jobs, not crawlers.
-    As a work around we have created this job, which we can configure a trigger to watch.
-    The job runs after the crawler but then doesn't do anything else.
-  EOT
-  number_of_workers = 2
-  worker_type       = "Standard"
-  role_arn          = aws_iam_role.glue_role.arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.empty_job.key}"
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {}
-}
-
 resource "aws_glue_workflow" "liberator_data" {
   name = "${local.identifier_prefix}-liberator-data-workflow"
-}
-
-resource "aws_glue_trigger" "trigger_job_that_triggers_liberator_jobs" {
-  name          = "${local.identifier_prefix}-job-to-trigger-liberator-jobs-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = aws_glue_workflow.liberator_data.name
-
-  actions {
-    job_name = aws_glue_job.job_to_trigger_liberator_jobs_trigger.name
-  }
-
-  predicate {
-    conditions {
-      crawl_state  = "SUCCEEDED"
-      crawler_name = aws_glue_crawler.landing_zone_liberator.name
-    }
-  }
 }

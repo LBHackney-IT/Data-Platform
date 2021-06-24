@@ -1,4 +1,5 @@
 module "liberator_data_sftp_to_s3" {
+  count                 = local.is_live_environment ? 1 : 0
   source                = "../modules/liberator-sftp-to-s3"
   tags                  = module.tags.values
   identifier_prefix     = local.identifier_prefix
