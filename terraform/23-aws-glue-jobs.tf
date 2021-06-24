@@ -1,4 +1,5 @@
 module "repairs_DLO_data" {
+  count                         = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
@@ -19,6 +20,7 @@ module "repairs_DLO_data" {
 }
 
 module "repairs_herts_heritage" {
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
@@ -39,6 +41,7 @@ module "repairs_herts_heritage" {
 }
 
 module "repairs_avonline" {
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
@@ -59,6 +62,7 @@ module "repairs_avonline" {
 }
 
 module "repairs_alpha_track" {
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
@@ -79,6 +83,7 @@ module "repairs_alpha_track" {
 }
 
 module "repairs_stannah" {
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
@@ -99,6 +104,7 @@ module "repairs_stannah" {
 }
 
 module "test-repairs-purdy-data" {
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
@@ -119,6 +125,7 @@ module "test-repairs-purdy-data" {
 }
 
 module "test-multiple-headers-v1" {
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
@@ -140,6 +147,7 @@ module "test-multiple-headers-v1" {
 }
 
 module "test-multiple-headers-v2" {
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
