@@ -28,7 +28,7 @@ resource "aws_glue_crawler" "google_sheet_import" {
   tags = var.tags
 
   database_name = var.glue_catalog_database_name
-  name          = "${var.identifier_prefix}-raw-zone-${var.department_name}-${var.dateset_name}"
+  name          = "${var.identifier_prefix}-raw-zone-${var.department_name}-${var.dataset_name}"
   role          = var.glue_role_arn
   table_prefix  = "${var.department_name}_"
 

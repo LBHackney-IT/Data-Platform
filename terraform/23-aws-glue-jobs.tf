@@ -4,7 +4,7 @@ module "repairs_DLO_data" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing-repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
@@ -15,7 +15,7 @@ module "repairs_DLO_data" {
   google_sheets_document_id       = "1i9q42Kkbugwi4f2S4zdyid2ZjoN1XLjuYvqYqfHyygs"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
-  dateset_name                    = "repairs-dlo"
+  dataset_name                    = "repairs-dlo"
 }
 
 module "repairs_herts_heritage" {
@@ -24,7 +24,7 @@ module "repairs_herts_heritage" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing-repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
@@ -35,7 +35,7 @@ module "repairs_herts_heritage" {
   google_sheets_document_id       = "1Psw8i2qooASPLjaBfGKNX7upiX7BeQSiMeJ8dQngSJI"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
-  dateset_name                    = "repairs-herts-heritage"
+  dataset_name                    = "repairs-herts-heritage"
 }
 
 module "repairs_avonline" {
@@ -44,7 +44,7 @@ module "repairs_avonline" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing-repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
@@ -55,7 +55,7 @@ module "repairs_avonline" {
   google_sheets_document_id       = "1nM99bPaOPvg5o_cz9_yJR6jlnMB0oSHdFhAMKQkPJi4"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
-  dateset_name                    = "repairs-avonline"
+  dataset_name                    = "repairs-avonline"
 }
 
 module "repairs_alpha_track" {
@@ -64,7 +64,7 @@ module "repairs_alpha_track" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing-repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
@@ -75,7 +75,7 @@ module "repairs_alpha_track" {
   google_sheets_document_id       = "1cbeVvMuNNinVQDeVfsUWalRpY6zK9oZPa3ebLtLSiAc"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
-  dateset_name                    = "repairs-alpha-track"
+  dataset_name                    = "repairs-alpha-track"
 }
 
 module "repairs_stannah" {
@@ -84,7 +84,7 @@ module "repairs_stannah" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing-repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
@@ -95,7 +95,7 @@ module "repairs_stannah" {
   google_sheets_document_id       = "1CpC_Dn4aM8MSFb5a6HJ_FEsVYcahRsis9YIATcfArhw"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
-  dateset_name                    = "repairs-stannah"
+  dataset_name                    = "repairs-stannah"
 }
 
 module "test-repairs-purdy-data" {
@@ -104,7 +104,7 @@ module "test-repairs-purdy-data" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing-repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
@@ -115,7 +115,7 @@ module "test-repairs-purdy-data" {
   google_sheets_document_id       = "1-PpKPnaPMA6AogsNXT5seqQk3VUB-naFnFJYhROkl2o"
   google_sheets_worksheet_name    = "FormresponsesPUR"
   department_name                 = "housing-repairs"
-  dateset_name                    = "test-repairs-purdy"
+  dataset_name                    = "test-repairs-purdy"
 }
 
 module "test-multiple-headers-v1" {
@@ -124,7 +124,7 @@ module "test-multiple-headers-v1" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing-repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
@@ -136,7 +136,7 @@ module "test-multiple-headers-v1" {
   google_sheets_worksheet_name    = "Door Entry"
   google_sheet_header_row_number  = 2
   department_name                 = "housing-repairs"
-  dateset_name                    = "test-repairs-door-entry"
+  dataset_name                    = "test-repairs-door-entry"
 }
 
 module "test-multiple-headers-v2" {
@@ -145,7 +145,7 @@ module "test-multiple-headers-v2" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing-repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
@@ -157,7 +157,7 @@ module "test-multiple-headers-v2" {
   google_sheets_worksheet_name    = "Lightning Protection"
   google_sheet_header_row_number  = 2
   department_name                 = "housing-repairs"
-  dateset_name                    = "test-repairs-lightning-protection"
+  dataset_name                    = "test-repairs-lightning-protection"
 }
 
 module "test-multiple-headers-in-xlsx-file-format" {
@@ -166,7 +166,7 @@ module "test-multiple-headers-in-xlsx-file-format" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing-repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
@@ -178,7 +178,7 @@ module "test-multiple-headers-in-xlsx-file-format" {
   google_sheets_worksheet_name    = "Fire Alarm/AOV"
   google_sheet_header_row_number  = 2
   department_name                 = "housing-repairs"
-  dateset_name                    = "test-repairs-fire-alarm-aov"
+  dataset_name                    = "test-repairs-fire-alarm-aov"
 }
 
 

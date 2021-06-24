@@ -39,7 +39,7 @@ variable "sheets_credentials_name" {
 }
 
 variable "bucket_id" {
-  description = "The ID of the bucket to put the dateset"
+  description = "The ID of the bucket to put the dataset"
   type        = string
 }
 
@@ -68,7 +68,7 @@ variable "department_name" {
   type        = string
 }
 
-variable "dateset_name" {
+variable "dataset_name" {
   description = "Output folder name"
   type        = string
 }
