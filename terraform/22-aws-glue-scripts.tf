@@ -48,7 +48,7 @@ resource "aws_s3_bucket_object" "xlsx_import_script" {
   etag   = filemd5("../scripts/xlsx-import.py")
 }
 
-    resource "aws_s3_bucket_object" "empty_job" {
+resource "aws_s3_bucket_object" "empty_job" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
