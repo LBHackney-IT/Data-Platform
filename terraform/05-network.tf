@@ -43,6 +43,8 @@ resource "tls_private_key" "bastion_key" {
 }
 
 resource "aws_ssm_parameter" "bastion_key" {
+  tags = module.tags.values
+
   name        = "/${local.identifier_prefix}/ec2/bastion_key"
   type        = "SecureString"
   description = "The private key for the EC2 bastion instance"
@@ -50,6 +52,8 @@ resource "aws_ssm_parameter" "bastion_key" {
 }
 
 resource "aws_key_pair" "generated_key" {
+  tags = module.tags.values
+
   key_name   = "${local.identifier_prefix}-bastion"
   public_key = tls_private_key.bastion_key.public_key_openssh
 }
@@ -82,6 +86,8 @@ resource "aws_iam_role_policy_attachment" "bastion" {
 }
 
 resource "aws_iam_instance_profile" "bastion" {
+  tags = module.tags.values
+
   name = "${local.identifier_prefix}-bastion-profile"
   role = aws_iam_role.bastion.id
 }
