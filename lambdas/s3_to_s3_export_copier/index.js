@@ -118,10 +118,10 @@ exports.handler = async (events) => {
 
       // If it has copy the files from s3 bucket A => s3 bucket B
       await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, targetServiceArea, snapshotTime);
-    })
-    )
 
-    if (workflowName) {
-      await startWorkflowRun(workflowName);
-    }
+      if (workflowName) {
+        await startWorkflowRun(workflowName);
+      }
+    })
+  )
 };
