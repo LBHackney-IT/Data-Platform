@@ -281,6 +281,7 @@ data "aws_iam_policy_document" "power_user_parking" {
       //      "glue:UpdateConnection",
       //      "glue:UpdateCrawler",
       //      "glue:UpdateCrawlerSchedule",
+      "glue:UpdateDag",
       //      "glue:UpdateDatabase",
       //      "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
@@ -456,6 +457,8 @@ data "aws_iam_policy_document" "power_user_parking" {
 }
 
 resource "aws_iam_role" "power_user_parking" {
+  tags = module.tags.values
+
   name               = lower("${local.identifier_prefix}-power-user-parking")
   assume_role_policy = data.aws_iam_policy_document.sso_trusted_relationship.json
 }

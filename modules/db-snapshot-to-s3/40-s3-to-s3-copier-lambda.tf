@@ -88,7 +88,19 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
     ]
   }
 
+  dynamic "statement" {
+    for_each = var.workflow_arn == "" ? [] : [1]
 
+    content {
+      actions = [
+        "glue:StartWorkflowRun",
+      ]
+      effect = "Allow"
+      resources = [
+        var.workflow_arn
+      ]
+    }
+  }
 }
 
 resource "aws_iam_policy" "s3_to_s3_copier_lambda" {
@@ -139,6 +151,7 @@ resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
     variables = {
       BUCKET_DESTINATION = var.landing_zone_bucket_id,
       SERVICE_AREA       = var.service_area
+      WORKFLOW_NAME      = var.workflow_name
     }
   }
 

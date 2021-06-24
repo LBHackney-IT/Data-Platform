@@ -26,6 +26,8 @@ resource "aws_iam_role" "glue_role" {
 }
 
 resource "aws_iam_policy" "glue_access_policy" {
+  tags = module.tags.values
+
   name = "${local.identifier_prefix}-glue-access-policy"
   policy = jsonencode({
     "Version" : "2012-10-17",
@@ -172,10 +174,10 @@ resource "aws_glue_crawler" "landing_zone_liberator" {
 resource "aws_glue_trigger" "landing_zone_liberator_crawler_trigger" {
   tags = module.tags.values
 
-  name     = "${local.identifier_prefix} Landing Zone Liberator Crawler"
-  schedule = "cron(0 * * * ? *)"
-  type     = "SCHEDULED"
-  enabled  = true
+  name          = "${local.identifier_prefix} Landing Zone Liberator Crawler"
+  type          = "ON_DEMAND"
+  enabled       = true
+  workflow_name = aws_glue_workflow.liberator_data.name
 
   actions {
     crawler_name = aws_glue_crawler.landing_zone_liberator.name
