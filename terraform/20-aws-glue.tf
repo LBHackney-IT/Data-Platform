@@ -142,20 +142,6 @@ resource "aws_glue_crawler" "refined_zone_housing_crawler" {
   }
 }
 
-resource "aws_glue_crawler" "landing_zone_test_crawler" {
-  tags = module.tags.values
-
-  database_name = aws_glue_catalog_database.landing_zone_catalog_database.name
-  name          = "${local.identifier_prefix}-landing-zone-test-crawler"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "test_"
-
-  s3_target {
-    path       = "s3://${module.landing_zone.bucket_id}/test"
-    exclusions = local.crawler_excluded_blogs
-  }
-}
-
 resource "aws_glue_crawler" "landing_zone_parking_crawler" {
   tags = module.tags.values
 
