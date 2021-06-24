@@ -1,3 +1,9 @@
+variable "glue_crawler_excluded_blobs" {
+  description = "A list of blobs to ignore when crawling the job"
+  type        = list(string)
+  default     = []
+}
+
 variable "google_sheet_import_schedule" {
   description = "Cron schedule for importing the Google sheet using AWS Glue"
   type        = string

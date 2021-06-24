@@ -1,5 +1,5 @@
 # Import test data
-resource "aws_glue_job" "glue_job_google_sheet_import" {
+resource "aws_glue_job" "google_sheet_import" {
   tags = var.tags
 
   name              = "Google Sheets Import Job - ${var.glue_job_name}"
@@ -20,17 +20,56 @@ resource "aws_glue_job" "glue_job_google_sheet_import" {
     "--worksheet_name"            = var.google_sheets_worksheet_name
     "--header_row_number"         = var.google_sheet_header_row_number
     "--secret_id"                 = var.sheets_credentials_name
-    "--s3_bucket_target"          = "s3://${var.landing_zone_bucket_id}/${var.department_folder_name}/${var.output_folder_name}"
+    "--s3_bucket_target"          = local.full_output_path
   }
 }
 
-resource "aws_glue_trigger" "google_sheet_import_trigger" {
-  name     = "Google Sheets Import Job Glue Trigger- ${var.glue_job_name}"
+resource "aws_glue_crawler" "google_sheet_import" {
+  tags = var.tags
+
+  database_name = var.glue_catalog_database_name
+  name          = "${var.identifier_prefix}-raw-zone-${var.department_name}-${var.dataset_name}"
+  role          = var.glue_role_arn
+  table_prefix  = "${var.department_name}_"
+
+  s3_target {
+    path       = local.full_output_path
+    exclusions = var.glue_crawler_excluded_blobs
+  }
+}
+
+resource "aws_glue_trigger" "google_sheet_import_schedule" {
+  tags = var.tags
+
+  name     = "Google Sheets Import Job Glue Trigger - ${var.glue_job_name}"
   schedule = var.google_sheet_import_schedule
   type     = "SCHEDULED"
-  enabled  = var.enable_glue_trigger
+  enabled  = (var.is_live_environment && var.enable_glue_trigger)
 
   actions {
-    job_name = aws_glue_job.glue_job_google_sheet_import.name
+    job_name = aws_glue_job.google_sheet_import.name
   }
 }
+
+resource "aws_glue_trigger" "google_sheet_import_crawler_trigger" {
+  tags = var.tags
+
+  name    = "Google Sheets Crawler Trigger - ${var.glue_job_name}"
+  type    = "CONDITIONAL"
+  enabled = true
+
+  predicate {
+    conditions {
+      state    = "SUCCEEDED"
+      job_name = aws_glue_job.google_sheet_import.name
+    }
+  }
+
+  actions {
+    job_name = aws_glue_crawler.google_sheet_import.name
+  }
+}
+
+//resource "aws_glue_workflow" "google_sheet_import" {
+//
+//}

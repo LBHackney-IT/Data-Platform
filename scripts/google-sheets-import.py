@@ -100,14 +100,20 @@ pandasDataFrame[all_columns] = pandasDataFrame[all_columns].astype(str)
 # Replace missing column names with valid names
 pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() for i, a in enumerate(pandasDataFrame.columns)]
 
+importYear = str(now.year)
+importMonth = str(now.month).zfill(2)
+importDay = str(now.day).zfill(2)
+importDate = importYear + importMonth + importDay
+
 # Convert to SparkDynamicDataFrame
 sparkDynamicDataFrame = sqlContext.createDataFrame(pandasDataFrame)
 sparkDynamicDataFrame = sparkDynamicDataFrame.coalesce(1)
-sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_date', f.current_timestamp())
+sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_datetime', f.current_timestamp())
 sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_timestamp', f.lit(str(now.timestamp())))
-sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_year', f.lit(str(now.year)))
-sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_month', f.lit(str(now.month).zfill(2)))
-sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_day', f.lit(str(now.day).zfill(2)))
+sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_year', f.lit(importYear))
+sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_month', f.lit(importMonth))
+sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_day', f.lit(importDay))
+sparkDynamicDataFrame = sparkDynamicDataFrame.withColumn('import_date', f.lit(importDate))
 
 dataframe = DynamicFrame.fromDF(sparkDynamicDataFrame, glueContext, "googlesheets")
 
@@ -118,7 +124,7 @@ dataframe = DynamicFrame.fromDF(sparkDynamicDataFrame, glueContext, "googlesheet
 parquetData = glueContext.write_dynamic_frame.from_options(
     frame = dataframe,
     connection_type = "s3",
-    connection_options = {"path":s3BucketTarget, "partitionKeys": ['import_year', 'import_month', 'import_day']},
+    connection_options = {"path":s3BucketTarget, "partitionKeys": ['import_year', 'import_month', 'import_day', 'import_date']},
     format = "parquet",
 )
 
