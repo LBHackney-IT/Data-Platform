@@ -16,57 +16,14 @@ data "aws_iam_policy_document" "sso_trusted_relationship" {
   }
 }
 
-
-data "aws_iam_policy_document" "power_user_parking" {
+data "aws_iam_policy_document" "power_user_parking_s3_access" {
   statement {
     effect = "Allow"
     actions = [
-      "athena:*",
       "s3:ListAllMyBuckets",
       "kms:ListAliases",
-      "logs:DescribeLogGroups",
-      "tag:GetResources",
-      "iam:ListRoles",
     ]
     resources = ["*"]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "logs:FilterLogEvents",
-      "logs:DescribeLogStreams",
-      "logs:GetLogEvents"
-    ]
-    resources = [
-      "arn:aws:logs:*:*:/aws-glue/*"
-    ]
-  }
-
-  statement {
-    sid    = "RolePermissions"
-    effect = "Allow"
-    actions = [
-      "iam:GetRole",
-    ]
-    resources = [
-      aws_iam_role.glue_role.arn
-    ]
-  }
-
-  statement {
-    sid = "AllowRolePassingToGlueJobs"
-    actions = [
-      "iam:PassRole",
-    ]
-    resources = [
-      aws_iam_role.glue_role.arn
-    ]
-    condition {
-      test     = "StringLike"
-      values   = ["glue.amazonaws.com"]
-      variable = "iam:PassedToService"
-    }
   }
 
   statement {
@@ -136,6 +93,215 @@ data "aws_iam_policy_document" "power_user_parking" {
       module.trusted_zone.kms_key_arn,
       module.athena_storage.kms_key_arn
     ]
+  }
+
+  statement {
+    sid    = "ReadAndWrite"
+    effect = "Allow"
+    actions = [
+      "s3:AbortMultipartUpload",
+      "s3:DescribeJob",
+      "s3:GetAccelerateConfiguration",
+      "s3:GetAccessPoint",
+      "s3:GetAccessPointConfigurationForObjectLambda",
+      "s3:GetAccessPointForObjectLambda",
+      "s3:GetAccessPointPolicy",
+      "s3:GetAccessPointPolicyForObjectLambda",
+      "s3:GetAccessPointPolicyStatus",
+      "s3:GetAccessPointPolicyStatusForObjectLambda",
+      "s3:GetAccountPublicAccessBlock",
+      "s3:GetAnalyticsConfiguration",
+      "s3:GetBucketAcl",
+      "s3:GetBucketCORS",
+      "s3:GetBucketLocation",
+      "s3:GetBucketLogging",
+      "s3:GetBucketNotification",
+      "s3:GetBucketObjectLockConfiguration",
+      "s3:GetBucketOwnershipControls",
+      "s3:GetBucketPolicy",
+      "s3:GetBucketPolicyStatus",
+      "s3:GetBucketPublicAccessBlock",
+      "s3:GetBucketRequestPayment",
+      "s3:GetBucketTagging",
+      "s3:GetBucketVersioning",
+      "s3:GetBucketWebsite",
+      "s3:GetEncryptionConfiguration",
+      "s3:GetIntelligentTieringConfiguration",
+      "s3:GetInventoryConfiguration",
+      "s3:GetJobTagging",
+      "s3:GetLifecycleConfiguration",
+      "s3:GetMetricsConfiguration",
+      "s3:GetObject",
+      "s3:GetObjectAcl",
+      "s3:GetObjectLegalHold",
+      "s3:GetObjectRetention",
+      "s3:GetObjectTagging",
+      "s3:GetObjectTorrent",
+      "s3:GetObjectVersion",
+      "s3:GetObjectVersionAcl",
+      "s3:GetObjectVersionForReplication",
+      "s3:GetObjectVersionTagging",
+      "s3:GetObjectVersionTorrent",
+      "s3:GetReplicationConfiguration",
+      "s3:GetStorageLensConfiguration",
+      "s3:GetStorageLensConfigurationTagging",
+      "s3:GetStorageLensDashboard",
+      // "s3:ListAccessPoints",
+      // "s3:ListAccessPointsForObjectLambda",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucketVersions",
+      "s3:ListJobs",
+      "s3:ListMultipartUploadParts",
+      "s3:ListStorageLensConfigurations",
+      // "s3:ObjectOwnerOverrideToBucketOwner",
+      // "s3:PutAccelerateConfiguration",
+      // "s3:PutAccessPointConfigurationForObjectLambda",
+      // "s3:PutAccessPointPolicy",
+      // "s3:PutAccessPointPolicyForObjectLambda",
+      // "s3:PutAccountPublicAccessBlock",
+      // "s3:PutAnalyticsConfiguration",
+      // "s3:PutBucketAcl",
+      // "s3:PutBucketCORS",
+      // "s3:PutBucketLogging",
+      // "s3:PutBucketNotification",
+      // "s3:PutBucketObjectLockConfiguration",
+      // "s3:PutBucketOwnershipControls",
+      // "s3:PutBucketPolicy",
+      // "s3:PutBucketPublicAccessBlock",
+      // "s3:PutBucketRequestPayment",
+      // "s3:PutBucketTagging",
+      // "s3:PutBucketVersioning",
+      // "s3:PutBucketWebsite",
+      // "s3:PutEncryptionConfiguration",
+      // "s3:PutIntelligentTieringConfiguration",
+      // "s3:PutInventoryConfiguration",
+      // "s3:PutJobTagging",
+      // "s3:PutLifecycleConfiguration",
+      // "s3:PutMetricsConfiguration",
+      "s3:PutObject",
+      // "s3:PutObjectAcl",
+      // "s3:PutObjectLegalHold",
+      // "s3:PutObjectRetention",
+      // "s3:PutObjectTagging",
+      // "s3:PutObjectVersionAcl",
+      // "s3:PutObjectVersionTagging",
+      // "s3:PutReplicationConfiguration",
+      // "s3:PutStorageLensConfiguration",
+      // "s3:PutStorageLensConfigurationTagging",
+    ]
+    resources = [
+      module.refined_zone.bucket_arn,
+      "${module.refined_zone.bucket_arn}/parking/*",
+      module.trusted_zone.bucket_arn,
+      "${module.trusted_zone.bucket_arn}/parking/*",
+      module.athena_storage.bucket_arn,
+      "${module.athena_storage.bucket_arn}/parking/*",
+      "${module.landing_zone.bucket_arn}/parking/manual/*"
+    ]
+  }
+
+  statement {
+    sid    = "DeleteObject"
+    effect = "Allow"
+    actions = [
+      "s3:DeleteObject"
+    ]
+    resources = [
+      "${module.landing_zone.bucket_arn}/parking/manual/*",
+      "${module.raw_zone.bucket_arn}/parking/manual/*",
+      "${module.refined_zone.bucket_arn}/parking/*"
+    ]
+  }
+
+  statement {
+    sid    = "ReadOnly"
+    effect = "Allow"
+    actions = [
+      "s3:Get*",
+      "s3:List*"
+    ]
+    resources = [
+      module.raw_zone.bucket_arn,
+      "${module.raw_zone.bucket_arn}/parking/*",
+      module.landing_zone.bucket_arn,
+      "${module.landing_zone.bucket_arn}/parking/*",
+    ]
+  }
+
+  statement {
+    sid    = "List"
+    effect = "Allow"
+    actions = [
+      "s3:List*"
+    ]
+    resources = [
+      module.glue_temp_storage.bucket_arn,
+      module.glue_scripts.bucket_arn,
+    ]
+  }
+
+  statement {
+    sid    = "FullAccess"
+    effect = "Allow"
+    actions = [
+      "s3:*"
+    ]
+    resources = [
+      "${module.glue_scripts.bucket_arn}/custom/*",
+    ]
+  }
+}
+
+
+data "aws_iam_policy_document" "power_user_parking_glue_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "athena:*",
+      "logs:DescribeLogGroups",
+      "tag:GetResources",
+      "iam:ListRoles",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:FilterLogEvents",
+      "logs:DescribeLogStreams",
+      "logs:GetLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:/aws-glue/*"
+    ]
+  }
+
+  statement {
+    sid    = "RolePermissions"
+    effect = "Allow"
+    actions = [
+      "iam:GetRole",
+    ]
+    resources = [
+      aws_iam_role.glue_role.arn
+    ]
+  }
+
+  statement {
+    sid = "AllowRolePassingToGlueJobs"
+    actions = [
+      "iam:PassRole",
+    ]
+    resources = [
+      aws_iam_role.glue_role.arn
+    ]
+    condition {
+      test     = "StringLike"
+      values   = ["glue.amazonaws.com"]
+      variable = "iam:PassedToService"
+    }
   }
 
   // Glue Access
@@ -297,163 +463,6 @@ data "aws_iam_policy_document" "power_user_parking" {
     ]
     resources = ["*"]
   }
-
-  statement {
-    sid    = "ReadAndWrite"
-    effect = "Allow"
-    actions = [
-      "s3:AbortMultipartUpload",
-      "s3:DescribeJob",
-      "s3:GetAccelerateConfiguration",
-      "s3:GetAccessPoint",
-      "s3:GetAccessPointConfigurationForObjectLambda",
-      "s3:GetAccessPointForObjectLambda",
-      "s3:GetAccessPointPolicy",
-      "s3:GetAccessPointPolicyForObjectLambda",
-      "s3:GetAccessPointPolicyStatus",
-      "s3:GetAccessPointPolicyStatusForObjectLambda",
-      "s3:GetAccountPublicAccessBlock",
-      "s3:GetAnalyticsConfiguration",
-      "s3:GetBucketAcl",
-      "s3:GetBucketCORS",
-      "s3:GetBucketLocation",
-      "s3:GetBucketLogging",
-      "s3:GetBucketNotification",
-      "s3:GetBucketObjectLockConfiguration",
-      "s3:GetBucketOwnershipControls",
-      "s3:GetBucketPolicy",
-      "s3:GetBucketPolicyStatus",
-      "s3:GetBucketPublicAccessBlock",
-      "s3:GetBucketRequestPayment",
-      "s3:GetBucketTagging",
-      "s3:GetBucketVersioning",
-      "s3:GetBucketWebsite",
-      "s3:GetEncryptionConfiguration",
-      "s3:GetIntelligentTieringConfiguration",
-      "s3:GetInventoryConfiguration",
-      "s3:GetJobTagging",
-      "s3:GetLifecycleConfiguration",
-      "s3:GetMetricsConfiguration",
-      "s3:GetObject",
-      "s3:GetObjectAcl",
-      "s3:GetObjectLegalHold",
-      "s3:GetObjectRetention",
-      "s3:GetObjectTagging",
-      "s3:GetObjectTorrent",
-      "s3:GetObjectVersion",
-      "s3:GetObjectVersionAcl",
-      "s3:GetObjectVersionForReplication",
-      "s3:GetObjectVersionTagging",
-      "s3:GetObjectVersionTorrent",
-      "s3:GetReplicationConfiguration",
-      "s3:GetStorageLensConfiguration",
-      "s3:GetStorageLensConfigurationTagging",
-      "s3:GetStorageLensDashboard",
-      // "s3:ListAccessPoints",
-      // "s3:ListAccessPointsForObjectLambda",
-      "s3:ListBucket",
-      "s3:ListBucketMultipartUploads",
-      "s3:ListBucketVersions",
-      "s3:ListJobs",
-      "s3:ListMultipartUploadParts",
-      "s3:ListStorageLensConfigurations",
-      // "s3:ObjectOwnerOverrideToBucketOwner",
-      // "s3:PutAccelerateConfiguration",
-      // "s3:PutAccessPointConfigurationForObjectLambda",
-      // "s3:PutAccessPointPolicy",
-      // "s3:PutAccessPointPolicyForObjectLambda",
-      // "s3:PutAccountPublicAccessBlock",
-      // "s3:PutAnalyticsConfiguration",
-      // "s3:PutBucketAcl",
-      // "s3:PutBucketCORS",
-      // "s3:PutBucketLogging",
-      // "s3:PutBucketNotification",
-      // "s3:PutBucketObjectLockConfiguration",
-      // "s3:PutBucketOwnershipControls",
-      // "s3:PutBucketPolicy",
-      // "s3:PutBucketPublicAccessBlock",
-      // "s3:PutBucketRequestPayment",
-      // "s3:PutBucketTagging",
-      // "s3:PutBucketVersioning",
-      // "s3:PutBucketWebsite",
-      // "s3:PutEncryptionConfiguration",
-      // "s3:PutIntelligentTieringConfiguration",
-      // "s3:PutInventoryConfiguration",
-      // "s3:PutJobTagging",
-      // "s3:PutLifecycleConfiguration",
-      // "s3:PutMetricsConfiguration",
-      "s3:PutObject",
-      // "s3:PutObjectAcl",
-      // "s3:PutObjectLegalHold",
-      // "s3:PutObjectRetention",
-      // "s3:PutObjectTagging",
-      // "s3:PutObjectVersionAcl",
-      // "s3:PutObjectVersionTagging",
-      // "s3:PutReplicationConfiguration",
-      // "s3:PutStorageLensConfiguration",
-      // "s3:PutStorageLensConfigurationTagging",
-    ]
-    resources = [
-      module.refined_zone.bucket_arn,
-      "${module.refined_zone.bucket_arn}/parking/*",
-      module.trusted_zone.bucket_arn,
-      "${module.trusted_zone.bucket_arn}/parking/*",
-      module.athena_storage.bucket_arn,
-      "${module.athena_storage.bucket_arn}/parking/*",
-      "${module.landing_zone.bucket_arn}/parking/manual/*"
-    ]
-  }
-
-  statement {
-    sid    = "DeleteObject"
-    effect = "Allow"
-    actions = [
-      "s3:DeleteObject"
-    ]
-    resources = [
-      "${module.landing_zone.bucket_arn}/parking/manual/*",
-      "${module.raw_zone.bucket_arn}/parking/manual/*",
-      "${module.refined_zone.bucket_arn}/parking/*"
-    ]
-  }
-
-  statement {
-    sid    = "ReadOnly"
-    effect = "Allow"
-    actions = [
-      "s3:Get*",
-      "s3:List*"
-    ]
-    resources = [
-      module.raw_zone.bucket_arn,
-      "${module.raw_zone.bucket_arn}/parking/*",
-      module.landing_zone.bucket_arn,
-      "${module.landing_zone.bucket_arn}/parking/*",
-    ]
-  }
-
-  statement {
-    sid    = "List"
-    effect = "Allow"
-    actions = [
-      "s3:List*"
-    ]
-    resources = [
-      module.glue_temp_storage.bucket_arn,
-      module.glue_scripts.bucket_arn,
-    ]
-  }
-
-  statement {
-    sid    = "FullAccess"
-    effect = "Allow"
-    actions = [
-      "s3:*"
-    ]
-    resources = [
-      "${module.glue_scripts.bucket_arn}/custom/*",
-    ]
-  }
 }
 
 resource "aws_iam_role" "power_user_parking" {
@@ -461,14 +470,26 @@ resource "aws_iam_role" "power_user_parking" {
   assume_role_policy = data.aws_iam_policy_document.sso_trusted_relationship.json
 }
 
-resource "aws_iam_policy" "power_user_parking" {
+resource "aws_iam_policy" "power_user_parking_s3_access" {
   tags = module.tags.values
 
-  name   = lower("${local.identifier_prefix}-power-user-parking")
-  policy = data.aws_iam_policy_document.power_user_parking.json
+  name   = lower("${local.identifier_prefix}-power-user-parking-s3-access")
+  policy = data.aws_iam_policy_document.power_user_parking_s3_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "power_user_parking_s3_access" {
+  role       = aws_iam_role.power_user_parking.name
+  policy_arn = aws_iam_policy.power_user_parking_s3_access.arn
+}
+
+resource "aws_iam_policy" "power_user_parking_glue_access" {
+  tags = module.tags.values
+
+  name   = lower("${local.identifier_prefix}-power-user-parking-glue-access")
+  policy = data.aws_iam_policy_document.power_user_parking_glue_access.json
 }
 
 resource "aws_iam_role_policy_attachment" "power_user_parking" {
   role       = aws_iam_role.power_user_parking.name
-  policy_arn = aws_iam_policy.power_user_parking.arn
+  policy_arn = aws_iam_policy.power_user_parking_glue_access.arn
 }
