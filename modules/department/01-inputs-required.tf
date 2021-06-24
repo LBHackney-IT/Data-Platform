@@ -30,6 +30,6 @@ variable "identifier_prefix" {
 
 variable "identifier" {
   description = "A url safe, lowercase identifier for the department"
-  type = string
+  type        = string
 }
 
