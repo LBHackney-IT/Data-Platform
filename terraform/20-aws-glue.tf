@@ -26,6 +26,8 @@ resource "aws_iam_role" "glue_role" {
 }
 
 resource "aws_iam_policy" "glue_access_policy" {
+  tags = module.tags.values
+
   name = "${local.identifier_prefix}-glue-access-policy"
   policy = jsonencode({
     "Version" : "2012-10-17",
