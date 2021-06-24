@@ -48,7 +48,7 @@ source_dataset = glueContext.create_dynamic_frame.from_catalog(
 df = source_dataset.toDF()
 source_dataset.printSchema()
 
-tmp = getLatestPartitions(df)
+df = getLatestPartitions(df)
 
 logger.info('adding new column')
 df = df.withColumn('address', F.col(source_address_column_header))
@@ -130,7 +130,7 @@ parquetData = glueContext.write_dynamic_frame.from_options(
     frame=cleanedDataframe,
     connection_type="s3",
     format="parquet",
-    connection_options={"path": cleaned_addresses_s3_bucket_target, "partitionKeys": ["import_year", "import_month", "import_day"]},
+    connection_options={"path": cleaned_addresses_s3_bucket_target, "partitionKeys": ["import_year", "import_month", "import_day", "import_date"]},
     transformation_ctx="parquetData")
 
 job.commit()
