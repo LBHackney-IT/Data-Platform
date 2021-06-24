@@ -170,14 +170,29 @@ module "import-pokemon-xlsx-file-format" {
   raw_zone_bucket_id          = module.raw_zone.bucket_id
   input_file_name             = "pokemon.xlsx"
   header_row_number           = 0
-  sheet_name                  = "Fire Alarm/AOV"
+  worksheet_name                  = "Fire Alarm/AOV"
   google_sheets_document_id   = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
   sheets_credentials_name     = aws_secretsmanager_secret.sheets_credentials_housing.name
-
-
-  document_key
-  secret_id
 }
+module "import-pokemon-trainers-xlsx-file-format" {
+  count = terraform.workspace == "default" ? 1 : 0
+
+  source                      = "../modules/xlsx-import-job"
+  glue_role_arn               = aws_iam_role.glue_role.arn
+  glue_scripts_bucket_id      = module.glue_scripts.bucket_id
+  glue_temp_storage_bucket_id = module.glue_temp_storage.bucket_arn
+  xlsx_import_script_key      = aws_s3_bucket_object.xlsx_import_script.key
+  landing_zone_bucket_id      = module.landing_zone.bucket_id
+  tags                        = module.tags.values
+  glue_job_name               = "Trainers"
+  department_folder_name      = "test_department"
+  output_folder_name          = "test_xlsx"
+  raw_zone_bucket_id          = module.raw_zone.bucket_id
+  input_file_name             = "pokemon.xlsx"
+  header_row_number           = 0
+  worksheet_name              = "Trainers"
+}
+
 
 resource "aws_glue_job" "address_matching_glue_job" {
   count = terraform.workspace == "default" ? 1 : 0

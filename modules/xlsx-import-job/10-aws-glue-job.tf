@@ -23,6 +23,7 @@ resource "aws_glue_job" "xlsx_import" {
     "--document_key"              = var.google_sheets_document_id
     "--worksheet_name"            = var.google_sheets_worksheet_name
     "--secret_id"                 = var.sheets_credentials_name
+    "--worksheet_name"            = var.worksheet_name
   }
 }
 

@@ -52,3 +52,8 @@ variable "input_file_name" {
   description = "XLSX input file name"
   type        = string
 }
+
+variable "worksheet_name" {
+  description = "Name of xlsx worksheet in google drive"
+  type        = string
+}
