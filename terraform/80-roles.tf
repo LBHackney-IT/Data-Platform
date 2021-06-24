@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "sso_trusted_relationship" {
   }
 }
 
-data "aws_iam_policy_document" "power_user_parking_s3_access" {
+data "aws_iam_policy_document" "parking_s3_access" {
   statement {
     effect = "Allow"
     actions = [
@@ -285,17 +285,20 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
       "iam:GetRole",
     ]
     resources = [
-      aws_iam_role.glue_role.arn
+      aws_iam_role.glue_role.arn,
+      aws_iam_role.parking_glue.arn
     ]
   }
 
+  # Play around with this.
   statement {
     sid = "AllowRolePassingToGlueJobs"
     actions = [
       "iam:PassRole",
     ]
     resources = [
-      aws_iam_role.glue_role.arn
+      aws_iam_role.glue_role.arn,
+      aws_iam_role.parking_glue.arn
     ]
     condition {
       test     = "StringLike"
@@ -472,16 +475,16 @@ resource "aws_iam_role" "power_user_parking" {
   assume_role_policy = data.aws_iam_policy_document.sso_trusted_relationship.json
 }
 
-resource "aws_iam_policy" "power_user_parking_s3_access" {
+resource "aws_iam_policy" "parking_s3_access" {
   tags = module.tags.values
 
-  name   = lower("${local.identifier_prefix}-power-user-parking-s3-access")
-  policy = data.aws_iam_policy_document.power_user_parking_s3_access.json
+  name   = lower("${local.identifier_prefix}-parking-s3-access")
+  policy = data.aws_iam_policy_document.parking_s3_access.json
 }
 
 resource "aws_iam_role_policy_attachment" "power_user_parking_s3_access" {
   role       = aws_iam_role.power_user_parking.name
-  policy_arn = aws_iam_policy.power_user_parking_s3_access.arn
+  policy_arn = aws_iam_policy.parking_s3_access.arn
 }
 
 resource "aws_iam_policy" "power_user_parking_glue_access" {
@@ -494,4 +497,21 @@ resource "aws_iam_policy" "power_user_parking_glue_access" {
 resource "aws_iam_role_policy_attachment" "power_user_parking_glue_access" {
   role       = aws_iam_role.power_user_parking.name
   policy_arn = aws_iam_policy.power_user_parking_glue_access.arn
+}
+
+
+
+##### GLUE PARKING
+
+
+resource "aws_iam_role" "parking_glue" {
+  tags = module.tags.values
+
+  name               = lower("${local.identifier_prefix}-parking-glue")
+  assume_role_policy = data.aws_iam_policy_document.glue_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "parking_glue_s3_access" {
+  role       = aws_iam_role.parking_glue.name
+  policy_arn = aws_iam_policy.parking_s3_access.arn
 }
