@@ -1,5 +1,5 @@
 locals {
-  crawler_excluded_blogs = [
+  glue_crawler_excluded_blobs = [
     "*.json",
     "*.txt",
     "*.zip",

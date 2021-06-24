@@ -13,7 +13,7 @@ resource "aws_glue_crawler" "landing_zone_data_and_insight_address_matching" {
 
   s3_target {
     path       = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-glue-job-output/"
-    exclusions = local.crawler_excluded_blogs
+    exclusions = local.glue_crawler_excluded_blobs
   }
 }
 
@@ -32,7 +32,7 @@ resource "aws_glue_crawler" "landing_zone_parking_crawler" {
 
   s3_target {
     path       = "s3://${module.landing_zone.bucket_id}/parking"
-    exclusions = local.crawler_excluded_blogs
+    exclusions = local.glue_crawler_excluded_blobs
   }
 }
 
@@ -49,7 +49,7 @@ resource "aws_glue_crawler" "landing_zone_liberator" {
 
   s3_target {
     path       = "s3://${module.landing_zone.bucket_id}/parking/liberator"
-    exclusions = local.crawler_excluded_blogs
+    exclusions = local.glue_crawler_excluded_blobs
   }
 }
 
@@ -85,7 +85,7 @@ resource "aws_glue_crawler" "raw_zone_parking_manual_uploads_crawler" {
 
   s3_target {
     path       = "s3://${module.raw_zone.bucket_id}/parking/manual/"
-    exclusions = local.crawler_excluded_blogs
+    exclusions = local.glue_crawler_excluded_blobs
   }
 
   configuration = jsonencode({
@@ -111,7 +111,7 @@ resource "aws_glue_crawler" "refined_zone_liberator_crawler" {
 
   s3_target {
     path       = "s3://${module.refined_zone.bucket_id}/parking/liberator/"
-    exclusions = local.crawler_excluded_blogs
+    exclusions = local.glue_crawler_excluded_blobs
   }
 
   configuration = jsonencode({
