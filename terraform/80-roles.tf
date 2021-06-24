@@ -336,7 +336,7 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
       "glue:CreateScript",
       //      "glue:CreateSecurityConfiguration",
       //      "glue:CreateTable",
-    "glue:CreateTrigger",
+      "glue:CreateTrigger",
       //      "glue:CreateUserDefinedFunction",
       //      "glue:CreateWorkflow",
       //      "glue:DeleteClassifier",
@@ -489,7 +489,7 @@ resource "aws_iam_policy" "power_user_parking_glue_access" {
   policy = data.aws_iam_policy_document.power_user_parking_glue_access.json
 }
 
-resource "aws_iam_role_policy_attachment" "power_user_parking" {
+resource "aws_iam_role_policy_attachment" "power_user_parking_glue_access" {
   role       = aws_iam_role.power_user_parking.name
   policy_arn = aws_iam_policy.power_user_parking_glue_access.arn
 }
