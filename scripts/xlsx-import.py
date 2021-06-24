@@ -17,15 +17,13 @@ def get_glue_env_var(key, default="none"):
     else:
         return default
 
-## @params: [JOB_NAME]
 s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
 header_row_number = get_glue_env_var('header_row_number', 0)
 worksheet_name = get_glue_env_var('worksheet_name', '')
-logger = glueContext.get_logger()
 
+## @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
-
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
