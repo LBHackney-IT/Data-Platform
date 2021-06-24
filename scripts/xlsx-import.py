@@ -79,6 +79,3 @@ parquet_data = glueContext.write_dynamic_frame.from_options(
 )
 
 job.commit()
-
-
-# s3://dataplatform-el-glue-temp-storage/

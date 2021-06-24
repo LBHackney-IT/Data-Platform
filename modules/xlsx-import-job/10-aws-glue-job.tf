@@ -14,9 +14,9 @@ resource "aws_glue_job" "xlsx_import" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--s3_bucket_source"          = "s3://${var.raw_zone_bucket_id}/${var.department_folder_name}/${var.input_file_name}"
+    "--s3_bucket_source"          = "s3://${var.landing_zone_bucket_id}/${var.department_folder_name}/${var.input_file_name}"
     "--additional-python-modules" = "openpyxl"
-    "--s3_bucket_target"          = "s3://${var.landing_zone_bucket_id}/${var.department_folder_name}/${var.output_folder_name}"
+    "--s3_bucket_target"          = "s3://${var.raw_zone_bucket_id}/${var.department_folder_name}/${var.output_folder_name}"
     "--header_row_number"         = var.header_row_number
     "--TempDir"                   = "s3://${var.glue_temp_storage_bucket_id}"
     "--worksheet_name"            = var.worksheet_name

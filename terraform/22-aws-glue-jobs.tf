@@ -136,25 +136,7 @@ module "test-multiple-headers-v2" {
   output_folder_name              = "test-repairs-lightning-protection"
 }
 
-module "test-multiple-headers-in-xlsx-file-format" {
-  count                           = terraform.workspace == "default" ? 1 : 0
-  source                          = "../modules/google-sheets-glue-job"
-  glue_role_arn                   = aws_iam_role.glue_role.arn
-  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  landing_zone_bucket_id          = module.landing_zone.bucket_id
-  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = module.tags.values
-  glue_job_name                   = "Testing Multiple Headers in XLSX format"
-  google_sheets_document_id       = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
-  google_sheets_worksheet_name    = "Fire Alarm/AOV"
-  google_sheet_header_row_number  = 2
-  department_folder_name          = "housing"
-  output_folder_name              = "test-repairs-fire-alarm-aov"
-}
-
-module "import-pokemon-trainers-xlsx-file-format" {
+module "import-repairs-fire-alarms-xlsx-file-format" {
   count = terraform.workspace == "default" ? 1 : 0
 
   source                      = "../modules/xlsx-import-job"
@@ -164,13 +146,13 @@ module "import-pokemon-trainers-xlsx-file-format" {
   xlsx_import_script_key      = aws_s3_bucket_object.xlsx_import_script.key
   landing_zone_bucket_id      = module.landing_zone.bucket_id
   tags                        = module.tags.values
-  glue_job_name               = "Trainers"
-  department_folder_name      = "test_department"
-  output_folder_name          = "test_xlsx"
+  glue_job_name               = "Fire Alarm/AOV"
+  department_folder_name      = "housing"
+  output_folder_name          = "Fire_Alarm/AOV"
   raw_zone_bucket_id          = module.raw_zone.bucket_id
-  input_file_name             = "pokemon.xlsx"
-  header_row_number           = 0
-  worksheet_name              = "Trainers"
+  input_file_name             = "electrical_mechnical_fire_safety_temp_order_number_wc_12.10.20r1.xlsx"
+  header_row_number           = 2
+  worksheet_name              = "Fire Alarm/AOV"
 }
 
 
