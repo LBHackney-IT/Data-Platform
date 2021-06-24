@@ -160,25 +160,23 @@ module "test-multiple-headers-v2" {
   dataset_name                    = "test-repairs-lightning-protection"
 }
 
-module "test-multiple-headers-in-xlsx-file-format" {
-  source                          = "../modules/google-sheets-glue-job"
-  identifier_prefix               = local.short_identifier_prefix
-  is_live_environment             = local.is_live_environment
-  glue_role_arn                   = aws_iam_role.glue_role.arn
-  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
-  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = module.tags.values
-  glue_job_name                   = "Testing Multiple Headers in XLSX format"
-  google_sheets_document_id       = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
-  google_sheets_worksheet_name    = "Fire Alarm/AOV"
-  google_sheet_header_row_number  = 2
-  department_name                 = "housing-repairs"
-  dataset_name                    = "test-repairs-fire-alarm-aov"
+module "import-repairs-fire-alarms-xlsx-file-format" {
+  count = terraform.workspace == "default" ? 1 : 0
+
+  source                      = "../modules/xlsx-import-job"
+  glue_role_arn               = aws_iam_role.glue_role.arn
+  glue_scripts_bucket_id      = module.glue_scripts.bucket_id
+  glue_temp_storage_bucket_id = module.glue_temp_storage.bucket_arn
+  xlsx_import_script_key      = aws_s3_bucket_object.xlsx_import_script.key
+  landing_zone_bucket_id      = module.landing_zone.bucket_id
+  tags                        = module.tags.values
+  glue_job_name               = "Fire Alarm/AOV"
+  department_folder_name      = "housing"
+  output_folder_name          = "Fire_Alarm/AOV"
+  raw_zone_bucket_id          = module.raw_zone.bucket_id
+  input_file_name             = "electrical_mechnical_fire_safety_temp_order_number_wc_12.10.20r1.xlsx"
+  header_row_number           = 2
+  worksheet_name              = "Fire Alarm/AOV"
 }
 
 
