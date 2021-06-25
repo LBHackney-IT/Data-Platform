@@ -1,4 +1,4 @@
-from unittest import main, TestCase
+from unittest import TestCase
 import botocore.session
 from botocore.stub import Stubber
 
@@ -121,6 +121,3 @@ class GetS3SubfoldersTest(TestCase):
   def get_s3_subfolders(self, *args):
     self.stubber.activate()
     return get_s3_subfolders(self.s3, *args)
-
-if __name__ == '__main__':
-    main()
