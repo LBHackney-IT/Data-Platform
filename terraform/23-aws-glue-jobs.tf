@@ -167,6 +167,7 @@ module "import-repairs-fire-alarms-xlsx-file-format" {
   glue_role_arn               = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id      = module.glue_scripts.bucket_id
   glue_temp_storage_bucket_id = module.glue_temp_storage.bucket_arn
+  helpers_script_key          = aws_s3_bucket_object.helpers.key
   xlsx_import_script_key      = aws_s3_bucket_object.xlsx_import_script.key
   landing_zone_bucket_id      = module.landing_zone.bucket_id
   tags                        = module.tags.values
@@ -176,7 +177,7 @@ module "import-repairs-fire-alarms-xlsx-file-format" {
   raw_zone_bucket_id          = module.raw_zone.bucket_id
   input_file_name             = "electrical_mechnical_fire_safety_temp_order_number_wc_12.10.20r1.xlsx"
   header_row_number           = 2
-  worksheet_name              = "Fire Alarm/AOV"
+  worksheet_name              = "Fire AlarmAOV"
 }
 
 
@@ -203,6 +204,7 @@ resource "aws_glue_job" "address_matching_glue_job" {
     "--imperfect_s3_bucket_target"     = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-glue-job-output/imperfect_s3_bucket_target"
     "--query_addresses_url"            = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-test/test_addresses.gz.parquet"
     "--target_addresses_url"           = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-test/addresses_api_full.gz.parquet"
+    "--extra-py-files"                 = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
 
@@ -225,7 +227,7 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
     "--s3_bucket_target"    = module.raw_zone.bucket_id
     "--s3_bucket_source"    = module.landing_zone.bucket_id
     "--s3_prefix"           = "parking/manual/"
-    "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.get_s3_subfolders.key}"
+    "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.get_s3_subfolders.key}, s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
 
