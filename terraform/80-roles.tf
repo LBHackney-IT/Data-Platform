@@ -515,3 +515,41 @@ resource "aws_iam_role_policy_attachment" "parking_glue_s3_access" {
   role       = aws_iam_role.parking_glue.name
   policy_arn = aws_iam_policy.parking_s3_access.arn
 }
+
+
+data "aws_iam_policy_document" "parking_glue_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:FilterLogEvents",
+      "logs:DescribeLogStreams",
+      "logs:GetLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:/aws-glue/*"
+    ]
+  }
+
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "glue:*"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "parking_glue_access" {
+  tags = module.tags.values
+
+  name   = lower("${local.identifier_prefix}-parking-glue-access")
+  policy = data.aws_iam_policy_document.parking_glue_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "parking_glue_access" {
+  role       = aws_iam_role.parking_glue.name
+  policy_arn = aws_iam_policy.parking_glue_access.arn
+}
