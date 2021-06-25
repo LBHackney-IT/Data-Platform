@@ -21,6 +21,7 @@ resource "aws_glue_job" "google_sheet_import" {
     "--header_row_number"         = var.google_sheet_header_row_number
     "--secret_id"                 = var.sheets_credentials_name
     "--s3_bucket_target"          = local.full_output_path
+    "--extra-py-files"            = "s3://${var.glue_scripts_bucket_id}/${var.helpers_script_key}"
   }
 }
 

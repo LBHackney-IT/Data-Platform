@@ -4,6 +4,7 @@ module "repairs_DLO_data" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -24,6 +25,7 @@ module "repairs_herts_heritage" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -44,6 +46,7 @@ module "repairs_avonline" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -64,6 +67,7 @@ module "repairs_alpha_track" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -84,6 +88,7 @@ module "repairs_stannah" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -104,6 +109,7 @@ module "test-repairs-purdy-data" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -124,6 +130,7 @@ module "test-multiple-headers-v1" {
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -144,6 +151,7 @@ module "test-multiple-headers-v2" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_role_arn                   = aws_iam_role.glue_role.arn
+  helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn

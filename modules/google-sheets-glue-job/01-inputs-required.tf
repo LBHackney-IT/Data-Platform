@@ -28,6 +28,11 @@ variable "google_sheets_import_script_key" {
   type        = string
 }
 
+variable "helpers_script_key" {
+  description = "Helpers script key"
+  type        = string
+}
+
 variable "glue_temp_storage_bucket_id" {
   description = "Glue temporary storage bucket id"
   type        = string
@@ -72,5 +77,3 @@ variable "dataset_name" {
   description = "Output folder name"
   type        = string
 }
-
-
