@@ -136,7 +136,7 @@ module "test-multiple-headers-v1" {
   google_sheets_worksheet_name    = "Door Entry"
   google_sheet_header_row_number  = 2
   department_name                 = "housing-repairs"
-  dataset_name                    = "test-repairs-door-entry"
+  dataset_name                    = "repairs-door-entry"
 }
 
 module "test-multiple-headers-v2" {
@@ -157,7 +157,7 @@ module "test-multiple-headers-v2" {
   google_sheets_worksheet_name    = "Lightning Protection"
   google_sheet_header_row_number  = 2
   department_name                 = "housing-repairs"
-  dataset_name                    = "test-repairs-lightning-protection"
+  dataset_name                    = "repairs-lightning-protection"
 }
 
 module "import-repairs-fire-alarms-xlsx-file-format" {
