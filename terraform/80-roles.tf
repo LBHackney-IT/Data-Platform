@@ -289,7 +289,6 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
     ]
   }
 
-  # Play around with this.
   statement {
     sid = "AllowRolePassingToGlueJobs"
     actions = [
@@ -496,11 +495,6 @@ resource "aws_iam_role_policy_attachment" "power_user_parking_glue_access" {
   role       = aws_iam_role.power_user_parking.name
   policy_arn = aws_iam_policy.power_user_parking_glue_access.arn
 }
-
-
-
-##### GLUE PARKING
-
 
 resource "aws_iam_role" "parking_glue" {
   tags = module.tags.values
