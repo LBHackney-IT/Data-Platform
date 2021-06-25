@@ -553,3 +553,8 @@ resource "aws_iam_role_policy_attachment" "parking_glue_access" {
   role       = aws_iam_role.parking_glue.name
   policy_arn = aws_iam_policy.parking_glue_access.arn
 }
+
+resource "aws_iam_role_policy_attachment" "parking_glue_access_to_cloudwatch" {
+  role       = aws_iam_role.parking_glue.name
+  policy_arn = aws_iam_policy.glue_can_write_to_cloudwatch.arn
+}
