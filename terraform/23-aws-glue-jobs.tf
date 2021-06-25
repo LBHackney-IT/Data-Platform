@@ -1,5 +1,5 @@
 module "repairs_DLO_data" {
-  count                         = terraform.workspace == "default" ? 1 : 0
+  count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment

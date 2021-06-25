@@ -72,7 +72,7 @@ resource "aws_iam_policy" "full_glue_access" {
 resource "aws_iam_policy" "glue_can_write_to_cloudwatch" {
   tags = module.tags.values
 
-  name = "${local.identifier_prefix}-glue-can-write-to-cloudwatch"
+  name   = "${local.identifier_prefix}-glue-can-write-to-cloudwatch"
   policy = data.aws_iam_policy_document.glue_can_write_to_cloudwatch.json
 }
 
