@@ -285,7 +285,6 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
       "iam:GetRole",
     ]
     resources = [
-      aws_iam_role.glue_role.arn,
       aws_iam_role.parking_glue.arn
     ]
   }
@@ -297,7 +296,6 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
       "iam:PassRole",
     ]
     resources = [
-      aws_iam_role.glue_role.arn,
       aws_iam_role.parking_glue.arn
     ]
     condition {
