@@ -38,6 +38,16 @@ resource "aws_s3_bucket_object" "get_s3_subfolders" {
   etag   = filemd5("../scripts/get_s3_subfolders.py")
 }
 
+resource "aws_s3_bucket_object" "helpers" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/helpers.py"
+  acl    = "private"
+  source = "../scripts/helpers.py"
+  etag   = filemd5("../scripts/helpers.py")
+}
+
 resource "aws_s3_bucket_object" "xlsx_import_script" {
   tags = module.tags.values
 

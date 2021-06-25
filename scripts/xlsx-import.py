@@ -1,6 +1,5 @@
 import pandas as pd
 import sys
-import datetime
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -8,14 +7,8 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql import SQLContext
-from pyspark.sql import functions as f
 
-
-def get_glue_env_var(key, default="none"):
-    if f'--{key}' in sys.argv:
-        return getResolvedOptions(sys.argv, [key])[key]
-    else:
-        return default
+from helpers import get_glue_env_var, convert_pandas_df_to_spark_dynamic_df, PARTITION_KEYS
 
 s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
@@ -49,21 +42,7 @@ panada_df.fillna(value='', inplace=True)
 
 sqlContext = SQLContext(sc)
 
-now = datetime.datetime.now()
-importYear = str(now.year)
-importMonth = str(now.month).zfill(2)
-importDay = str(now.day).zfill(2)
-importDate = importYear + importMonth + importDay
-
-# Convert to SparkDynamicDataFrame
-spark_df = sqlContext.createDataFrame(panada_df)
-spark_df = spark_df.coalesce(1)
-spark_df = spark_df.withColumn('import_datetime', f.current_timestamp())
-spark_df = spark_df.withColumn('import_timestamp', f.lit(str(now.timestamp())))
-spark_df = spark_df.withColumn('import_year', f.lit(importYear))
-spark_df = spark_df.withColumn('import_month', f.lit(importMonth))
-spark_df = spark_df.withColumn('import_day', f.lit(importDay))
-spark_df = spark_df.withColumn('import_date', f.lit(importDate))
+spark_df = convert_pandas_df_to_spark_dynamic_df(sql_context=sqlContext, panadas_df=panada_df)
 
 frame = DynamicFrame.fromDF(spark_df, glueContext, "DataFrame")
 
@@ -73,7 +52,7 @@ parquet_data = glueContext.write_dynamic_frame.from_options(
     format="parquet",
     connection_options={
         "path": s3_bucket_target,
-        "partitionKeys": ['import_year', 'import_month', 'import_day', 'import_date']
+        "partitionKeys": PARTITION_KEYS
     },
     transformation_ctx="parquet_data"
 )
