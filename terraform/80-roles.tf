@@ -519,19 +519,6 @@ data "aws_iam_policy_document" "parking_glue_access" {
   statement {
     effect = "Allow"
     actions = [
-      "logs:FilterLogEvents",
-      "logs:DescribeLogStreams",
-      "logs:GetLogEvents"
-    ]
-    resources = [
-      "arn:aws:logs:*:*:/aws-glue/*"
-    ]
-  }
-
-
-  statement {
-    effect = "Allow"
-    actions = [
       "glue:*"
     ]
     resources = [
