@@ -50,6 +50,25 @@ data "aws_iam_policy_document" "glue_can_write_to_cloudwatch" {
   }
 }
 
+data "aws_iam_policy_document" "full_glue_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "glue:*"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "full_glue_access" {
+  tags = module.tags.values
+
+  name   = lower("${local.identifier_prefix}-full-glue-access")
+  policy = data.aws_iam_policy_document.full_glue_access.json
+}
+
 resource "aws_iam_policy" "glue_can_write_to_cloudwatch" {
   tags = module.tags.values
 
@@ -72,7 +91,6 @@ resource "aws_iam_policy" "glue_access_policy" {
       {
         Effect : "Allow",
         Action : [
-          "glue:*",
           "s3:GetBucketLocation",
           "s3:ListBucket",
           "s3:ListAllMyBuckets",
@@ -130,4 +148,9 @@ resource "aws_iam_policy" "glue_access_policy" {
 resource "aws_iam_role_policy_attachment" "attach_glue_access_policy_to_glue_role" {
   role       = aws_iam_role.glue_role.name
   policy_arn = aws_iam_policy.glue_access_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "attach_full_glue_access_to_glue_role" {
+  role       = aws_iam_role.glue_role.name
+  policy_arn = aws_iam_policy.full_glue_access.arn
 }
