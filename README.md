@@ -22,13 +22,24 @@ future intention of potentially merging it into the infrastructure project in th
 However, to ensure that we are using the shared modules contained in infrastructure we have used `git subtree` to include
 the project code into this repository for reference.
 
-To use the below commands, you will need to add the infrastructure repository as a remote in the root file of the project folder, after cloning:
+The following commands outline how to infrastructure project was attached to the data platform project.
+
+***WARNING:*** You do NOT need to run these commands as part of project setup.
+
+The following commands *were* used to link the infrastructure repository to the data platform project. They are run from the root of the project after cloning.
+
 `git remote add -f infrastructure git@github.com:LBHackney-IT/infrastructure.git`
 
-Adding the repository for the first time:
 `git subtree add --prefix infrastructure infrastructure master --squash`
 
-To update the sub-project:
+The first command adds the infrastructure repository as a remote named `infrastructure` and the second command adds the infrastructure project as a subtree under the infrastructure directory using the master branch as a reference.
+
+### Updating Hackney Infrastructure (Copy)
+
+In the event that changes have been made to the infrastructure project, you can run the following command in the root of the project
+
+***WARNING:*** You do NOT need to run these commands as part of project setup, only if you explicity need to update the infrastructure project code
+
 `git fetch infrastructure master; git subtree pull --prefix infrastructure infrastructure master --squash`
 
 ## Terraform Deployment
