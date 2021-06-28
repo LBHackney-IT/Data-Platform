@@ -192,7 +192,7 @@ module "import-repairs-fire-alarms-xlsx-file-format" {
   output_folder_name          = "Fire_Alarm_AOV"
   raw_zone_bucket_id          = module.raw_zone.bucket_id
   input_file_name             = "electrical_mechnical_fire_safety_temp_order_number_wc_12.10.20r1.xlsx"
-  header_row_number           = 2
+  header_row_number           = 1
   worksheet_name              = "Fire AlarmAOV"
 }
 
