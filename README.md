@@ -22,7 +22,7 @@ future intention of potentially merging it into the infrastructure project in th
 However, to ensure that we are using the shared modules contained in infrastructure we have used `git subtree` to include
 the project code into this repository for reference.
 
-The following commands outline how to infrastructure project was attached to the data platform project.
+The following commands outline how the infrastructure project was attached to the data platform project.
 
 ***WARNING:*** You do NOT need to run these commands as part of project setup.
 
@@ -58,7 +58,7 @@ The terraform will be deployed using Github Actions on push to main / when a Pul
 - `environment` - Environment you're working in (this is normally `dev`)
 - `aws_api_account` - API AWS Account number to deploy RDS Export Lambda to, ie. the number after the #, beneath the public account name (for development purposes this is normally the account named DevScratch)
 - `aws_deploy_account` Primary AWS Account number to deploy to (for development purposes this is normally the account named DataPlatform-Development)
-- `aws_deploy_iam_role_name` - This is the role that will be used to deploy the infrastructure (for development purpouses this is normally `LBH_Automation_Deployment_Role`)
+- `aws_deploy_iam_role_name` - This is the role that will be used to deploy the infrastructure (for development purposes this is normally `LBH_Automation_Deployment_Role`)
 - `google_project_id` - The Google Project to create service accounts in (for DevScratch `dataplatform-dev0`)
 
 3. For local deployment AWS needs a AWS CLI profile (assumed to be called `hackney-dev-scratch`) in the profile configuration file (which can be set in `~/.aws/config`). Read [documentation on Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for more guidance setting up AWS credentials and named profiles.
