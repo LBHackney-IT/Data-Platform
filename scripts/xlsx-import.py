@@ -30,6 +30,9 @@ panada_df = pd.read_excel(
     sheet_name=worksheet_name
 )
 
+# Cast everything as string
+panada_df = panada_df.astype(str)
+
 # Replace missing column names with valid names
 panada_df.columns = ["column" + str(i) if a.strip() == "" else a.strip()
                      for i, a in enumerate(panada_df.columns)]
