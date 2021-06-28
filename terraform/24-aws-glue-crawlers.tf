@@ -22,20 +22,6 @@ resource "aws_glue_catalog_database" "landing_zone_catalog_database" {
   name = "${local.identifier_prefix}-landing-zone-database"
 }
 
-resource "aws_glue_crawler" "landing_zone_parking_crawler" {
-  tags = module.tags.values
-
-  database_name = aws_glue_catalog_database.landing_zone_catalog_database.name
-  name          = "${local.identifier_prefix}-landing-zone-parking-crawler"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "parking_"
-
-  s3_target {
-    path       = "s3://${module.landing_zone.bucket_id}/parking"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
-}
-
 resource "aws_glue_catalog_database" "landing_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-landing-zone"
 }
