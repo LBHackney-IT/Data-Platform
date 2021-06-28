@@ -1,7 +1,7 @@
 .PHONY: $(MAKECMDGOALS)
 
 test: install
-	python3 test_get_s3_subfolders.py
+	pipenv run python3 -m unittest
 
 install:
 	pipenv install
