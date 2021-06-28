@@ -1,4 +1,5 @@
 name: Data-Platform (Production)
+concurrency: production-deploy
 env:
   aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
   aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
