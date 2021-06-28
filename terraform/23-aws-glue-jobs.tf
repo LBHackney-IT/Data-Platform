@@ -187,9 +187,9 @@ module "import-repairs-fire-alarms-xlsx-file-format" {
   xlsx_import_script_key      = aws_s3_bucket_object.xlsx_import_script.key
   landing_zone_bucket_id      = module.landing_zone.bucket_id
   tags                        = module.tags.values
-  glue_job_name               = "Fire Alarm/AOV"
+  glue_job_name               = "Fire Alarm AOV"
   department_folder_name      = "housing"
-  output_folder_name          = "Fire_Alarm/AOV"
+  output_folder_name          = "Fire_Alarm_AOV"
   raw_zone_bucket_id          = module.raw_zone.bucket_id
   input_file_name             = "electrical_mechnical_fire_safety_temp_order_number_wc_12.10.20r1.xlsx"
   header_row_number           = 2
