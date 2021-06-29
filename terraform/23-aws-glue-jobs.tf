@@ -250,3 +250,9 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
 resource "aws_glue_workflow" "liberator_data" {
   name = "${local.identifier_prefix}-liberator-data-workflow"
 }
+
+    
+    
+    
+    
+    
