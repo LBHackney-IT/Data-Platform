@@ -4,6 +4,7 @@ const AWS_REGION = "eu-west-2";
 
 const bucketDestination = process.env.BUCKET_DESTINATION;
 const targetServiceArea = process.env.SERVICE_AREA;
+const workflowName = process.env.WORKFLOW_NAME
 
 async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucketName, targetPath, snapshotTime) {
   console.log("sourceBucketName", sourceBucketName);
@@ -28,6 +29,7 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
     const day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
     const month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
     const year = snapshotTime.getFullYear();
+    const date = year + month + day;
 
     console.log("list response contents", listResponse.Contents);
 
@@ -43,7 +45,7 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
         const copyObjectParams = {
           Bucket: targetBucketName,
           CopySource: `${sourceBucketName}/${file.Key}`,
-          Key: `${targetPath}/${databaseName}/${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/${fileName}`,
+          Key: `${targetPath}/${databaseName}/${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/import_date=${date}/${fileName}`,
           ACL: "bucket-owner-full-control",
         };
         console.log("copyObjectParams", copyObjectParams)
@@ -52,6 +54,16 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
       })
     );
   } while (listResponse.IsTruncated && listResponse.NextContinuationToken)
+}
+
+async function startWorkflowRun(workflowName) {
+  const glue = new AWS.Glue({apiVersion: '2017-03-31'});
+  const params = {
+    Name: workflowName
+  };
+  console.log("starting workflow run with params", params)
+
+  await glue.startWorkflowRun(params).promise();
 }
 
 exports.handler = async (events) => {
@@ -107,6 +119,10 @@ exports.handler = async (events) => {
 
       // If it has copy the files from s3 bucket A => s3 bucket B
       await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, targetServiceArea, snapshotTime);
+
+      if (workflowName) {
+        await startWorkflowRun(workflowName);
+      }
     })
-  );
+  )
 };

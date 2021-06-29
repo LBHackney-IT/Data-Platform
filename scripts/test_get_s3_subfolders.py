@@ -1,4 +1,4 @@
-from unittest import main, TestCase
+from unittest import TestCase
 import botocore.session
 from botocore.stub import Stubber
 
@@ -20,7 +20,9 @@ generic_list_objects_response_keys = {
 class GetS3SubfoldersTest(TestCase):
 
   def setUp(self) -> None:
-    self.s3 = botocore.session.get_session().create_client('s3')
+    self.boto_session = botocore.session.get_session()
+    self.boto_session.set_credentials("", "")
+    self.s3 = self.boto_session.create_client('s3')
     self.stubber = Stubber(self.s3)
     return super().setUp()
 
@@ -121,6 +123,3 @@ class GetS3SubfoldersTest(TestCase):
   def get_s3_subfolders(self, *args):
     self.stubber.activate()
     return get_s3_subfolders(self.s3, *args)
-
-if __name__ == '__main__':
-    main()

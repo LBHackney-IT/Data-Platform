@@ -17,8 +17,9 @@ output "network_vpc_subnets" {
 output "network_vpc_subnet_cider_blocks" {
   value = [for subnet in data.aws_subnet.network : subnet.cidr_block]
 }
+
 output "spirit_animal" {
-  description = "Your terrafrom assigned spirit animal"
+  description = "Your terraform assigned spirit animal"
   value       = random_pet.name.id
 }
 

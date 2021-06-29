@@ -23,6 +23,8 @@ data "aws_ec2_transit_gateway" "hub_tgw" {
 resource "aws_ec2_transit_gateway_vpc_attachment" "hub_tgw_attachment" {
   for_each = local.vpc_attachments
 
+  tags = module.tags.values
+
   dns_support                                     = lookup(each.value, "dns_support", true) ? "enable" : "disable"
   ipv6_support                                    = lookup(each.value, "ipv6_support", false) ? "enable" : "disable"
   subnet_ids                                      = each.value["subnet_ids"]
