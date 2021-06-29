@@ -8,3 +8,8 @@ format:
 	terraform fmt ./terraform-backend-setup
 	terraform fmt ./terraform-networking
 	terraform fmt -recursive ./modules
+
+lint:
+	$(MAKE) -C terraform lint-init lint
+	$(MAKE) -C terraform-networking lint-init lint
+	$(MAKE) -C terraform-backend-setup lint-init lint
