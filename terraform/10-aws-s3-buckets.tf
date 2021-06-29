@@ -90,3 +90,11 @@ module "lambda_artefact_storage" {
   bucket_name       = "Lambda Artefact Storage"
   bucket_identifier = "dp-lambda-artefact-storage"
 }
+
+# Used as part of /pipeline-scripts/generate-ssl-keys.sh
+resource "aws_s3_bucket" "ssl_connection_resources" {
+  count  = local.is_live_environment ? 1 : 0
+  bucket = "${local.identifier_prefix}-ssl-connection-resources"
+  acl    = "public-read"
+  tags   = module.tags.values
+}
