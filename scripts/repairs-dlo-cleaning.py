@@ -11,19 +11,16 @@ from pyspark.sql.functions import rank, col, trim, when, max
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
-
-
-def get_glue_env_var(key, default="none"):
-    if f'--{key}' in sys.argv:
-        return getResolvedOptions(sys.argv, [key])[key]
-    else:
-        return default
+from helpers import get_glue_env_var
 
 
 def getLatestPartitions(dfa):
-    dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
-    dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
-    dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
+    dfa = dfa.where(col('import_year') == dfa.select(
+        max('import_year')).first()[0])
+    dfa = dfa.where(col('import_month') == dfa.select(
+        max('import_month')).first()[0])
+    dfa = dfa.where(col('import_day') == dfa.select(
+        max('import_day')).first()[0])
     return dfa
 
 
@@ -31,7 +28,8 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
-cleaned_repairs_s3_bucket_target = get_glue_env_var('cleaned_repairs_s3_bucket_target', '')
+cleaned_repairs_s3_bucket_target = get_glue_env_var(
+    'cleaned_repairs_s3_bucket_target', '')
 
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
@@ -59,7 +57,8 @@ df2 = df.toDF(*[c.lower().replace('-', '_') for c in df.columns])
 df2 = df.toDF(*[c.lower().replace('__', '_') for c in df.columns])
 
 logger.info('convert timestamp column to a datetime field type')
-df2 = df2.withColumn('timestamp', F.to_timestamp("timestamp", "dd/MM/yyyy HH:mm:ss"))
+df2 = df2.withColumn('timestamp', F.to_timestamp(
+    "timestamp", "dd/MM/yyyy HH:mm:ss"))
 
 # convert resident name to title case
 df2 = df2.withColumn('name_of_resident', F.initcap(F.col('name_of_resident')))
@@ -120,7 +119,8 @@ def map_repair_priority(code):
 # # convert to a UDF Function by passing in the function and the return type of function (string in this case)
 udf_map_repair_priority = F.udf(map_repair_priority, StringType())
 # apply function
-df2 = df2.withColumn('work_priority_code', udf_map_repair_priority('work_priority_description'))
+df2 = df2.withColumn('work_priority_code',
+                     udf_map_repair_priority('work_priority_description'))
 
 # write data into S3
 logger.info('Write data into S3')
