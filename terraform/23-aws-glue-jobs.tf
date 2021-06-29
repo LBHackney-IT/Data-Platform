@@ -264,7 +264,7 @@ resource "aws_glue_job" "levenshtein_address_matching" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--target_destination"             = "s3://${module.refined_zone.bucket_id}/housing/repairs-dlo/llpg-matched-repairs/"
+    "--target_destination"             = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-matched-addresses/"
     "--source_data"                    = "s3://${module.refined_zone.bucket_id}/housing/repairs-dlo/"
     "--addresses_api_data"             = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-test/addresses_API_full.csv" // to be updated to raw zone address api data
     "--extra-py-files"                 = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
