@@ -24,7 +24,7 @@ resource "aws_secretsmanager_secret_version" "housing_json_credentials_secret_ve
 }
 
 resource "aws_secretsmanager_secret" "redshift_cluster_parking_credentials" {
-  tags  = module.tags.values
+  tags = module.tags.values
 
   name        = "${local.identifier_prefix}-parking/redshift-cluster-parking-user"
   description = "Credentials for the redshift cluster parking user "
