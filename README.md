@@ -22,13 +22,24 @@ future intention of potentially merging it into the infrastructure project in th
 However, to ensure that we are using the shared modules contained in infrastructure we have used `git subtree` to include
 the project code into this repository for reference.
 
-To use the below commands, you will need to add the infrastructure repository as a remote:
+The following commands outline how the infrastructure project was attached to the data platform project.
+
+***WARNING:*** You do NOT need to run these commands as part of project setup.
+
+The following commands *were* used to link the infrastructure repository to the data platform project. They are run from the root of the project after cloning.
+
 `git remote add -f infrastructure git@github.com:LBHackney-IT/infrastructure.git`
 
-Adding the repository for the first time:
 `git subtree add --prefix infrastructure infrastructure master --squash`
 
-To update the sub-project:
+The first command adds the infrastructure repository as a remote named `infrastructure` and the second command adds the infrastructure project as a subtree under the infrastructure directory using the master branch as a reference.
+
+### Updating Hackney Infrastructure (Copy)
+
+In the event that changes have been made to the infrastructure project, you can run the following command in the root of the project
+
+***WARNING:*** You do NOT need to run these commands as part of project setup, only if you explicity need to update the infrastructure project code
+
 `git fetch infrastructure master; git subtree pull --prefix infrastructure infrastructure master --squash`
 
 ## Terraform Deployment
@@ -41,13 +52,13 @@ The terraform will be deployed using Github Actions on push to main / when a Pul
 
 #### Set up
 
-1. Create a env.tfvars file for local deployment, i.e run `cp config/terraform/env.tfvars.example config/terraform/env.tfvars` from the project root directory.
+1. Create a env.tfvars file for local deployment, this can be done by running `cp config/terraform/env.tfvars.example config/terraform/env.tfvars` from the project root directory.
 2. Update the following required variables in the newly created file:
 
-- `environment` - Environment you're working in (this is normally dev)
-- `aws_api_account` - API AWS Account to deploy RDS Export Lambda to (for developement purpouses this is normally dev-scratch)
-- `aws_deploy_account` Primary AWS Account to deploy to (for developement purpouses this is normally dataplatform-development)
-- `aws_deploy_iam_role_name` - This is the role that will be used to deploy the infrastructure (for development purpouses this is normally LBH_Automation_Deployment_Role)
+- `environment` - Environment you're working in (this is normally `dev`)
+- `aws_api_account` - API AWS Account number to deploy RDS Export Lambda to, ie. the number after the #, beneath the public account name (for development purposes this is normally the account named DevScratch)
+- `aws_deploy_account` Primary AWS Account number to deploy to (for development purposes this is normally the account named DataPlatform-Development)
+- `aws_deploy_iam_role_name` - This is the role that will be used to deploy the infrastructure (for development purposes this is normally `LBH_Automation_Deployment_Role`)
 - `google_project_id` - The Google Project to create service accounts in (for DevScratch `dataplatform-dev0`)
 
 3. For local deployment AWS needs a AWS CLI profile (assumed to be called `hackney-dev-scratch`) in the profile configuration file (which can be set in `~/.aws/config`). Read [documentation on Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for more guidance setting up AWS credentials and named profiles.
@@ -58,11 +69,16 @@ To set up this profile, you can use the AWS CLI using the following command:
 $ aws configure sso
 ```
 
-Your terminal should look like this:
+In the terminal, add the start URL and the region as below
 
 ```
 SSO start URL [None]: https://hackney.awsapps.com/start
 SSO Region [None]: eu-west-1
+```
+
+Your terminal should look like this:
+
+```
 Attempting to automatically open the SSO authorization page in your default browser.
 If the browser does not open or you wish to use a different device to authorize this request, open the following URL:
 
@@ -71,13 +87,23 @@ https://device.sso.eu-west-1.amazonaws.com/
 Then enter the code:
 LDHD-CKXW
 
-There are 18 AWS accounts available to you.
-Using the account ID 937934410339
-There are 2 roles available to you.
+There are {number} AWS accounts available to you.
+```
+
+Below the final line there will be a box which can be scrolled through using the arrow keys, select with <kbd>Enter</kbd> the account which corresponds to the `aws_api_account` used in step 2 above (normally DevScratch)
+
+```
+Using the account ID {number}
+```
+
+If you have access to multiple roles within that account, select the appropriate role (this is assumed to be `AWSAdministratorAccess` below), press <kbd>Enter</kbd> to select the default options for `client Region`, `output format` and `profile name`
+
+```
 Using the role name "AWSAdministratorAccess"
 CLI default client Region [eu-west-2]:
 CLI default output format [json]:
-CLI profile name [AWSAdministratorAccess-937934410339]: hackney-dataplatform-development
+CLI profile name [AWSAdministratorAccess-{number}]:
+hackney-dataplatform-development
 ```
 
 Install AWS-Vault
@@ -92,6 +118,8 @@ Generate Credentials for Vault
 $ aws-vault exec hackney-dataplatform-development -- aws sts get-caller-identity
 ```
 
+Ensure that GNU Make is installed on your computer. The full commands for the below instructions can be found in `/terraform/Makefile`
+
 Initialise the Project
 
 - Before you run, ensure:
@@ -99,13 +127,13 @@ Initialise the Project
   - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform directory
 
 ```
-$ aws-vault exec hackney-dataplatform-development -- terraform init
+$ make init
 ```
 
-Initialise your Workspace
+Initialise your Workspace (note capitalisation)
 
 ```
-$ aws-vault exec hackney-dataplatform-development -- terraform workspace new {developer}
+$ WORKSPACE={developer} make new
 ```
 
 4. Set up Google credentials
