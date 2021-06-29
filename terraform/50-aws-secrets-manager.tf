@@ -6,6 +6,11 @@ resource "aws_kms_key" "secrets_manager_key" {
   enable_key_rotation     = true
 }
 
+resource "aws_kms_alias" "key_alias" {
+  name          = lower("alias/${var.identifier_prefix}-secrets-manager")
+  target_key_id = aws_kms_key.secrets_manager_key.key_id
+}
+
 resource "random_pet" "name" {}
 
 resource "aws_secretsmanager_secret" "sheets_credentials_housing" {
