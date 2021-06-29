@@ -247,6 +247,30 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
   }
 }
 
+resource "aws_glue_job" "levenshtein_address_matching" {
+  count = terraform.workspace == "default" ? 1 : 0
+
+  tags = module.tags.values
+
+  name              = "Address Matching - Levenshtein"
+  number_of_workers = 10
+  worker_type       = "G.1X"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.levenshtein_address_matching.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--target_destination"             = "s3://${module.refined_zone.bucket_id}/housing/repairs-dlo/llpg-matched-repairs/"
+    "--source_data"                    = "s3://${module.refined_zone.bucket_id}/housing/repairs-dlo/"
+    "--addresses_api_data"             = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-test/addresses_API_full.csv" // to be updated to raw zone address api data
+    "--extra-py-files"                 = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+}
+
 resource "aws_glue_workflow" "liberator_data" {
   name = "${local.identifier_prefix}-liberator-data-workflow"
 }

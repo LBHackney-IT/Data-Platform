@@ -3,6 +3,7 @@ from awsglue.utils import getResolvedOptions
 import datetime
 import boto3
 from pyspark.sql import functions as f
+from pyspark.sql.functions import col, max
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 
@@ -50,3 +51,9 @@ def convert_pandas_df_to_spark_dynamic_df(sql_context, panadas_df):
     spark_df = spark_df.withColumn('import_date', f.lit(importDate))
 
     return spark_df
+
+def get_latest_partitions(dfa):
+   dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
+   dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
+   dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
+   return dfa
