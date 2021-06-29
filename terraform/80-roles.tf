@@ -16,6 +16,8 @@ data "aws_iam_policy_document" "sso_trusted_relationship" {
   }
 }
 
+
+// Parking s3 access policy
 data "aws_iam_policy_document" "parking_s3_access" {
   statement {
     effect = "Allow"
@@ -253,7 +255,14 @@ data "aws_iam_policy_document" "parking_s3_access" {
   }
 }
 
+resource "aws_iam_policy" "parking_s3_access" {
+  tags = module.tags.values
 
+  name   = lower("${local.identifier_prefix}-parking-s3-access")
+  policy = data.aws_iam_policy_document.parking_s3_access.json
+}
+
+//Parking glue access policy
 data "aws_iam_policy_document" "power_user_parking_glue_access" {
   statement {
     effect = "Allow"
@@ -465,25 +474,6 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
   }
 }
 
-resource "aws_iam_role" "power_user_parking" {
-  tags = module.tags.values
-
-  name               = lower("${local.identifier_prefix}-power-user-parking")
-  assume_role_policy = data.aws_iam_policy_document.sso_trusted_relationship.json
-}
-
-resource "aws_iam_policy" "parking_s3_access" {
-  tags = module.tags.values
-
-  name   = lower("${local.identifier_prefix}-parking-s3-access")
-  policy = data.aws_iam_policy_document.parking_s3_access.json
-}
-
-resource "aws_iam_role_policy_attachment" "power_user_parking_s3_access" {
-  role       = aws_iam_role.power_user_parking.name
-  policy_arn = aws_iam_policy.parking_s3_access.arn
-}
-
 resource "aws_iam_policy" "power_user_parking_glue_access" {
   tags = module.tags.values
 
@@ -491,11 +481,62 @@ resource "aws_iam_policy" "power_user_parking_glue_access" {
   policy = data.aws_iam_policy_document.power_user_parking_glue_access.json
 }
 
+// Parking secrets policy
+data "aws_iam_policy_document" "parking_secrets_read_only" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue"
+    ]
+    resources = [
+      aws_secretsmanager_secret.redshift_cluster_parking_credentials.arn
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = [
+      aws_kms_key.secrets_manager_key.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "parking_secrets_read_only" {
+  tags = module.tags.values
+
+  name   = lower("${local.identifier_prefix}-parking-secrets-read-only")
+  policy = data.aws_iam_policy_document.parking_secrets_read_only.json
+}
+
+// Power user role + attachments
+resource "aws_iam_role" "power_user_parking" {
+  tags = module.tags.values
+
+  name               = lower("${local.identifier_prefix}-power-user-parking")
+  assume_role_policy = data.aws_iam_policy_document.sso_trusted_relationship.json
+}
+
+resource "aws_iam_role_policy_attachment" "power_user_parking_s3_access" {
+  role       = aws_iam_role.power_user_parking.name
+  policy_arn = aws_iam_policy.parking_s3_access.arn
+}
+
 resource "aws_iam_role_policy_attachment" "power_user_parking_glue_access" {
   role       = aws_iam_role.power_user_parking.name
   policy_arn = aws_iam_policy.power_user_parking_glue_access.arn
 }
 
+resource "aws_iam_role_policy_attachment" "parking_secrets_read_only" {
+  role       = aws_iam_role.power_user_parking.name
+  policy_arn = aws_iam_policy.parking_secrets_read_only.arn
+}
+
+// Glue role + attachments
 resource "aws_iam_role" "parking_glue" {
   tags = module.tags.values
 
