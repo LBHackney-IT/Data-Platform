@@ -68,11 +68,16 @@ resource "aws_iam_role_policy_attachment" "attach_redshift_role" {
   policy_arn = aws_iam_policy.redshift_access_policy.arn
 }
 
+resource "random_password" "redshift_cluster_master_password" {
+  length  = 40
+  special = false
+}
+
 resource "aws_redshift_cluster" "redshift_cluster" {
   cluster_identifier        = "${var.identifier_prefix}-redshift-cluster"
   database_name             = "data_platform"
   master_username           = "data_engineers"
-  master_password           = "Mustbe8characters"
+  master_password           = random_password.redshift_cluster_master_password.result
   node_type                 = "dc2.large"
   cluster_type              = "single-node"
   iam_roles                 = [aws_iam_role.redshift_role.arn]
@@ -81,7 +86,19 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   final_snapshot_identifier = "${var.identifier_prefix}-redshift-cluster-final"
   vpc_security_group_ids    = [aws_security_group.redshift_cluster_security_group.id]
   tags                      = var.tags
+}
 
+resource "aws_secretsmanager_secret" "redshift_cluster_master_password" {
+  tags = var.tags
+
+  name        = "${var.identifier_prefix}-redshift-cluster-master-password"
+  description = "Password for the redshift cluster master user "
+  kms_key_id  = var.secrets_manager_key
+}
+
+resource "aws_secretsmanager_secret_version" "redshift_cluster_master_password" {
+  secret_id     = aws_secretsmanager_secret.redshift_cluster_master_password.id
+  secret_string = random_password.redshift_cluster_master_password.result
 }
 
 resource "aws_redshift_subnet_group" "redshift" {
