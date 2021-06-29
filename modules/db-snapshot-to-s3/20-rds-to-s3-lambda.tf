@@ -95,7 +95,7 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
     ]
     effect = "Allow"
     resources = [
-      var.landing_zone_kms_key_arn,
+      var.zone_kms_key_arn,
     ]
   }
 }
