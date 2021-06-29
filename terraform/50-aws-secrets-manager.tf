@@ -7,7 +7,7 @@ resource "aws_kms_key" "secrets_manager_key" {
 }
 
 resource "aws_kms_alias" "key_alias" {
-  name          = lower("alias/${var.identifier_prefix}-secrets-manager")
+  name          = lower("alias/${local.identifier_prefix}-secrets-manager")
   target_key_id = aws_kms_key.secrets_manager_key.key_id
 }
 
