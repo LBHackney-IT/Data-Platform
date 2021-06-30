@@ -42,10 +42,10 @@ resource "aws_s3_bucket_object" "address_cleaning" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key = "scripts/address-cleaning.py"
-  acl = "private"
+  key    = "scripts/address-cleaning.py"
+  acl    = "private"
   source = "../scripts/address-cleaning.py"
-  etag = filemd5("../scripts/address-cleaning.py")
+  etag   = filemd5("../scripts/address-cleaning.py")
 }
 
 resource "aws_s3_bucket_object" "helpers" {

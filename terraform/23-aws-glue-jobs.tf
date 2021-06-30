@@ -241,7 +241,7 @@ resource "aws_glue_job" "repairs_dlo_cleaning_glue_job" {
 
   default_arguments = {
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
-    "--source_catalog_table"            = "housing_repairs_repairs_dlo"
+    "--source_catalog_table"             = "housing_repairs_repairs_dlo"
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned"
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
@@ -272,7 +272,7 @@ resource "aws_glue_job" "address_cleaning_glue_job" {
     "--source_catalog_table"               = "housing_repairs_repairs_dlo_cleaned"
     "--source_address_column_header"       = "address_of_repair"
     "--source_postcode_column_header"      = "postcode_of_property"
-    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--TempDir"                            = "s3://${module.glue_temp_storage.bucket_arn}/"
   }
 }
 
