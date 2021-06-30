@@ -6,12 +6,6 @@ resource "aws_kms_key" "secrets_manager_key" {
   enable_key_rotation     = true
 }
 
-resource "random_pet" "name" {
-  keepers = {
-    # Generate a new pet name each time we the kms key id
-    kms_key_id = aws_kms_key.secrets_manager_key.id
-  }
-}
 resource "aws_kms_alias" "key_alias" {
   name          = lower("alias/${local.identifier_prefix}-secrets-manager")
   target_key_id = aws_kms_key.secrets_manager_key.key_id
@@ -20,13 +14,12 @@ resource "aws_kms_alias" "key_alias" {
 resource "aws_secretsmanager_secret" "sheets_credentials_housing" {
   tags = module.tags.values
 
-  // Random pet name is added here, encase you destroy the secret. Secrets will linger for around 6-7 days encase
-  // recovery is required, and you will be unable to create with the same name.
-  name = "${local.identifier_prefix}-sheets-credential-housing-${random_pet.name.id}"
+  // name_prefix is added here, in case you destroy the secret.
+  // Secrets will linger for around 6-7 days in case recovery is required,
+  // and you will be unable to create with the same name.
+  name_prefix = "${local.identifier_prefix}-sheets-credential-housing"
 
-  # Read the kms key id "through" the random_pet resource to ensure that
-  # both will change together.
-  kms_key_id = random_pet.name.keepers.kms_key_id
+  kms_key_id = aws_kms_key.secrets_manager_key.id
 }
 
 resource "aws_secretsmanager_secret_version" "housing_json_credentials_secret_version" {
