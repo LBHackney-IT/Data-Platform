@@ -150,3 +150,7 @@ resource "aws_iam_role_policy_attachment" "attach_glue_access_policy_to_glue_rol
   policy_arn = aws_iam_policy.glue_access_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "attach_full_glue_access_to_glue_role" {
+  role       = aws_iam_role.glue_role.name
+  policy_arn = aws_iam_policy.full_glue_access.arn
+}
