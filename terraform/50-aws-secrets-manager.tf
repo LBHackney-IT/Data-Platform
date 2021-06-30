@@ -9,7 +9,7 @@ resource "aws_kms_key" "secrets_manager_key" {
 resource "random_pet" "name" {
   keepers = {
     # Generate a new pet name each time we the kms key id
-    kms_key_id = aws_kms_key.sheets_credentials.id
+    kms_key_id = aws_kms_key.secrets_manager_key.id
   }
 }
 resource "aws_kms_alias" "key_alias" {
