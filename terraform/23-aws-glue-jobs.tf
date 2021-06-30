@@ -272,6 +272,7 @@ resource "aws_glue_job" "address_cleaning_glue_job" {
     "--source_address_column_header"       = "address_of_repair"
     "--source_postcode_column_header"      = "postcode_of_property"
     "--TempDir"                            = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
 
