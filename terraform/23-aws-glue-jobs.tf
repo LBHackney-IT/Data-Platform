@@ -240,8 +240,9 @@ resource "aws_glue_job" "repairs_dlo_cleaning_glue_job" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--source_catalog_database"          = module.department_housing_repairs.refined_zone_catalog_database_name
-    "---source_catalog_table"            = "housing_repairs_repairs_dlo"
+    "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
+    "--source_catalog_table"            = "housing_repairs_repairs_dlo"
+    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned"
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
