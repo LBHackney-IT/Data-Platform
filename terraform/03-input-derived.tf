@@ -20,7 +20,7 @@ locals {
   environment             = lower(replace(local.is_live_environment ? var.environment : terraform.workspace, " ", "-"))
   application_snake       = lower(replace(var.application, " ", "-"))
   identifier_prefix       = lower("${local.application_snake}-${local.environment}")
-  short_identifier_prefix = lower(replace(local.is_live_environment ? "" : terraform.workspace, " ", "-"))
+  short_identifier_prefix = lower(replace(local.is_live_environment ? "" : "${terraform.workspace}-", " ", "-"))
 }
 
 data "aws_caller_identity" "data_platform" {}
