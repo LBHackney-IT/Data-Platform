@@ -17,7 +17,7 @@ resource "aws_secretsmanager_secret" "sheets_credentials_housing" {
   // name_prefix is added here, in case you destroy the secret.
   // Secrets will linger for around 6-7 days in case recovery is required,
   // and you will be unable to create with the same name.
-  name_prefix = "${local.identifier_prefix}-sheets-credential-housing"
+  name_prefix = "${local.identifier_prefix}-sheets-credential-housing-"
 
   kms_key_id = aws_kms_key.secrets_manager_key.id
 }
