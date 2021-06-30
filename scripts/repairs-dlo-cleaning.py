@@ -73,20 +73,15 @@ df2 = df2.withColumnRenamed('name_of_resident', 'name_full') \
     .withColumnRenamed('which_trade_needs_to_respond_to_repair?', 'trade_description') \
     .withColumnRenamed('what_is_the_priority_for_the_repair?', 'work_priority_description') \
     .withColumnRenamed('date_of_appointment', 'appointment_date') \
-    .withColumnRenamed('if_there_is_a_cautionary_contact_alert,_what_is_the_nature_of_it?',
-                       'alert_regarding_person_notes') \
-    .withColumnRenamed('if_yes,_what_vulnerabilities_do_they_have?', 'vulnerability_notes') \
+    .withColumnRenamed('if_there_is_a_cautionary_contact_alert_what_is_the_nature_of_it?', 'alert_regarding_person_notes') \
+    .withColumnRenamed('if_yes_what_vulnerabilities_do_they_have?', 'vulnerability_notes') \
     .withColumnRenamed('postcode_of_property', 'postal_code_raw') \
     .withColumnRenamed('planners_to_allocate_to_operatives', 'operative') \
     .withColumnRenamed('does_the_resident_have_any_vulnerabilities?', 'vulnerability_flag') \
     .withColumnRenamed('is_there_a_cautionary_contact_alert_at_this_address?', 'alert_regarding_person') \
     .withColumnRenamed('planners_to_allocate_to_operatives', 'operative') \
-    .withColumnRenamed(
-    'make_a_note_if_the_resident_is_reporting_any_coronavirus_symptoms_in_the_household_and_advise_residents_to_wear_a_face_mask_when_the_operative_is_in_the_property_and_to_maintain_social_distancing_',
-    'covid_notes') \
-    .withColumnRenamed(
-    'have_you_read_the_coronavirus_statement_to_the_resident?_please_advise_the_resident_to_wear_a_face_mask_when_the_operative_is_in_the_property_and_to_maintain_social_distancing_',
-    'covid_statement_given') \
+    .withColumnRenamed('make_a_note_if_the_resident_is_reporting_any_coronavirus_symptoms_in_the_household_and_advise_residents_to_wear_a_face_mask_when_the_operative_is_in_the_property_and_to_maintain_social_distancing', 'covid_notes') \
+    .withColumnRenamed('have_you_read_the_coronavirus_statement_to_the_resident?_please_advise_the_resident_to_wear_a_face_mask_when_the_operative_is_in_the_property_and_to_maintain_social_distancing', 'covid_statement_given') \
     .withColumnRenamed('uh_property_reference', 'property_reference_uh') \
     .withColumnRenamed('housing_status:_is_the_resident_a..._select_as_many_as_apply_', 'property_address_type') \
     .withColumnRenamed('is_the_job_a_recharge_or_sus_recharge?', 'recharge') \
@@ -99,7 +94,6 @@ df2 = df2.withColumnRenamed('name_of_resident', 'name_full') \
     .withColumnRenamed('uh_phone_number_1', 'phone_2') \
     .withColumnRenamed('uh_phone_number_2', 'phone_3') \
     .withColumnRenamed('timestamp', 'datetime_raised') \
- \
     # create a new column for repair priority code, based on repair priority description column
 
 
