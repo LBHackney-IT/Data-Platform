@@ -90,3 +90,17 @@ module "lambda_artefact_storage" {
   bucket_name       = "Lambda Artefact Storage"
   bucket_identifier = "dp-lambda-artefact-storage"
 }
+
+# This is a public bucket, used by the playbook documentation,
+# "Connecting to the redshift cluster from Google Data Studio"
+#
+# See more info within /.github/generate-ssl-keys.sh
+#
+# A public bucket makes following this guide easier, furthermore
+# the generated certificate/private key isn't special/used for auth.
+resource "aws_s3_bucket" "ssl_connection_resources" {
+  count  = local.is_live_environment ? 1 : 0
+  bucket = "${local.identifier_prefix}-ssl-connection-resources"
+  acl    = "public-read"
+  tags   = module.tags.values
+}

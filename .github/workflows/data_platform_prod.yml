@@ -108,3 +108,7 @@ jobs:
           echo "source_profile=default" >> ~/.aws/config
           echo "role_session_name=deploy-image-to-ecr" >> ~/.aws/config
           AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
+
+      - name: Generate Self Signed certificate
+        run: |
+          AWS_DEFAULT_REGION=eu-west-2 AWS_PROFILE=deploy_role ./.github/generate-ssl-keys.sh
