@@ -6,9 +6,6 @@ module "landing_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Landing Zone"
   bucket_identifier = "landing-zone"
-  role_arns_to_share_access_with = [
-    module.db_snapshot_to_s3.s3_to_s3_copier_lambda_role_arn
-  ]
 }
 
 module "raw_zone" {
@@ -19,6 +16,9 @@ module "raw_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Raw Zone"
   bucket_identifier = "raw-zone"
+  role_arns_to_share_access_with = [
+    module.db_snapshot_to_s3.s3_to_s3_copier_lambda_role_arn
+  ]
 }
 
 module "refined_zone" {

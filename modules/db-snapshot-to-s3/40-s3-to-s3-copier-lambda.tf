@@ -55,9 +55,9 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
     resources = [
       module.rds_export_storage.kms_key_arn,
       "${module.rds_export_storage.bucket_arn}/*",
-      var.landing_zone_kms_key_arn,
-      var.landing_zone_bucket_arn,
-      "${var.landing_zone_bucket_arn}/*",
+      var.zone_kms_key_arn,
+      var.zone_bucket_arn,
+      "${var.zone_bucket_arn}/*",
     ]
   }
 
@@ -71,8 +71,8 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
     ]
     effect = "Allow"
     resources = [
-      var.landing_zone_bucket_arn,
-      "${var.landing_zone_bucket_arn}/*",
+      var.zone_bucket_arn,
+      "${var.zone_bucket_arn}/*",
       module.rds_export_storage.bucket_arn,
       "${module.rds_export_storage.bucket_arn}/*"
     ]
@@ -88,7 +88,19 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
     ]
   }
 
+  dynamic "statement" {
+    for_each = var.workflow_arn == "" ? [] : [1]
 
+    content {
+      actions = [
+        "glue:StartWorkflowRun",
+      ]
+      effect = "Allow"
+      resources = [
+        var.workflow_arn
+      ]
+    }
+  }
 }
 
 resource "aws_iam_policy" "s3_to_s3_copier_lambda" {
@@ -137,8 +149,9 @@ resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
 
   environment {
     variables = {
-      BUCKET_DESTINATION = var.landing_zone_bucket_id,
+      BUCKET_DESTINATION = var.zone_bucket_id,
       SERVICE_AREA       = var.service_area
+      WORKFLOW_NAME      = var.workflow_name
     }
   }
 

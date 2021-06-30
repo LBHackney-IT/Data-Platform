@@ -10,6 +10,7 @@ from awsglue.dynamicframe import DynamicFrame
 import boto3
 
 from get_s3_subfolders import get_s3_subfolders
+from helpers import get_glue_env_var, convert_pandas_df_to_spark_dynamic_df, PARTITION_KEYS
 
 s3_client = boto3.client('s3')
 sc = SparkContext()
@@ -17,12 +18,6 @@ glue_context = GlueContext(sc)
 
 now = datetime.now()
 logger = glue_context.get_logger()
-
-def get_glue_env_var(key, default="none"):
-    if f'--{key}' in sys.argv:
-        return getResolvedOptions(sys.argv, [key])[key]
-    else:
-        return default
 
 def remove_empty_columns(data_frame):
     return data_frame.drop('')

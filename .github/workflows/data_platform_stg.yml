@@ -1,4 +1,5 @@
 name: Data-Platform (Staging)
+concurrency: staging-deploy
 env:
   aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
   aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}

@@ -22,15 +22,15 @@ variable "lambda_artefact_storage_bucket" {
   type = string
 }
 
-variable "landing_zone_kms_key_arn" {
+variable "zone_kms_key_arn" {
   type = string
 }
 
-variable "landing_zone_bucket_arn" {
+variable "zone_bucket_arn" {
   type = string
 }
 
-variable "landing_zone_bucket_id" {
+variable "zone_bucket_id" {
   type = string
 }
 

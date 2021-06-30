@@ -14,4 +14,5 @@ module "redshift" {
   raw_zone_kms_key_arn     = module.raw_zone.kms_key_arn
   refined_zone_kms_key_arn = module.refined_zone.kms_key_arn
   trusted_zone_kms_key_arn = module.trusted_zone.kms_key_arn
+  secrets_manager_key      = aws_kms_key.secrets_manager_key.arn
 }

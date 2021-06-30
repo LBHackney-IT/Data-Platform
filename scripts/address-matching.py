@@ -10,11 +10,9 @@ from pyspark.sql.window import Window
 from pyspark.sql.functions import rank, col
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
-def get_glue_env_var(key, default="none"):
-    if f'--{key}' in sys.argv:
-        return getResolvedOptions(sys.argv, [key])[key]
-    else:
-        return default
+
+from helpers import get_glue_env_var
+
 ## write into the log file with:
 ## @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])

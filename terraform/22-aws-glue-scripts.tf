@@ -42,8 +42,49 @@ resource "aws_s3_bucket_object" "address_cleaning" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/address-cleaning.py"
-  acl    = "private"
+  key = "scripts/address-cleaning.py"
+  acl = "private"
   source = "../scripts/address-cleaning.py"
-  etag   = filemd5("../scripts/address-cleaning.py")
+  etag = filemd5("../scripts/address-cleaning.py")
+}
+
+resource "aws_s3_bucket_object" "helpers" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/helpers.py"
+  acl    = "private"
+  source = "../scripts/helpers.py"
+  etag   = filemd5("../scripts/helpers.py")
+}
+
+resource "aws_s3_bucket_object" "xlsx_import_script" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/xlsx-import.py"
+  acl    = "private"
+  source = "../scripts/xlsx-import.py"
+  etag   = filemd5("../scripts/xlsx-import.py")
+}
+
+
+resource "aws_s3_bucket_object" "repairs_dlo_cleaning_script" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/repairs-dlo-cleaning.py"
+  acl    = "private"
+  source = "../scripts/repairs-dlo-cleaning.py"
+  etag   = filemd5("../scripts/repairs-dlo-cleaning.py")
+}
+
+resource "aws_s3_bucket_object" "empty_job" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/empty-job.py"
+  acl    = "private"
+  source = "../scripts/empty-job.py"
+  etag   = filemd5("../scripts/empty-job.py")
 }

@@ -57,3 +57,8 @@ variable "raw_zone_kms_key_arn" {
   description = "ARN of raw zone KMS key"
   type        = string
 }
+
+variable "secrets_manager_key" {
+  description = "ARN of secrets manager KMS key"
+  type        = string
+}

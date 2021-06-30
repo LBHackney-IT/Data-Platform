@@ -1,4 +1,5 @@
 resource "aws_cloudtrail" "events" {
+  count                         = terraform.workspace == "default" ? 1 : 0
   name                          = var.identifier_prefix
   s3_bucket_name                = aws_s3_bucket.cloudtrail.id
   s3_key_prefix                 = "prefix"

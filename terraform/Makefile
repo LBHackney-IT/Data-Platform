@@ -17,3 +17,6 @@ destroy:
 
 new:
 	aws-vault exec hackney-dataplatform-development -- terraform workspace new ${WORKSPACE}
+
+format:
+	terraform fmt .

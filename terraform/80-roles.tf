@@ -17,56 +17,15 @@ data "aws_iam_policy_document" "sso_trusted_relationship" {
 }
 
 
-data "aws_iam_policy_document" "power_user_parking" {
+// Parking s3 access policy
+data "aws_iam_policy_document" "parking_s3_access" {
   statement {
     effect = "Allow"
     actions = [
-      "athena:*",
       "s3:ListAllMyBuckets",
       "kms:ListAliases",
-      "logs:DescribeLogGroups",
-      "tag:GetResources",
-      "iam:ListRoles",
     ]
     resources = ["*"]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "logs:FilterLogEvents",
-      "logs:DescribeLogStreams",
-      "logs:GetLogEvents"
-    ]
-    resources = [
-      "arn:aws:logs:*:*:/aws-glue/*"
-    ]
-  }
-
-  statement {
-    sid    = "RolePermissions"
-    effect = "Allow"
-    actions = [
-      "iam:GetRole",
-    ]
-    resources = [
-      aws_iam_role.glue_role.arn
-    ]
-  }
-
-  statement {
-    sid = "AllowRolePassingToGlueJobs"
-    actions = [
-      "iam:PassRole",
-    ]
-    resources = [
-      aws_iam_role.glue_role.arn
-    ]
-    condition {
-      test     = "StringLike"
-      values   = ["glue.amazonaws.com"]
-      variable = "iam:PassedToService"
-    }
   }
 
   statement {
@@ -136,166 +95,6 @@ data "aws_iam_policy_document" "power_user_parking" {
       module.trusted_zone.kms_key_arn,
       module.athena_storage.kms_key_arn
     ]
-  }
-
-  // Glue Access
-  statement {
-    sid = "AwsGlue"
-    actions = [
-      "glue:BatchCreatePartition",
-      "glue:BatchDeleteConnection",
-      "glue:BatchDeletePartition",
-      "glue:BatchDeleteTable",
-      "glue:BatchDeleteTableVersion",
-      "glue:BatchGetCrawlers",
-      "glue:BatchGetDevEndpoints",
-      "glue:BatchGetJobs",
-      "glue:BatchGetPartition",
-      "glue:BatchGetTriggers",
-      "glue:BatchGetWorkflows",
-      "glue:BatchStopJobRun",
-      //      "glue:CancelMLTaskRun",
-      "glue:CheckSchemaVersionValidity",
-      //      "glue:CreateClassifier",
-      //      "glue:CreateConnection",
-      //      "glue:CreateCrawler",
-      "glue:CreateDag",
-      //      "glue:CreateDatabase",
-      //      "glue:CreateDevEndpoint",
-      "glue:CreateJob",
-      //      "glue:CreateMLTransform",
-      //      "glue:CreatePartition",
-      //      "glue:CreateRegistry",
-      //      "glue:CreateSchema",
-      "glue:CreateScript",
-      //      "glue:CreateSecurityConfiguration",
-      //      "glue:CreateTable",
-      //      "glue:CreateTrigger",
-      //      "glue:CreateUserDefinedFunction",
-      //      "glue:CreateWorkflow",
-      //      "glue:DeleteClassifier",
-      //      "glue:DeleteConnection",
-      //      "glue:DeleteCrawler",
-      //      "glue:DeleteDatabase",
-      //      "glue:DeleteDevEndpoint",
-      "glue:DeleteJob",
-      //      "glue:DeleteMLTransform",
-      //      "glue:DeletePartition",
-      //      "glue:DeleteRegistry",
-      //      "glue:DeleteResourcePolicy",
-      //      "glue:DeleteSchema",
-      //      "glue:DeleteSchemaVersions",
-      //      "glue:DeleteSecurityConfiguration",
-      //      "glue:DeleteTable",
-      //      "glue:DeleteTableVersion",
-      //      "glue:DeleteTrigger",
-      //      "glue:DeleteUserDefinedFunction",
-      //      "glue:DeleteWorkflow",
-      "glue:GetCatalogImportStatus",
-      "glue:GetClassifier",
-      "glue:GetClassifiers",
-      "glue:GetConnection",
-      "glue:GetConnections",
-      "glue:GetCrawler",
-      "glue:GetCrawlerMetrics",
-      "glue:GetCrawlers",
-      "glue:GetDag",
-      "glue:GetDataCatalogEncryptionSettings",
-      "glue:GetDatabase",
-      "glue:GetDatabases",
-      "glue:GetDataflowGraph",
-      "glue:GetDevEndpoint",
-      "glue:GetDevEndpoints",
-      "glue:GetInferredSchema",
-      "glue:GetJob",
-      "glue:GetJobBookmark",
-      "glue:GetJobRun",
-      "glue:GetJobRuns",
-      "glue:GetJobs",
-      //      "glue:GetMLTaskRun",
-      //      "glue:GetMLTaskRuns",
-      //      "glue:GetMLTransform",
-      //      "glue:GetMLTransforms",
-      "glue:GetMapping",
-      "glue:GetPartition",
-      "glue:GetPartitions",
-      "glue:GetPlan",
-      "glue:GetRegistry",
-      "glue:GetResourcePolicies",
-      "glue:GetResourcePolicy",
-      "glue:GetSchema",
-      "glue:GetSchemaByDefinition",
-      "glue:GetSchemaVersion",
-      "glue:GetSchemaVersionsDiff",
-      "glue:GetSecurityConfiguration",
-      "glue:GetSecurityConfigurations",
-      "glue:GetTable",
-      "glue:GetTableVersion",
-      "glue:GetTableVersions",
-      "glue:GetTables",
-      "glue:GetTags",
-      "glue:GetTrigger",
-      "glue:GetTriggers",
-      "glue:GetUserDefinedFunction",
-      "glue:GetUserDefinedFunctions",
-      "glue:GetWorkflow",
-      "glue:GetWorkflowRun",
-      "glue:GetWorkflowRunProperties",
-      "glue:GetWorkflowRuns",
-      //      "glue:ImportCatalogToGlue",
-      "glue:ListCrawlers",
-      "glue:ListDevEndpoints",
-      "glue:ListJobs",
-      "glue:ListMLTransforms",
-      "glue:ListRegistries",
-      "glue:ListSchemaVersions",
-      "glue:ListSchemas",
-      "glue:ListTriggers",
-      "glue:ListWorkflows",
-      //      "glue:PutDataCatalogEncryptionSettings",
-      //      "glue:PutResourcePolicy",
-      //      "glue:PutSchemaVersionMetadata",
-      //      "glue:PutWorkflowRunProperties",
-      //      "glue:QuerySchemaVersionMetadata",
-      //      "glue:RegisterSchemaVersion",
-      //      "glue:RemoveSchemaVersionMetadata",
-      "glue:ResetJobBookmark",
-      //      "glue:ResumeWorkflowRun",
-      "glue:SearchTables",
-      "glue:StartCrawler",
-      "glue:StartCrawlerSchedule",
-      "glue:StartExportLabelsTaskRun",
-      "glue:StartImportLabelsTaskRun",
-      "glue:StartJobRun",
-      //      "glue:StartMLEvaluationTaskRun",
-      //      "glue:StartMLLabelingSetGenerationTaskRun",
-      //      "glue:StartTrigger",
-      //      "glue:StartWorkflowRun",
-      "glue:StopCrawler",
-      "glue:StopCrawlerSchedule",
-      "glue:StopTrigger",
-      "glue:StopWorkflowRun",
-      "glue:TagResource",
-      //      "glue:UntagResource",
-      //      "glue:UpdateClassifier",
-      //      "glue:UpdateConnection",
-      //      "glue:UpdateCrawler",
-      //      "glue:UpdateCrawlerSchedule",
-      "glue:UpdateDag",
-      //      "glue:UpdateDatabase",
-      //      "glue:UpdateDevEndpoint",
-      "glue:UpdateJob",
-      //      "glue:UpdateMLTransform",
-      //      "glue:UpdatePartition",
-      //      "glue:UpdateRegistry",
-      //      "glue:UpdateSchema",
-      //      "glue:UpdateTable",
-      //      "glue:UpdateTrigger",
-      //      "glue:UpdateUserDefinedFunction",
-      //      "glue:UpdateWorkflow",
-      //      "glue:UseMLTransforms",
-    ]
-    resources = ["*"]
   }
 
   statement {
@@ -456,19 +255,306 @@ data "aws_iam_policy_document" "power_user_parking" {
   }
 }
 
+resource "aws_iam_policy" "parking_s3_access" {
+  tags = module.tags.values
+
+  name   = lower("${local.identifier_prefix}-parking-s3-access")
+  policy = data.aws_iam_policy_document.parking_s3_access.json
+}
+
+//Parking glue access policy
+data "aws_iam_policy_document" "power_user_parking_glue_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "athena:*",
+      "logs:DescribeLogGroups",
+      "tag:GetResources",
+      "iam:ListRoles",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:FilterLogEvents",
+      "logs:DescribeLogStreams",
+      "logs:GetLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:/aws-glue/*"
+    ]
+  }
+
+  statement {
+    sid    = "RolePermissions"
+    effect = "Allow"
+    actions = [
+      "iam:GetRole",
+    ]
+    resources = [
+      aws_iam_role.parking_glue.arn
+    ]
+  }
+
+  statement {
+    sid = "AllowRolePassingToGlueJobs"
+    actions = [
+      "iam:PassRole",
+    ]
+    resources = [
+      aws_iam_role.parking_glue.arn
+    ]
+    condition {
+      test     = "StringLike"
+      values   = ["glue.amazonaws.com"]
+      variable = "iam:PassedToService"
+    }
+  }
+
+  // Glue Access
+  statement {
+    sid = "AwsGlue"
+    actions = [
+      "glue:BatchCreatePartition",
+      "glue:BatchDeleteConnection",
+      "glue:BatchDeletePartition",
+      "glue:BatchDeleteTable",
+      "glue:BatchDeleteTableVersion",
+      "glue:BatchGetCrawlers",
+      "glue:BatchGetDevEndpoints",
+      "glue:BatchGetJobs",
+      "glue:BatchGetPartition",
+      "glue:BatchGetTriggers",
+      "glue:BatchGetWorkflows",
+      "glue:BatchStopJobRun",
+      //      "glue:CancelMLTaskRun",
+      "glue:CheckSchemaVersionValidity",
+      //      "glue:CreateClassifier",
+      //      "glue:CreateConnection",
+      //      "glue:CreateCrawler",
+      "glue:CreateDag",
+      //      "glue:CreateDatabase",
+      //      "glue:CreateDevEndpoint",
+      "glue:CreateJob",
+      //      "glue:CreateMLTransform",
+      //      "glue:CreatePartition",
+      //      "glue:CreateRegistry",
+      //      "glue:CreateSchema",
+      "glue:CreateScript",
+      //      "glue:CreateSecurityConfiguration",
+      //      "glue:CreateTable",
+      "glue:CreateTrigger",
+      //      "glue:CreateUserDefinedFunction",
+      //      "glue:CreateWorkflow",
+      //      "glue:DeleteClassifier",
+      //      "glue:DeleteConnection",
+      //      "glue:DeleteCrawler",
+      //      "glue:DeleteDatabase",
+      //      "glue:DeleteDevEndpoint",
+      "glue:DeleteJob",
+      //      "glue:DeleteMLTransform",
+      //      "glue:DeletePartition",
+      //      "glue:DeleteRegistry",
+      //      "glue:DeleteResourcePolicy",
+      //      "glue:DeleteSchema",
+      //      "glue:DeleteSchemaVersions",
+      //      "glue:DeleteSecurityConfiguration",
+      //      "glue:DeleteTable",
+      //      "glue:DeleteTableVersion",
+      //      "glue:DeleteTrigger",
+      //      "glue:DeleteUserDefinedFunction",
+      //      "glue:DeleteWorkflow",
+      "glue:GetCatalogImportStatus",
+      "glue:GetClassifier",
+      "glue:GetClassifiers",
+      "glue:GetConnection",
+      "glue:GetConnections",
+      "glue:GetCrawler",
+      "glue:GetCrawlerMetrics",
+      "glue:GetCrawlers",
+      "glue:GetDag",
+      "glue:GetDataCatalogEncryptionSettings",
+      "glue:GetDatabase",
+      "glue:GetDatabases",
+      "glue:GetDataflowGraph",
+      "glue:GetDevEndpoint",
+      "glue:GetDevEndpoints",
+      "glue:GetInferredSchema",
+      "glue:GetJob",
+      "glue:GetJobBookmark",
+      "glue:GetJobRun",
+      "glue:GetJobRuns",
+      "glue:GetJobs",
+      //      "glue:GetMLTaskRun",
+      //      "glue:GetMLTaskRuns",
+      //      "glue:GetMLTransform",
+      //      "glue:GetMLTransforms",
+      "glue:GetMapping",
+      "glue:GetPartition",
+      "glue:GetPartitions",
+      "glue:GetPlan",
+      "glue:GetRegistry",
+      "glue:GetResourcePolicies",
+      "glue:GetResourcePolicy",
+      "glue:GetSchema",
+      "glue:GetSchemaByDefinition",
+      "glue:GetSchemaVersion",
+      "glue:GetSchemaVersionsDiff",
+      "glue:GetSecurityConfiguration",
+      "glue:GetSecurityConfigurations",
+      "glue:GetTable",
+      "glue:GetTableVersion",
+      "glue:GetTableVersions",
+      "glue:GetTables",
+      "glue:GetTags",
+      "glue:GetTrigger",
+      "glue:GetTriggers",
+      "glue:GetUserDefinedFunction",
+      "glue:GetUserDefinedFunctions",
+      "glue:GetWorkflow",
+      "glue:GetWorkflowRun",
+      "glue:GetWorkflowRunProperties",
+      "glue:GetWorkflowRuns",
+      //      "glue:ImportCatalogToGlue",
+      "glue:ListCrawlers",
+      "glue:ListDevEndpoints",
+      "glue:ListJobs",
+      "glue:ListMLTransforms",
+      "glue:ListRegistries",
+      "glue:ListSchemaVersions",
+      "glue:ListSchemas",
+      "glue:ListTriggers",
+      "glue:ListWorkflows",
+      //      "glue:PutDataCatalogEncryptionSettings",
+      //      "glue:PutResourcePolicy",
+      //      "glue:PutSchemaVersionMetadata",
+      //      "glue:PutWorkflowRunProperties",
+      //      "glue:QuerySchemaVersionMetadata",
+      //      "glue:RegisterSchemaVersion",
+      //      "glue:RemoveSchemaVersionMetadata",
+      "glue:ResetJobBookmark",
+      //      "glue:ResumeWorkflowRun",
+      "glue:SearchTables",
+      "glue:StartCrawler",
+      "glue:StartCrawlerSchedule",
+      "glue:StartExportLabelsTaskRun",
+      "glue:StartImportLabelsTaskRun",
+      "glue:StartJobRun",
+      //      "glue:StartMLEvaluationTaskRun",
+      //      "glue:StartMLLabelingSetGenerationTaskRun",
+      //      "glue:StartTrigger",
+      //      "glue:StartWorkflowRun",
+      "glue:StopCrawler",
+      "glue:StopCrawlerSchedule",
+      "glue:StopTrigger",
+      "glue:StopWorkflowRun",
+      "glue:TagResource",
+      //      "glue:UntagResource",
+      //      "glue:UpdateClassifier",
+      //      "glue:UpdateConnection",
+      //      "glue:UpdateCrawler",
+      //      "glue:UpdateCrawlerSchedule",
+      "glue:UpdateDag",
+      //      "glue:UpdateDatabase",
+      //      "glue:UpdateDevEndpoint",
+      "glue:UpdateJob",
+      //      "glue:UpdateMLTransform",
+      //      "glue:UpdatePartition",
+      //      "glue:UpdateRegistry",
+      //      "glue:UpdateSchema",
+      //      "glue:UpdateTable",
+      "glue:UpdateTrigger",
+      //      "glue:UpdateUserDefinedFunction",
+      //      "glue:UpdateWorkflow",
+      //      "glue:UseMLTransforms",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "power_user_parking_glue_access" {
+  tags = module.tags.values
+
+  name   = lower("${local.identifier_prefix}-power-user-parking-glue-access")
+  policy = data.aws_iam_policy_document.power_user_parking_glue_access.json
+}
+
+// Parking secrets policy
+data "aws_iam_policy_document" "parking_secrets_read_only" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue"
+    ]
+    resources = [
+      aws_secretsmanager_secret.redshift_cluster_parking_credentials.arn
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = [
+      aws_kms_key.secrets_manager_key.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "parking_secrets_read_only" {
+  tags = module.tags.values
+
+  name   = lower("${local.identifier_prefix}-parking-secrets-read-only")
+  policy = data.aws_iam_policy_document.parking_secrets_read_only.json
+}
+
+// Power user role + attachments
 resource "aws_iam_role" "power_user_parking" {
+  tags = module.tags.values
+
   name               = lower("${local.identifier_prefix}-power-user-parking")
   assume_role_policy = data.aws_iam_policy_document.sso_trusted_relationship.json
 }
 
-resource "aws_iam_policy" "power_user_parking" {
-  tags = module.tags.values
-
-  name   = lower("${local.identifier_prefix}-power-user-parking")
-  policy = data.aws_iam_policy_document.power_user_parking.json
+resource "aws_iam_role_policy_attachment" "power_user_parking_s3_access" {
+  role       = aws_iam_role.power_user_parking.name
+  policy_arn = aws_iam_policy.parking_s3_access.arn
 }
 
-resource "aws_iam_role_policy_attachment" "power_user_parking" {
+resource "aws_iam_role_policy_attachment" "power_user_parking_glue_access" {
   role       = aws_iam_role.power_user_parking.name
-  policy_arn = aws_iam_policy.power_user_parking.arn
+  policy_arn = aws_iam_policy.power_user_parking_glue_access.arn
+}
+
+resource "aws_iam_role_policy_attachment" "parking_secrets_read_only" {
+  role       = aws_iam_role.power_user_parking.name
+  policy_arn = aws_iam_policy.parking_secrets_read_only.arn
+}
+
+// Glue role + attachments
+resource "aws_iam_role" "parking_glue" {
+  tags = module.tags.values
+
+  name               = lower("${local.identifier_prefix}-parking-glue")
+  assume_role_policy = data.aws_iam_policy_document.glue_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "parking_glue_s3_access" {
+  role       = aws_iam_role.parking_glue.name
+  policy_arn = aws_iam_policy.parking_s3_access.arn
+}
+
+resource "aws_iam_role_policy_attachment" "parking_glue_access" {
+  role       = aws_iam_role.parking_glue.name
+  policy_arn = aws_iam_policy.full_glue_access.arn
+}
+
+resource "aws_iam_role_policy_attachment" "parking_glue_access_to_cloudwatch" {
+  role       = aws_iam_role.parking_glue.name
+  policy_arn = aws_iam_policy.glue_can_write_to_cloudwatch.arn
 }
