@@ -18,6 +18,7 @@ resource "google_service_account_key" "housing_json_credentials" {
 
   keepers = {
     # Arbitrary map of values that, when changed, will trigger a new key to be generated
+    secret_id     = aws_secretsmanager_secret.sheets_credentials_housing.id
     rotation_time = time_rotating.key_rotation_housing[0].rotation_rfc3339
   }
 }
