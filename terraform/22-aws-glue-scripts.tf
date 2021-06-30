@@ -66,6 +66,17 @@ resource "aws_s3_bucket_object" "xlsx_import_script" {
   etag   = filemd5("../scripts/xlsx-import.py")
 }
 
+
+resource "aws_s3_bucket_object" "repairs_dlo_cleaning_script" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/repairs-dlo-cleaning.py"
+  acl    = "private"
+  source = "../scripts/repairs-dlo-cleaning.py"
+  etag   = filemd5("../scripts/repairs-dlo-cleaning.py")
+}
+
 resource "aws_s3_bucket_object" "empty_job" {
   tags = module.tags.values
 

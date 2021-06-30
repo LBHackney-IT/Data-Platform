@@ -129,7 +129,7 @@ resource "aws_iam_policy" "glue_access_policy" {
           module.raw_zone.kms_key_arn,
           module.refined_zone.kms_key_arn,
           module.trusted_zone.kms_key_arn,
-          aws_kms_key.sheets_credentials.arn,
+          aws_kms_key.secrets_manager_key.arn,
         ]
       },
       {

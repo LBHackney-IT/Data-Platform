@@ -17,37 +17,9 @@ resource "aws_glue_crawler" "landing_zone_data_and_insight_address_matching" {
   }
 }
 
-resource "aws_glue_crawler" "landing_zone_housing_crawler" {
-  tags = module.tags.values
-
-  database_name = aws_glue_catalog_database.landing_zone_catalog_database.name
-  name          = "${local.identifier_prefix}-landing-zone-housing-crawler"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "housing_"
-
-  s3_target {
-    path       = "s3://${module.landing_zone.bucket_id}/housing"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
-}
-
 # ==== PARKING ======================================================================================================= #
 resource "aws_glue_catalog_database" "landing_zone_catalog_database" {
   name = "${local.identifier_prefix}-landing-zone-database"
-}
-
-resource "aws_glue_crawler" "landing_zone_parking_crawler" {
-  tags = module.tags.values
-
-  database_name = aws_glue_catalog_database.landing_zone_catalog_database.name
-  name          = "${local.identifier_prefix}-landing-zone-parking-crawler"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "parking_"
-
-  s3_target {
-    path       = "s3://${module.landing_zone.bucket_id}/parking"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
 }
 
 resource "aws_glue_catalog_database" "landing_zone_liberator" {
@@ -136,20 +108,23 @@ resource "aws_glue_crawler" "refined_zone_liberator_crawler" {
 }
 
 
-resource "aws_glue_catalog_database" "refined_zone_catalog_database" {
-  name = "${local.identifier_prefix}-refined-zone-database"
-}
-
-resource "aws_glue_crawler" "refined_zone_housing_crawler" {
+resource "aws_glue_crawler" "refined_zone_housing_repairs_dlo_cleaned_crawler" {
   tags = module.tags.values
 
-  database_name = aws_glue_catalog_database.refined_zone_catalog_database.name
-  name          = "${local.identifier_prefix}-refined-zone-housing-crawler"
+  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
+  name          = "${local.identifier_prefix}-refined-zone-housing-repairs-dlo-cleaned"
   role          = aws_iam_role.glue_role.arn
   table_prefix  = "housing_"
 
   s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/housing"
+    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned/"
     exclusions = local.glue_crawler_excluded_blobs
   }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+  })
 }

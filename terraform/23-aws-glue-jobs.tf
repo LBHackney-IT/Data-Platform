@@ -223,6 +223,30 @@ resource "aws_glue_job" "address_matching_glue_job" {
     "--extra-py-files"                 = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
+resource "aws_glue_job" "repairs_dlo_cleaning_glue_job" {
+  count = terraform.workspace == "default" ? 1 : 0
+
+  tags = module.tags.values
+
+  name              = "Repairs-dlo cleaning"
+  number_of_workers = 10
+  worker_type       = "G.1X"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_dlo_cleaning_script.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--source_catalog_database"          = module.department_housing_repairs.refined_zone_catalog_database_name
+    "---source_catalog_table"            = "housing_repairs_repairs_dlo"
+    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned"
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+}
+
 
 resource "aws_glue_job" "address_cleaning_glue_job" {
   count = terraform.workspace == "default" ? 1 : 0
@@ -241,9 +265,9 @@ resource "aws_glue_job" "address_cleaning_glue_job" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--cleaned_addresses_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing/repairs-DLO/cleanedAddresses"
-    "--source_catalog_database"            = aws_glue_catalog_database.landing_zone_catalog_database.name
-    "--source_catalog_table"               = "housing_repairs_dlo"
+    "--cleaned_addresses_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses"
+    "--source_catalog_database"            = module.department_housing_repairs.refined_zone_catalog_database_name
+    "--source_catalog_table"               = "housing_repairs_repairs_dlo"
     "--source_address_column_header"       = "address_of_repair"
     "--source_postcode_column_header"      = "postcode_of_property"
   }
