@@ -111,4 +111,4 @@ jobs:
 
       - name: Generate Self Signed certificate
         run: |
-          AWS_PROFILE=deploy_role ./pipeline-scripts/generate-ssl-keys.sh
+          AWS_PROFILE=deploy_role ./.github/generate-ssl-keys.sh
