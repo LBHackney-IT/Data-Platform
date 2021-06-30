@@ -133,7 +133,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_with_clean
   tags = module.tags.values
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  name          = "${local.identifier_prefix}-refined-zone-housing-repairs-repairs-dlo-with-cleaned-addresses"
+  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-repairs-dlo-with-cleaned-addresses"
   role          = aws_iam_role.glue_role.arn
   table_prefix  = "housing_repairs_repairs_dlo_with_cleaned_addresses"
 
