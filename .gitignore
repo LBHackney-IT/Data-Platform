@@ -2,6 +2,8 @@
 .terraform*
 *.tfstate*
 lambdas/*/node_modules
+lambdas/*/lib
+lambdas/*/requirements.txt
 lambdas/*/*.zip
 lambdas/*.zip
 env.tfvars

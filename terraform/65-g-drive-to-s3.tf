@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda_assume_role" {
 resource "aws_iam_role" "g_drive_to_s3_copier_lambda" {
   # tags = var.tags
 
-  name               = lower("${local.identifier_prefix}-s3-to-s3-copier-lambda")
+  name               = lower("${local.identifier_prefix}-g-drive-to-s3-copier-lambda")
   assume_role_policy = data.aws_iam_policy_document.g_drive_to_s3_copier_lambda_assume_role.json
 }
 
@@ -59,10 +59,7 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
     effect = "Allow"
     resources = [
       "*"
-      # var.zone_bucket_arn,
-      # "${var.zone_bucket_arn}/*",
-      # module.rds_export_storage.bucket_arn,
-      # "${module.rds_export_storage.bucket_arn}/*"
+      # var.zone_bucket_arns
     ]
   }
 
@@ -84,7 +81,7 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
 resource "aws_iam_policy" "g_drive_to_s3_copier_lambda" {
   # tags = var.tags
 
-  name   = lower("${local.identifier_prefix}-s3-to-s3-copier-lambda")
+  name   = lower("${local.identifier_prefix}-g-drive-to-s3-copier-lambda")
   policy = data.aws_iam_policy_document.g_drive_to_s3_copier_lambda.json
 }
 
@@ -104,7 +101,7 @@ resource "aws_s3_bucket_object" "g_drive_to_s3_copier_lambda" {
   # tags = var.tags
 
   bucket = module.lambda_artefact_storage.bucket_id
-  key    = "s3-to-s3-export-copier.zip"
+  key    = "g_drive_to_s3.zip"
   source = data.archive_file.g_drive_to_s3_copier_lambda.output_path
   acl    = "private"
   etag   = data.archive_file.g_drive_to_s3_copier_lambda.output_md5
@@ -117,7 +114,7 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   # tags = var.tags
 
   role             = aws_iam_role.g_drive_to_s3_copier_lambda.arn
-  handler          = "main.main"
+  handler          = "main.lambda_handler"
   runtime          = "python3.8"
   function_name    = "${local.identifier_prefix}-g-drive-to-s3-copier"
   s3_bucket        = module.lambda_artefact_storage.bucket_id
@@ -127,9 +124,9 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
 
   environment {
     variables = {
-      BUCKET_DESTINATION = "var.zone_bucket_id",
-      SERVICE_AREA       = "var.service_area",
-      WORKFLOW_NAME      = "var.workflow_name"
+      FILE_ID = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq",
+      BUCKET_ID = module.landing_zone.bucket_id
+      FILE_NAME = "Electrical-Mechnical-Fire-Safety-Temp-order-number-WC-12.10.20R1.xlsx"
     }
   }
 
