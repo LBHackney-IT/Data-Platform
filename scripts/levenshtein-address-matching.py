@@ -8,12 +8,19 @@ from pyspark.sql.window import Window
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
+from pyspark.sql.functions import col, max
 
-from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from helpers import get_glue_env_var, PARTITION_KEYS
 
 glueContext = GlueContext(SparkContext.getOrCreate())
 job = Job(glueContext)
 # logger = glueContext.get_logger()
+
+def get_latest_partitions(dfa):
+   dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
+   dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
+   dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
+   return dfa
 
 source_data = get_glue_env_var('source_data', '')
 target_destination = get_glue_env_var('target_destination', '')
