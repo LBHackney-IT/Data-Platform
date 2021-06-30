@@ -73,19 +73,32 @@ resource "random_password" "redshift_cluster_master_password" {
   special = false
 }
 
+resource "aws_redshift_parameter_group" "require_ssl" {
+  name   = "${var.identifier_prefix}-redshift-parameter-group"
+  family = "redshift-1.0"
+
+  parameter {
+    name  = "require_ssl"
+    value = "true"
+  }
+
+  tags = var.tags
+}
+
 resource "aws_redshift_cluster" "redshift_cluster" {
-  cluster_identifier        = "${var.identifier_prefix}-redshift-cluster"
-  database_name             = "data_platform"
-  master_username           = "data_engineers"
-  master_password           = random_password.redshift_cluster_master_password.result
-  node_type                 = "dc2.large"
-  cluster_type              = "single-node"
-  iam_roles                 = [aws_iam_role.redshift_role.arn]
-  cluster_subnet_group_name = aws_redshift_subnet_group.redshift.name
-  publicly_accessible       = false
-  final_snapshot_identifier = "${var.identifier_prefix}-redshift-cluster-final"
-  vpc_security_group_ids    = [aws_security_group.redshift_cluster_security_group.id]
-  tags                      = var.tags
+  cluster_identifier           = "${var.identifier_prefix}-redshift-cluster"
+  database_name                = "data_platform"
+  master_username              = "data_engineers"
+  master_password              = random_password.redshift_cluster_master_password.result
+  node_type                    = "dc2.large"
+  cluster_type                 = "single-node"
+  cluster_parameter_group_name = aws_redshift_parameter_group.require_ssl.name
+  iam_roles                    = [aws_iam_role.redshift_role.arn]
+  cluster_subnet_group_name    = aws_redshift_subnet_group.redshift.name
+  publicly_accessible          = false
+  final_snapshot_identifier    = "${var.identifier_prefix}-redshift-cluster-final"
+  vpc_security_group_ids       = [aws_security_group.redshift_cluster_security_group.id]
+  tags                         = var.tags
 }
 
 resource "aws_secretsmanager_secret" "redshift_cluster_master_password" {
