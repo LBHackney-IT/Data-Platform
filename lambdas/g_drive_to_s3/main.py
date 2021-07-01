@@ -22,8 +22,7 @@ def upload_file_to_s3(client, body_data, bucket_name, file_name):
 def download_file(service, file_id):
     request = service.files().get_media(fileId=file_id)
 
-    fh = io.BytesIO()
-    downloader = MediaIoBaseDownload(fh, request)
+    downloader = MediaIoBaseDownload(io.BytesIO(), request)
     done = False
     while done is False:
         status, done = downloader.next_chunk()
@@ -62,4 +61,4 @@ def lambda_handler(event, lambda_context):
 
 
 if __name__ == '__main__':
-    lambda_handler()
+    lambda_handler('event', 'lambda_context')

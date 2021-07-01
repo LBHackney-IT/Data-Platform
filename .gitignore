@@ -4,6 +4,8 @@
 lambdas/*/node_modules
 lambdas/*/lib
 lambdas/*/requirements.txt
+lambdas/*/key_file.json
+lambdas/*/venv
 lambdas/*/*.zip
 lambdas/*.zip
 env.tfvars
