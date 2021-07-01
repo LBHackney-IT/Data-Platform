@@ -52,6 +52,9 @@ jobs:
         shell: bash
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
+      - name: Install dependencies in g-drive-to-s3 lambda
+        working-directory: "./lambdas/g_drive_to_s3"
+        run: make install-requirements
       - name: Deploy Data Platform Network
         uses: ./.github/actions/aws-terraform
         with:
