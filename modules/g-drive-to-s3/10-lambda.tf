@@ -129,21 +129,21 @@ resource "aws_lambda_function_event_invoke_config" "g_drive_to_s3_copier_lambda"
 }
 
 resource "aws_cloudwatch_event_rule" "every_day_at_10" {
-    name = "g-drive-to-s3-copier-every-day-at-10"
-    description = "Fires every five minutes"
-    schedule_expression = "cron(0 10 * * ? *)"
+  name                = "g-drive-to-s3-copier-every-day-at-10"
+  description         = "Fires every five minutes"
+  schedule_expression = "cron(0 10 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "check_foo_every_day_at_10" {
-    rule = aws_cloudwatch_event_rule.every_day_at_10.name
-    target_id = "g_drive_to_s3_copier_lambda"
-    arn = aws_lambda_function.g_drive_to_s3_copier_lambda.arn
+  rule      = aws_cloudwatch_event_rule.every_day_at_10.name
+  target_id = "g_drive_to_s3_copier_lambda"
+  arn       = aws_lambda_function.g_drive_to_s3_copier_lambda.arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_check_foo" {
-    statement_id = "AllowExecutionFromCloudWatch"
-    action = "lambda:InvokeFunction"
-    function_name = aws_lambda_function.g_drive_to_s3_copier_lambda.function_name
-    principal = "events.amazonaws.com"
-    source_arn = aws_cloudwatch_event_rule.every_day_at_10.arn
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.g_drive_to_s3_copier_lambda.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.every_day_at_10.arn
 }
