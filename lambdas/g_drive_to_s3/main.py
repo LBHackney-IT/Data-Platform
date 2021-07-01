@@ -47,7 +47,6 @@ def lambda_handler(event, lambda_context):
         credentials=credentials,
         cache_discovery=False)
 
-    s3_client = boto3.client('s3')
 
     file_id = getenv("FILE_ID")
 
@@ -57,9 +56,8 @@ def lambda_handler(event, lambda_context):
 
     file_name = getenv("FILE_NAME")
 
-    # f = open("demofile2.xlsx", "wb")
-    # f.write(file_body)
-    # f.close()
+    s3_client = boto3.client('s3')
+
     upload_file_to_s3(s3_client, file_body, bucket_name,file_name)
 
 
