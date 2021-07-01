@@ -133,14 +133,14 @@ resource "aws_instance" "qlik_sense" {
     "Name" : "${var.identifier_prefix}-qlik-sense",
   })
 
-  ami           = data.aws_ami.latest_windows.id
-  instance_type = var.instance_type
+  ami                  = data.aws_ami.latest_windows.id
+  instance_type        = var.instance_type
   key_name             = aws_key_pair.qlik_sense_server_key.key_name
   iam_instance_profile = aws_iam_instance_profile.qlik_sense.name
 
   subnet_id              = local.instance_subnet_id
   vpc_security_group_ids = [aws_security_group.qlik_sense.id]
-  get_password_data = "true"
+  get_password_data      = "true"
 
   lifecycle {
     ignore_changes = [subnet_id]

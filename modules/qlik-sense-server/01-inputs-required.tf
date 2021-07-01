@@ -10,7 +10,7 @@ variable "identifier_prefix" {
 
 variable "instance_type" {
   description = "The instance type to use for the Qlik server"
-  type = string
+  type        = string
 }
 
 variable "vpc_id" {
