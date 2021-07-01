@@ -34,3 +34,8 @@ variable "google_project_id" {
   description = "The ID of the google project used as the target for resource deployment"
   type        = string
 }
+
+variable "qlik_server_instance_type" {
+  description = "The instance type to use for the Qlik server"
+  type        = string
+}

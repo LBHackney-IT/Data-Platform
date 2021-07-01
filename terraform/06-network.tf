@@ -115,7 +115,6 @@ resource "aws_security_group" "bastion" {
 resource "aws_instance" "bastion" {
   tags = merge(module.tags.values, {
     "Name" : "${local.identifier_prefix}-bastion",
-    "Bastion" : "yes"
   })
 
   ami                  = data.aws_ami.latest_amazon_linux_2.id

@@ -272,7 +272,7 @@ resource "aws_glue_job" "address_cleaning_glue_job" {
     "--source_address_column_header"       = "property_address"
     "--source_postcode_column_header"      = "postal_code_raw"
     "--TempDir"                            = "s3://${module.glue_temp_storage.bucket_arn}/"
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"                     = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
 
