@@ -140,7 +140,7 @@ resource "aws_cloudwatch_event_target" "check_foo_every_day_at_10" {
   arn       = aws_lambda_function.g_drive_to_s3_copier_lambda.arn
 }
 
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_check_foo" {
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_g_drive_to_s3_copier" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.g_drive_to_s3_copier_lambda.function_name
