@@ -79,6 +79,18 @@ resource "aws_s3_bucket_object" "repairs_dlo_cleaning_script" {
   etag   = filemd5("../scripts/repairs-dlo-cleaning.py")
 }
 
+
+resource "aws_s3_bucket_object" "repairs_alphatrack_cleaning_script" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/repairs-alphatrack-cleaning.py"
+  acl    = "private"
+  source = "../scripts/repairs-alphatrack-cleaning.py"
+  etag   = filemd5("../scripts/repairs-alphatrack-cleaning.py")
+}
+
+
 resource "aws_s3_bucket_object" "empty_job" {
   tags = module.tags.values
 
