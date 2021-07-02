@@ -16,8 +16,7 @@ data "aws_iam_policy_document" "sso_trusted_relationship" {
   }
 }
 
-
-// Parking s3 access policy
+// Parking S3 Access Policy
 data "aws_iam_policy_document" "parking_s3_access" {
   statement {
     effect = "Allow"
@@ -79,7 +78,6 @@ data "aws_iam_policy_document" "parking_s3_access" {
       //      UpdateCustomKeyStore
       //      UpdateKeyDescription
       //      Verify
-
       "kms:Encrypt",
       "kms:Decrypt",
       "kms:ReEncrypt*",

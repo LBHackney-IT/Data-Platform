@@ -1,5 +1,6 @@
 resource "aws_cloudtrail" "events" {
-  count                         = terraform.workspace == "default" ? 1 : 0
+  count = var.is_live_environment ? 1 : 0
+
   name                          = var.identifier_prefix
   s3_bucket_name                = aws_s3_bucket.cloudtrail.id
   s3_key_prefix                 = "prefix"
@@ -80,7 +81,6 @@ resource "aws_s3_bucket" "cloudtrail" {
     }
   }
 }
-
 
 data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
   statement {

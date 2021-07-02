@@ -162,8 +162,6 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
 }
 
 resource "aws_lambda_function_event_invoke_config" "rds_snapshot_to_s3_lambda" {
-
-
   function_name          = aws_lambda_function.rds_snapshot_to_s3_lambda.function_name
   maximum_retry_attempts = 0
   qualifier              = "$LATEST"
