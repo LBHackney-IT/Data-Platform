@@ -62,7 +62,7 @@ resource "aws_glue_catalog_database" "raw_zone_unrestricted_address_api" {
 resource "aws_glue_crawler" "raw_zone_unrestricted_address_api_crawler" {
   tags = module.tags.values
 
-  database_name = aws_glue_catalog_database.raw_zone_unrestricted_address_api
+  database_name = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
   name          = "${local.identifier_prefix}-raw-zone-unrestricted-address-api"
   role          = aws_iam_role.glue_role.arn
   table_prefix  = "unrestricted_address_api_"
