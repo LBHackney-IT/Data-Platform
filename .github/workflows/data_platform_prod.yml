@@ -40,6 +40,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "14"
+      - name: Install pipenv
+        run: |
+          sudo apt-get update
+          sudo apt-get install pipenv
       - name: Install dependencies in rds-database-snapshot-replicator lambda
         working-directory: "./lambdas/rds-database-snapshot-replicator"
         run: npm install
@@ -52,6 +56,9 @@ jobs:
         shell: bash
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_PROD }}
+      - name: Install dependencies in g-drive-to-s3 lambda
+        working-directory: "./lambdas/g_drive_to_s3"
+        run: make install-requirements
       - name: Deploy Data Platform Network
         uses: ./.github/actions/aws-terraform
         with:
@@ -108,3 +115,7 @@ jobs:
           echo "source_profile=default" >> ~/.aws/config
           echo "role_session_name=deploy-image-to-ecr" >> ~/.aws/config
           AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
+
+      - name: Generate Self Signed certificate
+        run: |
+          AWS_DEFAULT_REGION=eu-west-2 AWS_PROFILE=deploy_role ./.github/generate-ssl-keys.sh

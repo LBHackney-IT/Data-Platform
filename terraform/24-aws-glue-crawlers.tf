@@ -22,20 +22,6 @@ resource "aws_glue_catalog_database" "landing_zone_catalog_database" {
   name = "${local.identifier_prefix}-landing-zone-database"
 }
 
-resource "aws_glue_crawler" "landing_zone_parking_crawler" {
-  tags = module.tags.values
-
-  database_name = aws_glue_catalog_database.landing_zone_catalog_database.name
-  name          = "${local.identifier_prefix}-landing-zone-parking-crawler"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "parking_"
-
-  s3_target {
-    path       = "s3://${module.landing_zone.bucket_id}/parking"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
-}
-
 resource "aws_glue_catalog_database" "landing_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-landing-zone"
 }
@@ -121,15 +107,17 @@ resource "aws_glue_crawler" "refined_zone_liberator_crawler" {
   })
 }
 
-resource "aws_glue_crawler" "refined_zone_housing_repairs_matched_addresses_crawler" {
+
+resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_cleaned_crawler" {
   tags = module.tags.values
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  name          = "${local.identifier_prefix}-refined-zone-housing-repairs-dlo-matched-addresses"
+  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-repairs-dlo-cleaned"
   role          = aws_iam_role.glue_role.arn
+  table_prefix  = "housing_repairs_repairs_dlo_"
 
   s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-matched-addresses/"
+    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned/"
     exclusions = local.glue_crawler_excluded_blobs
   }
 
@@ -140,3 +128,47 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_matched_addresses_craw
     }
   })
 }
+
+resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_alpha_track_cleaned_crawler" {
+  tags = module.tags.values
+
+  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
+  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-repairs-alpha-track-cleaned"
+  role          = aws_iam_role.glue_role.arn
+  table_prefix  = "housing_repairs_repairs_alpha_track_"
+
+  s3_target {
+    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-alpha-track/cleaned/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+  })
+}
+
+resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_with_cleaned_addresses_crawler" {
+  tags = module.tags.values
+
+  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
+  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-repairs-dlo-with-cleaned-addresses"
+  role          = aws_iam_role.glue_role.arn
+  table_prefix  = "housing_repairs_repairs_dlo_with_cleaned_addresses_"
+
+  s3_target {
+    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+  })
+}
+
+

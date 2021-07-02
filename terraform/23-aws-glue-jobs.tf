@@ -1,4 +1,4 @@
-module "repairs_DLO_data" {
+module "repairs_DLO" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
@@ -108,7 +108,7 @@ module "repairs_stannah" {
   dataset_name                    = "repairs-stannah"
 }
 
-module "test-repairs-purdy-data" {
+module "repairs_purdy" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
@@ -123,14 +123,14 @@ module "test-repairs-purdy-data" {
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
-  glue_job_name                   = "Test Purdy Repair"
+  glue_job_name                   = "Purdy Repairs"
   google_sheets_document_id       = "1-PpKPnaPMA6AogsNXT5seqQk3VUB-naFnFJYhROkl2o"
   google_sheets_worksheet_name    = "FormresponsesPUR"
   department_name                 = "housing-repairs"
-  dataset_name                    = "test-repairs-purdy"
+  dataset_name                    = "repairs-purdy"
 }
 
-module "test-multiple-headers-v1" {
+module "repairs_axis" {
   count                           = terraform.workspace == "default" ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
@@ -145,35 +145,11 @@ module "test-multiple-headers-v1" {
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   tags                            = module.tags.values
-  glue_job_name                   = "Testing Multiple Headers v1"
-  google_sheets_document_id       = "17Yfj2-8EDh7qnhJwVtkjDlhOGQ18R1nvlBzu1RRKL-M"
-  google_sheets_worksheet_name    = "Door Entry"
-  google_sheet_header_row_number  = 2
+  glue_job_name                   = "Axis Repairs"
+  google_sheets_document_id       = "1aDWO9ZAVar377jiYTXkZzDCIckCqbhppOW23B85hFsA"
+  google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
-  dataset_name                    = "repairs-door-entry"
-}
-
-module "test-multiple-headers-v2" {
-  count                           = terraform.workspace == "default" ? 1 : 0
-  source                          = "../modules/google-sheets-glue-job"
-  identifier_prefix               = local.short_identifier_prefix
-  is_live_environment             = local.is_live_environment
-  glue_role_arn                   = aws_iam_role.glue_role.arn
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
-  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
-  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
-  bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = module.tags.values
-  glue_job_name                   = "Testing Multiple Headers v2"
-  google_sheets_document_id       = "17Yfj2-8EDh7qnhJwVtkjDlhOGQ18R1nvlBzu1RRKL-M"
-  google_sheets_worksheet_name    = "Lightning Protection"
-  google_sheet_header_row_number  = 2
-  department_name                 = "housing-repairs"
-  dataset_name                    = "repairs-lightning-protection"
+  dataset_name                    = "repairs-axis"
 }
 
 module "import-repairs-fire-alarms-xlsx-file-format" {
@@ -223,6 +199,86 @@ resource "aws_glue_job" "address_matching_glue_job" {
     "--extra-py-files"                 = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
+resource "aws_glue_job" "repairs_dlo_cleaning_glue_job" {
+  count = terraform.workspace == "default" ? 1 : 0
+
+  tags = module.tags.values
+
+  name              = "Repairs-dlo cleaning"
+  number_of_workers = 10
+  worker_type       = "G.1X"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_dlo_cleaning_script.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
+    "--source_catalog_table"             = "housing_repairs_repairs_dlo"
+    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned"
+    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+}
+
+
+resource "aws_glue_job" "address_cleaning_glue_job" {
+  count = terraform.workspace == "default" ? 1 : 0
+
+  tags = module.tags.values
+
+  name              = "Address Cleaning"
+  number_of_workers = 10
+  worker_type       = "G.1X"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.address_cleaning.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--cleaned_addresses_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses"
+    "--source_catalog_database"            = module.department_housing_repairs.refined_zone_catalog_database_name
+    "--source_catalog_table"               = "housing_repairs_repairs_dlo_cleaned"
+    "--source_address_column_header"       = "property_address"
+    "--source_postcode_column_header"      = "postal_code_raw"
+    "--TempDir"                            = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+}
+
+
+
+resource "aws_glue_job" "housing_repairs_alpha_track_cleaning" {
+  count = terraform.workspace == "default" ? 1 : 0
+
+  tags = module.tags.values
+
+  name              = "Housing Repairs Alpha-track Cleaning"
+  number_of_workers = 10
+  worker_type       = "G.1X"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_alphatrack_cleaning_script.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-alpha-track/cleaned"
+    "--source_catalog_database"            = module.department_housing_repairs.raw_zone_catalog_database_name
+    "--source_catalog_table"               = "housing_repairs_repairs_alpha_track"
+    "--TempDir"                            = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+}
+
 
 resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
   tags = module.tags.values
