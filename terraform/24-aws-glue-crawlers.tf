@@ -1,11 +1,13 @@
 resource "aws_glue_catalog_database" "landing_zone_data_and_insight_address_matching" {
-  count = terraform.workspace == "default" ? 1 : 0
-  name  = "${local.identifier_prefix}-data-and-insight-address-matching-landing-zone"
+  count = local.is_live_environment ? 1 : 0
+
+  name = "${local.identifier_prefix}-data-and-insight-address-matching-landing-zone"
 }
 
 resource "aws_glue_crawler" "landing_zone_data_and_insight_address_matching" {
-  count = terraform.workspace == "default" ? 1 : 0
-  tags  = module.tags.values
+  count = local.is_live_environment ? 1 : 0
+
+  tags = module.tags.values
 
   database_name = aws_glue_catalog_database.landing_zone_data_and_insight_address_matching[count.index].name
   name          = "${local.identifier_prefix}-landing-zone-data-and-insight-address-matching"
@@ -82,7 +84,6 @@ resource "aws_glue_crawler" "raw_zone_parking_manual_uploads_crawler" {
 }
 
 // ==== REFINED ZONE ===========
-
 resource "aws_glue_catalog_database" "refined_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-refined-zone"
 }
@@ -106,7 +107,6 @@ resource "aws_glue_crawler" "refined_zone_liberator_crawler" {
     }
   })
 }
-
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_cleaned_crawler" {
   tags = module.tags.values
@@ -170,5 +170,3 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_with_clean
     }
   })
 }
-
-

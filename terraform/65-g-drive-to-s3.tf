@@ -1,4 +1,6 @@
 module "repairs_spreadsheet" {
+  count = local.is_live_environment ? 1 : 0
+
   source                         = "../modules/g-drive-to-s3"
   tags                           = module.tags.values
   project                        = var.project

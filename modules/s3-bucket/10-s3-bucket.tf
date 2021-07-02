@@ -51,7 +51,6 @@ resource "aws_kms_key" "key" {
   policy = data.aws_iam_policy_document.key_policy.json
 }
 
-
 resource "aws_kms_alias" "key_alias" {
   name          = lower("alias/${var.identifier_prefix}-s3-${var.bucket_identifier}")
   target_key_id = aws_kms_key.key.key_id

@@ -23,7 +23,8 @@ resource "aws_secretsmanager_secret" "sheets_credentials_housing" {
 }
 
 resource "aws_secretsmanager_secret_version" "housing_json_credentials_secret_version" {
-  count         = terraform.workspace == "default" ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
+
   secret_id     = aws_secretsmanager_secret.sheets_credentials_housing.id
   secret_binary = google_service_account_key.housing_json_credentials[0].private_key
 }
@@ -32,6 +33,6 @@ resource "aws_secretsmanager_secret" "redshift_cluster_parking_credentials" {
   tags = module.tags.values
 
   name        = "${local.identifier_prefix}-parking/redshift-cluster-parking-user"
-  description = "Credentials for the redshift cluster parking user "
+  description = "Credentials for the redshift cluster parking user"
   kms_key_id  = aws_kms_key.secrets_manager_key.id
 }
