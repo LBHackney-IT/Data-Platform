@@ -1,4 +1,3 @@
-
 resource "aws_secretsmanager_secret" "sheets_credentials" {
   tags = var.tags
 
@@ -12,5 +11,5 @@ resource "aws_secretsmanager_secret" "sheets_credentials" {
 
 resource "aws_secretsmanager_secret_version" "json_credentials" {
   secret_id     = aws_secretsmanager_secret.sheets_credentials.id
-  secret_binary = google_service_account_key.json_credentials.private_key
+  secret_binary = google_service_account_key.json_credentials[0].private_key
 }

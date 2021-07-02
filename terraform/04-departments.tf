@@ -1,43 +1,55 @@
 module "department_housing_repairs" {
-  source                 = "../modules/department"
-  tags                   = module.tags.values
-  identifier_prefix      = local.short_identifier_prefix
-  identifier             = "housing-repairs"
-  landing_zone_bucket_id = module.landing_zone.bucket_id
-  raw_zone_bucket_id     = module.raw_zone.bucket_id
-  refined_zone_bucket_id = module.refined_zone.bucket_id
-  trusted_zone_bucket_id = module.trusted_zone.bucket_id
+  source                     = "../modules/department"
+  tags                       = module.tags.values
+  is_live_environment        = local.is_live_environment
+  application                = local.application_snake
+  identifier_prefix          = local.short_identifier_prefix
+  name                       = "Housing Repairs"
+  landing_zone_bucket_id     = module.landing_zone.bucket_id
+  raw_zone_bucket_id         = module.raw_zone.bucket_id
+  refined_zone_bucket_id     = module.refined_zone.bucket_id
+  trusted_zone_bucket_id     = module.trusted_zone.bucket_id
+  secrets_manager_kms_key_id = aws_kms_key.secrets_manager_key.id
 }
 
 module "department_parking" {
-  source                 = "../modules/department"
-  tags                   = module.tags.values
-  identifier_prefix      = local.short_identifier_prefix
-  identifier             = "parking"
-  landing_zone_bucket_id = module.landing_zone.bucket_id
-  raw_zone_bucket_id     = module.raw_zone.bucket_id
-  refined_zone_bucket_id = module.refined_zone.bucket_id
-  trusted_zone_bucket_id = module.trusted_zone.bucket_id
+  source                     = "../modules/department"
+  tags                       = module.tags.values
+  is_live_environment        = local.is_live_environment
+  application                = local.application_snake
+  identifier_prefix          = local.short_identifier_prefix
+  name                       = "Parking"
+  landing_zone_bucket_id     = module.landing_zone.bucket_id
+  raw_zone_bucket_id         = module.raw_zone.bucket_id
+  refined_zone_bucket_id     = module.refined_zone.bucket_id
+  trusted_zone_bucket_id     = module.trusted_zone.bucket_id
+  secrets_manager_kms_key_id = aws_kms_key.secrets_manager_key.id
 }
 
 module "department_finance" {
-  source                 = "../modules/department"
-  tags                   = module.tags.values
-  identifier_prefix      = local.short_identifier_prefix
-  identifier             = "finance"
-  landing_zone_bucket_id = module.landing_zone.bucket_id
-  raw_zone_bucket_id     = module.raw_zone.bucket_id
-  refined_zone_bucket_id = module.refined_zone.bucket_id
-  trusted_zone_bucket_id = module.trusted_zone.bucket_id
+  source                     = "../modules/department"
+  tags                       = module.tags.values
+  is_live_environment        = local.is_live_environment
+  application                = local.application_snake
+  identifier_prefix          = local.short_identifier_prefix
+  name                       = "Finance"
+  landing_zone_bucket_id     = module.landing_zone.bucket_id
+  raw_zone_bucket_id         = module.raw_zone.bucket_id
+  refined_zone_bucket_id     = module.refined_zone.bucket_id
+  trusted_zone_bucket_id     = module.trusted_zone.bucket_id
+  secrets_manager_kms_key_id = aws_kms_key.secrets_manager_key.id
 }
 
 module "department_data_and_insight" {
-  source                 = "../modules/department"
-  tags                   = module.tags.values
-  identifier_prefix      = local.short_identifier_prefix
-  identifier             = "data_and_insight"
-  landing_zone_bucket_id = module.landing_zone.bucket_id
-  raw_zone_bucket_id     = module.raw_zone.bucket_id
-  refined_zone_bucket_id = module.refined_zone.bucket_id
-  trusted_zone_bucket_id = module.trusted_zone.bucket_id
+  source                     = "../modules/department"
+  tags                       = module.tags.values
+  is_live_environment        = local.is_live_environment
+  application                = local.application_snake
+  identifier_prefix          = local.short_identifier_prefix
+  name                       = "Data and Insight"
+  landing_zone_bucket_id     = module.landing_zone.bucket_id
+  raw_zone_bucket_id         = module.raw_zone.bucket_id
+  refined_zone_bucket_id     = module.refined_zone.bucket_id
+  trusted_zone_bucket_id     = module.trusted_zone.bucket_id
+  secrets_manager_kms_key_id = aws_kms_key.secrets_manager_key.id
 }

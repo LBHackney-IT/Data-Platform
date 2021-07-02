@@ -3,7 +3,10 @@ output "email_service_accounts" {
   description = "Email service accounts"
   value = {
     housing = local.is_live_environment ? google_service_account.service_account_housing[0].email : ""
-    parking = local.is_live_environment ? module.parking_google_service_account[0].email : ""
+    housing_repairs = module.department_housing_repairs.google_service_account.credentials_secret_name
+    parking = module.department_parking.google_service_account.credentials_secret_name
+    data_and_insight = module.department_data_and_insight.google_service_account.credentials_secret_name
+    finance = module.department_finance.google_service_account.credentials_secret_name
   }
 }
 
