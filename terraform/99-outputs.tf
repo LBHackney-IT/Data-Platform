@@ -1,15 +1,4 @@
 # We make any output files clear by adding them to the 99-outputs.tf, meaning anyone can quickly check if they're consuming your module
-output "email_service_accounts" {
-  description = "Email service accounts"
-  value = {
-    housing = local.is_live_environment ? google_service_account.service_account_housing[0].email : ""
-    housing_repairs = module.department_housing_repairs.google_service_account.credentials_secret_name
-    parking = module.department_parking.google_service_account.credentials_secret_name
-    data_and_insight = module.department_data_and_insight.google_service_account.credentials_secret_name
-    finance = module.department_finance.google_service_account.credentials_secret_name
-  }
-}
-
 output "network_vpc_arn" {
   description = "The ARN of the AWS VPC"
   value       = data.aws_vpc.network.arn
