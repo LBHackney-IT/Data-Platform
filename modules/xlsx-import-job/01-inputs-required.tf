@@ -28,11 +28,32 @@ variable "glue_temp_storage_bucket_id" {
   type        = string
 }
 
+variable "lambda_artefact_storage_bucket" {
+  type = string
+}
 
 variable "landing_zone_bucket_id" {
   description = "Landing zone S3 bucket id"
   type        = string
 }
+
+variable "landing_zone_kms_key_arn" {
+  type = string
+}
+
+variable "identifier_prefix" {
+  type = string
+}
+
+variable "landing_zone_bucket_arn" {
+  type = string
+}
+
+variable "google_sheets_import_script_key" {
+  description = "Google sheets import script key"
+  type        = string
+}
+
 variable "raw_zone_bucket_id" {
   description = "Raw zone S3 bucket id"
   type        = string
