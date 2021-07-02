@@ -25,15 +25,3 @@ resource "google_service_account_key" "housing_json_credentials" {
     rotation_time = time_rotating.key_rotation_housing[0].rotation_rfc3339
   }
 }
-
-module "parking_google_service_account" {
-  count = local.is_live_environment ? 1 : 0
-
-  source                     = "../modules/google-service-account"
-  department_name            = "parking"
-  identifier_prefix          = local.short_identifier_prefix
-  application                = local.application_snake
-  google_project_id          = var.google_project_id
-  secrets_manager_kms_key_id = aws_kms_key.secrets_manager_key.key_id
-  tags                       = module.tags.values
-}

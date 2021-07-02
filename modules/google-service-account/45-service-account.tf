@@ -1,4 +1,6 @@
 resource "google_service_account" "service_account" {
+  count = var.is_live_environment ? 1 : 0
+
   account_id   = lower("${var.identifier_prefix}${var.department_name}")
   display_name = "${var.application} - ${title(var.department_name)}"
   project      = var.google_project_id
@@ -9,7 +11,9 @@ resource "time_rotating" "key_rotation" {
 }
 
 resource "google_service_account_key" "json_credentials" {
-  service_account_id = google_service_account.service_account.name
+  count = var.is_live_environment ? 1 : 0
+
+  service_account_id = google_service_account.service_account[0].name
   public_key_type    = "TYPE_X509_PEM_FILE"
 
   keepers = {
