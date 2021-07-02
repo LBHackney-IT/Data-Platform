@@ -192,4 +192,25 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_with_clean
   })
 }
 
+resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_with_matched_addresses_crawler" {
+  tags = module.tags.values
+
+  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
+  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-repairs-dlo-with-matched-addresses"
+  role          = aws_iam_role.glue_role.arn
+  table_prefix  = "housing_repairs_repairs_dlo_with_matched_addresses_"
+
+  s3_target {
+    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-matched-addresses/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+  })
+}
+
 
