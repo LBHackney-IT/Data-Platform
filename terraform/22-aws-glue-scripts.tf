@@ -18,6 +18,16 @@ resource "aws_s3_bucket_object" "address_matching" {
   etag   = filemd5("../scripts/address-matching.py")
 }
 
+resource "aws_s3_bucket_object" "levenshtein_address_matching" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/levenshtein-address-matching.py"
+  acl    = "private"
+  source = "../scripts/levenshtein-address-matching.py"
+  etag   = filemd5("../scripts/levenshtein-address-matching.py")
+}
+
 resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
   tags = module.tags.values
 
