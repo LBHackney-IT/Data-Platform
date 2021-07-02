@@ -303,12 +303,12 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
   }
 }
 
-resource "aws_glue_job" "levenshtein_address_matching" {
+resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
   count = terraform.workspace == "default" ? 1 : 0
 
   tags = module.tags.values
 
-  name              = "Address Matching - Levenshtein"
+  name              = "Housing Repairs - Repairs DLO Levenshtein Address Matching"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = aws_iam_role.glue_role.arn
@@ -320,9 +320,12 @@ resource "aws_glue_job" "levenshtein_address_matching" {
   glue_version = "2.0"
 
   default_arguments = {
+    "--addresses_api_data_database"    = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
+    "--addresses_api_data_table"       = "unrestricted_address_api_dbo.hackney_address"
+    "--source_catalog_database"        = "housing-repairs-refined-zone"
+    "--source_catalog_table"           = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
     "--target_destination"             = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-matched-addresses/"
-    "--source_data"                    = "s3://${module.refined_zone.bucket_id}/housing/repairs-dlo/"
-    "--addresses_api_data"             = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-test/addresses_API_full.csv" // to be updated to raw zone address api data
+    "--TempDir"                        = "s3://${module.glue_temp_storage.bucket_arn}/"
     "--extra-py-files"                 = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
