@@ -22,7 +22,7 @@ output "network_vpc_subnet_cider_blocks" {
 }
 
 output "ecr_repository_worker_endpoint" {
-  value = module.liberator_to_parquet.ecr_repository_worker_endpoint
+  value = length(module.liberator_to_parquet) == 1 ? module.liberator_to_parquet[0].ecr_repository_worker_endpoint : null
 }
 
 output "ssl_connection_resources_bucket_id" {

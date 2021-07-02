@@ -28,7 +28,6 @@ variable "glue_temp_storage_bucket_id" {
   type        = string
 }
 
-
 variable "landing_zone_bucket_id" {
   description = "Landing zone S3 bucket id"
   type        = string

@@ -1,18 +1,21 @@
 /* ==== SERVICE ACCOUNT - HOUSING =================================================================================== */
 resource "google_service_account" "service_account_housing" {
-  count        = local.is_live_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
+
   account_id   = lower("${local.application_snake}-${var.environment}-housing")
   display_name = "${var.application} - Housing"
   project      = var.google_project_id
 }
 
 resource "time_rotating" "key_rotation_housing" {
-  count         = local.is_live_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
+
   rotation_days = 30
 }
 
 resource "google_service_account_key" "housing_json_credentials" {
-  count              = local.is_live_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
+
   service_account_id = google_service_account.service_account_housing[0].name
   public_key_type    = "TYPE_X509_PEM_FILE"
 
@@ -24,8 +27,9 @@ resource "google_service_account_key" "housing_json_credentials" {
 }
 
 module "parking_google_service_account" {
-  count                      = local.is_live_environment ? 1 : 0
-  source                     = "./../modules/google-service-account"
+  count = local.is_live_environment ? 1 : 0
+
+  source                     = "../modules/google-service-account"
   department_name            = "parking"
   identifier_prefix          = local.short_identifier_prefix
   application                = local.application_snake

@@ -42,10 +42,10 @@ resource "aws_s3_bucket_object" "get_s3_subfolders" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/get_s3_subfolders.py"
+  key    = "scripts/get-s3-subfolders.py"
   acl    = "private"
-  source = "../scripts/get_s3_subfolders.py"
-  etag   = filemd5("../scripts/get_s3_subfolders.py")
+  source = "../scripts/get-s3-subfolders.py"
+  etag   = filemd5("../scripts/get-s3-subfolders.py")
 }
 
 resource "aws_s3_bucket_object" "address_cleaning" {
@@ -78,7 +78,6 @@ resource "aws_s3_bucket_object" "xlsx_import_script" {
   etag   = filemd5("../scripts/xlsx-import.py")
 }
 
-
 resource "aws_s3_bucket_object" "repairs_dlo_cleaning_script" {
   tags = module.tags.values
 
@@ -89,17 +88,15 @@ resource "aws_s3_bucket_object" "repairs_dlo_cleaning_script" {
   etag   = filemd5("../scripts/repairs-dlo-cleaning.py")
 }
 
-
-resource "aws_s3_bucket_object" "repairs_alphatrack_cleaning_script" {
+resource "aws_s3_bucket_object" "repairs_alpha_track_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/repairs-alphatrack-cleaning.py"
+  key    = "scripts/repairs-alpha-track-cleaning.py"
   acl    = "private"
-  source = "../scripts/repairs-alphatrack-cleaning.py"
-  etag   = filemd5("../scripts/repairs-alphatrack-cleaning.py")
+  source = "../scripts/repairs-alpha-track-cleaning.py"
+  etag   = filemd5("../scripts/repairs-alpha-track-cleaning.py")
 }
-
 
 resource "aws_s3_bucket_object" "empty_job" {
   tags = module.tags.values

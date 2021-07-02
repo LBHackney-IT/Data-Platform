@@ -9,11 +9,16 @@ module "department_housing_repairs" {
   trusted_zone_bucket_id = module.trusted_zone.bucket_id
 }
 
-#module "department_parking" {
-#  source = "../modules/department"
-#  tags   = module.tags.values
-#  identifier = "parking"
-#}
+module "department_parking" {
+  source                 = "../modules/department"
+  tags                   = module.tags.values
+  identifier_prefix      = local.short_identifier_prefix
+  identifier             = "parking"
+  landing_zone_bucket_id = module.landing_zone.bucket_id
+  raw_zone_bucket_id     = module.raw_zone.bucket_id
+  refined_zone_bucket_id = module.refined_zone.bucket_id
+  trusted_zone_bucket_id = module.trusted_zone.bucket_id
+}
 
 module "department_finance" {
   source                 = "../modules/department"

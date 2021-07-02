@@ -99,7 +99,8 @@ module "lambda_artefact_storage" {
 # A public bucket makes following this guide easier, furthermore
 # the generated certificate/private key isn't special/used for auth.
 resource "aws_s3_bucket" "ssl_connection_resources" {
-  count  = local.is_live_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
+
   bucket = "${local.identifier_prefix}-ssl-connection-resources"
   acl    = "public-read"
   tags   = module.tags.values
