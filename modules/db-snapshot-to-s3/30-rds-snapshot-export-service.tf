@@ -69,8 +69,6 @@ resource "aws_iam_policy" "rds_snapshot_export_service" {
 }
 
 resource "aws_iam_role_policy_attachment" "rds_snapshot_export_service" {
-
-
   role       = aws_iam_role.rds_snapshot_export_service.name
   policy_arn = aws_iam_policy.rds_snapshot_export_service.arn
 }
