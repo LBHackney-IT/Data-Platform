@@ -43,6 +43,10 @@ variable "file_name" {
   type = string
 }
 
+variable "lambda_name" {
+  type = string
+}
+
 variable "service_area" {
   description = "Name of service area where data is to be sent, e.g. 'housing'"
   type        = string
