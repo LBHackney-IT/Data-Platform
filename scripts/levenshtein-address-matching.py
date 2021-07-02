@@ -14,13 +14,22 @@ from helpers import get_glue_env_var, PARTITION_KEYS
 
 glueContext = GlueContext(SparkContext.getOrCreate())
 job = Job(glueContext)
-# logger = glueContext.get_logger()
 
 def get_latest_partitions(dfa):
    dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
    dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
    dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
    return dfa
+
+# create a classification function
+
+def match_type(levenshtein):
+    if levenshtein == 0:
+        return 'perfect match'
+    elif levenshtein > 15:
+        return 'unmatched'
+    else:
+        return 'imperfect match'
 
 addresses_api_data_database = get_glue_env_var('addresses_api_data_database', '')
 addresses_api_data_table = get_glue_env_var('addresses_api_data_table', '')
@@ -37,11 +46,8 @@ query_addresses = query_addresses_ddf.toDF()
 query_addresses = get_latest_partitions(query_addresses)
 query_addresses.count()
 
-# logger.info('create a sample')
 query_addresses_sample = query_addresses.filter("concatenated_string_to_match != ''")
-# query_addresses_sample = query_addresses_sample.sample(0.0001,123)
 
-# logger.info('concat query data')
 query_concat = query_addresses_sample.withColumn(
     "query_address",
     F.concat_ws(" ", "concatenated_string_to_match", "postcode")
@@ -50,7 +56,7 @@ query_concat = query_addresses_sample.withColumn(
 query_concat = query_concat.select("prinx", "query_address", "postcode").withColumnRenamed("postcode", "query_postcode")
 
 
-###################### PREP ADDRESSES API DATA
+### PREP ADDRESSES API DATA
 
 target_addresses_ddf = glueContext.create_dynamic_frame.from_catalog(
     name_space=addresses_api_data_database,
@@ -92,29 +98,17 @@ target_concat = target_concat.withColumn(
 
 target_concat = target_concat.select("target_address", "target_address_short", "target_address_medium", "postcode", "uprn").withColumnRenamed("postcode", "target_postcode")
 
-######################COMPARE QUERY AND TARGET
-
-## For rounds 1 to 3, only consider same postcodes
+### COMPARE QUERY AND TARGET
 
 cross_with_same_postcode = query_concat.join(target_concat, query_concat.query_postcode == target_concat.target_postcode, "fullouter")
-# cross = query_concat.crossJoin(target_concat)
+
 
 cross_compare = cross_with_same_postcode.withColumn("levenshtein", F.levenshtein(F.col("query_address"), F.col("target_address")))
 cross_compare = cross_compare.withColumn("levenshtein_short", F.levenshtein(F.col("query_address"), F.col("target_address_short")))
 cross_compare = cross_compare.withColumn("levenshtein_medium", F.levenshtein(F.col("query_address"), F.col("target_address_medium")))
 cross_compare = cross_compare.withColumn("levenshtein_10char", F.levenshtein(F.substring(F.col("query_address"), 1, 10), F.substring(F.col("target_address"), 1, 10)))
 
-# create a classification function
-
-def match_type(levenshtein):
-    if levenshtein == 0:
-        return 'perfect match'
-    elif levenshtein > 15:
-        return 'unmatched'
-    else:
-        return 'imperfect match'
-
-# convert to a UDF Function by passing in the function and the return type of function (string in this case)
+# convert the classification function to a UDF Function by passing in the function and the return type of function (string in this case)
 udf_matchtype = F.udf(match_type, StringType())
 
 
@@ -153,7 +147,6 @@ perfect10char = perfect10char.select(F.col("prinx"), F.col("query_address"), F.c
 perfectMatch = perfectFull.union(perfectShort).union(perfectMedium).union(perfect10char)
 perfectMatch = perfectMatch.withColumn("round", F.lit("round 0"))
 
-
 ## ROUND 1 - now look at imperfect with same postcode
 
 cross_compare = cross_compare\
@@ -170,12 +163,9 @@ bestMatch_round1 = bestMatch_round1.withColumn("match_type", udf_matchtype("leve
 bestMatch_round1 = bestMatch_round1.withColumn("round", F.lit("round 1"))
 bestMatch_round1 = bestMatch_round1.select("prinx", "query_address", F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), "match_type", "round")
 
-
 ## ROUND 2
 
 cross_compare = cross_compare.join(bestMatch_round1, "prinx", "left_anti")
-
-# cross_compare_round2 = cross_compare_round2.filter("levenshtein_short < 3")
 
 window = Window.partitionBy('prinx').orderBy("levenshtein_short")
 
@@ -189,9 +179,8 @@ bestMatch_round2 = bestMatch_round2.select(F.col("prinx"), F.col("query_address"
 
 ## ROUND 3
 
-# logger.info('Round 3: take all the unmatched, still keep same postcode, try match to line1 and line 2')
+# take all the unmatched, still keep same postcode, try match to line1 and line 2
 cross_compare = cross_compare.join(bestMatch_round2, "prinx", "left_anti")
-
 
 window = Window.partitionBy('prinx').orderBy("levenshtein_medium")
 
@@ -219,11 +208,8 @@ cross_compare = cross_compare.filter("levenshtein<5 or levenshtein_short<5 or le
 
 ## ROUND 4
 
-# logger.info('Round 4: mismatched postcodes, levenstein <5')
-
 window = Window.partitionBy('prinx').orderBy("levenshtein")
 
-# logger.info('sort and filter')
 bestMatch_round4 = cross_compare.filter("levenshtein < 5").withColumn('rank', F.rank().over(window))\
  .filter('rank = 1')\
  .dropDuplicates(['prinx'])
@@ -234,15 +220,11 @@ bestMatch_round4 = bestMatch_round4.select(F.col("prinx"), F.col("query_address"
 
 ## ROUND 5
 
-# logger.info('Round 5: take all the unmatched, allow mismatched postcodes, match to line 1 and postcode only')
+# take all the unmatched, allow mismatched postcodes, match to line 1 and postcode only
 cross_compare = cross_compare.join(bestMatch_round4, "prinx", "left_anti")
-
-# logger.info('rank and filter')
-# cross_compare_round5 = cross_compare_round5.filter("levenshtein_short < 5")
 
 window = Window.partitionBy('prinx').orderBy("levenshtein_short")
 
-# logger.info('sort and filter')
 bestMatch_round5 = cross_compare.filter("levenshtein_short < 5").withColumn('rank', F.rank().over(window))\
  .filter('rank = 1')\
  .dropDuplicates(['prinx'])
@@ -253,7 +235,7 @@ bestMatch_round5 = bestMatch_round5.select(F.col("prinx"), F.col("query_address"
 
 ## ROUND 6
 
-# logger.info('Round 6: take all the unmatched, allow mismatched postcodes, match to line 1 and 2 and postcode')
+# take all the unmatched, allow mismatched postcodes, match to line 1 and 2 and postcode
 cross_compare = cross_compare.join(bestMatch_round5, "prinx", "left_anti")
 
 window = Window.partitionBy('prinx').orderBy("levenshtein_medium")
@@ -269,7 +251,7 @@ bestMatch_round6 = bestMatch_round6.select(F.col("prinx"), F.col("query_address"
 
 ## ROUND 7 - last chance
 
-# logger.info('Round 7: take all the rest and mark as unmatched')
+# take all the rest and mark as unmatched
 unmatched = query_concat\
     .join(perfectMatch, "prinx", "left_anti")\
     .join(bestMatch_round1, "prinx", "left_anti")\
@@ -279,13 +261,11 @@ unmatched = query_concat\
     .join(bestMatch_round5, "prinx", "left_anti")\
     .join(bestMatch_round6, "prinx", "left_anti")
 
-
 lastChanceCompare = unmatched.crossJoin(target_concat)
 cross_compare = lastChanceCompare.withColumn("levenshtein", F.levenshtein(F.col("query_address"), F.col("target_address")))
 
 window = Window.partitionBy('prinx').orderBy("levenshtein")
 
-# logger.info('sort and filter')
 bestMatch_lastChance = cross_compare.withColumn('rank', F.rank().over(window))\
  .filter('rank = 1')\
  .dropDuplicates(['prinx'])
@@ -294,31 +274,21 @@ bestMatch_lastChance = bestMatch_lastChance.withColumn("match_type", udf_matchty
 bestMatch_lastChance = bestMatch_lastChance.withColumn("round", F.lit("last chance"))
 bestMatch_lastChance = bestMatch_lastChance.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("match_type"), "round")
 
+## PUT RESULTS OF ALL ROUNDS TOGETHER
 
-
-##PUT RESULTS OF ALL ROUNDS TOGETHER
-
-# logger.info('put back all results together')
 all_best_match = perfectMatch.union(bestMatch_round1).union(bestMatch_round2).union(bestMatch_round3).union(bestMatch_round4).union(bestMatch_round5).union(bestMatch_round6).union(bestMatch_lastChance)
-# all_best_match = bestMatch_round1.join(bestMatch_round2, "prinx", "outer")
-# .union(bestMatch_round3).union(bestMatch_round4).union(bestMatch_round5).union(bestMatch_round6).union(bestMatch_round7)
 
+## JOIN MATCH RESULTS WITH INITIAL DATASET
 
-##JOIN MATCH RESULTS WITH INITIAL DATASET
-
-# logger.info('join match results with the initial dataset')
 matchingResults = query_addresses.join(all_best_match, "prinx", "left")
 
-
-# logger.info('write into parquet')
 resultDataFrame = DynamicFrame.fromDF(matchingResults, glueContext, "resultDataFrame")
 
 parquetData = glueContext.write_dynamic_frame.from_options(
     frame=resultDataFrame,
     connection_type="s3",
     format="parquet",
-    connection_options={"path": target_destination, "partitionKeys": ["import_year", "import_month", "import_day", "import_date"]},
+    connection_options={"path": target_destination, "partitionKeys": PARTITION_KEYS},
     transformation_ctx="parquetData")
-
 
 job.commit()
