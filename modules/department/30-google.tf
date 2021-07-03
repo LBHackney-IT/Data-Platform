@@ -6,7 +6,7 @@ module "google_service_account" {
   department_name            = local.department_identifier
   identifier_prefix          = var.identifier_prefix
   application                = var.application
-  google_project_id          = data.google_project.project.id
+  google_project_id          = data.google_project.project.project_id
   secrets_manager_kms_key_id = var.secrets_manager_kms_key_id
   tags                       = var.tags
 }
