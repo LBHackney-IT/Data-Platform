@@ -150,6 +150,29 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_alpha_track_cl
   })
 }
 
+
+resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_avonline_cleaned_crawler" {
+  tags = module.tags.values
+
+  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
+  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-repairs-avonline-cleaned"
+  role          = aws_iam_role.glue_role.arn
+  table_prefix  = "housing_repairs_repairs_avonline_"
+
+  s3_target {
+    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-avonline/cleaned/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+  })
+}
+
+
 resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_with_cleaned_addresses_crawler" {
   tags = module.tags.values
 
