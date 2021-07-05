@@ -488,7 +488,8 @@ data "aws_iam_policy_document" "parking_secrets_read_only" {
       "secretsmanager:GetSecretValue"
     ]
     resources = [
-      aws_secretsmanager_secret.redshift_cluster_parking_credentials.arn
+      aws_secretsmanager_secret.redshift_cluster_parking_credentials.arn,
+      module.department_parking.google_service_account_credentials_secret.arn
     ]
   }
 
