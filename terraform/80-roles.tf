@@ -212,6 +212,7 @@ data "aws_iam_policy_document" "parking_s3_access" {
       "${module.landing_zone.bucket_arn}/parking/manual/*",
       "${module.raw_zone.bucket_arn}/parking/manual/*",
       "${module.refined_zone.bucket_arn}/parking/*",
+      "${module.glue_temp_storage.bucket_arn}/parking/*"
     ]
   }
 
