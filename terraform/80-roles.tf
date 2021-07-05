@@ -197,7 +197,8 @@ data "aws_iam_policy_document" "parking_s3_access" {
       "${module.trusted_zone.bucket_arn}/parking/*",
       module.athena_storage.bucket_arn,
       "${module.athena_storage.bucket_arn}/parking/*",
-      "${module.landing_zone.bucket_arn}/parking/manual/*"
+      "${module.landing_zone.bucket_arn}/parking/manual/*",
+      "${module.raw_zone.bucket_arn}/parking/*"
     ]
   }
 
@@ -210,7 +211,7 @@ data "aws_iam_policy_document" "parking_s3_access" {
     resources = [
       "${module.landing_zone.bucket_arn}/parking/manual/*",
       "${module.raw_zone.bucket_arn}/parking/manual/*",
-      "${module.refined_zone.bucket_arn}/parking/*"
+      "${module.refined_zone.bucket_arn}/parking/*",
     ]
   }
 
@@ -249,6 +250,7 @@ data "aws_iam_policy_document" "parking_s3_access" {
     ]
     resources = [
       "${module.glue_scripts.bucket_arn}/custom/*",
+      "${module.glue_temp_storage.bucket_arn}/parking/*",
     ]
   }
 }
@@ -274,7 +276,8 @@ data "aws_iam_policy_document" "read_only_access_to_glue_scripts" {
   }
 
   statement {
-    effect = "DecryptGlueScripts"
+    sid = "DecryptGlueScripts"
+    effect = "Allow"
     actions = [
       "kms:Decrypt",
       "kms:GenerateDataKey"
