@@ -24,3 +24,7 @@ variable "tags" {
   description = "AWS tags"
   type        = map(string)
 }
+
+variable "workflow_name" {
+  type = string
+}
