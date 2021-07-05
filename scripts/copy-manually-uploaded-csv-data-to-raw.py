@@ -10,7 +10,7 @@ from awsglue.dynamicframe import DynamicFrame
 import boto3
 
 from get_s3_subfolders import get_s3_subfolders
-from helpers import get_glue_env_var, convert_pandas_df_to_spark_dynamic_df, PARTITION_KEYS
+from helpers import get_glue_env_var, add_import_time_columns, PARTITION_KEYS
 
 s3_client = boto3.client('s3')
 sc = SparkContext()
@@ -21,14 +21,6 @@ logger = glue_context.get_logger()
 
 def remove_empty_columns(data_frame):
     return data_frame.drop('')
-
-def add_import_time_columns(data_frame):
-    columns_added = data_frame.withColumn('import_date', f.current_timestamp())\
-      .withColumn('import_timestamp', f.lit(now.timestamp()))\
-      .withColumn('import_year', f.lit(str(now.year)))\
-      .withColumn('import_month', f.lit(str(now.month).zfill(2)))\
-      .withColumn('import_day', f.lit(str(now.day).zfill(2)))
-    return columns_added
 
 def data_source_landing_to_raw(bucket_source, bucket_target, key, glue_context):
   data_source = glue_context.create_dynamic_frame.from_options(
@@ -51,7 +43,7 @@ def data_source_landing_to_raw(bucket_source, bucket_target, key, glue_context):
   glue_context.write_dynamic_frame.from_options(frame = data_output,
     connection_type = "s3",
     format = "parquet",
-    connection_options = {"path": bucket_target + "/" + key, "partitionKeys": ["import_year" ,"import_month" ,"import_day"]},
+    connection_options = {"path": bucket_target + "/" + key, "partitionKeys": PARTITION_KEYS},
     transformation_ctx = "data_sink_" + key
   )
 
