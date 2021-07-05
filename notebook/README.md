@@ -32,3 +32,21 @@ docker compose up notebook
 1. Change the `s3_url` variable to be a s3 bucket that exists in the AWS account you are using.
 1. Click "Run"
 1. You should get some data back from the s3 bucket and no errors.
+
+## Spark SQL read–eval–print loop
+
+1. Follow the instructions for "Run your container" above.
+1. Run `make thrift-server`, and wait for the command to finish, you should get a message similar to the below.
+   ```
+   starting org.apache.spark.sql.hive.thriftserver.HiveThriftServer2, logging to /home/spark-2.4.3-bin-spark-2.4.3-bin-hadoop2.8/logs/spark--org.apache.spark.sql.hive.thriftserver.HiveThriftServer2-1-aa00aa00aa00.out
+   ```
+1. Wait around 10 seconds for the server to finish starting
+1. Run `make spark-sql`, and wait for a SQL prompt to appear
+   ```
+   0: jdbc:hive2://localhost:10000/default>
+   ```
+1. Test your console is working by copy & pasting the following SQL
+   ```sql
+   SELECT lpi_key, uprn, longitude, latitude, import_year, import_month, import_day, import_date
+   FROM `dataplatform-stg-raw-zone-unrestricted-address-api`.`unrestricted_address_api_dbo_hackney_address` LIMIT 10;
+   ```

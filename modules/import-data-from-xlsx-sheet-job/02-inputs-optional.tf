@@ -10,7 +10,6 @@ variable "enable_glue_trigger" {
   default     = false
 }
 
-
 variable "header_row_number" {
   description = "Header row number (0-indexed)"
   type        = number
