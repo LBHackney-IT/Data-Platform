@@ -42,9 +42,3 @@ output "google_service_account" {
   description = "The service account created for this department"
   value       = module.google_service_account
 }
-
-output "google_service_account_credentials_secret" {
-  value = {
-    arn = module.google_service_account.credentials_secret.arn
-  }
-}

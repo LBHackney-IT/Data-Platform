@@ -343,7 +343,7 @@ module "parking_spreadsheet_estate_permit_limits" {
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
-  glue_role_arn                   = aws_iam_role.glue_role.arn
+  glue_role_arn                   = aws_iam_role.parking_glue.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_parking.raw_zone_catalog_database_name
@@ -351,7 +351,7 @@ module "parking_spreadsheet_estate_permit_limits" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = module.department_parking.google_service_account.credentials_secret_name
+  sheets_credentials_name         = module.department_parking.google_service_account.credentials_secret.name
   tags                            = module.tags.values
   glue_job_name                   = "parking-spreadsheet-estate-permit-limits"
   google_sheets_document_id       = "14H-kO4wB011ol7J7hLSJ9xv56R4xugmGsZCWNMbe1Ys"
