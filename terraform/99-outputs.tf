@@ -20,3 +20,7 @@ output "ecr_repository_worker_endpoint" {
 output "ssl_connection_resources_bucket_id" {
   value = length(aws_s3_bucket.ssl_connection_resources) == 1 ? aws_s3_bucket.ssl_connection_resources[0].id : ""
 }
+
+output "qlik_sense_server_ip" {
+  value = module.qlik_server[*].instance_private_ip
+}
