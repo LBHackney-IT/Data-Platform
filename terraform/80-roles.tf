@@ -197,7 +197,8 @@ data "aws_iam_policy_document" "parking_s3_access" {
       "${module.trusted_zone.bucket_arn}/parking/*",
       module.athena_storage.bucket_arn,
       "${module.athena_storage.bucket_arn}/parking/*",
-      "${module.landing_zone.bucket_arn}/parking/manual/*"
+      "${module.landing_zone.bucket_arn}/parking/manual/*",
+      "${module.raw_zone.bucket_arn}/parking/*"
     ]
   }
 
@@ -210,7 +211,7 @@ data "aws_iam_policy_document" "parking_s3_access" {
     resources = [
       "${module.landing_zone.bucket_arn}/parking/manual/*",
       "${module.raw_zone.bucket_arn}/parking/manual/*",
-      "${module.refined_zone.bucket_arn}/parking/*"
+      "${module.refined_zone.bucket_arn}/parking/*",
     ]
   }
 
@@ -249,6 +250,7 @@ data "aws_iam_policy_document" "parking_s3_access" {
     ]
     resources = [
       "${module.glue_scripts.bucket_arn}/custom/*",
+      "${module.glue_temp_storage.bucket_arn}/parking/*",
     ]
   }
 }
@@ -262,7 +264,7 @@ resource "aws_iam_policy" "parking_s3_access" {
 
 // Read only policy for glue scripts
 data "aws_iam_policy_document" "read_only_access_to_glue_scripts" {
-    statement {
+  statement {
     sid    = "ReadOnly"
     effect = "Allow"
     actions = [
@@ -270,6 +272,18 @@ data "aws_iam_policy_document" "read_only_access_to_glue_scripts" {
     ]
     resources = [
       "${module.glue_scripts.bucket_arn}/*"
+    ]
+  }
+
+  statement {
+    sid = "DecryptGlueScripts"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = [
+      module.glue_scripts.kms_key_arn
     ]
   }
 }
@@ -582,4 +596,9 @@ resource "aws_iam_role_policy_attachment" "parking_glue_access_to_cloudwatch" {
 resource "aws_iam_role_policy_attachment" "parking_read_glue_scripts" {
   role       = aws_iam_role.parking_glue.name
   policy_arn = aws_iam_policy.read_glue_scripts.arn
+}
+
+resource "aws_iam_role_policy_attachment" "parking_glue_secrets_read_only" {
+  role       = aws_iam_role.parking_glue.name
+  policy_arn = aws_iam_policy.parking_secrets_read_only.arn
 }
