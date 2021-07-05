@@ -325,7 +325,7 @@ resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
 
   default_arguments = {
     "--addresses_api_data_database"    = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
-    "--addresses_api_data_table"       = "unrestricted_address_api_dbo.hackney_address"
+    "--addresses_api_data_table"       = "unrestricted_address_api_dbo_hackney_address"
     "--source_catalog_database"        = "housing-repairs-refined-zone"
     "--source_catalog_table"           = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
     "--target_destination"             = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-matched-addresses/"
