@@ -260,8 +260,8 @@ resource "aws_iam_policy" "parking_s3_access" {
   policy = data.aws_iam_policy_document.parking_s3_access.json
 }
 
-// Parking glue role read only access to glue scripts
-data "aws_iam_policy_document" "parking_ro_access_to_glue_scripts" {
+// Read only policy for glue scripts
+data "aws_iam_policy_document" "read_only_access_to_glue_scripts" {
     statement {
     sid    = "ReadOnly"
     effect = "Allow"
@@ -274,11 +274,11 @@ data "aws_iam_policy_document" "parking_ro_access_to_glue_scripts" {
   }
 }
 
-resource "aws_iam_policy" "parking_read_glue_scripts" {
+resource "aws_iam_policy" "read_glue_scripts" {
   tags = module.tags.values
 
-  name   = lower("${local.identifier_prefix}-parking-read-glue-scripts")
-  policy = data.aws_iam_policy_document.parking_ro_access_to_glue_scripts.json
+  name   = lower("${local.identifier_prefix}-read-glue-scripts")
+  policy = data.aws_iam_policy_document.read_only_access_to_glue_scripts.json
 }
 
 //Parking glue access policy
@@ -581,5 +581,5 @@ resource "aws_iam_role_policy_attachment" "parking_glue_access_to_cloudwatch" {
 
 resource "aws_iam_role_policy_attachment" "parking_read_glue_scripts" {
   role       = aws_iam_role.parking_glue.name
-  policy_arn = aws_iam_policy.parking_read_glue_scripts.arn
+  policy_arn = aws_iam_policy.read_glue_scripts.arn
 }
