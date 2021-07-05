@@ -155,7 +155,7 @@ module "repairs_axis" {
 module "import-repairs-fire-alarms-xlsx-file-format" {
   count = terraform.workspace == "default" ? 1 : 0
 
-  source                          = "../modules/xlsx-import-job"
+  source                          = "../modules/import-xlsx-file-from-g-drive"
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_arn
@@ -167,14 +167,22 @@ module "import-repairs-fire-alarms-xlsx-file-format" {
   landing_zone_kms_key_arn        = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn         = module.landing_zone.bucket_arn
   tags                            = module.tags.values
-  google_sheets_import_script_key = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
-  glue_job_name                   = "Fire Alarm AOV"
+  google_sheets_document_id       = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
+  glue_job_name                   = "repairs spreadsheet"
   department_folder_name          = "housing"
-  output_folder_name              = "Fire_Alarm_AOV"
+  output_folder_name              = "repairs_spreadsheet"
   raw_zone_bucket_id              = module.raw_zone.bucket_id
   input_file_name                 = "electrical_mechnical_fire_safety_temp_order_number_wc_12.10.20r1.xlsx"
-  header_row_number               = 1
-  worksheet_name                  = "Fire AlarmAOV"
+  worksheets = {
+    sheet1: {
+      header_row_number = 1
+      worksheet_name = "Fire AlarmAOV"
+    }
+    sheet2: {
+      header_row_number = 1
+      worksheet_name = "Door Entry"
+    }
+  }
 }
 
 

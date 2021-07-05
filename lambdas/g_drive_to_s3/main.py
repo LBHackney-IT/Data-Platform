@@ -22,12 +22,13 @@ def upload_file_to_s3(client, body_data, bucket_name, file_name):
 def download_file(service, file_id):
     request = service.files().get_media(fileId=file_id)
 
-    downloader = MediaIoBaseDownload(io.BytesIO(), request)
+    file = io.BytesIO()
+    downloader = MediaIoBaseDownload(file, request)
     done = False
     while done is False:
         status, done = downloader.next_chunk()
         print("Download %d%%." % int(status.progress() * 100))
-    return fh.getvalue()
+    return file.getvalue()
 
 def lambda_handler(event, lambda_context):
     load_dotenv()
