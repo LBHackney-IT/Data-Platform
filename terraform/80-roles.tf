@@ -269,8 +269,7 @@ data "aws_iam_policy_document" "parking_ro_access_to_glue_scripts" {
       "s3:Get*",
     ]
     resources = [
-      "${module.glue_scripts.bucket_arn}/${aws_s3_bucket_object.google_sheets_import_script.key}",
-      "${module.glue_scripts.bucket_arn}/${aws_s3_bucket_object.helpers.key}"
+      "${module.glue_scripts.bucket_arn}/*"
     ]
   }
 }
