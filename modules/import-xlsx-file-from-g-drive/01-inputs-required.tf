@@ -88,7 +88,7 @@ variable "worksheets" {
   type = map(
     object({
       header_row_number = number
-      worksheet_name = string
+      worksheet_name    = string
     })
   )
 }
