@@ -3,8 +3,5 @@ output "email" {
 }
 
 output "credentials_secret" {
-  value = {
-    name = aws_secretsmanager_secret.sheets_credentials.name
-    arn = aws_secretsmanager_secret.sheets_credentials.arn
-  }
+  value = aws_secretsmanager_secret.sheets_credentials
 }
