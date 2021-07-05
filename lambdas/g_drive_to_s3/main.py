@@ -60,6 +60,15 @@ def lambda_handler(event, lambda_context):
 
     upload_file_to_s3(s3_client, file_body, bucket_name,file_name)
 
+    glue_client = boto3.client('glue')
+
+    glue_job_names = getenv("GLUE_JOB_NAMES").split("/")
+
+    for glue_job_name in glue_job_names:
+        print('Running '+ glue_job_name)
+        response = glue_client.start_job_run(JobName = glue_job_name)
+        print(response)
+
 
 if __name__ == '__main__':
     lambda_handler('event', 'lambda_context')
