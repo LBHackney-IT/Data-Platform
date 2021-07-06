@@ -2,7 +2,7 @@
 resource "aws_glue_job" "google_sheet_import" {
   tags = var.tags
 
-  name              = "Google Sheets Import Job - ${var.glue_job_name}"
+  name              = "Google Sheets Import Job - ${local.import_name}"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = var.glue_role_arn
@@ -26,14 +26,14 @@ resource "aws_glue_job" "google_sheet_import" {
 }
 
 resource "aws_glue_workflow" "workflow" {
-  name = "${var.identifier_prefix}${var.department_name}-${var.dataset_name}"
+  name = "${var.identifier_prefix}${local.import_name}"
 }
 
 resource "aws_glue_crawler" "google_sheet_import" {
   tags = var.tags
 
   database_name = var.glue_catalog_database_name
-  name          = "${var.identifier_prefix}raw-zone-${var.department_name}-${var.dataset_name}"
+  name          = "${var.identifier_prefix}raw-zone-${local.import_name}"
   role          = var.glue_role_arn
   table_prefix  = "${replace(var.department_name, "-", "_")}_"
 
@@ -46,7 +46,7 @@ resource "aws_glue_crawler" "google_sheet_import" {
 resource "aws_glue_trigger" "google_sheet_import_schedule" {
   tags = var.tags
 
-  name          = "Google Sheets Import Job Glue Trigger - ${var.glue_job_name}"
+  name          = "Google Sheets Import Job Glue Trigger - ${local.import_name}"
   schedule      = var.google_sheet_import_schedule
   workflow_name = aws_glue_workflow.workflow.name
   type          = "SCHEDULED"
@@ -60,7 +60,7 @@ resource "aws_glue_trigger" "google_sheet_import_schedule" {
 resource "aws_glue_trigger" "google_sheet_import_crawler_trigger" {
   tags = var.tags
 
-  name          = "Google Sheets Crawler Trigger - ${var.glue_job_name}"
+  name          = "Google Sheets Crawler Trigger - ${local.import_name}"
   workflow_name = aws_glue_workflow.workflow.name
   type          = "CONDITIONAL"
   enabled       = true
