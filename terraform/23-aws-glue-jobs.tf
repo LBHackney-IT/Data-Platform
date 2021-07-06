@@ -137,7 +137,7 @@ resource "aws_glue_job" "housing_repairs_alpha_track_cleaning" {
 
 
 resource "aws_glue_job" "housing_repairs_avonline_cleaning" {
-  count = terraform.workspace == "default" ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
 
@@ -154,9 +154,9 @@ resource "aws_glue_job" "housing_repairs_avonline_cleaning" {
 
   default_arguments = {
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-avonline/cleaned"
-    "--source_catalog_database"            = module.department_housing_repairs.raw_zone_catalog_database_name
-    "--source_catalog_table"               = "housing_repairs_repairs_avonline"
-    "--TempDir"                            = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
+    "--source_catalog_table"             = "housing_repairs_repairs_avonline"
+    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
