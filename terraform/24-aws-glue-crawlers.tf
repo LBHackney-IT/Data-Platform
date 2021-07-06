@@ -204,9 +204,10 @@ resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_job" {
   }
 
   actions {
-    job_name = aws_glue_job.repairs_dlo_cleaning.name
+    job_name = aws_glue_job.repairs_dlo_cleaning.*.name
   }
 }
+
 resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_crawler" {
   name          = "${local.identifier_prefix}-housing-repairs-repairs-dlo-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
@@ -214,7 +215,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_crawler" {
 
   predicate {
     conditions {
-      job_name = aws_glue_job.repairs_dlo_cleaning.name
+      job_name = aws_glue_job.repairs_dlo_cleaning.*.name
       state    = "SUCCEEDED"
     }
   }
