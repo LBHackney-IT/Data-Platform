@@ -2,11 +2,12 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
     paths:
-      - "./terraform-networking"
-      - "./terraform-backend-setup"
-      - "./terraform"
+      - "terraform-networking/**"
+      - "terraform-backend-setup/**"
+      - "terraform/**"
 
 jobs:
   validate:
