@@ -9,6 +9,7 @@ from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from pyspark.sql.functions import col, max
+from pyspark.sql.types import StringType
 
 from helpers import get_glue_env_var, PARTITION_KEYS
 
@@ -65,7 +66,7 @@ target_addresses_ddf = glueContext.create_dynamic_frame.from_catalog(
 
 target_addresses = target_addresses_ddf.toDF()
 target_addresses = get_latest_partitions(target_addresses)
-target_addresses = target_addresses.filter("use_class NOT LIKE 'P%'")
+target_addresses = target_addresses.where("blpu_class NOT LIKE 'P%'")
 
 
 target_concat = target_addresses.select("line1", "line2", "line3", "postcode", "uprn")
