@@ -80,14 +80,10 @@ resource "aws_glue_crawler" "raw_zone_unrestricted_address_api_crawler" {
   })
 }
 
-resource "aws_glue_catalog_database" "raw_zone_parking_manual_uploads" {
-  name = "${local.identifier_prefix}-raw-zone-parking-manual-uploads-database"
-}
-
 resource "aws_glue_crawler" "raw_zone_parking_manual_uploads_crawler" {
   tags = module.tags.values
 
-  database_name = aws_glue_catalog_database.raw_zone_parking_manual_uploads.name
+  database_name = module.department_parking.raw_zone_catalog_database_name
   name          = "${local.identifier_prefix}-raw-zone-parking-manual-uploads-crawler"
   role          = aws_iam_role.glue_role.arn
 
