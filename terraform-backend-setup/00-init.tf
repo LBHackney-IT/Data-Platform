@@ -1,5 +1,7 @@
 # Core Infrastructure
-provider "aws" {}
+provider "aws" {
+  region = "eu-west-2"
+}
 
 # General
 terraform {
@@ -10,4 +12,3 @@ terraform {
     }
   }
 }
-
