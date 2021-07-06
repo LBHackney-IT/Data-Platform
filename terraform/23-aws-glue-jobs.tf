@@ -63,7 +63,7 @@ resource "aws_glue_job" "repairs_dlo_cleaning" {
 
   tags = module.tags.values
 
-  name              = "Housing Repairs - Repairs DLO Cleaning"
+  name              = "${local.short_identifier_prefix}Housing Repairs - Repairs DLO Cleaning"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = aws_iam_role.glue_role.arn
@@ -88,7 +88,7 @@ resource "aws_glue_job" "repairs_dlo_address_cleaning" {
 
   tags = module.tags.values
 
-  name              = "Housing Repairs - Repairs DLO Address Cleaning"
+  name              = "${local.short_identifier_prefix}Housing Repairs - Repairs DLO Address Cleaning"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = aws_iam_role.glue_role.arn
@@ -115,7 +115,7 @@ resource "aws_glue_job" "housing_repairs_alpha_track_cleaning" {
 
   tags = module.tags.values
 
-  name              = "Housing Repairs - Alpha Track Cleaning"
+  name              = "${local.short_identifier_prefix}Housing Repairs - Alpha Track Cleaning"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = aws_iam_role.glue_role.arn
