@@ -26,7 +26,7 @@ resource "aws_glue_job" "google_sheet_import" {
 }
 
 resource "aws_glue_workflow" "workflow" {
-  name = "${var.identifier_prefix}-${var.department_name}-${var.dataset_name}
+  name = "${var.identifier_prefix}-${var.department_name}-${var.dataset_name}"
 }
 
 resource "aws_glue_crawler" "google_sheet_import" {
@@ -46,11 +46,11 @@ resource "aws_glue_crawler" "google_sheet_import" {
 resource "aws_glue_trigger" "google_sheet_import_schedule" {
   tags = var.tags
 
-  name     = "Google Sheets Import Job Glue Trigger - ${var.glue_job_name}"
-  schedule = var.google_sheet_import_schedule
+  name          = "Google Sheets Import Job Glue Trigger - ${var.glue_job_name}"
+  schedule      = var.google_sheet_import_schedule
   workflow_name = aws_glue_workflow.workflow.name
-  type     = "SCHEDULED"
-  enabled  = (var.is_live_environment && var.enable_glue_trigger)
+  type          = "SCHEDULED"
+  enabled       = (var.is_live_environment && var.enable_glue_trigger)
 
   actions {
     job_name = aws_glue_job.google_sheet_import.name
@@ -60,10 +60,10 @@ resource "aws_glue_trigger" "google_sheet_import_schedule" {
 resource "aws_glue_trigger" "google_sheet_import_crawler_trigger" {
   tags = var.tags
 
-  name    = "Google Sheets Crawler Trigger - ${var.glue_job_name}"
+  name          = "Google Sheets Crawler Trigger - ${var.glue_job_name}"
   workflow_name = aws_glue_workflow.workflow.name
-  type    = "CONDITIONAL"
-  enabled = true
+  type          = "CONDITIONAL"
+  enabled       = true
 
   predicate {
     conditions {

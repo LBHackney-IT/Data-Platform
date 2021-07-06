@@ -199,7 +199,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_job" {
   predicate {
     conditions {
       crawler_name = module.repairs_dlo.crawler_name
-      crawl_state    = "SUCCEEDED"
+      crawl_state  = "SUCCEEDED"
     }
   }
 
@@ -244,4 +244,4 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_with_match
     }
   })
 }
-    
+

@@ -276,7 +276,7 @@ data "aws_iam_policy_document" "read_only_access_to_glue_scripts" {
   }
 
   statement {
-    sid = "DecryptGlueScripts"
+    sid    = "DecryptGlueScripts"
     effect = "Allow"
     actions = [
       "kms:Decrypt",
