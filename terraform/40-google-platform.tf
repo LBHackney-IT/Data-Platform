@@ -5,3 +5,11 @@ resource "google_project_service" "sheets_api" {
   service                    = "sheets.googleapis.com"
   disable_dependent_services = true
 }
+
+resource "google_project_service" "drive_api" {
+  count = local.is_live_environment ? 1 : 0
+
+  project                    = var.google_project_id
+  service                    = "drive.googleapis.com"
+  disable_dependent_services = true
+}
