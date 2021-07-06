@@ -27,6 +27,6 @@ module "liberator_db_snapshot_to_s3" {
   zone_bucket_id                 = module.landing_zone.bucket_id
   service_area                   = "parking"
   rds_instance_ids               = [for item in module.liberator_to_parquet : item.rds_instance_id]
-  workflow_name                  = aws_glue_workflow.liberator_data.name
-  workflow_arn                   = aws_glue_workflow.liberator_data.arn
+  workflow_name                  = aws_glue_workflow.parking_liberator_data.name
+  workflow_arn                   = aws_glue_workflow.parking_liberator_data.arn
 }
