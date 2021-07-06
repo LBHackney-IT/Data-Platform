@@ -13,3 +13,4 @@ dev.tfvars
 google_service_account_creds*.json
 .DS_Store
 */.env
+notebook/aws-config/credentials

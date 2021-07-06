@@ -41,19 +41,6 @@ resource "aws_glue_crawler" "landing_zone_liberator" {
   }
 }
 
-resource "aws_glue_trigger" "landing_zone_liberator_crawler_trigger" {
-  tags = module.tags.values
-
-  name          = "${local.identifier_prefix} Landing Zone Liberator Crawler"
-  type          = "ON_DEMAND"
-  enabled       = true
-  workflow_name = aws_glue_workflow.parking_liberator_data.name
-
-  actions {
-    crawler_name = aws_glue_crawler.landing_zone_liberator.name
-  }
-}
-
 // ==== RAW ZONE ===========
 resource "aws_glue_catalog_database" "raw_zone_unrestricted_address_api" {
   name = "${local.identifier_prefix}-raw-zone-unrestricted-address-api"
@@ -167,6 +154,29 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_alpha_track_cl
   })
 }
 
+
+resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_avonline_cleaned_crawler" {
+  tags = module.tags.values
+
+  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
+  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-repairs-avonline-cleaned"
+  role          = aws_iam_role.glue_role.arn
+  table_prefix  = "housing_repairs_repairs_avonline_"
+
+  s3_target {
+    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-avonline/cleaned/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+  })
+}
+
+
 resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_with_cleaned_addresses_crawler" {
   tags = module.tags.values
 
@@ -187,43 +197,6 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_with_clean
     }
   })
 }
-resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_job" {
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.identifier_prefix}-housing-repairs-repairs-dlo-cleaning-job-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_dlo[0].workflow_name
-
-  predicate {
-    conditions {
-      crawler_name = module.repairs_dlo[0].crawler_name
-      crawl_state  = "SUCCEEDED"
-    }
-  }
-
-  actions {
-    job_name = aws_glue_job.repairs_dlo_cleaning[0].name
-  }
-}
-
-resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_crawler" {
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.identifier_prefix}-housing-repairs-repairs-dlo-cleaning-crawler-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_dlo[0].workflow_name
-
-  predicate {
-    conditions {
-      job_name = aws_glue_job.repairs_dlo_cleaning[0].name
-      state    = "SUCCEEDED"
-    }
-  }
-  actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_repairs_dlo_cleaned_crawler.name
-  }
-}
-
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_with_matched_addresses_crawler" {
   tags = module.tags.values
