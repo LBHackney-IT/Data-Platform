@@ -141,7 +141,7 @@ resource "aws_glue_job" "housing_repairs_avonline_cleaning" {
 
   tags = module.tags.values
 
-  name              = "Housing Repairs Avonline Cleaning"
+  name              = "${local.short_identifier_prefix}Housing Repairs - Repairs Avonline Cleaning"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = aws_iam_role.glue_role.arn
