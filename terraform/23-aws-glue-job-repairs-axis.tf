@@ -32,3 +32,24 @@ resource "aws_glue_job" "housing_repairs_axis_cleaning" {
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
+
+resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_axis_cleaned_crawler" {
+  tags = module.tags.values
+
+  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
+  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-repairs-axis-cleaned"
+  role          = aws_iam_role.glue_role.arn
+  table_prefix  = "housing_repairs_repairs_axis_"
+
+  s3_target {
+    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-axis/cleaned/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+  })
+}
