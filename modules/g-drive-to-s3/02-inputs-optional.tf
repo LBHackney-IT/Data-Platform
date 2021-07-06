@@ -1,11 +1,11 @@
-variable "workflow_name" {
-  description = "Optional. The name of a workflow to run on completion. This workflow will be run after each file has been added to s3"
-  type        = string
-  default     = ""
+variable "glue_job_names" {
+  description = "A list glue jobs to be triggered after import"
+  type        = list(string)
+  default     = []
 }
 
-variable "workflow_arn" {
-  description = "Optional. The arn of a workflow to run on completion. This workflow will be run after each file has been added to s3"
-  type        = string
-  default     = ""
+variable "job_arns" {
+  description = "A list glue jobs to be triggered after import"
+  type        = list(string)
+  default     = []
 }
