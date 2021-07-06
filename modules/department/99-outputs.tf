@@ -24,12 +24,12 @@ output "landing_zone_catalog_database_name" {
 }
 
 output "raw_zone_catalog_database_name" {
-  description = "Landing Zone Catalog Database Name"
+  description = "Raw Zone Catalog Database Name"
   value       = aws_glue_catalog_database.raw_zone_catalog_database.name
 }
 
 output "refined_zone_catalog_database_name" {
-  description = "Landing Zone Catalog Database Name"
+  description = "Refined Zone Catalog Database Name"
   value       = aws_glue_catalog_database.refined_zone_catalog_database.name
 }
 
