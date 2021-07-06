@@ -19,7 +19,6 @@ module "repairs_dlo" {
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
   dataset_name                    = "repairs-dlo"
-  workflow_name                   = "${local.identifier_prefix}-housing-repairs-repairs-dlo"
 }
 
 module "repairs_herts_heritage" {
@@ -43,7 +42,6 @@ module "repairs_herts_heritage" {
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
   dataset_name                    = "repairs-herts-heritage"
-  workflow_name                   = "${local.identifier_prefix}-housing-repairs-repairs-herts-heritage"
 }
 
 module "repairs_avonline" {
@@ -67,7 +65,6 @@ module "repairs_avonline" {
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
   dataset_name                    = "repairs-avonline"
-  workflow_name                   = "${local.identifier_prefix}-housing-repairs-repairs-avonline"
 }
 
 module "repairs_alpha_track" {
@@ -91,7 +88,6 @@ module "repairs_alpha_track" {
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
   dataset_name                    = "repairs-alpha-track"
-  workflow_name                   = "${local.identifier_prefix}-housing-repairs-repairs-alpha-track"
 }
 
 module "repairs_stannah" {
@@ -115,7 +111,6 @@ module "repairs_stannah" {
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
   dataset_name                    = "repairs-stannah"
-  workflow_name                   = "${local.identifier_prefix}-housing-repairs-repairs-stannah"
 }
 
 module "repairs_purdy" {
@@ -139,7 +134,6 @@ module "repairs_purdy" {
   google_sheets_worksheet_name    = "FormresponsesPUR"
   department_name                 = "housing-repairs"
   dataset_name                    = "repairs-purdy"
-  workflow_name                   = "${local.identifier_prefix}-housing-repairs-rrepairs-purdy"
 }
 
 module "repairs_axis" {
@@ -163,7 +157,6 @@ module "repairs_axis" {
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
   dataset_name                    = "repairs-axis"
-  workflow_name                   = "${local.identifier_prefix}-housing-repairs-rrepairs-axis"
 }
 
 module "repairs_fire_alarm_aov" {
