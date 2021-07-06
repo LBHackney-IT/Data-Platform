@@ -26,7 +26,7 @@ resource "aws_glue_job" "google_sheet_import" {
 }
 
 resource "aws_glue_workflow" "workflow" {
-  name = "${var.identifier_prefix}-${var.department_name}-${var.dataset_name}"
+  name = "${var.identifier_prefix}${var.department_name}-${var.dataset_name}"
 }
 
 resource "aws_glue_crawler" "google_sheet_import" {
