@@ -53,11 +53,6 @@ variable "glue_catalog_database_name" {
   type        = string
 }
 
-variable "glue_job_name" {
-  description = "Name of AWS Glue job"
-  type        = string
-}
-
 variable "google_sheets_document_id" {
   description = "Google sheets document id"
   type        = string
