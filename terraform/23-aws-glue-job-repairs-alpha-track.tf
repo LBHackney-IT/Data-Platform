@@ -53,3 +53,40 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_alpha_track_cl
     }
   })
 }
+
+resource "aws_glue_trigger" "housing_repairs_repairs_alpha_track_cleaning_job" {
+  count = local.is_live_environment ? 1 : 0
+
+  name          = "${local.identifier_prefix}-housing-repairs-repairs-alpha-track-cleaning-job-trigger"
+  type          = "CONDITIONAL"
+  workflow_name = module.repairs_alpha_track[0].workflow_name
+
+  predicate {
+    conditions {
+      crawler_name = module.repairs_alpha_track[0].crawler_name
+      crawl_state  = "SUCCEEDED"
+    }
+  }
+
+  actions {
+    job_name = aws_glue_job.housing_repairs_alpha_track_cleaning[0].name
+  }
+}
+
+resource "aws_glue_trigger" "housing_repairs_repairs_alpha_track_cleaning_crawler" {
+  count = local.is_live_environment ? 1 : 0
+
+  name          = "${local.identifier_prefix}-housing-repairs-repairs-alpha-track-cleaning-crawler-trigger"
+  type          = "CONDITIONAL"
+  workflow_name = module.repairs_alpha_track[0].workflow_name
+
+  predicate {
+    conditions {
+      job_name = aws_glue_job.housing_repairs_alpha_track_cleaning[0].name
+      state    = "SUCCEEDED"
+    }
+  }
+  actions {
+    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_repairs_alpha_track_cleaned_crawler.name
+  }
+}
