@@ -187,6 +187,8 @@ resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
   }
 }
 
-resource "aws_glue_workflow" "liberator_data" {
-  name = "${local.short_identifier_prefix}-liberator-data-workflow"
+resource "aws_glue_workflow" "parking_liberator_data" {
+  # This resource is modified outside of terraform by parking analysts.
+  # Any change which forces the workflow to be recreated will lose their changes.
+  name = "${local.short_identifier_prefix}parking-liberator-data-workflow"
 }
