@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda_assume_role" {
 resource "aws_iam_role" "g_drive_to_s3_copier_lambda" {
   tags = var.tags
 
-  name               = lower("${var.identifier_prefix}-g-drive-to-s3-copier-lambda")
+  name               = lower("${var.identifier_prefix}-g-drive-to-s3-copier-${var.lambda_name}")
   assume_role_policy = data.aws_iam_policy_document.g_drive_to_s3_copier_lambda_assume_role.json
 }
 
@@ -46,16 +46,14 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
   }
 
   dynamic "statement" {
-    for_each = var.workflow_arn == "" ? [] : [1]
+    for_each = var.job_arns == "" ? [] : [1]
 
     content {
       actions = [
-        "glue:StartWorkflowRun",
+        "glue:StartJobRun",
       ]
-      effect = "Allow"
-      resources = [
-        var.workflow_arn
-      ]
+      effect    = "Allow"
+      resources = var.job_arns
     }
   }
 }
@@ -98,7 +96,7 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   role             = aws_iam_role.g_drive_to_s3_copier_lambda.arn
   handler          = "main.lambda_handler"
   runtime          = "python3.8"
-  function_name    = "${var.identifier_prefix}-g-drive-to-s3-copier"
+  function_name    = "${var.identifier_prefix}-${var.lambda_name}-copier"
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_bucket_object.g_drive_to_s3_copier_lambda.key
   source_code_hash = data.archive_file.g_drive_to_s3_copier_lambda.output_base64sha256
@@ -106,9 +104,10 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
 
   environment {
     variables = {
-      FILE_ID   = var.file_id
-      BUCKET_ID = var.zone_bucket_id
-      FILE_NAME = "${var.service_area}/${var.file_name}"
+      FILE_ID        = var.file_id
+      BUCKET_ID      = var.zone_bucket_id
+      FILE_NAME      = "${var.service_area}/${var.file_name}"
+      GLUE_JOB_NAMES = join("/", var.glue_job_names)
     }
   }
 

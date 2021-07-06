@@ -3,16 +3,6 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "project" {
-  description = "The project name."
-  type        = string
-}
-
-variable "environment" {
-  description = "Enviroment e.g. Dev, Stg, Prod, Mgmt."
-  type        = string
-}
-
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
@@ -40,6 +30,10 @@ variable "file_id" {
 }
 
 variable "file_name" {
+  type = string
+}
+
+variable "lambda_name" {
   type = string
 }
 
