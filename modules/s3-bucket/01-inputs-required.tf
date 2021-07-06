@@ -27,5 +27,3 @@ variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
 }
-
-

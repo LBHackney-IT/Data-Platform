@@ -22,12 +22,13 @@ def upload_file_to_s3(client, body_data, bucket_name, file_name):
 def download_file(service, file_id):
     request = service.files().get_media(fileId=file_id)
 
-    downloader = MediaIoBaseDownload(io.BytesIO(), request)
+    file = io.BytesIO()
+    downloader = MediaIoBaseDownload(file, request)
     done = False
     while done is False:
         status, done = downloader.next_chunk()
         print("Download %d%%." % int(status.progress() * 100))
-    return fh.getvalue()
+    return file.getvalue()
 
 def lambda_handler(event, lambda_context):
     load_dotenv()
@@ -58,6 +59,15 @@ def lambda_handler(event, lambda_context):
     s3_client = boto3.client('s3')
 
     upload_file_to_s3(s3_client, file_body, bucket_name,file_name)
+
+    glue_client = boto3.client('glue')
+
+    glue_job_names = getenv("GLUE_JOB_NAMES").split("/")
+
+    for glue_job_name in glue_job_names:
+        print('Running '+ glue_job_name)
+        response = glue_client.start_job_run(JobName = glue_job_name)
+        print(response)
 
 
 if __name__ == '__main__':

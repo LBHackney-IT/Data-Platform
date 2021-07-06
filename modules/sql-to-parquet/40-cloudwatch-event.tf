@@ -43,13 +43,11 @@ data "aws_iam_policy_document" "event_run_policy" {
   }
 }
 
-
 resource "aws_cloudwatch_event_target" "run_ingestor_task" {
   target_id = var.instance_name
   arn       = aws_ecs_cluster.ecs_cluster.arn
   rule      = aws_cloudwatch_event_rule.new_s3_object.name
   role_arn  = aws_iam_role.cloudwatch_run_ecs_events.arn
-
 
   ecs_target {
     task_count          = 1

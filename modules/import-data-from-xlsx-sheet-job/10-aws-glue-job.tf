@@ -24,13 +24,45 @@ resource "aws_glue_job" "xlsx_import" {
   }
 }
 
-resource "aws_glue_trigger" "google_sheet_import_trigger" {
-  name     = "Xlsx Import Job Glue Trigger- ${var.glue_job_name}"
+resource "aws_glue_trigger" "xlsx_import_trigger" {
+  name     = "Xlsx Import Job Glue Trigger - ${var.glue_job_name}"
   schedule = var.xlsx_import_schedule
   type     = "SCHEDULED"
   enabled  = var.enable_glue_trigger
 
   actions {
     job_name = aws_glue_job.xlsx_import.name
+  }
+
+}
+resource "aws_glue_crawler" "xlsx_import" {
+  tags = var.tags
+
+  database_name = var.glue_catalog_database_name
+  name          = "${var.raw_zone_bucket_id}-${var.department_folder_name}-${var.worksheet_name}"
+  role          = var.glue_role_arn
+  table_prefix  = "${replace(var.department_folder_name, "-", "_")}_"
+
+  s3_target {
+    path = "s3://${var.raw_zone_bucket_id}/${var.department_folder_name}/${var.worksheet_name}"
+  }
+}
+
+resource "aws_glue_trigger" "xlsx_import_crawler_trigger" {
+  tags = var.tags
+
+  name    = "Xlsx Crawler Trigger - ${var.glue_job_name}"
+  type    = "CONDITIONAL"
+  enabled = true
+
+  predicate {
+    conditions {
+      state    = "SUCCEEDED"
+      job_name = aws_glue_job.xlsx_import.name
+    }
+  }
+
+  actions {
+    job_name = aws_glue_crawler.xlsx_import.name
   }
 }

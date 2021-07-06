@@ -3,6 +3,11 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "is_live_environment" {
+  description = "A flag indicting if we are running in a live environment for setting up automation"
+  type        = bool
+}
+
 variable "landing_zone_bucket_id" {
   description = "Landing zone S3 bucket id"
   type        = string
@@ -28,8 +33,17 @@ variable "identifier_prefix" {
   type        = string
 }
 
-variable "identifier" {
-  description = "A url safe, lowercase identifier for the department"
+variable "name" {
+  description = "The name of the department"
   type        = string
 }
 
+variable "application" {
+  type        = string
+  description = "For example, data-platform"
+}
+
+variable "secrets_manager_kms_key_id" {
+  type        = string
+  description = "The KMS Key Id to be used to encrypt the secret which stores the json credentials"
+}
