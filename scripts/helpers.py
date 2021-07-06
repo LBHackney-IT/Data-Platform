@@ -71,3 +71,15 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
     continuation_token['ContinuationToken'] = list_objects_response.get('NextContinuationToken')
 
   return set(folders)
+
+def map_repair_priority(code):
+    if code == 'Immediate':
+        return 1
+    elif code == 'Emergency':
+        return 2
+    elif code == 'Urgent':
+        return 3
+    elif code == 'Normal':
+        return 4
+    else:
+        return None
