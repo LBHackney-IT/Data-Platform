@@ -19,6 +19,10 @@ jobs:
         uses: hashicorp/setup-terraform@v1.2.1
         with:
           terraform_version: 0.14.9
+      - name: Set up dummy Google Cloud Credentials
+        run: |
+          echo "{}" >> ./google_service_account_creds.json
+        shell: bash
       - name: Run `terraform validate` on Terraform Networking
         working-directory: "./terraform-networking"
         run: |
