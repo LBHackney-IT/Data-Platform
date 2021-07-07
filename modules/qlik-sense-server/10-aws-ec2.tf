@@ -143,6 +143,6 @@ resource "aws_instance" "qlik_sense" {
   get_password_data      = "true"
 
   lifecycle {
-    ignore_changes = [subnet_id]
+    ignore_changes = [subnet_id, ami]
   }
 }
