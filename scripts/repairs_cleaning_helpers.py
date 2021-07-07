@@ -23,7 +23,7 @@ udf_map_repair_priority = F.udf(map_repair_priority, StringType())
 
 def clean_column_names(df):
     # remove trialing underscores
-    df = df.select([F.col(col).alias(re.sub("_", "", col))
+    df = df.select([F.col(col).alias(re.sub("_$", "", col))
                    for col in df.columns])
     # lowercase and remove double underscores
     df2 = df.select([F.col(col).alias(
