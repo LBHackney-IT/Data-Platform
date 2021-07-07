@@ -57,6 +57,15 @@ resource "aws_s3_bucket_object" "helpers" {
   source = "../scripts/helpers.py"
   etag   = filemd5("../scripts/helpers.py")
 }
+resource "aws_s3_bucket_object" "repairs_cleaning_helpers" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/repairs_cleaning_helpers.py"
+  acl    = "private"
+  source = "../scripts/repairs_cleaning_helpers.py"
+  etag   = filemd5("../scripts/repairs_cleaning_helpers.py")
+}
 
 resource "aws_s3_bucket_object" "xlsx_import_script" {
   tags = module.tags.values
