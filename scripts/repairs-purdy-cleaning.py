@@ -8,7 +8,7 @@ from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 from helpers import get_glue_env_var
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
+from repairs_cleaning_helpers import udf_map_repair_priority, remove_multiple_and_trailing_underscores_and_lowercase
 
 
 def getLatestPartitions(dfa):
@@ -42,7 +42,7 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 df = source_data.toDF()
 
 df = getLatestPartitions(df)
-df2 = clean_column_names(df)
+df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
 
 # rename column names to reflect harmonised column banes
 logger.info('convert timestamp and date columns to datetime / date field types')
