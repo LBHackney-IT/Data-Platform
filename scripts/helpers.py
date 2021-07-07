@@ -31,6 +31,10 @@ def get_secret(logger, secret_name, region_name):
     else:
         return get_secret_value_response['SecretBinary'].decode('ascii')
 
+def add_timestamp_column(data_frame):
+    now = datetime.datetime.now()
+    return data_frame.withColumn('import_timestamp', f.lit(str(now.timestamp())))
+
 def add_import_time_columns(data_frame):
     now = datetime.datetime.now()
     importYear = str(now.year)

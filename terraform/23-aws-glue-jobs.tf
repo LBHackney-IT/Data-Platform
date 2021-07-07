@@ -77,6 +77,30 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
   }
 }
 
+resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
+  tags = module.tags.values
+
+  name              = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  number_of_workers = 2
+  worker_type       = "Standard"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_parking_liberator_landing_to_raw.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--job-bookmark-option"       = "job-bookmark-enable"
+    "--s3_bucket_target"          = module.raw_zone.bucket_id
+    "--s3_prefix"                 = "parking/liberator/"
+    "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_liberator.name
+    "--glue_database_name_target" = aws_glue_catalog_database.raw_zone_liberator.name
+    "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+}
+
 resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
   count = local.is_live_environment ? 1 : 0
 

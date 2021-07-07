@@ -28,6 +28,10 @@ resource "aws_glue_catalog_database" "landing_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-landing-zone"
 }
 
+resource "aws_glue_catalog_database" "raw_zone_liberator" {
+  name = "${local.identifier_prefix}-liberator-raw-zone"
+}
+
 resource "aws_glue_crawler" "landing_zone_liberator" {
   tags = module.tags.values
 
