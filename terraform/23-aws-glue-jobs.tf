@@ -137,6 +137,7 @@ resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
+
 resource "aws_glue_job" "get_uprn_from_uhref" {
   count = terraform.workspace == "default" ? 1 : 0
 
@@ -163,8 +164,6 @@ resource "aws_glue_job" "get_uprn_from_uhref" {
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
-
-
 
 resource "aws_glue_workflow" "parking_liberator_data" {
   # This resource is modified outside of terraform by parking analysts.
