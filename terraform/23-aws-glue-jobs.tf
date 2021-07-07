@@ -112,7 +112,7 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
 }
 
 resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
-  count = terraform.workspace == "default" ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
 
@@ -139,7 +139,7 @@ resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
 }
 
 resource "aws_glue_job" "get_uprn_from_uhref" {
-  count = terraform.workspace == "default" ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
 

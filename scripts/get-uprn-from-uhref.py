@@ -18,14 +18,11 @@ def get_latest_partitions(dfa):
    dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
    return dfa
 
-
-
 source_data_database = get_glue_env_var('source_data_database', '')
 source_data_catalogue_table = get_glue_env_var('source_data_catalogue_table', '')
 lookup_database = get_glue_env_var('lookup_database', '')
 lookup_catalogue_table = get_glue_env_var('lookup_catalogue_table', '')
 target_destination = get_glue_env_var('target_destination', '')
-
 
 ### READ SOURCE DATA
 source_ddf = glueContext.create_dynamic_frame.from_catalog(
@@ -35,7 +32,6 @@ source_ddf = glueContext.create_dynamic_frame.from_catalog(
 
 source_df = source_ddf.toDF()
 source_df = get_latest_partitions(source_df)
-
 
 ### READ UHREF/UPRN LOOKUP DATA
 
@@ -54,7 +50,6 @@ uhref_uprn_lookup_df = uhref_uprn_lookup_df.withColumnRenamed("ten_property_ref"
 joined_df = source_df.join(uhref_uprn_lookup_df, "property_reference_uh", "left")
 
 # ### WRITE
-
 
 resultDataFrame = DynamicFrame.fromDF(joined_df, glueContext, "resultDataFrame")
 
