@@ -1,7 +1,4 @@
 .PHONY: $(MAKECMDGOALS)
 
-test: install
-	pipenv run python3 -m unittest
-
-install:
-	pipenv install
+test:
+	docker run -v ${PWD}:/root/scripts amazon/aws-glue-libs:glue_libs_1.0.0_image_01 /home/aws-glue-libs/bin/gluepytest /root/scripts/
