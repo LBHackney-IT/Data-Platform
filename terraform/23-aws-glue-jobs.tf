@@ -137,6 +137,34 @@ resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
+resource "aws_glue_job" "get_uprn_from_uhref" {
+  count = terraform.workspace == "default" ? 1 : 0
+
+  tags = module.tags.values
+
+  name              = "${local.short_identifier_prefix}Get UPRN from UHref"
+  number_of_workers = 10
+  worker_type       = "G.1X"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.get_uprn_from_uhref.key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--lookup_catalogue_table"      = "datainsight_data_and_insight"
+    "--lookup_database"             = "dataplatform-stg-raw-zone-database"
+    "--source_data_catalogue_table" = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
+    "--source_data_database"        = module.department_housing_repairs.refined_zone_catalog_database_name
+    "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
+    "--TempDir"                     = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+}
+
+
 
 resource "aws_glue_workflow" "parking_liberator_data" {
   # This resource is modified outside of terraform by parking analysts.
