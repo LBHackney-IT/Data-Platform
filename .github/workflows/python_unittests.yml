@@ -8,10 +8,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install pipenv
-        run: |
-          sudo apt-get update
-          sudo apt-get install pipenv
       - name: Run `make test`
         run: |
           cd scripts
