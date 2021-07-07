@@ -44,7 +44,7 @@ resource "aws_glue_crawler" "xlsx_import" {
   table_prefix  = "${replace(var.department_folder_name, "-", "_")}_"
 
   s3_target {
-    path = "s3://${var.raw_zone_bucket_id}/${var.department_folder_name}/${var.worksheet_name}"
+    path = "s3://${var.raw_zone_bucket_id}/${var.department_folder_name}/${var.output_folder_name}"
   }
 }
 
