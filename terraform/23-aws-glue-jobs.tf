@@ -5,7 +5,7 @@ module "repairs_fire_alarm_aov" {
   glue_role_arn                  = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_id
+  glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   helpers_script_key             = aws_s3_bucket_object.helpers.key
   xlsx_import_script_key         = aws_s3_bucket_object.xlsx_import_script.key
   identifier_prefix              = local.identifier_prefix
@@ -81,7 +81,7 @@ resource "aws_glue_job" "repairs_dlo_address_cleaning" {
     "--source_catalog_table"               = "housing_repairs_repairs_dlo_cleaned"
     "--source_address_column_header"       = "property_address"
     "--source_postcode_column_header"      = "postal_code_raw"
-    "--TempDir"                            = local.glue_temp_storage_bucket_path
+    "--TempDir"                            = module.glue_temp_storage.bucket_url
     "--extra-py-files"                     = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
@@ -133,7 +133,7 @@ resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
     "--source_catalog_database"     = "housing-repairs-refined-zone"
     "--source_catalog_table"        = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
     "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-matched-addresses/"
-    "--TempDir"                     = local.glue_temp_storage_bucket_path
+    "--TempDir"                     = module.glue_temp_storage.bucket_url
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
