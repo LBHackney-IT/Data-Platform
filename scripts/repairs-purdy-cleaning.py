@@ -7,7 +7,7 @@ from awsglue.job import Job
 from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
-from helpers import get_glue_env_var
+from helpers import get_glue_env_var, PARTITION_KEYS
 from repairs_cleaning_helpers import udf_map_repair_priority, remove_multiple_and_trailing_underscores_and_lowercase
 
 
@@ -70,7 +70,7 @@ parquetData = glueContext.write_dynamic_frame.from_options(
     frame=cleanedDataframe,
     connection_type="s3",
     format="parquet",
-    connection_options={"path": cleaned_repairs_s3_bucket_target, "partitionKeys": [
-        "import_year", "import_month", "import_day", "import_date"]},
+    connection_options={
+        "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
     transformation_ctx="parquetData")
 job.commit()
