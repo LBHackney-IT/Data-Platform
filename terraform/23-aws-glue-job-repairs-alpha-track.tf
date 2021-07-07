@@ -28,7 +28,7 @@ resource "aws_glue_job" "housing_repairs_alpha_track_cleaning" {
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-alpha-track/cleaned"
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = "housing_repairs_repairs_alpha_track"
-    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--TempDir"                          = local.glue_temp_storage_bucket_path
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
