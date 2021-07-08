@@ -80,9 +80,3 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
     continuation_token['ContinuationToken'] = list_objects_response.get('NextContinuationToken')
 
   return set(folders)
-
-def get_latest_partitions(dfa):
-   dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
-   dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
-   dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
-   return dfa
