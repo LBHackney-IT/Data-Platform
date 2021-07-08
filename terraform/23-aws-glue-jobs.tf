@@ -47,7 +47,7 @@ resource "aws_glue_job" "repairs_dlo_address_cleaning" {
     "--source_catalog_table"               = "housing_repairs_repairs_dlo_cleaned"
     "--source_address_column_header"       = "property_address"
     "--source_postcode_column_header"      = "postal_code_raw"
-    "--TempDir"                            = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--TempDir"                            = module.glue_temp_storage.bucket_url
     "--extra-py-files"                     = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }
@@ -99,7 +99,7 @@ resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
     "--source_catalog_database"     = "housing-repairs-refined-zone"
     "--source_catalog_table"        = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
     "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-matched-addresses/"
-    "--TempDir"                     = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--TempDir"                     = module.glue_temp_storage.bucket_url
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
 }

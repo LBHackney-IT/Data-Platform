@@ -18,3 +18,8 @@ output "kms_key_arn" {
   description = "KMS Key arn"
   value       = aws_kms_key.key.arn
 }
+
+output "bucket_url" {
+  description = "S3 bucket url"
+  value = "s3://${aws_s3_bucket.bucket.bucket}/"
+}

@@ -5,7 +5,7 @@ module "repairs_fire_alarm_aov" {
   glue_role_arn                  = aws_iam_role.glue_role.arn
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_arn
+  glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   helpers_script_key             = aws_s3_bucket_object.helpers.key
   xlsx_import_script_key         = aws_s3_bucket_object.xlsx_import_script.key
   identifier_prefix              = local.identifier_prefix
