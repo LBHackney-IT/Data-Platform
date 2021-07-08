@@ -60,8 +60,8 @@ df2 = df2.withColumn('data_source', F.lit('Alphatrack'))
 
 # rename column names
 df2 = df2.withColumnRenamed('email_address', 'email_staff') \
-    .withColumnRenamed('date_-_temp_order_reference', 'temp_order_number_date') \
-    .withColumnRenamed('time_-_temp_order_reference', 'temp_order_number_time') \
+    .withColumnRenamed('date_temp_order_reference', 'temp_order_number_date') \
+    .withColumnRenamed('time_temp_order_reference', 'temp_order_number_time') \
     .withColumnRenamed('temporary_order_number_if_required', 'temp_order_number_full') \
     .withColumnRenamed('call_out_sors', 'sor') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
