@@ -226,8 +226,6 @@ data "aws_iam_policy_document" "parking_s3_access" {
     resources = [
       module.raw_zone.bucket_arn,
       "${module.raw_zone.bucket_arn}/parking/*",
-      module.landing_zone.bucket_arn,
-      "${module.landing_zone.bucket_arn}/parking/*",
     ]
   }
 
@@ -238,6 +236,7 @@ data "aws_iam_policy_document" "parking_s3_access" {
       "s3:List*"
     ]
     resources = [
+      module.landing_zone.bucket_arn,
       module.glue_temp_storage.bucket_arn,
       module.glue_scripts.bucket_arn,
     ]
