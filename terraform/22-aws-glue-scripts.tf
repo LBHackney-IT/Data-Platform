@@ -87,12 +87,12 @@ resource "aws_s3_bucket_object" "get_uprn_from_uhref" {
   etag   = filemd5("../scripts/get-uprn-from-uhref.py")
 }
 
-resource "aws_s3_bucket_object" "empty_job" {
+resource "aws_s3_bucket_object" "copy_parking_liberator_landing_to_raw" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/empty-job.py"
+  key    = "scripts/copy_parking_liberator_landing_to_raw.py"
   acl    = "private"
-  source = "../scripts/empty-job.py"
-  etag   = filemd5("../scripts/empty-job.py")
+  source = "../scripts/copy_parking_liberator_landing_to_raw.py"
+  etag   = filemd5("../scripts/copy_parking_liberator_landing_to_raw.py")
 }
