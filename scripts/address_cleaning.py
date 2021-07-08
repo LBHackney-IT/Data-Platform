@@ -13,7 +13,7 @@ from awsglue.dynamicframe import DynamicFrame
 
 from helpers import get_glue_env_var, PARTITION_KEYS
 
-def getLatestPartitions(dfa):
+def get_latest_partitions(dfa):
    dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
    dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
    dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
@@ -44,7 +44,7 @@ source_dataset = glueContext.create_dynamic_frame.from_catalog(
 df = source_dataset.toDF()
 source_dataset.printSchema()
 
-df = getLatestPartitions(df)
+df = get_latest_partitions(df)
 
 logger.info('adding new column')
 df = df.withColumn('address', F.col(source_address_column_header))
