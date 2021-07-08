@@ -2,10 +2,10 @@ resource "aws_s3_bucket_object" "repairs_purdy_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/repairs-purdy-cleaning.py"
+  key    = "scripts/repairs_purdy_cleaning.py"
   acl    = "private"
-  source = "../scripts/repairs-purdy-cleaning.py"
-  etag   = filemd5("../scripts/repairs-purdy-cleaning.py")
+  source = "../scripts/repairs_purdy_cleaning.py"
+  etag   = filemd5("../scripts/repairs_purdy_cleaning.py")
 }
 
 resource "aws_glue_job" "housing_repairs_purdy_cleaning" {

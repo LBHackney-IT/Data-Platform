@@ -2,10 +2,10 @@ resource "aws_s3_bucket_object" "repairs_stannah_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/repairs-stannah-cleaning.py"
+  key    = "scripts/repairs_stannah_cleaning.py"
   acl    = "private"
-  source = "../scripts/repairs-stannah-cleaning.py"
-  etag   = filemd5("../scripts/repairs-stannah-cleaning.py")
+  source = "../scripts/repairs_stannah_cleaning.py"
+  etag   = filemd5("../scripts/repairs_stannah_cleaning.py")
 }
 
 resource "aws_glue_job" "housing_repairs_stannah_cleaning" {

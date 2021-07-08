@@ -2,10 +2,10 @@ resource "aws_s3_bucket_object" "repairs_alpha_track_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/repairs-alpha-track-cleaning.py"
+  key    = "scripts/repairs_alpha_track_cleaning.py"
   acl    = "private"
-  source = "../scripts/repairs-alpha-track-cleaning.py"
-  etag   = filemd5("../scripts/repairs-alpha-track-cleaning.py")
+  source = "../scripts/repairs_alpha_track_cleaning.py"
+  etag   = filemd5("../scripts/repairs_alpha_track_cleaning.py")
 }
 
 resource "aws_glue_job" "housing_repairs_alpha_track_cleaning" {

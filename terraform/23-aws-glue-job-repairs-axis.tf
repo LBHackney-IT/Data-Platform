@@ -2,10 +2,10 @@ resource "aws_s3_bucket_object" "repairs_axis_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/repairs-axis-cleaning.py"
+  key    = "scripts/repairs_axis_cleaning.py"
   acl    = "private"
-  source = "../scripts/repairs-axis-cleaning.py"
-  etag   = filemd5("../scripts/repairs-axis-cleaning.py")
+  source = "../scripts/repairs_axis_cleaning.py"
+  etag   = filemd5("../scripts/repairs_axis_cleaning.py")
 }
 
 resource "aws_glue_job" "housing_repairs_axis_cleaning" {
