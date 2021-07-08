@@ -23,9 +23,10 @@ database_name_source = get_glue_env_var("glue_database_name_source")
 database_name_target = get_glue_env_var("glue_database_name_target")
 bucket_target = get_glue_env_var("s3_bucket_target")
 prefix = get_glue_env_var("s3_prefix")
+table_filter_expression = get_glue_env_var("table_filter_expression")
 logger = glue_context.get_logger()
 
-for table in glue_client.get_tables(DatabaseName=database_name_source)['TableList']:
+for table in glue_client.get_tables(DatabaseName=database_name_source, Expression=table_filter_expression)['TableList']:
   logger.info(f"Starting copying table {database_name_source}{table['Name']}")
   table_dynamic_frame = glue_context.create_dynamic_frame.from_catalog(
       name_space = database_name_source,
