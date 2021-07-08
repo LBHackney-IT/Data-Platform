@@ -2,50 +2,50 @@ resource "aws_s3_bucket_object" "google_sheets_import_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/google-sheets-import.py"
+  key    = "scripts/google_sheets_import.py"
   acl    = "private"
-  source = "../scripts/google-sheets-import.py"
-  etag   = filemd5("../scripts/google-sheets-import.py")
+  source = "../scripts/google_sheets_import.py"
+  etag   = filemd5("../scripts/google_sheets_import.py")
 }
 
 resource "aws_s3_bucket_object" "address_matching" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/address-matching.py"
+  key    = "scripts/address_matching.py"
   acl    = "private"
-  source = "../scripts/address-matching.py"
-  etag   = filemd5("../scripts/address-matching.py")
+  source = "../scripts/address_matching.py"
+  etag   = filemd5("../scripts/address_matching.py")
 }
 
 resource "aws_s3_bucket_object" "levenshtein_address_matching" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/levenshtein-address-matching.py"
+  key    = "scripts/levenshtein_address_matching.py"
   acl    = "private"
-  source = "../scripts/levenshtein-address-matching.py"
-  etag   = filemd5("../scripts/levenshtein-address-matching.py")
+  source = "../scripts/levenshtein_address_matching.py"
+  etag   = filemd5("../scripts/levenshtein_address_matching.py")
 }
 
 resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/copy-manually-uploaded-csv-data-to-raw.py"
+  key    = "scripts/copy_manually_uploaded_csv_data_to_raw.py"
   acl    = "private"
-  source = "../scripts/copy-manually-uploaded-csv-data-to-raw.py"
-  etag   = filemd5("../scripts/copy-manually-uploaded-csv-data-to-raw.py")
+  source = "../scripts/copy_manually_uploaded_csv_data_to_raw.py"
+  etag   = filemd5("../scripts/copy_manually_uploaded_csv_data_to_raw.py")
 }
 
 resource "aws_s3_bucket_object" "address_cleaning" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/address-cleaning.py"
+  key    = "scripts/address_cleaning.py"
   acl    = "private"
-  source = "../scripts/address-cleaning.py"
-  etag   = filemd5("../scripts/address-cleaning.py")
+  source = "../scripts/address_cleaning.py"
+  etag   = filemd5("../scripts/address_cleaning.py")
 }
 
 resource "aws_s3_bucket_object" "helpers" {
@@ -71,20 +71,20 @@ resource "aws_s3_bucket_object" "xlsx_import_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/xlsx-import.py"
+  key    = "scripts/xlsx_import.py"
   acl    = "private"
-  source = "../scripts/xlsx-import.py"
-  etag   = filemd5("../scripts/xlsx-import.py")
+  source = "../scripts/xlsx_import.py"
+  etag   = filemd5("../scripts/xlsx_import.py")
 }
 
 resource "aws_s3_bucket_object" "get_uprn_from_uhref" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/get-uprn-from-uhref.py"
+  key    = "scripts/get_uprn_from_uhref.py"
   acl    = "private"
-  source = "../scripts/get-uprn-from-uhref.py"
-  etag   = filemd5("../scripts/get-uprn-from-uhref.py")
+  source = "../scripts/get_uprn_from_uhref.py"
+  etag   = filemd5("../scripts/get_uprn_from_uhref.py")
 }
 
 resource "aws_s3_bucket_object" "copy_parking_liberator_landing_to_raw" {

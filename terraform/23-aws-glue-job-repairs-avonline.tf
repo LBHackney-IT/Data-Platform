@@ -2,10 +2,10 @@ resource "aws_s3_bucket_object" "repairs_avonline_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/repairs-avonline-cleaning.py"
+  key    = "scripts/repairs_avonline_cleaning.py"
   acl    = "private"
-  source = "../scripts/repairs-avonline-cleaning.py"
-  etag   = filemd5("../scripts/repairs-avonline-cleaning.py")
+  source = "../scripts/repairs_avonline_cleaning.py"
+  etag   = filemd5("../scripts/repairs_avonline_cleaning.py")
 }
 
 resource "aws_glue_job" "housing_repairs_avonline_cleaning" {
@@ -29,7 +29,7 @@ resource "aws_glue_job" "housing_repairs_avonline_cleaning" {
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = "housing_repairs_repairs_avonline"
     "--TempDir"                          = module.glue_temp_storage.bucket_url
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
 }
 

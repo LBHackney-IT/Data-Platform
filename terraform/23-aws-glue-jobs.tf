@@ -95,6 +95,7 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
     "--job-bookmark-option"       = "job-bookmark-enable"
     "--s3_bucket_target"          = module.raw_zone.bucket_id
     "--s3_prefix"                 = "parking/liberator/"
+    "--table_filter_expression"   = "^liberator_(?!fpn).*"
     "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_liberator.name
     "--glue_database_name_target" = aws_glue_catalog_database.raw_zone_liberator.name
     "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"

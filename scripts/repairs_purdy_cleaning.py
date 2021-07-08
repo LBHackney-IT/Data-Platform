@@ -1,25 +1,16 @@
 import sys
+
+import pyspark.sql.functions as F
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from pyspark.sql.functions import col, max
-import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
-from helpers import get_glue_env_var, PARTITION_KEYS
+
+from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import udf_map_repair_priority, remove_multiple_and_trailing_underscores_and_lowercase
-
-
-def getLatestPartitions(dfa):
-    dfa = dfa.where(col('import_year') == dfa.select(
-        max('import_year')).first()[0])
-    dfa = dfa.where(col('import_month') == dfa.select(
-        max('import_month')).first()[0])
-    dfa = dfa.where(col('import_day') == dfa.select(
-        max('import_day')).first()[0])
-    return dfa
-
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -41,7 +32,7 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 
 df = source_data.toDF()
 
-df = getLatestPartitions(df)
+df = get_latest_partitions(df)
 df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
 
 # rename column names to reflect harmonised column banes
