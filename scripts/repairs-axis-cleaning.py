@@ -9,7 +9,8 @@ from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
-from helpers import get_glue_env_var, map_repair_priority, PARTITION_KEYS
+from helpers import get_glue_env_var, PARTITION_KEYS
+from repairs_cleaning_helpers import udf_map_repair_priority, remove_multiple_and_trailing_underscores_and_lowercase
 
 def getLatestPartitions(dfa):
    dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
@@ -36,10 +37,7 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 
 df = source_data.toDF()
 df = getLatestPartitions(df)
-
-df2 = df.toDF(*[c.lower().replace(' ', '_') for c in df.columns])
-df2 = df2.toDF(*[c.lower().replace('-', '_') for c in df.columns])
-df2 = df2.toDF(*[c.lower().replace('__', '_') for c in df.columns])
+df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
 
 df2 = df2.withColumn('timestamp', F.to_timestamp("timestamp", "dd/MM/yyyy HH:mm:ss"))
 df2 = df2.withColumn('date_temp_order_reference_', F.to_date('date_temp_order_reference_', "dd/MM/yyyy"))
@@ -62,6 +60,6 @@ parquetData = glueContext.write_dynamic_frame.from_options(
     frame=cleanedDataframe,
     connection_type="s3",
     format="parquet",
-    connection_options={"path": cleaned_repairs_s3_bucket_target,"partitionKeys": ["import_year", "import_month", "import_day", "import_date"]},
+    connection_options={"path": cleaned_repairs_s3_bucket_target,"partitionKeys": PARTITION_KEYS},
     transformation_ctx="parquetData")
 job.commit()
