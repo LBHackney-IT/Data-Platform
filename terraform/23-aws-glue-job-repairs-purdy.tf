@@ -29,7 +29,7 @@ resource "aws_glue_job" "housing_repairs_purdy_cleaning" {
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = "housing_repairs_repairs_purdy"
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}, s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
 }
 

@@ -29,7 +29,7 @@ resource "aws_glue_job" "repairs_dlo_cleaning" {
     "--source_catalog_table"             = "housing_repairs_repairs_dlo"
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned"
     "--TempDir"                          = module.glue_temp_storage.bucket_url
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
 }
 

@@ -1,7 +1,8 @@
 import sys
 import re
 
-from awsglue.context import GlueContext, SparkContext
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.transforms import *
@@ -13,22 +14,14 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from pyspark.sql.window import Window
 
-from helpers import get_glue_env_var, PARTITION_KEYS
-
-
-def getLatestPartitions(dfa):
-   dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
-   dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
-   dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
-   return dfa
-
+from helpers import get_glue_env_var, get_latest_partitions PARTITION_KEYS
+from repairs_cleaning_helpers import remove_multiple_and_trailing_underscores_and_lowercase
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table    = get_glue_env_var('source_catalog_table', '')
 cleaned_repairs_s3_bucket_target = get_glue_env_var('cleaned_repairs_s3_bucket_target', '')
-
 
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
@@ -47,8 +40,8 @@ df = source_data.toDF()
 df = getLatestPartitions(df)
 
 # clean up column names, data types
-df = df.select([F.col(col).alias(re.sub("_$", "", col)) for col in df.columns])
-df2 = df.select([F.col(col).alias(re.sub("[^0-9a-zA-Z$]+", "_", col.lower())) for col in df.columns])
+df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
+
 logger.info('convert timestamp and date columns to datetime / date field types')
 df2 = df2.withColumn('timestamp', F.to_timestamp("timestamp", "dd/MM/yyyy HH:mm:ss"))
 

@@ -1,4 +1,5 @@
 import sys
+
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -9,14 +10,9 @@ from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
-from helpers import get_glue_env_var, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, remove_multiple_and_trailing_underscores_and_lowercase
 
-def getLatestPartitions(dfa):
-   dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
-   dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
-   dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
-   return dfa
+from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from repairs_cleaning_helpers import udf_map_repair_priority, remove_multiple_and_trailing_underscores_and_lowercase
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -36,23 +32,22 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 )
 
 df = source_data.toDF()
-df = getLatestPartitions(df)
+df = get_latest_partitions(df)
 df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
 
 df2 = df2.withColumn('timestamp', F.to_timestamp("timestamp", "dd/MM/yyyy HH:mm:ss"))
-df2 = df2.withColumn('date_temp_order_reference_', F.to_date('date_temp_order_reference_', "dd/MM/yyyy"))
+df2 = df2.withColumn('date_temp_order_reference', F.to_date('date_temp_order_reference_', "dd/MM/yyyy"))
 
 df2 = df2.withColumn('data_source', F.lit('Axis'))
 
 df2 = df2.withColumnRenamed('email', 'email_staff') \
-    .withColumnRenamed('date_temp_order_reference_', 'temp_order_number_date') \
-    .withColumnRenamed('time_temp_order_reference_', 'temp_order_number_time') \
+    .withColumnRenamed('date_temp_order_reference', 'temp_order_number_date') \
+    .withColumnRenamed('time_temp_order_reference', 'temp_order_number_time') \
     .withColumnRenamed('temporary_order_number', 'temp_order_number_full') \
     .withColumnRenamed('priority', 'work_priority_description') \
     .withColumnRenamed('notes_and_information', 'notes') \
     .withColumnRenamed('timestamp', 'datetime_raised')
 
-udf_map_repair_priority = F.udf(map_repair_priority, StringType())
 df2 = df2.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
