@@ -26,7 +26,7 @@ job.init(args['JOB_NAME'], args)
 panada_df = pd.read_excel(
     s3_bucket_source,
     engine='openpyxl',
-    skiprows=range(0, int(header_row_number)),
+    skiprows=range(0, int(header_row_number)-1),
     sheet_name=worksheet_name
 )
 
