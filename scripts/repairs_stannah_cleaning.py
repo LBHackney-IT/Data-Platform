@@ -14,7 +14,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from pyspark.sql.window import Window
 
-from helpers import get_glue_env_var, get_latest_partitions PARTITION_KEYS
+from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import remove_multiple_and_trailing_underscores_and_lowercase
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
