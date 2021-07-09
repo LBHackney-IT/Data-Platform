@@ -1,3 +1,6 @@
+# When updating parking roles, while this will be deployed to staging it won't update the role that the SSO users assume.
+# To update the SSO role, you will need to ask the Cloud Engineering team responsible for maintaining the SSO
+# to copy over the updated role to SSO.
 data "aws_iam_policy_document" "sso_trusted_relationship" {
   statement {
     effect = "Allow"
@@ -369,7 +372,7 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
       //      "glue:CreateCrawler",
       "glue:CreateDag",
       //      "glue:CreateDatabase",
-      //      "glue:CreateDevEndpoint",
+      "glue:CreateDevEndpoint",
       "glue:CreateJob",
       //      "glue:CreateMLTransform",
       //      "glue:CreatePartition",
@@ -377,6 +380,7 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
       //      "glue:CreateSchema",
       "glue:CreateScript",
       //      "glue:CreateSecurityConfiguration",
+      "glue:CreateSession",
       //      "glue:CreateTable",
       "glue:CreateTrigger",
       //      "glue:CreateUserDefinedFunction",
@@ -385,7 +389,7 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
       //      "glue:DeleteConnection",
       //      "glue:DeleteCrawler",
       //      "glue:DeleteDatabase",
-      //      "glue:DeleteDevEndpoint",
+      "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
       //      "glue:DeleteMLTransform",
       //      "glue:DeletePartition",
@@ -478,7 +482,7 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
       //      "glue:StartMLEvaluationTaskRun",
       //      "glue:StartMLLabelingSetGenerationTaskRun",
       //      "glue:StartTrigger",
-      //      "glue:StartWorkflowRun",
+      "glue:StartWorkflowRun",
       "glue:StopCrawler",
       "glue:StopCrawlerSchedule",
       "glue:StopTrigger",
@@ -491,7 +495,7 @@ data "aws_iam_policy_document" "power_user_parking_glue_access" {
       //      "glue:UpdateCrawlerSchedule",
       "glue:UpdateDag",
       //      "glue:UpdateDatabase",
-      //      "glue:UpdateDevEndpoint",
+      "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
       //      "glue:UpdateMLTransform",
       //      "glue:UpdatePartition",
