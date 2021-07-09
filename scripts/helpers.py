@@ -3,14 +3,10 @@ from awsglue.utils import getResolvedOptions
 import datetime
 import boto3
 from pyspark.sql import functions as f
+from pyspark.sql.functions import col, max
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 
-def get_latest_partitions(dfa):
-   dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
-   dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
-   dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
-   return dfa
 
 def get_glue_env_var(key, default="none"):
     if f'--{key}' in sys.argv:
@@ -47,8 +43,10 @@ def add_import_time_columns(data_frame):
     importDay = str(now.day).zfill(2)
     importDate = importYear + importMonth + importDay
 
-    data_frame = data_frame.withColumn('import_datetime', f.current_timestamp())
-    data_frame = data_frame.withColumn('import_timestamp', f.lit(str(now.timestamp())))
+    data_frame = data_frame.withColumn(
+        'import_datetime', f.current_timestamp())
+    data_frame = data_frame.withColumn(
+        'import_timestamp', f.lit(str(now.timestamp())))
     data_frame = data_frame.withColumn('import_year', f.lit(importYear))
     data_frame = data_frame.withColumn('import_month', f.lit(importMonth))
     data_frame = data_frame.withColumn('import_day', f.lit(importDay))
@@ -64,19 +62,30 @@ def convert_pandas_df_to_spark_dynamic_df(sql_context, panadas_df):
     return spark_df
 
 def get_s3_subfolders(s3_client, bucket_name, prefix):
-  there_are_more_objects_in_the_bucket_to_fetch = True
-  folders = []
-  continuation_token = {}
-  while there_are_more_objects_in_the_bucket_to_fetch:
-    list_objects_response = s3_client.list_objects_v2(
-      Bucket=bucket_name,
-      Delimiter='/',
-      Prefix=prefix,
-      **continuation_token
-    )
+    there_are_more_objects_in_the_bucket_to_fetch = True
+    folders = []
+    continuation_token = {}
+    while there_are_more_objects_in_the_bucket_to_fetch:
+        list_objects_response = s3_client.list_objects_v2(
+            Bucket=bucket_name,
+            Delimiter='/',
+            Prefix=prefix,
+            **continuation_token
+        )
 
-    folders.extend(x['Prefix'] for x in list_objects_response.get('CommonPrefixes', []))
-    there_are_more_objects_in_the_bucket_to_fetch = list_objects_response['IsTruncated']
-    continuation_token['ContinuationToken'] = list_objects_response.get('NextContinuationToken')
+        folders.extend(x['Prefix']
+                       for x in list_objects_response.get('CommonPrefixes', []))
+        there_are_more_objects_in_the_bucket_to_fetch = list_objects_response['IsTruncated']
+        continuation_token['ContinuationToken'] = list_objects_response.get(
+            'NextContinuationToken')
 
-  return set(folders)
+    return set(folders)
+
+def get_latest_partitions(dfa):
+    dfa = dfa.where(col('import_year') == dfa.select(
+        max('import_year')).first()[0])
+    dfa = dfa.where(col('import_month') == dfa.select(
+        max('import_month')).first()[0])
+    dfa = dfa.where(col('import_day') == dfa.select(
+        max('import_day')).first()[0])
+    return dfa
