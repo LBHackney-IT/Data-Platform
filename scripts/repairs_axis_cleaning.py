@@ -36,7 +36,7 @@ df = get_latest_partitions(df)
 df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
 
 df2 = df2.withColumn('timestamp', F.to_timestamp("timestamp", "dd/MM/yyyy HH:mm:ss"))
-df2 = df2.withColumn('date_temp_order_reference', F.to_date('date_temp_order_reference_', "dd/MM/yyyy"))
+df2 = df2.withColumn('date_temp_order_reference', F.to_date('date_temp_order_reference', "dd/MM/yyyy"))
 
 df2 = df2.withColumn('data_source', F.lit('Axis'))
 
