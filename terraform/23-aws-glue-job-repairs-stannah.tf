@@ -60,6 +60,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_stannah_cleaning_job" {
   name          = "${local.identifier_prefix}-housing-repairs-repairs-stannah-cleaning-job-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_stannah[0].workflow_name
+  tags          = module.tags.values
 
   predicate {
     conditions {
@@ -79,6 +80,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_stannah_cleaning_crawler" {
   name          = "${local.identifier_prefix}-housing-repairs-repairs-stannah-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_stannah[0].workflow_name
+  tags          = module.tags.values
 
   predicate {
     conditions {
