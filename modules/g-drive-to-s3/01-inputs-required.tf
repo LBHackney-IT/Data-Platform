@@ -38,7 +38,7 @@ variable "lambda_name" {
 
   validation {
     condition     = length(var.lambda_name) <= 51
-    error_message = "The lambda_name must be less than "
+    error_message = "The lambda_name must be less than 51 characters long."
   }
 }
 
