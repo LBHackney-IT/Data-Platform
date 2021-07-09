@@ -23,13 +23,21 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
+columns_df = pd.read_excel(
+    s3_bucket_source,
+    engine='openpyxl',
+    skiprows=range(0, int(header_row_number)-1),
+    sheet_name=worksheet_name,
+    nrows=1
+)
+
 panada_df = pd.read_excel(
     s3_bucket_source,
     engine='openpyxl',
     skiprows=range(0, int(header_row_number)-1),
-    sheet_name=worksheet_name
+    sheet_name=worksheet_name,
+    usecols=columns_df.columns.values.tolist()
 )
-
 # Cast everything as string
 panada_df = panada_df.astype(str)
 
