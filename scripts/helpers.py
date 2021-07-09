@@ -1,19 +1,16 @@
 import sys
-from awsglue.utils import getResolvedOptions
 import datetime
 import boto3
+from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as f
-from pyspark.sql.functions import col, max
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
-
 
 def get_glue_env_var(key, default="none"):
     if f'--{key}' in sys.argv:
         return getResolvedOptions(sys.argv, [key])[key]
     else:
         return default
-
 
 def get_secret(logger, secret_name, region_name):
     session = boto3.session.Session()
@@ -32,11 +29,9 @@ def get_secret(logger, secret_name, region_name):
     else:
         return get_secret_value_response['SecretBinary'].decode('ascii')
 
-
 def add_timestamp_column(data_frame):
     now = datetime.datetime.now()
     return data_frame.withColumn('import_timestamp', f.lit(str(now.timestamp())))
-
 
 def add_import_time_columns(data_frame):
     now = datetime.datetime.now()
@@ -55,7 +50,6 @@ def add_import_time_columns(data_frame):
     data_frame = data_frame.withColumn('import_date', f.lit(importDate))
     return data_frame
 
-
 def convert_pandas_df_to_spark_dynamic_df(sql_context, panadas_df):
     # Convert to SparkDynamicDataFrame
     spark_df = sql_context.createDataFrame(panadas_df)
@@ -63,7 +57,6 @@ def convert_pandas_df_to_spark_dynamic_df(sql_context, panadas_df):
     spark_df = add_import_time_columns(spark_df)
 
     return spark_df
-
 
 def get_s3_subfolders(s3_client, bucket_name, prefix):
     there_are_more_objects_in_the_bucket_to_fetch = True
@@ -85,12 +78,11 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
 
     return set(folders)
 
-
 def get_latest_partitions(dfa):
-    dfa = dfa.where(col('import_year') == dfa.select(
-        max('import_year')).first()[0])
-    dfa = dfa.where(col('import_month') == dfa.select(
-        max('import_month')).first()[0])
-    dfa = dfa.where(col('import_day') == dfa.select(
-        max('import_day')).first()[0])
+    dfa = dfa.where(f.col('import_year') == dfa.select(
+        f.max('import_year')).first()[0])
+    dfa = dfa.where(f.col('import_month') == dfa.select(
+        f.max('import_month')).first()[0])
+    dfa = dfa.where(f.col('import_day') == dfa.select(
+        f.max('import_day')).first()[0])
     return dfa

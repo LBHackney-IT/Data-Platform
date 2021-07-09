@@ -1,8 +1,6 @@
-
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 import re
-
 
 def map_repair_priority(code):
     if code == 'Immediate':
@@ -19,7 +17,6 @@ def map_repair_priority(code):
 
 # # convert to a UDF Function by passing in the function and the return type of function (string in this case)
 udf_map_repair_priority = F.udf(map_repair_priority, StringType())
-
 
 def remove_multiple_and_trailing_underscores_and_lowercase(df):
     # remove trialing underscores
