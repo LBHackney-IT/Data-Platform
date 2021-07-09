@@ -27,7 +27,7 @@ module "repairs_fire_alarm_aov" {
     }
     sheet2 : {
       header_row_number = 2
-      worksheet_name    = "Fire Alarm/AOV"
+      worksheet_name    = "Fire AlarmAOV"
     }
     sheet3 : {
       header_row_number = 2
