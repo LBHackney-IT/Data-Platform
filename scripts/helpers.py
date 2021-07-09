@@ -1,19 +1,16 @@
 import sys
-from awsglue.utils import getResolvedOptions
 import datetime
 import boto3
+from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as f
-from pyspark.sql.functions import col, max
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
-
 
 def get_glue_env_var(key, default="none"):
     if f'--{key}' in sys.argv:
         return getResolvedOptions(sys.argv, [key])[key]
     else:
         return default
-
 
 def get_secret(logger, secret_name, region_name):
     session = boto3.session.Session()
@@ -82,10 +79,10 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
     return set(folders)
 
 def get_latest_partitions(dfa):
-    dfa = dfa.where(col('import_year') == dfa.select(
-        max('import_year')).first()[0])
-    dfa = dfa.where(col('import_month') == dfa.select(
-        max('import_month')).first()[0])
-    dfa = dfa.where(col('import_day') == dfa.select(
-        max('import_day')).first()[0])
+    dfa = dfa.where(f.col('import_year') == dfa.select(
+        f.max('import_year')).first()[0])
+    dfa = dfa.where(f.col('import_month') == dfa.select(
+        f.max('import_month')).first()[0])
+    dfa = dfa.where(f.col('import_day') == dfa.select(
+        f.max('import_day')).first()[0])
     return dfa
