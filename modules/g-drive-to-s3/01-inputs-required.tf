@@ -35,6 +35,11 @@ variable "file_name" {
 
 variable "lambda_name" {
   type = string
+
+  validation {
+    condition     = length(var.lambda_name) <= 51
+    error_message = "The lambda_name must be less than "
+  }
 }
 
 variable "service_area" {

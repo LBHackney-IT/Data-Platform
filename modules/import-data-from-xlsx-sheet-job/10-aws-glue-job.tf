@@ -39,7 +39,7 @@ resource "aws_glue_crawler" "xlsx_import" {
   tags = var.tags
 
   database_name = var.glue_catalog_database_name
-  name          = "${var.raw_zone_bucket_id}-${var.department_folder_name}-${var.worksheet_name}"
+  name          = "${var.raw_zone_bucket_id}-${var.department_folder_name}-${trimspace(var.worksheet_name)}"
   role          = var.glue_role_arn
   table_prefix  = "${replace(var.department_folder_name, "-", "_")}_"
 

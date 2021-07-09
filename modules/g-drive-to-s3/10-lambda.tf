@@ -14,8 +14,7 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda_assume_role" {
 
 resource "aws_iam_role" "g_drive_to_s3_copier_lambda" {
   tags = var.tags
-
-  name               = lower("${var.identifier_prefix}-g-drive-to-s3-copier-${var.lambda_name}")
+  name               = lower("${var.identifier_prefix}-from-g-drive-${var.lambda_name}")
   assume_role_policy = data.aws_iam_policy_document.g_drive_to_s3_copier_lambda_assume_role.json
 }
 

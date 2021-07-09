@@ -8,7 +8,7 @@ module "repairs_fire_alarm_aov" {
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   helpers_script_key             = aws_s3_bucket_object.helpers.key
   xlsx_import_script_key         = aws_s3_bucket_object.xlsx_import_script.key
-  identifier_prefix              = local.identifier_prefix
+  identifier_prefix              = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
