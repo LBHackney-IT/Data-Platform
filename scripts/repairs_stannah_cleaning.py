@@ -37,7 +37,7 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 )
 
 df = source_data.toDF()
-df = getLatestPartitions(df)
+df = get_latest_partitions(df)
 
 # clean up column names, data types
 df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
