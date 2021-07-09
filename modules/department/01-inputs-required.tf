@@ -8,23 +8,73 @@ variable "is_live_environment" {
   type        = bool
 }
 
-variable "landing_zone_bucket_id" {
-  description = "Landing zone S3 bucket id"
-  type        = string
+variable "landing_zone_bucket" {
+  description = "Landing zone S3 bucket"
+  type = object({
+    bucket_id  = string
+    bucket_arn = string
+    //kms_key_id = string
+    kms_key_arn = string
+    //bucket_url = string
+  })
 }
 
-variable "raw_zone_bucket_id" {
-  description = "Raw zone S3 bucket id"
-  type        = string
+variable "raw_zone_bucket" {
+  description = "Raw zone S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
 }
 
-variable "refined_zone_bucket_id" {
-  description = "Refined zone S3 bucket id"
-  type        = string
+variable "refined_zone_bucket" {
+  description = "Refined zone S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
 }
 
-variable "trusted_zone_bucket_id" {
-  description = "Trusted zone S3 bucket id"
+variable "trusted_zone_bucket" {
+  description = "Trusted zone S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+}
+
+variable "athena_storage_bucket" {
+  description = "Athena storage S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+}
+
+variable "glue_scripts_bucket" {
+  description = "Glue scripts storage S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+}
+
+variable "glue_temp_storage_bucket" {
+  description = "Glue temporary storage S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+}
+
+variable "short_identifier_prefix" {
+  description = "Project wide short resource identifier prefix"
   type        = string
 }
 
