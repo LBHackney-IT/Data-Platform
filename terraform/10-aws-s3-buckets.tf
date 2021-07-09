@@ -71,16 +71,6 @@ module "athena_storage" {
   bucket_identifier = "athena-storage"
 }
 
-module "liberator_data_storage" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Liberator Data Storage"
-  bucket_identifier = "liberator-data-storage"
-}
-
 module "lambda_artefact_storage" {
   source            = "../modules/s3-bucket"
   tags              = module.tags.values
