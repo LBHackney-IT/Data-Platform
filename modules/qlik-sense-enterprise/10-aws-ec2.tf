@@ -153,7 +153,7 @@ resource "aws_instance" "qlik_sense_enterprise" {
 
   root_block_device {
     volume_size = 100
-    tags = var.tags
+    tags        = var.tags
   }
 
   lifecycle {
