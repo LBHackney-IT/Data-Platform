@@ -1,3 +1,3 @@
 locals {
-  import_name = "${var.department_folder_name}-repairs-${lower(replace(var.worksheet_name, " ", "-"))}"
+  import_name = "${var.department_folder_name}-${lower(replace(var.worksheet_name, " ", "-"))}"
 }
