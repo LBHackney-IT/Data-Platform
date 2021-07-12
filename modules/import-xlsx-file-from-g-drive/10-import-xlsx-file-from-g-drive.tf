@@ -29,7 +29,7 @@ module "import-repairs-fire-alarms-xlsx-file-format" {
   tags                           = var.tags
   glue_job_name                  = "${var.glue_job_name} - ${each.value.worksheet_name}"
   department_folder_name         = var.department_folder_name
-  output_folder_name             = "${var.output_folder_name}/${lower(replace(each.value.worksheet_name, " ", "_"))}"
+  output_folder_name             = "${var.output_folder_name}/repairs_${lower(replace(each.value.worksheet_name, " ", "_"))}"
   raw_zone_bucket_id             = var.raw_zone_bucket_id
   input_file_name                = var.input_file_name
   header_row_number              = each.value.header_row_number
