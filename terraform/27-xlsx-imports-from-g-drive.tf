@@ -65,7 +65,7 @@ module "repairs_fire_alarm_aov" {
       header_row_number = 2
       worksheet_name    = "T.V Aerials"
     }
-     sheet12 : {
+    sheet12 : {
       header_row_number = 2
       worksheet_name    = "DPA"
     }
