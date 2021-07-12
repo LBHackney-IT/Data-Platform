@@ -7,6 +7,6 @@ module "google_service_account" {
   identifier_prefix          = var.identifier_prefix
   application                = var.application
   google_project_id          = data.google_project.project.project_id
-  secrets_manager_kms_key_id = var.secrets_manager_kms_key_id
+  secrets_manager_kms_key_id = var.secrets_manager_kms_key.key_id
   tags                       = var.tags
 }

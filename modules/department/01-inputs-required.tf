@@ -8,23 +8,71 @@ variable "is_live_environment" {
   type        = bool
 }
 
-variable "landing_zone_bucket_id" {
-  description = "Landing zone S3 bucket id"
-  type        = string
+variable "landing_zone_bucket" {
+  description = "Landing zone S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
 }
 
-variable "raw_zone_bucket_id" {
-  description = "Raw zone S3 bucket id"
-  type        = string
+variable "raw_zone_bucket" {
+  description = "Raw zone S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
 }
 
-variable "refined_zone_bucket_id" {
-  description = "Refined zone S3 bucket id"
-  type        = string
+variable "refined_zone_bucket" {
+  description = "Refined zone S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
 }
 
-variable "trusted_zone_bucket_id" {
-  description = "Trusted zone S3 bucket id"
+variable "trusted_zone_bucket" {
+  description = "Trusted zone S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+}
+
+variable "athena_storage_bucket" {
+  description = "Athena storage S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+}
+
+variable "glue_scripts_bucket" {
+  description = "Glue scripts storage S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+}
+
+variable "glue_temp_storage_bucket" {
+  description = "Glue temporary storage S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+}
+
+variable "short_identifier_prefix" {
+  description = "Project wide short resource identifier prefix"
   type        = string
 }
 
@@ -39,11 +87,14 @@ variable "name" {
 }
 
 variable "application" {
-  type        = string
   description = "For example, data-platform"
+  type        = string
 }
 
-variable "secrets_manager_kms_key_id" {
-  type        = string
+variable "secrets_manager_kms_key" {
   description = "The KMS Key Id to be used to encrypt the secret which stores the json credentials"
+  type = object({
+    key_id = string
+    arn    = string
+  })
 }

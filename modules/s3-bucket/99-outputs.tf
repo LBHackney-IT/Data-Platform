@@ -21,5 +21,5 @@ output "kms_key_arn" {
 
 output "bucket_url" {
   description = "S3 bucket url"
-  value = "s3://${aws_s3_bucket.bucket.bucket}/"
+  value       = "s3://${aws_s3_bucket.bucket.bucket}/"
 }
