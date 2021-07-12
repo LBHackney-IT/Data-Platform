@@ -65,7 +65,7 @@ resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_job" {
 
   predicate {
     conditions {
-      crawler_name = "Xlsx Crawler Trigger - Electrical Mechanical Fire Safety Repairs - Door Entry"
+      crawler_name = "dataplatform-stg-raw-zone-housing-repairs-Door Entry"
       crawl_state  = "SUCCEEDED"
     }
   }
