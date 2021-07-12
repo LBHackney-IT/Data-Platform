@@ -11,8 +11,8 @@ variable "is_live_environment" {
 variable "landing_zone_bucket" {
   description = "Landing zone S3 bucket"
   type = object({
-    bucket_id  = string
-    bucket_arn = string
+    bucket_id   = string
+    bucket_arn  = string
     kms_key_arn = string
   })
 }
