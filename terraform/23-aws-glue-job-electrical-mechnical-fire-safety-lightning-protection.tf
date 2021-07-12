@@ -9,7 +9,7 @@ resource "aws_s3_bucket_object" "elec_mech_fire_lightning_protection_script" {
 }
 
 resource "aws_glue_job" "housing_elec_mech_fire_lightning_protection" {
-  count = local.is_live_environment ? 1 : 1
+  count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
 
@@ -54,39 +54,39 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_lightni
   })
 }
 
-# resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection_job" {
-#   count = local.is_live_environment ? 1 : 1
-#
-#   name          = "${local.identifier_prefix}-housing-repairs-repairs-axis-cleaning-job-trigger"
-#   type          = "CONDITIONAL"
-#   workflow_name = module.elec_mech_fire_lightning_protection[0].workflow_name
-#
-#   predicate {
-#     conditions {
-#       crawler_name = module.elec_mech_fire_lightning_protection[0].crawler_name
-#       crawl_state  = "SUCCEEDED"
-#     }
-#   }
-#
-#   actions {
-#     job_name = aws_glue_job.housing_elec_mech_fire_lightning_protection[0].name
-#   }
-# }
-#
-# resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection_crawler" {
-#   count = local.is_live_environment ? 1 : 0
-#
-#   name          = "${local.identifier_prefix}-housing-repairs-repairs-axis-cleaning-crawler-trigger"
-#   type          = "CONDITIONAL"
-#   workflow_name = module.elec_mech_fire_lightning_protection[0].workflow_name
-#
-#   predicate {
-#     conditions {
-#       job_name = aws_glue_job.housing_elec_mech_fire_lightning_protection[0].name
-#       state    = "SUCCEEDED"
-#     }
-#   }
-#   actions {
-#     crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_lightning_protection_cleaned_crawler.name
-#   }
-# }
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection_job" {
+  count = local.is_live_environment ? 1 : 0
+
+  name          = "${local.identifier_prefix}-housing-repairs-repairs-axis-cleaning-job-trigger"
+  type          = "CONDITIONAL"
+  workflow_name = "housing-repairs-lightning-protection-"
+
+  predicate {
+    conditions {
+      crawler_name = "dataplatform-stg-raw-zone-housing-repairs-Lightning Protection"
+      crawl_state  = "SUCCEEDED"
+    }
+  }
+
+  actions {
+    job_name = aws_glue_job.housing_elec_mech_fire_lightning_protection[0].name
+  }
+}
+
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection_crawler" {
+  count = local.is_live_environment ? 1 : 0
+
+  name          = "${local.identifier_prefix}-housing-repairs-repairs-axis-cleaning-crawler-trigger"
+  type          = "CONDITIONAL"
+  workflow_name = "housing-repairs-lightning-protection-"
+
+  predicate {
+    conditions {
+      job_name = aws_glue_job.housing_elec_mech_fire_lightning_protection[0].name
+      state    = "SUCCEEDED"
+    }
+  }
+  actions {
+    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_lightning_protection_cleaned_crawler.name
+  }
+}
