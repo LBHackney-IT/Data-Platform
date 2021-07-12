@@ -38,7 +38,7 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 )
 
 df = source_data.toDF()
-df = getLatestPartitions(df)
+df = get_latest_partitions(df)
 
 # clean up column names, data types
 df2 = clean_column_names(df)
