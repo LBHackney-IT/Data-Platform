@@ -60,7 +60,7 @@ resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_job" {
 
   name          = "${local.identifier_prefix}-housing-repairs-door-entry-cleaning-job-trigger"
   type          = "CONDITIONAL"
-  workflow_name = "${local.identifier_prefix}housing-repairs-door-entry"
+  workflow_name = "housing-repairs-door-entry"
 
 
   predicate {
