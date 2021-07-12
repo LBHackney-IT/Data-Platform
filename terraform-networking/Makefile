@@ -1,4 +1,4 @@
-.PHONY: init plan apply destroy new
+.PHONY: $(MAKECMDGOALS)
 
 init:
 	aws-vault exec hackney-dataplatform-development -- terraform init
@@ -14,3 +14,9 @@ validate:
 
 destroy: 
 	aws-vault exec hackney-dataplatform-development -- terraform destroy -var-file="../config/terraform/env.tfvars"
+
+lint-init:
+	tflint --init --config="../.tflint.hcl"
+
+lint:
+	aws-vault exec hackney-dataplatform-development -- tflint --var-file='../config/terraform/env.tfvars' --module --config="../.tflint.hcl" --loglevel=warn .
