@@ -10,13 +10,14 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 from helpers import get_latest_partitions, get_glue_env_var, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, remove_multiple_and_trailing_underscores_and_lowercase
+from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
-cleaned_repairs_s3_bucket_target = get_glue_env_var('cleaned_repairs_s3_bucket_target', '')
+cleaned_repairs_s3_bucket_target = get_glue_env_var(
+    'cleaned_repairs_s3_bucket_target', '')
 
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
@@ -32,9 +33,10 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 df = source_data.toDF()
 df = get_latest_partitions(df)
 
-df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
+df2 = clean_column_names(df)
 
-df2 = df2.withColumn('time_stamp', F.to_timestamp("time_stamp", "dd/MM/yyyy HH:mm:ss"))
+df2 = df2.withColumn('time_stamp', F.to_timestamp(
+    "time_stamp", "dd/MM/yyyy HH:mm:ss"))
 df2 = df2.withColumn('data_source', F.lit('Herts Heritage'))
 
 df2 = df2.withColumnRenamed('time_stamp', 'timestamp') \
@@ -52,6 +54,7 @@ parquetData = glueContext.write_dynamic_frame.from_options(
     frame=cleanedDataframe,
     connection_type="s3",
     format="parquet",
-    connection_options={"path": cleaned_repairs_s3_bucket_target,"partitionKeys": PARTITION_KEYS},
+    connection_options={
+        "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
     transformation_ctx="parquetData")
 job.commit()
