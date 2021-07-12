@@ -151,6 +151,11 @@ resource "aws_instance" "qlik_sense_enterprise" {
   vpc_security_group_ids = [aws_security_group.qlik_sense_enterprise.id]
   get_password_data      = "true"
 
+  root_block_device {
+    volume_size = 100
+    tags = var.tags
+  }
+
   lifecycle {
     ignore_changes = [subnet_id, ami]
   }
