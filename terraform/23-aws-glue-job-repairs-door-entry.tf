@@ -41,7 +41,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_door_entry_cle
   role          = aws_iam_role.glue_role.arn
   table_prefix  = "housing_repairs_repairs_door_entry_"
 
-  workflow_name = "${local.identifier_prefix}{module.repairs_fire_alarm_aov.department_name}-repairs-${lower(replace(module.repairs_fire_alarm_aov.workseets.sheet1.worksheet_name, " ", "-"))}"
+  workflow_name = "${local.identifier_prefix}housing-repairs-repairs-door-entry"
   s3_target {
     path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-door-entry/cleaned/"
     exclusions = local.glue_crawler_excluded_blobs
@@ -60,7 +60,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_door_entry_cleaning_job" {
 
   name          = "${local.identifier_prefix}-housing-repairs-repairs-door-entry-cleaning-job-trigger"
   type          = "CONDITIONAL"
-  workflow_name = "${local.identifier_prefix}{module.repairs_fire_alarm_aov.department_name}-repairs-${lower(replace(module.repairs_fire_alarm_aov.workseets.sheet1.worksheet_name, " ", "-"))}"
+  workflow_name = "${local.identifier_prefix}housing-repairs-repairs-door-entry"
 
 
   predicate {
@@ -80,7 +80,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_door_entry_cleaning_crawler
 
   name          = "${local.identifier_prefix}-housing-repairs-repairs-door-entry-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
-  workflow_name = "${local.identifier_prefix}{module.repairs_fire_alarm_aov.department_name}-repairs-${lower(replace(module.repairs_fire_alarm_aov.workseets.sheet1.worksheet_name, " ", "-"))}"
+  workflow_name = "${local.identifier_prefix}housing-repairs-repairs-door-entry"
 
 
   predicate {

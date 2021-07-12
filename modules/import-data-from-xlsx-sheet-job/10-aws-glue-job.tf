@@ -28,6 +28,7 @@ resource "aws_glue_workflow" "workflow" {
   name = "${var.identifier_prefix}${local.import_name}"
 }
 
+
 resource "aws_glue_trigger" "xlsx_import_trigger" {
   name          = "Xlsx Import Job Glue Trigger - ${var.glue_job_name}"
   schedule      = var.xlsx_import_schedule
@@ -40,6 +41,7 @@ resource "aws_glue_trigger" "xlsx_import_trigger" {
   }
 
 }
+
 resource "aws_glue_crawler" "xlsx_import" {
   tags = var.tags
 
