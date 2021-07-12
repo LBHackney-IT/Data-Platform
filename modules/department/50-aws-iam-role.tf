@@ -1,6 +1,10 @@
 // WARNING! All statement blocks MUST have a UNIQUE SID, this is to allow the individual documents to be merged.
 // Statement blocks with the same SID will replace each other when merged.
 
+# When updating user roles, while this will be deployed to staging it won't update the role that the SSO users assume.
+# To update the SSO role, you will need to ask the Cloud Engineering team responsible for maintaining the SSO
+# to copy over the updated role to SSO.
+
 // S3 access policy
 data "aws_iam_policy_document" "s3_department_access" {
   statement {
@@ -228,7 +232,7 @@ data "aws_iam_policy_document" "secrets_manager_read_only" {
       "secretsmanager:GetSecretValue"
     ]
     resources = [
-      aws_secretsmanager_secret.redshift_cluster_parking_credentials.arn,
+      aws_secretsmanager_secret.redshift_cluster_credentials.arn,
       module.google_service_account.credentials_secret.arn
     ]
   }

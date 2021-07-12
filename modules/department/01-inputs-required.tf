@@ -13,9 +13,7 @@ variable "landing_zone_bucket" {
   type = object({
     bucket_id  = string
     bucket_arn = string
-    //kms_key_id = string
     kms_key_arn = string
-    //bucket_url = string
   })
 }
 
