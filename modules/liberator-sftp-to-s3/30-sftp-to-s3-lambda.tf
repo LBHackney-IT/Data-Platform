@@ -21,15 +21,15 @@ resource "aws_lambda_function" "liberator_data_upload_lambda" {
   }
 }
 
-resource "aws_cloudwatch_event_rule" "every_day_at_six" {
-  name                = "${var.identifier_prefix}-every-day-at-six"
-  description         = "Runs every day at 6am"
-  schedule_expression = "cron(0 06 * * ? *)"
+resource "aws_cloudwatch_event_rule" "every_day_at_three" {
+  name                = "${var.identifier_prefix}-every-day-at-three"
+  description         = "Runs every day at 3am"
+  schedule_expression = "cron(0 03 * * ? *)"
   is_enabled          = var.run_daily
 }
 
 resource "aws_cloudwatch_event_target" "run_liberator_uploader_every_day" {
-  rule      = aws_cloudwatch_event_rule.every_day_at_six.name
+  rule      = aws_cloudwatch_event_rule.every_day_at_three.name
   target_id = aws_lambda_function.liberator_data_upload_lambda.function_name
   arn       = aws_lambda_function.liberator_data_upload_lambda.arn
 }
@@ -39,5 +39,5 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_liberator_data_upload
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.liberator_data_upload_lambda.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.every_day_at_six.arn
+  source_arn    = aws_cloudwatch_event_rule.every_day_at_three.arn
 }
