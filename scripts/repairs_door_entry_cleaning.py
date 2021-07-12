@@ -4,21 +4,19 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.sql.window import Window
-from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
-from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
-from helpers import get_latest_partitions, get_glue_env_var, PARTITION_KEYS
+import re
+from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
-
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
 cleaned_repairs_s3_bucket_target = get_glue_env_var(
     'cleaned_repairs_s3_bucket_target', '')
 
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
 logger = glueContext.get_logger()
@@ -31,23 +29,36 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 )
 
 df = source_data.toDF()
+
 df = get_latest_partitions(df)
 
 df2 = clean_column_names(df)
 
-df2 = df2.withColumn('time_stamp', F.to_timestamp(
-    "time_stamp", "dd/MM/yyyy HH:mm:ss"))
-df2 = df2.withColumn('data_source', F.lit('Herts Heritage'))
+df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Door Entry'))
 
-df2 = df2.withColumnRenamed('time_stamp', 'timestamp') \
-    .withColumnRenamed('notes_and_information', 'notes') \
-    .withColumnRenamed('contact_information_for_access', 'phone_1') \
+# rename column names to reflect harmonised column names
+
+df2 = df2.withColumnRenamed('date', 'datetime_raised') \
+    .withColumnRenamed('requested_by', 'operative') \
+    .withColumnRenamed('address', 'property_address') \
+    .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
-    .withColumnRenamed('email_address', 'email_staff') \
-    .withColumnRenamed('temporary_order_date', 'temp_order_number_date') \
-    .withColumnRenamed('temporary_order_number__time_', 'temp_order_number_time') \
-    .withColumnRenamed('STATUS', 'order_status') \
-    .withColumnRenamed('status_notes', 'order_status_notes')
+    .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
+    .withColumnRenamed('budget_/_subjective', 'budget_code') \
+    .withColumnRenamed('cost', 'order_value') \
+    .withColumnRenamed('contractor_job_status_complete_or_in_progress', 'order_status') \
+    .withColumnRenamed('date_completed', 'completed_date') \
+    .withColumnRenamed('tess_number', 'contractor_ref') \
+
+
+
+# drop unnecessary columns
+df2 = df2.drop('column13')
+
+# apply function
+df2 = df2.withColumn('work_priority_priority_code',
+                     udf_map_repair_priority('work_priority_description'))
+
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(

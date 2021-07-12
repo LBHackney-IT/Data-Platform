@@ -34,4 +34,5 @@ module "import-repairs-fire-alarms-xlsx-file-format" {
   input_file_name                = var.input_file_name
   header_row_number              = each.value.header_row_number
   worksheet_name                 = each.value.worksheet_name
+  identifier_prefix              = var.identifier_prefix
 }

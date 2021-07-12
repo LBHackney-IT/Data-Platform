@@ -24,17 +24,24 @@ resource "aws_glue_job" "xlsx_import" {
   }
 }
 
+resource "aws_glue_workflow" "workflow" {
+  name = "${var.identifier_prefix}${local.import_name}"
+}
+
+
 resource "aws_glue_trigger" "xlsx_import_trigger" {
-  name     = "Xlsx Import Job Glue Trigger - ${var.glue_job_name}"
-  schedule = var.xlsx_import_schedule
-  type     = "SCHEDULED"
-  enabled  = var.enable_glue_trigger
+  name          = "Xlsx Import Job Glue Trigger - ${var.glue_job_name}"
+  schedule      = var.xlsx_import_schedule
+  type          = "SCHEDULED"
+  enabled       = var.enable_glue_trigger
+  workflow_name = aws_glue_workflow.workflow.name
 
   actions {
     job_name = aws_glue_job.xlsx_import.name
   }
 
 }
+
 resource "aws_glue_crawler" "xlsx_import" {
   tags = var.tags
 
@@ -51,9 +58,10 @@ resource "aws_glue_crawler" "xlsx_import" {
 resource "aws_glue_trigger" "xlsx_import_crawler_trigger" {
   tags = var.tags
 
-  name    = "Xlsx Crawler Trigger - ${var.glue_job_name}"
-  type    = "CONDITIONAL"
-  enabled = true
+  name          = "Xlsx Crawler Trigger - ${var.glue_job_name}"
+  type          = "CONDITIONAL"
+  enabled       = true
+  workflow_name = aws_glue_workflow.workflow.name
 
   predicate {
     conditions {
