@@ -50,7 +50,6 @@ resource "aws_glue_crawler" "xlsx_import" {
   role          = var.glue_role_arn
   table_prefix  = "${replace(var.department_folder_name, "-", "_")}_"
 
-  workflow_name = aws_glue_workflow.workflow.name
   s3_target {
     path = "s3://${var.raw_zone_bucket_id}/${var.department_folder_name}/${var.output_folder_name}"
   }

@@ -41,7 +41,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_door_entry_cle
   role          = aws_iam_role.glue_role.arn
   table_prefix  = "housing_repairs_repairs_door_entry_"
 
-  workflow_name = "${local.identifier_prefix}housing-repairs-repairs-door-entry"
+
   s3_target {
     path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-door-entry/cleaned/"
     exclusions = local.glue_crawler_excluded_blobs
@@ -65,7 +65,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_door_entry_cleaning_job" {
 
   predicate {
     conditions {
-      crawler_name = "Xlsx Crawler Trigger - ${module.repairs_fire_alarm_aov.glue_job_name} - ${module.repairs_fire_alarm_aov.worksheets.sheet1.worksheet_name}"
+      crawler_name = "Xlsx Crawler Trigger - Electrical Mechanical Fire Safety Repairs - Door Entry"
       crawl_state  = "SUCCEEDED"
     }
   }
@@ -81,7 +81,6 @@ resource "aws_glue_trigger" "housing_repairs_repairs_door_entry_cleaning_crawler
   name          = "${local.identifier_prefix}-housing-repairs-repairs-door-entry-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = "${local.identifier_prefix}housing-repairs-repairs-door-entry"
-
 
   predicate {
     conditions {
