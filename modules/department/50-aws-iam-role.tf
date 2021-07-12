@@ -1,5 +1,8 @@
+// WARNING! All statement blocks MUST have a UNIQUE SID, this is to allow the individual documents to be merged.
+// Statement blocks with the same SID will replace each other when merged.
+
 // S3 access policy
-data "aws_iam_policy_document" "s3_access" {
+data "aws_iam_policy_document" "s3_department_access" {
   statement {
     sid    = "ListAllS3AndKmsKeys"
     effect = "Allow"
@@ -48,13 +51,13 @@ data "aws_iam_policy_document" "s3_access" {
     ]
     resources = [
       var.refined_zone_bucket.bucket_arn,
-      "${var.refined_zone_bucket.bucket_arn}/${department_identifier}/*",
+      "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       var.trusted_zone_bucket.bucket_arn,
-      "${var.trusted_zone_bucket.bucket_arn}/${department_identifier}/*",
+      "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       var.athena_storage_bucket.bucket_arn,
-      "${var.athena_storage_bucket.bucket_arn}/${department_identifier}/*",
-      "${var.landing_zone_bucket.bucket_arn}/${department_identifier}/manual/*",
-      "${var.raw_zone_bucket.bucket_arn}/${department_identifier}/*"
+      "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
+      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 
@@ -65,10 +68,10 @@ data "aws_iam_policy_document" "s3_access" {
       "s3:Delete*"
     ]
     resources = [
-      "${var.landing_zone_bucket.bucket_arn}/${department_identifier}/manual/*",
-      "${var.raw_zone_bucket.bucket_arn}/${department_identifier}/*",
-      "${var.refined_zone_bucket.bucket_arn}/${department_identifier}/*",
-      "${var.glue_temp_storage_bucket.bucket_arn}/${department_identifier}/*"
+      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
+      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.glue_temp_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 
@@ -81,14 +84,14 @@ data "aws_iam_policy_document" "s3_access" {
     ]
     resources = [
       var.raw_zone_bucket.bucket_arn,
-      "${var.raw_zone_bucket.bucket_arn}/${department_identifier}/*",
+      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       var.landing_zone_bucket.bucket_arn,
-      "${var.landing_zone_bucket.bucket_arn}/${department_identifier}/*",
+      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/*",
     ]
   }
 
   statement {
-    sid    = "List"
+    sid    = "S3List"
     effect = "Allow"
     actions = [
       "s3:List*"
@@ -107,7 +110,7 @@ data "aws_iam_policy_document" "s3_access" {
     ]
     resources = [
       "${var.glue_scripts_bucket.bucket_arn}/custom/*",
-      "${var.glue_temp_storage_bucket.bucket_arn}/${department_identifier}/*",
+      "${var.glue_temp_storage_bucket.bucket_arn}/${local.department_identifier}/*",
     ]
   }
 }
@@ -115,8 +118,8 @@ data "aws_iam_policy_document" "s3_access" {
 resource "aws_iam_policy" "s3_access" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${department_identifier}-s3-access")
-  policy = data.aws_iam_policy_document.s3_access.json
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-s3-department-access")
+  policy = data.aws_iam_policy_document.s3_department_access.json
 }
 
 // Glue access policy
@@ -174,159 +177,36 @@ data "aws_iam_policy_document" "glue_access" {
   statement {
     sid = "AwsGlue"
     actions = [
-      "glue:BatchCreatePartition",
-      "glue:BatchDeleteConnection",
-      "glue:BatchDeletePartition",
-      "glue:BatchDeleteTable",
-      "glue:BatchDeleteTableVersion",
-      "glue:BatchGetCrawlers",
-      "glue:BatchGetDevEndpoints",
-      "glue:BatchGetJobs",
-      "glue:BatchGetPartition",
-      "glue:BatchGetTriggers",
-      "glue:BatchGetWorkflows",
-      "glue:BatchStopJobRun",
-      //      "glue:CancelMLTaskRun",
+      "glue:Batch*",
       "glue:CheckSchemaVersionValidity",
-      //      "glue:CreateClassifier",
-      //      "glue:CreateConnection",
-      //      "glue:CreateCrawler",
       "glue:CreateDag",
-      //      "glue:CreateDatabase",
       "glue:CreateDevEndpoint",
       "glue:CreateJob",
-      //      "glue:CreateMLTransform",
-      //      "glue:CreatePartition",
-      //      "glue:CreateRegistry",
-      //      "glue:CreateSchema",
       "glue:CreateScript",
-      //      "glue:CreateSecurityConfiguration",
       "glue:CreateSession",
-      //      "glue:CreateTable",
       "glue:CreateTrigger",
-      //      "glue:CreateUserDefinedFunction",
-      //      "glue:CreateWorkflow",
-      //      "glue:DeleteClassifier",
-      //      "glue:DeleteConnection",
-      //      "glue:DeleteCrawler",
-      //      "glue:DeleteDatabase",
       "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
-      //      "glue:DeleteMLTransform",
-      //      "glue:DeletePartition",
-      //      "glue:DeleteRegistry",
-      //      "glue:DeleteResourcePolicy",
-      //      "glue:DeleteSchema",
-      //      "glue:DeleteSchemaVersions",
-      //      "glue:DeleteSecurityConfiguration",
-      //      "glue:DeleteTable",
-      //      "glue:DeleteTableVersion",
-      //      "glue:DeleteTrigger",
-      //      "glue:DeleteUserDefinedFunction",
-      //      "glue:DeleteWorkflow",
-      "glue:GetCatalogImportStatus",
-      "glue:GetClassifier",
-      "glue:GetClassifiers",
-      "glue:GetConnection",
-      "glue:GetConnections",
-      "glue:GetCrawler",
-      "glue:GetCrawlerMetrics",
-      "glue:GetCrawlers",
-      "glue:GetDag",
-      "glue:GetDataCatalogEncryptionSettings",
-      "glue:GetDatabase",
-      "glue:GetDatabases",
-      "glue:GetDataflowGraph",
-      "glue:GetDevEndpoint",
-      "glue:GetDevEndpoints",
-      "glue:GetInferredSchema",
-      "glue:GetJob",
-      "glue:GetJobBookmark",
-      "glue:GetJobRun",
-      "glue:GetJobRuns",
-      "glue:GetJobs",
-      //      "glue:GetMLTaskRun",
-      //      "glue:GetMLTaskRuns",
-      //      "glue:GetMLTransform",
-      //      "glue:GetMLTransforms",
-      "glue:GetMapping",
-      "glue:GetPartition",
-      "glue:GetPartitions",
-      "glue:GetPlan",
-      "glue:GetRegistry",
-      "glue:GetResourcePolicies",
-      "glue:GetResourcePolicy",
-      "glue:GetSchema",
-      "glue:GetSchemaByDefinition",
-      "glue:GetSchemaVersion",
-      "glue:GetSchemaVersionsDiff",
-      "glue:GetSecurityConfiguration",
-      "glue:GetSecurityConfigurations",
-      "glue:GetTable",
-      "glue:GetTableVersion",
-      "glue:GetTableVersions",
-      "glue:GetTables",
-      "glue:GetTags",
-      "glue:GetTrigger",
-      "glue:GetTriggers",
-      "glue:GetUserDefinedFunction",
-      "glue:GetUserDefinedFunctions",
-      "glue:GetWorkflow",
-      "glue:GetWorkflowRun",
-      "glue:GetWorkflowRunProperties",
-      "glue:GetWorkflowRuns",
-      //      "glue:ImportCatalogToGlue",
-      "glue:ListCrawlers",
-      "glue:ListDevEndpoints",
-      "glue:ListJobs",
-      "glue:ListMLTransforms",
-      "glue:ListRegistries",
-      "glue:ListSchemaVersions",
-      "glue:ListSchemas",
-      "glue:ListTriggers",
-      "glue:ListWorkflows",
-      //      "glue:PutDataCatalogEncryptionSettings",
-      //      "glue:PutResourcePolicy",
-      //      "glue:PutSchemaVersionMetadata",
-      //      "glue:PutWorkflowRunProperties",
-      //      "glue:QuerySchemaVersionMetadata",
-      //      "glue:RegisterSchemaVersion",
-      //      "glue:RemoveSchemaVersionMetadata",
+      "glue:Get*",
+      "glue:List*",
       "glue:ResetJobBookmark",
-      //      "glue:ResumeWorkflowRun",
       "glue:SearchTables",
       "glue:StartCrawler",
       "glue:StartCrawlerSchedule",
       "glue:StartExportLabelsTaskRun",
       "glue:StartImportLabelsTaskRun",
       "glue:StartJobRun",
-      //      "glue:StartMLEvaluationTaskRun",
-      //      "glue:StartMLLabelingSetGenerationTaskRun",
-      //      "glue:StartTrigger",
+      "glue:StartTrigger",
       "glue:StartWorkflowRun",
       "glue:StopCrawler",
       "glue:StopCrawlerSchedule",
       "glue:StopTrigger",
       "glue:StopWorkflowRun",
       "glue:TagResource",
-      //      "glue:UntagResource",
-      //      "glue:UpdateClassifier",
-      //      "glue:UpdateConnection",
-      //      "glue:UpdateCrawler",
-      //      "glue:UpdateCrawlerSchedule",
       "glue:UpdateDag",
-      //      "glue:UpdateDatabase",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
-      //      "glue:UpdateMLTransform",
-      //      "glue:UpdatePartition",
-      //      "glue:UpdateRegistry",
-      //      "glue:UpdateSchema",
-      //      "glue:UpdateTable",
       "glue:UpdateTrigger",
-      //      "glue:UpdateUserDefinedFunction",
-      //      "glue:UpdateWorkflow",
-      //      "glue:UseMLTransforms",
     ]
     resources = ["*"]
   }
@@ -335,7 +215,7 @@ data "aws_iam_policy_document" "glue_access" {
 resource "aws_iam_policy" "glue_access" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${department_identifier}-glue-access")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-access")
   policy = data.aws_iam_policy_document.glue_access.json
 }
 
@@ -360,7 +240,7 @@ data "aws_iam_policy_document" "secrets_manager_read_only" {
       "kms:GenerateDataKey"
     ]
     resources = [
-      var.secrets_manager_kms_key_id
+      var.secrets_manager_kms_key.arn
     ]
   }
 }
@@ -368,7 +248,7 @@ data "aws_iam_policy_document" "secrets_manager_read_only" {
 resource "aws_iam_policy" "secrets_manager_read_only" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${department_identifier}-secrets-manager-read-only")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-secrets-manager-read-only")
   policy = data.aws_iam_policy_document.secrets_manager_read_only.json
 }
 
@@ -401,7 +281,7 @@ data "aws_iam_policy_document" "glue_scripts_read_only" {
 resource "aws_iam_policy" "glue_scripts_read_only" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${department_identifier}-glue-scripts-read-only")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-scripts-read-only")
   policy = data.aws_iam_policy_document.glue_scripts_read_only.json
 }
 
@@ -434,7 +314,7 @@ data "aws_iam_policy_document" "glue_can_write_to_cloudwatch" {
 resource "aws_iam_policy" "glue_can_write_to_cloudwatch" {
   tags = var.tags
 
-  name   = "${var.identifier_prefix}-${department_identifier}-glue-cloudwatch"
+  name   = "${var.identifier_prefix}-${local.department_identifier}-glue-cloudwatch"
   policy = data.aws_iam_policy_document.glue_can_write_to_cloudwatch.json
 }
 
@@ -454,23 +334,23 @@ data "aws_iam_policy_document" "full_glue_access" {
 resource "aws_iam_policy" "full_glue_access" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${department_identifier}-full-glue-access")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-full-glue-access")
   policy = data.aws_iam_policy_document.full_glue_access.json
 }
 
 // User Role - This role is a combination of all the rules ready to be applied to sso.
 data "aws_iam_policy_document" "sso_user_policy" {
   override_policy_documents = [
-    data.aws_iam_policy_document.s3_access,
-    data.aws_iam_policy_document.glue_access,
-    data.aws_iam_policy_document.secrets_manager_read_only
+    data.aws_iam_policy_document.s3_department_access.json,
+    data.aws_iam_policy_document.glue_access.json,
+    data.aws_iam_policy_document.secrets_manager_read_only.json
   ]
 }
 
 resource "aws_iam_policy" "sso_user_policy" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${department_identifier}-sso-user-policy")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-sso-user-policy")
   policy = data.aws_iam_policy_document.sso_user_policy.json
 }
 
@@ -489,7 +369,7 @@ data "aws_iam_policy_document" "glue_agent_assume_role" {
 resource "aws_iam_role" "glue_agent" {
   tags = var.tags
 
-  name               = lower("${var.identifier_prefix}-glue-${department_identifier}")
+  name               = lower("${var.identifier_prefix}-glue-${local.department_identifier}")
   assume_role_policy = data.aws_iam_policy_document.glue_agent_assume_role.json
 }
 

@@ -89,11 +89,14 @@ variable "name" {
 }
 
 variable "application" {
-  type        = string
   description = "For example, data-platform"
+  type        = string
 }
 
-variable "secrets_manager_kms_key_id" {
-  type        = string
+variable "secrets_manager_kms_key" {
   description = "The KMS Key Id to be used to encrypt the secret which stores the json credentials"
+  type        = object({
+    key_id = string
+    arn = string
+  })
 }
