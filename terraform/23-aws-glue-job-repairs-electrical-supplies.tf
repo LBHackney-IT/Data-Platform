@@ -2,10 +2,10 @@ resource "aws_s3_bucket_object" "repairs_electrical_supplies_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/repairs_electrical_supplies.py"
+  key    = "scripts/repairs_electrical_supplies_cleaning.py"
   acl    = "private"
-  source = "../scripts/repairs_electrical_supplies.py"
-  etag   = filemd5("../scripts/repairs_electrical_supplies.py")
+  source = "../scripts/repairs_electrical_supplies_cleaning.py"
+  etag   = filemd5("../scripts/repairs_electrical_supplies_cleaning.py")
 }
 
 resource "aws_glue_job" "housing_repairs_electrical_supplies_cleaning" {
