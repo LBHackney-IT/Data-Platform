@@ -31,3 +31,10 @@ def clean_column_names(df):
     df2 = df.select([F.col(col).alias(
         re.sub("[^0-9a-zA-Z$]+", "_", col.lower())) for col in df.columns])
     return df2
+
+
+def remove_unamed_columns(df):
+    all_columns = df.columns
+    columns_to_drop = [i for i in all_columns if i.startswith('unnamed')]
+    df = df.drop(*columns_to_drop)
+    return df

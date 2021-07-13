@@ -8,7 +8,7 @@ import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 import re
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
+from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names, remove_unamed_columns
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
@@ -32,7 +32,9 @@ df = source_data.toDF()
 
 df = get_latest_partitions(df)
 
-df2 = clean_column_names(df)
+df2 = remove_unamed_columns(df)
+
+df2 = clean_column_names(df2)
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Door Entry'))
 
@@ -44,16 +46,11 @@ df2 = df2.withColumnRenamed('date', 'datetime_raised') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
-    .withColumnRenamed('budget_/_subjective', 'budget_code') \
+    .withColumnRenamed('budget_subjective', 'budget_code') \
     .withColumnRenamed('cost', 'order_value') \
     .withColumnRenamed('contractor_job_status_complete_or_in_progress', 'order_status') \
     .withColumnRenamed('date_completed', 'completed_date') \
     .withColumnRenamed('tess_number', 'contractor_ref') \
-
-
-
-# drop unnecessary columns
-df2 = df2.drop('column13')
 
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
