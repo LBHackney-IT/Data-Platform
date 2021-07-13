@@ -58,7 +58,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  name          = "${local.identifier_prefix}-housing-repairs-repairs-axis-cleaning-job-trigger"
+  name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-lightning-protection-cleaning-job-trigger"
   type          = "CONDITIONAL"
   workflow_name = "housing-repairs-lightning-protection-"
 
@@ -78,7 +78,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  name          = "${local.identifier_prefix}-housing-repairs-repairs-axis-cleaning-crawler-trigger"
+  name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-lightning-protection-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = "housing-repairs-lightning-protection-"
 
