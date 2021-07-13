@@ -12,7 +12,7 @@ from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, remove_multiple_and_trailing_underscores_and_lowercase
+from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -33,7 +33,7 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 
 df = source_data.toDF()
 df = get_latest_partitions(df)
-df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
+df2 = clean_column_names(df)
 
 df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
 

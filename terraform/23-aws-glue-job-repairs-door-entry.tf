@@ -25,7 +25,7 @@ resource "aws_glue_job" "housing_repairs_door_entry_cleaning" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/door-entry/cleaned"
+    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs_electrical_mechanical_fire/door-entry/cleaned/"
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = "housing_repairs_door_entry"
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
@@ -43,7 +43,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_door_entry_cleaned_cra
 
 
   s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/door-entry/cleaned/"
+    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs_electrical_mechanical_fire/door-entry/cleaned/"
     exclusions = local.glue_crawler_excluded_blobs
   }
 
