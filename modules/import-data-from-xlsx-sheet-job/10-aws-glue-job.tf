@@ -71,6 +71,6 @@ resource "aws_glue_trigger" "xlsx_import_crawler_trigger" {
   }
 
   actions {
-    job_name = aws_glue_crawler.xlsx_import.name
+    crawler_name = aws_glue_crawler.xlsx_import.name
   }
 }
