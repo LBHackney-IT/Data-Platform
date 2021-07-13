@@ -25,7 +25,7 @@ resource "aws_glue_job" "housing_elec_mech_fire_lightning_protection" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-axis/cleaned"
+    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-elec-mech-fire-lightning-protection/cleaned"
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = "housing_lightning_protection_"
     "--TempDir"                          = module.glue_temp_storage.bucket_url
@@ -56,6 +56,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_lightni
 
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection_job" {
   count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
 
   name          = "${local.identifier_prefix}-housing-repairs-repairs-axis-cleaning-job-trigger"
   type          = "CONDITIONAL"
@@ -75,6 +76,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection
 
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection_crawler" {
   count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
 
   name          = "${local.identifier_prefix}-housing-repairs-repairs-axis-cleaning-crawler-trigger"
   type          = "CONDITIONAL"

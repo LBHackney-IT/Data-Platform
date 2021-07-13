@@ -58,6 +58,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_door_entry_cleaned_cra
 resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_job" {
   count = local.is_live_environment ? 1 : 0
 
+  tags          = module.tags.values
   name          = "${local.identifier_prefix}-housing-repairs-door-entry-cleaning-job-trigger"
   type          = "CONDITIONAL"
   workflow_name = "housing-repairs-door-entry"
@@ -79,6 +80,7 @@ resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_job" {
 resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_crawler" {
   count = local.is_live_environment ? 1 : 0
 
+  tags          = module.tags.values
   name          = "${local.identifier_prefix}-housing-repairs-door-entry-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = "housing-repairs-door-entry"
