@@ -61,6 +61,7 @@ resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_job" {
   name          = "${local.identifier_prefix}-housing-repairs-door-entry-cleaning-job-trigger"
   type          = "CONDITIONAL"
   workflow_name = "housing-repairs-door-entry"
+  tags          = module.tags.values
 
 
   predicate {
@@ -81,6 +82,7 @@ resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_crawler" {
   name          = "${local.identifier_prefix}-housing-repairs-door-entry-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = "housing-repairs-door-entry"
+  tags          = module.tags.values
 
   predicate {
     conditions {
