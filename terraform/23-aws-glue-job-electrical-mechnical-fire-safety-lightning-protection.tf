@@ -50,7 +50,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_lightni
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
-      TableLevelConfiguration = 4
+      TableLevelConfiguration = 5
     }
   })
 }
