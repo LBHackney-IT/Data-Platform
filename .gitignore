@@ -8,6 +8,7 @@ lambdas/*/key_file.json
 lambdas/*/venv
 lambdas/*/*.zip
 lambdas/*.zip
+notebook/scripts/.ipynb_checkpoints/*
 env.tfvars
 dev.tfvars
 google_service_account_creds*.json
