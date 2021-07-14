@@ -27,7 +27,7 @@ resource "aws_glue_job" "housing_repairs_electrical_supplies_cleaning" {
   default_arguments = {
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/electrical-supplies/cleaned"
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
-    "--source_catalog_table"             = "housing_repairs_electrical_supplies"
+    "--source_catalog_table"             = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"].catalog_name
     "--TempDir"                          = module.glue_temp_storage.bucket_url
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
@@ -60,13 +60,13 @@ resource "aws_glue_trigger" "housing_repairs_electrical_supplies_cleaning_job" {
 
   name          = "${local.identifier_prefix}-housing-repairs-electrical-supplies-cleaning-job-trigger"
   type          = "CONDITIONAL"
-  workflow_name = "housing-repairs-electrical-supplies"
+  workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"].workflow_name
   tags          = module.tags.values
 
 
   predicate {
     conditions {
-      crawler_name = "dataplatform-stg-raw-zone-housing-repairs-Electrical Supplies"
+      crawler_name = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"].crawler_name
       crawl_state  = "SUCCEEDED"
     }
   }
