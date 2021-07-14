@@ -45,9 +45,9 @@ resource "aws_glue_crawler" "xlsx_import" {
 
   database_name = var.glue_catalog_database_name
   // TODO: Provide the raw-zone name dynamically (using the bucket name is too long for crawler names)
-  name          = "raw-zone-${var.department_folder_name}-${local.worksheet_key}"
-  role          = var.glue_role_arn
-  table_prefix  = "${replace(var.department_folder_name, "-", "_")}_"
+  name         = "raw-zone-${var.department_folder_name}-${local.worksheet_key}"
+  role         = var.glue_role_arn
+  table_prefix = "${replace(var.department_folder_name, "-", "_")}_"
 
   s3_target {
     path = local.s3_output_path
