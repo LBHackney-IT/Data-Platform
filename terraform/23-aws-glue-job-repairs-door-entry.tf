@@ -47,12 +47,12 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_door_entry_cleaned_cra
     exclusions = local.glue_crawler_excluded_blobs
   }
 
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 5
-    }
-  })
+  # configuration = jsonencode({
+  #   Version = 1.0
+  #   Grouping = {
+  #     TableLevelConfiguration = 5
+  #   }
+  # })
 }
 
 resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_job" {

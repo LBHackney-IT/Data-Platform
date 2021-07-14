@@ -47,12 +47,12 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_lightni
     exclusions = local.glue_crawler_excluded_blobs
   }
 
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 5
-    }
-  })
+  # configuration = jsonencode({
+  #   Version = 1.0
+  #   Grouping = {
+  #     TableLevelConfiguration = 5
+  #   }
+  # })
 }
 
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection_job" {
