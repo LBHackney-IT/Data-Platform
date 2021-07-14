@@ -82,7 +82,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection
 
   name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-lightning-protection-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
-  workflow_name = "housing-repairs-lightning-protection-"
+  workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["door-entry"].workflow_name
 
   predicate {
     conditions {
