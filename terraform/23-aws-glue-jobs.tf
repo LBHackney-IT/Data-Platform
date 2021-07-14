@@ -57,13 +57,13 @@ resource "aws_glue_job" "manually_uploaded_parking_data_to_raw" {
 
   tags = module.tags.values
 
-  name              = "${local.short_identifier_prefix}Parking Copy Manually Uploaded CSVs to Raw"
+  name              = "${local.short_identifier_prefix}Parking Import Manually Uploaded CSVs to Raw"
   number_of_workers = 2
   worker_type       = "Standard"
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_manually_uploaded_csv_data_to_raw.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.import_manually_uploaded_csv_data_to_raw.key}"
   }
 
   glue_version = "2.0"

@@ -28,14 +28,14 @@ resource "aws_s3_bucket_object" "levenshtein_address_matching" {
   etag   = filemd5("../scripts/levenshtein_address_matching.py")
 }
 
-resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
+resource "aws_s3_bucket_object" "import_manually_uploaded_csv_data_to_raw" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/copy_manually_uploaded_csv_data_to_raw.py"
+  key    = "scripts/import_manually_uploaded_csv_data_to_raw.py"
   acl    = "private"
-  source = "../scripts/copy_manually_uploaded_csv_data_to_raw.py"
-  etag   = filemd5("../scripts/copy_manually_uploaded_csv_data_to_raw.py")
+  source = "../scripts/import_manually_uploaded_csv_data_to_raw.py"
+  etag   = filemd5("../scripts/import_manually_uploaded_csv_data_to_raw.py")
 }
 
 resource "aws_s3_bucket_object" "address_cleaning" {

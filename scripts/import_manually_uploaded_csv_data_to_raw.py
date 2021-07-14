@@ -21,6 +21,19 @@ logger = glue_context.get_logger()
 def remove_empty_columns(data_frame):
     return data_frame.drop('')
 
+def add_import_job_columns(data_frame):
+    # f.input_file_name returns path so must extract filename between final '/' and subsequent '.'
+    ## TESTING: TRY DIFFERENT VERSIONS >>> ##
+    # ORIGINAL FAILED>> columns_added = data_frame.withColumn('import_filename', f.lit(('/'+f.input_file_name()+'.').split('/')[-1].split('.')[0]))
+    # FAILED using regular python string manipulation>> columns_added = data_frame.withColumn('import_filename', ('/'+f.input_file_name()+'.').split('/')[-1].split('.')[0])
+    # FAILED>> columns_added = data_frame.withColumn('import_filename', ('/'+str(f.input_file_name())+'.').split('/')[-1].split('.')[0])
+    # THE FOLLOWING LINE allowed the job to run succesfully BUT what did it output in the parquets? Did it actually output a column containing the filename or path or do something else or fail even? >>>
+    columns_added = data_frame.withColumn('import_pathname', f.input_file_name())
+        # BUT THESE NEXT TWO TESTS FAILED. Trying to manipulate columns like a string looks tricky. Do f.split and f.concat methods work? Can i even access elements after f.split in this way? More to go and learn! >>>
+        # .withColumn('import_filename', ('import_filename', f.split(f.split(f.concat('/',f.input_file_name(),'.'),'/')[-1],'.')[0]))
+        # .withColumn('import_filename', ('import_filename', f.lit(f.split(f.split(f.concat('/',f.input_file_name(),'.'),'/')[-1],'.')[0])))
+    return columns_added
+
 def data_source_landing_to_raw(bucket_source, bucket_target, key, glue_context):
   data_source = glue_context.create_dynamic_frame.from_options(
     format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","},
@@ -34,6 +47,7 @@ def data_source_landing_to_raw(bucket_source, bucket_target, key, glue_context):
   data_frame = remove_empty_columns(data_source.toDF())
   logger.info("Using Columns: " + str(data_frame.columns))
   data_frame = add_import_time_columns(data_frame)
+  data_frame = add_import_job_columns(data_frame)
 
   data_output = DynamicFrame.fromDF(data_frame, glue_context, "cedar_data")
 
