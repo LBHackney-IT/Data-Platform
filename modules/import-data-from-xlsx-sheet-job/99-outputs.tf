@@ -15,5 +15,5 @@ output "workflow_name" {
 }
 
 output "crawler_name" {
-  value =  aws_glue_crawler.xlsx_import.id
+  value = aws_glue_crawler.xlsx_import.id
 }
