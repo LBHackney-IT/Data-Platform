@@ -10,11 +10,11 @@ module "import_file_from_g_drive" {
   service_area                   = var.department_folder_name
   file_id                        = var.google_sheets_document_id
   file_name                      = var.input_file_name
-  glue_job_names                 = [for job in module.import-repairs-fire-alarms-xlsx-file-format : job.job_name]
-  job_arns                       = [for job in module.import-repairs-fire-alarms-xlsx-file-format : job.job_arn]
+  glue_job_names                 = [for job in module.import_data_from_xlsx_sheet_job : job.job_name]
+  job_arns                       = [for job in module.import_data_from_xlsx_sheet_job : job.job_arn]
 }
 
-module "import-repairs-fire-alarms-xlsx-file-format" {
+module "import_data_from_xlsx_sheet_job" {
   for_each = var.worksheets
 
   source                         = "../import-data-from-xlsx-sheet-job"
@@ -29,7 +29,7 @@ module "import-repairs-fire-alarms-xlsx-file-format" {
   tags                           = var.tags
   glue_job_name                  = "${var.glue_job_name} - ${each.value.worksheet_name}"
   department_folder_name         = var.department_folder_name
-  output_folder_name             = "${var.output_folder_name}/${lower(replace(each.value.worksheet_name, " ", "_"))}"
+  output_folder_name             = "${var.output_folder_name}/${lower(replace(replace(trimspace(each.value.worksheet_name), "/[^a-zA-Z0-9]+/", "-"), "/-+/", "-"))}"
   raw_zone_bucket_id             = var.raw_zone_bucket_id
   input_file_name                = var.input_file_name
   header_row_number              = each.value.header_row_number
