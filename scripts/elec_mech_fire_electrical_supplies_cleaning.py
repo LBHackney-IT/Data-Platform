@@ -51,7 +51,9 @@ df2 = df2[[
     'import_year',
     'import_month',
     'import_day',
-    'import_date'
+    'import_date',
+    'import_datetime',
+    'import_timestamp'
 ]]
 
 df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
