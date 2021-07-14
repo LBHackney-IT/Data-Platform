@@ -28,7 +28,7 @@ resource "aws_glue_job" "housing_repairs_door_entry_cleaning" {
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/door-entry/cleaned/"
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = module.repairs_fire_alarm_aov[0].worksheet_resources["door-entry"].catalog_table
-    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--TempDir"                          = module.glue_temp_storage.bucket_url
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
 }
