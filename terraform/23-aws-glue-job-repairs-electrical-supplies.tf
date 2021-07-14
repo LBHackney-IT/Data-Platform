@@ -1,25 +1,25 @@
-resource "aws_s3_bucket_object" "repairs_electrical_supplies_cleaning_script" {
+resource "aws_s3_bucket_object" "elec_mech_fire_electrical_supplies_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/repairs_electrical_supplies_cleaning.py"
+  key    = "scripts/elec_mech_fire_electrical_supplies_cleaning.py"
   acl    = "private"
-  source = "../scripts/repairs_electrical_supplies_cleaning.py"
-  etag   = filemd5("../scripts/repairs_electrical_supplies_cleaning.py")
+  source = "../scripts/elec_mech_fire_electrical_supplies_cleaning.py"
+  etag   = filemd5("../scripts/elec_mech_fire_electrical_supplies_cleaning.py")
 }
 
-resource "aws_glue_job" "housing_repairs_electrical_supplies_cleaning" {
+resource "aws_glue_job" "housing_elec_mech_fire_electrical_supplies_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
 
-  name              = "${local.short_identifier_prefix}Housing Repairs - Repairs ElecMechFire Electrical Supplies Cleaning"
+  name              = "${local.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety Electrical Supplies Cleaning"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_electrical_supplies_cleaning_script.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.elec_mech_fire_electrical_supplies_cleaning_script.key}"
   }
 
   glue_version = "2.0"
@@ -55,7 +55,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_electrical_supplies_cl
   })
 }
 
-resource "aws_glue_trigger" "housing_repairs_electrical_supplies_cleaning_job" {
+resource "aws_glue_trigger" "housing_elec_mech_fire_electrical_supplies_cleaning_job" {
   count = local.is_live_environment ? 1 : 0
 
   name          = "${local.identifier_prefix}-housing-repairs-electrical-supplies-cleaning-job-trigger"
@@ -72,11 +72,11 @@ resource "aws_glue_trigger" "housing_repairs_electrical_supplies_cleaning_job" {
   }
 
   actions {
-    job_name = aws_glue_job.housing_repairs_electrical_supplies_cleaning[0].name
+    job_name = aws_glue_job.housing_elec_mech_fire_electrical_supplies_cleaning[0].name
   }
 }
 
-resource "aws_glue_trigger" "housing_repairs_electrical_supplies_cleaning_crawler" {
+resource "aws_glue_trigger" "housing_elec_mech_fire_electrical_supplies_cleaning_crawler" {
   count = local.is_live_environment ? 1 : 0
 
   name          = "${local.identifier_prefix}-housing-repairs-electrical-supplies-cleaning-crawler-trigger"
@@ -86,7 +86,7 @@ resource "aws_glue_trigger" "housing_repairs_electrical_supplies_cleaning_crawle
 
   predicate {
     conditions {
-      job_name = aws_glue_job.housing_repairs_electrical_supplies_cleaning[0].name
+      job_name = aws_glue_job.housing_elec_mech_fire_electrical_supplies_cleaning[0].name
       state    = "SUCCEEDED"
     }
   }
