@@ -47,7 +47,11 @@ df2 = df2[[
     'contractor_s_own_ref_no',
     'new_uhw_number',
     'requested_by',
-    'works_status_comments'
+    'works_status_comments',
+    'import_year',
+    'import_month',
+    'import_day',
+    'import_date'
 ]]
 
 df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
