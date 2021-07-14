@@ -33,7 +33,7 @@ def clean_column_names(df):
     return df2
 
 
-def remove_unamed_columns(df):
+def remove_unnamed_columns(df):
     all_columns = df.columns
     columns_to_drop = [i for i in all_columns if i.startswith('unnamed')]
     df = df.drop(*columns_to_drop)

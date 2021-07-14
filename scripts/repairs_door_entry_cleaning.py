@@ -8,7 +8,7 @@ import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 import re
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names, remove_unamed_columns
+from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names, remove_unnamed_columns
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
@@ -32,7 +32,7 @@ df = source_data.toDF()
 
 df = get_latest_partitions(df)
 
-df2 = remove_unamed_columns(df)
+df2 = remove_unnamed_columns(df)
 
 df2 = clean_column_names(df2)
 
