@@ -1,5 +1,5 @@
 variable "workflow_names" {
-  description = "A list workflow names to be triggered after import"
+  description = "A list of workflow names to be triggered after import"
   type        = list(string)
   default     = []
 }
