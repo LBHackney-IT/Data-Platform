@@ -14,6 +14,10 @@ output "workflow_name" {
   value = aws_glue_workflow.workflow.id
 }
 
+output "workflow_arn" {
+  value = aws_glue_workflow.workflow.arn
+}
+
 output "crawler_name" {
   value = aws_glue_crawler.xlsx_import.id
 }

@@ -62,11 +62,11 @@ def lambda_handler(event, lambda_context):
 
     glue_client = boto3.client('glue')
 
-    glue_job_names = getenv("GLUE_JOB_NAMES").split("/")
+    workflow_names = getenv("WORKFLOW_NAMES").split("/")
 
-    for glue_job_name in glue_job_names:
-        print('Running '+ glue_job_name)
-        response = glue_client.start_job_run(JobName = glue_job_name)
+    for workflow_name in workflow_names:
+        print('Running '+ workflow_name)
+        response = glue_client.start_workflow_run(Name = workflow_name)
         print(response)
 
 

@@ -14,11 +14,11 @@ output "network_vpc_subnet_cider_blocks" {
 }
 
 output "ecr_repository_worker_endpoint" {
-  value = length(module.liberator_dump_to_rds_snapshot) == 1 ? module.liberator_dump_to_rds_snapshot[0].ecr_repository_worker_endpoint : null
+  value = try(module.liberator_dump_to_rds_snapshot[0].ecr_repository_worker_endpoint, null)
 }
 
 output "ssl_connection_resources_bucket_id" {
-  value = length(aws_s3_bucket.ssl_connection_resources) == 1 ? aws_s3_bucket.ssl_connection_resources[0].id : ""
+  value = try(aws_s3_bucket.ssl_connection_resources[0].id, "")
 }
 
 output "qlik_sense_server_ip" {
