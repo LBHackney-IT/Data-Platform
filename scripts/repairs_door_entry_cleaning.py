@@ -56,6 +56,15 @@ df2 = df2.withColumnRenamed('date', 'datetime_raised') \
 df2 = df2.withColumn('work_priority_priority_code',
                      udf_map_repair_priority('work_priority_description'))
 
+df2 = df2.select("data_source", "datetime_raised", "sor",
+                 "operative", "property_address", "order_value",
+                 "description_of_work", "work_priority_description",
+                 "temp_order_number_full", "budget_code", "order_value",
+                 "order_status", "completed_date", "contractor_ref",
+                 "unnamed_14", "unnamed_15", "unnamed_16", "work_priority_priority_code",
+                 "import_datetime", "import_timestamp", "import_year",
+                 "import_month", "import_day", "import_date",
+                 )
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
