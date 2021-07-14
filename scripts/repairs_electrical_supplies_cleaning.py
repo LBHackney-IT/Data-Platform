@@ -34,9 +34,21 @@ df = get_latest_partitions(df)
 
 df2 = clean_column_names(df)
 
-# drop unnamed columns
-columns_to_drop = [i for i in df2.columns if i.startswith('unnamed')]
-df2 = df2.drop(*columns_to_drop)
+# only keep relevant columns
+df2 = df2[[
+    'address',
+    'description',
+    'date',
+    'temp_order_number',
+    'priority_code',
+    'raised_value',
+    'total_invoiced',
+    'cost_code',
+    'contractor_s_own_ref_no',
+    'new_uhw_number',
+    'requested_by',
+    'works_status_comments'
+]]
 
 df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
 
