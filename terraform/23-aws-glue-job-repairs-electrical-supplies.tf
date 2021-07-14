@@ -81,7 +81,7 @@ resource "aws_glue_trigger" "housing_repairs_electrical_supplies_cleaning_crawle
 
   name          = "${local.identifier_prefix}-housing-repairs-electrical-supplies-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
-  workflow_name = "housing-repairs-electrical-supplies"
+  workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"].workflow_name
   tags          = module.tags.values
 
   predicate {
