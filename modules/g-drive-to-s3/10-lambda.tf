@@ -45,14 +45,14 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
   }
 
   dynamic "statement" {
-    for_each = var.job_arns == "" ? [] : [1]
+    for_each = var.workflow_arns == "" ? [] : [1]
 
     content {
       actions = [
-        "glue:StartJobRun",
+        "glue:StartWorkflowRun",
       ]
       effect    = "Allow"
-      resources = var.job_arns
+      resources = var.workflow_arns
     }
   }
 }
@@ -106,7 +106,7 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
       FILE_ID        = var.file_id
       BUCKET_ID      = var.zone_bucket_id
       FILE_NAME      = "${var.service_area}/${var.file_name}"
-      GLUE_JOB_NAMES = join("/", var.glue_job_names)
+      WORKFLOW_NAMES = join("/", var.workflow_names)
     }
   }
 
