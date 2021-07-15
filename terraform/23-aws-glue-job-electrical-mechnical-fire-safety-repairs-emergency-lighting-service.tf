@@ -50,13 +50,6 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_emergency_lighting_ser
     path       = local.repair_emergency_lighting_servicing_output
     exclusions = local.glue_crawler_excluded_blobs
   }
-
-  # configuration = jsonencode({
-  #   Version = 1.0
-  #   Grouping = {
-  #     TableLevelConfiguration = 5
-  #   }
-  # })
 }
 
 resource "aws_glue_trigger" "housing_repairs_emergency_lighting_servicing_cleaning_job" {
