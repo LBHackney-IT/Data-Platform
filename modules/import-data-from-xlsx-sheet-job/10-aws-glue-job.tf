@@ -42,6 +42,17 @@ resource "aws_glue_crawler" "xlsx_import" {
   }
 }
 
+resource "aws_glue_trigger" "xlsx_import_trigger" {
+  name          = "Xlsx Import Job Glue Trigger - ${var.glue_job_name}"
+  type          = "ON_DEMAND"
+  enabled       = true
+  workflow_name = aws_glue_workflow.workflow.name
+
+  actions {
+    job_name = aws_glue_job.xlsx_import.name
+  }
+}
+
 resource "aws_glue_trigger" "xlsx_import_crawler_trigger" {
   tags = var.tags
 
