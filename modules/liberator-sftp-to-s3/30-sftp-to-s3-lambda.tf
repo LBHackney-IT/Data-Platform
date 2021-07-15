@@ -22,7 +22,7 @@ resource "aws_lambda_function" "liberator_data_upload_lambda" {
 }
 
 resource "aws_cloudwatch_event_rule" "every_day_every_half_hour_between_three_and_six_am" {
-  name                = "${var.identifier_prefix}-every-day-every-half-hour-between-three-and-six-am"
+  name                = "${var.identifier_prefix}-every-half-hour-between-three-and-six-am"
   description         = "Runs every day, every half-hour between 3am and 6.30am inclusive"
   schedule_expression = "cron(0,30 03-06 * * ? *)"
   is_enabled          = var.run_daily
