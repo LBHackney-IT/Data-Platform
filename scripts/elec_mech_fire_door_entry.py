@@ -36,6 +36,8 @@ df2 = clean_column_names(df)
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Door Entry'))
 
+df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
+
 # rename column names to reflect harmonised column names
 
 df2 = df2.withColumnRenamed('date', 'datetime_raised') \
