@@ -11,6 +11,7 @@ resource "aws_s3_bucket_object" "housing_repairs_emergency_lighting_servicing_cl
   source = "../scripts/elec_mech_fire_emergency_lighting_servicing_cleaning.py"
   etag   = filemd5("../scripts/elec_mech_fire_emergency_lighting_servicing_cleaning.py")
 }
+ 
 resource "aws_glue_job" "housing_repairs_emergency_lighting_servicing_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
@@ -28,7 +29,7 @@ resource "aws_glue_job" "housing_repairs_emergency_lighting_servicing_cleaning" 
   glue_version = "2.0"
 
   default_arguments = {
-    "--cleaned_repairs_s3_bucket_target" = repair_emergency_lighting_servicing_output
+    "--cleaned_repairs_s3_bucket_target" = local.repair_emergency_lighting_servicing_output
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = module.repairs_fire_alarm_aov[0].worksheet_resources["emergency-lighting-servicing"].catalog_table
     "--TempDir"                          = module.glue_temp_storage.bucket_url
@@ -46,7 +47,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_emergency_lighting_ser
 
 
   s3_target {
-    path       = repair_emergency_lighting_servicing_output
+    path       = local.repair_emergency_lighting_servicing_output
     exclusions = local.glue_crawler_excluded_blobs
   }
 
