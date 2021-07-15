@@ -57,8 +57,18 @@ variable "department_folder_name" {
   type        = string
 }
 
+variable "identifier_prefix" {
+  description = "Project wide resource identifier prefix"
+  type        = string
+}
+
 variable "output_folder_name" {
   description = "Output folder name"
+  type        = string
+}
+
+variable "data_set_name" {
+  description = "Data set name"
   type        = string
 }
 

@@ -14,13 +14,14 @@ from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, remove_multiple_and_trailing_underscores_and_lowercase
+from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
-source_catalog_table    = get_glue_env_var('source_catalog_table', '')
-cleaned_repairs_s3_bucket_target = get_glue_env_var('cleaned_repairs_s3_bucket_target', '')
+source_catalog_table = get_glue_env_var('source_catalog_table', '')
+cleaned_repairs_s3_bucket_target = get_glue_env_var(
+    'cleaned_repairs_s3_bucket_target', '')
 
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
@@ -40,20 +41,25 @@ df = get_latest_partitions(df)
 
 # clean up column names
 logger.info('clean up column names')
-df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
+df2 = clean_column_names(df)
 
 logger.info('convert timestamp and date columns to datetime / date field types')
-df2 = df2.withColumn('timestamp', F.to_timestamp("timestamp", "dd/MM/yyyy HH:mm:ss"))
-df2 = df2.withColumn('date_temp_order_reference', F.to_date('date_temp_order_reference', "dd/MM/yyyy"))
+df2 = df2.withColumn('timestamp', F.to_timestamp(
+    "timestamp", "dd/MM/yyyy HH:mm:ss"))
+df2 = df2.withColumn('date_temp_order_reference', F.to_date(
+    'date_temp_order_reference', "dd/MM/yyyy"))
 
 # convert contact details to title case
-df2 = df2.withColumn('contact_information', F.initcap(F.col('contact_information')))
+df2 = df2.withColumn('contact_information',
+                     F.initcap(F.col('contact_information')))
 
 # split out phone number from contact field
-df2 = df2.withColumn("phone_1", F.regexp_extract("contact_information", "(\d+)", 0))
+df2 = df2.withColumn("phone_1", F.regexp_extract(
+    "contact_information", "(\d+)", 0))
 
 # keep name only from contact field
-df2 = df2.withColumn("name_full", F.regexp_extract("contact_information", "[a-zA-Z]+(?:\s[a-zA-Z]+)*", 0))
+df2 = df2.withColumn("name_full", F.regexp_extract(
+    "contact_information", "[a-zA-Z]+(?:\s[a-zA-Z]+)*", 0))
 
 # add new data source column to specify which repairs sheet the repair came from
 df2 = df2.withColumn('data_source', F.lit('Alphatrack'))
@@ -71,13 +77,15 @@ df2 = df2.withColumnRenamed('email_address', 'email_staff') \
 df2 = df2.drop('contact_information')
 
 # apply function
-df2 = df2.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
+df2 = df2.withColumn('work_priority_priority_code',
+                     udf_map_repair_priority('work_priority_description'))
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
     frame=cleanedDataframe,
     connection_type="s3",
     format="parquet",
-    connection_options={"path": cleaned_repairs_s3_bucket_target,"partitionKeys": PARTITION_KEYS},
+    connection_options={
+        "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
     transformation_ctx="parquetData")
 job.commit()

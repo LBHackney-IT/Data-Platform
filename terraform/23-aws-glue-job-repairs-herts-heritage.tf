@@ -28,7 +28,7 @@ resource "aws_glue_job" "housing_repairs_herts_heritage_cleaning" {
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-herts-heritage/cleaned"
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = "housing_repairs_repairs_herts_heritage"
-    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_arn}/"
+    "--TempDir"                          = module.glue_temp_storage.bucket_url
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
 }
@@ -60,6 +60,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_herts_heritage_cleaning_job
   name          = "${local.identifier_prefix}-housing-repairs-repairs-herts-heritage-cleaning-job-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_herts_heritage[0].workflow_name
+  tags          = module.tags.values
 
   predicate {
     conditions {
@@ -79,6 +80,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_herts_heritage_cleaning_cra
   name          = "${local.identifier_prefix}-housing-repairs-repairs-herts-heritage-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_herts_heritage[0].workflow_name
+  tags          = module.tags.values
 
   predicate {
     conditions {

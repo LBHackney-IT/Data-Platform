@@ -1,24 +1,22 @@
 import sys
-
-import pyspark.sql.functions as F
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.sql.functions import col, max
+import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
-
+import re
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
-
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
 cleaned_repairs_s3_bucket_target = get_glue_env_var(
     'cleaned_repairs_s3_bucket_target', '')
 
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
 logger = glueContext.get_logger()
@@ -33,28 +31,38 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 df = source_data.toDF()
 
 df = get_latest_partitions(df)
+
 df2 = clean_column_names(df)
 
-# rename column names to reflect harmonised column banes
-logger.info('convert timestamp and date columns to datetime / date field types')
-df2 = df2.withColumn('timestamp', F.to_timestamp(
-    "timestamp", "dd/MM/yyyy HH:mm:ss"))
+df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Door Entry'))
 
-df2 = df2.withColumnRenamed('notes_and_information', 'notes') \
-    .withColumnRenamed('Priority', 'work_priority_description') \
-    .withColumnRenamed('email_address', 'email_staff') \
-    .withColumnRenamed('temporary_order_number', 'temp_order_number_full') \
-    .withColumnRenamed('date_temp_order_reference', 'temp_order_number_date') \
-    .withColumnRenamed('time_temp_order_reference', 'temp_order_number_time') \
+# rename column names to reflect harmonised column names
+
+df2 = df2.withColumnRenamed('date', 'datetime_raised') \
+    .withColumnRenamed('requested_by', 'operative') \
+    .withColumnRenamed('address', 'property_address') \
+    .withColumnRenamed('description', 'description_of_work') \
+    .withColumnRenamed('priority_code', 'work_priority_description') \
+    .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
+    .withColumnRenamed('budget_subjective', 'budget_code') \
+    .withColumnRenamed('cost', 'order_value') \
+    .withColumnRenamed('contractor_job_status_complete_or_in_progress', 'order_status') \
     .withColumnRenamed('date_completed', 'completed_date') \
-
-# drop unnecessary columns
-df2 = df2.drop('column11')
-df2 = df2.drop('additional_notes')
+    .withColumnRenamed('tess_number', 'contractor_ref') \
 
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
                      udf_map_repair_priority('work_priority_description'))
+
+df2 = df2.select("data_source", "datetime_raised", "sor",
+                 "operative", "property_address", "order_value",
+                 "description_of_work", "work_priority_description",
+                 "temp_order_number_full", "budget_code", "order_value",
+                 "order_status", "completed_date", "contractor_ref",
+                 "unnamed_14", "unnamed_15", "unnamed_16", "work_priority_priority_code",
+                 "import_datetime", "import_timestamp", "import_year",
+                 "import_month", "import_day", "import_date",
+                 )
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(

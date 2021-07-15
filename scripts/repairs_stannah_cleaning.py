@@ -15,13 +15,14 @@ from pyspark.sql.types import StringType
 from pyspark.sql.window import Window
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import remove_multiple_and_trailing_underscores_and_lowercase
+from repairs_cleaning_helpers import clean_column_names
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
-source_catalog_table    = get_glue_env_var('source_catalog_table', '')
-cleaned_repairs_s3_bucket_target = get_glue_env_var('cleaned_repairs_s3_bucket_target', '')
+source_catalog_table = get_glue_env_var('source_catalog_table', '')
+cleaned_repairs_s3_bucket_target = get_glue_env_var(
+    'cleaned_repairs_s3_bucket_target', '')
 
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
@@ -40,10 +41,11 @@ df = source_data.toDF()
 df = get_latest_partitions(df)
 
 # clean up column names, data types
-df2 = remove_multiple_and_trailing_underscores_and_lowercase(df)
+df2 = clean_column_names(df)
 
 logger.info('convert timestamp and date columns to datetime / date field types')
-df2 = df2.withColumn('timestamp', F.to_timestamp("timestamp", "dd/MM/yyyy HH:mm:ss"))
+df2 = df2.withColumn('timestamp', F.to_timestamp(
+    "timestamp", "dd/MM/yyyy HH:mm:ss"))
 
 # add new data source column to specify which repairs sheet the repair came from
 df2 = df2.withColumn('data_source', F.lit('Stannah'))
@@ -65,6 +67,7 @@ parquetData = glueContext.write_dynamic_frame.from_options(
     frame=cleanedDataframe,
     connection_type="s3",
     format="parquet",
-    connection_options={"path": cleaned_repairs_s3_bucket_target,"partitionKeys": PARTITION_KEYS},
+    connection_options={
+        "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
     transformation_ctx="parquetData")
 job.commit()

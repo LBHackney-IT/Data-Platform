@@ -16,44 +16,50 @@ resource "aws_glue_job" "xlsx_import" {
   default_arguments = {
     "--s3_bucket_source"          = "s3://${var.landing_zone_bucket_id}/${var.department_folder_name}/${var.input_file_name}"
     "--additional-python-modules" = "openpyxl"
-    "--s3_bucket_target"          = "s3://${var.raw_zone_bucket_id}/${var.department_folder_name}/${var.output_folder_name}"
+    "--s3_bucket_target"          = local.s3_output_path
     "--header_row_number"         = var.header_row_number
-    "--TempDir"                   = "${var.glue_temp_storage_bucket_id}"
+    "--TempDir"                   = var.glue_temp_storage_bucket_id
     "--worksheet_name"            = var.worksheet_name
     "--extra-py-files"            = "s3://${var.glue_scripts_bucket_id}/${var.helpers_script_key}"
   }
 }
 
-resource "aws_glue_trigger" "xlsx_import_trigger" {
-  name     = "Xlsx Import Job Glue Trigger - ${var.glue_job_name}"
-  schedule = var.xlsx_import_schedule
-  type     = "SCHEDULED"
-  enabled  = var.enable_glue_trigger
-
-  actions {
-    job_name = aws_glue_job.xlsx_import.name
-  }
-
+resource "aws_glue_workflow" "workflow" {
+  name = "${var.identifier_prefix}${local.import_name}"
 }
+
 resource "aws_glue_crawler" "xlsx_import" {
   tags = var.tags
 
   database_name = var.glue_catalog_database_name
-  name          = "${var.raw_zone_bucket_id}-${var.department_folder_name}-${trimspace(var.worksheet_name)}"
-  role          = var.glue_role_arn
-  table_prefix  = "${replace(var.department_folder_name, "-", "_")}_"
+  // TODO: Provide the raw-zone name dynamically (using the bucket name is too long for crawler names)
+  name         = "raw-zone-${var.department_folder_name}-${local.worksheet_key}"
+  role         = var.glue_role_arn
+  table_prefix = "${replace(var.department_folder_name, "-", "_")}_"
 
   s3_target {
-    path = "s3://${var.raw_zone_bucket_id}/${var.department_folder_name}/${var.output_folder_name}"
+    path = local.s3_output_path
+  }
+}
+
+resource "aws_glue_trigger" "xlsx_import_trigger" {
+  name          = "Xlsx Import Job Glue Trigger - ${var.glue_job_name}"
+  type          = "ON_DEMAND"
+  enabled       = true
+  workflow_name = aws_glue_workflow.workflow.name
+
+  actions {
+    job_name = aws_glue_job.xlsx_import.name
   }
 }
 
 resource "aws_glue_trigger" "xlsx_import_crawler_trigger" {
   tags = var.tags
 
-  name    = "Xlsx Crawler Trigger - ${var.glue_job_name}"
-  type    = "CONDITIONAL"
-  enabled = true
+  name          = "Xlsx Crawler Trigger - ${var.glue_job_name}"
+  type          = "CONDITIONAL"
+  enabled       = true
+  workflow_name = aws_glue_workflow.workflow.name
 
   predicate {
     conditions {
@@ -63,6 +69,6 @@ resource "aws_glue_trigger" "xlsx_import_crawler_trigger" {
   }
 
   actions {
-    job_name = aws_glue_crawler.xlsx_import.name
+    crawler_name = aws_glue_crawler.xlsx_import.name
   }
 }

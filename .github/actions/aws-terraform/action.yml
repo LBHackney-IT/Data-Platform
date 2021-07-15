@@ -60,9 +60,6 @@ runs:
         ${{ github.action_path }}/box.sh "Setting up build environment"
         echo -e "Installing TFLint"
         curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip
-        curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint-ruleset-aws/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint-ruleset.zip && unzip tflint-ruleset.zip && rm tflint-ruleset.zip
-        mkdir -p ./.tflint.d/plugins/
-        mv tflint-ruleset-aws ./.tflint.d/plugins/
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}"
@@ -123,6 +120,7 @@ runs:
       id: lint
       run: |
         ${{ github.action_path }}/box.sh "Running TFLint"
+        ./tflint --init --config=${{ github.action_path }}/../../../.tflint.hcl
         ./tflint --var-file='../config/terraform/${{ inputs.environment }}.tfvars' --var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' --var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' --var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ inputs.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --module --config=${{ github.action_path }}/../../../.tflint.hcl --loglevel=warn .
         echo -e "\n"
       shell: bash

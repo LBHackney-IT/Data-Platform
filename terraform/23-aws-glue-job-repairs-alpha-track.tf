@@ -60,6 +60,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_alpha_track_cleaning_job" {
   name          = "${local.identifier_prefix}-housing-repairs-repairs-alpha-track-cleaning-job-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_alpha_track[0].workflow_name
+  tags          = module.tags.values
 
   predicate {
     conditions {
@@ -79,6 +80,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_alpha_track_cleaning_crawle
   name          = "${local.identifier_prefix}-housing-repairs-repairs-alpha-track-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_alpha_track[0].workflow_name
+  tags          = module.tags.values
 
   predicate {
     conditions {

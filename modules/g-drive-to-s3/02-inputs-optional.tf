@@ -1,11 +1,11 @@
-variable "glue_job_names" {
-  description = "A list glue jobs to be triggered after import"
+variable "workflow_names" {
+  description = "A list of workflow names to be triggered after import"
   type        = list(string)
   default     = []
 }
 
-variable "job_arns" {
-  description = "A list glue jobs to be triggered after import"
+variable "workflow_arns" {
+  description = "A list of workflow arns to be triggered after import"
   type        = list(string)
   default     = []
 }

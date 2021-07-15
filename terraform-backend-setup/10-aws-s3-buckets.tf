@@ -1,10 +1,14 @@
 resource "aws_kms_key" "kms_key" {
+  tags = module.tags.values
+
   description             = "${var.project} - ${var.environment} KMS Key"
   deletion_window_in_days = 10
   enable_key_rotation     = true
 }
 
 resource "aws_s3_bucket" "terraform_state_storage" {
+  tags = module.tags.values
+
   bucket = lower("${var.project}-terraform-state")
 
   server_side_encryption_configuration {
