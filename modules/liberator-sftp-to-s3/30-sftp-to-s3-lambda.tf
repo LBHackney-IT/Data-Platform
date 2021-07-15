@@ -21,10 +21,10 @@ resource "aws_lambda_function" "liberator_data_upload_lambda" {
   }
 }
 
-resource "aws_cloudwatch_event_rule" "every_day_at_three" {
+resource "aws_cloudwatch_event_rule" "every_day_every_half_hour_between_three_and_six_am" {
   name                = "${var.identifier_prefix}-every-day-at-three"
   description         = "Runs every day at 3am"
-  schedule_expression = "cron(0 03 * * ? *)"
+  schedule_expression = "cron(0,30 03-06 * * ? *)"
   is_enabled          = var.run_daily
 }
 

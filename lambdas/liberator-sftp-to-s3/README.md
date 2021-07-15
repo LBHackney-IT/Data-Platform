@@ -9,7 +9,7 @@ See the corresponding [architecture decision record](http://playbook.hackney.gov
 ### Deploy the lambda function in you development workspace
 
 1. Install dependencies by running the following from this directory.
-```sh 
+```sh
 npm install
 ```
 
@@ -20,7 +20,7 @@ make init
 make apply
 ```
 
-You can make changes to the lambda code then re apply the terraform to update the lambda function. 
+You can make changes to the lambda code then re apply the terraform to update the lambda function.
 
 ## Invoke the lambda function in your development workspace
 
