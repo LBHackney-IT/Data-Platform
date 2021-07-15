@@ -59,6 +59,7 @@ df3 = df3[[
     'property_address',
     'description_of_work',
     'work_priority_description',
+    'work_priority_priority_code',
     'temp_order_number_full',
     'order_value',
     'order_status',
