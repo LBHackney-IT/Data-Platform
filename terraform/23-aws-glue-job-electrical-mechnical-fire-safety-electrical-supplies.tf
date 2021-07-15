@@ -46,13 +46,6 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_electrical_supplies_cl
     path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/electrical-supplies/cleaned/"
     exclusions = local.glue_crawler_excluded_blobs
   }
-
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 5
-    }
-  })
 }
 
 resource "aws_glue_trigger" "housing_elec_mech_fire_electrical_supplies_cleaning_job" {

@@ -1,6 +1,9 @@
+import re
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
-import re
+from pyspark.sql import types as t
+from datetime import datetime
+from pyspark.sql.types import TimestampType
 
 
 def map_repair_priority(code):
@@ -16,7 +19,7 @@ def map_repair_priority(code):
         return None
 
 
-# # convert to a UDF Function by passing in the function and the return type of function (string in this case)
+# convert to a UDF Function by passing in the function and the return type of function (string in this case)
 udf_map_repair_priority = F.udf(map_repair_priority, StringType())
 
 
@@ -31,3 +34,10 @@ def clean_column_names(df):
     df2 = df.select([F.col(col).alias(
         re.sub("[^0-9a-zA-Z$]+", "_", col.lower())) for col in df.columns])
     return df2
+
+def date_to_datetime_converter(col):
+    timestamp = datetime.combine(col, datetime.min.time())
+    return timestamp
+
+# convert to a UDF Function by passing in the function and the return type of function (TimestampType in this case)
+udf_date_to_datetime_converter = F.udf(date_to_datetime_converter, TimestampType())

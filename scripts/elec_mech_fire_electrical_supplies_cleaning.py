@@ -8,7 +8,7 @@ import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 import re
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
+from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names, udf_date_to_datetime_converter
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
@@ -56,13 +56,14 @@ df2 = df2[[
     'import_timestamp'
 ]]
 
-df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
+df2 = df2.withColumn('date', F.to_date('date', "yyyy-MM-dd"))
+df2 = df2.filter(col('date').isNotNull())
+df2 = df2.withColumn('datetime_raised', udf_date_to_datetime_converter('date'))
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Electrical Supplies'))
 
 # rename column names to reflect harmonised column names
-df2 = df2.withColumnRenamed('date', 'datetime_raised') \
-    .withColumnRenamed('requested_by', 'operative') \
+df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
@@ -72,6 +73,8 @@ df2 = df2.withColumnRenamed('date', 'datetime_raised') \
     .withColumnRenamed('works_status_comments', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')\
 
+
+df2 = df2.drop('date')
 
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
