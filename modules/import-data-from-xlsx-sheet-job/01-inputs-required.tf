@@ -67,6 +67,11 @@ variable "output_folder_name" {
   type        = string
 }
 
+variable "data_set_name" {
+  description = "Data set name"
+  type        = string
+}
+
 variable "input_file_name" {
   description = "XLSX input file name"
   type        = string

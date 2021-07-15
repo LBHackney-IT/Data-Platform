@@ -7,6 +7,10 @@ output "job_arn" {
 }
 
 output "catalog_table" {
+  value = replace("${var.department_folder_name}_${var.data_set_name}", "-", "_")
+}
+
+output "worksheet_key" {
   value = local.worksheet_key
 }
 
