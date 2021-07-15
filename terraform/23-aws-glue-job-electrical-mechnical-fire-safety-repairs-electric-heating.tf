@@ -1,5 +1,5 @@
 locals {
-  repair_electric_heating_output = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/electric_heating/cleaned/"
+  repair_electric_heating_output = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/electric-heating/cleaned/"
 }
 
 resource "aws_s3_bucket_object" "housing_repairs_electric_heating_cleaning" {
