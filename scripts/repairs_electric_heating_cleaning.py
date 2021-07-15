@@ -68,7 +68,7 @@ df3 = df3.select(*columns, 'import_datetime', 'import_timestamp', 'import_year',
 df3 = df3.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
 df3 = df3.withColumn('data_source', F.lit('ElecMechFire - Electric Heating'))
 
-cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
+cleanedDataframe = DynamicFrame.fromDF(df3, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
     frame=cleanedDataframe,
     connection_type="s3",
