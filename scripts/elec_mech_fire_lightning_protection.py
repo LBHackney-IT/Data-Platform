@@ -12,7 +12,7 @@ from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
+from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names, udf_date_to_datetime_converter
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -35,19 +35,23 @@ df = source_data.toDF()
 df = get_latest_partitions(df)
 df2 = clean_column_names(df)
 
-df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
+df2 = df2.withColumn('date', F.to_date('date', "dd.mm.yy"))
+df2 = df2.replace('nan', None)
+df2 = df2.filter(col('date').isNotNull())
+df2 = df2.withColumn('datetime_raised', udf_date_to_datetime_converter('date'))
 
 df2 = df2.withColumn('data_source', F.lit('Lighting Protection'))
 
-df2 = df2.withColumnRenamed('date', 'datetime_raised') \
-    .withColumnRenamed('requested_by', 'operative') \
+df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
     .withColumnRenamed('cost', 'order_value')\
     .withColumnRenamed('subjective', 'budget_code')\
-    .withColumnRenamed('contractor\'s_own_ref', 'contractor_ref')
+    .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
+
+df2 = df2.drop('date')
 
 df2 = df2.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
 
