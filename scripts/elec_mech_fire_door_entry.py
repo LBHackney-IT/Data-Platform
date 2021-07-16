@@ -34,9 +34,6 @@ df = get_latest_partitions(df)
 
 df2 = clean_column_names(df)
 
-df2 = df2.replace('nan', None)
-df2 = df2.filter(col('date').isNotNull())
-
 # convert date column to datetime format
 df2 = df2.withColumn('date', F.to_date('date', "dd.mm.yy")).withColumn('datetime_raised', F.to_timestamp('date'))
 
