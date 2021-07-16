@@ -37,9 +37,7 @@ df2 = clean_column_names(df)
 
 df3 = df2
 
-df3 = df3.replace('nan', None).replace('NaT', None)
-df3 = df3.filter(col('date').isNotNull())
-df3 = df3.withColumn('date', F.to_date('date', "yyyy-MM-dd")).withColumn('datetime_raised', F.to_timestamp('date'))
+df3 = df3.withColumn('datetime_raised', F.to_timestamp('date', 'yyyy-MM-dd'))
 
 df3 = df3.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
