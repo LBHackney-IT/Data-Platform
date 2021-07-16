@@ -2,10 +2,10 @@ resource "aws_s3_bucket_object" "elec_mech_fire_lightning_protection_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/elec_mech_fire_lightning_protection.py"
+  key    = "scripts/elec_mech_fire_lightning_protection_cleaning.py"
   acl    = "private"
-  source = "../scripts/elec_mech_fire_lightning_protection.py"
-  etag   = filemd5("../scripts/elec_mech_fire_lightning_protection.py")
+  source = "../scripts/elec_mech_fire_lightning_protection_cleaning.py"
+  etag   = filemd5("../scripts/elec_mech_fire_lightning_protection_cleaning.py")
 }
 
 resource "aws_glue_job" "housing_elec_mech_fire_lightning_protection" {

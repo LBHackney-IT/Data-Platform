@@ -1,13 +1,14 @@
-resource "aws_s3_bucket_object" "elec_mech_fire_door_entry_script" {
+resource "aws_s3_bucket_object" "elec_mech_fire_door_entry_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/elec_mech_fire_door_entry.py"
+  key    = "scripts/elec_mech_fire_door_entry_cleaning.py"
   acl    = "private"
-  source = "../scripts/elec_mech_fire_door_entry.py"
-  etag   = filemd5("../scripts/elec_mech_fire_door_entry.py")
+  source = "../scripts/elec_mech_fire_door_entry_cleaning.py"
+  etag   = filemd5("../scripts/elec_mech_fire_door_entry_cleaning.py")
 }
-resource "aws_glue_job" "housing_elec_mech_fire_door_entry" {
+
+resource "aws_glue_job" "housing_elec_mech_fire_door_entry_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
@@ -18,13 +19,13 @@ resource "aws_glue_job" "housing_elec_mech_fire_door_entry" {
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.elec_mech_fire_door_entry_script.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.elec_mech_fire_door_entry_cleaning_script.key}"
   }
 
   glue_version = "2.0"
 
   default_arguments = {
-    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical_mechanical-fire/housing-door-entry/cleaned/"
+    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/housing-door-entry/cleaned/"
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = module.repairs_fire_alarm_aov[0].worksheet_resources["door-entry"].catalog_table
     "--TempDir"                          = module.glue_temp_storage.bucket_url
@@ -71,11 +72,11 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_door_entry_job" {
   }
 
   actions {
-    job_name = aws_glue_job.housing_elec_mech_fire_door_entry[0].name
+    job_name = aws_glue_job.housing_elec_mech_fire_door_entry_cleaning[0].name
   }
 }
 
-resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_door_entry_crawler" {
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_door_entry_cleaning_crawler" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
@@ -85,7 +86,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_door_entry_crawler" 
 
   predicate {
     conditions {
-      job_name = aws_glue_job.housing_elec_mech_fire_door_entry[0].name
+      job_name = aws_glue_job.housing_elec_mech_fire_door_entry_cleaning[0].name
       state    = "SUCCEEDED"
     }
   }
