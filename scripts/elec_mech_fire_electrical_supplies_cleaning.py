@@ -57,7 +57,7 @@ df2 = df2[[
 ]]
 
 # convert date column to datetime format
-df2 = df2.withColumn('datetime_raised', F.to_timestamp('date', 'yyyy-MM-dd'))
+df2 = df2.withColumn('date', F.to_timestamp('date', 'yyyy-MM-dd'))
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Electrical Supplies'))
 
@@ -71,9 +71,7 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('total_invoiced', 'order_value')\
     .withColumnRenamed('works_status_comments', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')\
-
-
-df2 = df2.drop('date')
+    .withColumnRenamed('date', 'datetime_raised')
 
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
