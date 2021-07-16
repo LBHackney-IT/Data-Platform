@@ -35,8 +35,7 @@ df = get_latest_partitions(df)
 df2 = clean_column_names(df)
 
 # convert date column to datetime format
-df2 = df2.withColumn('date', F.to_date('date', "dd.mm.yy")).withColumn('datetime_raised', F.to_timestamp('date'))
-
+df2 = df2.withColumn('datetime_raised', F.to_timestamp('date', 'dd.MM.yy'))
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Door Entry'))
 
