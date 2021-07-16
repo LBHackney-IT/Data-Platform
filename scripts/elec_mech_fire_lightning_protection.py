@@ -36,7 +36,7 @@ df = get_latest_partitions(df)
 df2 = clean_column_names(df)
 
 # convert date column to datetime format
-df2 = df2.withColumn('datetime_raised', F.to_timestamp('date', 'dd.MM.yy'))
+df2 = df2.withColumn('date', F.to_timestamp('date', 'dd.MM.yy'))
 
 df2 = df2.withColumn('data_source', F.lit('Lighting Protection'))
 
@@ -47,9 +47,8 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
     .withColumnRenamed('cost', 'order_value')\
     .withColumnRenamed('subjective', 'budget_code')\
-    .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
-
-df2 = df2.drop('date')
+    .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')\
+    .withColumnRenamed('date', 'datetime_raised')
 
 df2 = df2.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
 
