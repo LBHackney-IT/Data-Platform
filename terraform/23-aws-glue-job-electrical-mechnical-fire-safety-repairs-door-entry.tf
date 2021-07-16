@@ -7,12 +7,12 @@ resource "aws_s3_bucket_object" "elec_mech_fire_door_entry_script" {
   source = "../scripts/elec_mech_fire_door_entry.py"
   etag   = filemd5("../scripts/elec_mech_fire_door_entry.py")
 }
-resource "aws_glue_job" "housing_repairs_door_entry_cleaning" {
+resource "aws_glue_job" "housing_elec_mech_fire_door_entry" {
   count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
 
-  name              = "${local.short_identifier_prefix}Housing Repairs - Repairs ElecMechFire Door Entry Cleaning"
+  name              = "${local.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety Door Entry Cleaning"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = aws_iam_role.glue_role.arn
@@ -24,7 +24,7 @@ resource "aws_glue_job" "housing_repairs_door_entry_cleaning" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/door-entry/cleaned/"
+    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical_mechanical-fire/housing-door-entry/cleaned/"
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = module.repairs_fire_alarm_aov[0].worksheet_resources["door-entry"].catalog_table
     "--TempDir"                          = module.glue_temp_storage.bucket_url
@@ -32,17 +32,18 @@ resource "aws_glue_job" "housing_repairs_door_entry_cleaning" {
   }
 }
 
-resource "aws_glue_crawler" "refined_zone_housing_repairs_door_entry_cleaned_crawler" {
+resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_door_entry_cleaned_crawler" {
   tags = module.tags.values
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-door-entry-cleaned"
+  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-elec-mech-fire-door-entry-cleaned"
   role          = aws_iam_role.glue_role.arn
-  table_prefix  = "housing_repairs_door_entry_"
-
+  table_prefix  = "housing_repairs_elec_mech_fire_door_entry_"
 
   s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs_electrical_mechanical_fire/door-entry/cleaned/"
+    path = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/housing-door-entry/cleaned/"
+
+
     exclusions = local.glue_crawler_excluded_blobs
   }
 
@@ -54,14 +55,13 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_door_entry_cleaned_cra
   # })
 }
 
-resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_job" {
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_door_entry_job" {
   count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
 
-  name          = "${local.identifier_prefix}-housing-repairs-door-entry-cleaning-job-trigger"
+  name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-door-entry-cleaning-job-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["door-entry"].workflow_name
-  tags          = module.tags.values
-
 
   predicate {
     conditions {
@@ -71,25 +71,25 @@ resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_job" {
   }
 
   actions {
-    job_name = aws_glue_job.housing_repairs_door_entry_cleaning[0].name
+    job_name = aws_glue_job.housing_elec_mech_fire_door_entry[0].name
   }
 }
 
-resource "aws_glue_trigger" "housing_repairs_door_entry_cleaning_crawler" {
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_door_entry_crawler" {
   count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
 
-  name          = "${local.identifier_prefix}-housing-repairs-door-entry-cleaning-crawler-trigger"
+  name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-door-entry-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["door-entry"].workflow_name
-  tags          = module.tags.values
 
   predicate {
     conditions {
-      job_name = aws_glue_job.housing_repairs_door_entry_cleaning[0].name
+      job_name = aws_glue_job.housing_elec_mech_fire_door_entry[0].name
       state    = "SUCCEEDED"
     }
   }
   actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_door_entry_cleaned_crawler.name
+    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_door_entry_cleaned_crawler.name
   }
 }
