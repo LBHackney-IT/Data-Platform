@@ -56,9 +56,7 @@ df2 = df2[[
     'import_timestamp'
 ]]
 
-df2 = df2.replace('nan', None)
-df2 = df2.filter(col('date').isNotNull())
-df2 = df2.withColumn('date', F.to_date('date', "dd.mm.yyyy")).withColumn('datetime_raised', F.to_timestamp('date'))
+df2 = df2.withColumn('date', F.to_timestamp('date', 'dd.MM.yyyy'))
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Electrical Supplies'))
 
@@ -72,9 +70,7 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('total_invoiced', 'order_value')\
     .withColumnRenamed('works_status_comments', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')\
-
-
-df2 = df2.drop('date')
+    .withColumnRenamed('date', 'datetime_raised')
 
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
