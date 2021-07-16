@@ -36,10 +36,12 @@ df = get_latest_partitions(df)
 df2 = clean_column_names(df)
 
 df3 = df2
-df3 = df3.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
 
-df3 = df3.withColumnRenamed('date', 'datetime_raised') \
-    .withColumnRenamed('requested_by', 'operative') \
+df3 = df3.replace('nan', None).replace('NaT', None)
+df3 = df3.filter(col('date').isNotNull())
+df3 = df3.withColumn('date', F.to_date('date', "yyyy-MM-dd")).withColumn('datetime_raised', F.to_timestamp('date'))
+
+df3 = df3.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
