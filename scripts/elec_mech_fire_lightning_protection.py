@@ -12,7 +12,7 @@ from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names, udf_date_to_datetime_converter
+from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -35,10 +35,11 @@ df = source_data.toDF()
 df = get_latest_partitions(df)
 df2 = clean_column_names(df)
 
-df2 = df2.withColumn('date', F.to_date('date', "dd.mm.yy"))
 df2 = df2.replace('nan', None)
 df2 = df2.filter(col('date').isNotNull())
-df2 = df2.withColumn('datetime_raised', udf_date_to_datetime_converter('date'))
+
+# convert date column to datetime format
+df2 = df2.withColumn('date', F.to_date('date', "dd.mm.yy")).withColumn('datetime_raised', F.to_timestamp('date'))
 
 df2 = df2.withColumn('data_source', F.lit('Lighting Protection'))
 

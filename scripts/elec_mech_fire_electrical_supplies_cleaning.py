@@ -8,7 +8,7 @@ import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 import re
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names, udf_date_to_datetime_converter
+from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
@@ -56,9 +56,10 @@ df2 = df2[[
     'import_timestamp'
 ]]
 
-df2 = df2.withColumn('date', F.to_date('date', "yyyy-MM-dd"))
 df2 = df2.filter(col('date').isNotNull())
-df2 = df2.withColumn('datetime_raised', udf_date_to_datetime_converter('date'))
+
+# convert date column to datetime format
+df2 = df2.withColumn('date', F.to_date('date', "yyyy-MM-dd")).withColumn('datetime_raised', F.to_timestamp('date'))
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Electrical Supplies'))
 

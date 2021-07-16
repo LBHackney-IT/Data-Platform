@@ -34,10 +34,3 @@ def clean_column_names(df):
     df2 = df.select([F.col(col).alias(
         re.sub("[^0-9a-zA-Z$]+", "_", col.lower())) for col in df.columns])
     return df2
-
-def date_to_datetime_converter(col):
-    timestamp = datetime.combine(col, datetime.min.time())
-    return timestamp
-
-# convert to a UDF Function by passing in the function and the return type of function (TimestampType in this case)
-udf_date_to_datetime_converter = F.udf(date_to_datetime_converter, TimestampType())
