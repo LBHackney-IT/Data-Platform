@@ -56,7 +56,8 @@ df2 = df2[[
     'import_timestamp'
 ]]
 
-df2 = df2.withColumn('date', F.to_timestamp('date', 'dd.MM.yyyy'))
+# convert date column to datetime format
+df2 = df2.withColumn('date', F.to_timestamp('date', 'yyyy-MM-dd'))
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Electrical Supplies'))
 
