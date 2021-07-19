@@ -55,6 +55,22 @@ async function findFiles(sftpConn) {
   };
 }
 
+async function checkS3ForFile() {
+  const s3Client = new AWS.S3({ region: AWS_REGION });
+  const params = {
+    Bucket: s3Bucket,
+    Key: `${objectKeyPrefix}liberator_dump_${YYMMDD()}.zip`,
+  };
+
+  try {
+    await s3Client.headObject(params).promise();
+    return true;
+  } catch (error) {
+    console.log("Today's liberator file not yet present in S3 bucket, retrieving file from SFTP")
+    return false;
+  }
+}
+
 function putFile() {
   const s3Client = new AWS.S3({ region: AWS_REGION });
   const stream = new PassThrough();
@@ -83,6 +99,11 @@ async function streamFileFromSftpToS3(sftp, fileName) {
 
 exports.handler = async () => {
   const sftp = new sftpClient();
+
+  if (await checkS3ForFile()) {
+    console.log("Today's liberator file is already present in S3 bucket!");
+    return { success: true, message: `File already found in s3, no further action taken` };
+}
 
   await sftp.connect(config);
 
