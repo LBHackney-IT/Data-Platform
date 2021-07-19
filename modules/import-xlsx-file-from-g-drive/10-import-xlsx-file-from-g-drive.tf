@@ -10,8 +10,8 @@ module "import_file_from_g_drive" {
   service_area                   = var.department_folder_name
   file_id                        = var.google_sheets_document_id
   file_name                      = var.input_file_name
-  glue_job_names                 = [for job in module.import_data_from_xlsx_sheet_job : job.job_name]
-  job_arns                       = [for job in module.import_data_from_xlsx_sheet_job : job.job_arn]
+  workflow_names                 = [for job in module.import_data_from_xlsx_sheet_job : job.workflow_name]
+  workflow_arns                  = [for job in module.import_data_from_xlsx_sheet_job : job.workflow_arn]
 }
 
 module "import_data_from_xlsx_sheet_job" {
@@ -29,7 +29,8 @@ module "import_data_from_xlsx_sheet_job" {
   tags                           = var.tags
   glue_job_name                  = "${var.glue_job_name} - ${each.value.worksheet_name}"
   department_folder_name         = var.department_folder_name
-  output_folder_name             = "${var.output_folder_name}/${lower(replace(replace(trimspace(each.value.worksheet_name), "/[^a-zA-Z0-9]+/", "-"), "/-+/", "-"))}"
+  output_folder_name             = var.output_folder_name
+  data_set_name                  = lower(replace(replace(replace(trimspace(each.value.worksheet_name), ".", ""), "/[^a-zA-Z0-9]+/", "-"), "/-+/", "-"))
   raw_zone_bucket_id             = var.raw_zone_bucket_id
   input_file_name                = var.input_file_name
   header_row_number              = each.value.header_row_number

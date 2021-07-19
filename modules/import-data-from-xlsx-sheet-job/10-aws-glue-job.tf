@@ -28,18 +28,6 @@ resource "aws_glue_workflow" "workflow" {
   name = "${var.identifier_prefix}${local.import_name}"
 }
 
-resource "aws_glue_trigger" "xlsx_import_trigger" {
-  name          = "Xlsx Import Job Glue Trigger - ${var.glue_job_name}"
-  schedule      = var.xlsx_import_schedule
-  type          = "SCHEDULED"
-  enabled       = var.enable_glue_trigger
-  workflow_name = aws_glue_workflow.workflow.name
-
-  actions {
-    job_name = aws_glue_job.xlsx_import.name
-  }
-}
-
 resource "aws_glue_crawler" "xlsx_import" {
   tags = var.tags
 
@@ -51,6 +39,17 @@ resource "aws_glue_crawler" "xlsx_import" {
 
   s3_target {
     path = local.s3_output_path
+  }
+}
+
+resource "aws_glue_trigger" "xlsx_import_trigger" {
+  name          = "Xlsx Import Job Glue Trigger - ${var.glue_job_name}"
+  type          = "ON_DEMAND"
+  enabled       = true
+  workflow_name = aws_glue_workflow.workflow.name
+
+  actions {
+    job_name = aws_glue_job.xlsx_import.name
   }
 }
 

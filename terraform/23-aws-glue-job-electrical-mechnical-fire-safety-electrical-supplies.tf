@@ -25,44 +25,37 @@ resource "aws_glue_job" "housing_elec_mech_fire_electrical_supplies_cleaning" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/electrical-supplies/cleaned"
+    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/housing-electrical-supplies/cleaned/"
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
-    "--source_catalog_table"             = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"].catalog_name
+    "--source_catalog_table"             = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"].catalog_table
     "--TempDir"                          = module.glue_temp_storage.bucket_url
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
 }
 
-resource "aws_glue_crawler" "refined_zone_housing_repairs_electrical_supplies_cleaned_crawler" {
+resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_electrical_supplies_cleaned_crawler" {
   tags = module.tags.values
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-electrical-supplies-cleaned"
+  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-elec-mech-fire-electrical-supplies-cleaned"
   role          = aws_iam_role.glue_role.arn
-  table_prefix  = "housing_repairs_electrical_supplies_"
-
+  table_prefix  = "housing_repairs_elec_mech_fire_electrical_supplies_"
 
   s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/electrical-supplies/cleaned/"
+    path = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/housing-electrical-supplies/cleaned/"
+
+
     exclusions = local.glue_crawler_excluded_blobs
   }
-
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 5
-    }
-  })
 }
 
-resource "aws_glue_trigger" "housing_elec_mech_fire_electrical_supplies_cleaning_job" {
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_electrical_supplies_job" {
   count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
 
-  name          = "${local.identifier_prefix}-housing-repairs-electrical-supplies-cleaning-job-trigger"
+  name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-electrical-supplies-cleaning-job-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"].workflow_name
-  tags          = module.tags.values
-
 
   predicate {
     conditions {
@@ -76,13 +69,13 @@ resource "aws_glue_trigger" "housing_elec_mech_fire_electrical_supplies_cleaning
   }
 }
 
-resource "aws_glue_trigger" "housing_elec_mech_fire_electrical_supplies_cleaning_crawler" {
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_electrical_supplies_cleaning_crawler" {
   count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
 
-  name          = "${local.identifier_prefix}-housing-repairs-electrical-supplies-cleaning-crawler-trigger"
+  name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-electrical-supplies-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"].workflow_name
-  tags          = module.tags.values
 
   predicate {
     conditions {
@@ -91,6 +84,6 @@ resource "aws_glue_trigger" "housing_elec_mech_fire_electrical_supplies_cleaning
     }
   }
   actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_electrical_supplies_cleaned_crawler.name
+    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_electrical_supplies_cleaned_crawler.name
   }
 }

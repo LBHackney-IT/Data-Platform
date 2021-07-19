@@ -8,7 +8,7 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql import SQLContext
 
-from helpers import get_glue_env_var, convert_pandas_df_to_spark_dynamic_df, PARTITION_KEYS
+from helpers import get_glue_env_var, convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
 
 s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
@@ -54,6 +54,9 @@ panada_df.fillna(value='', inplace=True)
 sqlContext = SQLContext(sc)
 
 spark_df = convert_pandas_df_to_spark_dynamic_df(sql_context=sqlContext, panadas_df=panada_df)
+spark_df = spark_df.replace('nan', None).replace('NaT', None)
+spark_df = spark_df.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
+spark_df = add_import_time_columns(spark_df)
 
 frame = DynamicFrame.fromDF(spark_df, glueContext, "DataFrame")
 

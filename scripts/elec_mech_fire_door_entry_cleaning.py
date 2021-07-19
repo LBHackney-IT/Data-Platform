@@ -34,54 +34,45 @@ df = get_latest_partitions(df)
 
 df2 = clean_column_names(df)
 
-# only keep relevant columns
-df2 = df2[[
-    'address',
-    'description',
-    'date',
-    'temp_order_number',
-    'priority_code',
-    'raised_value',
-    'total_invoiced',
-    'cost_code',
-    'contractor_s_own_ref_no',
-    'new_uhw_number',
-    'requested_by',
-    'works_status_comments',
-    'import_year',
-    'import_month',
-    'import_day',
-    'import_date',
-    'import_datetime',
-    'import_timestamp'
-]]
-
 # convert date column to datetime format
-df2 = df2.withColumn('date', F.to_timestamp('date', 'yyyy-MM-dd'))
+df2 = df2.withColumn('date', F.to_timestamp('date', 'dd.MM.yy'))
 
-df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Electrical Supplies'))
+df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Door Entry'))
 
 # rename column names to reflect harmonised column names
+
 df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
-    .withColumnRenamed('cost_code', 'budget_code')\
-    .withColumnRenamed('total_invoiced', 'order_value')\
-    .withColumnRenamed('works_status_comments', 'order_status')\
-    .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')\
-    .withColumnRenamed('date', 'datetime_raised')
+    .withColumnRenamed('budget_subjective', 'budget_code') \
+    .withColumnRenamed('cost', 'order_value') \
+    .withColumnRenamed('contractor_job_status_complete_or_in_progress', 'order_status') \
+    .withColumnRenamed('date_completed', 'completed_date') \
+    .withColumnRenamed('tess_number', 'contractor_ref') \
+    .withColumnRenamed('date', 'datetime_raised') \
 
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
                      udf_map_repair_priority('work_priority_description'))
+
+df2 = df2.select("data_source", "datetime_raised", "sor",
+                 "operative", "property_address", "order_value",
+                 "description_of_work", "work_priority_description",
+                 "temp_order_number_full", "budget_code", "order_value",
+                 "order_status", "completed_date", "contractor_ref",
+                 "unnamed_14", "unnamed_15", "unnamed_16", "work_priority_priority_code",
+                 "import_datetime", "import_timestamp", "import_year",
+                 "import_month", "import_day", "import_date",
+                 )
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
     frame=cleanedDataframe,
     connection_type="s3",
     format="parquet",
-    connection_options={"path": cleaned_repairs_s3_bucket_target,"partitionKeys": PARTITION_KEYS},
+    connection_options={
+        "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
     transformation_ctx="parquetData")
 job.commit()
