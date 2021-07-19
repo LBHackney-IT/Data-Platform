@@ -10,13 +10,13 @@ from yapf.yapflib.yapf_api import FormatCode  # reformat a string of code
 notebooks = glob.glob("./scripts/*.ipynb")
 
 def write_lines(python_script_lines):
-    with open("../scripts/" + filename.replace('-', '_') + ".notebook.py", 'w', encoding='utf-8') as output_file:
+    with open("./export/" + filename.replace('-', '_') + ".notebook.py", 'w', encoding='utf-8') as output_file:
         for line in python_script_lines:
             if not line.strip().startswith("#") and not line.isspace():
                 output_file.write(line + '\n')
 
 def write_file(python_script):
-    with open("../scripts/" + filename.replace('-', '_').lower() + ".notebook.py", 'w', encoding='utf-8') as output_file:
+    with open("./export/" + filename.replace('-', '_').lower() + ".notebook.py", 'w', encoding='utf-8') as output_file:
         output_file.writelines(python_script)
 
 for notebook in notebooks:
