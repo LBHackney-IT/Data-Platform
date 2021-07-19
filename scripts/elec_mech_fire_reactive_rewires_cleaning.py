@@ -57,6 +57,9 @@ df2 = df2[[
 # convert date column to datetime format
 df2 = df2.withColumn('date', F.to_timestamp('date', 'yyyy-MM-dd')).withColumnRenamed('date', 'datetime_raised')
 
+df2 = df2.withColumn('status_of_completed_y_n', F.when(df2['status_of_completed_y_n']=='Y', 'Completed').otherwise(''))\
+    .withColumnRenamed('status_of_completed_y_n', 'order_status')
+
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Reactive Rewires'))
 
 # rename column names to reflect harmonised column names
@@ -66,7 +69,6 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
     .withColumnRenamed('cost_of_repairs_work', 'order_value')\
-    .withColumnRenamed('status_of_completed_y_n', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
 
 # apply function
