@@ -9,7 +9,7 @@ resource "aws_s3_bucket_object" "elec_mech_fire_communal_lighting_script" {
 }
 
 resource "aws_glue_job" "housing_elec_mech_fire_communal_lighting" {
-  count = local.is_live_environment ? 1 : 1
+  count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
 
@@ -57,7 +57,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_communa
 }
 
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_communal_lighting_job" {
-  count = local.is_live_environment ? 1 : 1
+  count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
   name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-communal-lighting-cleaning-job-trigger"
@@ -77,7 +77,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_communal_lighting_jo
 }
 
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_communal_lighting_crawler" {
-  count = local.is_live_environment ? 1 : 1
+  count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
   name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-communal-lighting-cleaning-crawler-trigger"
