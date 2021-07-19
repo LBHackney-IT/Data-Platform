@@ -34,23 +34,23 @@ df = get_latest_partitions(df)
 df2 = clean_column_names(df)
 
 df3 = df2
-df3 = df3.withColumn('date', F.to_date('date', "yyyy-MM-dd"))
-df3 = df3.withColumn('data_source', F.lit('ElecMechFire - Emergency Lighting Service'))
+
+# Remove any instances of nan
+df3 = df3.replace('nan', None)
 
 # rename column names to reflect harmonised column names
-df3 = df3.withColumnRenamed('date', 'datetime_raised') \
-    .withColumnRenamed('requested_by', 'operative') \
+df3 = df3.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
-    .withColumnRenamed('cost', 'order_value')\
-    .withColumnRenamed('status_of_completed_y_n', 'order_status')
+    .withColumnRenamed('cost', 'order_value')
 
-
-# apply function
+df3 = df3.withColumn('date', F.to_timestamp('date', "yyyy-MM-dd")).withColumnRenamed('date', 'datetime_raised')
+df3 = df3.withColumn('data_source', F.lit('ElecMechFire - Emergency Lighting Service'))
 df3 = df3.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
-df3 = df3.replace('nan', None)
+df3 = df3.withColumn('status_of_completed_y_n', F.when(df3['status_of_completed_y_n']=='Y', 'Completed').otherwise(''))\
+    .withColumnRenamed('status_of_completed_y_n', 'order_status')
 
 # only keep relevant columns
 df3 = df3[[
@@ -59,7 +59,6 @@ df3 = df3[[
     'property_address',
     'description_of_work',
     'work_priority_description',
-    'work_priority_priority_code',
     'temp_order_number_full',
     'order_value',
     'order_status',
