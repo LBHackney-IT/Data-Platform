@@ -50,3 +50,17 @@ docker compose up notebook
    SELECT lpi_key, uprn, longitude, latitude, import_year, import_month, import_day, import_date
    FROM `dataplatform-stg-raw-zone-unrestricted-address-api`.`unrestricted_address_api_dbo_hackney_address` LIMIT 10;
    ```
+
+# Notebook Exporter Script
+Included is a script `export_notebook.py` that will take Jupyter Notebook from the scripts directory and export them as
+python files.
+
+This is accomplished using a notebook reading and export python library combined with a Google developed code formatter.
+The notebooks are read, and cells tagged with "remove" are dropped from the output. The resulting python is run through
+the code formatter and exported to a file with the same name in an export directory.
+
+To run the script you will need to `pip` install the following libraries
+* nbconvert
+* yapf
+
+To run the script, pass the script to python.
