@@ -40,6 +40,8 @@ df2 = df2.withColumn('datetime_raised', F.to_timestamp(
     'date', 'yyyy-MM-dd HH:mm:ss'))
 # rename column names to reflect harmonised column banes
 
+df2 = df2.withColumn('status_of_completed_y_n', F.when(df2['status_of_completed_y_n'] == 'Y', 'Completed').otherwise(''))\
+
 df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('description', 'description_of_work') \
