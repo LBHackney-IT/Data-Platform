@@ -34,14 +34,16 @@ df = get_latest_partitions(df)
 
 df2 = clean_column_names(df)
 
+# convert date column to datetime format
+df2 = df2.withColumn('date', F.to_timestamp('date', 'dd.MM.yy'))
+
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Door Entry'))
 
 df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
 
 # rename column names to reflect harmonised column names
 
-df2 = df2.withColumnRenamed('date', 'datetime_raised') \
-    .withColumnRenamed('requested_by', 'operative') \
+df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
@@ -51,6 +53,7 @@ df2 = df2.withColumnRenamed('date', 'datetime_raised') \
     .withColumnRenamed('contractor_job_status_complete_or_in_progress', 'order_status') \
     .withColumnRenamed('date_completed', 'completed_date') \
     .withColumnRenamed('tess_number', 'contractor_ref') \
+    .withColumnRenamed('date', 'datetime_raised') \
 
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
