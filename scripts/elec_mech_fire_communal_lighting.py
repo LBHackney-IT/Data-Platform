@@ -36,7 +36,7 @@ df = source_data.toDF()
 df = get_latest_partitions(df)
 df2 = clean_column_names(df)
 
-df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
+df2 = df2.withColumn('date', F.to_timestamp('date', 'dd.MM.yyyy'))
 
 df2 = df2.withColumn('data_source', F.lit('Lighting Protection'))
 
