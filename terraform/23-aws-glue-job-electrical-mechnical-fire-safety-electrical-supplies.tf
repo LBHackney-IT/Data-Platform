@@ -46,6 +46,12 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_electri
 
 
     exclusions = local.glue_crawler_excluded_blobs
+    configuration = jsonencode({
+      Version = 1.0
+      CrawlerOutput = {
+        Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      }
+    })
   }
 }
 
