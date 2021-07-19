@@ -69,6 +69,7 @@ pandasDataFrame[all_columns] = pandasDataFrame[all_columns].astype(str)
 # Replace missing column names with valid names
 pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() for i, a in
                            enumerate(pandasDataFrame.columns)]
+pandasDataFrame.columns = map(normalize_column_name, pandasDataFrame.columns)
 
 sparkDynamicDataFrame = convert_pandas_df_to_spark_dynamic_df(sqlContext, pandasDataFrame)
 sparkDynamicDataFrame = sparkDynamicDataFrame.replace('nan', None).replace('NaT', None)
