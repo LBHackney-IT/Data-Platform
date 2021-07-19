@@ -35,9 +35,6 @@ df2 = clean_column_names(df)
 
 df3 = df2
 
-# Remove any instances of nan
-df3 = df3.replace('nan', None)
-
 # rename column names to reflect harmonised column names
 df3 = df3.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
