@@ -41,8 +41,10 @@ df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
 
 # rename column names to reflect harmonised column names
 
-df2 = df2.withColumnRenamed('date', 'datetime_raised') \
-    .withColumnRenamed('requested_by', 'operative') \
+df2 = df2.withColumn('datetime_raised', F.to_timestamp(
+    'date', 'MM/dd/yy HH:mm:ss'))
+
+df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
