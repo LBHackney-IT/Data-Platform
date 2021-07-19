@@ -35,36 +35,30 @@ df = get_latest_partitions(df)
 df2 = clean_column_names(df)
 
 # convert date column to datetime format
-df2 = df2.withColumn('date', F.to_timestamp('date', 'dd.MM.yy'))
+df2 = df2.withColumn('data_source', F.lit('ElecMechFire - TV Aerials'))
+df2 = df2.withColumn('datetime_raised', F.to_timestamp(
+    'date', 'yyyy-MM-dd HH:mm:ss'))
+# rename column names to reflect harmonised column banes
 
-df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Door Entry'))
-
-df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
-
-# rename column names to reflect harmonised column names
+df2 = df2.withColumn('status_of_completed_y_n', F.when(df2['status_of_completed_y_n'] == 'Y', 'Completed').otherwise(''))\
 
 df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
-    .withColumnRenamed('budget_subjective', 'budget_code') \
-    .withColumnRenamed('cost', 'order_value') \
-    .withColumnRenamed('contractor_job_status_complete_or_in_progress', 'order_status') \
-    .withColumnRenamed('date_completed', 'completed_date') \
-    .withColumnRenamed('tess_number', 'contractor_ref') \
-    .withColumnRenamed('date', 'datetime_raised') \
+    .withColumnRenamed('cost_of_repairs_work', 'order_value') \
+    .withColumnRenamed('status_of_completed_y_n', 'order_status') \
 
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
                      udf_map_repair_priority('work_priority_description'))
 
-df2 = df2.select("data_source", "datetime_raised", "sor",
+df2 = df2.select("data_source", "datetime_raised",
                  "operative", "property_address", "order_value",
                  "description_of_work", "work_priority_description",
-                 "temp_order_number_full", "budget_code", "order_value",
-                 "order_status", "completed_date", "contractor_ref",
-                 "unnamed_14", "unnamed_15", "unnamed_16", "work_priority_priority_code",
+                 "temp_order_number_full", "order_value",
+                 "work_priority_priority_code",
                  "import_datetime", "import_timestamp", "import_year",
                  "import_month", "import_day", "import_date",
                  )
