@@ -15,7 +15,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from google.oauth2 import service_account
 
-from helpers import get_glue_env_var, get_secret, convert_pandas_df_to_spark_dynamic_df, PARTITION_KEYS
+from helpers import get_glue_env_var, get_secret, convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
 
 sparkContext = SparkContext.getOrCreate()
 glueContext = GlueContext(sparkContext)
@@ -71,6 +71,9 @@ pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() f
                            enumerate(pandasDataFrame.columns)]
 
 sparkDynamicDataFrame = convert_pandas_df_to_spark_dynamic_df(sqlContext, pandasDataFrame)
+sparkDynamicDataFrame = sparkDynamicDataFrame.replace('nan', None).replace('NaT', None)
+sparkDynamicDataFrame = sparkDynamicDataFrame.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
+sparkDynamicDataFrame = add_import_time_columns(sparkDynamicDataFrame)
 
 dataframe = DynamicFrame.fromDF(sparkDynamicDataFrame, glueContext, "googlesheets")
 

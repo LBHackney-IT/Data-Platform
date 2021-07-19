@@ -54,7 +54,6 @@ def convert_pandas_df_to_spark_dynamic_df(sql_context, panadas_df):
     # Convert to SparkDynamicDataFrame
     spark_df = sql_context.createDataFrame(panadas_df)
     spark_df = spark_df.coalesce(1)
-    spark_df = add_import_time_columns(spark_df)
 
     return spark_df
 
