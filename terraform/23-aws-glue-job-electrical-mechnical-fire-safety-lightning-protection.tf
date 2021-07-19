@@ -1,4 +1,4 @@
-resource "aws_s3_bucket_object" "elec_mech_fire_lightning_protection_script" {
+resource "aws_s3_bucket_object" "elec_mech_fire_lightning_protection_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
@@ -8,7 +8,7 @@ resource "aws_s3_bucket_object" "elec_mech_fire_lightning_protection_script" {
   etag   = filemd5("../scripts/elec_mech_fire_lightning_protection_cleaning.py")
 }
 
-resource "aws_glue_job" "housing_elec_mech_fire_lightning_protection" {
+resource "aws_glue_job" "housing_elec_mech_fire_lightning_protection_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
@@ -19,7 +19,7 @@ resource "aws_glue_job" "housing_elec_mech_fire_lightning_protection" {
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.elec_mech_fire_lightning_protection_script.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.elec_mech_fire_lightning_protection_cleaning_script.key}"
   }
 
   glue_version = "2.0"
@@ -72,11 +72,11 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection
   }
 
   actions {
-    job_name = aws_glue_job.housing_elec_mech_fire_lightning_protection[0].name
+    job_name = aws_glue_job.housing_elec_mech_fire_lightning_protection_cleaning[0].name
   }
 }
 
-resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection_crawler" {
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection_cleaning_crawler" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
@@ -86,7 +86,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_lightning_protection
 
   predicate {
     conditions {
-      job_name = aws_glue_job.housing_elec_mech_fire_lightning_protection[0].name
+      job_name = aws_glue_job.housing_elec_mech_fire_lightning_protection_cleaning[0].name
       state    = "SUCCEEDED"
     }
   }
