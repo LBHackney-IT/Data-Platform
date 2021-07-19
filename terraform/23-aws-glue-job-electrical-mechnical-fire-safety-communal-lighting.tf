@@ -13,7 +13,7 @@ resource "aws_glue_job" "housing_elec_mech_fire_communal_lighting" {
 
   tags = module.tags.values
 
-  name              = "${local.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety Lightning Protection Cleaning"
+  name              = "${local.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Communal Lighting Cleaning"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = aws_iam_role.glue_role.arn
