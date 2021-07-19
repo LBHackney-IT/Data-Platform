@@ -1,6 +1,9 @@
+import re
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
-import re
+from pyspark.sql import types as t
+from datetime import datetime
+from pyspark.sql.types import TimestampType
 
 
 def map_repair_priority(code):
@@ -16,7 +19,7 @@ def map_repair_priority(code):
         return None
 
 
-# # convert to a UDF Function by passing in the function and the return type of function (string in this case)
+# convert to a UDF Function by passing in the function and the return type of function (string in this case)
 udf_map_repair_priority = F.udf(map_repair_priority, StringType())
 
 

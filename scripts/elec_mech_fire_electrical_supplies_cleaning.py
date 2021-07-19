@@ -56,13 +56,13 @@ df2 = df2[[
     'import_timestamp'
 ]]
 
-df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
+# convert date column to datetime format
+df2 = df2.withColumn('date', F.to_timestamp('date', 'yyyy-MM-dd'))
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Electrical Supplies'))
 
 # rename column names to reflect harmonised column names
-df2 = df2.withColumnRenamed('date', 'datetime_raised') \
-    .withColumnRenamed('requested_by', 'operative') \
+df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
@@ -71,7 +71,7 @@ df2 = df2.withColumnRenamed('date', 'datetime_raised') \
     .withColumnRenamed('total_invoiced', 'order_value')\
     .withColumnRenamed('works_status_comments', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')\
-
+    .withColumnRenamed('date', 'datetime_raised')
 
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
