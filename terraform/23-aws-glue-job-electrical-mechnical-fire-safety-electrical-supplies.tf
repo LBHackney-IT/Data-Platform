@@ -41,9 +41,15 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_electri
   role          = aws_iam_role.glue_role.arn
   table_prefix  = "housing_repairs_elec_mech_fire_electrical_supplies_"
 
+  configuration = jsonencode({
+    Version = 1.0
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+    }
+  })
+
   s3_target {
     path = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/housing-electrical-supplies/cleaned/"
-
 
     exclusions = local.glue_crawler_excluded_blobs
   }
