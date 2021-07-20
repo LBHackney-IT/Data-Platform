@@ -5,6 +5,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 import pyspark.sql.functions as F
+from pyspark.sql.functions import *
 from awsglue.dynamicframe import DynamicFrame
 import re
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
