@@ -58,7 +58,7 @@ df2 = df2[[
 # convert date column to datetime format
 df2 = df2.withColumn('date', F.to_timestamp('date', 'yyyy-MM-dd')).withColumnRenamed('date', 'datetime_raised')
 
-df2 = df2.withColumn('status_of_completed_y_n', F.when(df2['status_of_completed_y_n']=='Y', 'Completed').otherwise(''))\
+df2 = df2.withColumn('status_of_completed_y_n', when(df2['status_of_completed_y_n']=='Y', 'Completed').otherwise(''))\
     .withColumnRenamed('status_of_completed_y_n', 'order_status')
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Reactive Rewires'))
@@ -73,11 +73,11 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
 
 # map repairs priority
-df2 = df2.withColumn("work_priority_priority_code", F.when(df2['work_priority_description'] == "Immediate", 1)
-                                 .F.when(df2['work_priority_description'] == "Emergency", 2)
-                                 .F.when(df2['work_priority_description'] == "Urgent", 3)
-                                 .F.when(df2['work_priority_description'] == "Normal", 4)
-                                 .F.otherwise(None))
+df2 = df2.withColumn("work_priority_priority_code", when(df2['work_priority_description'] == "Immediate", 1)
+                                 .when(df2['work_priority_description'] == "Emergency", 2)
+                                 .when(df2['work_priority_description'] == "Urgent", 3)
+                                 .when(df2['work_priority_description'] == "Normal", 4)
+                                 .otherwise(None))
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
