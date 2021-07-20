@@ -126,14 +126,14 @@ resource "aws_lambda_function_event_invoke_config" "g_drive_to_s3_copier_lambda"
   ]
 }
 
-resource "aws_cloudwatch_event_rule" "every_day_at_10" {
-  name                = "g-drive-to-s3-copier-every-day-at-10"
+resource "aws_cloudwatch_event_rule" "every_day_at_6" {
+  name                = "g-drive-to-s3-copier-every-day-at-6"
   description         = "Fires every dat at "
-  schedule_expression = "cron(0 10 * * ? *)"
+  schedule_expression = "cron(0 6 * * ? *)"
 }
 
-resource "aws_cloudwatch_event_target" "check_foo_every_day_at_10" {
-  rule      = aws_cloudwatch_event_rule.every_day_at_10.name
+resource "aws_cloudwatch_event_target" "run_lambda_every_day_at_6" {
+  rule      = aws_cloudwatch_event_rule.every_day_at_6.name
   target_id = "g_drive_to_s3_copier_lambda"
   arn       = aws_lambda_function.g_drive_to_s3_copier_lambda.arn
 }
@@ -143,5 +143,5 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_g_drive_to_s3_copier"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.g_drive_to_s3_copier_lambda.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.every_day_at_10.arn
+  source_arn    = aws_cloudwatch_event_rule.every_day_at_6.arn
 }
