@@ -15,7 +15,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from google.oauth2 import service_account
 
-from helpers import get_glue_env_var, get_secret, convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
+from helpers import get_glue_env_var, normalize_column_name, get_secret, convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
 
 sparkContext = SparkContext.getOrCreate()
 glueContext = GlueContext(sparkContext)
@@ -69,6 +69,7 @@ pandasDataFrame[all_columns] = pandasDataFrame[all_columns].astype(str)
 # Replace missing column names with valid names
 pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() for i, a in
                            enumerate(pandasDataFrame.columns)]
+pandasDataFrame.columns = map(normalize_column_name, pandasDataFrame.columns)
 
 sparkDynamicDataFrame = convert_pandas_df_to_spark_dynamic_df(sqlContext, pandasDataFrame)
 sparkDynamicDataFrame = sparkDynamicDataFrame.replace('nan', None).replace('NaT', None)

@@ -1,6 +1,8 @@
+import re
 import sys
-import datetime
 import boto3
+import datetime
+import unicodedata
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as f
 
@@ -29,6 +31,17 @@ def get_secret(logger, secret_name, region_name):
     else:
         return get_secret_value_response['SecretBinary'].decode('ascii')
 
+"""
+Normalize column name by replacing invalid characters with underscore
+strips accents and make lowercase
+:param column: column name
+:return: normalized column name
+Example of applying: df.columns = map(normalize, panada_df.columns)
+"""
+def normalize_column_name(column: str) -> str:
+    n = re.sub(r"[ .',;{}()\n\t=_-]+", '_', column.lower().strip())
+    return unicodedata.normalize('NFKD', n).encode('ASCII', 'ignore').decode()
+
 def add_timestamp_column(data_frame):
     now = datetime.datetime.now()
     return data_frame.withColumn('import_timestamp', f.lit(str(now.timestamp())))
@@ -54,7 +67,6 @@ def convert_pandas_df_to_spark_dynamic_df(sql_context, panadas_df):
     # Convert to SparkDynamicDataFrame
     spark_df = sql_context.createDataFrame(panadas_df)
     spark_df = spark_df.coalesce(1)
-
     return spark_df
 
 def get_s3_subfolders(s3_client, bucket_name, prefix):

@@ -8,7 +8,7 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql import SQLContext
 
-from helpers import get_glue_env_var, convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
+from helpers import get_glue_env_var, normalize_column_name, convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
 
 s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
@@ -44,12 +44,16 @@ panada_df = panada_df.astype(str)
 # Replace missing column names with valid names
 panada_df.columns = ["column" + str(i) if a.strip() == "" else a.strip()
                      for i, a in enumerate(panada_df.columns)]
+panada_df.columns = map(normalize_column_name, panada_df.columns)
 
 # Strip training spaces from data cells
 panada_df = panada_df.apply(lambda x:  x.str.strip() if type(x) is str else x)
 
 # Replace any nulls with empty strings
-panada_df.fillna(value='', inplace=True)
+# REMOVED: This was added previously to resolve an issue but unsure what that issue was. I've removed it as we shouldn't
+#          be replacing null values with empty strings as they aren't equivalent. If this proves to be a mistake we can
+#          add it back in with comments explaining why it exists.
+# panada_df.fillna(value='', inplace=True)
 
 sqlContext = SQLContext(sc)
 
