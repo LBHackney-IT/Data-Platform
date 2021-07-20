@@ -72,11 +72,11 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
 
 # map repairs priority
-df2 = df2.withColumn("work_priority_priority_code", when(df2['work_priority_description'] == "Immediate", 1)
-                                 .when(df2['work_priority_description'] == "Emergency", 2)
-                                 .when(df2['work_priority_description'] == "Urgent", 3)
-                                 .when(df2['work_priority_description'] == "Normal", 4)
-                                 .otherwise(None))
+df2 = df2.withColumn("work_priority_priority_code", F.when(df2['work_priority_description'] == "Immediate", 1)
+                                 .F.when(df2['work_priority_description'] == "Emergency", 2)
+                                 .F.when(df2['work_priority_description'] == "Urgent", 3)
+                                 .F.when(df2['work_priority_description'] == "Normal", 4)
+                                 .F.otherwise(None))
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
