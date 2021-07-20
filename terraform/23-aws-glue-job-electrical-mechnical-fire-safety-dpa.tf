@@ -42,7 +42,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_dpa_cle
   table_prefix  = "housing_repairs_elec_mech_fire_dpa_"
 
   s3_target {
-    path = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/housing-dpa/cleaned/"
+    path = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/dpa/cleaned/"
 
 
     exclusions = local.glue_crawler_excluded_blobs
