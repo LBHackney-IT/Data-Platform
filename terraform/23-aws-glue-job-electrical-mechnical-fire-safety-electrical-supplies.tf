@@ -30,6 +30,7 @@ resource "aws_glue_job" "housing_elec_mech_fire_electrical_supplies_cleaning" {
     "--source_catalog_table"             = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"].catalog_table
     "--TempDir"                          = module.glue_temp_storage.bucket_url
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
+    "--conf"                             = "spark.sql.parquet.outputTimestampType=TIMESTAMP_MILLIS"
   }
 }
 
