@@ -39,10 +39,10 @@ df2 = clean_column_names(df)
 logger.info('convert timestamp and date columns to datetime / date field types')
 df2 = df2.withColumn('timestamp', F.to_timestamp(
     "timestamp", "dd/MM/yyyy HH:mm:ss"))
-df2 = df2.withColumn('date_temp_order_reference', F.to_timestamp(
+df2 = df2.withColumn('date_temp_order_reference', F.to_date(
     'date_temp_order_reference', "dd/MM/yyyy HH:mm:ss"))
 
-df2 = df2.withColumn('date_completed', F.to_date(
+df2 = df2.withColumn('date_completed', F.to_timestamp(
     'date_completed', "dd/MM/yyyy"))
 
 df2 = df2.withColumnRenamed('notes_and_information', 'notes') \
