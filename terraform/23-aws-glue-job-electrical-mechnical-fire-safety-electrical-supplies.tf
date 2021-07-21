@@ -25,7 +25,7 @@ resource "aws_glue_job" "housing_elec_mech_fire_electrical_supplies_cleaning" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/housing-electrical-supplies/cleaned/"
+    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/electrical-supplies/cleaned/"
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"].catalog_table
     "--TempDir"                          = module.glue_temp_storage.bucket_url
@@ -49,7 +49,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_electri
   })
 
   s3_target {
-    path = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/housing-electrical-supplies/cleaned/"
+    path = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/electrical-supplies/cleaned/"
 
     exclusions = local.glue_crawler_excluded_blobs
   }
