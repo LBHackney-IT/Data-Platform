@@ -47,7 +47,8 @@ df2 = df.filter(df.address != 'nan')
 
 logger.info('convert date columns to datetime / date field types')
 df2 = df2.withColumn('date', F.to_timestamp('date', 'dd.MM.yy'))
-
+df2 = df2.withColumn('date_completed', F.regexp_replace('date_completed', r'^[A-Za-z\s]*', ''))
+df2 = df2.withColumn('date_completed', F.to_timestamp('date_completed', "dd/MM/yyyy"))
 # keep selected columns
 df2 = df2[['address',
            'description',
