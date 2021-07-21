@@ -56,7 +56,9 @@ df2 = df2.withColumnRenamed('email_address', 'email_staff') \
     .withColumnRenamed('sors_frequent_use_only', 'sor') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('notes_and_information', 'notes') \
-    .withColumnRenamed('value_costs', 'order_value')
+    .withColumnRenamed('value_costs', 'order_value') \
+    .withColumnRenamed('timestamp', 'datetime_raised') \
+
 
 # drop columns not needed
 df2 = df2.drop(df2.column10)

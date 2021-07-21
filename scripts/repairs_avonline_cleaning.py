@@ -68,7 +68,8 @@ df2 = df2.withColumnRenamed('email_address', 'email_staff') \
     .withColumnRenamed('temporary_order_number_if_required', 'temp_order_number_full') \
     .withColumnRenamed('call_out_sors', 'sor') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
-    .withColumnRenamed('notes_and_information', 'notes')
+    .withColumnRenamed('notes_and_information', 'notes') \
+    .withColumnRenamed('timestamp', 'datetime_raised')
 
 # drop columns not needed
 df2 = df2.drop('contact_information')

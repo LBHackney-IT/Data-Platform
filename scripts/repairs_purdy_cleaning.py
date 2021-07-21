@@ -52,6 +52,7 @@ df2 = df2.withColumnRenamed('notes_and_information', 'notes') \
     .withColumnRenamed('date_temp_order_reference', 'temp_order_number_date') \
     .withColumnRenamed('time_temp_order_reference', 'temp_order_number_time') \
     .withColumnRenamed('date_completed', 'completed_date') \
+    .withColumnRenamed('timestamp', 'datetime_raised')
 
 # drop unnecessary columns
 df2 = df2.drop('column11')
