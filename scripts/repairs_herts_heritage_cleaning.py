@@ -44,7 +44,6 @@ df2 = df2.withColumnRenamed('time_stamp', 'timestamp') \
     .withColumnRenamed('contact_information_for_access', 'phone_1') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('email_address', 'email_staff') \
-    .withColumnRenamed('temporary_order_date', 'temp_order_number_date') \
     .withColumnRenamed('temporary_order_number__time_', 'temp_order_number_time') \
     .withColumnRenamed('STATUS', 'order_status') \
     .withColumnRenamed('status_notes', 'order_status_notes')
