@@ -13,6 +13,7 @@ from pyspark.sql import types as t
 from pyspark.sql.window import Window
 from pyspark.sql.functions import rank, col, trim, when, max, trim
 import pyspark.sql.functions as F
+from pyspark.sql.functions import *
 from pyspark.sql.types import StringType, TimestampType
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
@@ -47,27 +48,26 @@ df2 = df.filter(df.address != 'nan')
 logger.info('convert date columns to datetime / date field types')
 df2 = df2.withColumn('date', F.to_timestamp('date', 'dd.MM.yy'))
 
-# drop empty and unused columns
-df2 = df2.drop('unnamed:_13',
-               'unnamed:_14',
-               'unnamed:_15',
-               'unnamed:_16',
-               'unnamed:_17',
-               'unnamed:_18',
-               'unnamed:_19',
-               'unnamed:_20',
-               'unnamed:_21',
-               'unnamed:_22',
-               'unnamed:_23',
-               'unnamed:_24',
-               'unnamed:_25',
-               'unnamed:_26',
-               'unnamed:_27',
-               'unnamed:_28',
-               'unnamed:_29',
-               'unnamed:_30',
-               'unnamed:_31'
-               )
+# keep selected columns
+df2 = df2[['address',
+           'description',
+           'date',
+           'temp_order_number',
+           'priority_code',
+           'sor',
+           'cost',
+           'subjective',
+           'contractor_s_own_ref_no',
+           'contractor_job_status_complete_or_in_progress',
+           'date_completed',
+           'new_uhw_number',
+           'requested_by',
+           'import_datetime',
+           'import_timestamp',
+           'import_year',
+           'import_month',
+           'import_day',
+           'import_date']]
 
 # add new data source column to specify which repairs sheet the repair came from
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Fire Alarm AOV'))
@@ -88,8 +88,12 @@ df2 = df2.withColumnRenamed('address', 'property_address') \
 # remove any spaces from 'work_priority_description' column so that values can be mapped where applicable
 df2 = df2.withColumn('work_priority_description', trim(df2.work_priority_description))
 
-# apply function
-df2 = df2.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
+# map work priority codes
+df2 = df2.withColumn("work_priority_priority_code", when(df2['work_priority_description'] == "Immediate", 1)
+                     .when(df2['work_priority_description'] == "Emergency", 2)
+                     .when(df2['work_priority_description'] == "Urgent", 3)
+                     .when(df2['work_priority_description'] == "Normal", 4)
+                     .otherwise(None))
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
