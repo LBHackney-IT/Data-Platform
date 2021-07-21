@@ -41,6 +41,9 @@ df2 = df2.withColumn('timestamp', F.to_timestamp(
 df2 = df2.withColumn('date_temp_order_reference', F.to_date(
     'date_temp_order_reference', "dd/MM/yyyy"))
 
+df2 = df2.withColumn('completed_date', F.to_timestamp(
+    'completed_date', "dd/MM/yyyy HH:mm:ss"))
+
 df2 = df2.withColumn('data_source', F.lit('Axis'))
 
 df2 = df2.withColumnRenamed('email', 'email_staff') \
