@@ -39,6 +39,11 @@ df2 = clean_column_names(df)
 logger.info('convert timestamp and date columns to datetime / date field types')
 df2 = df2.withColumn('timestamp', F.to_timestamp(
     "timestamp", "dd/MM/yyyy HH:mm:ss"))
+df2 = df2.withColumn('date_temp_order_reference', F.to_timestamp(
+    'date_temp_order_reference', "dd/MM/yyyy HH:mm:ss"))
+
+df2 = df2.withColumn('date_completed', F.to_date(
+    'date_completed', "dd/MM/yyyy"))
 
 df2 = df2.withColumnRenamed('notes_and_information', 'notes') \
     .withColumnRenamed('Priority', 'work_priority_description') \
@@ -47,6 +52,7 @@ df2 = df2.withColumnRenamed('notes_and_information', 'notes') \
     .withColumnRenamed('date_temp_order_reference', 'temp_order_number_date') \
     .withColumnRenamed('time_temp_order_reference', 'temp_order_number_time') \
     .withColumnRenamed('date_completed', 'completed_date') \
+    .withColumnRenamed('timestamp', 'datetime_raised')
 
 # drop unnecessary columns
 df2 = df2.drop('column11')

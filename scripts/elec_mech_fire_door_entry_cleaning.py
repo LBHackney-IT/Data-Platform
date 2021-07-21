@@ -41,6 +41,8 @@ df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Door Entry'))
 
 df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
 
+df2 = df2.withColumn('date_completed', F.to_timestamp(
+    'date_completed', "yyyy-MM-dd HH:mm:ss"))
 # rename column names to reflect harmonised column names
 
 df2 = df2.withColumnRenamed('requested_by', 'operative') \

@@ -12,6 +12,7 @@ from pyspark.sql.functions import rank, col, trim, when, max
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
+from pyspark.sql.types import IntegerType
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import udf_map_repair_priority
@@ -54,6 +55,13 @@ df2 = df2.withColumn('name_of_resident', F.initcap(F.col('name_of_resident')))
 
 # add new data source column to specify which repairs sheet the repair came from
 df2 = df2.withColumn('data_source', F.lit('DLO'))
+df2 = df2.withColumn("uh_property_reference",
+                     df2["uh_property_reference"].cast(IntegerType()))
+
+df2 = df2.withColumn("block_reference",
+                     df2["block_reference"].cast(IntegerType()))
+df2 = df2.withColumn("estate_reference",
+                     df2["estate_reference"].cast(IntegerType()))
 
 # rename column names
 logger.info('Rename column names')
