@@ -36,14 +36,14 @@ resource "aws_glue_job" "address_cleaning" {
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.address_cleaning.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.address_cleaning.key}"
   }
 
   glue_version = "2.0"
 
   default_arguments = {
     "--TempDir"                            = module.glue_temp_storage.bucket_url
-    "--extra-py-files"                     = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"                     = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
 }
 
