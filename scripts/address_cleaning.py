@@ -11,13 +11,8 @@ from pyspark.sql.functions import rank, col, trim, when, max
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 
-from helpers import get_glue_env_var, PARTITION_KEYS
+from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 
-def get_latest_partitions(dfa):
-   dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
-   dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
-   dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
-   return dfa
 ## write into the log file with:
 ## @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
@@ -44,7 +39,7 @@ source_dataset = glueContext.create_dynamic_frame.from_catalog(
 df = source_dataset.toDF()
 source_dataset.printSchema()
 
-df = get_latest_partitions(df)
+tmp = get_latest_partitions(df)
 
 logger.info('adding new column')
 df = df.withColumn('address', F.col(source_address_column_header))
@@ -55,12 +50,13 @@ df = df.withColumn('postcode', F.regexp_extract(F.col('address'), '([A-Za-z][A-H
 logger.info('remove postcode from address')
 df = df.withColumn('address', F.regexp_replace(F.col('address'), '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})', ''))
 
-logger.info('populate empty postcode with postcode from the other PC column')
-df = df.withColumn("postcode", \
-       F.when(F.col("postcode")=="" ,None) \
-          .otherwise(F.col("postcode")))
+
 
 if source_postcode_column_header:
+    logger.info('populate empty postcode with postcode from the other PC column')
+    df = df.withColumn("postcode", \
+       F.when(F.col("postcode")=="" ,None) \
+          .otherwise(F.col("postcode")))
     df = df.withColumn("postcode", F.coalesce(F.col('postcode'),F.col(source_postcode_column_header)))
 
 logger.info('postcode formatting')
