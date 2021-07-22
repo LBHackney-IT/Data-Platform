@@ -34,6 +34,8 @@ resource "aws_glue_job" "repairs_dlo_cleaning" {
 }
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_cleaned_crawler" {
+  count = local.is_live_environment ? 1 : 0
+
   tags = module.tags.values
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
@@ -89,7 +91,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_crawler" {
     }
   }
   actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_repairs_dlo_cleaned_crawler.name
+    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_repairs_dlo_cleaned_crawler[0].name
   }
 }
 
