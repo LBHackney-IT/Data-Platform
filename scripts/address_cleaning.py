@@ -39,7 +39,7 @@ source_dataset = glueContext.create_dynamic_frame.from_catalog(
 df = source_dataset.toDF()
 source_dataset.printSchema()
 
-tmp = get_latest_partitions(df)
+df = get_latest_partitions(df)
 
 logger.info('adding new column')
 df = df.withColumn('address', F.col(source_address_column_header))
