@@ -95,10 +95,10 @@ resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_crawler" {
   }
 }
 
-resource "aws_glue_trigger" "housing_repairs_repairs_dlo_address_cleaning_crawler" {
+resource "aws_glue_trigger" "housing_repairs_repairs_dlo_address_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
-  name          = "${local.identifier_prefix}-housing-repairs-repairs-dlo-address-cleaning-crawler-trigger"
+  name          = "${local.identifier_prefix}-housing-repairs-repairs-dlo-address-cleaning-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_dlo[0].workflow_name
   tags          = module.tags.values
