@@ -42,8 +42,8 @@ resource "aws_glue_job" "address_cleaning" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--TempDir"                            = module.glue_temp_storage.bucket_url
-    "--extra-py-files"                     = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
+    "--TempDir"        = module.glue_temp_storage.bucket_url
+    "--extra-py-files" = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
 }
 
