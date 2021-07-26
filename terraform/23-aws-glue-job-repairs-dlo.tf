@@ -114,8 +114,8 @@ resource "aws_glue_trigger" "housing_repairs_repairs_dlo_address_cleaning" {
       "--source_catalog_database": module.department_housing_repairs.refined_zone_catalog_database_name
       "--source_catalog_table": "housing_repairs_repairs_dlo_cleaned"
       "--cleaned_addresses_s3_bucket_target": "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses"
-      "----source_address_column_header": "property_address"
-      "--source_postcode_column_header": "null"
+      "--source_address_column_header": "property_address"
+      "--source_postcode_column_header": "None"
     }
     job_name = aws_glue_job.address_cleaning[0].name
   }
