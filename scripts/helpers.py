@@ -8,6 +8,19 @@ from pyspark.sql import functions as f
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 
+def clean_column_names(df):
+    # remove full stops from column names
+    df = df.select([f.col("`{0}`".format(c)).alias(
+        c.replace('.', '')) for c in df.columns])
+    # remove trialing underscores
+    df = df.select([f.col(col).alias(re.sub("_$", "", col))
+                   for col in df.columns])
+    # lowercase and remove double underscores
+    df2 = df.select([f.col(col).alias(
+        re.sub("[^0-9a-zA-Z$]+", "_", col.lower())) for col in df.columns])
+    return df2
+
+
 def get_glue_env_var(key, default="none"):
     if f'--{key}' in sys.argv:
         return getResolvedOptions(sys.argv, [key])[key]
