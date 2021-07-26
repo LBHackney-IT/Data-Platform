@@ -21,6 +21,7 @@ resource "aws_glue_job" "xlsx_import" {
     "--TempDir"                   = var.glue_temp_storage_bucket_id
     "--worksheet_name"            = var.worksheet_name
     "--extra-py-files"            = "s3://${var.glue_scripts_bucket_id}/${var.helpers_script_key}"
+    "--extra-jars"                = "s3://${var.glue_scripts_bucket_id}/${var.jars_key}"
   }
 }
 

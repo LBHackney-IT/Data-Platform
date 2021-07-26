@@ -1,4 +1,3 @@
-import pandas as pd
 import sys
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
@@ -8,7 +7,7 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql import SQLContext
 
-from helpers import get_glue_env_var, normalize_column_name, convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
+from helpers import get_glue_env_var, normalize_column_name, add_import_time_columns, clean_column_names, PARTITION_KEYS
 
 s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
@@ -23,46 +22,20 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
-columns_df = pd.read_excel(
-    s3_bucket_source,
-    engine='openpyxl',
-    skiprows=range(0, int(header_row_number)-1),
-    sheet_name=worksheet_name,
-    nrows=1
-)
-
-panada_df = pd.read_excel(
-    s3_bucket_source,
-    engine='openpyxl',
-    skiprows=range(0, int(header_row_number)-1),
-    sheet_name=worksheet_name,
-    usecols=columns_df.columns.values.tolist()
-)
-# Cast everything as string
-panada_df = panada_df.astype(str)
-
-# Replace missing column names with valid names
-panada_df.columns = ["column" + str(i) if a.strip() == "" else a.strip()
-                     for i, a in enumerate(panada_df.columns)]
-panada_df.columns = map(normalize_column_name, panada_df.columns)
-
-# Strip training spaces from data cells
-panada_df = panada_df.apply(lambda x:  x.str.strip() if type(x) is str else x)
-
-# Replace any nulls with empty strings
-# REMOVED: This was added previously to resolve an issue but unsure what that issue was. I've removed it as we shouldn't
-#          be replacing null values with empty strings as they aren't equivalent. If this proves to be a mistake we can
-#          add it back in with comments explaining why it exists.
-# panada_df.fillna(value='', inplace=True)
-
 sqlContext = SQLContext(sc)
 
-spark_df = convert_pandas_df_to_spark_dynamic_df(sql_context=sqlContext, panadas_df=panada_df)
-spark_df = spark_df.replace('nan', None).replace('NaT', None)
-spark_df = spark_df.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
-spark_df = add_import_time_columns(spark_df)
+df = sqlContext.read.format("com.crealytics.spark.excel") \
+    .option("header", "true") \
+    .option("inferSchema", "true") \
+    .option("dataAddress", f'\'{worksheet_name}\'!A{int(header_row_number)}') \
+    .load(s3_bucket_source)
 
-frame = DynamicFrame.fromDF(spark_df, glueContext, "DataFrame")
+df = clean_column_names(df)
+
+df = df.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
+df = add_import_time_columns(df)
+
+frame = DynamicFrame.fromDF(df, glueContext, "DataFrame")
 
 parquet_data = glueContext.write_dynamic_frame.from_options(
     frame=frame,

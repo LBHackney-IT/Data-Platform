@@ -28,6 +28,11 @@ variable "helpers_script_key" {
   type        = string
 }
 
+variable "jars_key" {
+  description = "Jars key"
+  type        = string
+}
+
 variable "glue_temp_storage_bucket_id" {
   description = "Glue temporary storage bucket id"
   type        = string
