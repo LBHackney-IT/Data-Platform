@@ -7,7 +7,8 @@ from awsglue.job import Job
 from pyspark.ml import Pipeline
 from pyspark.ml.feature import RegexTokenizer, NGram, HashingTF, MinHashLSH
 from pyspark.sql.window import Window
-from pyspark.sql.functions import rank, col, trim, when, max
+from pyspark.sql.types import StringType
+from pyspark.sql.functions import rank, col, lit, trim, when, max
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 
