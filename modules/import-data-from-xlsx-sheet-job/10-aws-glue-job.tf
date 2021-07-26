@@ -15,7 +15,6 @@ resource "aws_glue_job" "xlsx_import" {
 
   default_arguments = {
     "--s3_bucket_source"          = "s3://${var.landing_zone_bucket_id}/${var.department_folder_name}/${var.input_file_name}"
-    "--additional-python-modules" = "openpyxl"
     "--s3_bucket_target"          = local.s3_output_path
     "--header_row_number"         = var.header_row_number
     "--TempDir"                   = var.glue_temp_storage_bucket_id
