@@ -57,6 +57,17 @@ resource "aws_s3_bucket_object" "helpers" {
   source = "../scripts/helpers.py"
   etag   = filemd5("../scripts/helpers.py")
 }
+
+resource "aws_s3_bucket_object" "jars" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
+  acl    = "private"
+  source = "../jars/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
+  etag   = filemd5("../jars/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar")
+}
+
 resource "aws_s3_bucket_object" "repairs_cleaning_helpers" {
   tags = module.tags.values
 
