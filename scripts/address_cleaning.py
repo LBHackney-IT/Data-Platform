@@ -11,13 +11,8 @@ from pyspark.sql.functions import rank, col, trim, when, max
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 
-from helpers import get_glue_env_var, PARTITION_KEYS
+from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 
-def get_latest_partitions(dfa):
-   dfa = dfa.where(col('import_year') == dfa.select(max('import_year')).first()[0])
-   dfa = dfa.where(col('import_month') == dfa.select(max('import_month')).first()[0])
-   dfa = dfa.where(col('import_day') == dfa.select(max('import_day')).first()[0])
-   return dfa
 ## write into the log file with:
 ## @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
@@ -47,7 +42,7 @@ source_dataset.printSchema()
 df = get_latest_partitions(df)
 
 logger.info('adding new column')
-df = df.withColumn('address', F.col(source_address_column_header))
+df = df.withColumn('address', col(source_address_column_header))
 
 logger.info('extract postcode into a new column')
 df = df.withColumn('postcode', F.regexp_extract(F.col('address'), '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})', 1))
@@ -55,12 +50,13 @@ df = df.withColumn('postcode', F.regexp_extract(F.col('address'), '([A-Za-z][A-H
 logger.info('remove postcode from address')
 df = df.withColumn('address', F.regexp_replace(F.col('address'), '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})', ''))
 
-logger.info('populate empty postcode with postcode from the other PC column')
-df = df.withColumn("postcode", \
+
+
+if source_postcode_column_header != 'None':
+    logger.info('populate empty postcode with postcode from the other PC column')
+    df = df.withColumn("postcode", \
        F.when(F.col("postcode")=="" ,None) \
           .otherwise(F.col("postcode")))
-
-if source_postcode_column_header:
     df = df.withColumn("postcode", F.coalesce(F.col('postcode'),F.col(source_postcode_column_header)))
 
 logger.info('postcode formatting')
@@ -70,6 +66,9 @@ df = df.withColumn("postcode_length", F.length(F.col("postcode_nospace")))
 df = df.withColumn("postcode_start", F.expr("substring(postcode_nospace, 1, postcode_length -3)"))
 df = df.withColumn("postcode_end", F.expr("substring(postcode_nospace, -3, 3)"))
 df = df.withColumn("postcode", F.concat_ws(" ", "postcode_start", "postcode_end"))
+df = df.drop("postcode_length")
+df = df.drop("postcode_start")
+df = df.drop("postcode_end")
 
 logger.info('address line formatting - remove commas and extra spaces')
 df = df.withColumn("address", F.upper(F.col("address")))
@@ -118,6 +117,9 @@ df = df.withColumnRenamed("address", "concatenated_string_to_match")
 
 logger.info('create a unique ID')
 df = df.withColumn("prinx", F.monotonically_increasing_id()).repartition(1)
+
+logger.info('create an empty uprn column')
+df = df.withColumn("uprn", lit(None).cast(StringType()))
 
 logger.info('write into parquet')
 cleanedDataframe = DynamicFrame.fromDF(df, glueContext, "cleanedDataframe")

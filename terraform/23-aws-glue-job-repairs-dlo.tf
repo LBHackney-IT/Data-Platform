@@ -34,6 +34,8 @@ resource "aws_glue_job" "repairs_dlo_cleaning" {
 }
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_cleaned_crawler" {
+  count = local.is_live_environment ? 1 : 0
+
   tags = module.tags.values
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
@@ -89,6 +91,35 @@ resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_crawler" {
     }
   }
   actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_repairs_dlo_cleaned_crawler.name
+    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_repairs_dlo_cleaned_crawler[0].name
   }
 }
+
+resource "aws_glue_trigger" "housing_repairs_repairs_dlo_address_cleaning" {
+  count = local.is_live_environment ? 1 : 0
+
+  name          = "${local.identifier_prefix}-housing-repairs-repairs-dlo-address-cleaning-trigger"
+  type          = "CONDITIONAL"
+  workflow_name = module.repairs_dlo[0].workflow_name
+  tags          = module.tags.values
+
+  predicate {
+    conditions {
+      crawler_name = aws_glue_crawler.refined_zone_housing_repairs_repairs_dlo_cleaned_crawler[0].name
+      crawl_state  = "SUCCEEDED"
+    }
+  }
+  actions {
+    arguments = {
+      "--source_catalog_database" : module.department_housing_repairs.refined_zone_catalog_database_name
+      "--source_catalog_table" : "housing_repairs_repairs_dlo_cleaned"
+      "--cleaned_addresses_s3_bucket_target" : "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses"
+      "--source_address_column_header" : "property_address"
+      "--source_postcode_column_header" : "None"
+    }
+    job_name = aws_glue_job.address_cleaning[0].name
+  }
+}
+
+
+
