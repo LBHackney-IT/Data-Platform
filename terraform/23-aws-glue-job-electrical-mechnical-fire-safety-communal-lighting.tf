@@ -1,4 +1,4 @@
-resource "aws_s3_bucket_object" "elec_mech_fire_communal_lighting_script" {
+resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_communal_lighting_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
@@ -8,7 +8,7 @@ resource "aws_s3_bucket_object" "elec_mech_fire_communal_lighting_script" {
   etag   = filemd5("../scripts/elec_mech_fire_communal_lighting.py")
 }
 
-resource "aws_glue_job" "housing_elec_mech_fire_communal_lighting" {
+resource "aws_glue_job" "housing_repairs_elec_mech_fire_communal_lighting_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
@@ -19,7 +19,7 @@ resource "aws_glue_job" "housing_elec_mech_fire_communal_lighting" {
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.elec_mech_fire_communal_lighting_script.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.housing_repairs_elec_mech_fire_communal_lighting_script.key}"
   }
 
   glue_version = "2.0"
@@ -34,6 +34,7 @@ resource "aws_glue_job" "housing_elec_mech_fire_communal_lighting" {
 }
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_communal_lighting_cleaned_crawler" {
+  count = local.is_live_environment ? 1 : 0
   tags = module.tags.values
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
@@ -56,7 +57,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_communa
   })
 }
 
-resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_communal_lighting_job" {
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_communal_lighting_cleaning_job" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
@@ -72,7 +73,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_communal_lighting_jo
   }
 
   actions {
-    job_name = aws_glue_job.housing_elec_mech_fire_communal_lighting[0].name
+    job_name = aws_glue_job.housing_repairs_elec_mech_fire_communal_lighting_cleaning[0].name
   }
 }
 
@@ -86,7 +87,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_communal_lighting_cr
 
   predicate {
     conditions {
-      job_name = aws_glue_job.housing_elec_mech_fire_communal_lighting[0].name
+      job_name = aws_glue_job.housing_repairs_elec_mech_fire_communal_lighting_cleaning[0].name
       state    = "SUCCEEDED"
     }
   }
@@ -94,3 +95,30 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_communal_lighting_cr
     crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_communal_lighting_cleaned_crawler.name
   }
 }
+
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_communal_lighting_address_cleaning" {
+  count = local.is_live_environment ? 1 : 0
+
+  name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-communal-lighting-address-cleaning-trigger"
+  type          = "CONDITIONAL"
+  workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["communal-lighting"].workflow_name
+  tags          = module.tags.values
+
+  predicate {
+    conditions {
+      crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_communal_lighting_cleaned_crawler[0].name
+      crawl_state  = "SUCCEEDED"
+    }
+  }
+  actions {
+    arguments = {
+      "--source_catalog_database" : module.department_housing_repairs.refined_zone_catalog_database_name
+      "--source_catalog_table" : "housing_repairs_elec_mech_fire_communal_lighting_cleaned"
+      "--cleaned_addresses_s3_bucket_target" : "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/communal-lighting/with-cleaned-addresses"
+      "--source_address_column_header" : "property_address"
+      "--source_postcode_column_header" : "None"
+    }
+    job_name = aws_glue_job.address_cleaning[0].name
+  }
+}
+

@@ -1,4 +1,4 @@
-resource "aws_s3_bucket_object" "repairs_dlo_cleaning_script" {
+resource "aws_s3_bucket_object" "housing_repairs_repairs_dlo_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
@@ -8,7 +8,7 @@ resource "aws_s3_bucket_object" "repairs_dlo_cleaning_script" {
   etag   = filemd5("../scripts/repairs_dlo_cleaning.py")
 }
 
-resource "aws_glue_job" "repairs_dlo_cleaning" {
+resource "aws_glue_job" "housing_repairs_repairs_dlo_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
   tags = module.tags.values
@@ -19,7 +19,7 @@ resource "aws_glue_job" "repairs_dlo_cleaning" {
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_dlo_cleaning_script.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.housing_repairs_repairs_dlo_cleaning_script.key}"
   }
 
   glue_version = "2.0"
@@ -35,7 +35,6 @@ resource "aws_glue_job" "repairs_dlo_cleaning" {
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_dlo_cleaned_crawler" {
   count = local.is_live_environment ? 1 : 0
-
   tags = module.tags.values
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
@@ -72,7 +71,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_job" {
   }
 
   actions {
-    job_name = aws_glue_job.repairs_dlo_cleaning[0].name
+    job_name = aws_glue_job.housing_repairs_repairs_dlo_cleaning[0].name
   }
 }
 
@@ -86,7 +85,7 @@ resource "aws_glue_trigger" "housing_repairs_repairs_dlo_cleaning_crawler" {
 
   predicate {
     conditions {
-      job_name = aws_glue_job.repairs_dlo_cleaning[0].name
+      job_name = aws_glue_job.housing_repairs_repairs_dlo_cleaning[0].name
       state    = "SUCCEEDED"
     }
   }
