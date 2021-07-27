@@ -40,7 +40,7 @@ source_data = glueContext.create_dynamic_frame.from_catalog(
 )
 
 df = source_data.toDF()
-df = getLatestPartitions(df)
+df = get_latest_partitions(df)
 
 # drop empty rows
 df2 = df.filter(df.address != 'nan')
