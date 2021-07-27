@@ -1,5 +1,5 @@
 module "repairs_fire_alarm_aov" {
-  count = local.is_live_environment ? 1 : 1
+  count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-xlsx-file-from-g-drive"
   glue_role_arn                  = aws_iam_role.glue_role.arn
