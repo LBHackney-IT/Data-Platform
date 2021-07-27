@@ -191,7 +191,7 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:CreateTrigger",
       "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
-      "glue:DeleteTrigger"
+      "glue:DeleteTrigger",
       "glue:Get*",
       "glue:List*",
       "glue:ResetJobBookmark",
