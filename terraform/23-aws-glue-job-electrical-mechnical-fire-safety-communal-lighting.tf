@@ -92,7 +92,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_communal_lighting_cr
     }
   }
   actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_communal_lighting_cleaned_crawler.name
+    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_communal_lighting_cleaned_crawler[0].name
   }
 }
 
