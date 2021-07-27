@@ -22,10 +22,10 @@ module "repairs_fire_alarm_aov" {
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "electrical_mechnical_fire_safety_temp_order_number_wc_12.10.20r1.xlsx"
   worksheets = {
-    # sheet1 : {
-    #   header_row_number = 2
-    #   worksheet_name    = "Door Entry"
-    # }
+    sheet1 : {
+      header_row_number = 2
+      worksheet_name    = "Door Entry"
+    }
     sheet2 : {
       header_row_number = 2
       worksheet_name    = "Fire AlarmAOV"
