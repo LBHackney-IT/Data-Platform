@@ -20,6 +20,7 @@ def get_latest_partitions(dfa):
 
 source_data_database = get_glue_env_var('source_data_database', '')
 source_data_catalogue_table = get_glue_env_var('source_data_catalogue_table', '')
+source_uhref_header = get_glue_env_var('source_uhref_header', '')
 lookup_database = get_glue_env_var('lookup_database', '')
 lookup_catalogue_table = get_glue_env_var('lookup_catalogue_table', '')
 target_destination = get_glue_env_var('target_destination', '')
@@ -43,11 +44,11 @@ uhref_uprn_lookup_ddf = glueContext.create_dynamic_frame.from_catalog(
 uhref_uprn_lookup_df = uhref_uprn_lookup_ddf.toDF()
 uhref_uprn_lookup_df = get_latest_partitions(uhref_uprn_lookup_df)
 uhref_uprn_lookup_df = uhref_uprn_lookup_df.select("ten_property_ref", "uprn").where("ten_property_ref IS NOT NULL")
-uhref_uprn_lookup_df = uhref_uprn_lookup_df.withColumnRenamed("ten_property_ref", "property_reference_uh")
+uhref_uprn_lookup_df = uhref_uprn_lookup_df.withColumnRenamed("ten_property_ref", source_uhref_header)
 
 # ### JOIN
 
-joined_df = source_df.join(uhref_uprn_lookup_df, "property_reference_uh", "left")
+joined_df = source_df.join(uhref_uprn_lookup_df, source_uhref_header, "left")
 
 # ### WRITE
 
