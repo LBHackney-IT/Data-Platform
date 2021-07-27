@@ -94,12 +94,12 @@ resource "aws_glue_trigger" "housing_repairs_repairs_avonline_cleaning_crawler" 
   }
 }
 
-resource "aws_glue_trigger" "housing_repairs_repairs_alpha_track_address_cleaning" {
+resource "aws_glue_trigger" "housing_repairs_repairs_avonline_address_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
   name          = "${local.identifier_prefix}-housing-repairs-repairs-avonline-address-cleaning-trigger"
   type          = "CONDITIONAL"
-  workflow_name = module.repairs_alpha_track[0].workflow_name
+  workflow_name = module.repairs_avonline[0].workflow_name
   tags          = module.tags.values
 
   predicate {
