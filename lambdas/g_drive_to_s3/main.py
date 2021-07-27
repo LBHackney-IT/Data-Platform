@@ -67,9 +67,9 @@ def lambda_handler(event, lambda_context):
     for workflow_name in workflow_names:
         try:
             response = glue_client.start_workflow_run(Name = workflow_name)
-        except:
+        except Exception as e:
             print('Failed to run '+ workflow_name)
-            print(response)
+            print(e)
 
 if __name__ == '__main__':
     lambda_handler('event', 'lambda_context')
