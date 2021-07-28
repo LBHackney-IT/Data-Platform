@@ -145,6 +145,7 @@ resource "aws_glue_job" "get_uprn_from_uhref" {
     "--lookup_database"             = "dataplatform-stg-raw-zone-database"
     "--source_data_catalogue_table" = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
     "--source_data_database"        = module.department_housing_repairs.refined_zone_catalog_database_name
+    "--source_uhref_header"         = "" # This will be different for different workflows
     "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
     "--TempDir"                     = module.glue_temp_storage.bucket_url
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
