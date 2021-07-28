@@ -1,14 +1,14 @@
-resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_dpa_script" {
+resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_lift_breakdown_ela_cleaning_script" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/elec_mech_fire_dpa.py"
+  key    = "scripts/elec_mech_fire_lift_breakdown_ela_cleaning.py"
   acl    = "private"
-  source = "../scripts/elec_mech_fire_dpa.py"
-  etag   = filemd5("../scripts/elec_mech_fire_dpa.py")
+  source = "../scripts/elec_mech_fire_lift_breakdown_ela_cleaning.py"
+  etag   = filemd5("../scripts/elec_mech_fire_lift_breakdown_ela_cleaning.py")
 }
 
-module "dpa" {
+module "lift_breakdown_el" {
   count = local.is_live_environment ? 1 : 0
 
   source = "../modules/electrical-mechnical-fire-safety-cleaning-job"
@@ -18,7 +18,7 @@ module "dpa" {
   short_identifier_prefix            = local.short_identifier_prefix
   identifier_prefix                  = local.identifier_prefix
   department_name                    = "housing-repairs"
-  script_key                         = aws_s3_bucket_object.housing_repairs_elec_mech_fire_dpa_script.key
+  script_key                         = aws_s3_bucket_object.housing_repairs_elec_mech_fire_lift_breakdown_ela_cleaning_script.key
   glue_scripts_bucket_id             = module.glue_scripts.bucket_id
   glue_role_arn                      = aws_iam_role.glue_role.arn
   glue_crawler_excluded_blobs        = local.glue_crawler_excluded_blobs
@@ -27,8 +27,8 @@ module "dpa" {
   helper_script_key                  = aws_s3_bucket_object.helpers.key
   cleaning_helper_script_key         = aws_s3_bucket_object.repairs_cleaning_helpers.key
   catalog_database                   = module.department_housing_repairs.raw_zone_catalog_database_name
-  worksheet_resource                 = module.repairs_fire_alarm_aov[0].worksheet_resources["dpa"]
+  worksheet_resource                 = module.repairs_fire_alarm_aov[0].worksheet_resources["lift-breakdown---ela"]
   refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  dataset_name                       = "dpa"
+  dataset_name                       = "lift-breakdown-ela"
   address_cleaning_job_name          = aws_glue_job.address_cleaning[0].name
 }

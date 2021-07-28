@@ -39,6 +39,10 @@ resource "aws_glue_job" "address_cleaning" {
     script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.address_cleaning.key}"
   }
 
+  execution_property {
+    max_concurrent_runs = 12
+  }
+
   glue_version = "2.0"
 
   default_arguments = {
