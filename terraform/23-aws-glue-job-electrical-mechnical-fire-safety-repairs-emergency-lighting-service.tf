@@ -1,7 +1,3 @@
-locals {
-  repair_emergency_lighting_servicing_output = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/emergency-lighting-servicing/cleaned/"
-}
-
 resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_emergency_lighting_servicing_cleaning" {
   tags = module.tags.values
 
@@ -11,112 +7,28 @@ resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_emergency_lighti
   source = "../scripts/elec_mech_fire_emergency_lighting_servicing_cleaning.py"
   etag   = filemd5("../scripts/elec_mech_fire_emergency_lighting_servicing_cleaning.py")
 }
- 
-resource "aws_glue_job" "housing_repairs_elec_mech_fire_emergency_lighting_servicing_cleaning" {
+
+module "emergency_lighting_servicing" {
   count = local.is_live_environment ? 1 : 0
 
-  tags = module.tags.values
+  source = "../modules/electrical-mechnical-fire-safety-cleaning-job"
+  tags   = module.tags.values
 
-  name              = "${local.short_identifier_prefix}Housing Repairs - Repairs ElecMechFire Emergency Lighting Servicing Cleaning"
-  number_of_workers = 10
-  worker_type       = "G.1X"
-  role_arn          = aws_iam_role.glue_role.arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.housing_repairs_elec_mech_fire_emergency_lighting_servicing_cleaning.key}"
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {
-    "--cleaned_repairs_s3_bucket_target" = local.repair_emergency_lighting_servicing_output
-    "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
-    "--source_catalog_table"             = module.repairs_fire_alarm_aov[0].worksheet_resources["emergency-lighting-servicing"].catalog_table
-    "--TempDir"                          = module.glue_temp_storage.bucket_url
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
-  }
+  is_live_environment                = local.is_live_environment
+  short_identifier_prefix            = local.short_identifier_prefix
+  identifier_prefix                  = local.identifier_prefix
+  department_name                    = "housing-repairs"
+  script_key                         = aws_s3_bucket_object.housing_repairs_elec_mech_fire_emergency_lighting_servicing_cleaning.key
+  glue_scripts_bucket_id             = module.glue_scripts.bucket_id
+  glue_role_arn                      = aws_iam_role.glue_role.arn
+  glue_crawler_excluded_blobs        = local.glue_crawler_excluded_blobs
+  glue_temp_storage_bucket_id        = module.glue_temp_storage.bucket_url
+  refined_zone_bucket_id             = module.refined_zone.bucket_id
+  helper_script_key                  = aws_s3_bucket_object.helpers.key
+  cleaning_helper_script_key         = aws_s3_bucket_object.repairs_cleaning_helpers.key
+  catalog_database                   = module.department_housing_repairs.raw_zone_catalog_database_name
+  worksheet_resource                 = module.repairs_fire_alarm_aov[0].worksheet_resources["emergency-lighting-servicing"]
+  refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
+  dataset_name                       = "emergency-lighting-servicing"
+  address_cleaning_job_name          = aws_glue_job.address_cleaning[0].name
 }
-
-resource "aws_glue_crawler" "refined_zone_housing_repairs_emergency_lighting_servicing_cleaned_crawler" {
-  count = local.is_live_environment ? 1 : 0
-  tags = module.tags.values
-
-  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-elec-mech-fire-emergency-lighting-servicing-cleaned"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "housing_repairs_elec_mech_fire_emergency_lighting_servicing_"
-
-
-  s3_target {
-    path       = local.repair_emergency_lighting_servicing_output
-    exclusions = local.glue_crawler_excluded_blobs
-  }
-}
-
-resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_emergency_lighting_servicing_cleaning_job" {
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-emergency-lighting-servicing-cleaning-job-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["emergency-lighting-servicing"].workflow_name
-  tags          = module.tags.values
-
-
-  predicate {
-    conditions {
-      crawler_name = module.repairs_fire_alarm_aov[0].worksheet_resources["emergency-lighting-servicing"].crawler_name
-      crawl_state  = "SUCCEEDED"
-    }
-  }
-
-  actions {
-    job_name = aws_glue_job.housing_repairs_elec_mech_fire_emergency_lighting_servicing_cleaning[0].name
-  }
-}
-
-resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_emergency_lighting_servicing_cleaning_crawler" {
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-emergency-lighting-servicing-cleaning-crawler-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["emergency-lighting-servicing"].workflow_name
-  tags          = module.tags.values
-
-  predicate {
-    conditions {
-      job_name = aws_glue_job.housing_repairs_elec_mech_fire_emergency_lighting_servicing_cleaning[0].name
-      state    = "SUCCEEDED"
-    }
-  }
-  actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_emergency_lighting_servicing_cleaned_crawler[0].name
-  }
-}
-
-resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_emergency_lighting_servicing_address_cleaning" {
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.identifier_prefix}-housing-repairs-elec-mech-fire-emergency-lighting-servicing-address-cleaning-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_fire_alarm_aov[0].worksheet_resources["emergency-lighting-servicing"].workflow_name
-  tags          = module.tags.values
-
-  predicate {
-    conditions {
-      crawler_name = aws_glue_crawler.refined_zone_housing_repairs_emergency_lighting_servicing_cleaned_crawler[0].name
-      crawl_state  = "SUCCEEDED"
-    }
-  }
-  actions {
-    arguments = {
-      "--source_catalog_database" : module.department_housing_repairs.refined_zone_catalog_database_name
-      "--source_catalog_table" : "housing_repairs_elec_mech_fire_emergency_lighting_servicing_cleaned"
-      "--cleaned_addresses_s3_bucket_target" : "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/emergency-lighting-servicing/with-cleaned-addresses"
-      "--source_address_column_header" : "property_address"
-      "--source_postcode_column_header" : "None"
-    }
-    job_name = aws_glue_job.address_cleaning[0].name
-  }
-}
-
-
