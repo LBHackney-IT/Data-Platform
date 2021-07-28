@@ -1,13 +1,3 @@
-# resource "aws_s3_bucket_object" "elec_mech_fire_communal_lighting_script" {
-#   tags = module.tags.values
-#
-#   bucket = var.glue_scripts_bucket_id
-#   key    = "scripts/elec_mech_fire_communal_lighting.py"
-#   acl    = "private"
-#   source = "../scripts/elec_mech_fire_communal_lighting.py"
-#   etag   = filemd5("../scripts/elec_mech_fire_communal_lighting.py")
-# }
-
 resource "aws_glue_job" "housing_repairs_elec_mech_fire_cleaning" {
   count = var.is_live_environment ? 1 : 0
 

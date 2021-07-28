@@ -30,10 +30,10 @@ resource "aws_glue_job" "address_cleaning" {
 
   tags = module.tags.values
 
-  name                = "${local.short_identifier_prefix}Housing Repairs - Address Cleaning"
-  number_of_workers   = 10
-  worker_type         = "G.1X"
-  role_arn            = aws_iam_role.glue_role.arn
+  name              = "${local.short_identifier_prefix}Housing Repairs - Address Cleaning"
+  number_of_workers = 10
+  worker_type       = "G.1X"
+  role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
     script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.address_cleaning.key}"
