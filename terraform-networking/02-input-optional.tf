@@ -83,12 +83,25 @@ variable "core_region" {
 
 variable "google_project_id" {
   description = "Not need for this module, declared to prevent terraform from throwing errors"
-  type        = string
-  default     = ""
+  default     = false
 }
 
 variable "aws_api_account" {
   description = "Not need for this module, declared to prevent terraform from throwing errors"
-  type        = string
-  default     = ""
+  default     = false
+}
+
+variable "aws_hackit_account_id" {
+  description = "Not need for this module, declared to prevent terraform from throwing errors"
+  default     = false
+}
+
+variable "rds_instance_ids" {
+  description = "Not need for this module, declared to prevent terraform from throwing errors"
+  default     = false
+}
+
+variable "deployment_user_arn" {
+  description = "Not need for this module, declared to prevent terraform from throwing errors"
+  default     = false
 }
