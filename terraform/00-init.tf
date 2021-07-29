@@ -19,10 +19,6 @@ provider "aws" {
 provider "aws" {
   alias  = "aws_hackit_account"
   region = "eu-west-1"
-  assume_role {
-    role_arn     = "arn:aws:iam::${var.aws_hackit_account_id}:role/${var.aws_deploy_iam_role_name}"
-    session_name = "DataPlatform"
-  }
 }
 
 provider "google" {

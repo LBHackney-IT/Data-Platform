@@ -105,3 +105,8 @@ variable "deployment_user_arn" {
   description = "Not need for this module, declared to prevent terraform from throwing errors"
   default     = false
 }
+
+variable "qlik_server_instance_type" {
+  description = "Not need for this module, declared to prevent terraform from throwing errors"
+  default     = false
+}
