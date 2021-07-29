@@ -25,6 +25,11 @@ variable "aws_api_account" {
   type        = string
 }
 
+variable "aws_hackit_account_id" {
+  description = "AWS hackit account id"
+  type        = string
+}
+
 variable "aws_vpc_id" {
   description = "The ID of the AWS VPC"
   type        = string
