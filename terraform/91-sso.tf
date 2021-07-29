@@ -16,6 +16,7 @@ output "identity_store_id" {
 }
 
 data "aws_identitystore_group" "example" {
+  provider = aws.aws_hackit_account
   identity_store_id = local.identity_store_id
 
   filter {
