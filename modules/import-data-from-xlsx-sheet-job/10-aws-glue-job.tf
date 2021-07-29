@@ -40,6 +40,13 @@ resource "aws_glue_crawler" "xlsx_import" {
   s3_target {
     path = local.s3_output_path
   }
+
+  configuration = jsonencode({
+    Version = 1.0
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+    }
+  })
 }
 
 resource "aws_glue_trigger" "xlsx_import_trigger" {
