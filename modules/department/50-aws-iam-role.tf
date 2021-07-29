@@ -355,7 +355,7 @@ data "aws_iam_policy_document" "sso_user_policy" {
 resource "aws_iam_policy" "sso_user_policy" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${local.department_identifier}-sso-user-policy")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-sso-user-policy-DO-NOT-USE")
   policy = data.aws_iam_policy_document.sso_user_policy.json
 }
 
@@ -374,7 +374,7 @@ data "aws_iam_policy_document" "glue_agent_assume_role" {
 resource "aws_iam_role" "glue_agent" {
   tags = var.tags
 
-  name               = lower("${var.identifier_prefix}-glue-${local.department_identifier}")
+  name               = lower("${var.identifier_prefix}-glue-${local.department_identifier}-DO-NOT-USE")
   assume_role_policy = data.aws_iam_policy_document.glue_agent_assume_role.json
 }
 
