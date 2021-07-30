@@ -3,11 +3,6 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "is_live_environment" {
-  description = "A flag indicting if we are running in a live environment for setting up automation"
-  type        = bool
-}
-
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
@@ -79,8 +74,8 @@ variable "dataset_name" {
   type        = string
 }
 
-variable "address_cleaning_job_name" {
-  description = "Address cleaning job name"
+variable "address_cleaning_script_key" {
+  description = "Address cleaning script key"
   type        = string
 }
 

@@ -1,5 +1,4 @@
 resource "aws_glue_job" "housing_repairs_elec_mech_fire_cleaning" {
-  count = var.is_live_environment ? 1 : 0
 
   tags = var.tags
 
@@ -24,7 +23,6 @@ resource "aws_glue_job" "housing_repairs_elec_mech_fire_cleaning" {
 }
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_cleaned_crawler" {
-  count = var.is_live_environment ? 1 : 0
   tags  = var.tags
 
   database_name = var.refined_zone_catalog_database_name
@@ -33,7 +31,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_cleaned
   table_prefix  = "housing_repairs_elec_mech_fire_${replace(var.dataset_name, "-", "_")}_"
 
   s3_target {
-    path = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/cleaned/"
+    path = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/"
 
 
     exclusions = var.glue_crawler_excluded_blobs
@@ -48,7 +46,6 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_cleaned
 }
 
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_cleaning_job" {
-  count = var.is_live_environment ? 1 : 0
   tags  = var.tags
 
   name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-cleaning-job-trigger"
@@ -63,12 +60,11 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_cleaning_job" {
   }
 
   actions {
-    job_name = aws_glue_job.housing_repairs_elec_mech_fire_cleaning[0].name
+    job_name = aws_glue_job.housing_repairs_elec_mech_fire_cleaning.name
   }
 }
 
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_crawler" {
-  count = var.is_live_environment ? 1 : 0
   tags  = var.tags
 
   name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-cleaning-crawler-trigger"
@@ -77,17 +73,42 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_crawler" {
 
   predicate {
     conditions {
-      job_name = aws_glue_job.housing_repairs_elec_mech_fire_cleaning[0].name
+      job_name = aws_glue_job.housing_repairs_elec_mech_fire_cleaning.name
       state    = "SUCCEEDED"
     }
   }
   actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_cleaned_crawler[0].name
+    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_cleaned_crawler.name
   }
 }
 
+resource "aws_glue_job" "repairs_address_cleaning" {
+
+  tags = module.tags.values
+
+  name              = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))}Address Cleaning"
+  number_of_workers = 10
+  worker_type       = "G.1X"
+  role_arn          = aws_iam_role.glue_role.arn
+  command {
+    python_version  = "3"
+    script_location = "s3://${var.glue_scripts_bucket_id}/${var.address_cleaning_script_key}"
+  }
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--TempDir"        = module.glue_temp_storage.bucket_url
+    "--extra-py-files" = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
+  }
+}
+
+locals {
+  source_catalog_table = "housing_repairs_elec_mech_fire_${replace(var.dataset_name, "-", "_")}_cleaned"
+  cleaned_addresses_s3_bucket_target = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/with-cleaned-addresses"
+}
+
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_address_cleaning" {
-  count = var.is_live_environment ? 1 : 0
 
   name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-address-cleaning-trigger"
   type          = "CONDITIONAL"
@@ -96,18 +117,37 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_address_cleaning" {
 
   predicate {
     conditions {
-      crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_cleaned_crawler[0].name
+      crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_cleaned_crawler.name
       crawl_state  = "SUCCEEDED"
     }
   }
   actions {
     arguments = {
       "--source_catalog_database" : var.refined_zone_catalog_database_name
-      "--source_catalog_table" : "housing_repairs_elec_mech_fire_${replace(var.dataset_name, "-", "_")}_cleaned"
-      "--cleaned_addresses_s3_bucket_target" : "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/with-cleaned-addresses"
+      "--source_catalog_table" : local.source_catalog_table
+      "--cleaned_addresses_s3_bucket_target" : local.cleaned_addresses_s3_bucket_target
       "--source_address_column_header" : "property_address"
       "--source_postcode_column_header" : "None"
     }
-    job_name = var.address_cleaning_job_name
+    job_name = aws_glue_job.repairs_address_cleaning.id
+  }
+}
+
+resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_after_address_clean_crawler" {
+
+  tags  = var.tags
+
+  name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-address-cleaning-crawler-trigger"
+  type          = "CONDITIONAL"
+  workflow_name = var.worksheet_resource.workflow_name
+
+  predicate {
+    conditions {
+      job_name = aws_glue_job.repairs_address_cleaning.id
+      state    = "SUCCEEDED"
+    }
+  }
+  actions {
+    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_cleaned_crawler.name
   }
 }
