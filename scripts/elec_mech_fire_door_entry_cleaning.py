@@ -66,7 +66,7 @@ df2 = df2.select("data_source", "datetime_raised", "sor",
                  "description_of_work", "work_priority_description",
                  "temp_order_number_full", "budget_code", "order_value",
                  "order_status", "completed_date", "contractor_ref",
-                 "unnamed_14", "unnamed_15", "unnamed_16", "work_priority_priority_code",
+                 "_c14", "_c15", "_c16", "work_priority_priority_code",
                  "import_datetime", "import_timestamp", "import_year",
                  "import_month", "import_day", "import_date",
                  )
