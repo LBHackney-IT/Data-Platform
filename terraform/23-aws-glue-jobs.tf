@@ -40,7 +40,7 @@ resource "aws_glue_job" "address_cleaning" {
   }
 
   execution_property {
-    max_concurrent_runs = 12
+    max_concurrent_runs = 1
   }
 
   glue_version = "2.0"

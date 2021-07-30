@@ -14,7 +14,6 @@ module "electrical_supplies" {
   source = "../modules/electrical-mechnical-fire-safety-cleaning-job"
   tags   = module.tags.values
 
-  is_live_environment                = local.is_live_environment
   short_identifier_prefix            = local.short_identifier_prefix
   identifier_prefix                  = local.identifier_prefix
   department_name                    = "housing-repairs"
@@ -30,5 +29,5 @@ module "electrical_supplies" {
   worksheet_resource                 = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"]
   refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   dataset_name                       = "electrical-supplies"
-  address_cleaning_job_name          = aws_glue_job.address_cleaning[0].name
+  address_cleaning_script_key        = aws_s3_bucket_object.address_cleaning.key
 }
