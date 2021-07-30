@@ -1,5 +1,7 @@
 resource "aws_ssoadmin_permission_set" "department" {
-  name             = "DataPlatformCollaborator${local.department_pascalcase}-DoNotUse"
+  provider = aws.aws_hackit_account
+
+  name             = "DataPlatCollab${local.department_pascalcase}-DoNotUse"
   description      = "This is a test permission set created by Terraform"
   instance_arn     = var.sso_instance_arn
   session_duration = "PT12H"
@@ -7,12 +9,16 @@ resource "aws_ssoadmin_permission_set" "department" {
 }
 
 resource "aws_ssoadmin_permission_set_inline_policy" "department" {
+  provider = aws.aws_hackit_account
+
   inline_policy      = data.aws_iam_policy_document.sso_user_policy.json
   instance_arn       = var.sso_instance_arn
   permission_set_arn = aws_ssoadmin_permission_set.department.arn
 }
 
 data "aws_identitystore_group" "department" {
+  provider = aws.aws_hackit_account
+
   identity_store_id = var.identity_store_id
 
   filter {
@@ -23,6 +29,8 @@ data "aws_identitystore_group" "department" {
 
 // Added this as I want to see if it fails when it can't be found
 data "aws_identitystore_group" "will_fail" {
+  provider = aws.aws_hackit_account
+
   identity_store_id = var.identity_store_id
 
   filter {
