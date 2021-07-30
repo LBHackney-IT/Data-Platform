@@ -30,7 +30,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_cleaned
   database_name = var.refined_zone_catalog_database_name
   name          = "${var.short_identifier_prefix}refined-zone-housing-repairs-elec-mech-fire-${var.dataset_name}-cleaned"
   role          = var.glue_role_arn
-  table_prefix  = "housing_repairs_elec_mech_fire_communal_lighting_"
+  table_prefix  = "housing_repairs_elec_mech_fire_${replace(var.dataset_name, "-", "_")}_"
 
   s3_target {
     path = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/cleaned/"
