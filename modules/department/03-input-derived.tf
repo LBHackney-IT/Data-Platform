@@ -1,3 +1,4 @@
 locals {
-  department_identifier = replace(replace(lower(var.name), "/[^a-zA-Z0-9]+/", "-"), "/-+/", "-")
+  department_identifier = replace(lower(var.name), "/[^a-zA-Z0-9]+/", "-")
+  department_pascalcase = replace(title(replace(var.name, "/[^a-zA-Z0-9]+/", " ")), " ", "")
 }
