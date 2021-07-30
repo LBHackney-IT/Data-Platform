@@ -32,3 +32,4 @@ output "identity_store_id" {
 output "arn" {
   value = local.sso_instance_arn
 }
+  
