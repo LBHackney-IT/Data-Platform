@@ -24,3 +24,11 @@ output "ssl_connection_resources_bucket_id" {
 output "qlik_sense_server_ip" {
   value = module.qlik_server[*].instance_private_ip
 }
+
+output "identity_store_id" {
+  value = local.identity_store_id
+}
+
+output "arn" {
+  value = local.sso_instance_arn
+}

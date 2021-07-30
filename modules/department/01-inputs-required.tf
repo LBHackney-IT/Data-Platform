@@ -98,3 +98,13 @@ variable "secrets_manager_kms_key" {
     arn    = string
   })
 }
+
+variable "sso_instance_arn" {
+  description = "The ARN of the SSO Instance used to configure SSO on the main HackIT account"
+  type        = string
+}
+
+variable "identity_store_id" {
+  description = "The ID of the Identity Store used to configure SSO on the main HackIT account"
+  type        = string
+}

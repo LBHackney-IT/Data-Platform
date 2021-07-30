@@ -35,7 +35,7 @@ resource "aws_glue_job" "housing_repairs_repairs_alpha_track_cleaning" {
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_alpha_track_cleaned_crawler" {
   count = local.is_live_environment ? 1 : 0
-  tags = module.tags.values
+  tags  = module.tags.values
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-repairs-alpha-track-cleaned"
