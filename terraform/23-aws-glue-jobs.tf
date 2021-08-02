@@ -125,6 +125,7 @@ resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
     "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-matched-addresses/"
     "--TempDir"                     = module.glue_temp_storage.bucket_url
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--match_to_property_shell"     = "" # force/allow/forbid
   }
 }
 
