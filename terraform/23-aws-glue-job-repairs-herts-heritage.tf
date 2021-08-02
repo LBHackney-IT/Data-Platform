@@ -35,4 +35,3 @@ module "housing_repairs_herts_heritage" {
   dataset_name                       = "repairs-herts-heritage"
   address_cleaning_job_name          = aws_glue_job.address_cleaning[0].name
 }
-

@@ -23,7 +23,7 @@ resource "aws_glue_job" "housing_repairs_elec_mech_fire_cleaning" {
 }
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_cleaned_crawler" {
-  tags  = var.tags
+  tags = var.tags
 
   database_name = var.refined_zone_catalog_database_name
   name          = "${var.short_identifier_prefix}refined-zone-housing-repairs-elec-mech-fire-${var.dataset_name}-cleaned"
@@ -46,7 +46,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_elec_mech_fire_cleaned
 }
 
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_cleaning_job" {
-  tags  = var.tags
+  tags = var.tags
 
   name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-cleaning-job-trigger"
   type          = "CONDITIONAL"
@@ -65,7 +65,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_cleaning_job" {
 }
 
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_crawler" {
-  tags  = var.tags
+  tags = var.tags
 
   name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
@@ -103,7 +103,7 @@ resource "aws_glue_job" "repairs_address_cleaning" {
 }
 
 locals {
-  source_catalog_table = "housing_repairs_elec_mech_fire_${replace(var.dataset_name, "-", "_")}_cleaned"
+  source_catalog_table               = "housing_repairs_elec_mech_fire_${replace(var.dataset_name, "-", "_")}_cleaned"
   cleaned_addresses_s3_bucket_target = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/with-cleaned-addresses"
 }
 
@@ -134,7 +134,7 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_address_cleaning" {
 
 resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_after_address_clean_crawler" {
 
-  tags  = var.tags
+  tags = var.tags
 
   name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-address-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
