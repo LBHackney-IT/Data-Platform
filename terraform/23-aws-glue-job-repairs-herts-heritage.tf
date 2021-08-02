@@ -33,5 +33,5 @@ module "housing_repairs_herts_heritage" {
 
   refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   dataset_name                       = "repairs-herts-heritage"
-  address_cleaning_job_name          = aws_glue_job.address_cleaning[0].name
+  address_cleaning_script_key        = aws_s3_bucket_object.address_cleaning.key
 }
