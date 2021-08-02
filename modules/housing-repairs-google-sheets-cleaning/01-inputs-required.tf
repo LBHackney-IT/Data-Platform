@@ -84,8 +84,8 @@ variable "dataset_name" {
   type        = string
 }
 
-variable "address_cleaning_job_name" {
-  description = "Address cleaning job name"
+variable "address_cleaning_script_key" {
+  description = "S3 key of the Address cleaning script in the glue scripts bucket"
   type        = string
 }
 

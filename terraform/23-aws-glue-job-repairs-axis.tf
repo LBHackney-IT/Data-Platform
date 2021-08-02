@@ -26,7 +26,7 @@ module "housing_repairs_axis" {
   cleaning_helper_script_key         = aws_s3_bucket_object.repairs_cleaning_helpers.key
   catalog_database                   = module.department_housing_repairs.raw_zone_catalog_database_name
   refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  address_cleaning_job_name          = aws_glue_job.address_cleaning[0].name
+  address_cleaning_script_key        = aws_s3_bucket_object.address_cleaning.key
 
   data_cleaning_script_key = aws_s3_bucket_object.housing_repairs_repairs_axis_cleaning_script.key
   source_catalog_table     = "housing_repairs_repairs_axis"
