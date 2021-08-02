@@ -9,7 +9,10 @@ terraform {
     aws = {
       source                = "hashicorp/aws"
       version               = ">= 3.0"
-      configuration_aliases = [aws.aws_hackit_account]
     }
   }
+}
+
+provider "aws" {
+  alias = "aws_hackit_account"
 }

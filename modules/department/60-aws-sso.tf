@@ -1,4 +1,6 @@
 resource "aws_ssoadmin_permission_set" "department" {
+  count = var.is_live_environment ? 1 : 0
+
   provider = aws.aws_hackit_account
 
   // Name must not exceed 32 characters
@@ -11,11 +13,13 @@ resource "aws_ssoadmin_permission_set" "department" {
 }
 
 resource "aws_ssoadmin_permission_set_inline_policy" "department" {
+  count = var.is_live_environment ? 1 : 0
+
   provider = aws.aws_hackit_account
 
   inline_policy      = data.aws_iam_policy_document.sso_user_policy.json
   instance_arn       = var.sso_instance_arn
-  permission_set_arn = aws_ssoadmin_permission_set.department.arn
+  permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
 }
 
 //data "aws_identitystore_group" "department" {

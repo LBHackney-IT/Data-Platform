@@ -1,10 +1,12 @@
 data "aws_ssoadmin_instances" "sso_instances" {
+  count = local.is_live_environment ? 1 : 0
+
   provider = aws.aws_hackit_account
 }
 
 locals {
-  sso_instance_arn  = tolist(data.aws_ssoadmin_instances.sso_instances.arns)[0]
-  identity_store_id = tolist(data.aws_ssoadmin_instances.sso_instances.identity_store_ids)[0]
+  sso_instance_arn  = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].arns)[0], "")
+  identity_store_id = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].identity_store_ids)[0], "")
 }
 
 module "department_housing_repairs" {
