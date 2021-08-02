@@ -1,7 +1,7 @@
 resource "aws_glue_job" "repairs_address_cleaning" {
   tags = var.tags
 
-  name              = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))}Address Cleaning"
+  name              = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Address Cleaning"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = var.glue_role_arn
@@ -32,8 +32,8 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_address_cleaning" {
 
   predicate {
     conditions {
-      crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_cleaned_crawler.name
-      crawl_state  = "SUCCEEDED"
+      job_name = aws_glue_job.housing_repairs_elec_mech_fire_cleaning.name
+      state    = "SUCCEEDED"
     }
   }
   actions {
@@ -48,23 +48,3 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_address_cleaning" {
   }
 }
 
-// Crawler here ??
-
-resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_after_address_clean_crawler" {
-
-  tags = var.tags
-
-  name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-address-cleaning-crawler-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = var.worksheet_resource.workflow_name
-
-  predicate {
-    conditions {
-      job_name = aws_glue_job.repairs_address_cleaning.id
-      state    = "SUCCEEDED"
-    }
-  }
-  actions {
-    # crawler_name = aws_glue_crawler.refined_zone_housing_repairs_elec_mech_fire_cleaned_crawler.name
-  }
-}

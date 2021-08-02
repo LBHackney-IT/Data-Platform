@@ -79,6 +79,16 @@ variable "address_cleaning_script_key" {
   type        = string
 }
 
+variable "address_matching_script_key" {
+  description = "Address matching script key"
+  type        = string
+}
+
+variable "addresses_api_data_catalog" {
+  description = "Name of the data catalog holding the addresses API data"
+  type        = string
+}
+
 variable "glue_role_arn" {
   default = "Glue Role ARN that the job will use to excecute"
   type    = string

@@ -30,4 +30,6 @@ module "electrical_supplies" {
   refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   dataset_name                       = "electrical-supplies"
   address_cleaning_script_key        = aws_s3_bucket_object.address_cleaning.key
+  address_matching_script_key        = aws_s3_bucket_object.levenshtein_address_matching.key
+  addresses_api_data_catalog         = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
 }
