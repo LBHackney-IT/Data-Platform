@@ -83,13 +83,12 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_crawler" {
 }
 
 resource "aws_glue_job" "repairs_address_cleaning" {
-
-  tags = module.tags.values
+  tags = var.tags
 
   name              = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))}Address Cleaning"
   number_of_workers = 10
   worker_type       = "G.1X"
-  role_arn          = aws_iam_role.glue_role.arn
+  role_arn          = var.glue_role_arn
   command {
     python_version  = "3"
     script_location = "s3://${var.glue_scripts_bucket_id}/${var.address_cleaning_script_key}"
@@ -98,7 +97,7 @@ resource "aws_glue_job" "repairs_address_cleaning" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--TempDir"        = module.glue_temp_storage.bucket_url
+    "--TempDir"        = var.glue_temp_storage_bucket_id
     "--extra-py-files" = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
   }
 }
