@@ -26,7 +26,7 @@ resource "aws_glue_job" "housing_repairs_dlo_cleaning" {
 
   default_arguments = {
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
-    "--source_catalog_table"             = "housing_repairs_dlo"
+    "--source_catalog_table"             = "housing_repairs_repairs_dlo"
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned"
     "--TempDir"                          = module.glue_temp_storage.bucket_url
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
@@ -40,7 +40,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_dlo_cleaned_crawler" {
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-dlo-cleaned"
   role          = aws_iam_role.glue_role.arn
-  table_prefix  = "housing_repairs_dlo_"
+  table_prefix  = "housing_repairs_repairs_dlo_"
 
   s3_target {
     path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned/"
@@ -137,7 +137,7 @@ resource "aws_glue_job" "housing_repairs_dlo_address_cleaning" {
     "--TempDir"        = module.glue_temp_storage.bucket_url
     "--extra-py-files" = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
     "--source_catalog_database" : module.department_housing_repairs.refined_zone_catalog_database_name
-    "--source_catalog_table" : "housing_repairs_dlo_cleaned"
+    "--source_catalog_table" : "housing_repairs_repairs_dlo_cleaned"
     "--cleaned_addresses_s3_bucket_target" : "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses"
     "--source_address_column_header" : "property_address"
     "--source_postcode_column_header" : "None"
@@ -170,7 +170,7 @@ resource "aws_glue_crawler" "refined_zone_housing_repairs_dlo_with_cleaned_addre
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-dlo-with-cleaned-addresses"
   role          = aws_iam_role.glue_role.arn
-  table_prefix  = "housing_repairs_dlo_with_cleaned_addresses_"
+  table_prefix  = "housing_repairs_repairs_dlo_with_cleaned_addresses_"
 
   s3_target {
     path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses/"
@@ -223,7 +223,7 @@ resource "aws_glue_job" "get_uprn_from_uhref" {
   default_arguments = {
     "--lookup_catalogue_table"      = "datainsight_data_and_insight"
     "--lookup_database"             = "dataplatform-stg-raw-zone-database"
-    "--source_data_catalogue_table" = "housing_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
+    "--source_data_catalogue_table" = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
     "--source_data_database"        = module.department_housing_repairs.refined_zone_catalog_database_name
     "--source_uhref_header"         = "" # This will be different for different workflows
     "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
