@@ -32,8 +32,8 @@ resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_address_cleaning" {
 
   predicate {
     conditions {
-      job_name = aws_glue_job.housing_repairs_elec_mech_fire_cleaning.name
-      state    = "SUCCEEDED"
+      crawler_name = module.housing_repairs_elec_mech_fire_cleaning.crawler_name
+      crawl_state  = "SUCCEEDED"
     }
   }
   actions {
