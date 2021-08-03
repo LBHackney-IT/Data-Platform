@@ -74,11 +74,6 @@ variable "refined_zone_catalog_database_name" {
   type        = string
 }
 
-variable "trusted_zone_catalog_database_name" {
-  description = "Trusted zone catalog database name"
-  type        = string
-}
-
 variable "dataset_name" {
   description = "Name of the data set"
   type        = string
