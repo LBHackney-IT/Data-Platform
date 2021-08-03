@@ -14,7 +14,7 @@ module "housing_repairs_elec_mech_fire_cleaning" {
     "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.cleaning_helper_script_key}"
   }
   name_prefix        = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-cleaning"
-  database_name      = "${var.short_identifier_prefix}refined-zone-housing-repairs-elec-mech-fire-${var.dataset_name}-cleaned"
+  database_name      = var.refined_zone_catalog_database_name
   table_prefix       = "housing_repairs_elec_mech_fire_${replace(var.dataset_name, "-", "_")}_"
   s3_target_location = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/cleaned/"
 }

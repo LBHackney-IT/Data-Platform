@@ -1,19 +1,12 @@
-resource "aws_glue_job" "housing_repairs_elec_mech_fire_address_matching" {
-
-  tags = var.tags
-
-  name              = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Address Matching"
-  number_of_workers = 10
-  worker_type       = "G.1X"
-  role_arn          = var.glue_role_arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${var.glue_scripts_bucket_id}/${var.address_matching_script_key}"
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {
+module "housing_repairs_elec_mech_fire_address_matching" {
+  source              = "../aws-glue-job-with-crawler"
+  tags                = var.tags
+  workflow_name       = var.worksheet_resource.workflow_name
+  crawler_to_trigger  = module.housing_repairs_elec_mech_fire_address_cleaning.crawler_name
+  job_name            = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Address Matching"
+  glue_role_arn       = var.glue_role_arn
+  job_script_location = "s3://${var.glue_scripts_bucket_id}/${var.address_matching_script_key}"
+  job_arguments = {
     "--addresses_api_data_database" = var.addresses_api_data_catalog
     "--addresses_api_data_table"    = "unrestricted_address_api_dbo_hackney_address"
     "--source_catalog_database"     = var.catalog_database
@@ -22,23 +15,8 @@ resource "aws_glue_job" "housing_repairs_elec_mech_fire_address_matching" {
     "--TempDir"                     = var.glue_temp_storage_bucket_id
     "--extra-py-files"              = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
   }
-}
-
-resource "aws_glue_trigger" "housing_repairs_elec_mech_fire_address_matching_job" {
-  tags = var.tags
-
-  name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-cleaning-job-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = var.worksheet_resource.workflow_name
-
-  predicate {
-    conditions {
-      job_name = aws_glue_job.repairs_address_cleaning.name
-      state    = "SUCCEEDED"
-    }
-  }
-
-  actions {
-    job_name = aws_glue_job.housing_repairs_elec_mech_fire_address_matching.name
-  }
+  name_prefix        = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-address-matching"
+  database_name      = var.refined_zone_catalog_database_name
+  table_prefix       = "housing_repairs_elec_mech_fire_${replace(var.dataset_name, "-", "_")}_"
+  s3_target_location = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/with-matched-addresses/"
 }
