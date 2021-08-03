@@ -155,7 +155,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaned_crawler_trigger" {
   predicate {
     conditions {
       job_name = aws_glue_job.housing_repairs_dlo_address_cleaning[0].name
-      state  = "SUCCEEDED"
+      state    = "SUCCEEDED"
     }
   }
   actions {
@@ -166,7 +166,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaned_crawler_trigger" {
 resource "aws_glue_crawler" "refined_zone_housing_repairs_dlo_with_cleaned_addresses_crawler" {
   count = local.is_live_environment ? 1 : 0
 
-  tags = module.tags.values
+  tags          = module.tags.values
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-dlo-with-cleaned-addresses"
   role          = aws_iam_role.glue_role.arn
@@ -243,7 +243,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_uprn_crawler_trigger" {
   predicate {
     conditions {
       job_name = aws_glue_job.get_uprn_from_uhref[0].name
-      state  = "SUCCEEDED"
+      state    = "SUCCEEDED"
     }
   }
   actions {
@@ -252,7 +252,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_uprn_crawler_trigger" {
 }
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_with_uprn_from_uhref_crawler" {
-  tags = module.tags.values
+  tags  = module.tags.values
   count = local.is_live_environment ? 1 : 0
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
@@ -330,7 +330,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_uprn_address_matched_crawler_tr
   predicate {
     conditions {
       job_name = aws_glue_job.repairs_dlo_levenshtein_address_matching[0].name
-      state  = "SUCCEEDED"
+      state    = "SUCCEEDED"
     }
   }
   actions {
@@ -339,7 +339,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_uprn_address_matched_crawler_tr
 }
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_dlo_with_matched_addresses_crawler" {
-  tags = module.tags.values
+  tags  = module.tags.values
   count = local.is_live_environment ? 1 : 0
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name

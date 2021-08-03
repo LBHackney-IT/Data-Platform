@@ -38,6 +38,11 @@ variable "refined_zone_bucket_id" {
   type        = string
 }
 
+variable "trusted_zone_bucket_id" {
+  description = "Trusted zone bucket id"
+  type        = string
+}
+
 variable "helper_script_key" {
   description = "Helpers script key"
   type        = string

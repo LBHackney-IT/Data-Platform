@@ -32,4 +32,5 @@ module "door_entry" {
   address_cleaning_script_key        = aws_s3_bucket_object.address_cleaning.key
   address_matching_script_key        = aws_s3_bucket_object.levenshtein_address_matching.key
   addresses_api_data_catalog         = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
+  trusted_zone_bucket_id             = module.trusted_zone.bucket_id
 }
