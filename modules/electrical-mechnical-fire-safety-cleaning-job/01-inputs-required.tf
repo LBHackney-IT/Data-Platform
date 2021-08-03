@@ -38,6 +38,11 @@ variable "refined_zone_bucket_id" {
   type        = string
 }
 
+variable "trusted_zone_bucket_id" {
+  description = "Trusted zone bucket id"
+  type        = string
+}
+
 variable "helper_script_key" {
   description = "Helpers script key"
   type        = string
@@ -66,6 +71,11 @@ variable "worksheet_resource" {
 
 variable "refined_zone_catalog_database_name" {
   description = "Refined zone catalog database name"
+  type        = string
+}
+
+variable "trusted_zone_catalog_database_name" {
+  description = "Trusted zone catalog database name"
   type        = string
 }
 
