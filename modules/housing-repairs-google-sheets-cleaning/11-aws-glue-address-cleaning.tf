@@ -1,7 +1,7 @@
 resource "aws_glue_job" "address_cleaning" {
   tags = var.tags
 
-  name              = "${var.identifier_prefix}Housing Repairs - ${title(replace(var.dataset_name, "-", " "))} Address Cleaning"
+  name              = "${var.short_identifier_prefix}Housing Repairs - ${title(replace(var.dataset_name, "-", " "))} Address Cleaning"
   number_of_workers = 10
   worker_type       = "G.1X"
   role_arn          = var.glue_role_arn
@@ -29,7 +29,7 @@ resource "aws_glue_job" "address_cleaning" {
 
 resource "aws_glue_trigger" "housing_repairs_address_cleaning" {
 
-  name          = "${var.identifier_prefix}-housing-repairs-${var.dataset_name}-address-cleaning-trigger"
+  name          = "${var.short_identifier_prefix}-housing-repairs-${var.dataset_name}-address-cleaning-trigger"
   type          = "CONDITIONAL"
   workflow_name = var.workflow_name
   tags          = var.tags
