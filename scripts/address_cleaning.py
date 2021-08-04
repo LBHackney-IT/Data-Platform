@@ -118,7 +118,7 @@ df = df.withColumn("address", F.regexp_replace(F.col("address"), " CT.?\z", " CO
 df = df.withColumnRenamed("address", "concatenated_string_to_match")
 
 logger.info('create a unique ID')
-df = df.withColumn("prinx", F.monotonically_increasing_id()).repartition(1)
+df = df.withColumn("prinx", F.monotonically_increasing_id())
 
 logger.info('create an empty uprn column')
 df = df.withColumn("uprn", lit(None).cast(StringType()))
