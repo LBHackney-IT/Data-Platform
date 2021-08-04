@@ -319,43 +319,5 @@ resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
   }
 }
 
-resource "aws_glue_trigger" "housing_repairs_dlo_uprn_address_matched_crawler_trigger" {
-  count = local.is_live_environment ? 1 : 0
 
-  name          = "${local.identifier_prefix}-housing-repairs-dlo-with-matched-addresses"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_dlo[0].workflow_name
-  tags          = module.tags.values
 
-  predicate {
-    conditions {
-      job_name = aws_glue_job.repairs_dlo_levenshtein_address_matching[0].name
-      state    = "SUCCEEDED"
-    }
-  }
-  actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_dlo_with_matched_addresses_crawler[0].name
-  }
-}
-
-resource "aws_glue_crawler" "refined_zone_housing_repairs_dlo_with_matched_addresses_crawler" {
-  tags  = module.tags.values
-  count = local.is_live_environment ? 1 : 0
-
-  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-dlo-with-matched-addresses"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "housing_repairs_dlo_with_matched_addresses_"
-
-  s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-matched-addresses/"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
-
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 4
-    }
-  })
-}
