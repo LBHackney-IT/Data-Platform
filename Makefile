@@ -13,3 +13,12 @@ lint:
 	$(MAKE) -C terraform lint-init lint
 	$(MAKE) -C terraform-networking lint-init lint
 	$(MAKE) -C terraform-backend-setup lint-init lint
+
+init:
+	cd terraform &&  make init
+apply:
+	cd terraform && make apply
+plan:
+	cd terraform && make plan
+validate:
+	cd terraform && make validate
