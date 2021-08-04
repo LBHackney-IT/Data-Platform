@@ -25,7 +25,7 @@ resource "aws_glue_job" "housing_repairs_levenshtein_address_matching" {
 #
 resource "aws_glue_trigger" "housing_repairs_levenshtein_address_matching" {
 
-  name          = "${var.short_identifier_prefix}-housing-repairs-${var.dataset_name}-address-matching-trigger"
+  name          = "${var.short_identifier_prefix}housing-repairs-${var.dataset_name}-address-matching-trigger"
   type          = "CONDITIONAL"
   workflow_name = var.workflow_name
   tags          = var.tags
