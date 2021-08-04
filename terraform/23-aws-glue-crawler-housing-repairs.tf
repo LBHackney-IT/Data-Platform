@@ -6,7 +6,7 @@ resource "aws_glue_crawler" "trusted_zone_housing_repairs_crawler" {
   role          = aws_iam_role.glue_role.arn
 
   s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs/"
+    path       = "s3://${module.trusted_zone.bucket_id}/housing-repairs/repairs/"
     exclusions = local.glue_crawler_excluded_blobs
   }
 
