@@ -41,6 +41,13 @@ resource "aws_glue_crawler" "google_sheet_import" {
     path       = local.full_output_path
     exclusions = var.glue_crawler_excluded_blobs
   }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableGroupingPolicy = "CombineCompatibleSchemas"
+    }
+  })
 }
 
 resource "aws_glue_trigger" "google_sheet_import_schedule" {
