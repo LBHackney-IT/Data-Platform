@@ -13,7 +13,7 @@ resource "aws_glue_crawler" "trusted_zone_housing_repairs_crawler" {
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
-      TableLevelConfiguration = "CombineCompatibleSchemas"
+      TableGroupingPolicy = "CombineCompatibleSchemas"
     }
   })
 }
