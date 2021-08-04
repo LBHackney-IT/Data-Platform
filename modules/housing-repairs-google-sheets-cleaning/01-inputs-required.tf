@@ -89,6 +89,21 @@ variable "address_cleaning_script_key" {
   type        = string
 }
 
+variable "address_matching_script_key" {
+  description = "S3 key of the Address matching script in the glue scripts bucket"
+  type        = string
+}
+
+variable "addresses_api_data_catalog" {
+  description = "Name of the data catalog holding the addresses API data"
+  type        = string
+}
+
+variable "trusted_zone_bucket_id" {
+  description = "Trusted zone bucket id"
+  type        = string
+}
+
 variable "glue_role_arn" {
   default = "Glue Role ARN that the job will use to excecute"
   type    = string

@@ -44,3 +44,45 @@ resource "aws_glue_trigger" "housing_repairs_address_cleaning" {
     job_name = aws_glue_job.address_cleaning.name
   }
 }
+
+resource "aws_glue_trigger" "housing_repairs_cleaned_crawler_trigger" {
+
+  name          = "${var.short_identifier_prefix}-housing-repairs-${var.dataset_name}-address-cleaned-crawler-trigger"
+  type          = "CONDITIONAL"
+  workflow_name = var.workflow_name
+  tags          = var.tags
+
+  predicate {
+    conditions {
+      job_name = aws_glue_job.address_cleaning.name
+      state    = "SUCCEEDED"
+    }
+  }
+  actions {
+    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_with_cleaned_addresses_crawler.name
+  }
+}
+
+resource "aws_glue_crawler" "refined_zone_housing_repairs_with_cleaned_addresses_crawler" {
+  tags = var.tags
+
+  database_name = var.refined_zone_catalog_database_name
+  name          = "${var.short_identifier_prefix}refined-zone-housing-repairs-${var.dataset_name}-with-cleaned-addresses"
+  role          = var.glue_role_arn
+  table_prefix  = "housing_repairs_${replace(var.dataset_name, "-", "_")}_"
+
+  s3_target {
+    path       = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/with-cleaned-addresses/"
+    exclusions = var.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+    }
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+  })
+}
