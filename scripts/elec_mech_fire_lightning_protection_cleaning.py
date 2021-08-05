@@ -5,8 +5,6 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.sql.window import Window
-from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
@@ -50,6 +48,7 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')\
     .withColumnRenamed('date', 'datetime_raised')
 
+df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
 df2 = df2.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")

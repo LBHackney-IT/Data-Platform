@@ -51,6 +51,7 @@ df2 = df2.withColumnRenamed('date', 'datetime_raised') \
     .withColumnRenamed('status_of_completed_y_n', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no)', 'contractor_ref')
 
+df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
 df2.withColumn("order_status", when(df2["order_status"] == "Y", "Completed").otherwise(""))
 
 df2 = df2.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))

@@ -1,4 +1,3 @@
-import re
 import sys
 
 from awsglue.context import GlueContext
@@ -7,18 +6,13 @@ from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from pyspark.ml import Pipeline
-from pyspark.ml.feature import RegexTokenizer, NGram, HashingTF, MinHashLSH
-from pyspark.sql import types as t
-from pyspark.sql.window import Window
-from pyspark.sql.functions import rank, col, trim, when, max, trim
+from pyspark.sql.functions import trim, when, trim
 import pyspark.sql.functions as F
 from pyspark.sql.functions import *
-from pyspark.sql.types import StringType, TimestampType
+from pyspark.sql.types import StringType
+
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority
-
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -86,6 +80,7 @@ df2 = df2.withColumnRenamed('address', 'property_address') \
     .withColumnRenamed('date_completed', 'completed_date') \
     .withColumnRenamed('requested_by', 'operative')
 
+df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
 # remove any spaces from 'work_priority_description' column so that values can be mapped where applicable
 df2 = df2.withColumn('work_priority_description', trim(df2.work_priority_description))
 

@@ -6,7 +6,8 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
-import re
+from pyspark.sql.types import StringType
+
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
 
@@ -72,6 +73,8 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('works_status_comments', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')\
     .withColumnRenamed('date', 'datetime_raised')
+
+df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
 
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
