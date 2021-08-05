@@ -15,7 +15,7 @@ lint:
 	$(MAKE) -C terraform-backend-setup lint-init lint
 
 init:
-	cd terraform &&  make init
+	cd terraform && make init
 apply:
 	cd terraform && make apply
 plan:
