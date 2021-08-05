@@ -44,9 +44,10 @@ df3 = df3.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
     .withColumnRenamed('cost_code', 'budget_code')\
     .withColumnRenamed('total_invoiced', 'order_value')\
-    .withColumn('order_value', df3['order_value'].cast(StringType()))\
     .withColumnRenamed('works_status_comments', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
+
+df3 = df3.withColumn('order_value', df3['order_value'].cast(StringType()))
 
 columns = [\
     'datetime_raised',\
