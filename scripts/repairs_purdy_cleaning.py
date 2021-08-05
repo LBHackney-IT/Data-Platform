@@ -39,6 +39,7 @@ df2 = clean_column_names(df)
 logger.info('convert timestamp and date columns to datetime / date field types')
 df2 = df2.withColumn('timestamp', F.to_timestamp(
     "timestamp", "dd/MM/yyyy HH:mm:ss"))
+df2 = df2.withColumn('data_source', F.lit('Purdy Cleaning'))
 df2 = df2.withColumn('date_temp_order_reference', F.to_date(
     'date_temp_order_reference', "dd/MM/yyyy HH:mm:ss"))
 
