@@ -44,7 +44,7 @@ df2 = df2.withColumnRenamed('date', 'datetime_raised') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
-    .withColumnRenamed('cost_of_repairs/work', 'order_value')\
+    .withColumnRenamed('cost_of_work', 'order_value')\
     .withColumnRenamed('subjective', 'budget_code')\
     .withColumnRenamed('status_of_completed_y_n', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no)', 'contractor_ref')

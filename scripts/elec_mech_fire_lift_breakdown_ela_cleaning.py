@@ -51,7 +51,6 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
 
-df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
 # apply function
 df2 = df2.withColumn('work_priority_priority_code',
                      udf_map_repair_priority('work_priority_description'))
