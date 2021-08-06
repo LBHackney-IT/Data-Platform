@@ -57,7 +57,7 @@ df2 = df2.withColumnRenamed('email_address', 'email_staff') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('notes_and_information', 'notes') \
     .withColumnRenamed('value_costs', 'order_value') \
-    .withColumnRenamed('timestamp', 'datetime_raised') \
+    .withColumnRenamed('timestamp', 'datetime_raised') 
 
 df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 
