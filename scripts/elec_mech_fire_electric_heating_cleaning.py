@@ -5,8 +5,6 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.sql.window import Window
-from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
@@ -48,6 +46,8 @@ df3 = df3.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('total_invoiced', 'order_value')\
     .withColumnRenamed('works_status_comments', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
+
+df3 = df3.withColumn('order_value', df3['order_value'].cast(StringType()))
 
 columns = [\
     'datetime_raised',\

@@ -5,8 +5,6 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.sql.window import Window
-from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
 from pyspark.sql.functions import *
 from pyspark.sql.types import StringType
@@ -46,12 +44,13 @@ df2 = df2.withColumnRenamed('date', 'datetime_raised') \
     .withColumnRenamed('description', 'description_of_work') \
     .withColumnRenamed('priority_code', 'work_priority_description') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
-    .withColumnRenamed('cost_of_repairs/work', 'order_value')\
+    .withColumnRenamed('cost_of_work', 'order_value')\
     .withColumnRenamed('subjective', 'budget_code')\
     .withColumnRenamed('status_of_completed_y_n', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no)', 'contractor_ref')
 
-df2 = df2.withColumn("order_status", when(df2["order_status"] == "Y", "Completed").otherwise(""))
+df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
+df2.withColumn("order_status", when(df2["order_status"] == "Y", "Completed").otherwise(""))
 
 df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 

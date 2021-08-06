@@ -7,7 +7,7 @@ from awsglue.job import Job
 import pyspark.sql.functions as F
 from pyspark.sql.functions import *
 from awsglue.dynamicframe import DynamicFrame
-import re
+from pyspark.sql.types import StringType
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import clean_column_names, map_repair_priority
 
@@ -71,6 +71,8 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
     .withColumnRenamed('cost_of_repairs_work', 'order_value')\
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
+
+df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
 
 df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 

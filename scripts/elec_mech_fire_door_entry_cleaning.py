@@ -6,6 +6,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
+from pyspark.sql.types import StringType
 import re
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import map_repair_priority, clean_column_names
@@ -39,7 +40,6 @@ df2 = df2.withColumn('date', F.to_timestamp('date', 'dd.MM.yy'))
 
 df2 = df2.withColumn('data_source', F.lit('ElecMechFire - Door Entry'))
 
-df2 = df2.withColumn('date', F.to_date('date', "dd/MM/yyyy"))
 
 df2 = df2.withColumn('date_completed', F.to_timestamp(
     'date_completed', "yyyy-MM-dd HH:mm:ss"))
@@ -56,6 +56,8 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('date_completed', 'completed_date') \
     .withColumnRenamed('tess_number', 'contractor_ref') \
     .withColumnRenamed('date', 'datetime_raised') \
+
+df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
 
 # apply function
 df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')

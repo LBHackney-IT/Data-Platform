@@ -6,7 +6,8 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
-import re
+from pyspark.sql.types import StringType
+
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
@@ -43,6 +44,7 @@ df3 = df3.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
     .withColumnRenamed('cost', 'order_value')
 
+df3 = df3.withColumn('order_value', df3['order_value'].cast(StringType()))
 df3 = df3.withColumn('date', F.to_timestamp('date', "yyyy-MM-dd")).withColumnRenamed('date', 'datetime_raised')
 df3 = df3.withColumn('data_source', F.lit('ElecMechFire - Emergency Lighting Service'))
 
