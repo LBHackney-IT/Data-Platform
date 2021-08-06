@@ -4,9 +4,9 @@ import pyspark.sql.functions as F
 
 def map_repair_priority(data_frame, origin_column, target_column):
     return data_frame.withColumn(target_column, F.when(data_frame[origin_column] == "Immediate", 1)
-                                 .F.when(data_frame[origin_column] == "Emergency", 2)
-                                 .F.when(data_frame[origin_column] == "Urgent", 3)
-                                 .F.when(data_frame[origin_column] == "Normal", 4)
+                                 .when(data_frame[origin_column] == "Emergency", 2)
+                                 .when(data_frame[origin_column] == "Urgent", 3)
+                                 .when(data_frame[origin_column] == "Normal", 4)
                                  .otherwise(None))
 
 
