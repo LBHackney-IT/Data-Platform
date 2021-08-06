@@ -9,7 +9,7 @@ from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.types import StringType
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
+from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
@@ -47,7 +47,9 @@ df3 = df3.withColumnRenamed('requested_by', 'operative') \
 df3 = df3.withColumn('order_value', df3['order_value'].cast(StringType()))
 df3 = df3.withColumn('date', F.to_timestamp('date', "yyyy-MM-dd")).withColumnRenamed('date', 'datetime_raised')
 df3 = df3.withColumn('data_source', F.lit('ElecMechFire - Emergency Lighting Service'))
-df3 = df3.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
+
+df3 = map_repair_priority(df3, 'work_priority_description', 'work_priority_priority_code')
+
 df3 = df3.withColumn('status_of_completed_y_n', F.when(df3['status_of_completed_y_n']=='Y', 'Completed').otherwise(''))\
     .withColumnRenamed('status_of_completed_y_n', 'order_status')
 
@@ -58,6 +60,7 @@ df3 = df3[[
     'property_address',
     'description_of_work',
     'work_priority_description',
+    'work_priority_priority_code',
     'temp_order_number_full',
     'order_value',
     'order_status',

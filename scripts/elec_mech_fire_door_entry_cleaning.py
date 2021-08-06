@@ -9,7 +9,7 @@ from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.types import StringType
 import re
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
+from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
@@ -60,8 +60,7 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
 df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
 
 # apply function
-df2 = df2.withColumn('work_priority_priority_code',
-                     udf_map_repair_priority('work_priority_description'))
+df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 
 df2 = df2.select("data_source", "datetime_raised", "sor",
                  "operative", "property_address", "order_value",

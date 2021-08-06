@@ -7,7 +7,7 @@ from awsglue.job import Job
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
+from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 from pyspark.sql.types import StringType
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
@@ -51,12 +51,11 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
 
-# apply function
-df2 = df2.withColumn('work_priority_priority_code',
-                     udf_map_repair_priority('work_priority_description'))
+df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 
 df2 = df2.select("data_source", "datetime_raised",
                  "operative", "property_address", "work_priority_description",
+                 "work_priority_priority_code",
                  "temp_order_number_full", "contractor_ref",
                  "work_priority_priority_code",
                  "import_datetime", "import_timestamp", "import_year",

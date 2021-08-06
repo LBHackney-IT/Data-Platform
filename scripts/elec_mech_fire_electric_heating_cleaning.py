@@ -10,7 +10,7 @@ from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
+from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -65,7 +65,8 @@ columns = [\
 
 df3 = df3.select(*columns, 'import_datetime', 'import_timestamp', 'import_year', 'import_month', 'import_day', 'import_date')
 
-df3 = df3.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
+df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
+
 df3 = df3.withColumn('data_source', F.lit('ElecMechFire - Electric Heating'))
 
 cleanedDataframe = DynamicFrame.fromDF(df3, glueContext, "cleanedDataframe")
