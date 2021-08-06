@@ -15,7 +15,7 @@ from pyspark.sql.types import StringType
 from pyspark.sql.window import Window
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import clean_column_names
+from repairs_cleaning_helpers import clean_column_names, map_repair_priority
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -59,6 +59,7 @@ df2 = df2.withColumnRenamed('email_address', 'email_staff') \
     .withColumnRenamed('value_costs', 'order_value') \
     .withColumnRenamed('timestamp', 'datetime_raised') \
 
+df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 
 # drop columns not needed
 df2 = df2.drop(df2.column10)

@@ -17,7 +17,7 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import StringType, TimestampType
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority
+from repairs_cleaning_helpers import map_repair_priority
 
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
@@ -89,12 +89,7 @@ df2 = df2.withColumnRenamed('address', 'property_address') \
 # remove any spaces from 'work_priority_description' column so that values can be mapped where applicable
 df2 = df2.withColumn('work_priority_description', trim(df2.work_priority_description))
 
-# map work priority codes
-df2 = df2.withColumn("work_priority_priority_code", when(df2['work_priority_description'] == "Immediate", 1)
-                     .when(df2['work_priority_description'] == "Emergency", 2)
-                     .when(df2['work_priority_description'] == "Urgent", 3)
-                     .when(df2['work_priority_description'] == "Normal", 4)
-                     .otherwise(None))
+df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
