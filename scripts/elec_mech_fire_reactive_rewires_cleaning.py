@@ -73,6 +73,7 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
 
 df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
+df2 = df2.withColumn('temp_order_number_full', df2['temp_order_number_full'].cast(StringType()))
 
 df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 
