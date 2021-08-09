@@ -65,7 +65,7 @@ columns = [\
 
 df3 = df3.select(*columns, 'import_datetime', 'import_timestamp', 'import_year', 'import_month', 'import_day', 'import_date')
 
-df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
+df3 = map_repair_priority(df3, 'work_priority_description', 'work_priority_priority_code')
 
 df3 = df3.withColumn('data_source', F.lit('ElecMechFire - Electric Heating'))
 
