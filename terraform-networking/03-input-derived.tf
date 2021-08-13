@@ -20,7 +20,3 @@ locals {
   application_snake = lower(replace(var.application, " ", "-"))
   identifier_prefix = lower("${local.application_snake}-${local.environment}")
 }
-
-data "aws_caller_identity" "api_account" {
-  provider = aws.aws_api_account
-}
