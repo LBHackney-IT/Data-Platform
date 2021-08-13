@@ -5,7 +5,7 @@ env:
   aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
   aws_deploy_region: "eu-west-2"
   google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
-  aws_staging_api_vpc_id : ${{  secrets.AWS_STAGING_API_VPC_ID  }}
+  aws_staging_api_vpc_id : ${{ secrets.AWS_STAGING_API_VPC_ID }}
   environment: "stg"
   automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
 
@@ -69,7 +69,7 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_deploy_region: ${{ env.aws_deploy_region }}
-          aws_staging_api_vpc_id: ${{  env.aws_staging_api_vpc_id  }}
+          aws_staging_api_vpc_id: ${{ env.aws_staging_api_vpc_id }}
           terraform_state_s3_key_prefix: ${{ env.network_state_prefix }}
           build_path: ${{ env.network_build_path }}
           automation_build_url: ${{ env.automation_build_url }}
@@ -98,7 +98,7 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_deploy_region: ${{ env.aws_deploy_region }}
-          aws_staging_api_vpc_id: ${{  env.aws_staging_api_vpc_id  }}
+          aws_staging_api_vpc_id: ${{ env.aws_staging_api_vpc_id }}
           terraform_state_s3_key_prefix: ${{ env.main_state_prefix }}
           build_path: ${{ env.main_build_path }}
           automation_build_url: ${{ env.automation_build_url }}
