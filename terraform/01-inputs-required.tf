@@ -44,3 +44,13 @@ variable "qlik_server_instance_type" {
   description = "The instance type to use for the Qlik server"
   type        = string
 }
+
+variable "tascomi_public_key" {
+  type        = string
+  description = "Tascomi api Public key"
+}
+
+variable "tascomi_private_key" {
+  type        = string
+  description = "Tascomi api Private key"
+}
