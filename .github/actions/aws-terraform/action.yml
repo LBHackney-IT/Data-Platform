@@ -37,6 +37,8 @@ inputs:
     required: true
   tascomi_private_key:
     description: "Tascomi api public key"
+  aws_staging_api_vpc_id:
+    description: "AWS Staging API VPC ID"
     required: true
   aws_hackit_account_id:
     description: "AWS HackIT account id to deploy to"
@@ -130,7 +132,7 @@ runs:
       run: |
         ${{ github.action_path }}/box.sh "Running TFLint"
         ./tflint --init --config=${{ github.action_path }}/../../../.tflint.hcl
-        ./tflint --var-file='../config/terraform/${{ inputs.environment }}.tfvars' --var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' --var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' --var 'aws_api_account=${{ inputs.aws_api_account }}' --var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' --var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' --var 'environment=${{ inputs.environment }}' -var 'environment=${{ inputs.tascomi_public_key }}' -var 'environment=${{ inputs.tascomi_private_key }}' --var 'google_project_id=${{ inputs.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --module --config=${{ github.action_path }}/../../../.tflint.hcl --loglevel=warn .
+        ./tflint --var-file='../config/terraform/${{ inputs.environment }}.tfvars' --var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' --var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' --var 'aws_api_account=${{ inputs.aws_api_account }}' --var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' --var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ inputs.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}'  -var 'environment=${{ inputs.tascomi_public_key }}' -var 'environment=${{ inputs.tascomi_private_key }}' --var 'aws_staging_api_vpc_id=${{ inputs.aws_staging_api_vpc_id }}' --module --config=${{ github.action_path }}/../../../.tflint.hcl --loglevel=warn .
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}"
@@ -141,7 +143,7 @@ runs:
         if [ "${{ inputs.terraform_destroy }}" == "destroy_me" ]; then
             ${{ github.action_path }}/box.sh "Running Terraform destroy"
             if [ "${{ inputs.branch }}" == "main" ]; then
-              terraform destroy -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'environment=${{ inputs.tascomi_public_key }}' -var 'environment=${{ inputs.tascomi_private_key }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -auto-approve
+              terraform destroy -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_staging_api_vpc_id=${{ inputs.aws_staging_api_vpc_id }}'  -var 'environment=${{ inputs.tascomi_public_key }}' -var 'environment=${{ inputs.tascomi_private_key }}' -auto-approve
               ${{ github.action_path }}/success_destroy.sh
               echo -e "Terraform run completed successfully."
             else
@@ -156,7 +158,7 @@ runs:
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
           ${{ github.action_path }}/box.sh "Running Terraform plan"
-          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'environment=${{ inputs.tascomi_public_key }}' -var 'environment=${{ inputs.tascomi_private_key }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -input=false -out=plan.out
+          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_staging_api_vpc_id=${{ inputs.aws_staging_api_vpc_id }}'  -var 'environment=${{ inputs.tascomi_public_key }}' -var 'environment=${{ inputs.tascomi_private_key }}' -input=false -out=plan.out
           echo -e "\n"
         fi
       shell: bash
