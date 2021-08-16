@@ -35,7 +35,7 @@ variable "transit_gateway_private_subnets" {
   type        = list(string)
 }
 
-variable "aws_staging_api_vpc_id" {
+variable "aws_api_vpc_id" {
   description = "Staging APIs peer VPC ID"
   type        = string
 }

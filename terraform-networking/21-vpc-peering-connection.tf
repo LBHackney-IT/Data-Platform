@@ -18,6 +18,6 @@ module "vpc_peering_cross_account" {
 
   accepter_aws_assume_role_arn             = local.accepter_assume_role_arn
   accepter_region                          = var.aws_deploy_region
-  accepter_vpc_id                          = var.aws_staging_api_vpc_id
+  accepter_vpc_id                          = var.aws_api_vpc_id
   accepter_allow_remote_vpc_dns_resolution = "false"
 }
