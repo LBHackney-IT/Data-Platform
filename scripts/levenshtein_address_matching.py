@@ -39,13 +39,16 @@ def match_type(levenshtein):
     else:
         return 'imperfect match'
 
+# convert the classification function to a UDF Function by passing in the function and the return type of function (string in this case)
+udf_matchtype = F.udf(match_type, StringType())
 
-addresses_api_data_database = get_glue_env_var(
-    'addresses_api_data_database', '')
+addresses_api_data_database = get_glue_env_var('addresses_api_data_database', '')
+
 addresses_api_data_table = get_glue_env_var('addresses_api_data_table', '')
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
 target_destination = get_glue_env_var('target_destination', '')
+match_to_property_shell = get_glue_env_var('match_to_property_shell', '')
 
 query_addresses_ddf = glueContext.create_dynamic_frame.from_catalog(
     name_space=source_catalog_database,
@@ -77,8 +80,15 @@ target_addresses_ddf = glueContext.create_dynamic_frame.from_catalog(
 
 target_addresses = target_addresses_ddf.toDF()
 target_addresses = get_latest_partitions(target_addresses)
-target_addresses = target_addresses.where("blpu_class NOT LIKE 'P%'")
 
+# set property shell preferences
+if match_to_property_shell == 'force': 
+    target_addresses = target_addresses.where("blpu_class LIKE 'P%'")
+elif match_to_property_shell == 'forbid':
+    target_addresses = target_addresses.where("blpu_class NOT LIKE 'P%'")   
+
+# keep blpu class
+target_concat = target_addresses.select("line1", "line2", "line3", "postcode", "uprn", "blpu_class")
 
 target_concat = target_addresses.select(
     "line1", "line2", "line3", "postcode", "uprn")
@@ -112,8 +122,8 @@ target_concat = target_concat.withColumn(
 )
 
 
-target_concat = target_concat.select("target_address", "target_address_short", "target_address_medium",
-                                     "postcode", "uprn").withColumnRenamed("postcode", "target_postcode")
+target_concat = target_concat.select("target_address", "target_address_short", "target_address_medium", 
+                                     "postcode", "uprn", "blpu_class").withColumnRenamed("postcode", "target_postcode")
 
 # COMPARE QUERY AND TARGET
 
@@ -130,26 +140,24 @@ cross_compare = cross_compare.withColumn("levenshtein_medium", F.levenshtein(
 cross_compare = cross_compare.withColumn("levenshtein_10char", F.levenshtein(
     F.substring(F.col("query_address"), 1, 10), F.substring(F.col("target_address"), 1, 10)))
 
-# convert the classification function to a UDF Function by passing in the function and the return type of function (string in this case)
-udf_matchtype = F.udf(match_type, StringType())
+
 
 
 # ROUND 0 - look for perfect
 perfectFull = cross_compare.filter("levenshtein = 0").dropDuplicates(['prinx'])
-perfectFull = perfectFull.withColumn(
-    "match_type", udf_matchtype("levenshtein"))
-perfectFull = perfectFull.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias(
-    "matched_uprn"), F.col("target_address").alias("matched_address"), "match_type")
+perfectFull = perfectFull.withColumn("match_type", udf_matchtype("levenshtein"))
+perfectFull = perfectFull.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
+
 
 
 perfectShort = cross_compare\
     .join(perfectFull, "prinx", "left_anti")\
     .filter("levenshtein_short = 0")\
     .dropDuplicates(['prinx'])
-perfectShort = perfectShort.withColumn(
-    "match_type", udf_matchtype("levenshtein"))
-perfectShort = perfectShort.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias(
-    "matched_uprn"), F.col("target_address").alias("matched_address"), "match_type")
+
+perfectShort = perfectShort.withColumn("match_type", udf_matchtype("levenshtein"))
+perfectShort = perfectShort.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
+
 
 
 perfectMedium = cross_compare\
@@ -157,10 +165,10 @@ perfectMedium = cross_compare\
     .join(perfectShort, "prinx", "left_anti")\
     .filter("levenshtein_medium = 0")\
     .dropDuplicates(['prinx'])
-perfectMedium = perfectMedium.withColumn(
-    "match_type", udf_matchtype("levenshtein"))
-perfectMedium = perfectMedium.select(F.col("prinx"), F.col("query_address"), F.col(
-    "uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), "match_type")
+
+perfectMedium = perfectMedium.withColumn("match_type", udf_matchtype("levenshtein"))
+perfectMedium = perfectMedium.select(F.col("prinx"), F.col("query_address"), 
+   F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
 
 
 perfect10char = cross_compare\
@@ -168,10 +176,10 @@ perfect10char = cross_compare\
     .join(perfectShort, "prinx", "left_anti")\
     .join(perfectMedium, "prinx", "left_anti")\
     .filter("levenshtein_10char = 0").dropDuplicates(['prinx'])
-perfect10char = perfect10char.withColumn(
-    "match_type", udf_matchtype("levenshtein"))
-perfect10char = perfect10char.select(F.col("prinx"), F.col("query_address"), F.col(
-    "uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), "match_type")
+
+perfect10char = perfect10char.withColumn("match_type", udf_matchtype("levenshtein"))
+perfect10char = perfect10char.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
+
 
 # put all 'perfect' together
 perfectMatch = perfectFull.union(perfectShort).union(
@@ -193,8 +201,9 @@ bestMatch_round1 = cross_compare.filter("levenshtein < 3").withColumn('rank', F.
 bestMatch_round1 = bestMatch_round1.withColumn(
     "match_type", udf_matchtype("levenshtein"))
 bestMatch_round1 = bestMatch_round1.withColumn("round", F.lit("round 1"))
-bestMatch_round1 = bestMatch_round1.select("prinx", "query_address", F.col("uprn").alias(
-    "matched_uprn"), F.col("target_address").alias("matched_address"), "match_type", "round")
+
+bestMatch_round1 = bestMatch_round1.select("prinx", "query_address", F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type", "round")
+
 
 # ROUND 2
 
@@ -209,8 +218,8 @@ bestMatch_round2 = cross_compare.filter("levenshtein_short < 3").withColumn('ran
 bestMatch_round2 = bestMatch_round2.withColumn(
     "match_type", udf_matchtype("levenshtein_short"))
 bestMatch_round2 = bestMatch_round2.withColumn("round", F.lit("round 2"))
-bestMatch_round2 = bestMatch_round2.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias(
-    "matched_uprn"), F.col("target_address").alias("matched_address"), F.col("match_type"), "round")
+bestMatch_round2 = bestMatch_round2.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
+
 
 # ROUND 3
 
@@ -226,8 +235,8 @@ bestMatch_round3 = cross_compare.filter("levenshtein_medium < 3").withColumn('ra
 bestMatch_round3 = bestMatch_round3.withColumn(
     "match_type", udf_matchtype("levenshtein_medium"))
 bestMatch_round3 = bestMatch_round3.withColumn("round", F.lit("round 3"))
-bestMatch_round3 = bestMatch_round3.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias(
-    "matched_uprn"), F.col("target_address").alias("matched_address"), F.col("match_type"), "round")
+bestMatch_round3 = bestMatch_round3.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
+
 
 # Prepare rounds 4 to 7: take all the unmatched, allow mismatched postcodes
 cross_with_any_postcode = query_concat\
@@ -258,8 +267,9 @@ bestMatch_round4 = cross_compare.filter("levenshtein < 5").withColumn('rank', F.
 bestMatch_round4 = bestMatch_round4.withColumn(
     "match_type", F.lit("imperfect match"))
 bestMatch_round4 = bestMatch_round4.withColumn("round", F.lit("round 4"))
-bestMatch_round4 = bestMatch_round4.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias(
-    "matched_uprn"), F.col("target_address").alias("matched_address"), F.col("match_type"), "round")
+
+bestMatch_round4 = bestMatch_round4.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
+
 
 # ROUND 5
 
@@ -275,8 +285,9 @@ bestMatch_round5 = cross_compare.filter("levenshtein_short < 5").withColumn('ran
 bestMatch_round5 = bestMatch_round5.withColumn(
     "match_type", F.lit("imperfect match"))
 bestMatch_round5 = bestMatch_round5.withColumn("round", F.lit("round 5"))
-bestMatch_round5 = bestMatch_round5.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias(
-    "matched_uprn"), F.col("target_address").alias("matched_address"), F.col("match_type"), "round")
+
+bestMatch_round5 = bestMatch_round5.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
+
 
 # ROUND 6
 
@@ -293,8 +304,9 @@ bestMatch_round6 = cross_compare.filter("levenshtein_medium < 5").withColumn('ra
 bestMatch_round6 = bestMatch_round6.withColumn(
     "match_type", F.lit("imperfect match"))
 bestMatch_round6 = bestMatch_round6.withColumn("round", F.lit("round 6"))
-bestMatch_round6 = bestMatch_round6.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias(
-    "matched_uprn"), F.col("target_address").alias("matched_address"), F.col("match_type"), "round")
+
+bestMatch_round6 = bestMatch_round6.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
+
 
 # ROUND 7 - last chance
 
@@ -318,12 +330,10 @@ bestMatch_lastChance = cross_compare.withColumn('rank', F.rank().over(window))\
     .filter('rank = 1')\
     .dropDuplicates(['prinx'])
 
-bestMatch_lastChance = bestMatch_lastChance.withColumn(
-    "match_type", udf_matchtype("levenshtein"))
-bestMatch_lastChance = bestMatch_lastChance.withColumn(
-    "round", F.lit("last chance"))
-bestMatch_lastChance = bestMatch_lastChance.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias(
-    "matched_uprn"), F.col("target_address").alias("matched_address"), F.col("match_type"), "round")
+bestMatch_lastChance = bestMatch_lastChance.withColumn("match_type", udf_matchtype("levenshtein"))
+bestMatch_lastChance = bestMatch_lastChance.withColumn("round", F.lit("last chance"))
+bestMatch_lastChance = bestMatch_lastChance.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
+
 
 # PUT RESULTS OF ALL ROUNDS TOGETHER
 
