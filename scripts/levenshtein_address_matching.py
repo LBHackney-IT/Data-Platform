@@ -61,6 +61,7 @@ query_addresses.count()
 
 query_addresses_sample = query_addresses.filter(
     "concatenated_string_to_match != ''")
+query_addresses_sample = query_addresses_sample.filter("uprn is null")
 
 query_concat = query_addresses_sample.withColumn(
     "query_address",
