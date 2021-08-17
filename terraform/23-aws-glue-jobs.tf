@@ -101,62 +101,6 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
   }
 }
 
-resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
-  count = local.is_live_environment ? 1 : 0
-
-  tags = module.tags.values
-
-  name              = "Housing Repairs - Repairs DLO Levenshtein Address Matching"
-  number_of_workers = 10
-  worker_type       = "G.1X"
-  role_arn          = aws_iam_role.glue_role.arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.levenshtein_address_matching.key}"
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {
-    "--addresses_api_data_database" = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
-    "--addresses_api_data_table"    = "unrestricted_address_api_dbo_hackney_address"
-    "--source_catalog_database"     = "housing-repairs-refined-zone"
-    "--source_catalog_table"        = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
-    "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-matched-addresses/"
-    "--TempDir"                     = module.glue_temp_storage.bucket_url
-    "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
-    "--match_to_property_shell"     = "" # force/allow/forbid
-  }
-}
-
-resource "aws_glue_job" "get_uprn_from_uhref" {
-  count = local.is_live_environment ? 1 : 0
-
-  tags = module.tags.values
-
-  name              = "${local.short_identifier_prefix}Get UPRN from UHref"
-  number_of_workers = 10
-  worker_type       = "G.1X"
-  role_arn          = aws_iam_role.glue_role.arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.get_uprn_from_uhref.key}"
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {
-    "--lookup_catalogue_table"      = "datainsight_data_and_insight"
-    "--lookup_database"             = "dataplatform-stg-raw-zone-database"
-    "--source_data_catalogue_table" = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
-    "--source_data_database"        = module.department_housing_repairs.refined_zone_catalog_database_name
-    "--source_uhref_header"         = "" # This will be different for different workflows
-    "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
-    "--TempDir"                     = module.glue_temp_storage.bucket_url
-    "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
-  }
-}
-
 resource "aws_glue_workflow" "parking_liberator_data" {
   # This resource is modified outside of terraform by parking analysts.
   # Any change which forces the workflow to be recreated will lose their changes.
