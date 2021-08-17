@@ -140,7 +140,7 @@ resource "aws_glue_job" "housing_repairs_dlo_address_cleaning" {
     "--source_catalog_table" : "housing_repairs_repairs_dlo_cleaned"
     "--cleaned_addresses_s3_bucket_target" : "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses"
     "--source_address_column_header" : "property_address"
-    "--source_postcode_column_header" : "None"
+    "--source_postcode_column_header" : "postal_code_raw"
   }
 }
 
@@ -227,6 +227,7 @@ resource "aws_glue_job" "get_uprn_from_uhref" {
     "--source_data_database"        = module.department_housing_repairs.refined_zone_catalog_database_name
     "--source_uhref_header"         = "property_reference_uh"
     "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
+    "--match_to_property_shell"     = "forbid"
     "--TempDir"                     = module.glue_temp_storage.bucket_url
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
