@@ -58,7 +58,10 @@ if source_postcode_column_header != 'None':
     df = df.withColumn("postcode", \
        F.when(F.col("postcode")=="" ,None) \
           .otherwise(F.col("postcode")))
-    df = df.withColumn("postcode", F.coalesce(F.col('postcode'),F.col(source_postcode_column_header)))
+    logger.info('extract native postcode if there is one into a new column')
+    df = df.withColumn('initial_postcode_cleaned', F.regexp_extract(F.col(source_postcode_column_header), '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})', 1))
+    df = df.withColumn("postcode", F.coalesce(F.col('postcode'),F.col('initial_postcode_cleaned')))
+    df = df.drop("initial_postcode_cleaned")
 
 logger.info('postcode formatting')
 df = df.withColumn("postcode", F.upper(F.col("postcode")))
