@@ -5,14 +5,12 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.sql.window import Window
-from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
+from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -49,6 +47,8 @@ df3 = df3.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('works_status_comments', 'order_status')\
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')
 
+df3 = df3.withColumn('order_value', df3['order_value'].cast(StringType()))
+
 columns = [\
     'datetime_raised',\
     'operative',\
@@ -65,7 +65,8 @@ columns = [\
 
 df3 = df3.select(*columns, 'import_datetime', 'import_timestamp', 'import_year', 'import_month', 'import_day', 'import_date')
 
-df3 = df3.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
+df3 = map_repair_priority(df3, 'work_priority_description', 'work_priority_priority_code')
+
 df3 = df3.withColumn('data_source', F.lit('ElecMechFire - Electric Heating'))
 
 cleanedDataframe = DynamicFrame.fromDF(df3, glueContext, "cleanedDataframe")

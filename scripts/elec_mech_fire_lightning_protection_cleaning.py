@@ -5,14 +5,12 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.sql.window import Window
-from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority, clean_column_names
+from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -50,7 +48,8 @@ df2 = df2.withColumnRenamed('requested_by', 'operative') \
     .withColumnRenamed('contractor_s_own_ref_no', 'contractor_ref')\
     .withColumnRenamed('date', 'datetime_raised')
 
-df2 = df2.withColumn('work_priority_priority_code', udf_map_repair_priority('work_priority_description'))
+df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
+df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(

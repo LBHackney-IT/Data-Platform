@@ -15,7 +15,7 @@ from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.types import IntegerType
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from repairs_cleaning_helpers import udf_map_repair_priority
+from repairs_cleaning_helpers import map_repair_priority
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -93,9 +93,7 @@ df2 = df2.withColumnRenamed('name_of_resident', 'name_full') \
     .withColumnRenamed('timestamp', 'datetime_raised') \
     # create a new column for repair priority code, based on repair priority description column
 
-# apply function
-df2 = df2.withColumn('work_priority_code',
-                     udf_map_repair_priority('work_priority_description'))
+df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 
 # write data into S3
 logger.info('Write data into S3')

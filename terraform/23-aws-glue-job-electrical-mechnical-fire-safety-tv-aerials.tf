@@ -14,7 +14,6 @@ module "tv_aerials" {
   source = "../modules/electrical-mechnical-fire-safety-cleaning-job"
   tags   = module.tags.values
 
-  is_live_environment                = local.is_live_environment
   short_identifier_prefix            = local.short_identifier_prefix
   identifier_prefix                  = local.identifier_prefix
   department_name                    = "housing-repairs"
@@ -30,5 +29,8 @@ module "tv_aerials" {
   worksheet_resource                 = module.repairs_fire_alarm_aov[0].worksheet_resources["tv-aerials"]
   refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   dataset_name                       = "tv-aerials"
-  address_cleaning_job_name          = aws_glue_job.address_cleaning[0].name
+  address_cleaning_script_key        = aws_s3_bucket_object.address_cleaning.key
+  address_matching_script_key        = aws_s3_bucket_object.levenshtein_address_matching.key
+  addresses_api_data_catalog         = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
+  trusted_zone_bucket_id             = module.trusted_zone.bucket_id
 }

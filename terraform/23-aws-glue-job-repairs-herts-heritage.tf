@@ -8,114 +8,33 @@ resource "aws_s3_bucket_object" "housing_repairs_repairs_herts_heritage_cleaning
   etag   = filemd5("../scripts/repairs_herts_heritage_cleaning.py")
 }
 
-resource "aws_glue_job" "housing_repairs_repairs_herts_heritage_cleaning" {
+module "housing_repairs_herts_heritage" {
   count = local.is_live_environment ? 1 : 0
 
-  tags = module.tags.values
+  source = "../modules/housing-repairs-google-sheets-cleaning"
+  tags   = module.tags.values
 
-  name              = "${local.short_identifier_prefix}Housing Repairs - Repairs Hurts Heritage Cleaning"
-  number_of_workers = 10
-  worker_type       = "G.1X"
-  role_arn          = aws_iam_role.glue_role.arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.housing_repairs_repairs_herts_heritage_cleaning_script.key}"
-  }
+  short_identifier_prefix     = local.short_identifier_prefix
+  identifier_prefix           = local.identifier_prefix
+  department_name             = "housing-repairs"
+  data_cleaning_script_key    = aws_s3_bucket_object.housing_repairs_repairs_herts_heritage_cleaning_script.key
+  glue_scripts_bucket_id      = module.glue_scripts.bucket_id
+  glue_role_arn               = aws_iam_role.glue_role.arn
+  glue_crawler_excluded_blobs = local.glue_crawler_excluded_blobs
+  glue_temp_storage_bucket_id = module.glue_temp_storage.bucket_url
+  refined_zone_bucket_id      = module.refined_zone.bucket_id
+  helper_script_key           = aws_s3_bucket_object.helpers.key
+  cleaning_helper_script_key  = aws_s3_bucket_object.repairs_cleaning_helpers.key
+  catalog_database            = module.department_housing_repairs.raw_zone_catalog_database_name
+  addresses_api_data_catalog  = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
+  address_matching_script_key = aws_s3_bucket_object.levenshtein_address_matching.key
+  trusted_zone_bucket_id      = module.trusted_zone.bucket_id
 
-  glue_version = "2.0"
+  source_catalog_table = "housing_repairs_repairs_herts_heritage"
+  trigger_crawler_name = module.repairs_herts_heritage[0].crawler_name
+  workflow_name        = module.repairs_herts_heritage[0].workflow_name
 
-  default_arguments = {
-    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-herts-heritage/cleaned"
-    "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
-    "--source_catalog_table"             = "housing_repairs_repairs_herts_heritage"
-    "--TempDir"                          = module.glue_temp_storage.bucket_url
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
-  }
-}
-
-resource "aws_glue_crawler" "refined_zone_housing_repairs_repairs_herts_heritage_cleaned_crawler" {
-  count = local.is_live_environment ? 1 : 0
-  tags  = module.tags.values
-
-  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-repairs-herts-heritage-cleaned"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "housing_repairs_repairs_herts_heritage_"
-
-  s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-herts-heritage/cleaned/"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
-
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 4
-    }
-  })
-}
-
-resource "aws_glue_trigger" "housing_repairs_repairs_herts_heritage_cleaning_job" {
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.identifier_prefix}-housing-repairs-repairs-herts-heritage-cleaning-job-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_herts_heritage[0].workflow_name
-  tags          = module.tags.values
-
-  predicate {
-    conditions {
-      crawler_name = module.repairs_herts_heritage[0].crawler_name
-      crawl_state  = "SUCCEEDED"
-    }
-  }
-
-  actions {
-    job_name = aws_glue_job.housing_repairs_repairs_herts_heritage_cleaning[0].name
-  }
-}
-
-resource "aws_glue_trigger" "housing_repairs_repairs_herts_heritage_cleaning_crawler" {
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.identifier_prefix}-housing-repairs-repairs-herts-heritage-cleaning-crawler-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_herts_heritage[0].workflow_name
-  tags          = module.tags.values
-
-  predicate {
-    conditions {
-      job_name = aws_glue_job.housing_repairs_repairs_herts_heritage_cleaning[0].name
-      state    = "SUCCEEDED"
-    }
-  }
-  actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_repairs_herts_heritage_cleaned_crawler[0].name
-  }
-}
-
-resource "aws_glue_trigger" "housing_repairs_repairs_herts_heritage_address_cleaning" {
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.identifier_prefix}-housing-repairs-repairs-herts-heritage-address-cleaning-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_herts_heritage[0].workflow_name
-  tags          = module.tags.values
-
-  predicate {
-    conditions {
-      crawler_name = aws_glue_crawler.refined_zone_housing_repairs_repairs_herts_heritage_cleaned_crawler[0].name
-      crawl_state  = "SUCCEEDED"
-    }
-  }
-  actions {
-    arguments = {
-      "--source_catalog_database" : module.department_housing_repairs.refined_zone_catalog_database_name
-      "--source_catalog_table" : "housing_repairs_repairs_herts_heritage_cleaned"
-      "--cleaned_addresses_s3_bucket_target" : "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-herts-heritage/with-cleaned-addresses"
-      "--source_address_column_header" : "property_address"
-      "--source_postcode_column_header" : "None"
-    }
-    job_name = aws_glue_job.address_cleaning[0].name
-  }
+  refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
+  dataset_name                       = "repairs-herts-heritage"
+  address_cleaning_script_key        = aws_s3_bucket_object.address_cleaning.key
 }

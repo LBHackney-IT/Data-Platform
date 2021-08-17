@@ -3,11 +3,6 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "is_live_environment" {
-  description = "A flag indicting if we are running in a live environment for setting up automation"
-  type        = bool
-}
-
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
@@ -40,6 +35,11 @@ variable "glue_temp_storage_bucket_id" {
 
 variable "refined_zone_bucket_id" {
   description = "Refined zone bucket id"
+  type        = string
+}
+
+variable "trusted_zone_bucket_id" {
+  description = "Trusted zone bucket id"
   type        = string
 }
 
@@ -79,8 +79,18 @@ variable "dataset_name" {
   type        = string
 }
 
-variable "address_cleaning_job_name" {
-  description = "Address cleaning job name"
+variable "address_cleaning_script_key" {
+  description = "Address cleaning script key"
+  type        = string
+}
+
+variable "address_matching_script_key" {
+  description = "Address matching script key"
+  type        = string
+}
+
+variable "addresses_api_data_catalog" {
+  description = "Name of the data catalog holding the addresses API data"
   type        = string
 }
 
