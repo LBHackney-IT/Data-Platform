@@ -7,8 +7,6 @@ module "vpc_peering_cross_account" {
   tags = module.tags.values
 
   source           = "git::https://github.com/cloudposse/terraform-aws-vpc-peering-multi-account.git?ref=tags/0.16.0"
-  namespace        = "dp"
-  stage            = local.environment
   name             = "${local.identifier_prefix}-vpc-peering-connection"
 
   requester_aws_assume_role_arn             = local.requester_assume_role_arn
