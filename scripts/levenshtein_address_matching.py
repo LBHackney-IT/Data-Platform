@@ -90,8 +90,7 @@ elif match_to_property_shell == 'forbid':
 # keep blpu class
 target_concat = target_addresses.select("line1", "line2", "line3", "postcode", "uprn", "blpu_class")
 
-target_concat = target_addresses.select(
-    "line1", "line2", "line3", "postcode", "uprn")
+
 target_concat = target_concat.withColumn(
     "concat_lines",
     F.concat_ws(" ", "line1", "line2", "line3")
