@@ -1,4 +1,6 @@
 resource "aws_glue_crawler" "trusted_zone_housing_repairs_crawler" {
+  count = local.is_live_environment ? 1 : 0
+
   tags = module.tags.values
 
   database_name = module.department_housing_repairs.trusted_zone_catalog_database_name
@@ -19,6 +21,8 @@ resource "aws_glue_crawler" "trusted_zone_housing_repairs_crawler" {
 }
 
 resource "aws_glue_trigger" "housing_repairs_trusted_crawler" {
+  count = local.is_live_environment ? 1 : 0
+
   tags = module.tags.values
 
   name = "${local.short_identifier_prefix}housing-repairs-repairs-trusted-crawler-trigger"
@@ -101,6 +105,6 @@ resource "aws_glue_trigger" "housing_repairs_trusted_crawler" {
     }
   }
   actions {
-    crawler_name = aws_glue_crawler.trusted_zone_housing_repairs_crawler.name
+    crawler_name = aws_glue_crawler.trusted_zone_housing_repairs_crawler[0].name
   }
 }
