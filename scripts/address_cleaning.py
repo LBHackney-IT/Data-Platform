@@ -4,7 +4,7 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.sql.types import StringType
+from pyspark.sql.types import LongType
 from pyspark.sql.functions import col, lit, trim, when
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
@@ -121,7 +121,7 @@ logger.info('create a unique ID')
 df = df.withColumn("prinx", F.monotonically_increasing_id())
 
 logger.info('create an empty uprn column')
-df = df.withColumn("uprn", lit(None).cast(StringType()))
+df = df.withColumn("uprn", lit(None).cast(LongType()))
 
 logger.info('write into parquet')
 cleanedDataframe = DynamicFrame.fromDF(df, glueContext, "cleanedDataframe")
