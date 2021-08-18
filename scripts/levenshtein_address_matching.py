@@ -61,6 +61,7 @@ query_addresses.count()
 
 query_addresses_sample = query_addresses.filter(
     "concatenated_string_to_match != ''")
+query_addresses_sample = query_addresses_sample.filter("uprn is null")
 
 query_concat = query_addresses_sample.withColumn(
     "query_address",
@@ -90,8 +91,7 @@ elif match_to_property_shell == 'forbid':
 # keep blpu class
 target_concat = target_addresses.select("line1", "line2", "line3", "postcode", "uprn", "blpu_class")
 
-target_concat = target_addresses.select(
-    "line1", "line2", "line3", "postcode", "uprn")
+
 target_concat = target_concat.withColumn(
     "concat_lines",
     F.concat_ws(" ", "line1", "line2", "line3")
