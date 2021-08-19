@@ -43,7 +43,7 @@ uhref_uprn_lookup_ddf = glueContext.create_dynamic_frame.from_catalog(
 
 uhref_uprn_lookup_df = uhref_uprn_lookup_ddf.toDF()
 uhref_uprn_lookup_df = get_latest_partitions(uhref_uprn_lookup_df)
-uhref_uprn_lookup_df = uhref_uprn_lookup_df.select("ten_property_ref", "uprn").where("ten_property_ref IS NOT NULL")
+uhref_uprn_lookup_df = uhref_uprn_lookup_df.select(col("ten_property_ref"), col("uprn").cast("string")).where("ten_property_ref IS NOT NULL")
 uhref_uprn_lookup_df = uhref_uprn_lookup_df.withColumnRenamed("ten_property_ref", source_uhref_header)
 
 # ### JOIN

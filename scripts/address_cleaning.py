@@ -4,11 +4,8 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.ml import Pipeline
-from pyspark.ml.feature import RegexTokenizer, NGram, HashingTF, MinHashLSH
-from pyspark.sql.window import Window
 from pyspark.sql.types import StringType
-from pyspark.sql.functions import rank, col, lit, trim, when, max
+from pyspark.sql.functions import col, lit, trim, when
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 
