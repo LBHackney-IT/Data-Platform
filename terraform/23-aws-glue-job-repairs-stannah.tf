@@ -36,4 +36,5 @@ module "housing_repairs_stannah" {
   trigger_crawler_name     = module.repairs_stannah[0].crawler_name
   workflow_name            = module.repairs_stannah[0].workflow_name
   dataset_name             = "repairs-stannah"
+  match_to_property_shell  = "forbid"
 }

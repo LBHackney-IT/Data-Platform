@@ -36,4 +36,5 @@ module "housing_repairs_purdy" {
   trigger_crawler_name     = module.repairs_purdy[0].crawler_name
   workflow_name            = module.repairs_purdy[0].workflow_name
   dataset_name             = "repairs-purdy"
+  match_to_property_shell  = "allow"
 }

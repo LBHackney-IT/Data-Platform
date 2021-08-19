@@ -21,6 +21,7 @@ resource "aws_glue_job" "housing_repairs_elec_mech_fire_address_matching_job" {
     "--target_destination"          = "s3://${var.trusted_zone_bucket_id}/housing-repairs/repairs/"
     "--TempDir"                     = var.glue_temp_storage_bucket_id
     "--extra-py-files"              = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
+    "--match_to_property_shell"     = var.match_to_property_shell
   }
 }
 

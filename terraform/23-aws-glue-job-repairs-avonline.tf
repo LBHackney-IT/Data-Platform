@@ -36,4 +36,5 @@ module "housing_repairs_avonline" {
   trigger_crawler_name     = module.repairs_avonline[0].crawler_name
   workflow_name            = module.repairs_avonline[0].workflow_name
   dataset_name             = "repairs-avonline"
+  match_to_property_shell  = "forbid"
 }
