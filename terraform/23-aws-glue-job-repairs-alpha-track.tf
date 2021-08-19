@@ -36,4 +36,5 @@ module "housing_repairs_alphatrack" {
   trigger_crawler_name     = module.repairs_alpha_track[0].crawler_name
   workflow_name            = module.repairs_alpha_track[0].workflow_name
   dataset_name             = "repairs-alpha-track"
+  match_to_property_shell  = "allow"
 }

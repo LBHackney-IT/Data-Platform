@@ -105,6 +105,12 @@ variable "trusted_zone_bucket_id" {
 }
 
 variable "glue_role_arn" {
-  default = "Glue Role ARN that the job will use to excecute"
-  type    = string
+  description = "Glue Role ARN that the job will use to excecute"
+  type        = string
+}
+
+variable "match_to_property_shell" {
+  description = "Set a strategy for address matching, excluding or including property shells"
+  type        = string
+  default     = ""
 }

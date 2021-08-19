@@ -36,4 +36,5 @@ module "housing_repairs_axis" {
   trigger_crawler_name     = module.repairs_axis[0].crawler_name
   workflow_name            = module.repairs_axis[0].workflow_name
   dataset_name             = "repairs-axis"
+  match_to_property_shell  = "allow"
 }
