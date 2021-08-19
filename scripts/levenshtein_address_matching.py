@@ -2,8 +2,6 @@ import sys
 from awsglue.utils import getResolvedOptions
 import pyspark.sql.functions as F
 from pyspark import SparkContext
-from pyspark.ml import Pipeline
-from pyspark.ml.feature import RegexTokenizer, NGram, HashingTF, MinHashLSH
 from pyspark.sql.window import Window
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
