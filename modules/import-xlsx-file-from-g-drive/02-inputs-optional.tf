@@ -1,7 +1,7 @@
 variable "xlsx_import_schedule" {
   description = "Cron schedule for importing the Google sheet using AWS Glue"
   type        = string
-  default     = "cron(0 02 ? * 1-5 *)"
+  default     = "cron(0 01 ? * 2-6 *)"
 }
 
 variable "enable_glue_trigger" {

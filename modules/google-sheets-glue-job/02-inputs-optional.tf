@@ -7,7 +7,7 @@ variable "glue_crawler_excluded_blobs" {
 variable "google_sheet_import_schedule" {
   description = "Cron schedule for importing the Google sheet using AWS Glue"
   type        = string
-  default     = "cron(0 02 ? * 1-5 *)"
+  default     = "cron(0 01 ? * 2-6 *)"
 }
 
 variable "google_sheet_header_row_number" {
