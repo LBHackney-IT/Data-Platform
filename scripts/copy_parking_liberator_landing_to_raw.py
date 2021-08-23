@@ -27,14 +27,18 @@ table_filter_expression = get_glue_env_var("table_filter_expression")
 logger = glue_context.get_logger()
 
 for table in glue_client.get_tables(DatabaseName=database_name_source, Expression=table_filter_expression)['TableList']:
-  logger.info(f"Starting copying table {database_name_source}{table['Name']}")
-  table_dynamic_frame = glue_context.create_dynamic_frame.from_catalog(
+  logger.info(f"Starting copying table {database_name_source}.{table['Name']}")
+  table_data_frame = glue_context.create_dynamic_frame.from_catalog(
       name_space = database_name_source,
       table_name = table['Name'],
       transformation_ctx = "data_source" + table['Name']
-  )
+  ).toDF()
 
-  table_with_timestamp = add_timestamp_column(table_dynamic_frame.toDF())
+  if(len(table_data_frame.columns) == 0):
+    logger.info(f"Aborting copying data for table {database_name_source}.{table['Name']}, as it has empty columns.")
+    continue
+
+  table_with_timestamp = add_timestamp_column(table_data_frame)
 
   data_sink = glue_context.getSink(
     path = "s3://" + bucket_target + "/" + prefix + table['Name'] + "/",
@@ -50,6 +54,6 @@ for table in glue_client.get_tables(DatabaseName=database_name_source, Expressio
   )
   data_sink.setFormat("glueparquet")
   data_sink.writeFrame(DynamicFrame.fromDF(table_with_timestamp, glue_context, "result_dataframe"))
-  logger.info(f"Finished copying table {database_name_source}{table['Name']}")
+  logger.info(f"Finished copying table {database_name_source}.{table['Name']}")
 
 job.commit()
