@@ -14,7 +14,7 @@ from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 
 
 def clean_addresses(df, source_address_column_header, source_postcode_column_header):
-    # df = get_latest_partitions(df)
+    df = get_latest_partitions(df)
 
 #     logger.info('adding new column')
 #     df = df.withColumn('address', col(source_address_column_header))
