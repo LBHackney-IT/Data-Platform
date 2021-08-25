@@ -49,8 +49,8 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
 #     df = df.drop("postcode_start")
 #     df = df.drop("postcode_end")
 #
-#     logger.info('address line formatting - remove commas and extra spaces')
-#     df = df.withColumn("address", F.upper(F.col("address")))
+    logger.info('address line formatting - remove commas and extra spaces')
+    df = df.withColumn("address", F.upper(F.col("address")))
 #     df = df.withColumn("address", F.regexp_replace(F.col("address"), ",", ""))
 #     df = df.withColumn("address", F.regexp_replace(F.col("address"), " +", " "))
 #     df = df.withColumn("address", F.regexp_replace(F.col("address"), " ?- ?\z", ""))
