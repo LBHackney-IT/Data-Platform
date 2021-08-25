@@ -74,21 +74,21 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
     logger.info('deal with abbreviations')
 #
     logger.info('for \'street\': we only replace st if it is at the end of the string, if not there is a risk of confusion with saint')
-    df = df.withColumn("address", F.regexp_replace(F.col("address"), " ST.?\z", " STREET"))
+    df = df.withColumn("address", F.regexp_replace(F.col("address"), " ST.?$", " STREET"))
 #
-#     df = df.withColumn("address", F.regexp_replace(F.col("address"), " RD.? ", " ROAD "))
-    df = df.withColumn("address", F.regexp_replace(F.col("address"), " RD.?\z", " ROAD"))
+    df = df.withColumn("address", F.regexp_replace(F.col("address"), " RD.? ", " ROAD "))
+    df = df.withColumn("address", F.regexp_replace(F.col("address"), " RD.?$", " ROAD"))
 #
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " AVE ", " AVENUE "))
-    df = df.withColumn("address", F.regexp_replace(F.col("address"), " AVE\z", " AVENUE"))
+    df = df.withColumn("address", F.regexp_replace(F.col("address"), " AVE$", " AVENUE"))
 #
-#     df = df.withColumn("address", F.regexp_replace(F.col("address"), " HSE ", " HOUSE "))
-    df = df.withColumn("address", F.regexp_replace(F.col("address"), " HSE\z", " HOUSE"))
+    df = df.withColumn("address", F.regexp_replace(F.col("address"), " HSE ", " HOUSE "))
+    df = df.withColumn("address", F.regexp_replace(F.col("address"), " HSE$", " HOUSE"))
 #
-#     df = df.withColumn("address", F.regexp_replace(F.col("address"), " CT.? ", " COURT "))
-    df = df.withColumn("address", F.regexp_replace(F.col("address"), " CT.?\z", " COURT"))
+    df = df.withColumn("address", F.regexp_replace(F.col("address"), " CT.? ", " COURT "))
+    df = df.withColumn("address", F.regexp_replace(F.col("address"), " CT.?$", " COURT"))
 #
-#     # df = df.withColumn("address", F.regexp_replace(F.col("address"), " ST.? ", " SAINT "))
+    df = df.withColumn("address", F.regexp_replace(F.col("address"), " ST.? ", " SAINT "))
 #
     df = df.withColumnRenamed("address", "concatenated_string_to_match")
 #
