@@ -4,26 +4,27 @@ from unittest.case import TestCase
 
 class TestCleanAddresses:
     def test_has_concatenated_string_to_match_column(self, spark):
-        assert (
-          self.clean_addresses(spark, [
-            {'address': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
-          ])
-          ==
-          [
-            {'concatenated_string_to_match': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
-          ]
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': 'CRANLEIGH COURT'},
+            self.clean_addresses(spark, [
+                {'address': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+            ])[0]
         )
 
     def test_has_concatenated_string_to_match_column_when_source_address_header_is_different(self, spark):
         response = self.clean_addresses(spark, [
-            {'flowers': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+            {'flowers': 'FLOWERS COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
           ], 'flowers')
-        TestCase().assertDictContainsSubset(
-            {'concatenated_string_to_match': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"},
+
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': 'FLOWERS COURT'},
             response[0]
         )
 
-    def test_adds_partitions(self, spark):
+    def assertDictionaryContains(self, expected, actual):
+        TestCase().assertEqual(actual, { **actual,  **expected})
+
+    def test_gets_latest_partitions(self, spark):
         assert (
             self.clean_addresses(spark, [
             {'address': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"},
