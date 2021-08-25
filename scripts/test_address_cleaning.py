@@ -84,7 +84,7 @@ class TestCleanAddresses:
 
     def test_has_empty_postcode_when_address_column_does_not_have_a_postcode(self, spark):
         response = self.clean_addresses(spark, [
-            {'address': 'Not a postcode', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+            {'address': 'Not a postcode'}
         ], 'address')
 
         self.assertDictionaryContains(
@@ -200,8 +200,13 @@ class TestCleanAddresses:
         TestCase().assertEqual(actual, { **actual,  **expected})
 
     def clean_addresses(self, spark, addresses, address_column_header = "address", postcode_column_header = 'None'):
+        addresses_with_imports = [{'import_year': '2021' , 'import_month': '08', 'import_day': '19', **i} for i in addresses]
         logger = DummyLogger()
-        query_addresses = spark.createDataFrame(spark.sparkContext.parallelize([Row(**i) for i in addresses]))
+        query_addresses = spark.createDataFrame(
+            spark.sparkContext.parallelize(
+                [Row(**i) for i in addresses_with_imports]
+            )
+        )
         return [row.asDict() for row in clean_addresses(query_addresses, address_column_header, postcode_column_header, logger).rdd.collect()]
 
     def test_replaces_abbreviation_in_middle_of_address(self, spark):
