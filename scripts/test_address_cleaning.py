@@ -24,7 +24,7 @@ class TestCleanAddresses:
             response[0]
         )
 
-    @pytest.mark.parametrize("postcode", ["SW1P 3EA", "sw1p 3ea"])
+    @pytest.mark.parametrize("postcode", ["SW1P 3EA", "SE17DB"])
     def test_extracts_postcode_like_string_from_address_column(self, spark, postcode):
         response = self.clean_addresses(spark, [
             {'address': postcode, 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
@@ -32,6 +32,16 @@ class TestCleanAddresses:
 
         self.assertDictionaryContains(
             {'postcode': postcode},
+            response[0]
+        )
+
+    def test_uppercases_postcode(self, spark):
+        response = self.clean_addresses(spark, [
+            {'address': 'sw1p 3ea', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ], 'address')
+
+        self.assertDictionaryContains(
+            {'postcode': 'SW1P 3EA'},
             response[0]
         )
 
