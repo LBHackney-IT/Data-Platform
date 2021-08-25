@@ -142,6 +142,15 @@ class TestCleanAddresses:
         query_addresses = spark.createDataFrame(spark.sparkContext.parallelize([Row(**i) for i in addresses]))
         return [row.asDict() for row in clean_addresses(query_addresses, address_column_header, postcode_column_header, logger).rdd.collect()]
 
+    def test_replaces_abbreviation_in_middle_of_address(self, spark):
+        response = self.clean_addresses(spark, [
+            {'address': 'FLOWERS AVE LANE', 'import_year': '2021' , 'import_month': '08', 'import_day': '19'},
+        ], 'address')
+
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': 'FLOWERS AVENUE LANE'}, response[0]
+        )
+
 class DummyLogger:
     def info(self, message):
         return
