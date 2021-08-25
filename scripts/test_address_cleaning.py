@@ -197,6 +197,17 @@ class TestCleanAddresses:
             {'concatenated_string_to_match': 'FLOWERS AVENUE LANE'}, response[0]
         )
 
+    @pytest.mark.parametrize("unique_id", [int("0")])
+    def test_create_unique_id_column(self, spark, unique_id):
+        response = self.clean_addresses(spark, [
+            {'address': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ])
+
+        self.assertDictionaryContains(
+            {'prinx': unique_id},
+            response[0]
+        )
+
 class DummyLogger:
     def info(self, message):
         return

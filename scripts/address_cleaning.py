@@ -91,8 +91,8 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
 #
     df = df.withColumnRenamed("address", "concatenated_string_to_match")
 #
-#     logger.info('create a unique ID')
-#     df = df.withColumn("prinx", F.monotonically_increasing_id())
+    logger.info('create a unique ID')
+    df = df.withColumn("prinx", F.monotonically_increasing_id())
 #
 #     logger.info('create an empty uprn column')
 #     df = df.withColumn("uprn", lit(None).cast(StringType()))
