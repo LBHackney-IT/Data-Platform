@@ -45,6 +45,16 @@ class TestCleanAddresses:
             response[0]
         )
 
+    def test_without_postcode_in_address_column_uses_postcode_column_header(self, spark):
+        response = self.clean_addresses(spark, [
+            {'address': 'dog road', '2postcode': 'N10 1AA', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ], 'address', '2postcode')
+
+        self.assertDictionaryContains(
+            {'postcode': 'N10 1AA'},
+            response[0]
+        )
+
     def test_has_empty_postcode_when_address_column_does_not_have_a_postcode(self, spark):
         response = self.clean_addresses(spark, [
             {'address': 'Not a postcode', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
