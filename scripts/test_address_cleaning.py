@@ -152,7 +152,7 @@ class TestCleanAddresses:
         self.assertDictionaryContains(
             {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
         )
-    
+
     def test_removes_london_from_end_of_address(self, spark):
         response = self.clean_addresses(spark, [
             {'address': '4 on tHe RoAd london', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
@@ -162,7 +162,17 @@ class TestCleanAddresses:
             {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
         )
 
-    def test_removes_hackney_from_end_of_address(self, spark):
+    @pytest.mark.parametrize("whitespace", [" ","   ", "    ", "     "])
+    def test_removes_hackney_from_end_of_address(self, spark, whitespace):
+        response = self.clean_addresses(spark, [
+            {'address': '4'+whitespace+'-'+whitespace+'6 on tHe RoAd', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ], 'address')
+
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': '4-6 ON THE ROAD'}, response[0]
+        )
+
+    def test_removes_space_from_dashes_between_numbers(self, spark):
         response = self.clean_addresses(spark, [
             {'address': '4 on tHe RoAd hackney', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
         ], 'address')
