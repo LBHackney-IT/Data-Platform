@@ -5,7 +5,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from pyspark.sql.types import StringType
-from pyspark.sql.functions import col, lit, trim, when
+from pyspark.sql.functions import col, lit
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 
@@ -28,7 +28,7 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
     if source_postcode_column_header != 'None':
         logger.info('populate empty postcode with postcode from the other PC column')
         df = df.withColumn("postcode", \
-        F.when(F.col("postcode")=="" ,None) \
+        F.when(F.col("postcode")=="", None) \
             .otherwise(F.col("postcode")))
         logger.info('extract native postcode if there is one into a new column')
         df = df.withColumn('initial_postcode_cleaned', F.regexp_extract(F.col(source_postcode_column_header), '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})', 1))
@@ -71,31 +71,31 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
     df = df.withColumn("address", F.regexp_replace(F.col("address"), '(\\d+) ?- ?(\\d+)', '$1-$2'))
 
     logger.info('deal with abbreviations')
-#
+
     logger.info('for \'street\': we only replace st if it is at the end of the string, if not there is a risk of confusion with saint')
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " ST.?$", " STREET"))
-#
+
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " RD.? ", " ROAD "))
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " RD.?$", " ROAD"))
-#
+
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " AVE ", " AVENUE "))
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " AVE$", " AVENUE"))
-#
+
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " HSE ", " HOUSE "))
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " HSE$", " HOUSE"))
-#
+
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " CT.? ", " COURT "))
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " CT.?$", " COURT"))
-#
+
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " ST.? ", " SAINT "))
-#
+
     df = df.withColumnRenamed("address", "concatenated_string_to_match")
-#
+
     logger.info('create a unique ID')
     df = df.withColumn("prinx", F.monotonically_increasing_id())
-#
-#     logger.info('create an empty uprn column')
-#     df = df.withColumn("uprn", lit(None).cast(StringType()))
+
+    logger.info('create an empty uprn column')
+    df = df.withColumn("uprn", lit(None).cast(StringType()))
     return df
 
 ## write into the log file with:
