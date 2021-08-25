@@ -35,6 +35,16 @@ class TestCleanAddresses:
             response[0]
         )
 
+    def test_removes_postcode_from_concatenated_string_to_match(self, spark):
+        response = self.clean_addresses(spark, [
+            {'address': 'cat lane SW1P 5DB', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ], 'address')
+
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': 'cat lane '},
+            response[0]
+        )
+
     def test_has_empty_postcode_when_address_column_does_not_have_a_postcode(self, spark):
         response = self.clean_addresses(spark, [
             {'address': 'Not a postcode', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}

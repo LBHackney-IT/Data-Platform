@@ -21,9 +21,9 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
 
     logger.info('extract postcode into a new column')
     df = df.withColumn('postcode', F.regexp_extract(F.col('address'), '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})', 1))
-#
-#     logger.info('remove postcode from address')
-#     df = df.withColumn('address', F.regexp_replace(F.col('address'), '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})', ''))
+
+    logger.info('remove postcode from address')
+    df = df.withColumn('address', F.regexp_replace(F.col('address'), '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})', ''))
 #
 #
 #
