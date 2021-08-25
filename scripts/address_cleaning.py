@@ -11,32 +11,10 @@ from awsglue.dynamicframe import DynamicFrame
 
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 
-## write into the log file with:
-## @params: [JOB_NAME]
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
-cleaned_addresses_s3_bucket_target = get_glue_env_var('cleaned_addresses_s3_bucket_target', '')
-source_catalog_database = get_glue_env_var('source_catalog_database', '')
-source_catalog_table = get_glue_env_var('source_catalog_table', '')
-
-
-sc = SparkContext.getOrCreate()
-glueContext = GlueContext(sc)
-logger = glueContext.get_logger()
-job = Job(glueContext)
-job.init(args['JOB_NAME'], args)
-
-logger.info('Fetch Source Data')
-source_dataset = glueContext.create_dynamic_frame.from_catalog(
-    name_space=source_catalog_database,
-    table_name=source_catalog_table,
-)
-
-df = source_dataset.toDF()
-source_dataset.printSchema()
 
 def clean_addresses(df, source_address_column_header, source_postcode_column_header):
-    df = get_latest_partitions(df)
+    # df = get_latest_partitions(df)
 
 #     logger.info('adding new column')
 #     df = df.withColumn('address', col(source_address_column_header))
@@ -114,7 +92,7 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
 #
 #     # df = df.withColumn("address", F.regexp_replace(F.col("address"), " ST.? ", " SAINT "))
 #
-#     df = df.withColumnRenamed("address", "concatenated_string_to_match")
+    df = df.withColumnRenamed("address", "concatenated_string_to_match")
 #
 #     logger.info('create a unique ID')
 #     df = df.withColumn("prinx", F.monotonically_increasing_id())
@@ -123,19 +101,43 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
 #     df = df.withColumn("uprn", lit(None).cast(StringType()))
     return df
 
+## write into the log file with:
+## @params: [JOB_NAME]
+if __name__ == "__main__":
+    args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
-logger.info('write into parquet')
-cleanedDataframe = DynamicFrame.fromDF(
-    clean_addresses(df, get_glue_env_var('source_address_column_header', ''), get_glue_env_var('source_postcode_column_header', '')),
-    glueContext,
-    "cleanedDataframe"
-)
+    cleaned_addresses_s3_bucket_target = get_glue_env_var('cleaned_addresses_s3_bucket_target', '')
+    source_catalog_database = get_glue_env_var('source_catalog_database', '')
+    source_catalog_table = get_glue_env_var('source_catalog_table', '')
 
-parquetData = glueContext.write_dynamic_frame.from_options(
-    frame=cleanedDataframe,
-    connection_type="s3",
-    format="parquet",
-    connection_options={"path": cleaned_addresses_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
-    transformation_ctx="parquetData")
 
-job.commit()
+    sc = SparkContext.getOrCreate()
+    glueContext = GlueContext(sc)
+    logger = glueContext.get_logger()
+    job = Job(glueContext)
+    job.init(args['JOB_NAME'], args)
+
+    logger.info('Fetch Source Data')
+    source_dataset = glueContext.create_dynamic_frame.from_catalog(
+        name_space=source_catalog_database,
+        table_name=source_catalog_table,
+    )
+
+    df = source_dataset.toDF()
+    source_dataset.printSchema()
+
+    logger.info('write into parquet')
+    cleanedDataframe = DynamicFrame.fromDF(
+        clean_addresses(df, get_glue_env_var('source_address_column_header', ''), get_glue_env_var('source_postcode_column_header', '')),
+        glueContext,
+        "cleanedDataframe"
+    )
+
+    parquetData = glueContext.write_dynamic_frame.from_options(
+        frame=cleanedDataframe,
+        connection_type="s3",
+        format="parquet",
+        connection_options={"path": cleaned_addresses_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
+        transformation_ctx="parquetData")
+
+    job.commit()
