@@ -87,7 +87,7 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " CT.? ", " COURT "))
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " CT.?$", " COURT"))
 
-    df = df.withColumn("address", F.regexp_replace(F.col("address"), " ST.? ", " SAINT "))
+    # df = df.withColumn("address", F.regexp_replace(F.col("address"), " ST.? ", " SAINT "))
 
     df = df.withColumnRenamed("address", "concatenated_string_to_match")
 
