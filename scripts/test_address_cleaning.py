@@ -77,15 +77,14 @@ class TestCleanAddresses:
         )
 
     def test_gets_latest_partitions(self, spark):
-        assert (
-            self.clean_addresses(spark, [
+        response = self.clean_addresses(spark, [
             {'address': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"},
             {'address': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "20"}
-            ])
-            ==
-            [
-                {'concatenated_string_to_match': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "20", 'postcode': ''}
-            ]
+        ])
+        assert len(response) == 1
+        self.assertDictionaryContains(
+            { 'import_year': '2021' , 'import_month': '08', 'import_day': '20' },
+            response[0]
         )
 
     def test_address_line_formatting_converts_address_to_uppercase(self, spark):
