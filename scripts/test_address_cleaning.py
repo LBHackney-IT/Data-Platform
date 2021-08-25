@@ -105,6 +105,16 @@ class TestCleanAddresses:
             {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
         )
 
+    @pytest.mark.parametrize("dash_string", ["-", " -", "- "])
+    def test_removes_dashes_at_the_end_of_the_addresses(self, spark, dash_string):
+        response = self.clean_addresses(spark, [
+            {'address': '4 on tHe RoAd'+dash_string, 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ], 'address')
+
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
+        )
+
     def test_replaces_abbreviation_at_end_of_address(self, spark):
         response = self.clean_addresses(spark, [
             {'address': 'CRANLEIGH COURT RD', 'import_year': '2021' , 'import_month': '08', 'import_day': '19'},
