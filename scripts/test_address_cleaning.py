@@ -24,14 +24,20 @@ class TestCleanAddresses:
             response[0]
         )
 
-    @pytest.mark.parametrize("postcode", ["SW1P 3EA", "SE17DB"])
-    def test_extracts_postcode_like_string_from_address_column(self, spark, postcode):
+    postcode_examples = [
+        ["SW1P 3EA", "SW1P 3EA"],
+        ["SE17DB", "SE1 7DB"],
+        ["GIR 0AA", "GIR 0AA"],
+        ["GIR0AA", "GIR 0AA"]
+    ]
+    @pytest.mark.parametrize("input_postcode, expected_postcode", postcode_examples)
+    def test_extracts_postcode_like_string_from_address_column(self, spark, input_postcode, expected_postcode):
         response = self.clean_addresses(spark, [
-            {'address': postcode, 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+            {'address': input_postcode, 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
         ], 'address')
 
         self.assertDictionaryContains(
-            {'postcode': postcode},
+            {'postcode': expected_postcode},
             response[0]
         )
 
