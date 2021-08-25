@@ -105,6 +105,15 @@ class TestCleanAddresses:
             {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
         )
 
+    def test_replaces_abbreviation_at_end_of_address(self, spark):
+        response = self.clean_addresses(spark, [
+            {'address': 'CRANLEIGH COURT RD', 'import_year': '2021' , 'import_month': '08', 'import_day': '19'},
+        ], 'address')
+
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': 'CRANLEIGH COURT ROAD'}, response[0]
+        )
+
     def assertDictionaryContains(self, expected, actual):
         TestCase().assertEqual(actual, { **actual,  **expected})
 
