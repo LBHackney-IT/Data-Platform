@@ -76,6 +76,15 @@ class TestCleanAddresses:
             {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
         )
 
+    def test_address_line_formatting_removes_commas(self, spark):
+        response = self.clean_addresses(spark, [
+            {'address': '4 on tHe, RoAd', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ], 'address')
+
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
+        )
+
     def assertDictionaryContains(self, expected, actual):
         TestCase().assertEqual(actual, { **actual,  **expected})
 
