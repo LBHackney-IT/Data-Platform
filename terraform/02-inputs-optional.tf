@@ -63,5 +63,5 @@ variable "rds_instance_ids" {
 variable "aws_api_vpc_id" {
   description = "Staging APIs peer VPC ID"
   type        = string
-  default     = "" 
+  default     = ""
 }
