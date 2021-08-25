@@ -51,7 +51,7 @@ class TestCleanAddresses:
         ], 'address')
 
         self.assertDictionaryContains(
-            {'concatenated_string_to_match': 'CAT LANE '},
+            {'concatenated_string_to_match': 'CAT LANE'},
             response[0]
         )
 
@@ -133,6 +133,17 @@ class TestCleanAddresses:
         self.assertDictionaryContains(
             {'concatenated_string_to_match': '4 ON TH - E ROAD'}, response[0]
         )
+
+    @pytest.mark.parametrize("whitespace", [" ","   ", "    ", "     "])
+    def test_trims_address_of_whitespace(self, spark, whitespace):
+        response = self.clean_addresses(spark, [
+            {'address': whitespace+'4 on tHe RoAd'+whitespace, 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ], 'address')
+
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
+        )
+
 
     def test_replaces_abbreviation_at_end_of_address(self, spark):
         response = self.clean_addresses(spark, [

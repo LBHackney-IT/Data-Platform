@@ -52,10 +52,9 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
     df = df.withColumn("address", F.regexp_replace(F.col("address"), ",", ""))
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " +", " "))
     df = df.withColumn("address", F.regexp_replace(F.col("address"), " ?- ?$", ""))
-#
-#
-#     logger.info('address line formatting - remove LONDON at the end (dont do this for out of London matching)')
-#     df = df.withColumn("address", F.trim(F.col("address")))
+    df = df.withColumn("address", F.trim(F.col("address")))
+
+    logger.info('address line formatting - remove LONDON at the end (dont do this for out of London matching)')
 #     df = df.withColumn("address_length", F.length(F.col("address")))
 #     df = df.withColumn("address", \
 #         F.when(F.col("address").endswith(" LONDON"), F.expr("substring(address, 1, address_length -7)")) \
