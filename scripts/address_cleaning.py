@@ -13,11 +13,11 @@ from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 
 
 
-def clean_addresses(df, source_address_column_header, source_postcode_column_header):
+def clean_addresses(df, source_address_column_header, source_postcode_column_header, logger):
     df = get_latest_partitions(df)
 
-#     logger.info('adding new column')
-#     df = df.withColumn('address', col(source_address_column_header))
+    logger.info('adding address column')
+    df = df.withColumn('address', col(source_address_column_header))
 #
 #     logger.info('extract postcode into a new column')
 #     df = df.withColumn('postcode', F.regexp_extract(F.col('address'), '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})', 1))
@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
     logger.info('write into parquet')
     cleanedDataframe = DynamicFrame.fromDF(
-        clean_addresses(df, get_glue_env_var('source_address_column_header', ''), get_glue_env_var('source_postcode_column_header', '')),
+        clean_addresses(df, get_glue_env_var('source_address_column_header', ''), get_glue_env_var('source_postcode_column_header', ''), logger),
         glueContext,
         "cleanedDataframe"
     )
