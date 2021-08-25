@@ -45,13 +45,14 @@ class TestCleanAddresses:
             response[0]
         )
 
-    def test_without_postcode_in_address_column_uses_postcode_column_header(self, spark):
+    @pytest.mark.parametrize("postcode", ["N10 1AA", "SE1 8DZ"])
+    def test_without_postcode_in_address_column_uses_postcode_column_header(self, spark, postcode):
         response = self.clean_addresses(spark, [
-            {'address': 'dog road', '2postcode': 'N10 1AA', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+            {'address': 'dog road', '2postcode': postcode, 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
         ], 'address', '2postcode')
 
         self.assertDictionaryContains(
-            {'postcode': 'N10 1AA'},
+            {'postcode': postcode},
             response[0]
         )
 
@@ -76,7 +77,7 @@ class TestCleanAddresses:
                 {'concatenated_string_to_match': 'CRANLEIGH COURT', 'import_year': "2021" , 'import_month': "08", 'import_day': "20", 'postcode': ''}
             ]
         )
-    
+
     def test_address_line_formatting_converts_address_to_uppercase(self, spark):
         response = self.clean_addresses(spark, [
             {'address': '4 on tHe RoAd', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
