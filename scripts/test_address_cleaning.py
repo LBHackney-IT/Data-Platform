@@ -37,11 +37,11 @@ class TestCleanAddresses:
 
     def test_removes_postcode_from_concatenated_string_to_match(self, spark):
         response = self.clean_addresses(spark, [
-            {'address': 'cat lane SW1P 5DB', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+            {'address': 'CAT LANE SW1P 5DB', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
         ], 'address')
 
         self.assertDictionaryContains(
-            {'concatenated_string_to_match': 'cat lane '},
+            {'concatenated_string_to_match': 'CAT LANE '},
             response[0]
         )
 
