@@ -88,7 +88,7 @@ class TestCleanAddresses:
     def assertDictionaryContains(self, expected, actual):
         TestCase().assertEqual(actual, { **actual,  **expected})
 
-    def clean_addresses(self, spark, addresses, address_column_header = "address", postcode_column_header = None):
+    def clean_addresses(self, spark, addresses, address_column_header = "address", postcode_column_header = 'None'):
         logger = DummyLogger()
         query_addresses = spark.createDataFrame(spark.sparkContext.parallelize([Row(**i) for i in addresses]))
         return [row.asDict() for row in clean_addresses(query_addresses, address_column_header, postcode_column_header, logger).rdd.collect()]
