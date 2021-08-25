@@ -37,7 +37,7 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
 
     logger.info('postcode formatting')
     df = df.withColumn("postcode", F.upper(F.col("postcode")))
-#     df = df.withColumn("postcode_nospace", F.regexp_replace(F.col("postcode"), " +", ""))
+    df = df.withColumn("postcode_nospace", F.regexp_replace(F.col("postcode"), " +", ""))
 #     df = df.withColumn("postcode_length", F.length(F.col("postcode_nospace")))
 #     df = df.withColumn("postcode_start", F.expr("substring(postcode_nospace, 1, postcode_length -3)"))
 #     df = df.withColumn("postcode_end", F.expr("substring(postcode_nospace, -3, 3)"))

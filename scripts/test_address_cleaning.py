@@ -45,6 +45,16 @@ class TestCleanAddresses:
             response[0]
         )
 
+    def test_generates_postcode_nospace_column(self, spark):
+        response = self.clean_addresses(spark, [
+            {'address': 'SE1 7DB', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ], 'address')
+
+        self.assertDictionaryContains(
+            {'postcode_nospace': 'SE17DB'},
+            response[0]
+        )
+
     def test_removes_postcode_from_concatenated_string_to_match(self, spark):
         response = self.clean_addresses(spark, [
             {'address': 'CAT LANE SW1P 5DB', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
