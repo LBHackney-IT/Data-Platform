@@ -55,18 +55,18 @@ def clean_addresses(df, source_address_column_header, source_postcode_column_hea
     df = df.withColumn("address", F.trim(F.col("address")))
 
     logger.info('address line formatting - remove LONDON at the end (dont do this for out of London matching)')
-#     df = df.withColumn("address_length", F.length(F.col("address")))
-#     df = df.withColumn("address", \
-#         F.when(F.col("address").endswith(" LONDON"), F.expr("substring(address, 1, address_length -7)")) \
-#             .otherwise(F.col("address")))
-#
-#     logger.info('address line formatting - remove HACKNEY at the end (dont necessarily this for out of borough matching)')
-#     df = df.withColumn("address", F.trim(F.col("address")))
-#     df = df.withColumn("address_length", F.length(F.col("address")))
-#     df = df.withColumn("address", \
-#         F.when(F.col("address").endswith(" HACKNEY"), F.expr("substring(address, 1, address_length -8)")) \
-#             .otherwise(F.col("address")))
-#
+    df = df.withColumn("address_length", F.length(F.col("address")))
+    df = df.withColumn("address", \
+        F.when(F.col("address").endswith(" LONDON"), F.expr("substring(address, 1, address_length -7)")) \
+            .otherwise(F.col("address")))
+
+    logger.info('address line formatting - remove HACKNEY at the end (dont necessarily this for out of borough matching)')
+    df = df.withColumn("address", F.trim(F.col("address")))
+    df = df.withColumn("address_length", F.length(F.col("address")))
+    df = df.withColumn("address", \
+        F.when(F.col("address").endswith(" HACKNEY"), F.expr("substring(address, 1, address_length -8)")) \
+            .otherwise(F.col("address")))
+
 #     logger.info('address line formatting - dashes between numbers: remove extra spaces')
 #     df = df.withColumn("address", F.regexp_replace(F.col("address"), '(\\d+) ?- ?(\\d+)', '$1-$2'))
 #

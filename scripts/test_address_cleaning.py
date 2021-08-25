@@ -152,7 +152,24 @@ class TestCleanAddresses:
         self.assertDictionaryContains(
             {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
         )
+    
+    def test_removes_london_from_end_of_address(self, spark):
+        response = self.clean_addresses(spark, [
+            {'address': '4 on tHe RoAd london', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ], 'address')
 
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
+        )
+
+    def test_removes_hackney_from_end_of_address(self, spark):
+        response = self.clean_addresses(spark, [
+            {'address': '4 on tHe RoAd hackney', 'import_year': "2021" , 'import_month': "08", 'import_day': "19"}
+        ], 'address')
+
+        self.assertDictionaryContains(
+            {'concatenated_string_to_match': '4 ON THE ROAD'}, response[0]
+        )
 
     def test_replaces_abbreviation_at_end_of_address(self, spark):
         response = self.clean_addresses(spark, [
