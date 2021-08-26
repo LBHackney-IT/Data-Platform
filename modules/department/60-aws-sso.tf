@@ -1,5 +1,5 @@
 locals {
-  deploy_sso = var.google_group_display_name && var.is_live_environment
+  deploy_sso = var.google_group_display_name != null && var.is_live_environment
 }
 
 resource "aws_ssoadmin_permission_set" "department" {
