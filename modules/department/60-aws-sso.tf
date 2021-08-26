@@ -45,6 +45,7 @@ data "aws_caller_identity" "data_platform" {
 # Link the permission set to the group
 resource "aws_ssoadmin_account_assignment" "permission_set_attachment" {
   count              = local.deploy_sso ? 1 : 0
+  provider           = aws.aws_hackit_account
   instance_arn       = var.sso_instance_arn
   permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
 
