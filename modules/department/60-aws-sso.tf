@@ -8,7 +8,7 @@ resource "aws_ssoadmin_permission_set" "department" {
   provider = aws.aws_hackit_account
 
   // Name must not exceed 32 characters
-  name             = "DataPlat${local.department_pascalcase}DoNotUse"
+  name             = "DataPlatform${local.department_pascalcase}"
   description      = "This is a test permission set created by Terraform"
   instance_arn     = var.sso_instance_arn
   session_duration = "PT12H"
