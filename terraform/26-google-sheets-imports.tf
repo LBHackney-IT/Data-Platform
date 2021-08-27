@@ -157,7 +157,7 @@ module "parking_spreadsheet_estate_permit_limits" {
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
-  glue_role_arn                   = aws_iam_role.parking_glue.arn
+  glue_role_arn                   = module.department_parking.glue_role_arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_parking.raw_zone_catalog_database_name
@@ -179,7 +179,7 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
-  glue_role_arn                   = aws_iam_role.parking_glue.arn
+  glue_role_arn                   = module.department_parking.glue_role_arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_parking.raw_zone_catalog_database_name

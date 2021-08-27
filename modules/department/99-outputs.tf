@@ -48,3 +48,8 @@ output "redshift_cluster_parking_secret" {
   value       = aws_secretsmanager_secret.redshift_cluster_credentials.arn
 }
 
+output "glue_role_arn" {
+  description = "ARN for the role used to run this departments glue scripts"
+  value       = aws_iam_role.glue_agent.arn
+}
+
