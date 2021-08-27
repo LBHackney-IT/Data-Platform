@@ -42,3 +42,9 @@ output "google_service_account" {
   description = "The service account created for this department"
   value       = module.google_service_account
 }
+
+output "redshift_cluster_parking_secret" {
+  description = "The redshift cluster parking secret arn"
+  value       = aws_secretsmanager_secret.redshift_cluster_credentials.arn
+}
+
