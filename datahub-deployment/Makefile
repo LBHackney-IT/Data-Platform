@@ -9,5 +9,11 @@ get-all:
 upgrade-datahub-release:
 	aws-vault exec hackney-dataplatform-staging -- helm upgrade --install datahub datahub/datahub --values ./values.yaml --kubeconfig ./kubeconfig
 
-datahub-release-hostory:
+datahub-release-history:
 	aws-vault exec hackney-dataplatform-staging -- helm history datahub --kubeconfig ./kubeconfig
+
+pull-datahub-repository:
+	aws-vault exec hackney-dataplatform-staging -- helm repo add datahub https://helm.datahubproject.io/
+
+datahub-source:
+	git clone git@github.com:linkedin/datahub.git datahub-source
