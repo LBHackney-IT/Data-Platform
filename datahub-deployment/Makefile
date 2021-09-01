@@ -8,3 +8,6 @@ get-all:
 
 upgrade-datahub-release:
 	aws-vault exec hackney-dataplatform-staging -- helm upgrade --install datahub datahub/datahub --values ./values.yaml --kubeconfig ./kubeconfig
+
+datahub-release-hostory:
+	aws-vault exec hackney-dataplatform-staging -- helm history datahub --kubeconfig ./kubeconfig
