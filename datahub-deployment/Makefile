@@ -11,6 +11,9 @@ upgrade-datahub-release:
 
 datahub-release-history:
 	aws-vault exec hackney-dataplatform-staging -- helm history datahub --kubeconfig ./kubeconfig
+	
+pull-datahub-repository:
+	aws-vault exec hackney-dataplatform-staging -- helm repo add datahub https://helm.datahubproject.io/
 
-ingest-staging-glue-data-to-datahub:
-	aws-vault exec hackney-dataplatform-staging -- datahub ingest -c metadata-ingestion/examples/recipes/glue_to_datahub.yml
+datahub-source:
+	git clone git@github.com:linkedin/datahub.git datahub-source
