@@ -14,6 +14,9 @@ datahub-release-history:
 	
 pull-datahub-repository:
 	aws-vault exec hackney-dataplatform-staging -- helm repo add datahub https://helm.datahubproject.io/
+	
+pull-datahub-repository:
+	aws-vault exec hackney-dataplatform-staging -- helm repo add datahub https://helm.datahubproject.io/
 
 datahub-source:
 	git clone git@github.com:linkedin/datahub.git datahub-source
