@@ -10,7 +10,7 @@ datahub-frontend:
   enabled: true
   image:
     repository: linkedin/datahub-frontend-react
-    tag: "latest"
+    tag: "v0.8.11"
   ingress:
     enabled: true
     annotations:
