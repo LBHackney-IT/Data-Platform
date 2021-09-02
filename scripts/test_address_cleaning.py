@@ -7,7 +7,7 @@ class TestCleanAddresses:
     def test_has_concatenated_string_to_match_column(self, spark):
         response = self.clean_addresses(spark, [{'address': 'CRANLEIGH COURT'}])
 
-        self.assertDictionaryContains({'concatenated_string_to_match': 'CRANLEIGH COURT'}, response[0])
+        self.assertDictionaryContains({'concatenated_string_to_match': 'CRANLEIGH CRT'}, response[0])
 
     def test_has_concatenated_string_to_match_column_when_source_address_header_is_different(self, spark):
         response = self.clean_addresses(spark, [{'flowers': 'FLOWERS COURT'}], 'flowers')
