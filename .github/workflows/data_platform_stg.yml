@@ -42,7 +42,7 @@ jobs:
           make test
   build:
     needs: tests
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.tests.result == 'success'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'pull_request' && needs.tests.result == 'success'
     name: AWS Terraform
     runs-on: ubuntu-latest
     steps:
