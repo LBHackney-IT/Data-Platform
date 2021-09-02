@@ -18,8 +18,6 @@ env:
 on:
   push:
     branches: ['*']
-  pull_request:
-    branches: ['*']
     paths-ignore:
       - "infrastructure/projects/**"
       - "infrastructure/platform/**"
