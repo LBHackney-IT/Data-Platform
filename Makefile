@@ -22,3 +22,4 @@ plan:
 	cd terraform && make plan
 validate:
 	cd terraform && make validate
+
