@@ -68,6 +68,16 @@ resource "aws_s3_bucket_object" "jars" {
   etag   = filemd5("../jars/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar")
 }
 
+resource "aws_s3_bucket_object" "deeque_jar" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "jars/deequ-1.0.3.jar"
+  acl    = "private"
+  source = "../jars/target/deequ-1.0.3.jar"
+  etag   = filemd5("../jars/target/deequ-1.0.3.jar")
+}
+
 resource "aws_s3_bucket_object" "repairs_cleaning_helpers" {
   tags = module.tags.values
 
