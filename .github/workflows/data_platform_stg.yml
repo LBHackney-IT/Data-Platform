@@ -17,7 +17,9 @@ env:
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - test-ci-cd-pipeline
     paths-ignore:
       - "infrastructure/projects/**"
       - "infrastructure/platform/**"
