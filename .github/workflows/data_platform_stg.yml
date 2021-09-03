@@ -17,7 +17,7 @@ env:
 
 on:
   push:
-    branches: [main]
+    branches: ['*']
     paths-ignore:
       - "infrastructure/projects/**"
       - "infrastructure/platform/**"
@@ -31,7 +31,34 @@ on:
         required: false
 
 jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run `make test`
+        run: |
+          cd scripts
+          make test
+  validate:
+    name: AWS Terraform Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      - name: Terraform Validate
+        uses: ./.github/actions/aws-terraform/terraform-validate
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          terraform_state_s3_key_prefix: ${{ env.network_state_prefix }}
+          build_path: ${{ env.network_build_path }}
+          environment: ${{ env.environment }}
+
   build:
+    needs: [tests, validate]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.tests.result == 'success' && needs.validate.result == 'success'
     name: AWS Terraform
     runs-on: ubuntu-latest
     steps:
