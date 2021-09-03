@@ -58,7 +58,7 @@ jobs:
 
   build:
     needs: [tests, validate]
-#    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.tests.result == 'success'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.tests.result == 'success' && needs.validate.result == 'success'
     name: AWS Terraform
     runs-on: ubuntu-latest
     steps:
