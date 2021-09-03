@@ -48,6 +48,11 @@ variable "helper_script_key" {
   type        = string
 }
 
+variable "deequ_jar_file_path" {
+  description = "Object key for Deequ jar"
+  type        = string
+}
+
 variable "cleaning_helper_script_key" {
   description = "Cleaning helpers script key"
   type        = string
