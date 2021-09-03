@@ -49,6 +49,12 @@ jobs:
         uses: actions/checkout@v2
       - name: Terraform Validate
         uses: ./.github/actions/aws-terraform/terraform-validate
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          terraform_state_s3_key_prefix: ${{ env.network_state_prefix }}
+          build_path: ${{ env.network_build_path }}
+          environment: ${{ env.environment }}
 
   build:
     needs: [tests, validate]
