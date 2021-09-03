@@ -24,7 +24,7 @@ There are three different options for running the tests, all must be run from in
 docker run --rm -p "4040:4040" -w /root/scripts -v %cd%:/root/scripts amazon/aws-glue-libs:glue_libs_1.0.0_image_01 /home/aws-glue-libs/bin/gluepytest --durations=0
 ```
 
-2. To run all the tests and have them autmatically rerun when a file changes:
+2. To run all the tests and have them automatically rerun when a file changes:
 ```sh
 docker run --rm -p "4040:4040" -w /root/scripts -v %cd%:/root/scripts amazon/aws-glue-libs:glue_libs_1.0.0_image_01 bash -c 'pip install pytest-watch && pytest-watch'
 ```
