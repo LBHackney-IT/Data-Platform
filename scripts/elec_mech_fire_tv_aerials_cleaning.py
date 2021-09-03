@@ -10,6 +10,10 @@ from pyspark.sql.types import StringType
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
+from pydeequ.analyzers import AnalysisRunner, Size, Completeness, Minimum, Maximum
+from pydeequ.repository import FileSystemMetricsRepository, ResultKey
+
+
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
 cleaned_repairs_s3_bucket_target = get_glue_env_var(
@@ -63,6 +67,21 @@ df2 = df2.select("data_source", "datetime_raised",
                  "import_datetime", "import_timestamp", "import_year",
                  "import_month", "import_day", "import_date",
                  )
+
+metrics_target_location = "s3://dataplatform-stg-refined-zone/quality-metrics/department=housing-repairs/dataset=tv-aerials-cleaned/deequ-metrics.json"
+
+metricsRepository = FileSystemMetricsRepository(glueContext.spark_session, metrics_target_location)
+resultKey = ResultKey(glueContext.spark_session, ResultKey.current_milli_time(), {})
+
+analysisResult = AnalysisRunner(glueContext.spark_session) \
+                    .onData(df2) \
+                    .addAnalyzer(Size()) \
+                    .addAnalyzer(Completeness("description_of_work")) \
+                    .addAnalyzer(Minimum("work_priority_priority_code")) \
+                    .addAnalyzer(Maximum("work_priority_priority_code")) \
+                    .useRepository(metricsRepository) \
+                    .saveOrAppendResult(resultKey) \
+                    .run()
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
