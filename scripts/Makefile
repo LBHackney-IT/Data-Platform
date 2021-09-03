@@ -1,10 +1,18 @@
 .PHONY: $(MAKECMDGOALS)
 
 test:
+ifdef filename
+	docker run --rm -p "4040:4040" -w /root/scripts -v ${PWD}:/root/scripts amazon/aws-glue-libs:glue_libs_1.0.0_image_01 /home/aws-glue-libs/bin/gluepytest ./${filename} --durations=0
+else
 	docker run --rm -p "4040:4040" -w /root/scripts -v ${PWD}:/root/scripts amazon/aws-glue-libs:glue_libs_1.0.0_image_01 /home/aws-glue-libs/bin/gluepytest --durations=0
+endif
 
 test-watch:
+ifdef filename
+	docker run --rm -p "4040:4040" -w /root/scripts -v ${PWD}:/root/scripts amazon/aws-glue-libs:glue_libs_1.0.0_image_01 bash -c 'pip install pytest-watch && pytest-watch ./${filename}'
+else
 	docker run --rm -p "4040:4040" -w /root/scripts -v ${PWD}:/root/scripts amazon/aws-glue-libs:glue_libs_1.0.0_image_01 bash -c 'pip install pytest-watch && pytest-watch'
+endif
 
 history-server:
 	docker run --rm -p "18080:18080" -v ${PWD}/spark_events:/tmp/spark-events amazon/aws-glue-libs:glue_libs_1.0.0_image_01 bash -c '$${SPARK_HOME}/bin/spark-class org.apache.spark.deploy.history.HistoryServer'
