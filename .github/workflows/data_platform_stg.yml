@@ -44,13 +44,13 @@ jobs:
     name: AWS Terraform Validate
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
       - name: Terraform Validate
-        uses:
-
-
+        uses: ./.github/actions/aws-terraform/terraform_validate.yml
 
   build:
-    needs: tests
+    needs: [tests, validate]
 #    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.tests.result == 'success'
     name: AWS Terraform
     runs-on: ubuntu-latest
