@@ -78,7 +78,7 @@ resource "aws_s3_bucket_object" "deeque_jar" {
   etag   = filemd5("../jars/target/deequ-1.0.3.jar")
 }
 
-resource "aws_s3_bucket_object" "pydeeque" {
+resource "aws_s3_bucket_object" "pydeequ" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id

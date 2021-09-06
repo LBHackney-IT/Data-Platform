@@ -109,3 +109,8 @@ variable "match_to_property_shell" {
   type        = string
   default     = ""
 }
+
+variable "pydeequ_zip_key" {
+  description = "Pydeequ module to be used in Glue scripts"
+  type        = string
+}

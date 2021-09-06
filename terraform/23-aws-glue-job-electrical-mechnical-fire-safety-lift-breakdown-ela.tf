@@ -24,6 +24,7 @@ module "lift_breakdown_el" {
   glue_temp_storage_bucket_id        = module.glue_temp_storage.bucket_url
   refined_zone_bucket_id             = module.refined_zone.bucket_id
   helper_script_key                  = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                    = aws_s3_bucket_object.pydeequ.key
   deequ_jar_file_path                = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.deeque_jar.key}"
   cleaning_helper_script_key         = aws_s3_bucket_object.repairs_cleaning_helpers.key
   catalog_database                   = module.department_housing_repairs.raw_zone_catalog_database_name
