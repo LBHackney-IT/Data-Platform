@@ -26,6 +26,9 @@ jobs:
       - name: Package & download jars
         working-directory: "./jars"
         run: make all
+      - name: Install and zip pydeequ module
+        working-directory: "./pydeequ-dependencies"
+        run: make install-and-zip
       - name: Run `terraform validate` on Terraform Networking
         working-directory: "./terraform-networking"
         run: |
