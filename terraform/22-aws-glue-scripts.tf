@@ -78,6 +78,16 @@ resource "aws_s3_bucket_object" "deeque_jar" {
   etag   = filemd5("../jars/target/deequ-1.0.3.jar")
 }
 
+resource "aws_s3_bucket_object" "pydeeque" {
+  tags = module.tags.values
+
+  bucket = module.glue_scripts.bucket_id
+  key    = "python-modules/pydeequ-1.0.1.zip"
+  acl    = "private"
+  source = "../pydeequ-dependencies/pydeequ-1.0.1.zip"
+  etag   = filemd5("../pydeequ-dependencies/pydeequ-1.0.1.zip")
+}
+
 resource "aws_s3_bucket_object" "repairs_cleaning_helpers" {
   tags = module.tags.values
 
