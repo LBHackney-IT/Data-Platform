@@ -11,7 +11,8 @@ module "housing_repairs_elec_mech_fire_cleaning" {
     "--source_catalog_database"          = var.catalog_database
     "--source_catalog_table"             = var.worksheet_resource.catalog_table
     "--TempDir"                          = var.glue_temp_storage_bucket_id
-    "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.cleaning_helper_script_key}"
+    "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.cleaning_helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.pydeequ_zip_key}"
+    "--extra-jars"                       = var.deequ_jar_file_path
   }
   name_prefix        = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-cleaning"
   database_name      = var.refined_zone_catalog_database_name
