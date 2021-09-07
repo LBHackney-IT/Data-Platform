@@ -11,7 +11,7 @@ from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 from pydeequ.checks import *
 
-from pydeequ.analyzers import AnalysisRunner, Size, Completeness, Minimum, Maximum
+from pydeequ.analyzers import Size
 from pydeequ.repository import FileSystemMetricsRepository, ResultKey
 from pydeequ.verification import RelativeRateOfChangeStrategy
 
@@ -76,22 +76,14 @@ metrics_target_location = "s3://dataplatform-stg-refined-zone/quality-metrics/de
 metricsRepository = FileSystemMetricsRepository(spark_session, metrics_target_location)
 resultKey = ResultKey(spark_session, ResultKey.current_milli_time(), {})
 
-analysisResult = AnalysisRunner(spark_session) \
-                    .onData(df2) \
-                    .addAnalyzer(Size()) \
-                    .addAnalyzer(Completeness("description_of_work")) \
-                    .addAnalyzer(Minimum("work_priority_priority_code")) \
-                    .addAnalyzer(Maximum("work_priority_priority_code")) \
-                    .useRepository(metricsRepository) \
-                    .saveOrAppendResult(resultKey) \
-                    .run()
-
 checkResult = VerificationSuite(spark_session) \
     .onData(df) \
+    .useRepository(metricsRepository) \
     .addCheck(Check(spark_session, CheckLevel.Error, "data quality checks") \
-        .hasSize(lambda x: x >= 50) \
         .hasMin("work_priority_priority_code", lambda x: x >= 1) \
-        .hasMax("work_priority_priority_code", lambda x: x <= 4))  \
+        .hasMax("work_priority_priority_code", lambda x: x <= 4)  \
+        .isComplete("description_of_work")) \
+    .saveOrAppendResult(resultKey) \
     .run()
 
 checkResult_df = VerificationResult.checkResultsAsDataFrame(spark_session, checkResult)
@@ -101,6 +93,7 @@ anomalyCheckResult = VerificationSuite(spark_session) \
     .onData(df) \
     .useRepository(metricsRepository) \
     .addAnomalyCheck(RelativeRateOfChangeStrategy(maxRateIncrease = 2.0), Size()) \
+    .saveOrAppendResult(resultKey) \
     .run()
 
 anomalyCheckResult_df = VerificationResult.checkResultsAsDataFrame(spark_session, anomalyCheckResult)
