@@ -13,6 +13,7 @@ from pydeequ.checks import *
 
 from pydeequ.analyzers import AnalysisRunner, Size, Completeness, Minimum, Maximum
 from pydeequ.repository import FileSystemMetricsRepository, ResultKey
+from pydeequ.verification import RelativeRateOfChangeStrategy
 
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
@@ -95,6 +96,15 @@ checkResult = VerificationSuite(spark_session) \
 
 checkResult_df = VerificationResult.checkResultsAsDataFrame(spark_session, checkResult)
 checkResult_df.show()
+
+anomalyCheckResult = VerificationSuite(spark_session) \
+    .onData(df) \
+    .useRepository(metricsRepository) \
+    .addAnomalyCheck(RelativeRateOfChangeStrategy(maxRateIncrease = 2.0), Size()) \
+    .run()
+
+anomalyCheckResult_df = VerificationResult.checkResultsAsDataFrame(spark_session, anomalyCheckResult)
+anomalyCheckResult_df.show()
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
