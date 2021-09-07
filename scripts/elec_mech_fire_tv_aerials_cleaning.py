@@ -9,11 +9,11 @@ from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.types import StringType
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import map_repair_priority, clean_column_names
-from pydeequ.checks import *
 
 from pydeequ.analyzers import Size
+from pydeequ.checks import Check, CheckLevel
 from pydeequ.repository import FileSystemMetricsRepository, ResultKey
-from pydeequ.verification import RelativeRateOfChangeStrategy
+from pydeequ.verification import VerificationSuite, VerificationResult, RelativeRateOfChangeStrategy
 
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
