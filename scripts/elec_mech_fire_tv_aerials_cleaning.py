@@ -10,8 +10,10 @@ from pyspark.sql.types import StringType
 from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
-from pydeequ.analyzers import AnalysisRunner, Size, Completeness, Minimum, Maximum
+from pydeequ.analyzers import Size
+from pydeequ.checks import Check, CheckLevel
 from pydeequ.repository import FileSystemMetricsRepository, ResultKey
+from pydeequ.verification import VerificationSuite, VerificationResult, RelativeRateOfChangeStrategy
 
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
@@ -23,6 +25,7 @@ cleaned_repairs_s3_bucket_target = get_glue_env_var(
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
+spark_session = glueContext.spark_session
 logger = glueContext.get_logger()
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
@@ -70,18 +73,31 @@ df2 = df2.select("data_source", "datetime_raised",
 
 metrics_target_location = "s3://dataplatform-stg-refined-zone/quality-metrics/department=housing-repairs/dataset=tv-aerials-cleaned/deequ-metrics.json"
 
-metricsRepository = FileSystemMetricsRepository(glueContext.spark_session, metrics_target_location)
-resultKey = ResultKey(glueContext.spark_session, ResultKey.current_milli_time(), {})
+metricsRepository = FileSystemMetricsRepository(spark_session, metrics_target_location)
+resultKey = ResultKey(spark_session, ResultKey.current_milli_time(), {})
 
-analysisResult = AnalysisRunner(glueContext.spark_session) \
-                    .onData(df2) \
-                    .addAnalyzer(Size()) \
-                    .addAnalyzer(Completeness("description_of_work")) \
-                    .addAnalyzer(Minimum("work_priority_priority_code")) \
-                    .addAnalyzer(Maximum("work_priority_priority_code")) \
-                    .useRepository(metricsRepository) \
-                    .saveOrAppendResult(resultKey) \
-                    .run()
+checkResult = VerificationSuite(spark_session) \
+    .onData(df) \
+    .useRepository(metricsRepository) \
+    .addCheck(Check(spark_session, CheckLevel.Error, "data quality checks") \
+        .hasMin("work_priority_priority_code", lambda x: x >= 1) \
+        .hasMax("work_priority_priority_code", lambda x: x <= 4)  \
+        .isComplete("description_of_work")) \
+    .saveOrAppendResult(resultKey) \
+    .run()
+
+checkResult_df = VerificationResult.checkResultsAsDataFrame(spark_session, checkResult)
+checkResult_df.show()
+
+anomalyCheckResult = VerificationSuite(spark_session) \
+    .onData(df) \
+    .useRepository(metricsRepository) \
+    .addAnomalyCheck(RelativeRateOfChangeStrategy(maxRateIncrease = 2.0), Size()) \
+    .saveOrAppendResult(resultKey) \
+    .run()
+
+anomalyCheckResult_df = VerificationResult.checkResultsAsDataFrame(spark_session, anomalyCheckResult)
+anomalyCheckResult_df.show()
 
 cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
 parquetData = glueContext.write_dynamic_frame.from_options(
@@ -92,3 +108,6 @@ parquetData = glueContext.write_dynamic_frame.from_options(
         "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
     transformation_ctx="parquetData")
 job.commit()
+
+spark_session.sparkContext._gateway.close()
+spark_session.stop()
