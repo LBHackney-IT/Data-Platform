@@ -20,8 +20,13 @@ def clean_column_names(df):
         re.sub("[^0-9a-zA-Z$]+", "_", col.lower())) for col in df.columns])
     return df2
 
+def get_metrics_target_location():
+    metrics_target_location = get_glue_env_var('deequ_metrics_location')
+    if (metrics_target_location == None):
+        raise ValueError("deequ_metrics_location not set. Please define in the glue job arguments.")
+    return metrics_target_location
 
-def get_glue_env_var(key, default="none"):
+def get_glue_env_var(key, default=None):
     if f'--{key}' in sys.argv:
         return getResolvedOptions(sys.argv, [key])[key]
     else:
