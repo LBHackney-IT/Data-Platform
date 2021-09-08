@@ -13,7 +13,8 @@ from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 from pydeequ.analyzers import Size
 from pydeequ.checks import Check, CheckLevel
 from pydeequ.repository import FileSystemMetricsRepository, ResultKey
-from pydeequ.verification import VerificationSuite, VerificationResult, RelativeRateOfChangeStrategy
+from pydeequ.verification import VerificationSuite, VerificationResult
+from pydeequ.anomaly_detection import RelativeRateOfChangeStrategy
 
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
