@@ -1,5 +1,6 @@
 import boto3
 import sys
+import re
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -26,7 +27,10 @@ prefix = get_glue_env_var("s3_prefix")
 table_filter_expression = get_glue_env_var("table_filter_expression")
 logger = glue_context.get_logger()
 
-for table in glue_client.get_tables(DatabaseName=database_name_source, Expression=table_filter_expression)['TableList']:
+filtering_pattern = re.compile(table_filter_expression)
+tables_to_move = [table for table in glue_context.tableNames(dbName=database_name_source) if filtering_pattern.match(table)]
+
+for table in tables_to_move:
   logger.info(f"Starting copying table {database_name_source}.{table['Name']}")
   table_data_frame = glue_context.create_dynamic_frame.from_catalog(
       name_space = database_name_source,
