@@ -98,6 +98,7 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
     "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_liberator.name
     "--glue_database_name_target" = aws_glue_catalog_database.raw_zone_liberator.name
     "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--enable-glue-datacatalog"   = "true"
   }
 }
 
