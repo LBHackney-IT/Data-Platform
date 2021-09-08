@@ -77,7 +77,7 @@ metricsRepository = FileSystemMetricsRepository(spark_session, metrics_target_lo
 resultKey = ResultKey(spark_session, ResultKey.current_milli_time(), {})
 
 checkResult = VerificationSuite(spark_session) \
-    .onData(df) \
+    .onData(df2) \
     .useRepository(metricsRepository) \
     .addCheck(Check(spark_session, CheckLevel.Error, "data quality checks") \
         .hasMin("work_priority_priority_code", lambda x: x >= 1) \
@@ -90,7 +90,7 @@ checkResult_df = VerificationResult.checkResultsAsDataFrame(spark_session, check
 checkResult_df.show()
 
 anomalyCheckResult = VerificationSuite(spark_session) \
-    .onData(df) \
+    .onData(df2) \
     .useRepository(metricsRepository) \
     .addAnomalyCheck(RelativeRateOfChangeStrategy(maxRateIncrease = 2.0), Size()) \
     .saveOrAppendResult(resultKey) \
