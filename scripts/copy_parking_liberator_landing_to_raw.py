@@ -35,7 +35,8 @@ for table_name in tables_to_move:
   table_data_frame = glue_context.create_dynamic_frame.from_catalog(
       name_space = database_name_source,
       table_name = table_name,
-      transformation_ctx = "data_source" + table_name
+      transformation_ctx = "data_source" + table_name,
+      push_down_predicate = "import_date>=date_format(date_sub(current_date, 5), 'yyyyMMdd')"
   ).toDF()
 
   if(len(table_data_frame.columns) == 0):
