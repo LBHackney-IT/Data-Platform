@@ -7,7 +7,7 @@ from awsglue.job import Job
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.types import StringType
-from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from helpers import get_glue_env_var, get_metrics_target_location, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
 from pydeequ.analyzers import Size
@@ -20,7 +20,7 @@ source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
 cleaned_repairs_s3_bucket_target = get_glue_env_var(
     'cleaned_repairs_s3_bucket_target', '')
-
+metrics_target_location = get_metrics_target_location()
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 sc = SparkContext.getOrCreate()
@@ -71,7 +71,6 @@ df2 = df2.select("data_source", "datetime_raised",
                  "import_month", "import_day", "import_date",
                  )
 
-metrics_target_location = "s3://dataplatform-stg-refined-zone/quality-metrics/department=housing-repairs/dataset=tv-aerials-cleaned/deequ-metrics.json"
 
 metricsRepository = FileSystemMetricsRepository(spark_session, metrics_target_location)
 resultKey = ResultKey(spark_session, ResultKey.current_milli_time(), {})
