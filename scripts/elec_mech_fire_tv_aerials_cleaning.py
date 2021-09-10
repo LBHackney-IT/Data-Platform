@@ -16,7 +16,6 @@ from pydeequ.repository import FileSystemMetricsRepository, ResultKey
 from pydeequ.verification import VerificationSuite, VerificationResult
 from pydeequ.anomaly_detection import RelativeRateOfChangeStrategy
 
-
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
 cleaned_repairs_s3_bucket_target = get_glue_env_var(
@@ -99,15 +98,32 @@ anomalyCheckResult = VerificationSuite(spark_session) \
 anomalyCheckResult_df = VerificationResult.checkResultsAsDataFrame(spark_session, anomalyCheckResult)
 anomalyCheckResult_df.show()
 
-cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
-parquetData = glueContext.write_dynamic_frame.from_options(
-    frame=cleanedDataframe,
-    connection_type="s3",
-    format="parquet",
-    connection_options={
-        "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
-    transformation_ctx="parquetData")
-job.commit()
+
+print(f"anomalyCheckResult_df status: {anomalyCheckResult_df.select('constraint_status').show()}")
+
+print(f"checkResult_df status: {checkResult_df.select('constraint_status').show()}")
+
+
+if anomalyCheckResult_df.constraint_status.contains("Success") and checkResult_df.constraint_status.contains("Success"):
+    print("No anomalies detected")
+    spark_session.sparkContext._gateway.close()
+    spark_session.stop()
+
+
+    # cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
+    # parquetData = glueContext.write_dynamic_frame.from_options(
+    #     frame=cleanedDataframe,
+    #     connection_type="s3",
+    #     format="parquet",
+    #     connection_options={
+    #         "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
+    #     transformation_ctx="parquetData")
+    # job.commit()
+
+else:
+    print("Anomaly detected")
+    spark_session.sparkContext._gateway.close()
+    spark_session.stop()
 
 spark_session.sparkContext._gateway.close()
 spark_session.stop()
