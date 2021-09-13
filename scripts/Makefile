@@ -2,10 +2,10 @@
 
 filename ?= ""
 test:
-	docker run --rm -p "4040:4040" -w /root/scripts -v ${PWD}:/root/scripts amazon/aws-glue-libs:glue_libs_1.0.0_image_01 /home/aws-glue-libs/bin/gluepytest ./${filename} --durations=0
+	filename=${filename} docker compose up unit_tests
 
 test-watch:
-	docker run --rm -p "4040:4040" -w /root/scripts -v ${PWD}:/root/scripts amazon/aws-glue-libs:glue_libs_1.0.0_image_01 bash -c 'pip install pytest-watch && pytest-watch ./${filename}'
+	docker compose run --entrypoint "bash -c 'pip install pytest-watch && pytest-watch ./${filename}'" unit_tests
 
 history-server:
 	docker run --rm -p "18080:18080" -v ${PWD}/spark_events:/tmp/spark-events amazon/aws-glue-libs:glue_libs_1.0.0_image_01 bash -c '$${SPARK_HOME}/bin/spark-class org.apache.spark.deploy.history.HistoryServer'
