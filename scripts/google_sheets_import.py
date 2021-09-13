@@ -32,7 +32,7 @@ headerRowNumber = get_glue_env_var('header_row_number', 1)
 s3BucketTarget = get_glue_env_var('s3_bucket_target', '')
 
 # Get credentials from AWS Secret Manager
-awsSecret = get_secret(logger, get_glue_env_var('secret_id', ''), "eu-west-2")
+awsSecret = get_secret(get_glue_env_var('secret_id', ''), "eu-west-2")
 googleSheetsJsonCredentials = json.loads(awsSecret)
 
 # CODE

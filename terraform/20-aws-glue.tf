@@ -138,7 +138,9 @@ resource "aws_iam_policy" "glue_access_policy" {
           "secretsmanager:GetSecretValue"
         ],
         Resource : [
-          aws_secretsmanager_secret.sheets_credentials_housing.arn
+          aws_secretsmanager_secret.sheets_credentials_housing.arn,
+          aws_secretsmanager_secret.tascomi_api_public_key.id,
+          aws_secretsmanager_secret.tascomi_api_private_key.id
         ]
       }
     ]
