@@ -7,7 +7,7 @@ from awsglue.job import Job
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.types import StringType
-from helpers import get_glue_env_var, get_metrics_target_location, get_latest_partitions, PARTITION_KEYS
+from helpers import get_glue_env_var, get_metrics_target_location, get_latest_partitions, cancel_job_if_failing_quality_checks, PARTITION_KEYS
 from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
 from pydeequ.analyzers import Size
@@ -79,51 +79,24 @@ checkResult = VerificationSuite(spark_session) \
     .onData(df2) \
     .useRepository(metricsRepository) \
     .addCheck(Check(spark_session, CheckLevel.Error, "data quality checks") \
-        .hasMin("work_priority_priority_code", lambda x: x >= 1) \
-        .hasMax("work_priority_priority_code", lambda x: x <= 4)  \
+        .hasMin("work_priority_priority_code", lambda x: x >= 1, 'The minimum(work_priority_priority_code) >= 2') \
+        .hasMax("work_priority_priority_code", lambda x: x <= 4, 'The maximum(work_priority_priority_code) <= 3')  \
         .isComplete("description_of_work")) \
-    .saveOrAppendResult(resultKey) \
-    .run()
-
-checkResult_df = VerificationResult.checkResultsAsDataFrame(spark_session, checkResult)
-checkResult_df.show()
-
-anomalyCheckResult = VerificationSuite(spark_session) \
-    .onData(df2) \
-    .useRepository(metricsRepository) \
     .addAnomalyCheck(RelativeRateOfChangeStrategy(maxRateIncrease = 2.0), Size()) \
     .saveOrAppendResult(resultKey) \
     .run()
 
-anomalyCheckResult_df = VerificationResult.checkResultsAsDataFrame(spark_session, anomalyCheckResult)
-anomalyCheckResult_df.show()
+cancel_job_if_failing_quality_checks(VerificationResult.checkResultsAsDataFrame(spark_session, checkResult))
 
-
-print(f"anomalyCheckResult_df status: {anomalyCheckResult_df.select('constraint_status').show()}")
-
-print(f"checkResult_df status: {checkResult_df.select('constraint_status').show()}")
-
-
-if anomalyCheckResult_df.constraint_status.contains("Success") and checkResult_df.constraint_status.contains("Success"):
-    print("No anomalies detected")
-    spark_session.sparkContext._gateway.close()
-    spark_session.stop()
-
-
-    # cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
-    # parquetData = glueContext.write_dynamic_frame.from_options(
-    #     frame=cleanedDataframe,
-    #     connection_type="s3",
-    #     format="parquet",
-    #     connection_options={
-    #         "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
-    #     transformation_ctx="parquetData")
-    # job.commit()
-
-else:
-    print("Anomaly detected")
-    spark_session.sparkContext._gateway.close()
-    spark_session.stop()
+cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
+parquetData = glueContext.write_dynamic_frame.from_options(
+    frame=cleanedDataframe,
+    connection_type="s3",
+    format="parquet",
+    connection_options={
+        "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
+    transformation_ctx="parquetData")
+job.commit()
 
 spark_session.sparkContext._gateway.close()
 spark_session.stop()

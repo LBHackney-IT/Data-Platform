@@ -5,6 +5,7 @@ import datetime
 import unicodedata
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as f
+from pyspark.sql import DataFrame
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 
@@ -115,3 +116,21 @@ def get_latest_partitions(dfa):
     dfa = dfa.where(f.col('import_day') == dfa.select(
         f.max('import_day')).first()[0])
     return dfa
+
+def cancel_job_if_failing_quality_checks(check_results: DataFrame):
+    '''
+    This method will check if there are any failing constraints
+    on the provided PyDeequ Verification Result.
+    If there are any, it will cause the Glue job to fail by
+    throwing an exception with the constraint message.
+
+    Example of usage:
+    cancel_job_if_failing_quality_checks(VerificationResult.checkResultsAsDataFrame(spark_session, checkResult))
+    '''
+
+    has_error = check_results.where(check_results.constraint_status == "Failure")
+    if (has_error.count() > 0):
+        messages = [ message['constraint_message'] for message in has_error.collect() ]
+        spark_session.sparkContext._gateway.close()
+        spark_session.stop()
+        raise Exception(' | '.join(messages))
