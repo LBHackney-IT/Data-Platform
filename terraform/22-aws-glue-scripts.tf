@@ -127,3 +127,4 @@ resource "aws_s3_bucket_object" "copy_parking_liberator_landing_to_raw" {
   source = "../scripts/copy_parking_liberator_landing_to_raw.py"
   etag   = filemd5("../scripts/copy_parking_liberator_landing_to_raw.py")
 }
+

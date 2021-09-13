@@ -28,3 +28,20 @@ resource "aws_secretsmanager_secret_version" "housing_json_credentials_secret_ve
   secret_id     = aws_secretsmanager_secret.sheets_credentials_housing.id
   secret_binary = google_service_account_key.housing_json_credentials[0].private_key
 }
+
+
+resource "aws_secretsmanager_secret" "tascomi_api_public_key" {
+  tags = module.tags.values
+
+  name_prefix = "${local.short_identifier_prefix}tascomi-api-public-key"
+
+  kms_key_id = aws_kms_key.secrets_manager_key.id
+}
+
+resource "aws_secretsmanager_secret" "tascomi_api_private_key" {
+  tags = module.tags.values
+
+  name_prefix = "${local.short_identifier_prefix}tascomi-api-private-key"
+
+  kms_key_id = aws_kms_key.secrets_manager_key.id
+}

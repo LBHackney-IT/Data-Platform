@@ -33,7 +33,7 @@ def get_glue_env_var(key, default=None):
     else:
         return default
 
-def get_secret(logger, secret_name, region_name):
+def get_secret(secret_name, region_name):
     session = boto3.session.Session()
 
     client = session.client(
