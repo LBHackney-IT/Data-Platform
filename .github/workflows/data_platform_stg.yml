@@ -87,8 +87,8 @@ jobs:
       - name: Install dependencies in g-drive-to-s3 lambda
         working-directory: "./lambdas/g_drive_to_s3"
         run: make install-requirements
-      - name: Download dependencies
-        working-directory: "./dependencies"
+      - name: Download external dependencies
+        working-directory: "./external-lib"
         run: make all
       - name: Deploy Data Platform Network
         uses: ./.github/actions/aws-terraform

@@ -9,7 +9,7 @@ lambdas/*/venv
 lambdas/*/*.zip
 lambdas/*.zip
 notebook/scripts/.ipynb_checkpoints/*
-dependencies/target/*
+external-lib/target/*
 env.tfvars
 dev.tfvars
 google_service_account_creds*.json

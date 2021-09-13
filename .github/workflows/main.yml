@@ -23,8 +23,8 @@ jobs:
         run: |
           echo "{}" >> ./google_service_account_creds.json
         shell: bash
-      - name: Download dependencies
-        working-directory: "./dependencies"
+      - name: Download external dependencies
+        working-directory: "./external-lib"
         run: make all
       - name: Run `terraform validate` on Terraform Networking
         working-directory: "./terraform-networking"
