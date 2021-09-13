@@ -64,8 +64,8 @@ resource "aws_s3_bucket_object" "jars" {
   bucket = module.glue_scripts.bucket_id
   key    = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
   acl    = "private"
-  source = "../jars/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
-  etag   = filemd5("../jars/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar")
+  source = "../dependencies/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
+  etag   = filemd5("../dependencies/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar")
 }
 
 resource "aws_s3_bucket_object" "deeque_jar" {
@@ -74,8 +74,8 @@ resource "aws_s3_bucket_object" "deeque_jar" {
   bucket = module.glue_scripts.bucket_id
   key    = "jars/deequ-1.0.3.jar"
   acl    = "private"
-  source = "../jars/target/deequ-1.0.3.jar"
-  etag   = filemd5("../jars/target/deequ-1.0.3.jar")
+  source = "../dependencies/target/deequ-1.0.3.jar"
+  etag   = filemd5("../dependencies/target/deequ-1.0.3.jar")
 }
 
 resource "aws_s3_bucket_object" "pydeequ" {
@@ -84,8 +84,8 @@ resource "aws_s3_bucket_object" "pydeequ" {
   bucket = module.glue_scripts.bucket_id
   key    = "python-modules/pydeequ-1.0.1.zip"
   acl    = "private"
-  source = "../pydeequ-dependencies/pydeequ-1.0.1.zip"
-  etag   = filemd5("../pydeequ-dependencies/pydeequ-1.0.1.zip")
+  source = "../dependencies/pydeequ-1.0.1.zip"
+  etag   = filemd5("../dependencies/target/pydeequ-1.0.1.zip")
 }
 
 resource "aws_s3_bucket_object" "repairs_cleaning_helpers" {

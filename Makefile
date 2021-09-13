@@ -15,10 +15,14 @@ lint:
 	$(MAKE) -C terraform-backend-setup lint-init lint
 
 init:
+	cd dependencies && make all
 	cd terraform && make init
 apply:
+	cd dependencies && make all
 	cd terraform && make apply
 plan:
+	cd dependencies && make all
 	cd terraform && make plan
 validate:
+	cd dependencies && make all
 	cd terraform && make validate

@@ -23,12 +23,9 @@ jobs:
         run: |
           echo "{}" >> ./google_service_account_creds.json
         shell: bash
-      - name: Package & download jars
-        working-directory: "./jars"
+      - name: Download dependencies
+        working-directory: "./dependencies"
         run: make all
-      - name: Install and zip pydeequ module
-        working-directory: "./pydeequ-dependencies"
-        run: make install-and-zip
       - name: Run `terraform validate` on Terraform Networking
         working-directory: "./terraform-networking"
         run: |
