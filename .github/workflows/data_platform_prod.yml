@@ -59,12 +59,9 @@ jobs:
       - name: Install dependencies in g-drive-to-s3 lambda
         working-directory: "./lambdas/g_drive_to_s3"
         run: make install-requirements
-      - name: Package & download jars
-        working-directory: "./jars"
+      - name: Download dependencies
+        working-directory: "./dependencies"
         run: make all
-      - name: Install and zip pydeequ module
-        working-directory: "./pydeequ-dependencies"
-        run: make install-and-zip
       - name: Deploy Data Platform Network
         uses: ./.github/actions/aws-terraform
         with:
