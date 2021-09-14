@@ -84,7 +84,7 @@ resource "aws_s3_bucket_object" "pydeequ" {
   bucket = module.glue_scripts.bucket_id
   key    = "python-modules/pydeequ-1.0.1.zip"
   acl    = "private"
-  source = "../external-lib/pydeequ-1.0.1.zip"
+  source = "../external-lib/target/pydeequ-1.0.1.zip"
   etag   = filemd5("../external-lib/target/pydeequ-1.0.1.zip")
 }
 
