@@ -130,7 +130,8 @@ def cancel_job_if_failing_quality_checks(check_results: DataFrame):
 
     has_error = check_results.where(check_results.constraint_status == "Failure")
     if (has_error.count() > 0):
-        messages = [ message['constraint_message'] for message in has_error.collect() ]
-        spark_session.sparkContext._gateway.close()
-        spark_session.stop()
+        messages = [
+            f"{message['check']}. {message['constraint_message']}"
+            for message in has_error.collect()
+        ]
         raise Exception(' | '.join(messages))
