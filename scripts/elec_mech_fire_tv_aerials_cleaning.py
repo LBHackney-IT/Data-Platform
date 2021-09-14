@@ -7,7 +7,7 @@ from awsglue.job import Job
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.types import StringType
-from helpers import get_glue_env_var, get_metrics_target_location, get_latest_partitions, cancel_job_if_failing_quality_checks, PARTITION_KEYS
+from helpers import get_glue_env_var, get_metrics_target_location, get_latest_partitions, PARTITION_KEYS
 from repairs_cleaning_helpers import map_repair_priority, clean_column_names
 
 from pydeequ.analyzers import Size
@@ -15,6 +15,7 @@ from pydeequ.checks import Check, CheckLevel
 from pydeequ.repository import FileSystemMetricsRepository, ResultKey
 from pydeequ.verification import VerificationSuite, VerificationResult
 from pydeequ.anomaly_detection import RelativeRateOfChangeStrategy
+
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')
@@ -75,28 +76,30 @@ df2 = df2.select("data_source", "datetime_raised",
 metricsRepository = FileSystemMetricsRepository(spark_session, metrics_target_location)
 resultKey = ResultKey(spark_session, ResultKey.current_milli_time(), {})
 
-checkResult = VerificationSuite(spark_session) \
-    .onData(df2) \
-    .useRepository(metricsRepository) \
-    .addCheck(Check(spark_session, CheckLevel.Error, "data quality checks") \
-        .hasMin("work_priority_priority_code", lambda x: x >= 1, 'The minimum(work_priority_priority_code) >= 2') \
-        .hasMax("work_priority_priority_code", lambda x: x <= 4, 'The maximum(work_priority_priority_code) <= 3')  \
-        .isComplete("description_of_work")) \
-    .addAnomalyCheck(RelativeRateOfChangeStrategy(maxRateIncrease = 2.0), Size()) \
-    .saveOrAppendResult(resultKey) \
-    .run()
+try:
+    checkResult = VerificationSuite(spark_session) \
+        .onData(df2) \
+        .useRepository(metricsRepository) \
+        .addCheck(Check(spark_session, CheckLevel.Error, "Data quality failure") \
+            .hasMin("work_priority_priority_code", lambda x: x >= 2, 'The minimum(work_priority_priority_code) >= 2') \
+            .hasMax("work_priority_priority_code", lambda x: x <= 4, 'The maximum(work_priority_priority_code) <= 3')  \
+            .isComplete("description_of_work")) \
+        .addAnomalyCheck(RelativeRateOfChangeStrategy(maxRateIncrease = 0.9), Size()) \
+        .saveOrAppendResult(resultKey) \
+        .run()
 
-cancel_job_if_failing_quality_checks(VerificationResult.checkResultsAsDataFrame(spark_session, checkResult))
+    cancel_job_if_failing_quality_checks(VerificationResult.checkResultsAsDataFrame(spark_session, checkResult))
 
-cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
-parquetData = glueContext.write_dynamic_frame.from_options(
-    frame=cleanedDataframe,
-    connection_type="s3",
-    format="parquet",
-    connection_options={
-        "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
-    transformation_ctx="parquetData")
-job.commit()
+    cleanedDataframe = DynamicFrame.fromDF(df2, glueContext, "cleanedDataframe")
+    parquetData = glueContext.write_dynamic_frame.from_options(
+        frame=cleanedDataframe,
+        connection_type="s3",
+        format="parquet",
+        connection_options={
+            "path": cleaned_repairs_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
+        transformation_ctx="parquetData")
+    job.commit()
 
-spark_session.sparkContext._gateway.close()
-spark_session.stop()
+finally:
+    spark_session.sparkContext._gateway.close()
+    spark_session.stop()
