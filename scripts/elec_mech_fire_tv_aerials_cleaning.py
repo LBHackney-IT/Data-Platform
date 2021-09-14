@@ -81,10 +81,10 @@ try:
         .onData(df2) \
         .useRepository(metricsRepository) \
         .addCheck(Check(spark_session, CheckLevel.Error, "Data quality failure") \
-            .hasMin("work_priority_priority_code", lambda x: x >= 2, 'The minimum(work_priority_priority_code) >= 2') \
-            .hasMax("work_priority_priority_code", lambda x: x <= 4, 'The maximum(work_priority_priority_code) <= 3')  \
+            .hasMin("work_priority_priority_code", lambda x: x >= 1, 'The minimum(work_priority_priority_code) >= 1') \
+            .hasMax("work_priority_priority_code", lambda x: x <= 4, 'The maximum(work_priority_priority_code) <= 4')  \
             .isComplete("description_of_work")) \
-        .addAnomalyCheck(RelativeRateOfChangeStrategy(maxRateIncrease = 0.9), Size()) \
+        .addAnomalyCheck(RelativeRateOfChangeStrategy(maxRateIncrease = 2.0), Size()) \
         .saveOrAppendResult(resultKey) \
         .run()
 
