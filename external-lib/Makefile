@@ -10,4 +10,4 @@ target/deequ-1.0.3.jar:
 
 target/pydeequ-1.0.1.zip:
 	pip3 install -t ./target pydeequ==1.0.1
-	zip -r target/pydeequ-1.0.1.zip target/pydeequ
+	cd target && zip -r pydeequ-1.0.1.zip pydeequ
