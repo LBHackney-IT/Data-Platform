@@ -74,7 +74,7 @@ df2 = df2.select("data_source", "datetime_raised",
 
 
 metricsRepository = FileSystemMetricsRepository(spark_session, metrics_target_location)
-resultKey = ResultKey(spark_session, ResultKey.current_milli_time(), {})
+resultKey = ResultKey(spark_session, ResultKey.current_milli_time(), {"source_database": source_catalog_database, "source_table": source_catalog_table})
 
 try:
     verificationSuite = VerificationSuite(spark_session) \
