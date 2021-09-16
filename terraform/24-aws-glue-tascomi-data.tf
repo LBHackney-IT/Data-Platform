@@ -73,7 +73,7 @@ resource "aws_glue_workflow" "tascomi_workflow" {
 }
 
 
-resource "aws_glue_trigger" "ingest_tascomi_applications_trigger" {
+resource "aws_glue_trigger" "tascomi_raw_zone_crawler_trigger" {
   tags = module.tags.values
 
   name          = "${local.short_identifier_prefix}Tascomi Data Crawler Trigger"
@@ -93,7 +93,8 @@ resource "aws_glue_trigger" "ingest_tascomi_applications_trigger" {
   }
 }
 
-resource "aws_glue_trigger" "ingest_tascomi_data_trigger" {
+
+resource "aws_glue_trigger" "ingest_tascomi_applications_trigger" {
   tags = module.tags.values
 
   name          = "${local.short_identifier_prefix}Tascomi Applications Ingestion Trigger"
@@ -105,6 +106,54 @@ resource "aws_glue_trigger" "ingest_tascomi_data_trigger" {
     job_name = aws_glue_job.ingest_tascomi_data.name
     arguments = {
       "--resource" = "applications"
+    }
+  }
+}
+
+resource "aws_glue_trigger" "ingest_tascomi_contacts_trigger" {
+  tags = module.tags.values
+
+  name          = "${local.short_identifier_prefix}Tascomi Contacts Ingestion Trigger"
+  type          = "ON_DEMAND"
+  enabled       = true
+  workflow_name = aws_glue_workflow.tascomi_workflow.name
+
+  actions {
+    job_name = aws_glue_job.ingest_tascomi_data.name
+    arguments = {
+      "--resource" = "contacts"
+    }
+  }
+}
+
+resource "aws_glue_trigger" "ingest_tascomi_public_comments_trigger" {
+  tags = module.tags.values
+
+  name          = "${local.short_identifier_prefix}Tascomi Public Comments Ingestion Trigger"
+  type          = "ON_DEMAND"
+  enabled       = true
+  workflow_name = aws_glue_workflow.tascomi_workflow.name
+
+  actions {
+    job_name = aws_glue_job.ingest_tascomi_data.name
+    arguments = {
+      "--resource" = "public_comments"
+    }
+  }
+}
+
+resource "aws_glue_trigger" "ingest_tascomi_documents_trigger" {
+  tags = module.tags.values
+
+  name          = "${local.short_identifier_prefix}Tascomi Documents Ingestion Trigger"
+  type          = "ON_DEMAND"
+  enabled       = true
+  workflow_name = aws_glue_workflow.tascomi_workflow.name
+
+  actions {
+    job_name = aws_glue_job.ingest_tascomi_data.name
+    arguments = {
+      "--resource" = "documents"
     }
   }
 }
