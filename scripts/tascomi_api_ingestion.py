@@ -22,7 +22,10 @@ def authenticate_tascomi(headers, public_key, private_key):
     headers['X-Hash'] = auth_hash
     return headers
 
-def get_tascomi_resource(url, body, public_key, private_key):
+def get_tascomi_resource(url, body):
+    global public_key
+    global private_key
+
     headers = {
         'content-type': "application/json",
         'content-length': "0",
@@ -33,14 +36,18 @@ def get_tascomi_resource(url, body, public_key, private_key):
     try:
         res = requests.get(url, data=body, headers=headers)
         records = json.loads(res.text)
-        print(f"Number of records: {len(records)}")
+        if type(records) == type(None):
+            print("Null data response: ")
+            print(res.json)
+            return ([""], url, res.status_code, f"Null data response: {json.dumps(res.json)}")
+
         serialized_records = [json.dumps(record) for record in records]
 
         return (serialized_records, url, res.status_code, "")
 
     except Exception as e:
         exception = str(e)
-        print(exception)
+        print(f"ERROR: {exception}")
         return ([""], url, "", exception)
 
 def calculate_auth_hash(public_key, private_key):
@@ -50,7 +57,10 @@ def calculate_auth_hash(public_key, private_key):
     token = crypt.hexdigest().encode('utf-8')
     return base64.b64encode(hmac.new(private_key.encode('utf-8'), token, hashlib.sha256).hexdigest().encode('utf-8'))
 
-def number_of_pages(resource, public_key, private_key):
+def number_of_pages(resource):
+    global public_key
+    global private_key
+
     headers = {
         'content-type': "application/json",
         'content-length': "0"
@@ -88,10 +98,12 @@ api_response_schema = StructType([
 ])
 get_tascomi_resource_udf = udf(get_tascomi_resource, api_response_schema)
 
-number_of_pages = number_of_pages(resource, public_key, private_key)
+number_of_pages = number_of_pages(resource)
+print(f"Number of pages to retrieve: {number_of_pages}")
 
-RequestRow = Row("url", "body", "public_key", "private_key")
-requests_list = [ RequestRow(f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "", public_key, private_key) for page_number in range(1, number_of_pages + 1) ]
+RequestRow = Row("page_number", "url", "body")
+
+requests_list = [ RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "") for page_number in range(1, number_of_pages + 1)]
 
 number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
 partitions = (2 * number_of_workers - 1) * 4
@@ -101,9 +113,10 @@ print(f"Using {partitions} partitions to repartition the RDD.")
 request_rdd = sc.parallelize(requests_list).repartition(partitions)
 request_df = glueContext.createDataFrame(request_rdd)
 
-response_df = request_df.withColumn("response", get_tascomi_resource_udf(col("url"), col("body"), col("public_key"), col("private_key")))
+response_df = request_df.withColumn("response", get_tascomi_resource_udf(col("url"), col("body")))
 
 tascomi_responses_df = response_df.select( \
+    col("page_number"),
     explode(col("response.response_data")).alias(f"{resource}"), \
     col("response.import_api_url_requested").alias("import_api_url_requested"), \
     col("response.import_api_status_code").alias("import_api_status_code"), \
