@@ -28,6 +28,10 @@ resource "aws_glue_job" "ingest_tascomi_data" {
     script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.ingest_tascomi_data.key}"
   }
 
+  execution_property {
+    max_concurrent_runs = 4
+  }
+
   glue_version = "2.0"
 
   default_arguments = {
