@@ -57,7 +57,7 @@ def calculate_auth_hash(public_key, private_key):
     token = crypt.hexdigest().encode('utf-8')
     return base64.b64encode(hmac.new(private_key.encode('utf-8'), token, hashlib.sha256).hexdigest().encode('utf-8'))
 
-def number_of_pages(resource):
+def get_number_of_pages(resource, query = ""):
     global public_key
     global private_key
 
@@ -68,11 +68,17 @@ def number_of_pages(resource):
 
     headers = authenticate_tascomi(headers, public_key, private_key)
 
-    url = f'https://hackney-planning.tascomi.com/rest/v1/{resource}'
+    url = f'https://hackney-planning.tascomi.com/rest/v1/{resource}{query}'
     res = requests.get(url, data="", headers=headers)
     number_of_results = res.headers['X-Number-Of-Results']
     results_per_page = res.headers['X-Results-Per-Page']
     return ceil(int(number_of_results) / int(results_per_page))
+
+def get_days_since_last_import(last_import_date):
+    yesterday = datetime.now() - timedelta(days=1)
+    last_import_datetime = datetime.strptime(last_import_date, "%Y%m%d")
+    number_days_to_query = (yesterday - last_import_datetime).days
+    return [ datetime.strftime(yesterday - timedelta(days=day), "%Y-%m-%d") for day in range(0, number_days_to_query + 1)]
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 sc = SparkContext.getOrCreate()
@@ -82,6 +88,7 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 resource = get_glue_env_var('resource', '')
+target_database_name = get_glue_env_var('target_database_name', '')
 public_key = get_secret(get_glue_env_var('public_key_secret_id', ''), "eu-west-2")
 private_key = get_secret(get_glue_env_var('private_key_secret_id', ''), "eu-west-2")
 
@@ -98,15 +105,33 @@ api_response_schema = StructType([
 ])
 get_tascomi_resource_udf = udf(get_tascomi_resource, api_response_schema)
 
-number_of_pages = number_of_pages(resource)
-print(f"Number of pages to retrieve: {number_of_pages}")
-
 RequestRow = Row("page_number", "url", "body")
 
-requests_list = [ RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "") for page_number in range(1, number_of_pages + 1)]
+table_exists = glueContext.tables(target_database_name).filter(tables.tableName == resource).count() == 1
+
+last_import_date = None
+if table_exists:
+    last_import_date = glueContext.sql(f"SELECT max(import_date) as max_import_date FROM `{target_database_name}`.{resource}").take(1)[0].max_import_date
+
+    # TODO: Will there ever be an empty table making this null?
+    print(f"last import date: {last_import_date}")
+
+if not last_import_date:
+    number_of_pages = get_number_of_pages(resource)
+    print(f"Number of pages to retrieve: {number_of_pages}")
+    requests_list = [ RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "") for page_number in range(1, number_of_pages + 1)]
+else:
+    requests_list = []
+    for day in get_days_since_last_import(last_import_date):
+        number_of_pages = get_number_of_pages(f"{resource}", f"?last_updated={day}")
+        print(f"Number of pages to retrieve for {day}: {number_of_pages}")
+        requests_list += [ RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}&last_updated={day}', "") for page_number in range(1, number_of_pages + 1)]
+
+    print(f"request list: {requests_list}")
 
 number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
 partitions = (2 * number_of_workers - 1) * 4
+# TODO: Less partitions when there arent many API calls
 
 print(f"Using {partitions} partitions to repartition the RDD.")
 
