@@ -8,7 +8,7 @@ Ensure you have [docker][docker-install] installed on your computer and it is ru
 
 ### Running the tests
 
-## Using Make recipes
+## On MacOS/Linux
 
 From within this (the /scripts) folder run:
   - `make test` to run all the tests
@@ -16,7 +16,7 @@ From within this (the /scripts) folder run:
 
 You can add a filename option to either of these commands to only run one test file, for example `make filename=test_address_cleaning.py test`
 
-## Without using Make recipes
+## On Windows
 There are three different options for running the tests, all must be run from inside the /scripts folder.
 
 1. To run all of the tests:
@@ -30,17 +30,26 @@ docker compose run --entrypoint "bash -c 'pip install pytest-watch && pytest-wat
 ```
 
 3. To run a single test file, replace ./my-test-file.py with the name of the test file:
+
+#### Using Bash shell
 ```sh
-filename=my-test-file.py docker compose up unit_tests
+export filename=my-test-file.py && docker compose up unit_tests
 ```
 
+#### Using PowerShell
+```sh
+$env:filename = 'my-test-file.py' ; docker-compose up unit_tests
+```
+
+:::important
 It is recommended that you run the tests and confirm that they are all passing before writing your own tests.
+:::
 
 ### Within the pipeline
 
-The tests are run as a step in GitHub Actions and will run when a commit is pushed to GitHub or when a PR is created/merged.
+The tests are run as a step in GitHub Actions and will run when a commit is pushed to GitHub or when a Pull Request is created/merged.
 
-If there is a failing test then the “Python Unit Tests” step will fail and this will need to be fixed before your change is merged into the main branch.
+If there is a failing test then the “Run tests” step will fail and this will need to be fixed before your change can be merged into the main branch.
 
 ## Debugging Spark portion of tests
 
