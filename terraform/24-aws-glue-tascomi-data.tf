@@ -67,19 +67,12 @@ resource "aws_glue_crawler" "raw_zone_tascomi_crawler" {
 
 ## Triggers
 
-resource "aws_glue_workflow" "tascomi_workflow" {
-  name = "${local.short_identifier_prefix}Tascomi Data Workflow"
-  tags = module.tags.values
-}
-
-
 resource "aws_glue_trigger" "tascomi_raw_zone_crawler_trigger" {
   tags = module.tags.values
 
   name          = "${local.short_identifier_prefix}Tascomi Data Crawler Trigger"
   type          = "CONDITIONAL"
   enabled       = true
-  workflow_name = aws_glue_workflow.tascomi_workflow.name
 
   predicate {
     conditions {
@@ -100,7 +93,6 @@ resource "aws_glue_trigger" "ingest_tascomi_applications_trigger" {
   name          = "${local.short_identifier_prefix}Tascomi Applications Ingestion Trigger"
   type          = "ON_DEMAND"
   enabled       = true
-  workflow_name = aws_glue_workflow.tascomi_workflow.name
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
@@ -116,7 +108,6 @@ resource "aws_glue_trigger" "ingest_tascomi_contacts_trigger" {
   name          = "${local.short_identifier_prefix}Tascomi Contacts Ingestion Trigger"
   type          = "ON_DEMAND"
   enabled       = true
-  workflow_name = aws_glue_workflow.tascomi_workflow.name
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
@@ -132,7 +123,6 @@ resource "aws_glue_trigger" "ingest_tascomi_public_comments_trigger" {
   name          = "${local.short_identifier_prefix}Tascomi Public Comments Ingestion Trigger"
   type          = "ON_DEMAND"
   enabled       = true
-  workflow_name = aws_glue_workflow.tascomi_workflow.name
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
@@ -148,7 +138,6 @@ resource "aws_glue_trigger" "ingest_tascomi_documents_trigger" {
   name          = "${local.short_identifier_prefix}Tascomi Documents Ingestion Trigger"
   type          = "ON_DEMAND"
   enabled       = true
-  workflow_name = aws_glue_workflow.tascomi_workflow.name
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
