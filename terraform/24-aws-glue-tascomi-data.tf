@@ -42,6 +42,7 @@ resource "aws_glue_job" "ingest_tascomi_data" {
     "--public_key_secret_id"    = aws_secretsmanager_secret.tascomi_api_public_key.id
     "--private_key_secret_id"   = aws_secretsmanager_secret.tascomi_api_private_key.id
     "--number_of_workers"       = local.number_of_workers
+    "--target_database_name"    = aws_glue_catalog_database.raw_zone_tascomi.name
   }
 }
 
