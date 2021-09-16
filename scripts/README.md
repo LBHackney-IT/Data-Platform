@@ -41,9 +41,7 @@ export filename=my-test-file.py && docker compose up unit_tests
 $env:filename = 'my-test-file.py' ; docker-compose up unit_tests
 ```
 
-:::important
 It is recommended that you run the tests and confirm that they are all passing before writing your own tests.
-:::
 
 ### Within the pipeline
 
