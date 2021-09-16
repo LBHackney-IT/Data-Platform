@@ -69,6 +69,7 @@ resource "aws_glue_crawler" "raw_zone_tascomi_crawler" {
 
 resource "aws_glue_workflow" "tascomi_workflow" {
   name = "${local.short_identifier_prefix}Tascomi Data Workflow"
+  tags = module.tags.values
 }
 
 
