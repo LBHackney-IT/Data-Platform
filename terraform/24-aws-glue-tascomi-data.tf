@@ -96,7 +96,8 @@ resource "aws_glue_trigger" "ingest_tascomi_applications_trigger" {
   tags = module.tags.values
 
   name          = "${local.short_identifier_prefix}Tascomi Applications Ingestion Trigger"
-  type          = "ON_DEMAND"
+  type          = "SCHEDULED"
+  schedule      = "cron(0 2 * * ? *)"
   enabled       = true
 
   actions {
@@ -111,7 +112,8 @@ resource "aws_glue_trigger" "ingest_tascomi_contacts_trigger" {
   tags = module.tags.values
 
   name          = "${local.short_identifier_prefix}Tascomi Contacts Ingestion Trigger"
-  type          = "ON_DEMAND"
+  type          = "SCHEDULED"
+  schedule      = "cron(0 2 * * ? *)"
   enabled       = true
 
   actions {
@@ -126,7 +128,8 @@ resource "aws_glue_trigger" "ingest_tascomi_public_comments_trigger" {
   tags = module.tags.values
 
   name          = "${local.short_identifier_prefix}Tascomi Public Comments Ingestion Trigger"
-  type          = "ON_DEMAND"
+  type          = "SCHEDULED"
+  schedule      = "cron(0 2 * * ? *)"
   enabled       = true
 
   actions {
@@ -141,7 +144,8 @@ resource "aws_glue_trigger" "ingest_tascomi_documents_trigger" {
   tags = module.tags.values
 
   name          = "${local.short_identifier_prefix}Tascomi Documents Ingestion Trigger"
-  type          = "ON_DEMAND"
+  type          = "SCHEDULED"
+  schedule      = "cron(0 2 * * ? *)"
   enabled       = true
 
   actions {
