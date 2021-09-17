@@ -22,6 +22,10 @@ def authenticate_tascomi(headers, public_key, private_key):
     headers['X-Hash'] = auth_hash
     return headers
 
+def not_today(date_str):
+    date = datetime.strptime(date_str[:19], "%Y-%m-%d %H:%M:%S")
+    return date.date() != datetime.now().date()
+
 def get_tascomi_resource(url, body):
     global public_key
     global private_key
@@ -41,7 +45,7 @@ def get_tascomi_resource(url, body):
             print(res.json)
             return ([""], url, res.status_code, f"Null data response: {json.dumps(res.json)}")
 
-        serialized_records = [json.dumps(record) for record in records]
+        serialized_records = [json.dumps(record) for record in records if not_today(record['last_updated']) ]
 
         return (serialized_records, url, res.status_code, "")
 

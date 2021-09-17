@@ -75,9 +75,9 @@ resource "aws_glue_crawler" "raw_zone_tascomi_crawler" {
 resource "aws_glue_trigger" "tascomi_raw_zone_crawler_trigger" {
   tags = module.tags.values
 
-  name          = "${local.short_identifier_prefix}Tascomi Data Crawler Trigger"
-  type          = "CONDITIONAL"
-  enabled       = true
+  name    = "${local.short_identifier_prefix}Tascomi Data Crawler Trigger"
+  type    = "CONDITIONAL"
+  enabled = true
 
   predicate {
     conditions {
@@ -95,10 +95,10 @@ resource "aws_glue_trigger" "tascomi_raw_zone_crawler_trigger" {
 resource "aws_glue_trigger" "ingest_tascomi_applications_trigger" {
   tags = module.tags.values
 
-  name          = "${local.short_identifier_prefix}Tascomi Applications Ingestion Trigger"
-  type          = "SCHEDULED"
-  schedule      = "cron(0 2 * * ? *)"
-  enabled       = true
+  name     = "${local.short_identifier_prefix}Tascomi Applications Ingestion Trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 2 * * ? *)"
+  enabled  = local.is_live_environment
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
@@ -111,10 +111,10 @@ resource "aws_glue_trigger" "ingest_tascomi_applications_trigger" {
 resource "aws_glue_trigger" "ingest_tascomi_contacts_trigger" {
   tags = module.tags.values
 
-  name          = "${local.short_identifier_prefix}Tascomi Contacts Ingestion Trigger"
-  type          = "SCHEDULED"
-  schedule      = "cron(0 2 * * ? *)"
-  enabled       = true
+  name     = "${local.short_identifier_prefix}Tascomi Contacts Ingestion Trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 2 * * ? *)"
+  enabled  = local.is_live_environment
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
@@ -127,10 +127,10 @@ resource "aws_glue_trigger" "ingest_tascomi_contacts_trigger" {
 resource "aws_glue_trigger" "ingest_tascomi_public_comments_trigger" {
   tags = module.tags.values
 
-  name          = "${local.short_identifier_prefix}Tascomi Public Comments Ingestion Trigger"
-  type          = "SCHEDULED"
-  schedule      = "cron(0 2 * * ? *)"
-  enabled       = true
+  name     = "${local.short_identifier_prefix}Tascomi Public Comments Ingestion Trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 2 * * ? *)"
+  enabled  = local.is_live_environment
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
@@ -143,10 +143,10 @@ resource "aws_glue_trigger" "ingest_tascomi_public_comments_trigger" {
 resource "aws_glue_trigger" "ingest_tascomi_documents_trigger" {
   tags = module.tags.values
 
-  name          = "${local.short_identifier_prefix}Tascomi Documents Ingestion Trigger"
-  type          = "SCHEDULED"
-  schedule      = "cron(0 2 * * ? *)"
-  enabled       = true
+  name     = "${local.short_identifier_prefix}Tascomi Documents Ingestion Trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 2 * * ? *)"
+  enabled  = local.is_live_environment
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
