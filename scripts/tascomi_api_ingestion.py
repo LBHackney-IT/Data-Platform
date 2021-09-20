@@ -23,6 +23,9 @@ def authenticate_tascomi(headers, public_key, private_key):
     return headers
 
 def not_today(date_str):
+    print(f"date_str: {date_str}")
+    if not date_str:
+        return True
     date = datetime.strptime(date_str[:19], "%Y-%m-%d %H:%M:%S")
     return date.date() != datetime.now().date()
 
@@ -45,14 +48,16 @@ def get_tascomi_resource(url, body):
             print(res.json)
             return ([""], url, res.status_code, f"Null data response: {json.dumps(res.json)}")
 
-        serialized_records = [json.dumps(record) for record in records if not_today(record['last_updated']) ]
+        serialized_records = [json.dumps(remove_gis_image(record)) for record in records if not_today(record['last_updated']) ]
 
         return (serialized_records, url, res.status_code, "")
 
     except Exception as e:
         exception = str(e)
+        print(Exception)
         print(f"ERROR: {exception}")
-        return ([""], url, "", exception)
+        raise e
+        # return ([""], url, "", exception)
 
 def calculate_auth_hash(public_key, private_key):
     now_bst = datetime.now() + timedelta(hours=1)
@@ -76,6 +81,7 @@ def get_number_of_pages(resource, query = ""):
     res = requests.get(url, data="", headers=headers)
     number_of_results = res.headers['X-Number-Of-Results']
     results_per_page = res.headers['X-Results-Per-Page']
+
     return ceil(int(number_of_results) / int(results_per_page))
 
 def get_days_since_last_import(last_import_date):
@@ -118,6 +124,10 @@ def calculate_number_of_partitions(number_of_requests, number_of_workers):
     else:
         return max_partitions
 
+def remove_gis_image(records):
+    records.pop("gis_map_image_base64", None)
+    return records
+
 def retrieve_and_write_tascomi_data(glueContext, resource, requests_list, partitions):
     request_rdd = sc.parallelize(requests_list).repartition(partitions)
     request_df = glueContext.createDataFrame(request_rdd)
@@ -143,6 +153,7 @@ def retrieve_and_write_tascomi_data(glueContext, resource, requests_list, partit
         format="parquet",
         connection_options={"path": "s3://" + bucket_target + "/" + prefix + resource + "/", "partitionKeys": PARTITION_KEYS},
         transformation_ctx=f"tascomi_{resource}_sink")
+
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 sc = SparkContext.getOrCreate()
