@@ -30,4 +30,7 @@ resource "aws_glue_trigger" "landing_zone_liberator_crawled" {
     job_name = aws_glue_job.copy_parking_liberator_landing_to_raw.name
   }
 
+  actions {
+    job_name = aws_glue_job.copy_env_enforcement_liberator_landing_to_raw.name
+  }
 }
