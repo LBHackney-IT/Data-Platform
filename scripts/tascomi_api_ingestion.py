@@ -45,8 +45,8 @@ def get_tascomi_resource(url, body):
         records = json.loads(res.text)
         if type(records) == type(None):
             print("Null data response: ")
-            print(res.json)
-            return ([""], url, res.status_code, f"Null data response: {json.dumps(res.json)}")
+            print(res.json())
+            return ([""], url, res.status_code, f"Null data response: {json.dumps(res.json())}")
 
         serialized_records = [json.dumps(remove_gis_image(record)) for record in records if not_today(record['last_updated']) ]
 
@@ -56,8 +56,7 @@ def get_tascomi_resource(url, body):
         exception = str(e)
         print(Exception)
         print(f"ERROR: {exception}")
-        raise e
-        # return ([""], url, "", exception)
+        return ([""], url, "", exception)
 
 def calculate_auth_hash(public_key, private_key):
     now_bst = datetime.now() + timedelta(hours=1)
