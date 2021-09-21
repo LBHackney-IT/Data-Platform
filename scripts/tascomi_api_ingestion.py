@@ -29,7 +29,8 @@ def not_today(date_str):
     date = datetime.strptime(date_str[:19], "%Y-%m-%d %H:%M:%S")
     return date.date() != datetime.now().date()
 
-def get_tascomi_resource(url, body):
+def get_tascomi_resource(page_number, url, body):
+    print(f"Calling API to get page {page_number}")
     global public_key
     global private_key
 
@@ -54,7 +55,6 @@ def get_tascomi_resource(url, body):
 
     except Exception as e:
         exception = str(e)
-        print(Exception)
         print(f"ERROR: {exception}")
         return ([""], url, "", exception)
 
@@ -113,8 +113,6 @@ def get_requests(last_import_date, resource):
         print(f"Number of pages to retrieve: {number_of_pages}")
         return [RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "") for page_number in range(1, number_of_pages + 1)]
 
-        print(f"request list: {requests_list}")
-
 def calculate_number_of_partitions(number_of_requests, number_of_workers):
     max_partitions = (2 * number_of_workers - 1) * 4
 
@@ -131,7 +129,7 @@ def retrieve_and_write_tascomi_data(glueContext, resource, requests_list, partit
     request_rdd = sc.parallelize(requests_list).repartition(partitions)
     request_df = glueContext.createDataFrame(request_rdd)
 
-    response_df = request_df.withColumn("response", get_tascomi_resource_udf(col("url"), col("body")))
+    response_df = request_df.withColumn("response", get_tascomi_resource_udf(col("page_number"), col("url"), col("body")))
 
     tascomi_responses_df = response_df.select( \
         col("page_number"),
