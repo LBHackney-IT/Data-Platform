@@ -1,6 +1,23 @@
 
 locals {
-  number_of_workers = 12
+  number_of_workers   = 12
+  max_concurrent_runs = length(local.tascomi_table_names)
+  tascomi_table_names = [
+    "action_types",
+    "additional_contacts",
+    "appeal_decision",
+    "appeal_status",
+    "appeal_types",
+    "assessments",
+    "breach_types",
+    "breeam_levels",
+    "case_journal_entry_types",
+    "case_journal_related_standard_phrases",
+    "case_journals",
+    "committees",
+    "communications",
+    "communication_templates",
+  ]
 }
 
 ## RAW ZONE
@@ -29,7 +46,7 @@ resource "aws_glue_job" "ingest_tascomi_data" {
   }
 
   execution_property {
-    max_concurrent_runs = 4
+    max_concurrent_runs = local.max_concurrent_runs
   }
 
   glue_version = "2.0"
@@ -96,9 +113,9 @@ resource "aws_glue_trigger" "ingest_tascomi_applications_trigger" {
   tags = module.tags.values
 
   name     = "${local.short_identifier_prefix}Tascomi Applications Ingestion Trigger"
-  type     = "SCHEDULED"
-  schedule = "cron(0 2 * * ? *)"
-  enabled  = local.is_live_environment
+  type     = "ON_DEMAND"
+//  schedule = "cron(0 2 * * ? *)"
+//  enabled  = local.is_live_environment
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
@@ -155,3 +172,22 @@ resource "aws_glue_trigger" "ingest_tascomi_documents_trigger" {
     }
   }
 }
+
+// create a trigger for each table that would be run daily and pass table name to job
+resource "aws_glue_trigger" "ingest_tascomi_tables_trigger" {
+  tags = module.tags.values
+  for_each = toset(local.tascomi_table_names)
+
+  name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
+  type     = "ON_DEMAND"
+//  schedule = "cron(0 2 * * ? *)"
+//  enabled  = local.is_live_environment
+
+  actions {
+    job_name = aws_glue_job.ingest_tascomi_data.name
+    arguments = {
+      "--resource" = each.value
+    }
+  }
+}
+
