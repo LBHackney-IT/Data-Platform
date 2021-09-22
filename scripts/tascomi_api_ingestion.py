@@ -45,8 +45,7 @@ def get_tascomi_resource(page_number, url, body):
         res = requests.get(url, data=body, headers=headers)
         records = json.loads(res.text)
         if type(records) == type(None):
-            print("Null data response: ")
-            print(res.json())
+            print(f"Null data response: {res.json()}, with status code {res.status_code} for page {page_number}")
             return ([""], url, res.status_code, f"Null data response: {json.dumps(res.json())}")
 
         serialized_records = [json.dumps(remove_gis_image(record)) for record in records if not_today(record['last_updated']) ]
