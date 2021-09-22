@@ -1,6 +1,17 @@
 
 locals {
-  number_of_workers = 12
+  number_of_workers   = 12
+  max_concurrent_runs = length(local.tascomi_table_names)
+  tascomi_table_names = [
+    "applications",
+    "contacts",
+    "emails",
+    "enforcements",
+    "fees",
+    "public_comments",
+    "communications",
+    "fee_payments"
+  ]
 }
 
 ## RAW ZONE
@@ -29,7 +40,7 @@ resource "aws_glue_job" "ingest_tascomi_data" {
   }
 
   execution_property {
-    max_concurrent_runs = 4
+    max_concurrent_runs = local.max_concurrent_runs
   }
 
   glue_version = "2.0"
@@ -91,67 +102,19 @@ resource "aws_glue_trigger" "tascomi_raw_zone_crawler_trigger" {
   }
 }
 
-
-resource "aws_glue_trigger" "ingest_tascomi_applications_trigger" {
+resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
   tags = module.tags.values
+  for_each = toset(local.tascomi_table_names)
 
-  name     = "${local.short_identifier_prefix}Tascomi Applications Ingestion Trigger"
+  name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
-  schedule = "cron(0 2 * * ? *)"
+  schedule = "cron(0 3 * * ? *)"
   enabled  = local.is_live_environment
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
     arguments = {
-      "--resource" = "applications"
-    }
-  }
-}
-
-resource "aws_glue_trigger" "ingest_tascomi_contacts_trigger" {
-  tags = module.tags.values
-
-  name     = "${local.short_identifier_prefix}Tascomi Contacts Ingestion Trigger"
-  type     = "SCHEDULED"
-  schedule = "cron(0 2 * * ? *)"
-  enabled  = local.is_live_environment
-
-  actions {
-    job_name = aws_glue_job.ingest_tascomi_data.name
-    arguments = {
-      "--resource" = "contacts"
-    }
-  }
-}
-
-resource "aws_glue_trigger" "ingest_tascomi_public_comments_trigger" {
-  tags = module.tags.values
-
-  name     = "${local.short_identifier_prefix}Tascomi Public Comments Ingestion Trigger"
-  type     = "SCHEDULED"
-  schedule = "cron(0 2 * * ? *)"
-  enabled  = local.is_live_environment
-
-  actions {
-    job_name = aws_glue_job.ingest_tascomi_data.name
-    arguments = {
-      "--resource" = "public_comments"
-    }
-  }
-}
-
-resource "aws_glue_trigger" "ingest_tascomi_documents_trigger" {
-  tags = module.tags.values
-
-  name     = "${local.short_identifier_prefix}Tascomi Documents Ingestion Trigger"
-  type     = "SCHEDULED"
-  schedule = "cron(0 2 * * ? *)"
-  enabled  = local.is_live_environment
-
-  actions {
-    job_name = aws_glue_job.ingest_tascomi_data.name
-    arguments = {
-      "--resource" = "documents"
+      "--resource" = each.value
     }
   }
 }
