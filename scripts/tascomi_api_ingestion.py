@@ -41,12 +41,13 @@ def get_tascomi_resource(page_number, url, body):
 
     headers = authenticate_tascomi(headers, public_key, private_key)
 
+    res = {}
     try:
         res = requests.get(url, data=body, headers=headers)
+        if not res.text or json.loads(res.text) == None:
+            print(f"Null data response, with status code {res.status_code} for page {page_number}")
+            return ([""], url, res.status_code, "Null data response.")
         records = json.loads(res.text)
-        if type(records) == type(None):
-            print(f"Null data response: {res.json()}, with status code {res.status_code} for page {page_number}")
-            return ([""], url, res.status_code, f"Null data response: {json.dumps(res.json())}")
 
         serialized_records = [json.dumps(remove_gis_image(record)) for record in records if not_today(record['last_updated']) ]
 
@@ -54,8 +55,8 @@ def get_tascomi_resource(page_number, url, body):
 
     except Exception as e:
         exception = str(e)
-        print(f"ERROR: {exception}")
-        return ([""], url, "", exception)
+        print(f"ERROR: {exception} when getting page {page_number}. Status code {res.status_code}, response text {res.text}")
+        return ([""], url, res.status_code, exception)
 
 def calculate_auth_hash(public_key, private_key):
     now_bst = datetime.now() + timedelta(hours=1)
