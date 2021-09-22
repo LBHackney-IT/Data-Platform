@@ -3,20 +3,14 @@ locals {
   number_of_workers   = 12
   max_concurrent_runs = length(local.tascomi_table_names)
   tascomi_table_names = [
-    "action_types",
-    "additional_contacts",
-    "appeal_decision",
-    "appeal_status",
-    "appeal_types",
-    "assessments",
-    "breach_types",
-    "breeam_levels",
-    "case_journal_entry_types",
-    "case_journal_related_standard_phrases",
-    "case_journals",
-    "committees",
+    "applications",
+    "contacts",
+    "emails",
+    "enforcements",
+    "fees",
+    "public_comments",
     "communications",
-    "communication_templates",
+    "fee_payments"
   ]
 }
 
@@ -125,38 +119,6 @@ resource "aws_glue_trigger" "ingest_tascomi_applications_trigger" {
   }
 }
 
-resource "aws_glue_trigger" "ingest_tascomi_contacts_trigger" {
-  tags = module.tags.values
-
-  name     = "${local.short_identifier_prefix}Tascomi Contacts Ingestion Trigger"
-  type     = "SCHEDULED"
-  schedule = "cron(0 2 * * ? *)"
-  enabled  = local.is_live_environment
-
-  actions {
-    job_name = aws_glue_job.ingest_tascomi_data.name
-    arguments = {
-      "--resource" = "contacts"
-    }
-  }
-}
-
-resource "aws_glue_trigger" "ingest_tascomi_public_comments_trigger" {
-  tags = module.tags.values
-
-  name     = "${local.short_identifier_prefix}Tascomi Public Comments Ingestion Trigger"
-  type     = "SCHEDULED"
-  schedule = "cron(0 2 * * ? *)"
-  enabled  = local.is_live_environment
-
-  actions {
-    job_name = aws_glue_job.ingest_tascomi_data.name
-    arguments = {
-      "--resource" = "public_comments"
-    }
-  }
-}
-
 resource "aws_glue_trigger" "ingest_tascomi_documents_trigger" {
   tags = module.tags.values
 
@@ -173,15 +135,14 @@ resource "aws_glue_trigger" "ingest_tascomi_documents_trigger" {
   }
 }
 
-// create a trigger for each table that would be run daily and pass table name to job
-resource "aws_glue_trigger" "ingest_tascomi_tables_trigger" {
+resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
   tags = module.tags.values
   for_each = toset(local.tascomi_table_names)
 
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
-  type     = "ON_DEMAND"
-//  schedule = "cron(0 2 * * ? *)"
-//  enabled  = local.is_live_environment
+  type     = "SCHEDULED"
+  schedule = "cron(0 3 * * ? *)"
+  enabled  = local.is_live_environment
 
   actions {
     job_name = aws_glue_job.ingest_tascomi_data.name
