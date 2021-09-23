@@ -2,12 +2,6 @@ locals {
   email = "ben.dalton@madetech.com"
   lambda_timeout = 900
 }
-//
-resource "aws_sns_topic" "glue_jobs" {
-  tags = module.tags.values
-
-  name = "${local.short_identifier_prefix}glue-error-notifications"
-}
 
 // SQS queue?
 //resource "aws_sqs_queue" "glue_errors_queue" {
@@ -15,12 +9,6 @@ resource "aws_sns_topic" "glue_jobs" {
 //
 //  name = "${local.short_identifier_prefix}glue-errors-queue"
 //}
-
-resource "aws_sns_topic_subscription" "glue_error_notifications" {
-  topic_arn = aws_sns_topic.glue_jobs.arn
-  protocol  = "email"
-  endpoint  = local.email
-}
 
 data "archive_file" "glue_job_error_notification_lambda" {
   type        = "zip"
