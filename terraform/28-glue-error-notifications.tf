@@ -5,16 +5,22 @@ locals {
 //
 resource "aws_sns_topic" "glue_jobs" {
   tags = module.tags.values
-  name = "here-to-help-data-ingestion"
+
+  name = "${local.short_identifier_prefix}glue-error-notifications"
 }
+
+// SQS queue?
+//resource "aws_sqs_queue" "glue_errors_queue" {
+//  tags = module.tags.values
 //
-//// use SQS queue??
-//
-//resource "aws_sns_topic_subscription" "here-to-help-data-ingestion-email-subscription" {
-//  topic_arn = aws_sns_topic.glue_jobs.arn
-//  protocol  = "email"
-//  endpoint  = local.email
+//  name = "${local.short_identifier_prefix}glue-errors-queue"
 //}
+
+resource "aws_sns_topic_subscription" "glue_error_notifications" {
+  topic_arn = aws_sns_topic.glue_jobs.arn
+  protocol  = "email"
+  endpoint  = local.email
+}
 
 data "archive_file" "glue_job_error_notification_lambda" {
   type        = "zip"
@@ -81,7 +87,7 @@ data "aws_iam_policy_document" "glue_error_notification_lambda" {
     ]
     effect = "Allow"
     resources = [
-      "*"
+      "arn:aws:logs:*:*:*"
     ]
   }
 
@@ -104,7 +110,7 @@ resource "aws_iam_policy" "glue_error_notification_lambda" {
 }
 
 resource "aws_iam_role_policy_attachment" "glue_error_notification_lambda" {
-  role       = aws_iam_role.glue_role.name
+  role       = aws_iam_role.glue_error_notification_lambda.name
   policy_arn = aws_iam_policy.glue_error_notification_lambda.arn
 }
 
