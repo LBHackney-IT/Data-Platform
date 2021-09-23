@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     source_catalog_database = get_glue_env_var('source_catalog_database', '')
     source_catalog_table = get_glue_env_var('source_catalog_table', '')
-    cleaned_planning_s3_bucket_target = get_glue_env_var('cleaned_planning_s3_bucket_target', '')
+    s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
 
     sc = SparkContext.getOrCreate()
     spark = SparkSession.builder.getOrCreate()
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     df = source_data.toDF()
     df = get_latest_partitions(df)
-    df = parse_json_into_dataframe( spark=spark, column='contacts', dataframe=df)
+    df = parse_json_into_dataframe(spark=spark, column='contacts', dataframe=df)
 
     cleanedDataframe = DynamicFrame.fromDF(df, glueContext, "cleanedDataframe")
     parquetData = glueContext.write_dynamic_frame.from_options(
@@ -40,6 +40,6 @@ if __name__ == "__main__":
         connection_type="s3",
         format="parquet",
         connection_options={
-            "path": cleaned_planning_s3_bucket_target, "partitionKeys": PARTITION_KEYS},
+            "path": s3_bucket_target, "partitionKeys": PARTITION_KEYS},
         transformation_ctx="parquetData")
     job.commit()
