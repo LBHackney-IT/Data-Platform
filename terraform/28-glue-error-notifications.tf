@@ -40,7 +40,7 @@ resource "aws_lambda_function" "glue_error_notification_lambda" {
 
   environment {
     variables = {
-      SNS_TOPIC_ARN = aws_sns_topic.glue_jobs.arn
+      SNS_TOPIC_ARN = module.department_parking.sns_topic_arn
     }
   }
 }
@@ -81,11 +81,22 @@ data "aws_iam_policy_document" "glue_error_notification_lambda" {
 
   statement {
     actions = [
+      "glue:GetJob",
+      "glue:GetJobRun"
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
       "SNS:Publish"
     ]
     effect = "Allow"
     resources = [
-      aws_sns_topic.glue_jobs.arn
+      module.department_parking.sns_topic_arn
     ]
   }
 }

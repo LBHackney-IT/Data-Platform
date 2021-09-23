@@ -19,25 +19,31 @@ exports.handler = async (event) => {
       JobName: jobName
     }
 
-    let glueJob = await glue.getJob(glueJobParams);
+    let glueJob = await glue.getJob(glueJobParams).promise();
     console.log("glue job:", glueJob);
+    let { LastModifiedOn } = glueJob.Job;
 
     let glueJobRunParams = {
       JobName: jobName,
       RunId: jobRunId
     }
 
-    let glueJobRun = await glue.getJobRun(glueJobRunParams);
+    let glueJobRun = await glue.getJobRun(glueJobRunParams).promise();
     console.log("glue job run:", glueJobRun);
+    let { StartedOn, CompletedOn, TriggerName } = glueJobRun.JobRun;
 
-    let glueJobUrl = "https://eu-west-2.console.aws.amazon.com/gluestudio/home?region=eu-west-2#/job/${url_encode(jobName)}/run/${jobRunId}";
+    let glueJobUrl = `https://eu-west-2.console.aws.amazon.com/gluestudio/home?region=eu-west-2#/job/${encodeURI(jobName)}/run/${encodeURI(jobRunId)}`;
 
     let snsMessage = {
       time: event.time,
       jobName: jobName,
       jobRunID: jobRunId,
       glueJobError: message,
-      glueJobLink: `${glueJobUrl}/${jobRunId}`
+      glueJobLink: glueJobUrl,
+      startTime: StartedOn,
+      endTime: CompletedOn,
+      triggerName: TriggerName,
+      lastModifiedOn: LastModifiedOn
     };
     console.log(`message: ${JSON.stringify(snsMessage)}`);
 

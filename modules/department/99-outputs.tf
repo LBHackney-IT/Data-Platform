@@ -53,3 +53,8 @@ output "glue_role_arn" {
   value       = aws_iam_role.glue_agent.arn
 }
 
+output "sns_topic_arn" {
+  description = "Glue job error notification SNS topic"
+  value       = aws_sns_topic.glue_jobs.arn
+}
+

@@ -11,7 +11,7 @@ resource "aws_sns_topic" "glue_jobs" {
 resource "aws_sns_topic_subscription" "glue_error_notifications" {
   topic_arn = aws_sns_topic.glue_jobs.arn
   protocol  = "email"
-  endpoint  = var.google_group_display_name
+  endpoint  = "ben.dalton@madetech.com" // var.google_group_display_name
 }
 
 // What if there are jobs not linked to a department, should we have an admin SNS topic that gets attached to all jobs?
