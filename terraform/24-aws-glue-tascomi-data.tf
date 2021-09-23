@@ -12,6 +12,23 @@ locals {
     "communications",
     "fee_payments"
   ]
+
+  tascomi_static_tables = [
+    "appeal_decision",
+    "appeal_status",
+    "appeal_types",
+    "breach_types",
+    "committees",
+    "communication_templates",
+    "communication_types",
+    "contact_types",
+    "decision_levels",
+    "decision_types",
+    "document_types",
+    "fee_types",
+    "ps_development_codes",
+    "public_consultations"
+  ]
 }
 
 ## RAW ZONE
@@ -81,8 +98,6 @@ resource "aws_glue_crawler" "raw_zone_tascomi_crawler" {
   })
 }
 
-## Triggers
-
 resource "aws_glue_trigger" "tascomi_raw_zone_crawler_trigger" {
   tags = module.tags.values
 
@@ -109,6 +124,23 @@ resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
   schedule = "cron(0 3 * * ? *)"
+  enabled  = local.is_live_environment
+
+  actions {
+    job_name = aws_glue_job.ingest_tascomi_data.name
+    arguments = {
+      "--resource" = each.value
+    }
+  }
+}
+
+resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
+  tags = module.tags.values
+  for_each = toset(local.tascomi_static_tables)
+
+  name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 22 * * SUN *)"
   enabled  = local.is_live_environment
 
   actions {
