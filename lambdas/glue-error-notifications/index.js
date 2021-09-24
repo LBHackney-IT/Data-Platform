@@ -1,73 +1,94 @@
-// const { SNSClient } = require('aws-sdk/client-sns')
-const { Glue, SNS } = require("aws-sdk");
-
-// const AWS_REGION = "eu-west-2";
+const {Glue, SNS} = require("aws-sdk");
 const client = new SNS({});
 const glue = new Glue({});
 
 let snsTopicARN = process.env.SNS_TOPIC_ARN;
 
+async function getGlueJob(jobName) {
+  let glueJobParams = {
+    JobName: jobName
+  }
+
+  let glueJob = await glue.getJob(glueJobParams).promise();
+
+  return glueJob.Job;
+}
+
+async function getGlueJobRun(jobName, jobRunId) {
+  let glueJobRunParams = {
+    JobName: jobName,
+    RunId: jobRunId
+  }
+
+  let glueJobRun = await glue.getJobRun(glueJobRunParams).promise();
+
+  return glueJobRun.JobRun;
+}
+
+async function getEnvironment(account, jobName) {
+  let glueJobResourceArn = {
+    ResourceArn: `arn:aws:glue:eu-west-2:${account}:job/${jobName}`
+  }
+
+  let glueJobTags = await glue.getTags(glueJobResourceArn).promise();
+
+  return glueJobTags.Tags["Environment"];
+}
+
+async function sendEmail(emailBody) {
+  let emailMessage = `The Glue job, ${emailBody.glueJobName}, failed with error:` + "\n" +
+    " \n" +
+    `${emailBody.glueErrorMessage}` + "\n\n" +
+    `Job Run ID: ${emailBody.glueJobRunId}` + "\n" +
+    `Time of failure: ${new Date(emailBody.jobErrorTime).toString()}` + "\n" +
+    `Job start time: ${emailBody.jobStartTime.toString()}` + "\n" +
+    `Job end time: ${emailBody.jobEndTime.toString()}` + "\n" +
+    `Glue job last modified on: ${emailBody.lastModifiedOn}` + "\n" +
+    "\n" +
+    `To investigate this error:` + "\n" +
+    `1. log into the AWS ${emailBody.awsEnvironment ?? ""} environment via the Hackney SSO https://hackney.awsapps.com/start#/` + "\n" +
+    `2. view the Glue job run details here ${emailBody.glueJobUrl}`
+
+  let publishParams = {
+    Message: emailMessage,
+    TopicArn: emailBody.snsTopicARN
+  };
+
+  return await client.publish(publishParams).promise();
+}
+
 exports.handler = async (event) => {
   try {
-    console.log(`Event: ${JSON.stringify(event)}`);
     console.log(`JSON Stringify Event: ${JSON.stringify(event)}`);
 
-    let {jobName, jobRunId, message } = event.detail;
+    let {jobName, jobRunId, message} = event.detail;
+    let {account, time} = event;
 
-    // use Glue SDK to get glue job run details: start & end time and url? or construct url
-    let glueJobParams = {
-      JobName: jobName
-    }
-
-    let glueJob = await glue.getJob(glueJobParams).promise();
-    console.log("glue job:", glueJob);
-    let { LastModifiedOn } = glueJob.Job;
-
-    let glueJobRunParams = {
-      JobName: jobName,
-      RunId: jobRunId
-    }
-
-    let glueJobRun = await glue.getJobRun(glueJobRunParams).promise();
-    console.log("glue job run:", glueJobRun);
-    let { StartedOn, CompletedOn, TriggerName } = glueJobRun.JobRun;
-
+    let {LastModifiedOn} = await getGlueJob(jobName);
+    let {StartedOn, CompletedOn} = await getGlueJobRun(jobName, jobRunId);
     let glueJobUrl = `https://eu-west-2.console.aws.amazon.com/gluestudio/home?region=eu-west-2#/job/${encodeURI(jobName)}/run/${encodeURI(jobRunId)}`;
+    let environment = await getEnvironment(account, jobName);
 
-    let snsMessage = {
-      time: event.time,
-      jobName: jobName,
-      jobRunID: jobRunId,
-      glueJobError: message,
-      glueJobLink: glueJobUrl,
-      startTime: StartedOn,
-      endTime: CompletedOn,
-      triggerName: TriggerName,
-      lastModifiedOn: LastModifiedOn
-    };
-    console.log(`message: ${JSON.stringify(snsMessage)}`);
+    let emailBody = {
+      glueJobName: jobName,
+      glueErrorMessage: message,
+      glueJobRunId: jobRunId,
+      jobErrorTime: time,
+      jobStartTime: StartedOn,
+      jobEndTime: CompletedOn,
+      lastModifiedOn: LastModifiedOn,
+      awsEnvironment: environment,
+      glueJobUrl: glueJobUrl,
+      snsTopicARN: snsTopicARN
+    }
 
-    let publishParams = {
-      Message: JSON.stringify(snsMessage),
-      TopicArn: snsTopicARN
-    };
-
-    await client.publish(publishParams);
+    await sendEmail(emailBody);
 
     return {
       success: true,
-      message: `Event ${JSON.stringify(event)}, sns topic arn: ${snsTopicARN}`
     };
-
-  }
-
-  catch (error) {
+  } catch (error) {
     console.log(`Error: ${error}`)
+    throw error;
   }
-
 }
-
-// construct message:
-  // Job start time, job end time, error message, job name, job run id, link to cloudwatch
-
-// glue job details from api?
