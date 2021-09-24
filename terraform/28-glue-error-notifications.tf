@@ -3,13 +3,6 @@ locals {
   lambda_timeout = 900
 }
 
-// SQS queue?
-//resource "aws_sqs_queue" "glue_errors_queue" {
-//  tags = module.tags.values
-//
-//  name = "${local.short_identifier_prefix}glue-errors-queue"
-//}
-
 data "archive_file" "glue_job_error_notification_lambda" {
   type        = "zip"
   source_dir  = "../lambdas/glue-error-notifications"
@@ -82,7 +75,8 @@ data "aws_iam_policy_document" "glue_error_notification_lambda" {
   statement {
     actions = [
       "glue:GetJob",
-      "glue:GetJobRun"
+      "glue:GetJobRun",
+      "glue:GetTags"
     ]
     effect = "Allow"
     resources = [
