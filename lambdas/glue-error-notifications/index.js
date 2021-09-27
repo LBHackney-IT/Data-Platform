@@ -1,8 +1,22 @@
 const {Glue, SNS} = require("aws-sdk");
-const client = new SNS({});
+const sns = new SNS({});
 const glue = new Glue({});
 
-let snsTopicARN = process.env.SNS_TOPIC_ARN;
+async function getSnsTopicForDepartment(departmentName) {
+  // List all topics
+  // Get tags for each topic
+  // Find the right one
+  let topics = await sns.listTopics({}).promise();
+  console.log("topics list", topics)
+
+  return topics.Topics.find(async (topic) => {
+    let topicArn = topic.TopicArn
+    let tags = await sns.listTagsForResource({ResourceArn: topicArn}).promise()
+    console.log(`tags for topic arn ${topicArn}`, tags)
+
+    return tags.Tags["PlatformDepartment"] == departmentName;
+  });
+}
 
 async function getGlueJob(jobName) {
   let glueJobParams = {
@@ -35,7 +49,7 @@ async function getEnvironment(account, jobName) {
   return glueJobTags.Tags["Environment"];
 }
 
-async function sendEmail(emailBody) {
+async function sendEmail(snsTopicArn, emailBody) {
   let emailMessage = `The Glue job, ${emailBody.glueJobName}, failed with error:` + "\n" +
     " \n" +
     `${emailBody.glueErrorMessage}` + "\n\n" +
@@ -51,10 +65,10 @@ async function sendEmail(emailBody) {
 
   let publishParams = {
     Message: emailMessage,
-    TopicArn: emailBody.snsTopicARN
+    TopicArn: snsTopicArn
   };
 
-  return await client.publish(publishParams).promise();
+  return await sns.publish(publishParams).promise();
 }
 
 exports.handler = async (event) => {
@@ -79,10 +93,12 @@ exports.handler = async (event) => {
       lastModifiedOn: LastModifiedOn,
       awsEnvironment: environment,
       glueJobUrl: glueJobUrl,
-      snsTopicARN: snsTopicARN
     }
 
-    await sendEmail(emailBody);
+    let departmentName = "parking";
+    let snsTopicArn = await getSnsTopicForDepartment(departmentName);
+
+    await sendEmail(snsTopicArn, emailBody);
 
     return {
       success: true,

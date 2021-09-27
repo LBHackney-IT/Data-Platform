@@ -31,11 +31,11 @@ resource "aws_lambda_function" "glue_error_notification_lambda" {
   source_code_hash = data.archive_file.glue_job_error_notification_lambda.output_base64sha256
   timeout          = local.lambda_timeout
 
-  environment {
-    variables = {
-      SNS_TOPIC_ARN = module.department_parking.sns_topic_arn
-    }
-  }
+  # environment {
+  #   variables = {
+  #     SNS_TOPIC_ARN = module.department_parking.sns_topic_arn
+  #   }
+  # }
 }
 
 data "aws_iam_policy_document" "glue_error_notification_lambda_assume_role" {
@@ -81,6 +81,17 @@ data "aws_iam_policy_document" "glue_error_notification_lambda" {
     effect = "Allow"
     resources = [
       "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "SNS:ListTopics",
+      "SNS:GetTags"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:sns:*:*:*"
     ]
   }
 
