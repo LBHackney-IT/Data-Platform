@@ -1,5 +1,4 @@
 locals {
-  email = "ben.dalton@madetech.com"
   lambda_timeout = 900
 }
 
@@ -87,11 +86,11 @@ data "aws_iam_policy_document" "glue_error_notification_lambda" {
   statement {
     actions = [
       "SNS:ListTopics",
-      "SNS:GetTags"
+      "SNS:ListTagsForResource"
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:sns:*:*:*"
+      "*"
     ]
   }
 
@@ -101,7 +100,9 @@ data "aws_iam_policy_document" "glue_error_notification_lambda" {
     ]
     effect = "Allow"
     resources = [
-      module.department_parking.sns_topic_arn
+      module.department_parking.sns_topic_arn,
+      module.department_data_and_insight.sns_topic_arn,
+      aws_sns_topic.admin_error_notifications.arn
     ]
   }
 }
@@ -149,4 +150,17 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
   function_name = aws_lambda_function.glue_error_notification_lambda.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.glue_error_notification_event_rule.arn
+}
+
+resource "aws_sns_topic" "admin_error_notifications" {
+  tags = merge(module.tags.values, {"PlatformDepartment" = "admin"})
+
+  name = "${local.short_identifier_prefix}failed-glue-job-notifications"
+}
+
+resource "aws_sns_topic_subscription" "admin_error_notifications" {
+  for_each = toset(var.platform_maintainers_emails)
+  endpoint = each.value
+  protocol = "email"
+  topic_arn = aws_sns_topic.admin_error_notifications.arn
 }

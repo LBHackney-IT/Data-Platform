@@ -3,19 +3,26 @@ const sns = new SNS({});
 const glue = new Glue({});
 
 async function getSnsTopicForDepartment(departmentName) {
-  // List all topics
-  // Get tags for each topic
-  // Find the right one
   let topics = await sns.listTopics({}).promise();
   console.log("topics list", topics)
 
-  return topics.Topics.find(async (topic) => {
-    let topicArn = topic.TopicArn
+  let departmentTopicArnPromises = topics.Topics.map(async (topic) => {
+    let topicArn = topic["TopicArn"];
+    console.log("topic arn", topicArn);
+
     let tags = await sns.listTagsForResource({ResourceArn: topicArn}).promise()
     console.log(`tags for topic arn ${topicArn}`, tags)
 
-    return tags.Tags["PlatformDepartment"] == departmentName;
+    let departmentTag = tags.Tags.find(tag => tag.Key === "PlatformDepartment")
+
+    return {
+      departmentName: departmentTag ? departmentTag.Value : "",
+      topicArn
+    }
   });
+
+  let departmentTopicArn = await Promise.all(departmentTopicArnPromises);
+  return departmentTopicArn.find(topic => topic["departmentName"] === departmentName).topicArn
 }
 
 async function getGlueJob(jobName) {
@@ -39,14 +46,14 @@ async function getGlueJobRun(jobName, jobRunId) {
   return glueJobRun.JobRun;
 }
 
-async function getEnvironment(account, jobName) {
+async function getTags(account, jobName) {
   let glueJobResourceArn = {
     ResourceArn: `arn:aws:glue:eu-west-2:${account}:job/${jobName}`
   }
 
   let glueJobTags = await glue.getTags(glueJobResourceArn).promise();
 
-  return glueJobTags.Tags["Environment"];
+  return glueJobTags.Tags;
 }
 
 async function sendEmail(snsTopicArn, emailBody) {
@@ -81,7 +88,11 @@ exports.handler = async (event) => {
     let {LastModifiedOn} = await getGlueJob(jobName);
     let {StartedOn, CompletedOn} = await getGlueJobRun(jobName, jobRunId);
     let glueJobUrl = `https://eu-west-2.console.aws.amazon.com/gluestudio/home?region=eu-west-2#/job/${encodeURI(jobName)}/run/${encodeURI(jobRunId)}`;
-    let environment = await getEnvironment(account, jobName);
+
+    let tags = await getTags(account, jobName);
+    let environment = tags["Environment"];
+    let department = tags["PlatformDepartment"] ?? "admin";
+    console.log("department", department);
 
     let emailBody = {
       glueJobName: jobName,
@@ -95,8 +106,8 @@ exports.handler = async (event) => {
       glueJobUrl: glueJobUrl,
     }
 
-    let departmentName = "parking";
-    let snsTopicArn = await getSnsTopicForDepartment(departmentName);
+    let snsTopicArn = await getSnsTopicForDepartment(department);
+    console.log("sns topic arn:", snsTopicArn);
 
     await sendEmail(snsTopicArn, emailBody);
 

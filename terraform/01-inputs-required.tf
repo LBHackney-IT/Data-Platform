@@ -44,3 +44,8 @@ variable "qlik_server_instance_type" {
   description = "The instance type to use for the Qlik server"
   type        = string
 }
+
+variable "platform_maintainers_emails" {
+  description = "A list of emails of the core Data Platform development team"
+  type = list(string)
+}
