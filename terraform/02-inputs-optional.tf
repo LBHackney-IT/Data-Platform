@@ -65,3 +65,9 @@ variable "aws_api_vpc_id" {
   type        = string
   default     = ""
 }
+
+variable "email_to_notify" {
+  description = "Email to notify when Glue jobs fail. This is only for local development"
+  type        = string
+  default     = null
+}

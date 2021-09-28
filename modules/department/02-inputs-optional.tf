@@ -10,3 +10,13 @@ variable "google_group_display_name" {
   type        = string
   default     = null
 }
+
+variable "google_group_admin_display_name" {
+  description = <<EOF
+    The google group display name for the admin group.
+    If google_group_display_name is not set then this must be set.
+    This will then be used to send emails to the admin group when the departments glue jobs fail.
+  EOF
+  type        = string
+  default     = null
+}
