@@ -21,6 +21,8 @@ locals {
   application_snake       = lower(replace(var.application, " ", "-"))
   identifier_prefix       = lower("${local.application_snake}-${local.environment}")
   short_identifier_prefix = lower(replace(local.is_live_environment ? "" : "${terraform.workspace}-", " ", "-"))
+  # google_group_admin_display_name = "saml-aws-data-platform-super-admins@hackney.gov.uk"
+  google_group_admin_display_name = "emma.corbett@hackney.gov.uk"
 }
 
 data "aws_caller_identity" "data_platform" {}

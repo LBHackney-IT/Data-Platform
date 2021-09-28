@@ -29,12 +29,6 @@ resource "aws_lambda_function" "glue_error_notification_lambda" {
   s3_key           = aws_s3_bucket_object.glue_job_error_notification_lambda.key
   source_code_hash = data.archive_file.glue_job_error_notification_lambda.output_base64sha256
   timeout          = local.lambda_timeout
-
-  # environment {
-  #   variables = {
-  #     SNS_TOPIC_ARN = module.department_parking.sns_topic_arn
-  #   }
-  # }
 }
 
 data "aws_iam_policy_document" "glue_error_notification_lambda_assume_role" {
@@ -100,9 +94,10 @@ data "aws_iam_policy_document" "glue_error_notification_lambda" {
     ]
     effect = "Allow"
     resources = [
-      module.department_parking.sns_topic_arn,
-      module.department_data_and_insight.sns_topic_arn,
-      aws_sns_topic.admin_error_notifications.arn
+      "arn:aws:sns:*:*:glue-error-notification-*"
+      # module.department_parking.sns_topic_arn,
+      # module.department_data_and_insight.sns_topic_arn,
+      # aws_sns_topic.admin_error_notifications.arn
     ]
   }
 }
@@ -120,8 +115,8 @@ resource "aws_iam_role_policy_attachment" "glue_error_notification_lambda" {
 }
 
 resource "aws_cloudwatch_event_rule" "glue_error_notification_event_rule" {
-  name = "${local.short_identifier_prefix}glue-job-fail"
-  description = "Raise event when a glue job fails"
+  name          = "${local.short_identifier_prefix}glue-job-fail"
+  description   = "Raise event when a glue job fails"
   event_pattern = <<EOF
   {
       "detail-type": [
@@ -141,7 +136,7 @@ resource "aws_cloudwatch_event_rule" "glue_error_notification_event_rule" {
 
 resource "aws_cloudwatch_event_target" "glue_job_error_lambda_trigger" {
   rule = aws_cloudwatch_event_rule.glue_error_notification_event_rule.name
-  arn = aws_lambda_function.glue_error_notification_lambda.arn
+  arn  = aws_lambda_function.glue_error_notification_lambda.arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch" {
@@ -153,14 +148,13 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
 }
 
 resource "aws_sns_topic" "admin_error_notifications" {
-  tags = merge(module.tags.values, {"PlatformDepartment" = "admin"})
+  tags = merge(module.tags.values, { "PlatformDepartment" = "admin" })
 
-  name = "${local.short_identifier_prefix}failed-glue-job-notifications"
+  name = "glue-error-notification-${local.short_identifier_prefix}admin"
 }
 
 resource "aws_sns_topic_subscription" "admin_error_notifications" {
-  for_each = toset(var.platform_maintainers_emails)
-  endpoint = each.value
-  protocol = "email"
+  endpoint  = local.google_group_admin_display_name
+  protocol  = "email"
   topic_arn = aws_sns_topic.admin_error_notifications.arn
 }
