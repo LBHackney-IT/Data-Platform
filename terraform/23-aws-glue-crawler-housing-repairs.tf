@@ -1,5 +1,5 @@
 resource "aws_glue_crawler" "trusted_zone_housing_repairs_crawler" {
-  tags = module.tags.values
+  tags = local.tags_with_housing_repairs_department
 
   database_name = module.department_housing_repairs.trusted_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}trusted-zone-housing-repairs"
@@ -19,7 +19,7 @@ resource "aws_glue_crawler" "trusted_zone_housing_repairs_crawler" {
 }
 
 resource "aws_glue_trigger" "housing_repairs_trusted_crawler" {
-  tags = module.tags.values
+  tags = local.tags_with_housing_repairs_department
 
   name     = "${local.short_identifier_prefix}housing-repairs-repairs-trusted-crawler-trigger"
   schedule = "cron(0 7,8,9,10 ? * MON-FRI *)"
