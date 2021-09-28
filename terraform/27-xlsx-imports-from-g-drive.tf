@@ -14,7 +14,7 @@ module "repairs_fire_alarm_aov" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  tags                           = local.tags_with_housing_repairs_department
+  tags                           = module.department_housing_repairs.tags
   google_sheets_document_id      = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
   glue_job_name                  = "Electrical Mechanical Fire Safety Repairs"
   department_folder_name         = "housing-repairs"

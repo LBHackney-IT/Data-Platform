@@ -1,5 +1,5 @@
 resource "aws_s3_bucket_object" "housing_repairs_dlo_cleaning_script" {
-  tags = local.tags_with_housing_repairs_department
+  tags = module.department_housing_repairs.tags
 
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/repairs_dlo_cleaning.py"
@@ -11,7 +11,7 @@ resource "aws_s3_bucket_object" "housing_repairs_dlo_cleaning_script" {
 resource "aws_glue_job" "housing_repairs_dlo_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
-  tags = local.tags_with_housing_repairs_department
+  tags = module.department_housing_repairs.tags
 
   name              = "${local.short_identifier_prefix}Housing Repairs - Repairs DLO Cleaning"
   number_of_workers = 10
@@ -35,7 +35,7 @@ resource "aws_glue_job" "housing_repairs_dlo_cleaning" {
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_dlo_cleaned_crawler" {
   count = local.is_live_environment ? 1 : 0
-  tags  = local.tags_with_housing_repairs_department
+  tags  = module.department_housing_repairs.tags
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-dlo-cleaned"
@@ -61,7 +61,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaning_job" {
   name          = "${local.identifier_prefix}-housing-repairs-dlo-cleaning-job-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_dlo[0].workflow_name
-  tags          = local.tags_with_housing_repairs_department
+  tags          = module.department_housing_repairs.tags
 
   predicate {
     conditions {
@@ -81,7 +81,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaning_crawler" {
   name          = "${local.identifier_prefix}-housing-repairs-dlo-cleaning-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_dlo[0].workflow_name
-  tags          = local.tags_with_housing_repairs_department
+  tags          = module.department_housing_repairs.tags
 
   predicate {
     conditions {
@@ -100,7 +100,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaning_trigger" {
   name          = "${local.identifier_prefix}-housing-repairs-dlo-address-cleaning-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_dlo[0].workflow_name
-  tags          = local.tags_with_housing_repairs_department
+  tags          = module.department_housing_repairs.tags
 
   predicate {
     conditions {
@@ -116,7 +116,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaning_trigger" {
 resource "aws_glue_job" "housing_repairs_dlo_address_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
-  tags = local.tags_with_housing_repairs_department
+  tags = module.department_housing_repairs.tags
 
   name              = "${local.short_identifier_prefix}DLO Repairs - Address Cleaning"
   number_of_workers = 10
@@ -150,7 +150,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaned_crawler_trigger" {
   name          = "${local.identifier_prefix}-housing-repairs-dlo-address-cleaned-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_dlo[0].workflow_name
-  tags          = local.tags_with_housing_repairs_department
+  tags          = module.department_housing_repairs.tags
 
   predicate {
     conditions {
@@ -166,7 +166,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaned_crawler_trigger" {
 resource "aws_glue_crawler" "refined_zone_housing_repairs_dlo_with_cleaned_addresses_crawler" {
   count = local.is_live_environment ? 1 : 0
 
-  tags          = local.tags_with_housing_repairs_department
+  tags          = module.department_housing_repairs.tags
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-dlo-with-cleaned-addresses"
   role          = aws_iam_role.glue_role.arn
@@ -191,7 +191,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaned_uhref_job_trigger" {
   name          = "${local.identifier_prefix}-housing-repairs-dlo-cleaned-uhref-job-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_dlo[0].workflow_name
-  tags          = local.tags_with_housing_repairs_department
+  tags          = module.department_housing_repairs.tags
 
   predicate {
     conditions {
@@ -207,7 +207,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaned_uhref_job_trigger" {
 resource "aws_glue_job" "get_uprn_from_uhref" {
   count = local.is_live_environment ? 1 : 0
 
-  tags = local.tags_with_housing_repairs_department
+  tags = module.department_housing_repairs.tags
 
   name              = "${local.short_identifier_prefix}Get UPRN from UHref DLO repairs"
   number_of_workers = 10
@@ -238,7 +238,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_uprn_crawler_trigger" {
   name          = "${local.identifier_prefix}-housing-repairs-dlo-with-uprn-from-uhref-crawler"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_dlo[0].workflow_name
-  tags          = local.tags_with_housing_repairs_department
+  tags          = module.department_housing_repairs.tags
 
   predicate {
     conditions {
@@ -252,7 +252,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_uprn_crawler_trigger" {
 }
 
 resource "aws_glue_crawler" "refined_zone_housing_repairs_with_uprn_from_uhref_crawler" {
-  tags  = local.tags_with_housing_repairs_department
+  tags  = module.department_housing_repairs.tags
   count = local.is_live_environment ? 1 : 0
 
   database_name = module.department_housing_repairs.refined_zone_catalog_database_name
@@ -279,7 +279,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_address_matching_job_trigger" {
   name          = "${local.identifier_prefix}-housing-repairs-dlo-address-matching-trigger"
   type          = "CONDITIONAL"
   workflow_name = module.repairs_dlo[0].workflow_name
-  tags          = local.tags_with_housing_repairs_department
+  tags          = module.department_housing_repairs.tags
 
   predicate {
     conditions {
@@ -295,7 +295,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_address_matching_job_trigger" {
 resource "aws_glue_job" "repairs_dlo_levenshtein_address_matching" {
   count = local.is_live_environment ? 1 : 0
 
-  tags = local.tags_with_housing_repairs_department
+  tags = module.department_housing_repairs.tags
 
   name              = "Housing Repairs - Repairs DLO Levenshtein Address Matching"
   number_of_workers = 10

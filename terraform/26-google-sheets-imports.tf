@@ -13,7 +13,7 @@ module "repairs_dlo" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = local.tags_with_parking_department
+  tags                            = module.department_housing_repairs.tags
   google_sheets_document_id       = "1i9q42Kkbugwi4f2S4zdyid2ZjoN1XLjuYvqYqfHyygs"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
@@ -35,7 +35,7 @@ module "repairs_herts_heritage" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = local.tags_with_parking_department
+  tags                            = module.department_housing_repairs.tags
   google_sheets_document_id       = "1Psw8i2qooASPLjaBfGKNX7upiX7BeQSiMeJ8dQngSJI"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
@@ -57,7 +57,7 @@ module "repairs_avonline" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = local.tags_with_parking_department
+  tags                            = module.department_housing_repairs.tags
   google_sheets_document_id       = "1nM99bPaOPvg5o_cz9_yJR6jlnMB0oSHdFhAMKQkPJi4"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
@@ -79,7 +79,7 @@ module "repairs_alpha_track" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = local.tags_with_parking_department
+  tags                            = module.department_housing_repairs.tags
   google_sheets_document_id       = "1cbeVvMuNNinVQDeVfsUWalRpY6zK9oZPa3ebLtLSiAc"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
@@ -101,7 +101,7 @@ module "repairs_stannah" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = local.tags_with_parking_department
+  tags                            = module.department_housing_repairs.tags
   google_sheets_document_id       = "1CpC_Dn4aM8MSFb5a6HJ_FEsVYcahRsis9YIATcfArhw"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
@@ -123,7 +123,7 @@ module "repairs_purdy" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = local.tags_with_parking_department
+  tags                            = module.department_housing_repairs.tags
   google_sheets_document_id       = "1-PpKPnaPMA6AogsNXT5seqQk3VUB-naFnFJYhROkl2o"
   google_sheets_worksheet_name    = "FormresponsesPUR"
   department_name                 = "housing-repairs"
@@ -145,7 +145,7 @@ module "repairs_axis" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
-  tags                            = local.tags_with_parking_department
+  tags                            = module.department_housing_repairs.tags
   google_sheets_document_id       = "1aDWO9ZAVar377jiYTXkZzDCIckCqbhppOW23B85hFsA"
   google_sheets_worksheet_name    = "Form responses 1"
   department_name                 = "housing-repairs"
@@ -166,7 +166,7 @@ module "parking_spreadsheet_estate_permit_limits" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = module.department_parking.google_service_account.credentials_secret.name
-  tags                            = local.tags_with_parking_department
+  tags                            = module.department_parking.tags
   google_sheets_document_id       = "14H-kO4wB011ol7J7hLSJ9xv56R4xugmGsZCWNMbe1Ys"
   google_sheets_worksheet_name    = "Import into Qlik Inline Load"
   department_name                 = "parking"
@@ -188,7 +188,7 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   sheets_credentials_name         = module.department_parking.google_service_account.credentials_secret.name
-  tags                            = local.tags_with_parking_department
+  tags                            = module.department_parking.tags
   google_sheets_document_id       = "14Ago8grVd-tW7N0aSlcNZoxzsLDViSYys4shw1wLRno"
   google_sheets_worksheet_name    = "6th June 2019"
   department_name                 = "parking"

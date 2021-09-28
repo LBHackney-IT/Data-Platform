@@ -1,5 +1,5 @@
 resource "aws_s3_bucket_object" "housing_repairs_repairs_avonline_cleaning_script" {
-  tags = local.tags_with_housing_repairs_department
+  tags = module.department_housing_repairs.tags
 
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/repairs_avonline_cleaning.py"
@@ -12,7 +12,7 @@ module "housing_repairs_avonline" {
   count = local.is_live_environment ? 1 : 0
 
   source = "../modules/housing-repairs-google-sheets-cleaning"
-  tags   = local.tags_with_housing_repairs_department
+  tags   = module.department_housing_repairs.tags
 
   short_identifier_prefix            = local.short_identifier_prefix
   identifier_prefix                  = local.identifier_prefix

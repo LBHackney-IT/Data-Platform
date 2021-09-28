@@ -12,7 +12,7 @@ module "tv_aerials" {
   count = local.is_live_environment ? 1 : 0
 
   source = "../modules/electrical-mechnical-fire-safety-cleaning-job"
-  tags   = local.tags_with_housing_repairs_department
+  tags   = module.department_housing_repairs.tags
 
   short_identifier_prefix            = local.short_identifier_prefix
   identifier_prefix                  = local.identifier_prefix
