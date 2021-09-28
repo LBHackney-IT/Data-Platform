@@ -15,12 +15,12 @@ module "tags" {
 }
 
 locals {
-  is_live_environment     = terraform.workspace == "default" ? true : false
-  team_snake              = lower(replace(var.team, " ", "-"))
-  environment             = lower(replace(local.is_live_environment ? var.environment : terraform.workspace, " ", "-"))
-  application_snake       = lower(replace(var.application, " ", "-"))
-  identifier_prefix       = lower("${local.application_snake}-${local.environment}")
-  short_identifier_prefix = lower(replace(local.is_live_environment ? "" : "${terraform.workspace}-", " ", "-"))
+  is_live_environment             = terraform.workspace == "default" ? true : false
+  team_snake                      = lower(replace(var.team, " ", "-"))
+  environment                     = lower(replace(local.is_live_environment ? var.environment : terraform.workspace, " ", "-"))
+  application_snake               = lower(replace(var.application, " ", "-"))
+  identifier_prefix               = lower("${local.application_snake}-${local.environment}")
+  short_identifier_prefix         = lower(replace(local.is_live_environment ? "" : "${terraform.workspace}-", " ", "-"))
   google_group_admin_display_name = local.is_live_environment ? "saml-aws-data-platform-super-admins@hackney.gov.uk" : var.email_to_notify
 }
 

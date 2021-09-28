@@ -2,18 +2,15 @@ const {Glue, SNS} = require("aws-sdk");
 const sns = new SNS({});
 const glue = new Glue({});
 
+const admin_tag = process.env.ADMIN_TAG;
+
 async function getSnsTopicForDepartment(departmentName) {
   let topics = await sns.listTopics({}).promise();
-  console.log("topics list", topics)
 
   let departmentTopicArnPromises = topics.Topics.map(async (topic) => {
     let topicArn = topic["TopicArn"];
-    console.log("topic arn", topicArn);
-
-    let tags = await sns.listTagsForResource({ResourceArn: topicArn}).promise()
-    console.log(`tags for topic arn ${topicArn}`, tags)
-
-    let departmentTag = tags.Tags.find(tag => tag.Key === "PlatformDepartment")
+    let tags = await sns.listTagsForResource({ResourceArn: topicArn}).promise();
+    let departmentTag = tags.Tags.find(tag => tag.Key === "PlatformDepartment");
 
     return {
       departmentName: departmentTag ? departmentTag.Value : "",
@@ -22,7 +19,7 @@ async function getSnsTopicForDepartment(departmentName) {
   });
 
   let departmentTopicArn = await Promise.all(departmentTopicArnPromises);
-  return departmentTopicArn.find(topic => topic["departmentName"] === departmentName).topicArn
+  return departmentTopicArn.find(topic => topic["departmentName"] === departmentName).topicArn;
 }
 
 async function getGlueJob(jobName) {
@@ -91,8 +88,8 @@ exports.handler = async (event) => {
 
     let tags = await getTags(account, jobName);
     let environment = tags["Environment"];
-    let department = tags["PlatformDepartment"] ?? "admin";
-    console.log("department", department);
+    let department = tags["PlatformDepartment"] ?? admin_tag;
+    console.log("Department for glue job", department);
 
     let emailBody = {
       glueJobName: jobName,
@@ -107,7 +104,8 @@ exports.handler = async (event) => {
     }
 
     let snsTopicArn = await getSnsTopicForDepartment(department);
-    console.log("sns topic arn:", snsTopicArn);
+
+    console.log("Sending notification to sns topic:", snsTopicArn);
 
     await sendEmail(snsTopicArn, emailBody);
 

@@ -29,6 +29,12 @@ resource "aws_lambda_function" "glue_failure_notification_lambda" {
   s3_key           = aws_s3_bucket_object.glue_job_failure_notification_lambda.key
   source_code_hash = data.archive_file.glue_job_failure_notification_lambda.output_base64sha256
   timeout          = local.lambda_timeout
+
+  environment {
+    variables = {
+      ADMIN_TAG = "${local.short_identifier_prefix}admin"
+    }
+  }
 }
 
 data "aws_iam_policy_document" "glue_failure_notification_lambda_assume_role" {
@@ -145,7 +151,7 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
 }
 
 resource "aws_sns_topic" "admin_failure_notifications" {
-  tags = merge(module.tags.values, { "PlatformDepartment" = "admin" })
+  tags = merge(module.tags.values, { "PlatformDepartment" = "${local.short_identifier_prefix}admin" })
 
   name = "glue-failure-notification-${local.short_identifier_prefix}admin"
 }
