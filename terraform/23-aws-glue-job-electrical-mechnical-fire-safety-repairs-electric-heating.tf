@@ -1,5 +1,5 @@
 resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_electric_heating_cleaning" {
-  tags = module.tags.values
+  tags = local.tags_with_housing_repairs_department
 
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/elec_mech_fire_electric_heating_cleaning.py"
@@ -12,7 +12,7 @@ module "electric_heating" {
   count = local.is_live_environment ? 1 : 0
 
   source = "../modules/electrical-mechnical-fire-safety-cleaning-job"
-  tags   = module.tags.values
+  tags   = local.tags_with_housing_repairs_department
 
   short_identifier_prefix            = local.short_identifier_prefix
   identifier_prefix                  = local.identifier_prefix
