@@ -1,5 +1,5 @@
 resource "aws_glue_trigger" "landing_zone_liberator_crawler_trigger" {
-  tags = module.tags.values
+  tags = module.department_parking.tags
 
   name          = "${local.identifier_prefix} Landing Zone Liberator Crawler"
   type          = "ON_DEMAND"
@@ -12,7 +12,7 @@ resource "aws_glue_trigger" "landing_zone_liberator_crawler_trigger" {
 }
 
 resource "aws_glue_trigger" "landing_zone_liberator_crawled" {
-  tags = module.tags.values
+  tags = module.department_parking.tags
 
   name          = "${local.identifier_prefix} Landing Zone Liberator Crawled"
   type          = "CONDITIONAL"
