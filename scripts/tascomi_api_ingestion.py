@@ -1,8 +1,8 @@
 import sys
 import requests
-from pyspark.sql.functions import udf, col, explode
-from pyspark.sql.types import StructType, StructField, StringType, ArrayType
-from pyspark.sql import Row
+from pyspark.sql.functions import udf, col, explode, lit
+from pyspark.sql.types import StructType, StructField, StringType, ArrayType, IntegerType
+from pyspark.sql import Row, SparkSession
 import hmac, hashlib;
 import base64;
 from datetime import datetime, timedelta
@@ -100,8 +100,8 @@ def get_days_since_last_import(last_import_date):
     days.sort()
     return days
 
-def get_last_import_date(glueContext, database, resource):
-    tables = glueContext.tables(database)
+def get_last_import_date(glue_context, database, resource):
+    tables = glue_context.tables(database)
 
     table_exists = tables.filter(tables.tableName == f"api_response_{resource}").count() == 1
     print(f"table_exists: {table_exists}")
@@ -148,10 +148,8 @@ def remove_gis_image(records):
     records.pop("gis_map_image_base64", None)
     return records
 
-def retrieve_and_write_tascomi_data(glueContext, resource, requests_list, partitions):
-    request_rdd = sc.parallelize(requests_list).repartition(partitions)
-    request_df = glueContext.createDataFrame(request_rdd)
-
+def retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions, import_attempt):
+    request_df = requests_list.repartition(partitions)
     response_df = request_df.withColumn("response", get_tascomi_resource_udf(col("page_number"), col("url"), col("body")))
 
     tascomi_responses_df = response_df.select( \
@@ -159,38 +157,44 @@ def retrieve_and_write_tascomi_data(glueContext, resource, requests_list, partit
         explode(col("response.response_data")).alias(f"{resource}"), \
         col("response.import_api_url_requested").alias("import_api_url_requested"), \
         col("response.import_api_status_code").alias("import_api_status_code"), \
-        col("response.import_exception_thrown").alias("import_exception_thrown"))
+        col("response.import_exception_thrown").alias("import_exception_thrown"), \
+        lit(import_attempt).alias("import_attempt"))
 
     tascomi_responses_df = add_import_time_columns(tascomi_responses_df)
 
-    dynamic_frame = DynamicFrame.fromDF(tascomi_responses_df, glueContext, f"tascomi_{resource}")
-    bucket_target = get_glue_env_var('s3_bucket_target', '')
-    prefix = get_glue_env_var('s3_prefix', '')
-
-    glueContext.write_dynamic_frame.from_options(
-        frame=dynamic_frame,
+    glue_context.write_dynamic_frame.from_options(
+        frame=DynamicFrame.fromDF(tascomi_responses_df, glue_context, f"tascomi_{resource}"),
         connection_type="s3",
         format="parquet",
-        connection_options={"path": "s3://" + bucket_target + "/" + prefix + resource + "/", "partitionKeys": PARTITION_KEYS},
+        connection_options={"path": s3_target_url, "partitionKeys": PARTITION_KEYS},
         transformation_ctx=f"tascomi_{resource}_sink")
 
+    return tascomi_responses_df
+
+def get_failed_requests(data_frame):
+    return data_frame\
+        .where((data_frame.import_api_status_code != '200') & (data_frame.import_api_status_code != '202'))\
+        .select(data_frame.page_number.alias("page_number"), data_frame.import_api_url_requested.alias("url"), lit("").alias("body"))
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 sc = SparkContext.getOrCreate()
-glueContext = GlueContext(sc)
-logger = glueContext.get_logger()
-job = Job(glueContext)
+glue_context = GlueContext(sc)
+logger = glue_context.get_logger()
+job = Job(glue_context)
 job.init(args['JOB_NAME'], args)
+spark_session = glue_context.spark_session
 
 resource = get_glue_env_var('resource', '')
 target_database_name = get_glue_env_var('target_database_name', '')
 public_key = get_secret(get_glue_env_var('public_key_secret_id', ''), "eu-west-2")
 private_key = get_secret(get_glue_env_var('private_key_secret_id', ''), "eu-west-2")
+bucket_target = get_glue_env_var('s3_bucket_target', '')
+prefix = get_glue_env_var('s3_prefix', '')
+s3_target_url = "s3://" + bucket_target + "/" + prefix + resource + "/"
 
 if resource == '':
     raise Exception("--resource value must be defined in the job aruguments")
 print(f"Getting resource {resource}")
-
 
 api_response_schema = StructType([
     StructField("response_data", ArrayType(StringType(), True)),
@@ -202,19 +206,33 @@ get_tascomi_resource_udf = udf(get_tascomi_resource, api_response_schema)
 
 RequestRow = Row("page_number", "url", "body")
 
-last_import_date = get_last_import_date(glueContext, target_database_name, resource)
+last_import_date = get_last_import_date(glue_context, target_database_name, resource)
 print(f"last import date: {last_import_date}")
 
 requests_list = get_requests(last_import_date, resource)
-number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
-
 number_of_requests = len(requests_list)
+
+requests_list = sc.parallelize(requests_list)
+requests_list = glue_context.createDataFrame(requests_list)
+
+attempt = 1
+number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
 partitions = calculate_number_of_partitions(number_of_requests, number_of_workers)
 print(f"Using {partitions} partitions to repartition the RDD.")
 
-if number_of_requests > 0:
-    retrieve_and_write_tascomi_data(glueContext, resource, requests_list, partitions)
-else:
-    print("No requests, exiting")
+while attempt < 4:
+    print(f"Running attempt {attempt} to ingest API data")
+    tascomi_responses = retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions, attempt)
+    requests_list = get_failed_requests(tascomi_responses)
+    attempt+=1
+
+number_failed_requests = requests_list.count()
+if number_failed_requests > 0:
+    print("After three attempts there are stilll outstanding pages to retrieve, failing job")
+    print(f"There are {number_failed_requests} requests still failing")
+    raise Exception(f"Failing Tascomi Ingestion glue job after {attempt -1} attempts of retrying API calls. There are {number_failed_requests} outstanding pages still not imported.")
 
 job.commit()
+
+
+# TO-DO: Think more about partitioning
