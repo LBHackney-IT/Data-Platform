@@ -118,7 +118,7 @@ resource "aws_glue_trigger" "tascomi_raw_zone_crawler_trigger" {
 }
 
 resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
-  tags = module.tags.values
+  tags     = module.tags.values
   for_each = toset(local.tascomi_table_names)
 
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
@@ -135,7 +135,7 @@ resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
 }
 
 resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
-  tags = module.tags.values
+  tags     = module.tags.values
   for_each = toset(local.tascomi_static_tables)
 
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
