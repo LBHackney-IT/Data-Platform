@@ -195,3 +195,25 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
   dataset_name                    = "parkmap_restrictions_report"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
+
+module "dni_david_testing" {
+  count = local.is_live_environment ? 1 : 0
+
+  source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_role_arn                   = aws_iam_role.glue_role.arn
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  glue_catalog_database_name      = module.department_data_and_insight.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id     = module.glue_temp_storage.bucket_id
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone.bucket_id
+  sheets_credentials_name         = module.department_data_and_insight.google_service_account.credentials_secret.name
+  tags                            = module.department_data_and_insight.tags
+  google_sheets_document_id       = "1yG_R0j_xcj-N5sznf5lEqFtaV7LIJVLf0Ix-R66-WUQ"
+  google_sheets_worksheet_name    = "Sheet1"
+  department_name                 = "data-and-insight"
+  dataset_name                    = "dni-david-testing"
+}
