@@ -198,11 +198,13 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
 
 module "dni_david_testing" {
   count = local.is_live_environment ? 1 : 0
+  
+  enable_glue_trigger = false
 
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
-  glue_role_arn                   = aws_iam_role.glue_role.arn
+  glue_role_arn                   = module.department_data_and_insight.glue_role_arn
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_data_and_insight.raw_zone_catalog_database_name
