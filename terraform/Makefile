@@ -7,7 +7,7 @@ plan:
 	aws-vault exec hackney-dataplatform-development -- terraform plan -var-file="../config/terraform/env.tfvars"
 
 apply:
-	aws-vault exec hackney-dataplatform-development -- terraform apply -var-file="../config/terraform/env.tfvars"
+	aws-vault exec hackney-dataplatform-development -- terraform apply -var-file="../config/terraform/env.tfvars" --auto-approve
 
 validate:
 	terraform validate
