@@ -1,5 +1,5 @@
 resource "aws_s3_bucket_object" "housing_repairs_repairs_alpha_track_cleaning_script" {
-  tags = module.department_housing_repairs.tags
+  tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/repairs_alpha_track_cleaning.py"

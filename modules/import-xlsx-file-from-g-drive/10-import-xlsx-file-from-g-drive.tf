@@ -27,7 +27,7 @@ module "import_data_from_xlsx_sheet_job" {
   xlsx_import_script_key         = var.xlsx_import_script_key
   lambda_artefact_storage_bucket = var.lambda_artefact_storage_bucket
   landing_zone_bucket_id         = var.landing_zone_bucket_id
-  tags                           = var.tags
+  tags                           = local.tags_with_department
   glue_job_name                  = "${var.glue_job_name} - ${each.value.worksheet_name}"
   department_folder_name         = var.department_folder_name
   output_folder_name             = var.output_folder_name
