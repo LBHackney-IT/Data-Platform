@@ -1,15 +1,44 @@
 name: CI
+env:
+  aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+  aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+  aws_deploy_region: "eu-west-2"
+  google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
+  aws_api_vpc_id : ${{ secrets.AWS_API_VPC_ID }}
+  environment: "stg"
+  automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+
+  network_state_prefix: "data-platform-network"
+  network_build_path: "./terraform-networking"
+
+  main_state_prefix: "data-platform"
+  main_build_path: "./terraform"
 
 on:
   pull_request:
-    branches:
-      - main
     paths:
       - "terraform-networking/**"
       - "terraform-backend-setup/**"
       - "terraform/**"
+      - "scripts/**"
+  push:
+    paths:
+      - "terraform-networking/**"
+      - "terraform-backend-setup/**"
+      - "terraform/**"
+      - "scripts/**"
 
 jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run `make test`
+        run: |
+          cd scripts
+          make test
   validate:
     runs-on: ubuntu-latest
     steps:
@@ -41,3 +70,16 @@ jobs:
         run: |
           terraform init -backend=false
           terraform validate
+  lint:
+    runs-on: ubunutu-latest
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1.2.1
+        with:
+          terraform_version: 0.14.9
+      - name: Run `tflint` on Terraform
+        working-directory: "./terraform"
+        run: |
+          tflint --init --config="../.tflint.hcl"
+          tflint --var-file='../config/terraform/stg.tfvars' --module --config="../.tflint.hcl" --loglevel=warn .

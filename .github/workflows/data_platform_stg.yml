@@ -17,7 +17,8 @@ env:
 
 on:
   push:
-    branches: ['*']
+    branches:
+      - main
     paths-ignore:
       - "infrastructure/projects/**"
       - "infrastructure/platform/**"
