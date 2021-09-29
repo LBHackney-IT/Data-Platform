@@ -14,10 +14,10 @@ module "repairs_fire_alarm_aov" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  tags                           = module.department_housing_repairs.tags
+  tags                           = module.tags.values
   google_sheets_document_id      = "1VlM80P6J8N0P3ZeU8VobBP9kMbpr1Lzq"
   glue_job_name                  = "Electrical Mechanical Fire Safety Repairs"
-  department_folder_name         = "housing-repairs"
+  department_folder_name         = module.department_housing_repairs.identifier
   output_folder_name             = "repairs-electrical-mechanical-fire"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "electrical_mechnical_fire_safety_temp_order_number_wc_12.10.20r1.xlsx"

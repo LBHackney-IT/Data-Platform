@@ -1,5 +1,5 @@
 resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_emergency_lighting_servicing_cleaning" {
-  tags = module.department_housing_repairs.tags
+  tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/elec_mech_fire_emergency_lighting_servicing_cleaning.py"
