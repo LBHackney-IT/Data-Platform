@@ -64,7 +64,7 @@ resource "aws_glue_job" "ingest_tascomi_data" {
 
   default_arguments = {
     "--s3_bucket_target"        = module.raw_zone.bucket_id
-    "--s3_prefix"               = "planning/tascomi/"
+    "--s3_prefix"               = "planning/tascomi/api-responses/"
     "--extra-py-files"          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog" = "true"
     "--public_key_secret_id"    = aws_secretsmanager_secret.tascomi_api_public_key.id
@@ -84,16 +84,17 @@ resource "aws_glue_crawler" "raw_zone_tascomi_crawler" {
   database_name = aws_glue_catalog_database.raw_zone_tascomi.name
   name          = "${local.identifier_prefix}-raw-zone-tascomi"
   role          = aws_iam_role.glue_role.arn
+  table_prefix = "api_response_"
 
   s3_target {
-    path       = "s3://${module.raw_zone.bucket_id}/planning/tascomi/"
+    path       = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
     exclusions = local.glue_crawler_excluded_blobs
   }
 
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
-      TableLevelConfiguration = 4
+      TableLevelConfiguration = 5
     }
   })
 }
