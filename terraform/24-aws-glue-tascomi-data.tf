@@ -82,7 +82,7 @@ resource "aws_glue_crawler" "raw_zone_tascomi_crawler" {
   tags = module.tags.values
 
   database_name = aws_glue_catalog_database.raw_zone_tascomi.name
-  name          = "${local.identifier_prefix}-raw-zone-tascomi"
+  name          = "${local.identifier_prefix}-raw-zone-tascomi-api-responses"
   role          = aws_iam_role.glue_role.arn
   table_prefix = "api_response_"
 
