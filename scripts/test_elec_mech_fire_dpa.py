@@ -9,7 +9,7 @@ class TestMechFireDpaCleaning:
     def test_date_conversion(self, spark):
         response = self.clean_mech_fire_data(spark, [{'date': datetime.datetime(2002, 1, 10, 0, 0)}])
 
-        assertDictionaryContains({'date': datetime.datetime(2002, 1, 10, 0, 0)}, response[0])
+        assertDictionaryContains({'datetime_raised': datetime.datetime(2002, 1, 10, 0, 0)}, response[0])
 
     def test_status_standard(self, spark):
         response = self.clean_mech_fire_data(spark, [{'order_status': 'Y'}])
