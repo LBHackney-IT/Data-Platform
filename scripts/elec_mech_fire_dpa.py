@@ -17,10 +17,9 @@ from repairs_cleaning_helpers import clean_column_names, map_repair_priority
 def clean_mech_fire_data(dataframe):
     # cleans status and dates 
 
-    dataframe = dataframe.withColumn("order_status", when(dataframe["order_status"] == "Y", "Completed").otherwise(""))
+    dataframe = dataframe.withColumn("status_of_completed_y_n", when(dataframe["status_of_completed_y_n"] == "Y", "Completed").otherwise(""))
     dataframe = dataframe.withColumn('date', F.to_timestamp('date', 'dd/MM/yy'))
     return dataframe
-
 
 
 if __name__ == "__main__":
@@ -46,7 +45,7 @@ if __name__ == "__main__":
     df2 = clean_column_names(df)
 
     df2 = df2.withColumn('date', F.to_timestamp('date', 'dd/MM/yy'))
-    
+    df2 = clean_mech_fire_data(dataframe=df2)
 
     df2 = df2.withColumn('data_source', F.lit('DPA'))
 
@@ -63,8 +62,6 @@ if __name__ == "__main__":
 
     df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
     #df2.withColumn("order_status", when(df2["order_status"] == "Y", "Completed").otherwise(""))
-
-    df2 = clean_mech_fire_data(dataframe=df2)
 
     df2 = map_repair_priority(df2, 'work_priority_description', 'work_priority_priority_code')
 
