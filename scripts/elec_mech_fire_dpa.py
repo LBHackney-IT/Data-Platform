@@ -17,8 +17,20 @@ from repairs_cleaning_helpers import clean_column_names, map_repair_priority
 def clean_mech_fire_data(dataframe):
     # cleans status and dates 
 
-    dataframe = dataframe.withColumn("status_of_completed_y_n", when(dataframe["status_of_completed_y_n"] == "Y", "Completed").otherwise(""))
-    dataframe = dataframe.withColumn('date', F.to_timestamp('date', 'dd/MM/yy'))
+    dataframe = dataframe.withColumnRenamed('date', 'datetime_raised') \
+        .withColumnRenamed('requested_by', 'operative') \
+        .withColumnRenamed('address', 'property_address') \
+        .withColumnRenamed('description', 'description_of_work') \
+        .withColumnRenamed('priority_code', 'work_priority_description') \
+        .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
+        .withColumnRenamed('cost_of_work', 'order_value')\
+        .withColumnRenamed('subjective', 'budget_code')\
+        .withColumnRenamed('status_of_completed_y_n', 'order_status')\
+        .withColumnRenamed('contractor_s_own_ref_no)', 'contractor_ref')
+
+    dataframe = dataframe.withColumn('datetime_raised', F.to_timestamp('datetime_raised', 'dd/MM/yy'))
+    dataframe = dataframe.withColumn("order_status", when(dataframe["order_status"] == "Y", "Completed").otherwise(""))
+
     return dataframe
 
 
@@ -49,16 +61,7 @@ if __name__ == "__main__":
 
     df2 = df2.withColumn('data_source', F.lit('DPA'))
 
-    df2 = df2.withColumnRenamed('date', 'datetime_raised') \
-        .withColumnRenamed('requested_by', 'operative') \
-        .withColumnRenamed('address', 'property_address') \
-        .withColumnRenamed('description', 'description_of_work') \
-        .withColumnRenamed('priority_code', 'work_priority_description') \
-        .withColumnRenamed('temp_order_number', 'temp_order_number_full') \
-        .withColumnRenamed('cost_of_work', 'order_value')\
-        .withColumnRenamed('subjective', 'budget_code')\
-        .withColumnRenamed('status_of_completed_y_n', 'order_status')\
-        .withColumnRenamed('contractor_s_own_ref_no)', 'contractor_ref')
+
 
     df2 = df2.withColumn('order_value', df2['order_value'].cast(StringType()))
     #df2.withColumn("order_status", when(df2["order_status"] == "Y", "Completed").otherwise(""))
