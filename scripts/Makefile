@@ -2,7 +2,7 @@
 
 filename ?= ""
 test:
-	filename=${filename} docker-compose up unit_tests
+	filename=${filename} docker-compose run unit_tests
 
 test-watch:
 	docker-compose run --entrypoint "bash -c 'pip install pytest-watch && pytest-watch ./${filename}'" unit_tests
