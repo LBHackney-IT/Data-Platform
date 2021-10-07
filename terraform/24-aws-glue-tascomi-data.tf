@@ -84,7 +84,7 @@ resource "aws_glue_crawler" "raw_zone_tascomi_crawler" {
   database_name = aws_glue_catalog_database.raw_zone_tascomi.name
   name          = "${local.identifier_prefix}-raw-zone-tascomi-api-responses"
   role          = aws_iam_role.glue_role.arn
-  table_prefix = "api_response_"
+  table_prefix  = "api_response_"
 
   s3_target {
     path       = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"

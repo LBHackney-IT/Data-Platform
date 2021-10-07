@@ -118,7 +118,7 @@ resource "aws_iam_role_policy_attachment" "glue_failure_notification_lambda" {
 }
 
 resource "aws_cloudwatch_event_rule" "glue_failure_notification_event_rule" {
-  tags          = module.tags.values
+  tags = module.tags.values
 
   name          = "${local.short_identifier_prefix}glue-job-fail"
   description   = "Raise event when a glue job fails"

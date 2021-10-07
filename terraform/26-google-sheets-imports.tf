@@ -198,7 +198,7 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
 
 module "dni_david_testing" {
   count = local.is_live_environment ? 1 : 0
-  
+
   enable_glue_trigger = false
 
   source                          = "../modules/google-sheets-glue-job"
