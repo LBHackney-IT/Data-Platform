@@ -18,7 +18,9 @@ data "aws_iam_policy_document" "fme_can_write_to_s3_and_athena" {
   statement {
     effect = "Allow"
     actions = [
+      "s3:GetObject",
       "S3:ListBucket",
+      "s3:GetObjectVersion",
       "s3:GetBucketLocation"
     ]
     resources = [
@@ -42,14 +44,16 @@ data "aws_iam_policy_document" "fme_can_write_to_s3_and_athena" {
   statement {
     effect = "Allow"
     actions = [
-      "s3:GetObject",
-      "s3:GetObjectVersion"
+      "athena:ListEngineVersions",
+      "athena:ListWorkGroups",
+      "athena:ListDataCatalogs",
+      "athena:ListDatabases",
+      "athena:GetDatabase",
+      "athena:ListTableMetadata",
+      "athena:GetTableMetadata"
     ]
     resources = [
-      "${module.raw_zone.bucket_arn}/*",
-      "${module.refined_zone.bucket_arn}/*",
-      "${module.trusted_zone.bucket_arn}/*"
-
+      "*"
     ]
   }
 }
