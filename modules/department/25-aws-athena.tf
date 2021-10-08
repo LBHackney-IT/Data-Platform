@@ -1,6 +1,6 @@
 resource "aws_athena_workgroup" "department_workgroup" {
   tags = var.tags
-  
+
   name  = "${var.short_identifier_prefix}${local.department_identifier}"
   state = "ENABLED"
 

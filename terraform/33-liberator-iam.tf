@@ -1,5 +1,5 @@
 resource "aws_iam_user" "liberator_user" {
-  name = "${local.short_identifier_prefix}liberator-assume-role-user"
+  name = "${local.short_identifier_prefix}liberator-user"
 
   tags = module.tags.values
 }
@@ -9,7 +9,7 @@ resource "aws_iam_access_key" "liberator_access_key" {
 }
 
 resource "aws_iam_user_policy" "liberator_user_policy" {
-  name = "${local.short_identifier_prefix}liberator-assume-role-user-policy"
+  name = "${local.short_identifier_prefix}liberator-user-policy"
   user = aws_iam_user.liberator_user.name
 
   policy = data.aws_iam_policy_document.liberator_can_write_to_s3.json
@@ -30,7 +30,6 @@ data "aws_iam_policy_document" "liberator_can_write_to_s3" {
   statement {
     effect = "Allow"
     actions = [
-      "s3:PutObject",
       "s3:GetObject",
       "s3:GetObjectVersion"
     ]
