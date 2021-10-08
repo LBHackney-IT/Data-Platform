@@ -1,5 +1,5 @@
 resource "aws_iam_user" "fme_user" {
-  name = "${local.short_identifier_prefex}fme_user"
+  name = "${local.short_identifier_prefix}fme_user"
 
   tags = module.tags.values
 }
@@ -11,6 +11,7 @@ resource "aws_iam_access_key" "fme_access_key" {
 resource "aws_iam_user_policy" "fme_user_policy" {
   name = "${local.short_identifier_prefix}fme-user-policy"
   user = aws_iam_user.fme_user.name
+  policy = data.aws_iam_policy_document.fme_can_write_to_s3_and_athena.json
 }
 
 data "aws_iam_policy_document" "fme_can_write_to_s3_and_athena" {
