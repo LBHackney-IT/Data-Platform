@@ -1,8 +1,8 @@
 import sys
 import requests
 from pyspark.sql.functions import udf, col, explode, lit
-from pyspark.sql.types import StructType, StructField, StringType, ArrayType, IntegerType
-from pyspark.sql import Row, SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, ArrayType
+from pyspark.sql import Row
 import hmac, hashlib;
 import base64;
 from datetime import datetime, timedelta
@@ -109,7 +109,7 @@ def get_last_import_date(glue_context, database, resource):
     if not table_exists:
         return None
 
-    return glueContext.sql(f"SELECT max(import_date) as max_import_date FROM `{database}`.api_response_{resource} where import_api_status_code = '200'").take(1)[0].max_import_date
+    return glue_context.sql(f"SELECT max(import_date) as max_import_date FROM `{database}`.api_response_{resource} where import_api_status_code = '200'").take(1)[0].max_import_date
 
 def throw_if_unsuccessful(success_state, message):
     if not success_state:
@@ -224,15 +224,14 @@ while attempt < 4:
     print(f"Running attempt {attempt} to ingest API data")
     tascomi_responses = retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions, attempt)
     requests_list = get_failed_requests(tascomi_responses)
+    print(f"found {requests_list.count()} failed requests after attempt {attempt}")
     attempt+=1
 
 number_failed_requests = requests_list.count()
+print(f"After attempt {attempt}, there are {number_failed_requests} remaining failed requests")
 if number_failed_requests > 0:
     print("After three attempts there are stilll outstanding pages to retrieve, failing job")
     print(f"There are {number_failed_requests} requests still failing")
     raise Exception(f"Failing Tascomi Ingestion glue job after {attempt -1} attempts of retrying API calls. There are {number_failed_requests} outstanding pages still not imported.")
 
 job.commit()
-
-
-# TO-DO: Think more about partitioning
