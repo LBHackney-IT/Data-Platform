@@ -39,7 +39,8 @@ data "aws_iam_policy_document" "fme_can_write_to_s3_and_athena" {
     resources = [
       "${module.raw_zone.bucket_arn}/",
       "${module.refined_zone.bucket_arn}/",
-      "${module.trusted_zone.bucket_arn}/"
+      "${module.trusted_zone.bucket_arn}/",
+      "${module.athena_storage.bucket_arn}/primary"
     ]
   }
 

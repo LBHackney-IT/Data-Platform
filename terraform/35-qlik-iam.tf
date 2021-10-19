@@ -1,5 +1,5 @@
 resource "aws_iam_user" "qlik_user" {
-  name = "${local.short_identifier_prefix}qlik_user"
+  name = "${local.short_identifier_prefix}qlik-user"
 
   tags = module.tags.values
 }
@@ -39,7 +39,9 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
     resources = [
       "${module.raw_zone.bucket_arn}/",
       "${module.refined_zone.bucket_arn}/",
-      "${module.trusted_zone.bucket_arn}/"
+      "${module.trusted_zone.bucket_arn}/",
+      module.athena_storage.bucket_arn
+
     ]
   }
 
