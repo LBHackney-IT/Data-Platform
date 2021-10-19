@@ -47,6 +47,18 @@ data "aws_iam_policy_document" "fme_can_write_to_s3_and_athena" {
   statement {
     effect = "Allow"
     actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:GenerateDataKey",
+    ]
+    resources = [
+      module.athena_storage.kms_key_arn,
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
       "s3:PutObject",
     ]
     resources = [
