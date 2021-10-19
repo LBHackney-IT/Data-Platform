@@ -41,7 +41,18 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
       "${module.refined_zone.bucket_arn}/",
       "${module.trusted_zone.bucket_arn}/",
       module.athena_storage.bucket_arn
+    ]
+  }
 
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:GenerateDataKey",
+    ]
+    resources = [
+      module.athena_storage.kms_key_arn,
     ]
   }
 
