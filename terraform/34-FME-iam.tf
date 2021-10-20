@@ -81,13 +81,23 @@ data "aws_iam_policy_document" "fme_can_write_to_s3_and_athena" {
   statement {
     effect = "Allow"
     actions = [
-      "athena:ListEngineVersions",
-      "athena:ListWorkGroups",
-      "athena:ListDataCatalogs",
-      "athena:ListDatabases",
-      "athena:GetDatabase",
-      "athena:ListTableMetadata",
-      "athena:GetTableMetadata"
+      "athena:BatchGetQueryExecution",
+      "athena:GetQueryExecution",
+      "athena:ListQueryExecutions",
+      "athena:StartQueryExecution",
+      "athena:StopQueryExecution",
+      "athena:GetQueryResults",
+      "athena:GetQueryResultsStream",
+      "athena:CreateNamedQuery",
+      "athena:GetNamedQuery",
+      "athena:BatchGetNamedQuery",
+      "athena:ListNamedQueries",
+      "athena:DeleteNamedQuery",
+      "athena:CreatePreparedStatement",
+      "athena:GetPreparedStatement",
+      "athena:ListPreparedStatements",
+      "athena:UpdatePreparedStatement",
+      "athena:DeletePreparedStatement"
     ]
     resources = [
       "*"
