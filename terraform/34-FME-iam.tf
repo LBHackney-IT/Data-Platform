@@ -79,8 +79,28 @@ data "aws_iam_policy_document" "fme_can_write_to_s3_and_athena" {
   }
 
   statement {
+    effect    = "Allow"
+    actions   = [
+      "glue:GetDatabase",
+      "glue:GetDatabases",
+      "glue:GetTable",
+      "glue:GetTables",
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
     effect = "Allow"
     actions = [
+      "athena:ListEngineVersions",
+      "athena:ListWorkGroups",
+      "athena:ListDataCatalogs",
+      "athena:ListDatabases",
+      "athena:GetDatabase",
+      "athena:ListTableMetadata",
+      "athena:GetTableMetadata",
       "athena:BatchGetQueryExecution",
       "athena:GetQueryExecution",
       "athena:ListQueryExecutions",

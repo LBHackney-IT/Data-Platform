@@ -79,13 +79,10 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
   statement {
     effect    = "Allow"
     actions   = [
-      "athena:ListEngineVersions",
-      "athena:ListWorkGroups",
-      "athena:ListDataCatalogs",
-      "athena:ListDatabases",
-      "athena:GetDatabase",
-      "athena:ListTableMetadata",
-      "athena:GetTableMetadata"
+      "glue:GetDatabase",
+      "glue:GetDatabases",
+      "glue:GetTable",
+      "glue:GetTables",
     ]
     resources = [
       "*"
@@ -95,6 +92,13 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
   statement {
     effect    = "Allow"
     actions   = [
+      "athena:ListEngineVersions",
+      "athena:ListWorkGroups",
+      "athena:ListDataCatalogs",
+      "athena:ListDatabases",
+      "athena:GetDatabase",
+      "athena:ListTableMetadata",
+      "athena:GetTableMetadata",
       "athena:BatchGetQueryExecution",
       "athena:GetQueryExecution",
       "athena:ListQueryExecutions",
