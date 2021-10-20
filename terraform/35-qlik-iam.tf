@@ -83,6 +83,9 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
       "glue:GetDatabases",
       "glue:GetTable",
       "glue:GetTables",
+      "glue:GetPartition",
+      "glue:GetPartitions",
+      "glue:BatchGetPartition",
     ]
     resources = [
       "*"
