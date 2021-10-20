@@ -29,31 +29,38 @@ resource "aws_iam_user_policy" "qlik_user_policy" {
 
 data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
   statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:ListAllMyBuckets"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
     effect    = "Allow"
     actions   = [
       "s3:GetObject",
-      "S3:ListBucket",
       "s3:GetObjectVersion",
-      "s3:GetBucketLocation"
     ]
     resources = [
-      "${module.raw_zone.bucket_arn}/",
-      "${module.refined_zone.bucket_arn}/",
-      "${module.trusted_zone.bucket_arn}/",
-      module.athena_storage.bucket_arn
+      "${module.raw_zone.bucket_arn}/*",
+      "${module.refined_zone.bucket_arn}/*",
+      "${module.trusted_zone.bucket_arn}/*",
+      "${module.athena_storage.bucket_arn}/*"
     ]
   }
 
   statement {
     effect = "Allow"
     actions = [
-      "s3:GetBucketLocation",
-      "s3:GetObject",
-      "s3:ListBucket",
       "s3:PutObject",
     ]
     resources = [
-      module.athena_storage.bucket_arn
+      "${module.athena_storage.bucket_arn}/*"
     ]
   }
 

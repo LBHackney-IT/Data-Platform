@@ -31,29 +31,38 @@ data "aws_iam_policy_document" "fme_can_write_to_s3_and_athena" {
   statement {
     effect = "Allow"
     actions = [
-      "s3:GetObject",
-      "S3:ListBucket",
-      "s3:GetObjectVersion",
-      "s3:GetBucketLocation"
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:ListAllMyBuckets"
     ]
     resources = [
-      "${module.raw_zone.bucket_arn}/",
-      "${module.refined_zone.bucket_arn}/",
-      "${module.trusted_zone.bucket_arn}/",
-      "${module.athena_storage.bucket_arn}/primary"
+      "*"
     ]
   }
 
   statement {
     effect = "Allow"
     actions = [
-      "s3:GetBucketLocation",
       "s3:GetObject",
-      "s3:ListBucket",
-      "s3:PutObject",
+      "s3:GetObjectVersion",
     ]
     resources = [
-      "${module.athena_storage.bucket_arn}/primary"
+      "${module.raw_zone.bucket_arn}/*",
+      "${module.refined_zone.bucket_arn}/*",
+      "${module.trusted_zone.bucket_arn}/*",
+      "${module.athena_storage.bucket_arn}/primary/*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:PutObject"
+    ]
+    resources = [
+      "${module.refined_zone.bucket_arn}/*",
+      "${module.trusted_zone.bucket_arn}/*",
+      "${module.athena_storage.bucket_arn}/primary/*"
     ]
   }
 
@@ -66,17 +75,6 @@ data "aws_iam_policy_document" "fme_can_write_to_s3_and_athena" {
     ]
     resources = [
       module.athena_storage.kms_key_arn,
-    ]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "s3:PutObject",
-    ]
-    resources = [
-      "${module.refined_zone.bucket_arn}/*",
-      "${module.trusted_zone.bucket_arn}/*"
     ]
   }
 
