@@ -1,0 +1,17 @@
+[
+    {
+        "timestamp": {
+            "MyTable": "submit_date"
+        },
+        "integer": {
+        },
+        "boolean": {
+        },
+        "float": {
+        },
+        "long": {
+        },
+        "double": {
+        }
+    }
+]
