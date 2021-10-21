@@ -1,5 +1,5 @@
 run-notebook:
-	-(aws-vault exec hackney-dataplatform-staging -- env | grep  ^AWS_)  > ./.env
+	-(aws-vault exec hackney-dataplatform-development -- env | grep  ^AWS_)  > ./.env
 	docker compose up -d notebook
 
 remove-images:
