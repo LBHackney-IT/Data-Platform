@@ -2,7 +2,7 @@
 module "Parking_PCN_Create_Event_log_job" {
     source = "../modules/glue_job??"
     department = module.department_parking
-    job_name = "Parking_PCN_Create_Event_log"
+    job_name = "Parking_PCN_Create_Event_log" // will include department
     job_description = <<EOF
     This job reviews the PCN Events trying to find the LATEST event date for a number of Events (i.e. DVLA Requested, DVLA Received).
     The output is a SINGLE PCN record containing some 30+ fields of Dates.
@@ -17,6 +17,7 @@ module "Parking_PCN_Create_Event_log_job" {
     triggered_by_job = "" # create a conditional trigger dependent on this job name
     triggered_by_crawler = "" # create a conditional trigger dependent on this crawler name
     schedule = "" # Create a scheduled trigger
+    glue_scripts_bucket_id = "" // s3 bucket id where scripts are stored
 }
 
 # Example with parking job that is triggered by another job
@@ -38,6 +39,7 @@ module "Parking_PCN_Create_Event_log_job" {
     triggered_by_job =  module.Parking_PCN_Create_Event_log_job.job_name # create a conditional trigger dependent on this job name
     triggered_by_crawler = "" # create a conditional trigger dependent on this crawler name
     schedule = "" # Create a scheduled trigger
+    glue_scripts_bucket_id = "" // s3 bucket id where scripts are stored
 }
 
 # Example with analyst job that requires job parameters to be set
@@ -66,6 +68,7 @@ module "Address_cleaning" {
     triggered_by_job =  module.Parking_PCN_Create_Event_log_job.job_name # create a conditional trigger dependent on this job name
     triggered_by_crawler = "" # create a conditional trigger dependent on this crawler name
     schedule = "" # Create a scheduled trigger
+    glue_scripts_bucket_id = "" // s3 bucket id where scripts are stored
 }
 
 

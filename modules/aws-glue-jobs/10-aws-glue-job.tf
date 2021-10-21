@@ -1,5 +1,5 @@
 locals {
-  script_location = "s3://${module.glue_scripts.bucket_id}/${var.script_name}.py"
+  script_location = "s3://${var.glue_scripts_bucket_id}/${var.script_name}.py"
 }
 
 resource "aws_glue_job" "job" {
@@ -17,34 +17,35 @@ resource "aws_glue_job" "job" {
 
   glue_version = "2.0"
 
-  default_arguments = var.job_arguments
+  default_arguments = var.job_parameters
 }
 
 resource "aws_glue_trigger" "job_trigger" {
   tags = var.tags
 
-  name          = "${var.department.name}-job-trigger"
-  type          = "CONDITIONAL"
+  name          = "${var.job_name}-job-trigger"
+  type          = (var.triggered_by_crawler != null || var.triggered_by_job != null) ? "CONDITIONAL" : (var.schedule == null ? "ON_DEMAND" : "CONDITIONAL")
   workflow_name = var.workflow_name
+  schedule      = var.schedule
 
 
   dynamic "predicate" {
-    for_each = var.crawler_to_trigger == null ? [] : [1]
+    for_each = var.triggered_by_crawler == null ? [] : [1]
 
     content {
       conditions {
-        crawler_name = var.crawler_to_trigger
+        crawler_name = var.triggered_by_crawler
         crawl_state  = "SUCCEEDED"
       }
     }
   }
 
   dynamic "predicate" {
-    for_each = var.job_to_trigger == null ? [] : [1]
+    for_each = var.triggered_by_job == null ? [] : [1]
 
     content {
       conditions {
-        job_name = var.job_to_trigger
+        job_name = var.triggered_by_job
         state    = "SUCCEEDED"
       }
     }

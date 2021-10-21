@@ -15,16 +15,6 @@ variable "job_parameters" {
   default     = null
 }
 
-variable "script_name" {
-  description = <<EOF
-    Optional.
-    Name of the Glue job script. If no value provided,
-    then this will be worked out from the job name
-  EOF
-  type        = string
-  default     = null
-}
-
 variable "workflow_name" {
   description = "Optional. Workflow to add the triggers to."
   type        = string
@@ -37,19 +27,19 @@ variable "trigger_name" {
   default     = null
 }
 
-variable "crawler_to_trigger" {
+variable "triggered_by_crawler" {
   description = <<EOF
-    Must populate either this variable or the job_to_trigger variable.
+    Can populate either this variable, the job_to_trigger variable or the schedule.
     The job created in this module will be triggered on completion of either
-    the crawler given here or the job given in job_to_trigger.
+    the crawler given here or the job given in job_to_trigger or the schedule.
   EOF
   type        = string
   default     = null
 }
 
-variable "job_to_trigger" {
+variable "triggered_by_job" {
   description = <<EOF
-    Must populate either this variable or the crawler_to_trigger variable.
+    Can populate either this variable, the crawler_to_trigger variable or the schedule.
     The job created in this module will be triggered on completion of either
     the job given here or the crawler given in crawler_to_trigger.
   EOF
@@ -58,12 +48,10 @@ variable "job_to_trigger" {
 }
 
 variable "schedule" {
-  description = "Optional. Schedule to run the Glue jobs"
+  description = <<EOF
+    Can populate either this variable, job_to_trigger or the crawler_to_trigger.
+    Schedule to run the Glue job
+  EOF
   type        = string
-  default     = "ON_DEMAND"
-}
-
-variable "job_arguments" {
-  description = "Arguments to pass to the glue job"
-  type        = map(string)
+  default     = null
 }
