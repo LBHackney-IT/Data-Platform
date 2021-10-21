@@ -23,15 +23,17 @@ data "aws_iam_policy_document" "liberator_can_write_to_s3" {
       "s3:GetBucketLocation"
     ]
     resources = [
-      "${module.liberator_data_storage.bucket_arn}/parking"
+      "${module.liberator_data_storage.bucket_arn}"
     ]
   }
 
   statement {
     effect = "Allow"
     actions = [
-      "s3:GetObject",
-      "s3:GetObjectVersion"
+      "s3:Get*",
+      "s3:ListObjectsV2",
+      "s3:PutObject",
+      "s3:PutObjectAcl"
     ]
     resources = [
       "${module.liberator_data_storage.bucket_arn}/parking/*"
