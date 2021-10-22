@@ -1,0 +1,10 @@
+[
+    {
+        "integer": {
+            "MyTable": "id_number"
+        },
+        "boolean": {
+            "MyTable": "flag"
+        }
+    }
+]
