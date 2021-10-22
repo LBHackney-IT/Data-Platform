@@ -27,12 +27,6 @@ variable "workflow_name" {
   default     = null
 }
 
-variable "trigger_name" {
-  description = "Optional. Trigger to run the Glue job"
-  type        = string
-  default     = null
-}
-
 variable "script_name" {
   description = <<EOF
     Optional.
@@ -83,6 +77,7 @@ variable "crawler_details" {
   type = object({
     database_name      = string
     s3_target_location = string
+    table_prefix       = optional(string)
   })
   default = null
 }

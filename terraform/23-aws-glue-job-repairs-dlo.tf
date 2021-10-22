@@ -23,7 +23,6 @@ module "housing_repairs_dlo_cleaning_job" {
   }
   script_name            = aws_s3_bucket_object.housing_repairs_dlo_cleaning_script.key
   workflow_name          = module.repairs_dlo[0].workflow_name
-  trigger_name           = "${local.identifier_prefix}-housing-repairs-dlo-cleaning-job-trigger"
   triggered_by_crawler   = module.repairs_dlo[0].crawler_name
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   crawler_details = {
@@ -49,12 +48,38 @@ module "housing_repairs_dlo_address_cleaning_job" {
   }
   script_name            = aws_s3_bucket_object.address_cleaning.key
   workflow_name          = module.repairs_dlo[0].workflow_name
-  trigger_name           = "${local.identifier_prefix}-housing-repairs-dlo-address-cleaned-crawler-trigger"
   triggered_by_crawler   = module.housing_repairs_dlo_cleaning_job[0].crawler_name
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   crawler_details = {
     database_name      = module.department_housing_repairs.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses/"
+  }
+}
+
+module "get_uprn_from_uhref_job" {
+  source = "../modules/aws-glue-job"
+  count  = local.is_live_environment ? 1 : 0
+
+  department = module.department_housing_repairs
+  job_name   = "${local.short_identifier_prefix}Get UPRN from UHref DLO repairs"
+  job_parameters = {
+    "--lookup_catalogue_table"      = "datainsight_data_and_insight"
+    "--lookup_database"             = "dataplatform-stg-raw-zone-database"
+    "--source_data_catalogue_table" = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
+    "--source_data_database"        = module.department_housing_repairs.refined_zone_catalog_database_name
+    "--source_uhref_header"         = "property_reference_uh"
+    "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
+    "--TempDir"                     = module.glue_temp_storage.bucket_url
+    "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+  script_name            = aws_s3_bucket_object.get_uprn_from_uhref.key
+  workflow_name          = module.repairs_dlo[0].workflow_name
+  triggered_by_crawler   = module.housing_repairs_dlo_address_cleaning_job[0].crawler_name
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  crawler_details = {
+    table_prefix       = "housing-repairs-with-uprn-from-uhref_"
+    database_name      = module.department_housing_repairs.refined_zone_catalog_database_name
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
   }
 }
 
