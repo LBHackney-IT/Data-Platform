@@ -1,4 +1,5 @@
-# Example with parking job
+## Example with parking job
+```
 module "Parking_PCN_Create_Event_log_job" {
   source          = "../modules/glue_job??"
   department      = module.department_parking
@@ -23,8 +24,9 @@ module "Parking_PCN_Create_Event_log_job" {
     s3_target_location = "" // s3 location to crawl
   }
 }
-
-# Example with parking job that is triggered by another job
+```
+## Example with parking job that is triggered by another job
+```
 module "Parking_PCN_Create_Event_log_job" {
   source          = "../modules/glue_job??"
   department      = module.department_parking
@@ -49,8 +51,10 @@ module "Parking_PCN_Create_Event_log_job" {
     s3_target_location = "" // s3 location to crawl
   }
 }
+```
 
-# Example with analyst job that requires job parameters to be set
+## Example with analyst job that requires job parameters to be set
+```
 module "Address_cleaning" {
   source          = "../modules/glue_job??"
   department      = module.department_data_and_insight
@@ -82,7 +86,7 @@ module "Address_cleaning" {
     s3_target_location = "" // s3 location to crawl
   }
 }
-
+```
 
 
 
