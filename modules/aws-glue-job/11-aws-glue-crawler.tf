@@ -1,9 +1,9 @@
 resource "aws_glue_crawler" "crawler" {
-  count = crawler_details == null ? 0 : 1
-  tags  = var.tags
+  count = var.crawler_details == null ? 0 : 1
+  tags  = local.tags
 
   database_name = var.crawler_details.database_name
-  name          = "${var.department.department_identifier}-crawler"
+  name          = "${var.department.identifier}-crawler"
   role          = var.department.glue_role_arn
   table_prefix  = var.table_prefix
 
@@ -22,10 +22,10 @@ resource "aws_glue_crawler" "crawler" {
 }
 
 resource "aws_glue_trigger" "crawler_trigger" {
-  count = crawler_details == null ? 0 : 1
-  tags  = var.tags
+  count = var.crawler_details == null ? 0 : 1
+  tags  = local.tags
 
-  name          = "${var.department.department_identifier}-crawler-trigger"
+  name          = "${var.department.identifier}-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = var.workflow_name
 
@@ -37,6 +37,6 @@ resource "aws_glue_trigger" "crawler_trigger" {
   }
 
   actions {
-    crawler_name = aws_glue_crawler.crawler.name
+    crawler_name = aws_glue_crawler.crawler[0].name
   }
 }

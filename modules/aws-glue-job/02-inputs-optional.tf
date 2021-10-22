@@ -33,6 +33,16 @@ variable "trigger_name" {
   default     = null
 }
 
+variable "script_name" {
+  description = <<EOF
+    Optional.
+    Name of the Glue job script. If no value is provided,
+    then it will be the same as the job name
+  EOF
+  type        = string
+  default     = null
+}
+
 variable "triggered_by_crawler" {
   description = <<EOF
     Can populate either this variable, the job_to_trigger variable or the schedule.
