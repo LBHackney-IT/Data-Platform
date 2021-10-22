@@ -6,60 +6,80 @@ from datetime import datetime, date
 class TestRecastTables:
   
     def test_castColumns_timestamp(self, spark):
-        response = self.castColumns(spark, [{'submit_date': '2021-09-24 08:58:47'}], "timestamp", TimestampType())
+        input_data = [{'submit_date': '2021-09-24 08:58:47'}]
         expected = [{'submit_date': datetime(2021, 9, 24, 8, 58, 47)}]
+        response = self.castColumns(spark, "./stub_column_type_dictionary.json", "MyTable", input_data, "timestamp", TimestampType())
         assert (response == expected)
   
     def test_castColumns_integer(self, spark):
-        response = self.castColumns(spark, [{'id_number': '12'}], "integer", IntegerType())
+        input_data = [{'id_number': '12'}]
         expected = [{'id_number': 12}]
+        response = self.castColumns(spark, "./stub_column_type_dictionary.json", "MyTable", input_data, "integer", IntegerType())
         assert (response == expected)
 
     def test_castColumns_boolean(self, spark):
-        response = self.castColumns(spark, [{'flag': 'f'},{'flag': 't'}], "boolean", BooleanType())
+        input_data = [{'flag': 'f'},{'flag': 't'}]
         expected = [{'flag': False},{'flag': True}]
+        response = self.castColumns(spark, "./stub_column_type_dictionary.json", "MyTable", input_data, "boolean", BooleanType())
         assert (response == expected)
 
     # Comparison of floats not doable with assert, hence the small precision 91.0 in this test
     def test_castColumns_float(self, spark):
-        response = self.castColumns(spark, [{'measurement': '91.0'}], "float", FloatType())
+        input_data = [{'measurement': '91.0'}]
         expected = [{'measurement': 91.0}]
+        response = self.castColumns(spark, "./stub_column_type_dictionary.json", "MyTable", input_data, "float", FloatType())
         assert (response == expected)
 
     def test_castColumns_double(self, spark):
-        response = self.castColumns(spark, [{'large_measurement': '91.535554'}], "double", DoubleType())
+        input_data = [{'large_measurement': '91.535554'}]
         expected = [{'large_measurement': 91.535554}]
+        response = self.castColumns(spark, "./stub_column_type_dictionary.json", "MyTable", input_data, "double", DoubleType())
         assert (response == expected)
 
-
     def test_castColumns_long(self, spark):
-        response = self.castColumns(spark, [{'long_id': '9157952949254835554'}], "long", LongType())
+        input_data = [{'long_id': '9157952949254835554'}]
         expected = [{'long_id': 9157952949254835554}]
+        response = self.castColumns(spark, "./stub_column_type_dictionary.json", "MyTable", input_data, "long", LongType())
         assert (response == expected)
 
     def test_castColumns_date(self, spark):
-        response = self.castColumns(spark, [{'start_date': '2021-09-24'}], "date", DateType())
+        input_data = [{'start_date': '2021-09-24'}]
+        response = self.castColumns(spark, "./stub_column_type_dictionary.json", "MyTable", input_data, "date", DateType())
         expected = [{'start_date': date(2021, 9, 24)}]
         assert (response == expected)
 
     def test_castColumns_allTypes(self, spark):
-        response = self.castColumnsAllTypes(spark, [{'submit_date': '2021-09-24 08:58:47', 'id_number': '12', 'flag': 'f', 'measurement': '91.0', 'large_measurement': '91.535554', 'long_id': '9157952949254835554', 'start_date': '2021-09-24'}])
+        input_data = [{'submit_date': '2021-09-24 08:58:47', 'id_number': '12', 'flag': 'f', 'measurement': '91.0', 'large_measurement': '91.535554', 'long_id': '9157952949254835554', 'start_date': '2021-09-24'}]
         expected = [{'submit_date': datetime(2021, 9, 24, 8, 58, 47), 'id_number': 12, 'flag': False, 'measurement': 91.0, 'large_measurement': 91.535554, 'long_id': 9157952949254835554,'start_date': date(2021, 9, 24)}]
+        response = self.castColumnsAllTypes(spark, "./stub_column_type_dictionary.json", "MyTable", input_data)
         assert (response == expected)
 
-    def castColumns(self, spark, data, typeName, dataType):
+    def test_castColumns_when_table_not_represented_in_dictionary(self, spark):
+        input_data = [{'submit_date': '2021-09-24 08:58:47'}]
+        expected = [{'submit_date': '2021-09-24 08:58:47'}]
+        response = self.castColumnsAllTypes(spark, "./stub_column_type_dictionary.json", "some_table_not_in_the_dictionary", input_data)
+        assert (response == expected)
+
+    def test_castColumns_when_all_datatypes_not_represented_in_dictionary(self, spark):
+        input_data = [{'id_number': '12', 'flag': 'f', 'start_date': '2021-09-24'}]
+        expected = [{'id_number': 12, 'flag': False,'start_date': '2021-09-24'}]
+        response = self.castColumnsAllTypes(spark, "./stub_column_type_dictionary_partial.json", "MyTable", input_data)
+        assert (response == expected)
+
+
+    def castColumns(self, spark, dictionaryPath, tableName, data, typeName, dataType):
         # The column dictionary is saved in JSON format in a separate file in this directory.
         # Then we are using the same code that is used in the script to access this file just with a relative path
         # instead of an S3 path.
-
-        columnsDictionary = spark.read.option("multiline", "true").json("./stub_column_type_dictionary.json")
+        columnsDictionary = spark.read.option("multiline", "true").json(dictionaryPath)
         query_data = spark.createDataFrame(spark.sparkContext.parallelize([Row(**i) for i in data]))
-        return [row.asDict() for row in castColumns(columnsDictionary, "MyTable", query_data, typeName, dataType).rdd.collect()]
+        return [row.asDict() for row in castColumns(columnsDictionary, tableName, query_data, typeName, dataType).rdd.collect()]
 
-    def castColumnsAllTypes(self, spark, data):
+    def castColumnsAllTypes(self, spark, dictionaryPath, tableName, data):
         # The column dictionary is saved in JSON format in a separate file in this directory.
         # Then we are using the same code that is used in the script to access this file just with a relative path
         # instead of an S3 path.
-        columnsDictionary = spark.read.option("multiline", "true").json("./stub_column_type_dictionary.json")
+        columnsDictionary = spark.read.option("multiline", "true").json(dictionaryPath)
         query_data = spark.createDataFrame(spark.sparkContext.parallelize([Row(**i) for i in data]))
-        return [row.asDict() for row in castColumnsAllTypes(columnsDictionary, "MyTable", query_data).rdd.collect()]
+        return [row.asDict() for row in castColumnsAllTypes(columnsDictionary, tableName, query_data).rdd.collect()]
+
