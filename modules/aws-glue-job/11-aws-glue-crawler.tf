@@ -3,7 +3,7 @@ resource "aws_glue_crawler" "crawler" {
   tags  = var.department.tags
 
   database_name = var.crawler_details.database_name
-  name          = var.job_name_identifier
+  name          = local.job_name_identifier
   role          = var.department.glue_role_arn
   table_prefix  = var.table_prefix
 
@@ -25,7 +25,7 @@ resource "aws_glue_trigger" "crawler_trigger" {
   count = var.crawler_details == null ? 0 : 1
   tags  = var.department.tags
 
-  name          = "${var.job_name_identifier}-crawler-trigger"
+  name          = "${local.job_name_identifier}-crawler-trigger"
   type          = "CONDITIONAL"
   workflow_name = var.workflow_name
 

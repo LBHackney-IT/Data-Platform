@@ -120,5 +120,6 @@ variable "department" {
   type = object({
     identifier    = string
     glue_role_arn = string
+    tags          = map(string)
   })
 }

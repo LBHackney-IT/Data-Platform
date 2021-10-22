@@ -36,7 +36,7 @@ resource "aws_glue_trigger" "housing_repairs_address_cleaning" {
 
   predicate {
     conditions {
-      crawler_name = aws_glue_crawler.refined_zone_housing_repairs_cleaned_crawler.name
+      crawler_name = module.housing_repairs_google_sheets_import.crawler_name
       crawl_state  = "SUCCEEDED"
     }
   }
