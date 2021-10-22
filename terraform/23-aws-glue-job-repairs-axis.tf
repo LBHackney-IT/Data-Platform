@@ -13,7 +13,8 @@ module "housing_repairs_axis" {
 
   source = "../modules/housing-repairs-google-sheets-cleaning"
   tags   = module.department_housing_repairs.tags
-
+  
+  department                         = module.department_housing_repairs
   short_identifier_prefix            = local.short_identifier_prefix
   identifier_prefix                  = local.identifier_prefix
   department_name                    = "housing-repairs"

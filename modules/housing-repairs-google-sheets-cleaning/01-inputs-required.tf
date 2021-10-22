@@ -114,3 +114,11 @@ variable "match_to_property_shell" {
   type        = string
   default     = ""
 }
+
+variable "department" {
+  description = "The department with all its properties"
+  type = object({
+    identifier    = string
+    glue_role_arn = string
+  })
+}
