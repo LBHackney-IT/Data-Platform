@@ -1,10 +1,10 @@
 [
     {
         "integer": {
-            "MyTable": "id_number"
+            "MyTable": ["id_number"]
         },
         "boolean": {
-            "MyTable": "flag"
+            "MyTable": ["flag"]
         }
     }
 ]
