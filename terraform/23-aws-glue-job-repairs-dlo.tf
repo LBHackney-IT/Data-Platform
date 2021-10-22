@@ -33,47 +33,13 @@ module "housing_repairs_dlo_cleaning" {
   tags = module.tags.values
 }
 
+module "housing_repairs_dlo_address_cleaning" {
+  source = "../modules/aws-glue-job"
+  count  = local.is_live_environment ? 1 : 0
 
-resource "aws_glue_trigger" "housing_repairs_dlo_cleaning_trigger" {
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.identifier_prefix}-housing-repairs-dlo-address-cleaning-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_dlo[0].workflow_name
-  tags          = module.department_housing_repairs.tags
-
-  predicate {
-    conditions {
-      crawler_name = module.housing_repairs_dlo_cleaning[0].crawler_name
-      crawl_state  = "SUCCEEDED"
-    }
-  }
-  actions {
-    job_name = aws_glue_job.housing_repairs_dlo_address_cleaning[0].name
-  }
-}
-
-resource "aws_glue_job" "housing_repairs_dlo_address_cleaning" {
-  count = local.is_live_environment ? 1 : 0
-
-  tags = module.department_housing_repairs.tags
-
-  name              = "${local.short_identifier_prefix}DLO Repairs - Address Cleaning"
-  number_of_workers = 10
-  worker_type       = "G.1X"
-  role_arn          = aws_iam_role.glue_role.arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.address_cleaning.key}"
-  }
-
-  execution_property {
-    max_concurrent_runs = 1
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {
+  department = module.department_housing_repairs
+  job_name   = "${local.short_identifier_prefix}DLO Repairs - Address Cleaning"
+  job_parameters = {
     "--TempDir"        = module.glue_temp_storage.bucket_url
     "--extra-py-files" = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
     "--source_catalog_database" : module.department_housing_repairs.refined_zone_catalog_database_name
@@ -82,47 +48,16 @@ resource "aws_glue_job" "housing_repairs_dlo_address_cleaning" {
     "--source_address_column_header" : "property_address"
     "--source_postcode_column_header" : "postal_code_raw"
   }
-}
-
-resource "aws_glue_trigger" "housing_repairs_dlo_cleaned_crawler_trigger" {
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.identifier_prefix}-housing-repairs-dlo-address-cleaned-crawler-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = module.repairs_dlo[0].workflow_name
-  tags          = module.department_housing_repairs.tags
-
-  predicate {
-    conditions {
-      job_name = aws_glue_job.housing_repairs_dlo_address_cleaning[0].name
-      state    = "SUCCEEDED"
-    }
+  script_name            = aws_s3_bucket_object.address_cleaning.key
+  workflow_name          = module.repairs_dlo[0].workflow_name
+  trigger_name           = "${local.identifier_prefix}-housing-repairs-dlo-address-cleaned-crawler-trigger"
+  triggered_by_crawler   = module.housing_repairs_dlo_cleaning[0].crawler_name
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  crawler_details = {
+    database_name      = module.department_housing_repairs.refined_zone_catalog_database_name
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses/"
   }
-  actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_dlo_with_cleaned_addresses_crawler[0].name
-  }
-}
-
-resource "aws_glue_crawler" "refined_zone_housing_repairs_dlo_with_cleaned_addresses_crawler" {
-  count = local.is_live_environment ? 1 : 0
-
-  tags          = module.department_housing_repairs.tags
-  database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  name          = "${local.short_identifier_prefix}refined-zone-housing-repairs-dlo-with-cleaned-addresses"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "housing_repairs_repairs_dlo_with_cleaned_addresses_"
-
-  s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses/"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
-
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 4
-    }
-  })
+  tags = module.tags.values
 }
 
 resource "aws_glue_trigger" "housing_repairs_dlo_cleaned_uhref_job_trigger" {
@@ -135,7 +70,7 @@ resource "aws_glue_trigger" "housing_repairs_dlo_cleaned_uhref_job_trigger" {
 
   predicate {
     conditions {
-      crawler_name = aws_glue_crawler.refined_zone_housing_repairs_dlo_with_cleaned_addresses_crawler[0].name
+      crawler_name = module.housing_repairs_dlo_address_cleaning[0].crawler_name
       crawl_state  = "SUCCEEDED"
     }
   }

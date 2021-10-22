@@ -1,7 +1,7 @@
 locals {
   script_name     = var.script_name == null ? "scripts/${var.job_name}.py" : var.script_name
   script_location = "s3://${var.glue_scripts_bucket_id}/${local.script_name}"
-  tags = merge(var.tags, { "PlatformDepartment" = var.department.identifier})
+  tags            = merge(var.tags, { "PlatformDepartment" = var.department.identifier })
 }
 
 resource "aws_glue_job" "job" {
