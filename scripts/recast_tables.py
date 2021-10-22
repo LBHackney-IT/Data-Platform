@@ -12,23 +12,25 @@ from helpers import get_latest_partitions, get_glue_env_var, PARTITION_KEYS
 
 def castColumns(columnDict,tableName,df,typeName,dataType):
     # check if this datatype is represented in the dictionary
-    if typeName in columnDict.columns:
+    if typeName not in columnDict.columns:
+        return df
         # check if this table is represented for this data type in the dictionary
-        if tableName+":" in columnDict.select(typeName).schema.simpleString():
+    if tableName+":" not in columnDict.select(typeName).schema.simpleString():
+        return df
             # iterate on columns of this type
-            for colName in columnDict.select(typeName+'.'+tableName).first()[0].split(','):
-                # recast
-                df = df.withColumn(colName ,col(colName).cast(dataType))
+    for colName in columnDict.select(typeName+'.'+tableName).first()[0].split(','):
+        # recast
+        df = df.withColumn(colName ,col(colName).cast(dataType))
     return df
 
-def castColumnsAllTypes(ColumnDict,tableName,df):
-    df = castColumns(columnDict=ColumnDict, tableName=tableName, df=df, typeName="timestamp", dataType=TimestampType())
-    df = castColumns(columnDict=ColumnDict, tableName=tableName, df=df, typeName="integer", dataType=IntegerType())
-    df = castColumns(columnDict=ColumnDict, tableName=tableName, df=df, typeName="boolean", dataType=BooleanType())
-    df = castColumns(columnDict=ColumnDict, tableName=tableName, df=df, typeName="float", dataType=DoubleType())
-    df = castColumns(columnDict=ColumnDict, tableName=tableName, df=df, typeName="long", dataType=LongType())
-    df = castColumns(columnDict=ColumnDict, tableName=tableName, df=df, typeName="double", dataType=DoubleType())
-    df = castColumns(columnDict=ColumnDict, tableName=tableName, df=df, typeName="date", dataType=DateType())
+def castColumnsAllTypes(columnDict,tableName,df):
+    df = castColumns(columnDict=columnDict, tableName=tableName, df=df, typeName="timestamp", dataType=TimestampType())
+    df = castColumns(columnDict=columnDict, tableName=tableName, df=df, typeName="integer", dataType=IntegerType())
+    df = castColumns(columnDict=columnDict, tableName=tableName, df=df, typeName="boolean", dataType=BooleanType())
+    df = castColumns(columnDict=columnDict, tableName=tableName, df=df, typeName="float", dataType=DoubleType())
+    df = castColumns(columnDict=columnDict, tableName=tableName, df=df, typeName="long", dataType=LongType())
+    df = castColumns(columnDict=columnDict, tableName=tableName, df=df, typeName="double", dataType=DoubleType())
+    df = castColumns(columnDict=columnDict, tableName=tableName, df=df, typeName="date", dataType=DateType())
     return df
 
 if __name__ == "__main__":
