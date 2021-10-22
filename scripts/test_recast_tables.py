@@ -71,7 +71,8 @@ class TestRecastTables:
         # The column dictionary is saved in JSON format in a separate file in this directory.
         # Then we are using the same code that is used in the script to access this file just with a relative path
         # instead of an S3 path.
-        columnsDictionary = spark.read.option("multiline", "true").json(dictionaryPath)
+
+        columnsDictionary = spark.read.option("multiline", "true").json(dictionaryPath).rdd.collect()[0]
         query_data = spark.createDataFrame(spark.sparkContext.parallelize([Row(**i) for i in data]))
         return [row.asDict() for row in castColumns(columnsDictionary, tableName, query_data, typeName, dataType).rdd.collect()]
 
@@ -79,7 +80,7 @@ class TestRecastTables:
         # The column dictionary is saved in JSON format in a separate file in this directory.
         # Then we are using the same code that is used in the script to access this file just with a relative path
         # instead of an S3 path.
-        columnsDictionary = spark.read.option("multiline", "true").json(dictionaryPath)
+        columnsDictionary = spark.read.option("multiline", "true").json(dictionaryPath).rdd.collect()[0]
         query_data = spark.createDataFrame(spark.sparkContext.parallelize([Row(**i) for i in data]))
         return [row.asDict() for row in castColumnsAllTypes(columnsDictionary, tableName, query_data).rdd.collect()]
 

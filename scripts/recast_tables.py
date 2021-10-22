@@ -5,22 +5,19 @@ from pyspark.sql import SparkSession
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
-from pyspark.sql.functions import col, max
-from pyspark.sql.types import StringType, IntegerType, BooleanType, DateType, FloatType, TimestampType, LongType, DoubleType, MapType
-from helpers import get_latest_partitions, get_glue_env_var, PARTITION_KEYS
+from pyspark.sql.functions import col
+from pyspark.sql.types import IntegerType, BooleanType, DateType, TimestampType, LongType, DoubleType
+from helpers import get_glue_env_var, PARTITION_KEYS
 
 
 def castColumns(columnDict,tableName,df,typeName,dataType):
-    # check if this datatype is represented in the dictionary
-    if typeName not in columnDict.columns:
+    # check if this datatype is represented in the dictionary and if the table is represented for this data type in the dictionary
+    if typeName not in columnDict or tableName not in columnDict[typeName]:
         return df
-        # check if this table is represented for this data type in the dictionary
-    if tableName+":" not in columnDict.select(typeName).schema.simpleString():
-        return df
-            # iterate on columns of this type
-    for colName in columnDict.select(typeName+'.'+tableName).first()[0].split(','):
+    # iterate on columns of this type
+    for colName in columnDict[typeName][tableName]:
         # recast
-        df = df.withColumn(colName ,col(colName).cast(dataType))
+        df = df.withColumn(colName, col(colName).cast(dataType))
     return df
 
 def castColumnsAllTypes(columnDict,tableName,df):
@@ -52,9 +49,8 @@ if __name__ == "__main__":
     #   load table list
     table_list = table_list_string.split(',')
     #   load columns dictionary
-    columnsDictionary = spark.read.option("multiline", "true").json(column_dict_path)
-
-
+    columnsDictionary = spark.read.option("multiline", "true").json(column_dict_path).rdd.collect()[0]
+    
     for nameOfTableToRecast in table_list:
         #   load data
         source_ddf = glueContext.create_dynamic_frame.from_catalog(
