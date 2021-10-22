@@ -39,6 +39,22 @@ data "aws_iam_policy_document" "liberator_can_write_to_s3" {
       "${module.liberator_data_storage.bucket_arn}/parking/*"
     ]
   }
+
+  statement {
+    effect  = "Allow"
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
+    ]
+    resources = [
+      "${module.liberator_data_storage.kms_key_arn}"
+    ]
+  }
 }
 
 resource "aws_secretsmanager_secret" "liberator_user_private_key" {
