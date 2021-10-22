@@ -8,6 +8,31 @@ resource "aws_s3_bucket_object" "housing_repairs_dlo_cleaning_script" {
   etag   = filemd5("../scripts/repairs_dlo_cleaning.py")
 }
 
+module "housing_repairs_dlo_cleaning" {
+  source = "../modules/aws-glue-job"
+  count  = local.is_live_environment ? 1 : 0
+
+  department = module.department_housing_repairs
+  job_name   = "${local.short_identifier_prefix}Housing Repairs - Repairs DLO Cleaning"
+  job_parameters = {
+    "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
+    "--source_catalog_table"             = "housing_repairs_repairs_dlo"
+    "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned"
+    "--TempDir"                          = module.glue_temp_storage.bucket_url
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
+  }
+  script_name            = aws_s3_bucket_object.housing_repairs_dlo_cleaning_script.key
+  workflow_name          = module.repairs_dlo[0].workflow_name
+  trigger_name           = "${local.identifier_prefix}-housing-repairs-dlo-cleaning-job-trigger"
+  triggered_by_crawler   = module.repairs_dlo[0].crawler_name
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  crawler_details = {
+    database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned/"
+  }
+  tags = module.tags.values
+}
+
 resource "aws_glue_job" "housing_repairs_dlo_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
