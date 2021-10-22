@@ -1,6 +1,6 @@
 resource "aws_glue_crawler" "crawler" {
   count = var.crawler_details == null ? 0 : 1
-  tags  = local.tags
+  tags = var.department.tags
 
   database_name = var.crawler_details.database_name
   name          = "${var.department.identifier}-crawler"
@@ -23,7 +23,7 @@ resource "aws_glue_crawler" "crawler" {
 
 resource "aws_glue_trigger" "crawler_trigger" {
   count = var.crawler_details == null ? 0 : 1
-  tags  = local.tags
+  tags = var.department.tags
 
   name          = "${var.department.identifier}-crawler-trigger"
   type          = "CONDITIONAL"

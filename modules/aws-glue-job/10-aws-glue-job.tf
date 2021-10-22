@@ -1,11 +1,10 @@
 locals {
   script_name     = var.script_name == null ? "scripts/${var.job_name}.py" : var.script_name
   script_location = "s3://${var.glue_scripts_bucket_id}/${local.script_name}"
-  tags            = merge(var.tags, { "PlatformDepartment" = var.department.identifier })
 }
 
 resource "aws_glue_job" "job" {
-  tags = local.tags
+  tags = var.department.tags
 
   name              = var.job_name
   number_of_workers = 10
@@ -22,7 +21,7 @@ resource "aws_glue_job" "job" {
 }
 
 resource "aws_glue_trigger" "job_trigger" {
-  tags = local.tags
+  tags = var.department.tags
 
   name          = "${var.job_name}-job-trigger"
   type          = (var.triggered_by_crawler != null || var.triggered_by_job != null) ? "CONDITIONAL" : (var.schedule == null ? "ON_DEMAND" : "CONDITIONAL")

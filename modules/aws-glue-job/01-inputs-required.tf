@@ -1,13 +1,9 @@
-variable "tags" {
-  description = "AWS tags"
-  type        = map(string)
-}
-
 variable "department" {
   description = "The department with all its properties"
   type = object({
     identifier    = string
     glue_role_arn = string
+    tags          = map(string)
   })
 }
 
