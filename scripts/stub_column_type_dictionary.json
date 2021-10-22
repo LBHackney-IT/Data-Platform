@@ -4,14 +4,22 @@
             "MyTable": "submit_date"
         },
         "integer": {
+            "MyTable": "id_number"
         },
         "boolean": {
+            "MyTable": "flag"
         },
         "float": {
+            "MyTable": "measurement"
         },
         "long": {
+            "MyTable": "long_id"
         },
         "double": {
+            "MyTable": "large_measurement"
+        },
+        "date": {
+            "MyTable": "start_date"
         }
     }
 ]
