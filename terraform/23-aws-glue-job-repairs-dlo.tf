@@ -83,6 +83,27 @@ module "get_uprn_from_uhref_job" {
   }
 }
 
+module "repairs_dlo_levenshtein_address_matching" {
+  source = "../modules/aws-glue-job"
+  count  = local.is_live_environment ? 1 : 0
+
+  department = module.department_housing_repairs
+  job_name   = "${local.short_identifier_prefix}Housing Repairs - Repairs DLO Levenshtein Address Matching"
+  job_parameters = {
+    "--addresses_api_data_database" = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
+    "--addresses_api_data_table"    = "unrestricted_address_api_dbo_hackney_address"
+    "--source_catalog_database"     = "housing-repairs-refined-zone"
+    "--source_catalog_table"        = "housing-repairs-with-uprn-from-uhref_with_uprn_from_uhref"
+    "--match_to_property_shell"     = "forbid"
+    "--target_destination"          = "s3://${module.trusted_zone.bucket_id}/housing-repairs/repairs/"
+    "--TempDir"                     = module.glue_temp_storage.bucket_url
+    "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+  script_name            = aws_s3_bucket_object.levenshtein_address_matching.key
+  workflow_name          = module.repairs_dlo[0].workflow_name
+  triggered_by_crawler   = module.get_uprn_from_uhref_job[0].crawler_name
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+}
 resource "aws_glue_trigger" "housing_repairs_dlo_address_matching_job_trigger" {
   count = local.is_live_environment ? 1 : 0
 
