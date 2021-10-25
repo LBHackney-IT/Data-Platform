@@ -13,7 +13,7 @@ resource "aws_glue_crawler" "crawler" {
     exclusions = var.glue_crawler_excluded_blobs
   }
 
-  configuration = jsonencode(var.crawler_details.configuration)
+  configuration = var.crawler_details.configuration
 }
 
 resource "aws_glue_trigger" "crawler_trigger" {
