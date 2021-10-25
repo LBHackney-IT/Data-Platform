@@ -1,16 +1,15 @@
-variable "tags" {
-  description = "AWS tags"
-  type        = map(string)
-}
-
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
 }
 
-variable "department_name" {
+variable "department" {
   description = "Department folder name"
-  type        = string
+  type = object({
+    identifier    = string
+    glue_role_arn = string
+    tags          = map(string)
+  })
 }
 
 variable "script_key" {

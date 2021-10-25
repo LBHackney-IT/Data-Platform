@@ -1,6 +1,6 @@
 module "housing_repairs_elec_mech_fire_address_cleaning" {
   source              = "../aws-glue-job-with-crawler"
-  tags                = var.tags
+  tags                = var.department.tags
   workflow_name       = var.worksheet_resource.workflow_name
   crawler_to_trigger  = module.housing_repairs_elec_mech_fire_cleaning.crawler_name
   job_name            = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Address Cleaning"

@@ -5,7 +5,7 @@ resource "aws_glue_crawler" "crawler" {
   database_name = var.crawler_details.database_name
   name          = local.job_name_identifier
   role          = var.department.glue_role_arn
-  table_prefix  = var.table_prefix
+  table_prefix  = var.crawler_details.table_prefix
 
   s3_target {
     path = var.crawler_details.s3_target_location

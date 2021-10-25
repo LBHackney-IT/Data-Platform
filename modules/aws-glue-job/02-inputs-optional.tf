@@ -66,12 +66,6 @@ variable "schedule" {
   default     = null
 }
 
-variable "table_prefix" {
-  description = "Prefix for table name in the Glue database"
-  type        = string
-  default     = null
-}
-
 variable "crawler_details" {
   description = "Inputs required to create a crawler"
   type = object({

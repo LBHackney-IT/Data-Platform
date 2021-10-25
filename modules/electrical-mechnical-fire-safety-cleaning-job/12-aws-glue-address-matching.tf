@@ -1,6 +1,6 @@
 resource "aws_glue_job" "housing_repairs_elec_mech_fire_address_matching_job" {
 
-  tags = var.tags
+  tags = var.department.tags
 
   name              = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Address Matching"
   number_of_workers = 10
@@ -26,7 +26,7 @@ resource "aws_glue_job" "housing_repairs_elec_mech_fire_address_matching_job" {
 }
 
 resource "aws_glue_trigger" "job_trigger" {
-  tags = var.tags
+  tags = var.department.tags
 
   name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-address-matching-job-trigger"
   type          = "CONDITIONAL"
