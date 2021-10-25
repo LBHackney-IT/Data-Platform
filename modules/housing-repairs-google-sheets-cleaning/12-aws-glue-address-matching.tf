@@ -1,43 +1,20 @@
-resource "aws_glue_job" "housing_repairs_levenshtein_address_matching" {
-  tags = var.tags
+module "housing_repairs_google_sheets_levenshtein_address_matching" {
+  source = "../aws-glue-job"
 
-  name              = "Housing Repairs - ${title(replace(var.dataset_name, "-", " "))} Address Matching"
-  number_of_workers = 10
-  worker_type       = "G.1X"
-  role_arn          = var.glue_role_arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${var.glue_scripts_bucket_id}/${var.address_matching_script_key}"
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {
+  department = var.department
+  job_name   = "${local.glue_job_name} Address Matching"
+  job_parameters = {
     "--addresses_api_data_database" = var.addresses_api_data_catalog
     "--addresses_api_data_table"    = "unrestricted_address_api_dbo_hackney_address"
     "--source_catalog_database"     = var.refined_zone_catalog_database_name
     "--source_catalog_table"        = "housing_repairs_${replace(var.dataset_name, "-", "_")}_with_cleaned_addresses"
     "--target_destination"          = "s3://${var.trusted_zone_bucket_id}/housing-repairs/repairs/"
     "--TempDir"                     = var.glue_temp_storage_bucket_id
-    "--extra-py-files"              = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
+    "--extra-py-files"              = local.extra_py_files
     "--match_to_property_shell"     = var.match_to_property_shell
   }
-}
-#
-resource "aws_glue_trigger" "housing_repairs_levenshtein_address_matching" {
-
-  name          = "${var.short_identifier_prefix}housing-repairs-${var.dataset_name}-address-matching-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = var.workflow_name
-  tags          = var.tags
-
-  predicate {
-    conditions {
-      crawler_name = module.housing_repairs_google_sheets_address_cleaning.crawler_name
-      crawl_state  = "SUCCEEDED"
-    }
-  }
-  actions {
-    job_name = aws_glue_job.housing_repairs_levenshtein_address_matching.name
-  }
+  script_name            = var.address_matching_script_key
+  workflow_name          = var.workflow_name
+  triggered_by_crawler   = module.housing_repairs_google_sheets_address_cleaning.crawler_name
+  glue_scripts_bucket_id = var.glue_scripts_bucket_id
 }
