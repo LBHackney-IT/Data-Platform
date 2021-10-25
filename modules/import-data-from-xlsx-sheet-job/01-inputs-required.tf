@@ -1,6 +1,10 @@
-variable "tags" {
-  description = "AWS tags"
-  type        = map(string)
+variable "department" {
+  description = "The department with all its properties"
+  type = object({
+    identifier    = string
+    glue_role_arn = string
+    tags          = map(string)
+  })
 }
 
 variable "glue_role_arn" {
@@ -54,11 +58,6 @@ variable "raw_zone_bucket_id" {
 
 variable "glue_job_name" {
   description = "Name of AWS Glue job"
-  type        = string
-}
-
-variable "department_folder_name" {
-  description = "Department folder name"
   type        = string
 }
 

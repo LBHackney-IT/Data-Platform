@@ -5,3 +5,7 @@ output "crawler_name" {
 output "job_name" {
   value = aws_glue_job.job.name
 }
+
+output "job_arn" {
+  value = aws_glue_job.job.arn
+}
