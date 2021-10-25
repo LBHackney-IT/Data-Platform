@@ -12,11 +12,10 @@ module "housing_repairs_alphatrack" {
   count = local.is_live_environment ? 1 : 0
 
   source = "../modules/housing-repairs-google-sheets-cleaning"
-  tags   = module.department_housing_repairs.tags
 
+  department                         = module.department_housing_repairs
   short_identifier_prefix            = local.short_identifier_prefix
   identifier_prefix                  = local.identifier_prefix
-  department_name                    = "housing-repairs"
   glue_scripts_bucket_id             = module.glue_scripts.bucket_id
   glue_role_arn                      = aws_iam_role.glue_role.arn
   glue_crawler_excluded_blobs        = local.glue_crawler_excluded_blobs

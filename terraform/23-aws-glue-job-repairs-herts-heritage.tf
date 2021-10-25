@@ -12,11 +12,10 @@ module "housing_repairs_herts_heritage" {
   count = local.is_live_environment ? 1 : 0
 
   source = "../modules/housing-repairs-google-sheets-cleaning"
-  tags   = module.department_housing_repairs.tags
 
+  department                  = module.department_housing_repairs
   short_identifier_prefix     = local.short_identifier_prefix
   identifier_prefix           = local.identifier_prefix
-  department_name             = "housing-repairs"
   data_cleaning_script_key    = aws_s3_bucket_object.housing_repairs_repairs_herts_heritage_cleaning_script.key
   glue_scripts_bucket_id      = module.glue_scripts.bucket_id
   glue_role_arn               = aws_iam_role.glue_role.arn

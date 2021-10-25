@@ -12,11 +12,10 @@ module "electric_heating" {
   count = local.is_live_environment ? 1 : 0
 
   source = "../modules/electrical-mechnical-fire-safety-cleaning-job"
-  tags   = module.department_housing_repairs.tags
 
   short_identifier_prefix            = local.short_identifier_prefix
   identifier_prefix                  = local.identifier_prefix
-  department_name                    = "housing-repairs"
+  department                         = module.department_housing_repairs
   script_key                         = aws_s3_bucket_object.housing_repairs_elec_mech_fire_electric_heating_cleaning.key
   glue_scripts_bucket_id             = module.glue_scripts.bucket_id
   glue_role_arn                      = aws_iam_role.glue_role.arn

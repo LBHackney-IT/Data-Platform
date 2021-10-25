@@ -44,25 +44,14 @@ resource "aws_s3_bucket_object" "ingest_tascomi_data" {
   etag   = filemd5("../scripts/tascomi_api_ingestion.py")
 }
 
-resource "aws_glue_job" "ingest_tascomi_data" {
-  tags = module.tags.values
+module "ingest_tascomi_data" {
+  source = "../modules/aws-glue-job"
 
-  name              = "${local.short_identifier_prefix} Ingest tascomi data"
-  number_of_workers = local.number_of_workers
-  worker_type       = "Standard"
-  role_arn          = aws_iam_role.glue_role.arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.ingest_tascomi_data.key}"
-  }
-
-  execution_property {
-    max_concurrent_runs = local.max_concurrent_runs
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {
+  department                      = module.department_planning
+  number_of_workers_for_glue_job  = local.number_of_workers
+  max_concurrent_runs_of_glue_job = local.max_concurrent_runs
+  job_name                        = "${local.short_identifier_prefix}Ingest tascomi data"
+  job_parameters = {
     "--s3_bucket_target"        = module.raw_zone.bucket_id
     "--s3_prefix"               = "planning/tascomi/api-responses/"
     "--extra-py-files"          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
@@ -72,50 +61,24 @@ resource "aws_glue_job" "ingest_tascomi_data" {
     "--number_of_workers"       = local.number_of_workers
     "--target_database_name"    = aws_glue_catalog_database.raw_zone_tascomi.name
   }
+  script_name            = aws_s3_bucket_object.ingest_tascomi_data.key
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.raw_zone_tascomi.name
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
+    table_prefix       = "api_response_"
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+        TableLevelConfiguration = 5
+      }
+    })
+  }
 }
 
 resource "aws_glue_catalog_database" "raw_zone_tascomi" {
   name = "${local.identifier_prefix}-tascomi-raw-zone"
-}
-
-resource "aws_glue_crawler" "raw_zone_tascomi_crawler" {
-  tags = module.tags.values
-
-  database_name = aws_glue_catalog_database.raw_zone_tascomi.name
-  name          = "${local.identifier_prefix}-raw-zone-tascomi-api-responses"
-  role          = aws_iam_role.glue_role.arn
-  table_prefix  = "api_response_"
-
-  s3_target {
-    path       = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
-
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 5
-    }
-  })
-}
-
-resource "aws_glue_trigger" "tascomi_raw_zone_crawler_trigger" {
-  tags = module.tags.values
-
-  name    = "${local.short_identifier_prefix}Tascomi Raw Zone Crawler"
-  type    = "CONDITIONAL"
-  enabled = true
-
-  predicate {
-    conditions {
-      job_name = aws_glue_job.ingest_tascomi_data.name
-      state    = "SUCCEEDED"
-    }
-  }
-
-  actions {
-    crawler_name = aws_glue_crawler.raw_zone_tascomi_crawler.name
-  }
 }
 
 resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
@@ -128,7 +91,7 @@ resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
   enabled  = false
 
   actions {
-    job_name = aws_glue_job.ingest_tascomi_data.name
+    job_name = module.ingest_tascomi_data.job_name
     arguments = {
       "--resource" = each.value
     }
@@ -145,7 +108,7 @@ resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
   enabled  = false
 
   actions {
-    job_name = aws_glue_job.ingest_tascomi_data.name
+    job_name = module.ingest_tascomi_data.job_name
     arguments = {
       "--resource" = each.value
     }
@@ -176,7 +139,6 @@ resource "aws_glue_job" "parse_tascomi_contacts_data" {
     python_version  = "3"
     script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.parse_tascomi_contacts_data.key}"
   }
-
 
   glue_version = "2.0"
 
@@ -223,7 +185,7 @@ resource "aws_glue_trigger" "tascomi_refined_data_trigger" {
 
   predicate {
     conditions {
-      crawler_name = aws_glue_crawler.raw_zone_tascomi_crawler.name
+      crawler_name = module.ingest_tascomi_data.crawler_name
       crawl_state  = "SUCCEEDED"
     }
   }

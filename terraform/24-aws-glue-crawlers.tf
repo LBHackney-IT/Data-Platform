@@ -19,30 +19,9 @@ resource "aws_glue_crawler" "landing_zone_data_and_insight_address_matching" {
   }
 }
 
-# ==== PARKING ======================================================================================================= #
+// ==== LANDING ZONE ===========
 resource "aws_glue_catalog_database" "landing_zone_catalog_database" {
   name = "${local.identifier_prefix}-landing-zone-database"
-}
-
-resource "aws_glue_catalog_database" "landing_zone_liberator" {
-  name = "${local.identifier_prefix}-liberator-landing-zone"
-}
-
-resource "aws_glue_catalog_database" "raw_zone_liberator" {
-  name = "${local.identifier_prefix}-liberator-raw-zone"
-}
-
-resource "aws_glue_crawler" "landing_zone_liberator" {
-  tags = module.tags.values
-
-  database_name = aws_glue_catalog_database.landing_zone_liberator.name
-  name          = "${local.identifier_prefix}-landing-zone-liberator"
-  role          = aws_iam_role.glue_role.arn
-
-  s3_target {
-    path       = "s3://${module.landing_zone.bucket_id}/parking/liberator"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
 }
 
 // ==== RAW ZONE ===========
@@ -80,31 +59,6 @@ resource "aws_glue_crawler" "raw_zone_parking_manual_uploads_crawler" {
 
   s3_target {
     path       = "s3://${module.raw_zone.bucket_id}/parking/manual/"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
-
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 4
-    }
-  })
-}
-
-// ==== REFINED ZONE ===========
-resource "aws_glue_catalog_database" "refined_zone_liberator" {
-  name = "${local.identifier_prefix}-liberator-refined-zone"
-}
-
-resource "aws_glue_crawler" "refined_zone_liberator_crawler" {
-  tags = module.tags.values
-
-  database_name = aws_glue_catalog_database.refined_zone_liberator.name
-  name          = "${local.identifier_prefix}-refined-zone-liberator"
-  role          = aws_iam_role.glue_role.arn
-
-  s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/parking/liberator/"
     exclusions = local.glue_crawler_excluded_blobs
   }
 
