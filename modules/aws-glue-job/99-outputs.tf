@@ -1,5 +1,5 @@
 output "crawler_name" {
-  value = aws_glue_crawler.crawler == null ? null : aws_glue_crawler.crawler[0].name
+  value = length(aws_glue_crawler.crawler) == 0 ? null : aws_glue_crawler.crawler[0].name
 }
 
 output "job_name" {
