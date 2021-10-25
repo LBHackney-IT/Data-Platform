@@ -5,7 +5,7 @@ module "housing_repairs_google_sheets_address_cleaning" {
   job_name   = "${local.glue_job_name} Address Cleaning"
   job_parameters = {
     "--TempDir"                          = var.glue_temp_storage_bucket_id
-    "--extra-py-files"                   = local.extra_py_files
+    "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.cleaning_helper_script_key}"
     "--source_catalog_database"          = var.refined_zone_catalog_database_name
     "--source_catalog_table"             = "housing_repairs_${replace(var.dataset_name, "-", "_")}_cleaned"
     "--cleaned_repairs_s3_bucket_target" = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/with-cleaned-addresses"

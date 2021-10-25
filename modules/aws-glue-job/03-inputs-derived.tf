@@ -3,8 +3,8 @@ locals {
   crawler_details = defaults(var.crawler_details, {
     configuration = jsonencode({
       Version = 1.0
-      Grouping = {
-        TableLevelConfiguration = 5
+      CrawlerOutput = {
+        Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
       }
     })
   })

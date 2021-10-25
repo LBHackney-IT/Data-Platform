@@ -4,7 +4,7 @@ variable "identifier_prefix" {
 }
 
 variable "department" {
-  description = "Department folder name"
+  description = "The department with all its properties"
   type = object({
     identifier    = string
     glue_role_arn = string

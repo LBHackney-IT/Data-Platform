@@ -8,7 +8,7 @@ module "housing_repairs_google_sheets_cleaning" {
     "--source_catalog_table"             = var.source_catalog_table
     "--cleaned_repairs_s3_bucket_target" = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/cleaned/"
     "--TempDir"                          = var.glue_temp_storage_bucket_id
-    "--extra-py-files"                   = local.extra_py_files
+    "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.cleaning_helper_script_key}"
   }
   script_name            = var.data_cleaning_script_key
   workflow_name          = var.workflow_name

@@ -15,7 +15,7 @@ module "housing_repairs_elec_mech_fire_address_matching" {
     "--match_to_property_shell"     = var.match_to_property_shell
   }
   script_name          = var.address_matching_script_key
-  workflow_name        = var.glue_scripts_bucket_id
-  triggered_by_crawler = module.housing_repairs_elec_mech_fire_cleaning.crawler_name
+  workflow_name        = var.worksheet_resource.workflow_name
+  triggered_by_crawler = module.housing_repairs_elec_mech_fire_address_cleaning.crawler_name
 }
 
