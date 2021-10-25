@@ -5,12 +5,23 @@ resource "aws_glue_workflow" "parking_liberator_data" {
   tags = module.tags.values
 }
 
+
+// LIBERATOR LANDING ZONE
 resource "aws_glue_catalog_database" "landing_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-landing-zone"
 }
 
-resource "aws_glue_catalog_database" "raw_zone_liberator" {
-  name = "${local.identifier_prefix}-liberator-raw-zone"
+resource "aws_glue_trigger" "landing_zone_liberator_crawler_trigger" {
+  tags = module.department_parking.tags
+
+  name          = "${local.identifier_prefix} Landing Zone Liberator Crawler"
+  type          = "ON_DEMAND"
+  enabled       = true
+  workflow_name = aws_glue_workflow.parking_liberator_data.name
+
+  actions {
+    crawler_name = aws_glue_crawler.landing_zone_liberator.name
+  }
 }
 
 resource "aws_glue_crawler" "landing_zone_liberator" {
@@ -26,29 +37,32 @@ resource "aws_glue_crawler" "landing_zone_liberator" {
   }
 }
 
-resource "aws_glue_catalog_database" "refined_zone_liberator" {
-  name = "${local.identifier_prefix}-liberator-refined-zone"
-}
+// LIBERATOR RAW ZONE
 
-resource "aws_glue_crawler" "refined_zone_liberator_crawler" {
-  tags = module.tags.values
+resource "aws_glue_trigger" "landing_zone_liberator_crawled" {
+  tags = module.department_parking.tags
 
-  database_name = aws_glue_catalog_database.refined_zone_liberator.name
-  name          = "${local.identifier_prefix}-refined-zone-liberator"
-  role          = aws_iam_role.glue_role.arn
+  name          = "${local.identifier_prefix} Landing Zone Liberator Crawled"
+  type          = "CONDITIONAL"
+  enabled       = true
+  workflow_name = aws_glue_workflow.parking_liberator_data.name
 
-  s3_target {
-    path       = "s3://${module.refined_zone.bucket_id}/parking/liberator/"
-    exclusions = local.glue_crawler_excluded_blobs
+  predicate {
+    conditions {
+      crawl_state  = "SUCCEEDED"
+      crawler_name = aws_glue_crawler.landing_zone_liberator.name
+    }
   }
 
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 4
-    }
-  })
+  actions {
+    job_name = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  }
+
+  actions {
+    job_name = aws_glue_job.copy_env_enforcement_liberator_landing_to_raw.name
+  }
 }
+
 resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
   tags = module.tags.values
 
@@ -101,39 +115,31 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw" {
   }
 }
 
-resource "aws_glue_trigger" "landing_zone_liberator_crawler_trigger" {
-  tags = module.department_parking.tags
-
-  name          = "${local.identifier_prefix} Landing Zone Liberator Crawler"
-  type          = "ON_DEMAND"
-  enabled       = true
-  workflow_name = aws_glue_workflow.parking_liberator_data.name
-
-  actions {
-    crawler_name = aws_glue_crawler.landing_zone_liberator.name
-  }
+resource "aws_glue_catalog_database" "raw_zone_liberator" {
+  name = "${local.identifier_prefix}-liberator-raw-zone"
 }
 
-resource "aws_glue_trigger" "landing_zone_liberator_crawled" {
-  tags = module.department_parking.tags
+// LIBERATOR REFINED ZONE
+resource "aws_glue_catalog_database" "refined_zone_liberator" {
+  name = "${local.identifier_prefix}-liberator-refined-zone"
+}
 
-  name          = "${local.identifier_prefix} Landing Zone Liberator Crawled"
-  type          = "CONDITIONAL"
-  enabled       = true
-  workflow_name = aws_glue_workflow.parking_liberator_data.name
+resource "aws_glue_crawler" "refined_zone_parking_liberator_crawler" {
+  tags = module.tags.values
 
-  predicate {
-    conditions {
-      crawl_state  = "SUCCEEDED"
-      crawler_name = aws_glue_crawler.landing_zone_liberator.name
+  database_name = aws_glue_catalog_database.refined_zone_liberator.name
+  name          = "${local.identifier_prefix}-refined-zone-liberator"
+  role          = aws_iam_role.glue_role.arn
+
+  s3_target {
+    path       = "s3://${module.refined_zone.bucket_id}/parking/liberator/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
     }
-  }
-
-  actions {
-    job_name = aws_glue_job.copy_parking_liberator_landing_to_raw.name
-  }
-
-  actions {
-    job_name = aws_glue_job.copy_env_enforcement_liberator_landing_to_raw.name
-  }
+  })
 }
