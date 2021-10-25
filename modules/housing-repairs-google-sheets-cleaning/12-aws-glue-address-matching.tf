@@ -33,7 +33,7 @@ resource "aws_glue_trigger" "housing_repairs_levenshtein_address_matching" {
 
   predicate {
     conditions {
-      crawler_name = aws_glue_crawler.refined_zone_housing_repairs_with_cleaned_addresses_crawler.name
+      crawler_name = module.housing_repairs_google_sheets_address_cleaning.crawler_name
       crawl_state  = "SUCCEEDED"
     }
   }
