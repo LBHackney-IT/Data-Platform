@@ -1,19 +1,10 @@
-resource "aws_glue_job" "housing_repairs_elec_mech_fire_address_matching_job" {
+module "housing_repairs_elec_mech_fire_address_matching" {
+  source = "../aws-glue-job"
 
-  tags = var.department.tags
-
-  name              = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Address Matching"
-  number_of_workers = 10
-  worker_type       = "G.1X"
-  role_arn          = var.glue_role_arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${var.glue_scripts_bucket_id}/${var.address_matching_script_key}"
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {
+  department             = var.department
+  job_name               = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Address Matching"
+  glue_scripts_bucket_id = var.glue_scripts_bucket_id
+  job_parameters = {
     "--addresses_api_data_database" = var.addresses_api_data_catalog
     "--addresses_api_data_table"    = "unrestricted_address_api_dbo_hackney_address"
     "--source_catalog_database"     = var.refined_zone_catalog_database_name
@@ -23,24 +14,8 @@ resource "aws_glue_job" "housing_repairs_elec_mech_fire_address_matching_job" {
     "--extra-py-files"              = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
     "--match_to_property_shell"     = var.match_to_property_shell
   }
+  script_name          = var.address_matching_script_key
+  workflow_name        = var.glue_scripts_bucket_id
+  triggered_by_crawler = module.housing_repairs_elec_mech_fire_cleaning.crawler_name
 }
 
-resource "aws_glue_trigger" "job_trigger" {
-  tags = var.department.tags
-
-  name          = "${var.identifier_prefix}-housing-repairs-elec-mech-fire-${var.dataset_name}-address-matching-job-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = var.worksheet_resource.workflow_name
-
-
-  predicate {
-    conditions {
-      crawler_name = module.housing_repairs_elec_mech_fire_address_cleaning.crawler_name
-      crawl_state  = "SUCCEEDED"
-    }
-  }
-
-  actions {
-    job_name = aws_glue_job.housing_repairs_elec_mech_fire_address_matching_job.name
-  }
-}
