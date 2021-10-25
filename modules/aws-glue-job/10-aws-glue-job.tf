@@ -7,12 +7,16 @@ resource "aws_glue_job" "job" {
   tags = var.department.tags
 
   name              = var.job_name
-  number_of_workers = 10
-  worker_type       = "G.1X"
+  number_of_workers = var.number_of_workers_for_glue_job
+  worker_type       = var.glue_job_worker_type
   role_arn          = var.department.glue_role_arn
   command {
     python_version  = "3"
     script_location = local.script_location
+  }
+
+  execution_property {
+    max_concurrent_runs = var.max_concurrent_runs_of_glue_job
   }
 
   glue_version = "2.0"
@@ -27,6 +31,7 @@ resource "aws_glue_trigger" "job_trigger" {
   type          = (var.triggered_by_crawler != null || var.triggered_by_job != null) ? "CONDITIONAL" : (var.schedule == null ? "ON_DEMAND" : "CONDITIONAL")
   workflow_name = var.workflow_name
   schedule      = var.schedule
+  enabled       = var.trigger_enabled
 
 
   dynamic "predicate" {

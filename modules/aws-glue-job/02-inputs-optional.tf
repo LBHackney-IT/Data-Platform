@@ -72,6 +72,31 @@ variable "crawler_details" {
     database_name      = string
     s3_target_location = string
     table_prefix       = optional(string)
+    configuration      = optional(string)
   })
   default = null
+}
+
+variable "number_of_workers_for_glue_job" {
+  description = "Specify the number of worker to use for the glue job"
+  type        = number
+  default     = 10
+}
+
+variable "glue_job_worker_type" {
+  description = "Specify the worker type to use for the glue job"
+  type        = string
+  default     = "Standard"
+}
+
+variable "max_concurrent_runs_of_glue_job" {
+  description = "Specify the max number of concurrent runs for the glue job"
+  type        = number
+  default     = 1
+}
+
+variable "trigger_enabled" {
+  description = "Set to false to disable shceduled or conditional triggers for the glue job"
+  type        = bool
+  default     = true
 }

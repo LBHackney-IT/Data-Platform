@@ -13,12 +13,7 @@ resource "aws_glue_crawler" "crawler" {
     exclusions = var.glue_crawler_excluded_blobs
   }
 
-  configuration = jsonencode({
-    Version = 1.0
-    CrawlerOutput = {
-      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
-    }
-  })
+  configuration = jsonencode(var.crawler_details.configuration)
 }
 
 resource "aws_glue_trigger" "crawler_trigger" {
