@@ -1,3 +1,9 @@
+resource "aws_glue_catalog_database" "landing_zone_data_and_insight_address_matching" {
+  count = local.is_live_environment ? 1 : 0
+
+  name = "${local.identifier_prefix}-data-and-insight-address-matching-landing-zone"
+}
+
 // ==== LANDING ZONE ===========
 resource "aws_glue_catalog_database" "landing_zone_catalog_database" {
   name = "${local.identifier_prefix}-landing-zone-database"

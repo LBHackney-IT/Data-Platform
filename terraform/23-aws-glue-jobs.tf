@@ -17,7 +17,7 @@ module "address_matching_glue_job" {
   }
   script_name = aws_s3_bucket_object.address_matching.key
   crawler_details = {
-    database_name = aws_glue_catalog_database.landing_zone_data_and_insight_address_matching[count.index].name
+    database_name      = aws_glue_catalog_database.landing_zone_data_and_insight_address_matching[count.index].name
     s3_target_location = "s3://${module.landing_zone.bucket_id}/data-and-insight/address-matching-glue-job-output/"
   }
 }
@@ -54,7 +54,7 @@ module "manually_uploaded_parking_data_to_raw" {
   }
   script_name = aws_s3_bucket_object.copy_manually_uploaded_csv_data_to_raw.key
   crawler_details = {
-    database_name = module.department_parking.raw_zone_catalog_database_name
+    database_name      = module.department_parking.raw_zone_catalog_database_name
     s3_target_location = "s3://${module.raw_zone.bucket_id}/parking/manual/"
     configuration = jsonencode({
       Version = 1.0
