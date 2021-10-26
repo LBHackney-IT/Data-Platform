@@ -6,9 +6,11 @@ variable "identifier_prefix" {
 variable "department" {
   description = "The department with all its properties"
   type = object({
-    identifier    = string
-    glue_role_arn = string
-    tags          = map(string)
+    identifier                         = string
+    glue_role_arn                      = string
+    refined_zone_catalog_database_name = string
+    raw_zone_catalog_database_name     = string
+    tags                               = map(string)
   })
 }
 
@@ -63,19 +65,9 @@ variable "glue_crawler_excluded_blobs" {
   default     = []
 }
 
-variable "catalog_database" {
-  description = "Catalog data name"
-  type        = string
-}
-
 variable "worksheet_resource" {
   description = "Object returned by module.repairs_fire_alarm_aov[0].worksheet_resources"
   type        = map(any)
-}
-
-variable "refined_zone_catalog_database_name" {
-  description = "Refined zone catalog database name"
-  type        = string
 }
 
 variable "dataset_name" {
