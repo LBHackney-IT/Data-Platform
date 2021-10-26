@@ -18,6 +18,7 @@ module "housing_repairs_google_sheets_address_cleaning" {
   triggered_by_crawler   = module.housing_repairs_google_sheets_cleaning.crawler_name
   glue_scripts_bucket_id = var.glue_scripts_bucket_id
   crawler_details = {
+    table_prefix       = "housing_repairs_${replace(var.dataset_name, "-", "_")}_"
     database_name      = var.refined_zone_catalog_database_name
     s3_target_location = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/with-cleaned-addresses/"
   }
