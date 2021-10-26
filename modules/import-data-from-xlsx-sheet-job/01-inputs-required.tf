@@ -7,11 +7,6 @@ variable "department" {
   })
 }
 
-variable "glue_role_arn" {
-  description = "Glue role arn"
-  type        = string
-}
-
 variable "glue_catalog_database_name" {
   description = "The name of the glue catalog database name"
   type        = string

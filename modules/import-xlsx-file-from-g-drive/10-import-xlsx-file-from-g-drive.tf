@@ -19,7 +19,6 @@ module "import_data_from_xlsx_sheet_job" {
 
   source                         = "../import-data-from-xlsx-sheet-job"
   department                     = var.department
-  glue_role_arn                  = var.department.glue_role_arn
   glue_scripts_bucket_id         = var.glue_scripts_bucket_id
   glue_temp_storage_bucket_id    = var.glue_temp_storage_bucket_id
   glue_catalog_database_name     = var.glue_catalog_database_name
