@@ -24,11 +24,19 @@ resource "aws_glue_job" "job" {
   default_arguments = var.job_parameters
 }
 
+locals {
+  is_conditional = var.triggered_by_crawler != null || var.triggered_by_job != null
+  is_scheduled   = var.schedule != null
+
+  trigger_type = local.is_conditional ? "CONDITIONAL" : (local.is_scheduled ? "SCHEDULED" : "ON_DEMAND")
+
+}
+
 resource "aws_glue_trigger" "job_trigger" {
   tags = var.department.tags
 
   name          = "${local.job_name_identifier}-job-trigger"
-  type          = (var.triggered_by_crawler != null || var.triggered_by_job != null) ? "CONDITIONAL" : (var.schedule == null ? "ON_DEMAND" : "CONDITIONAL")
+  type          = local.trigger_type
   workflow_name = var.workflow_name
   schedule      = var.schedule
   enabled       = var.trigger_enabled
