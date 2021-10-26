@@ -22,8 +22,8 @@ resource "aws_secretsmanager_secret_version" "fme_user_access_key_version" {
 }
 
 resource "aws_iam_user_policy" "fme_user_policy" {
-  name = "${local.short_identifier_prefix}fme-user-policy"
-  user = aws_iam_user.fme_user.name
+  name   = "${local.short_identifier_prefix}fme-user-policy"
+  user   = aws_iam_user.fme_user.name
   policy = data.aws_iam_policy_document.fme_can_write_to_s3_and_athena.json
 }
 
@@ -82,8 +82,8 @@ data "aws_iam_policy_document" "fme_can_write_to_s3_and_athena" {
   }
 
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "glue:GetDatabase",
       "glue:GetDatabases",
       "glue:GetTable",

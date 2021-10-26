@@ -23,7 +23,7 @@ data "aws_iam_policy_document" "liberator_can_write_to_s3" {
       "s3:GetBucketLocation"
     ]
     resources = [
-      "${module.liberator_data_storage.bucket_arn}"
+      module.liberator_data_storage.bucket_arn
     ]
   }
 
@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "liberator_can_write_to_s3" {
   }
 
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "kms:Encrypt",
       "kms:Decrypt",
@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "liberator_can_write_to_s3" {
       "kms:RetireGrant"
     ]
     resources = [
-      "${module.liberator_data_storage.kms_key_arn}"
+      module.liberator_data_storage.kms_key_arn
     ]
   }
 }

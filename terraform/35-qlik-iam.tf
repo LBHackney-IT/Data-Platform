@@ -22,8 +22,8 @@ resource "aws_secretsmanager_secret_version" "qlik_user_access_key_version" {
 }
 
 resource "aws_iam_user_policy" "qlik_user_policy" {
-  name = "${local.short_identifier_prefix}qlik-user-policy"
-  user = aws_iam_user.qlik_user.name
+  name   = "${local.short_identifier_prefix}qlik-user-policy"
+  user   = aws_iam_user.qlik_user.name
   policy = data.aws_iam_policy_document.qlik_can_read_from_s3_and_athena.json
 }
 
@@ -41,8 +41,8 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
   }
 
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "s3:GetObject",
       "s3:GetObjectVersion",
     ]
@@ -80,8 +80,8 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
   }
 
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "glue:GetDatabase",
       "glue:GetDatabases",
       "glue:GetTable",
@@ -96,8 +96,8 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
   }
 
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "athena:ListEngineVersions",
       "athena:ListWorkGroups",
       "athena:ListDataCatalogs",
