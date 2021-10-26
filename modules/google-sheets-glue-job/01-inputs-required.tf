@@ -1,6 +1,15 @@
-variable "tags" {
-  description = "AWS tags"
-  type        = map(string)
+variable "department" {
+  description = "The department with all its properties"
+  type = object({
+    identifier    = string
+    glue_role_arn = string
+    tags          = map(string)
+    google_service_account = object({
+      credentials_secret = object({
+        name = string
+      })
+    })
+  })
 }
 
 variable "is_live_environment" {
@@ -10,11 +19,6 @@ variable "is_live_environment" {
 
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
-  type        = string
-}
-
-variable "glue_role_arn" {
-  description = "Glue role arn"
   type        = string
 }
 
@@ -38,11 +42,6 @@ variable "glue_temp_storage_bucket_id" {
   type        = string
 }
 
-variable "sheets_credentials_name" {
-  description = "Google sheets credentials"
-  type        = string
-}
-
 variable "bucket_id" {
   description = "The ID of the bucket to put the dataset"
   type        = string
@@ -60,11 +59,6 @@ variable "google_sheets_document_id" {
 
 variable "google_sheets_worksheet_name" {
   description = "Google sheets worksheet name"
-  type        = string
-}
-
-variable "department_name" {
-  description = "Department folder name"
   type        = string
 }
 

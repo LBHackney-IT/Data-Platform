@@ -1,13 +1,13 @@
 output "job_name" {
-  value = aws_glue_job.xlsx_import.id
+  value = module.xlsx_import.job_name
 }
 
 output "job_arn" {
-  value = aws_glue_job.xlsx_import.arn
+  value = module.xlsx_import.job_arn
 }
 
 output "catalog_table" {
-  value = replace("${var.department_folder_name}_${var.data_set_name}", "-", "_")
+  value = replace("${var.department.identifier}_${var.data_set_name}", "-", "_")
 }
 
 output "worksheet_key" {
@@ -23,5 +23,5 @@ output "workflow_arn" {
 }
 
 output "crawler_name" {
-  value = aws_glue_crawler.xlsx_import.id
+  value = module.xlsx_import.crawler_name
 }
