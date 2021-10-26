@@ -26,6 +26,7 @@ module "housing_repairs_dlo_cleaning_job" {
   triggered_by_crawler   = module.repairs_dlo[0].crawler_name
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   crawler_details = {
+    table_prefix       = "housing_repairs_repairs_dlo_"
     database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned/"
   }
@@ -51,6 +52,7 @@ module "housing_repairs_dlo_address_cleaning_job" {
   triggered_by_crawler   = module.housing_repairs_dlo_cleaning_job[0].crawler_name
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   crawler_details = {
+    table_prefix       = "housing_repairs_repairs_dlo_"
     database_name      = module.department_housing_repairs.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses/"
   }
@@ -65,7 +67,7 @@ module "get_uprn_from_uhref_job" {
   job_parameters = {
     "--lookup_catalogue_table"      = "datainsight_data_and_insight"
     "--lookup_database"             = "dataplatform-stg-raw-zone-database"
-    "--source_data_catalogue_table" = "housing_repairs_repairs_dlo_with_cleaned_addresses_with_cleaned_addresses"
+    "--source_data_catalogue_table" = "housing_repairs_repairs_dlo_with_cleaned_addresses"
     "--source_data_database"        = module.department_housing_repairs.refined_zone_catalog_database_name
     "--source_uhref_header"         = "property_reference_uh"
     "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
@@ -77,7 +79,7 @@ module "get_uprn_from_uhref_job" {
   triggered_by_crawler   = module.housing_repairs_dlo_address_cleaning_job[0].crawler_name
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   crawler_details = {
-    table_prefix       = "housing-repairs-with-uprn-from-uhref_"
+    table_prefix       = "housing_repairs_repairs_dlo_"
     database_name      = module.department_housing_repairs.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
   }
@@ -92,8 +94,8 @@ module "repairs_dlo_levenshtein_address_matching" {
   job_parameters = {
     "--addresses_api_data_database" = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
     "--addresses_api_data_table"    = "unrestricted_address_api_dbo_hackney_address"
-    "--source_catalog_database"     = "housing-repairs-refined-zone"
-    "--source_catalog_table"        = "housing-repairs-with-uprn-from-uhref_with_uprn_from_uhref"
+    "--source_catalog_database"     = module.department_housing_repairs.refined_zone_catalog_database_name
+    "--source_catalog_table"        = "housing_repairs_repairs_dlo_with_uprn_from_uhref"
     "--match_to_property_shell"     = "forbid"
     "--target_destination"          = "s3://${module.trusted_zone.bucket_id}/housing-repairs/repairs/"
     "--TempDir"                     = module.glue_temp_storage.bucket_url
