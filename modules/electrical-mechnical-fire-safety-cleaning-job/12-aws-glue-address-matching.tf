@@ -7,7 +7,7 @@ module "housing_repairs_elec_mech_fire_address_matching" {
   job_parameters = {
     "--addresses_api_data_database" = var.addresses_api_data_catalog
     "--addresses_api_data_table"    = "unrestricted_address_api_dbo_hackney_address"
-    "--source_catalog_database"     = var.refined_zone_catalog_database_name
+    "--source_catalog_database"     = local.refined_zone_catalog_database_name
     "--source_catalog_table"        = "housing_repairs_elec_mech_fire_${replace(var.dataset_name, "-", "_")}_with_cleaned_addresses"
     "--target_destination"          = "s3://${var.trusted_zone_bucket_id}/housing-repairs/repairs/"
     "--TempDir"                     = var.glue_temp_storage_bucket_id
