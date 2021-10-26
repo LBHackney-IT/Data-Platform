@@ -61,7 +61,9 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.athena_storage_bucket.bucket_arn,
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
-      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*"
+      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.refined_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
+      "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*"
     ]
   }
 
