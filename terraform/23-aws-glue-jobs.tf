@@ -31,7 +31,7 @@ module "address_cleaning_glue_job" {
   job_name               = "${local.short_identifier_prefix}Housing Repairs - Address Cleaning"
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   job_parameters = {
-    "--TempDir"        = module.glue_temp_storage.bucket_url
+    "--TempDir"        = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
     "--extra-py-files" = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
   script_name = aws_s3_bucket_object.address_cleaning.key
