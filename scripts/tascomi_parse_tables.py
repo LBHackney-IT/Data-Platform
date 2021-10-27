@@ -50,16 +50,21 @@ if __name__ == "__main__":
 
         df = source_data.toDF()
 
-        # parse data
-        df = parse_json_into_dataframe(spark=spark, column=result_table_name, dataframe=df)
+        # check if api response code for table == 200
+        if df['import_api_status_code'] == '200':
 
-        # keep most recently updated records only
-        df = get_max_import_date(df=df, column='id', date='import_date')
+            # parse data
+            df = parse_json_into_dataframe(spark=spark, column=result_table_name, dataframe=df)
 
-        # write to S3
-        result_df = DynamicFrame.fromDF(df, glueContext, "result_df")
-        target_destination = s3_bucket_target + result_table_name
+            # keep most recently updated records only
+            df = get_max_import_date(df=df, column='id', date='import_date')
 
-        result_df.toDF().write.mode("overwrite").format("parquet").partitionBy(PARTITION_KEYS).save(target_destination)
+            # WRITE TO S3
+            result_df = DynamicFrame.fromDF(df, glueContext, "result_df")
+            target_destination = s3_bucket_target + result_table_name
+
+            df.toDF().write.mode("overwrite").format("parquet").partitionBy(PARTITION_KEYS).save(target_destination)
+        else:
+            pass
 
     job.commit()
