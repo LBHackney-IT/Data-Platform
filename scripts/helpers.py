@@ -174,3 +174,16 @@ def parse_json_into_dataframe(spark, column, dataframe):
     # drop columns no longer needed
     dataframe = dataframe.drop(column, 'json')
     return dataframe
+
+
+def remove_prefix(string, prefix):
+    """
+    Removes a prefix from a string.
+    :param string: the string with a prefix to be removed.
+    :param prefix: the prefix to be removed.
+    :return: string without prefix.
+    """
+    if string.startswith(prefix):
+        return string[len(prefix):]
+    else:
+        return string[:]
