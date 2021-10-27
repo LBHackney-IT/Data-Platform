@@ -1,5 +1,4 @@
 import sys
-from awsglue.dynamicframe import DynamicFrame
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from awsglue.context import GlueContext
@@ -9,7 +8,7 @@ from pyspark.sql.window import Window
 from pyspark.sql.functions import col, max, from_json
 from pyspark.sql import SparkSession
 
-from helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, remove_prefix
+from helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe
 
 
 def get_max_import_date(dataframe, column, date):
@@ -40,31 +39,31 @@ if __name__ == "__main__":
     # loop through each table
     for table in table_list:
 
-        # get table name without prefix for use in parse_json_into_dataframe function
-        result_table_name = remove_prefix(table, 'api_response_')
+        # get table name without prefix for use in parsing function
+        result_table_name = f'api_response_{table}'
+
 
         source_data = glueContext.create_dynamic_frame.from_catalog(
             name_space=source_catalog_database,
-            table_name=table,
+            table_name=result_table_name,
         )
 
         df = source_data.toDF()
 
-        # check if api response code for table == 200
-        if df['import_api_status_code'] == '200':
+        # keep only rows where api_response_code == 200
+        df = df.where(df.import_api_status_code == '200')
 
-            # parse data
-            df = parse_json_into_dataframe(spark=spark, column=result_table_name, dataframe=df)
+        # parse data
+        df = parse_json_into_dataframe(spark=spark, column=table, dataframe=df)
 
-            # keep most recently updated records only
-            df = get_max_import_date(df=df, column='id', date='import_date')
+        # keep most recently updated records only
+        df = get_max_import_date(df=df, column='id', date='import_date')
 
-            # WRITE TO S3
-            result_df = DynamicFrame.fromDF(df, glueContext, "result_df")
-            target_destination = s3_bucket_target + result_table_name
+        # WRITE TO S3
+        target_destination = s3_bucket_target + table
 
-            df.toDF().write.mode("overwrite").format("parquet").partitionBy(PARTITION_KEYS).save(target_destination)
-        else:
-            pass
+        df.write.mode("overwrite").format("parquet").partitionBy(PARTITION_KEYS).save(target_destination)
+
+
 
     job.commit()
