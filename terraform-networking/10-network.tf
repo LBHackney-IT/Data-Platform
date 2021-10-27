@@ -23,6 +23,14 @@ module "core_vpc" {
   ssm_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
   ssm_endpoint_private_dns_enabled = true
 
+  enable_ssmmessages_endpoint = true
+  ssmmessages_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
+  ssmmessages_endpoint_private_dns_enabled = true
+
+  enable_ec2messages_endpoint = true
+  ec2messages_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
+  ec2messages_endpoint_private_dns_enabled = true
+
   enable_ecr_api_endpoint             = true
   ecr_api_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
   ecr_api_endpoint_private_dns_enabled = true
