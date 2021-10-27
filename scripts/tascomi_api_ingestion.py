@@ -98,7 +98,7 @@ def get_last_import_date(glueContext, database, resource):
     if not table_exists:
         return None
 
-    return glueContext.sql(f"SELECT max(import_date) as max_import_date FROM `{database}`.api_response_{resource}").take(1)[0].max_import_date
+    return glueContext.sql(f"SELECT max(import_date) as max_import_date FROM `{database}`.api_response_{resource} where import_api_status_code = '200'").take(1)[0].max_import_date
 
 def get_requests(last_import_date, resource):
     if last_import_date:
