@@ -214,3 +214,53 @@ resource "aws_glue_trigger" "tascomi_refined_zone_crawler_trigger" {
     crawler_name = aws_glue_crawler.refined_zone_tascomi_crawler.name
   }
 }
+
+resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
+  tags = module.tags.values
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/planning/tascomi-column-type-dictionary.json"
+  acl    = "private"
+  source = "../scripts/tascomi-column-type-dictionary.json"
+  etag   = filemd5("../scripts/tascomi-column-type-dictionary.json")
+}
+
+resource "aws_s3_bucket_object" "recast_tables_script" {
+  tags = module.tags.values
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/recast_tables.py"
+  acl    = "private"
+  source = "../scripts/recast_tables.py"
+  etag   = filemd5("../scripts/recast_tables.py")
+}
+
+locals{
+  table_list = "applications,contacts,emails,enforcements,fees,public_comments,communications,fee_payments,appeal_status,appeal_types,committees,communications,communication_types,contact_types,document_types,fee_types,public_consultations"
+}
+
+module "recast_tascomi_tables" {
+  source = "../modules/aws-glue-job"
+
+  department                    = module.department_planning
+  job_name                      = "${local.short_identifier_prefix}Recast tascomi tables"
+  job_parameters = {
+    "--s3_bucket_target"        = "${module.refined_zone.bucket_id}/planning/tascomi/"
+    "--column_dict_path"        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.tascomi_column_type_dictionary.key}"
+    "--extra-py-files"          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--enable-glue-datacatalog" = "true" 
+    "--source_catalog_database"    = aws_glue_catalog_database.raw_zone_tascomi.name
+    "--table_list"   = local.table_list
+  }
+  script_name            = aws_s3_bucket_object.recast_tables_script.key
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.refined_zone_tascomi.name
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/planning/tascomi/"
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+        TableLevelConfiguration = 4
+      }
+    })
+  }
+}
