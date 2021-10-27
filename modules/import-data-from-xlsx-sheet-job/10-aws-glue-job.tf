@@ -1,26 +1,25 @@
 # Import test data
-resource "aws_glue_job" "xlsx_import" {
-  tags = var.tags
+module "xlsx_import" {
+  source = "../aws-glue-job"
 
-  name              = "Xlsx Import Job - ${var.glue_job_name}"
-  number_of_workers = 10
-  worker_type       = "G.1X"
-  role_arn          = var.glue_role_arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${var.glue_scripts_bucket_id}/${var.xlsx_import_script_key}"
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {
-    "--s3_bucket_source"  = "s3://${var.landing_zone_bucket_id}/${var.department_folder_name}/${var.input_file_name}"
+  department = var.department
+  job_name   = "Xlsx Import Job - ${var.glue_job_name}"
+  job_parameters = {
+    "--s3_bucket_source"  = "s3://${var.landing_zone_bucket_id}/${var.department.identifier}/${var.input_file_name}"
     "--s3_bucket_target"  = local.s3_output_path
     "--header_row_number" = var.header_row_number
-    "--TempDir"           = var.glue_temp_storage_bucket_id
+    "--TempDir"           = "${var.glue_temp_storage_bucket_id}/${var.department.identifier}/"
     "--worksheet_name"    = var.worksheet_name
     "--extra-py-files"    = "s3://${var.glue_scripts_bucket_id}/${var.helpers_script_key}"
     "--extra-jars"        = "s3://${var.glue_scripts_bucket_id}/${var.jars_key}"
+  }
+  script_name            = var.xlsx_import_script_key
+  workflow_name          = aws_glue_workflow.workflow.name
+  glue_scripts_bucket_id = var.glue_scripts_bucket_id
+  crawler_details = {
+    table_prefix       = "${replace(var.department.identifier, "-", "_")}_"
+    database_name      = var.glue_catalog_database_name
+    s3_target_location = local.s3_output_path
   }
 }
 
@@ -28,54 +27,5 @@ resource "aws_glue_workflow" "workflow" {
   name = "${var.identifier_prefix}${local.import_name}"
 }
 
-resource "aws_glue_crawler" "xlsx_import" {
-  tags = var.tags
 
-  database_name = var.glue_catalog_database_name
-  // TODO: Provide the raw-zone name dynamically (using the bucket name is too long for crawler names)
-  name         = "raw-zone-${var.department_folder_name}-${local.worksheet_key}"
-  role         = var.glue_role_arn
-  table_prefix = "${replace(var.department_folder_name, "-", "_")}_"
 
-  s3_target {
-    path = local.s3_output_path
-  }
-
-  configuration = jsonencode({
-    Version = 1.0
-    CrawlerOutput = {
-      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
-    }
-  })
-}
-
-resource "aws_glue_trigger" "xlsx_import_trigger" {
-  name          = "Xlsx Import Job Glue Trigger - ${var.glue_job_name}"
-  type          = "ON_DEMAND"
-  enabled       = true
-  workflow_name = aws_glue_workflow.workflow.name
-
-  actions {
-    job_name = aws_glue_job.xlsx_import.name
-  }
-}
-
-resource "aws_glue_trigger" "xlsx_import_crawler_trigger" {
-  tags = var.tags
-
-  name          = "Xlsx Crawler Trigger - ${var.glue_job_name}"
-  type          = "CONDITIONAL"
-  enabled       = true
-  workflow_name = aws_glue_workflow.workflow.name
-
-  predicate {
-    conditions {
-      state    = "SUCCEEDED"
-      job_name = aws_glue_job.xlsx_import.name
-    }
-  }
-
-  actions {
-    crawler_name = aws_glue_crawler.xlsx_import.name
-  }
-}

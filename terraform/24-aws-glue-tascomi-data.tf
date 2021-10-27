@@ -1,7 +1,7 @@
 
 locals {
   number_of_workers   = 12
-  max_concurrent_runs = length(local.tascomi_table_names)
+  max_concurrent_runs = max(length(local.tascomi_table_names), length(local.tascomi_static_tables))
   tascomi_table_names = [
     "applications",
     "contacts",
@@ -11,6 +11,23 @@ locals {
     "public_comments",
     "communications",
     "fee_payments"
+  ]
+
+  tascomi_static_tables = [
+    "appeal_decision",
+    "appeal_status",
+    "appeal_types",
+    "breach_types",
+    "committees",
+    "communication_templates",
+    "communication_types",
+    "contact_types",
+    "decision_levels",
+    "decision_types",
+    "document_types",
+    "fee_types",
+    "ps_development_codes",
+    "public_consultations"
   ]
 }
 
@@ -27,27 +44,16 @@ resource "aws_s3_bucket_object" "ingest_tascomi_data" {
   etag   = filemd5("../scripts/tascomi_api_ingestion.py")
 }
 
-resource "aws_glue_job" "ingest_tascomi_data" {
-  tags = module.tags.values
+module "ingest_tascomi_data" {
+  source = "../modules/aws-glue-job"
 
-  name              = "${local.short_identifier_prefix} Ingest tascomi data"
-  number_of_workers = local.number_of_workers
-  worker_type       = "Standard"
-  role_arn          = aws_iam_role.glue_role.arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.ingest_tascomi_data.key}"
-  }
-
-  execution_property {
-    max_concurrent_runs = local.max_concurrent_runs
-  }
-
-  glue_version = "2.0"
-
-  default_arguments = {
+  department                      = module.department_planning
+  number_of_workers_for_glue_job  = local.number_of_workers
+  max_concurrent_runs_of_glue_job = local.max_concurrent_runs
+  job_name                        = "${local.short_identifier_prefix}Ingest tascomi data"
+  job_parameters = {
     "--s3_bucket_target"        = module.raw_zone.bucket_id
-    "--s3_prefix"               = "planning/tascomi/"
+    "--s3_prefix"               = "planning/tascomi/api-responses/"
     "--extra-py-files"          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog" = "true"
     "--public_key_secret_id"    = aws_secretsmanager_secret.tascomi_api_public_key.id
@@ -55,64 +61,54 @@ resource "aws_glue_job" "ingest_tascomi_data" {
     "--number_of_workers"       = local.number_of_workers
     "--target_database_name"    = aws_glue_catalog_database.raw_zone_tascomi.name
   }
+  script_name            = aws_s3_bucket_object.ingest_tascomi_data.key
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.raw_zone_tascomi.name
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
+    table_prefix       = "api_response_"
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+        TableLevelConfiguration = 5
+      }
+    })
+  }
 }
 
 resource "aws_glue_catalog_database" "raw_zone_tascomi" {
   name = "${local.identifier_prefix}-tascomi-raw-zone"
 }
 
-resource "aws_glue_crawler" "raw_zone_tascomi_crawler" {
-  tags = module.tags.values
-
-  database_name = aws_glue_catalog_database.raw_zone_tascomi.name
-  name          = "${local.identifier_prefix}-raw-zone-tascomi"
-  role          = aws_iam_role.glue_role.arn
-
-  s3_target {
-    path       = "s3://${module.raw_zone.bucket_id}/planning/tascomi/"
-    exclusions = local.glue_crawler_excluded_blobs
-  }
-
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 4
-    }
-  })
-}
-
-## Triggers
-
-resource "aws_glue_trigger" "tascomi_raw_zone_crawler_trigger" {
-  tags = module.tags.values
-
-  name    = "${local.short_identifier_prefix}Tascomi Raw Zone Crawler"
-  type    = "CONDITIONAL"
-  enabled = true
-
-  predicate {
-    conditions {
-      job_name = aws_glue_job.ingest_tascomi_data.name
-      state    = "SUCCEEDED"
-    }
-  }
-
-  actions {
-    crawler_name = aws_glue_crawler.raw_zone_tascomi_crawler.name
-  }
-}
-
 resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
-  tags = module.tags.values
+  tags     = module.tags.values
   for_each = toset(local.tascomi_table_names)
 
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
   schedule = "cron(0 3 * * ? *)"
-  enabled  = local.is_live_environment
+  enabled  = false
 
   actions {
-    job_name = aws_glue_job.ingest_tascomi_data.name
+    job_name = module.ingest_tascomi_data.job_name
+    arguments = {
+      "--resource" = each.value
+    }
+  }
+}
+
+resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
+  tags     = module.tags.values
+  for_each = toset(local.tascomi_static_tables)
+
+  name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 22 ? * SUN *)"
+  enabled  = false
+
+  actions {
+    job_name = module.ingest_tascomi_data.job_name
     arguments = {
       "--resource" = each.value
     }
@@ -143,7 +139,6 @@ resource "aws_glue_job" "parse_tascomi_contacts_data" {
     python_version  = "3"
     script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.parse_tascomi_contacts_data.key}"
   }
-
 
   glue_version = "2.0"
 
@@ -190,7 +185,7 @@ resource "aws_glue_trigger" "tascomi_refined_data_trigger" {
 
   predicate {
     conditions {
-      crawler_name = aws_glue_crawler.raw_zone_tascomi_crawler.name
+      crawler_name = module.ingest_tascomi_data.crawler_name
       crawl_state  = "SUCCEEDED"
     }
   }
@@ -217,5 +212,55 @@ resource "aws_glue_trigger" "tascomi_refined_zone_crawler_trigger" {
 
   actions {
     crawler_name = aws_glue_crawler.refined_zone_tascomi_crawler.name
+  }
+}
+
+resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
+  tags   = module.tags.values
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/planning/tascomi-column-type-dictionary.json"
+  acl    = "private"
+  source = "../scripts/tascomi-column-type-dictionary.json"
+  etag   = filemd5("../scripts/tascomi-column-type-dictionary.json")
+}
+
+resource "aws_s3_bucket_object" "recast_tables_script" {
+  tags   = module.tags.values
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/recast_tables.py"
+  acl    = "private"
+  source = "../scripts/recast_tables.py"
+  etag   = filemd5("../scripts/recast_tables.py")
+}
+
+locals {
+  table_list = "applications,contacts,emails,enforcements,fees,public_comments,communications,fee_payments,appeal_status,appeal_types,committees,communications,communication_types,contact_types,document_types,fee_types,public_consultations"
+}
+
+module "recast_tascomi_tables" {
+  source = "../modules/aws-glue-job"
+
+  department = module.department_planning
+  job_name   = "${local.short_identifier_prefix}Recast tascomi tables"
+  job_parameters = {
+    "--s3_bucket_target"        = "${module.refined_zone.bucket_id}/planning/tascomi/"
+    "--column_dict_path"        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.tascomi_column_type_dictionary.key}"
+    "--extra-py-files"          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--enable-glue-datacatalog" = "true"
+    "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name
+    "--table_list"              = local.table_list
+  }
+  script_name            = aws_s3_bucket_object.recast_tables_script.key
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.refined_zone_tascomi.name
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/planning/tascomi/"
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+        TableLevelConfiguration = 4
+      }
+    })
   }
 }

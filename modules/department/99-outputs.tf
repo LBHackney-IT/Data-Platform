@@ -53,3 +53,7 @@ output "glue_role_arn" {
   value       = aws_iam_role.glue_agent.arn
 }
 
+output "tags" {
+  description = "Tags for each resource with department name"
+  value       = merge(var.tags, { "PlatformDepartment" = local.department_identifier })
+}

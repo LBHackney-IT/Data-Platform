@@ -11,13 +11,14 @@ resource "aws_kms_alias" "key_alias" {
   target_key_id = aws_kms_key.secrets_manager_key.key_id
 }
 
+// Housing Service Account
 resource "aws_secretsmanager_secret" "sheets_credentials_housing" {
   tags = module.tags.values
 
   // name_prefix is added here, in case you destroy the secret.
   // Secrets will linger for around 6-7 days in case recovery is required,
   // and you will be unable to create with the same name.
-  name_prefix = "${local.identifier_prefix}-sheets-credential-housing-"
+  name_prefix = "${local.identifier_prefix}/${module.department_housing_repairs.identifier}/sheets-credential-housing-"
 
   kms_key_id = aws_kms_key.secrets_manager_key.id
 }
@@ -29,11 +30,11 @@ resource "aws_secretsmanager_secret_version" "housing_json_credentials_secret_ve
   secret_binary = google_service_account_key.housing_json_credentials[0].private_key
 }
 
-
+// Tascomi Key
 resource "aws_secretsmanager_secret" "tascomi_api_public_key" {
   tags = module.tags.values
 
-  name_prefix = "${local.short_identifier_prefix}tascomi-api-public-key"
+  name_prefix = "${local.identifier_prefix}/${module.department_planning.identifier}/tascomi-api-public-key"
 
   kms_key_id = aws_kms_key.secrets_manager_key.id
 }
@@ -41,7 +42,7 @@ resource "aws_secretsmanager_secret" "tascomi_api_public_key" {
 resource "aws_secretsmanager_secret" "tascomi_api_private_key" {
   tags = module.tags.values
 
-  name_prefix = "${local.short_identifier_prefix}tascomi-api-private-key"
+  name_prefix = "${local.identifier_prefix}/${module.department_planning.identifier}/tascomi-api-private-key"
 
   kms_key_id = aws_kms_key.secrets_manager_key.id
 }

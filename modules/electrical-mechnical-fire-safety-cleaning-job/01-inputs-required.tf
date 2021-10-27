@@ -1,16 +1,17 @@
-variable "tags" {
-  description = "AWS tags"
-  type        = map(string)
-}
-
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
 }
 
-variable "department_name" {
-  description = "Department folder name"
-  type        = string
+variable "department" {
+  description = "The department with all its properties"
+  type = object({
+    identifier                         = string
+    glue_role_arn                      = string
+    refined_zone_catalog_database_name = string
+    raw_zone_catalog_database_name     = string
+    tags                               = map(string)
+  })
 }
 
 variable "script_key" {
@@ -64,19 +65,9 @@ variable "glue_crawler_excluded_blobs" {
   default     = []
 }
 
-variable "catalog_database" {
-  description = "Catalog data name"
-  type        = string
-}
-
 variable "worksheet_resource" {
   description = "Object returned by module.repairs_fire_alarm_aov[0].worksheet_resources"
   type        = map(any)
-}
-
-variable "refined_zone_catalog_database_name" {
-  description = "Refined zone catalog database name"
-  type        = string
 }
 
 variable "dataset_name" {
