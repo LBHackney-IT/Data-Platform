@@ -8,7 +8,7 @@ module "xlsx_import" {
     "--s3_bucket_source"  = "s3://${var.landing_zone_bucket_id}/${var.department.identifier}/${var.input_file_name}"
     "--s3_bucket_target"  = local.s3_output_path
     "--header_row_number" = var.header_row_number
-    "--TempDir"           = "${var.glue_temp_storage_bucket_id}/${var.department.identifier}/"
+    "--TempDir"           = "${var.glue_temp_storage_bucket_id}${var.department.identifier}/"
     "--worksheet_name"    = var.worksheet_name
     "--extra-py-files"    = "s3://${var.glue_scripts_bucket_id}/${var.helpers_script_key}"
     "--extra-jars"        = "s3://${var.glue_scripts_bucket_id}/${var.jars_key}"
