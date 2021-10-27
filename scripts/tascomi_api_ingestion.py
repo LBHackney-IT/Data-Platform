@@ -92,7 +92,7 @@ def get_days_since_last_import(last_import_date):
 def get_last_import_date(glueContext, database, resource):
     tables = glueContext.tables(database)
 
-    table_exists = tables.filter(tables.tableName == resource).count() == 1
+    table_exists = tables.filter(tables.tableName == f"api_response_{resource}").count() == 1
     print(f"table_exists: {table_exists}")
 
     if not table_exists:
