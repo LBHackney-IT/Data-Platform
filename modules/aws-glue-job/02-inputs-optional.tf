@@ -74,7 +74,10 @@ variable "crawler_details" {
     table_prefix       = optional(string)
     configuration      = optional(string)
   })
-  default = null
+  default = {
+    database_name      = null
+    s3_target_location = null
+  }
 }
 
 variable "number_of_workers_for_glue_job" {
