@@ -142,7 +142,7 @@ module "parse_tascomi_tables" {
   }
   script_name            = aws_s3_bucket_object.parse_tascomi_tables_script.key
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
-  triggered_by_crawler = module.ingest_tascomi_data.crawler_name
+  triggered_by_crawler   = module.ingest_tascomi_data.crawler_name
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.raw_zone_tascomi.name
@@ -198,7 +198,7 @@ module "recast_tascomi_tables" {
   }
   script_name            = aws_s3_bucket_object.recast_tables_script.key
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
-  triggered_by_crawler = module.parse_tascomi_tables.crawler_name
+  triggered_by_crawler   = module.parse_tascomi_tables.crawler_name
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.refined_zone_tascomi.name
