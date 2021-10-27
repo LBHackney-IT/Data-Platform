@@ -51,7 +51,7 @@ module "ingest_tascomi_data" {
   source = "../modules/aws-glue-job"
 
   department                      = module.department_planning
-  number_of_workers_for_glue_job  = local.number_of_workers
+  number_of_workers_for_glue_job  = 4
   max_concurrent_runs_of_glue_job = local.max_concurrent_runs
   job_name                        = "${local.short_identifier_prefix}Ingest tascomi data"
   job_parameters = {
