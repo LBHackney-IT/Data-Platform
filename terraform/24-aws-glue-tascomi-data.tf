@@ -30,7 +30,7 @@ locals {
     "public_consultations"
   ]
 
-  table_list = "applications,contacts,emails,enforcements,fees,public_comments,communications,fee_payments,appeal_status,appeal_types,committees,communications,communication_types,contact_types,document_types,fee_types,public_consultations"
+  table_list = "applications,contacts,emails,enforcements,public_comments,communications,fee_payments,appeal_status,appeal_types,committees,communications,communication_types,contact_types,document_types,fee_types,public_consultations"
 
 }
 
