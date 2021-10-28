@@ -50,7 +50,7 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
       "${module.raw_zone.bucket_arn}/*",
       "${module.refined_zone.bucket_arn}/*",
       "${module.trusted_zone.bucket_arn}/*",
-      "${module.athena_storage.bucket_arn}/*"
+      "${module.athena_storage.bucket_arn}/*",
     ]
   }
 
@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
       "s3:PutObject",
     ]
     resources = [
-      "${module.athena_storage.bucket_arn}/*"
+      "${module.athena_storage.bucket_arn}/*",
     ]
   }
 
@@ -75,7 +75,7 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
       module.athena_storage.kms_key_arn,
       module.raw_zone.kms_key_arn,
       module.refined_zone.kms_key_arn,
-      module.trusted_zone.kms_key_arn
+      module.trusted_zone.kms_key_arn,
     ]
   }
 

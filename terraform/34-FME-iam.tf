@@ -108,7 +108,7 @@ data "aws_iam_policy_document" "fme_access_to_s3" {
       "${module.raw_zone.bucket_arn}/*",
       "${module.refined_zone.bucket_arn}/*",
       "${module.trusted_zone.bucket_arn}/*",
-      "${module.athena_storage.bucket_arn}/primary/*"
+      "${module.athena_storage.bucket_arn}/primary/*",
     ]
   }
 
@@ -120,7 +120,7 @@ data "aws_iam_policy_document" "fme_access_to_s3" {
     resources = [
       "${module.refined_zone.bucket_arn}/*",
       "${module.trusted_zone.bucket_arn}/*",
-      "${module.athena_storage.bucket_arn}/primary/*"
+      "${module.athena_storage.bucket_arn}/primary/*",
     ]
   }
 
@@ -135,7 +135,7 @@ data "aws_iam_policy_document" "fme_access_to_s3" {
       module.athena_storage.kms_key_arn,
       module.raw_zone.kms_key_arn,
       module.refined_zone.kms_key_arn,
-      module.trusted_zone.kms_key_arn
+      module.trusted_zone.kms_key_arn,
     ]
   }
 }
