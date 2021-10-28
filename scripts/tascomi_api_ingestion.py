@@ -78,16 +78,25 @@ def get_number_of_pages(resource, query = ""):
 
     url = f'https://hackney-planning.tascomi.com/rest/v1/{resource}{query}'
     res = requests.get(url, data="", headers=headers)
-    number_of_results = res.headers['X-Number-Of-Results']
-    results_per_page = res.headers['X-Results-Per-Page']
+    if res.status_code == 202:
+        print(f"received status code 202, whilst getting number of pages for {resource}, with query {query}")
+        return { 'success': True, 'number_of_pages': 0 }
+    if res.status_code == 200:
+        number_of_results = res.headers['X-Number-Of-Results']
+        results_per_page = res.headers['X-Results-Per-Page']
 
-    return ceil(int(number_of_results) / int(results_per_page))
+        return { 'success': True, 'number_of_pages': ceil(int(number_of_results) / int(results_per_page)) }
+    error_message = f"Recieved status code {res.status_code} whilst trying to get number of pages for {resource}, {query}"
+    print(error_message)
+    return { 'success': False, 'error_message': error_message }
 
 def get_days_since_last_import(last_import_date):
     yesterday = datetime.now() - timedelta(days=1)
     last_import_datetime = datetime.strptime(last_import_date, "%Y%m%d")
     number_days_to_query = (yesterday - last_import_datetime).days
-    return [ datetime.strftime(yesterday - timedelta(days=day), "%Y-%m-%d") for day in range(0, number_days_to_query + 1)]
+    days = [ datetime.strftime(yesterday - timedelta(days=day), "%Y-%m-%d") for day in range(1, number_days_to_query + 1)]
+    days.sort()
+    return days
 
 def get_last_import_date(glueContext, database, resource):
     tables = glueContext.tables(database)
@@ -100,16 +109,28 @@ def get_last_import_date(glueContext, database, resource):
 
     return glueContext.sql(f"SELECT max(import_date) as max_import_date FROM `{database}`.api_response_{resource} where import_api_status_code = '200'").take(1)[0].max_import_date
 
+def throw_if_unsuccessful(success_state, message):
+    if not success_state:
+        raise Exception(message)
+
 def get_requests(last_import_date, resource):
     if last_import_date:
         requests_list = []
         for day in get_days_since_last_import(last_import_date):
-            number_of_pages = get_number_of_pages(f"{resource}", f"?last_updated={day}")
+            number_of_pages_reponse = get_number_of_pages(f"{resource}", f"?last_updated={day}")
+
+            throw_if_unsuccessful(number_of_pages_reponse["success"], number_of_pages_reponse["error_message"])
+
+            number_of_pages = number_of_pages_reponse["number_of_pages"]
             print(f"Number of pages to retrieve for {day}: {number_of_pages}")
             requests_list += [ RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}&last_updated={day}', "") for page_number in range(1, number_of_pages + 1)]
         return requests_list
     else:
-        number_of_pages = get_number_of_pages(resource)
+        number_of_pages_reponse = get_number_of_pages(resource)
+
+        throw_if_unsuccessful(number_of_pages_reponse["success"], number_of_pages_reponse["error_message"])
+
+        number_of_pages = number_of_pages_reponse["number_of_pages"]
         print(f"Number of pages to retrieve: {number_of_pages}")
         return [RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "") for page_number in range(1, number_of_pages + 1)]
 
