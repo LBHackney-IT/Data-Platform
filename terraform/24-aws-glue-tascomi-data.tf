@@ -134,7 +134,7 @@ module "parse_tascomi_tables" {
   department = module.department_planning
   job_name   = "${local.short_identifier_prefix}Parse tascomi tables"
   job_parameters = {
-    "--s3_bucket_target"        = "${module.raw_zone.bucket_id}/planning/tascomi/parsed/"
+    "--s3_bucket_target"        = "s3://${module.raw_zone.bucket_id}/planning/tascomi/parsed/"
     "--extra-py-files"          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name
@@ -189,7 +189,7 @@ module "recast_tascomi_tables" {
   department = module.department_planning
   job_name   = "${local.short_identifier_prefix}Recast tascomi tables"
   job_parameters = {
-    "--s3_bucket_target"        = "${module.refined_zone.bucket_id}/planning/tascomi/"
+    "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/planning/tascomi/"
     "--column_dict_path"        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.tascomi_column_type_dictionary.key}"
     "--extra-py-files"          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog" = "true"
