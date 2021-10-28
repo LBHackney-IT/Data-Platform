@@ -42,7 +42,6 @@ if __name__ == "__main__":
         # get table name without prefix for use in parsing function
         result_table_name = f'api_response_{table}'
 
-
         source_data = glueContext.create_dynamic_frame.from_catalog(
             name_space=source_catalog_database,
             table_name=result_table_name,
@@ -57,13 +56,11 @@ if __name__ == "__main__":
         df = parse_json_into_dataframe(spark=spark, column=table, dataframe=df)
 
         # keep most recently updated records only
-        df = get_max_import_date(df=df, column='id', date='import_date')
+        df = get_max_import_date(dataframe=df, column='id', date='import_date')
 
         # WRITE TO S3
         target_destination = s3_bucket_target + table
 
         df.write.mode("overwrite").format("parquet").partitionBy(PARTITION_KEYS).save(target_destination)
-
-
 
     job.commit()
