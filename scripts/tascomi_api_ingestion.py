@@ -119,7 +119,7 @@ def get_requests(last_import_date, resource):
         for day in get_days_since_last_import(last_import_date):
             number_of_pages_reponse = get_number_of_pages(f"{resource}", f"?last_updated={day}")
 
-            throw_if_unsuccessful(number_of_pages_reponse["success"], number_of_pages_reponse["error_message"])
+            throw_if_unsuccessful(number_of_pages_reponse.get("success"), number_of_pages_reponse.get("error_message"))
 
             number_of_pages = number_of_pages_reponse["number_of_pages"]
             print(f"Number of pages to retrieve for {day}: {number_of_pages}")
@@ -128,7 +128,7 @@ def get_requests(last_import_date, resource):
     else:
         number_of_pages_reponse = get_number_of_pages(resource)
 
-        throw_if_unsuccessful(number_of_pages_reponse["success"], number_of_pages_reponse["error_message"])
+        throw_if_unsuccessful(number_of_pages_reponse.get("success"), number_of_pages_reponse.get("error_message"))
 
         number_of_pages = number_of_pages_reponse["number_of_pages"]
         print(f"Number of pages to retrieve: {number_of_pages}")
