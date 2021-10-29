@@ -56,12 +56,16 @@ data "aws_iam_policy_document" "s3_department_access" {
     resources = [
       var.refined_zone_bucket.bucket_arn,
       "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.refined_zone_bucket.bucket_arn}/unrestricted/*",
       var.trusted_zone_bucket.bucket_arn,
       "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.trusted_zone_bucket.bucket_arn}/unrestricted/*",
       var.athena_storage_bucket.bucket_arn,
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
+      "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
       "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
       "${var.refined_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
       "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*"
     ]
@@ -75,8 +79,11 @@ data "aws_iam_policy_document" "s3_department_access" {
     ]
     resources = [
       "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
+      "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
       "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
       "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.refined_zone_bucket.bucket_arn}/unrestricted/*",
       "${var.glue_temp_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
@@ -91,8 +98,10 @@ data "aws_iam_policy_document" "s3_department_access" {
     resources = [
       var.raw_zone_bucket.bucket_arn,
       "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
       var.landing_zone_bucket.bucket_arn,
       "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
     ]
   }
 
