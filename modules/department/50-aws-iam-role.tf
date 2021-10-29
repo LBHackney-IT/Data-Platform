@@ -67,9 +67,7 @@ data "aws_iam_policy_document" "s3_department_access" {
       "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
       "${var.refined_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
-      "${var.refined_zone_bucket.bucket_arn}/quality-metrics/department=unrestricted/*",
-      "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
-      "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=unrestricted/*"
+      "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*"
     ]
   }
 
@@ -86,7 +84,7 @@ data "aws_iam_policy_document" "s3_department_access" {
       "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
       "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.refined_zone_bucket.bucket_arn}/unrestricted/*",
-      "${var.glue_temp_storage_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.glue_temp_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 
