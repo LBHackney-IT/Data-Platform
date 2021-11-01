@@ -165,4 +165,5 @@ module "department_planning" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-planning@hackney.gov.uk"
 }
