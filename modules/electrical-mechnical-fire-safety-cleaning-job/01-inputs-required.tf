@@ -29,8 +29,8 @@ variable "glue_scripts_bucket_id" {
   type        = string
 }
 
-variable "glue_temp_storage_bucket_id" {
-  description = "Id of temp glue job storage"
+variable "glue_temp_storage_bucket_url" {
+  description = "Glue temp storage S3 bucket url"
   type        = string
 }
 

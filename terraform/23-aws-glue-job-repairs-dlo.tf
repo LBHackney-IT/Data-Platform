@@ -18,7 +18,7 @@ module "housing_repairs_dlo_cleaning_job" {
     "--source_catalog_database"          = module.department_housing_repairs.raw_zone_catalog_database_name
     "--source_catalog_table"             = "housing_repairs_repairs_dlo"
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned"
-    "--TempDir"                          = "${module.glue_temp_storage.bucket_url}${module.department_housing_repairs.identifier}/"
+    "--TempDir"                          = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
   script_name            = aws_s3_bucket_object.housing_repairs_dlo_cleaning_script.key
@@ -39,7 +39,7 @@ module "housing_repairs_dlo_address_cleaning_job" {
   department = module.department_housing_repairs
   job_name   = "${local.short_identifier_prefix}DLO Repairs - Address Cleaning"
   job_parameters = {
-    "--TempDir"                            = "${module.glue_temp_storage.bucket_url}${module.department_housing_repairs.identifier}/"
+    "--TempDir"                            = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
     "--extra-py-files"                     = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
     "--source_catalog_database"            = module.department_housing_repairs.refined_zone_catalog_database_name
     "--source_catalog_table"               = "housing_repairs_repairs_dlo_cleaned"
@@ -71,7 +71,7 @@ module "get_uprn_from_uhref_job" {
     "--source_data_database"        = module.department_housing_repairs.refined_zone_catalog_database_name
     "--source_uhref_header"         = "property_reference_uh"
     "--target_destination"          = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
-    "--TempDir"                     = "${module.glue_temp_storage.bucket_url}${module.department_housing_repairs.identifier}/"
+    "--TempDir"                     = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
   script_name            = aws_s3_bucket_object.get_uprn_from_uhref.key
@@ -98,7 +98,7 @@ module "repairs_dlo_levenshtein_address_matching" {
     "--source_catalog_table"        = "housing_repairs_repairs_dlo_with_uprn_from_uhref"
     "--match_to_property_shell"     = "forbid"
     "--target_destination"          = "s3://${module.trusted_zone.bucket_id}/housing-repairs/repairs/"
-    "--TempDir"                     = "${module.glue_temp_storage.bucket_url}${module.department_housing_repairs.identifier}/"
+    "--TempDir"                     = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
   script_name            = aws_s3_bucket_object.levenshtein_address_matching.key

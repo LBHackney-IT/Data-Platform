@@ -8,7 +8,7 @@ module "google_sheet_import" {
   glue_scripts_bucket_id = var.glue_scripts_bucket_id
   script_name            = var.google_sheets_import_script_key
   job_parameters = {
-    "--TempDir"                   = "s3://${var.glue_temp_storage_bucket_id}/${var.department.identifier}/"
+    "--TempDir"                   = "${var.glue_temp_storage_bucket_url}/${var.department.identifier}/"
     "--additional-python-modules" = "gspread==3.7.0, google-auth==1.27.1, pyspark==3.1.1"
     "--document_key"              = var.google_sheets_document_id
     "--worksheet_name"            = var.google_sheets_worksheet_name

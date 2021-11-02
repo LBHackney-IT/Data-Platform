@@ -37,8 +37,8 @@ variable "helpers_script_key" {
   type        = string
 }
 
-variable "glue_temp_storage_bucket_id" {
-  description = "Glue temporary storage bucket id"
+variable "glue_temp_storage_bucket_url" {
+  description = "Glue temp storage S3 bucket url"
   type        = string
 }
 
