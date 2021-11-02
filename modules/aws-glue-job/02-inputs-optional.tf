@@ -84,22 +84,42 @@ variable "number_of_workers_for_glue_job" {
   description = "Specify the number of worker to use for the glue job"
   type        = number
   default     = 2
+
+  validation {
+    condition     = var.number_of_workers_for_glue_job > 0 && var.number_of_workers_for_glue_job < 12
+    error_message = "Number of workers should be greater than 0 and less than 12."
+  }
 }
 
 variable "glue_job_worker_type" {
   description = "Specify the worker type to use for the glue job"
   type        = string
   default     = "Standard"
+
+  validation {
+    condition     = contains(["Standard", "G.1X", "G.2X"], var.glue_job_worker_type)
+    error_message = "Worker type must be \"Standard\", \"G.1X\" or \"G.2X\"."
+  }
 }
 
 variable "max_concurrent_runs_of_glue_job" {
   description = "Specify the max number of concurrent runs for the glue job"
   type        = number
   default     = 1
+
+  validation {
+    condition     = var.max_concurrent_runs_of_glue_job > 0
+    error_message = "Maximum number of concurrent runs for this job must be greater than 0."
+  }
 }
 
 variable "trigger_enabled" {
-  description = "Set to false to disable shceduled or conditional triggers for the glue job"
+  description = "Set to false to disable scheduled or conditional triggers for the glue job"
   type        = bool
   default     = true
+
+  validation {
+    condition     = contains([true, false], var.trigger_enabled)
+    error_message = "Trigger enabled must be set to either true or false."
+  }
 }
