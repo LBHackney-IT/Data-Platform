@@ -1,6 +1,6 @@
 
 locals {
-  number_of_workers   = 12
+  number_of_workers   = 6
   max_concurrent_runs = max(length(local.tascomi_table_names), length(local.tascomi_static_tables))
   tascomi_table_names = [
     "applications",
