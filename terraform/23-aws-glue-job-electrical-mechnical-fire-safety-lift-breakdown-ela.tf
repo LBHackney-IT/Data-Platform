@@ -20,7 +20,7 @@ module "lift_breakdown_el" {
   glue_scripts_bucket_id      = module.glue_scripts.bucket_id
   glue_role_arn               = aws_iam_role.glue_role.arn
   glue_crawler_excluded_blobs = local.glue_crawler_excluded_blobs
-  glue_temp_storage_bucket_id = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url = module.glue_temp_storage.bucket_url
   refined_zone_bucket_id      = module.refined_zone.bucket_id
   helper_script_key           = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key             = aws_s3_bucket_object.pydeequ.key
