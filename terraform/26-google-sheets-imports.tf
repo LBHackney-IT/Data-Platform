@@ -7,7 +7,7 @@ module "repairs_dlo" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url     = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
@@ -27,7 +27,7 @@ module "repairs_herts_heritage" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url     = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
@@ -47,7 +47,7 @@ module "repairs_avonline" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url     = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
@@ -67,7 +67,7 @@ module "repairs_alpha_track" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url     = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
@@ -87,7 +87,7 @@ module "repairs_stannah" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url     = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
@@ -107,7 +107,7 @@ module "repairs_purdy" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url     = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
@@ -127,7 +127,7 @@ module "repairs_axis" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url     = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
@@ -146,7 +146,7 @@ module "parking_spreadsheet_estate_permit_limits" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_parking.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url     = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
@@ -165,7 +165,7 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_parking.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url     = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
@@ -187,7 +187,7 @@ module "dni_david_testing" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helpers_script_key              = aws_s3_bucket_object.helpers.key
   glue_catalog_database_name      = module.department_data_and_insight.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url     = module.glue_temp_storage.bucket_url
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id

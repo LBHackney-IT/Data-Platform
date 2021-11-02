@@ -13,21 +13,21 @@ module "housing_repairs_herts_heritage" {
 
   source = "../modules/housing-repairs-google-sheets-cleaning"
 
-  department                  = module.department_housing_repairs
-  short_identifier_prefix     = local.short_identifier_prefix
-  identifier_prefix           = local.identifier_prefix
-  data_cleaning_script_key    = aws_s3_bucket_object.housing_repairs_repairs_herts_heritage_cleaning_script.key
-  glue_scripts_bucket_id      = module.glue_scripts.bucket_id
-  glue_role_arn               = aws_iam_role.glue_role.arn
-  glue_crawler_excluded_blobs = local.glue_crawler_excluded_blobs
+  department                   = module.department_housing_repairs
+  short_identifier_prefix      = local.short_identifier_prefix
+  identifier_prefix            = local.identifier_prefix
+  data_cleaning_script_key     = aws_s3_bucket_object.housing_repairs_repairs_herts_heritage_cleaning_script.key
+  glue_scripts_bucket_id       = module.glue_scripts.bucket_id
+  glue_role_arn                = aws_iam_role.glue_role.arn
+  glue_crawler_excluded_blobs  = local.glue_crawler_excluded_blobs
   glue_temp_storage_bucket_url = module.glue_temp_storage.bucket_url
-  refined_zone_bucket_id      = module.refined_zone.bucket_id
-  helper_script_key           = aws_s3_bucket_object.helpers.key
-  cleaning_helper_script_key  = aws_s3_bucket_object.repairs_cleaning_helpers.key
-  catalog_database            = module.department_housing_repairs.raw_zone_catalog_database_name
-  addresses_api_data_catalog  = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
-  address_matching_script_key = aws_s3_bucket_object.levenshtein_address_matching.key
-  trusted_zone_bucket_id      = module.trusted_zone.bucket_id
+  refined_zone_bucket_id       = module.refined_zone.bucket_id
+  helper_script_key            = aws_s3_bucket_object.helpers.key
+  cleaning_helper_script_key   = aws_s3_bucket_object.repairs_cleaning_helpers.key
+  catalog_database             = module.department_housing_repairs.raw_zone_catalog_database_name
+  addresses_api_data_catalog   = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
+  address_matching_script_key  = aws_s3_bucket_object.levenshtein_address_matching.key
+  trusted_zone_bucket_id       = module.trusted_zone.bucket_id
 
   source_catalog_table = "housing_repairs_repairs_herts_heritage"
   trigger_crawler_name = module.repairs_herts_heritage[0].crawler_name
