@@ -86,8 +86,8 @@ variable "number_of_workers_for_glue_job" {
   default     = 2
 
   validation {
-    condition     = var.number_of_workers_for_glue_job > 0 && var.number_of_workers_for_glue_job < 12
-    error_message = "Number of workers should be greater than 0 and less than 12."
+    condition     = var.number_of_workers_for_glue_job >= 2 && var.number_of_workers_for_glue_job < 12
+    error_message = "Number of workers should be greater than or equal to 2 and less than 12."
   }
 }
 
@@ -117,9 +117,4 @@ variable "trigger_enabled" {
   description = "Set to false to disable scheduled or conditional triggers for the glue job"
   type        = bool
   default     = true
-
-  validation {
-    condition     = contains([true, false], var.trigger_enabled)
-    error_message = "Trigger enabled must be set to either true or false."
-  }
 }

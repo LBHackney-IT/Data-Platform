@@ -23,6 +23,6 @@ variable "glue_scripts_bucket_id" {
 
   validation {
     condition     = length(var.glue_scripts_bucket_id) > 7
-    error_message = "The bucket ID variable must contain the name of the Glue scripts bucket."
+    error_message = "The bucket ID variable must be set to `module.glue_scripts.bucket_id`."
   }
 }
