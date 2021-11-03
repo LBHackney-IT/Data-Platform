@@ -10,9 +10,19 @@ variable "department" {
 variable "job_name" {
   description = "Name of the AWS glue job"
   type        = string
+
+  validation {
+    condition     = length(var.job_name) > 7
+    error_message = "Job name must be at least 7 characters and include the department name."
+  }
 }
 
 variable "glue_scripts_bucket_id" {
   description = "S3 bucket which contains the Glue scripts"
   type        = string
+
+  validation {
+    condition     = length(var.glue_scripts_bucket_id) > 7
+    error_message = "The bucket ID variable must be set to `module.glue_scripts.bucket_id`."
+  }
 }
