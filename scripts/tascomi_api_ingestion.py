@@ -6,6 +6,7 @@ from pyspark.sql import Row
 import hmac, hashlib;
 import base64;
 from datetime import datetime, timedelta
+from dateutil import tz
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -59,8 +60,9 @@ def get_tascomi_resource(page_number, url, body):
         return ([""], url, res.status_code, exception)
 
 def calculate_auth_hash(public_key, private_key):
-    now_bst = datetime.now() + timedelta(hours=1)
-    the_time = now_bst.strftime("%Y%m%d%H%M").encode('utf-8')
+    tz_ldn = tz.gettz('Europe/London')
+    now = datetime.now(tz_ldn)
+    the_time = now.strftime("%Y%m%d%H%M").encode('utf-8')
     crypt = hashlib.sha256(public_key.encode('utf-8') + the_time)
     token = crypt.hexdigest().encode('utf-8')
     return base64.b64encode(hmac.new(private_key.encode('utf-8'), token, hashlib.sha256).hexdigest().encode('utf-8'))
