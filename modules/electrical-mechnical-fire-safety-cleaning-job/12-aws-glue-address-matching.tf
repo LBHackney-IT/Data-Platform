@@ -14,8 +14,10 @@ module "housing_repairs_elec_mech_fire_address_matching" {
     "--extra-py-files"              = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
     "--match_to_property_shell"     = var.match_to_property_shell
   }
-  script_name          = var.address_matching_script_key
-  workflow_name        = var.worksheet_resource.workflow_name
-  triggered_by_crawler = module.housing_repairs_elec_mech_fire_address_cleaning.crawler_name
+  glue_job_worker_type           = "G.1X"
+  number_of_workers_for_glue_job = 6
+  script_name                    = var.address_matching_script_key
+  workflow_name                  = var.worksheet_resource.workflow_name
+  triggered_by_crawler           = module.housing_repairs_elec_mech_fire_address_cleaning.crawler_name
 }
 
