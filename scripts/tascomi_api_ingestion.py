@@ -215,23 +215,23 @@ number_of_requests = len(requests_list)
 requests_list = sc.parallelize(requests_list)
 requests_list = glue_context.createDataFrame(requests_list)
 
-attempt = 1
+attempt = 0
 number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
 partitions = calculate_number_of_partitions(number_of_requests, number_of_workers)
 print(f"Using {partitions} partitions to repartition the RDD.")
 
-while attempt < 4:
+while attempt < 3 and number_of_requests > 0:
+    attempt+=1
     print(f"Running attempt {attempt} to ingest API data")
     tascomi_responses = retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions, attempt)
     requests_list = get_failed_requests(tascomi_responses)
-    print(f"found {requests_list.count()} failed requests after attempt {attempt}")
-    attempt+=1
+    number_of_requests = requests_list.count()
+    print(f"found {number_of_requests} failed requests after attempt {attempt}")
 
-number_failed_requests = requests_list.count()
-print(f"After attempt {attempt}, there are {number_failed_requests} remaining failed requests")
-if number_failed_requests > 0:
+print(f"After attempt {attempt}, there are {number_of_requests} remaining failed requests")
+if number_of_requests > 0:
     print("After three attempts there are stilll outstanding pages to retrieve, failing job")
-    print(f"There are {number_failed_requests} requests still failing")
-    raise Exception(f"Failing Tascomi Ingestion glue job after {attempt -1} attempts of retrying API calls. There are {number_failed_requests} outstanding pages still not imported.")
+    print(f"There are {number_of_requests} requests still failing")
+    raise Exception(f"Failing Tascomi Ingestion glue job after {attempt} attempts of retrying API calls. There are {number_of_requests} outstanding pages still not imported.")
 
 job.commit()
