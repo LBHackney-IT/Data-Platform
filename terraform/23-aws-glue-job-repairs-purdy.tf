@@ -8,6 +8,7 @@ module "housing_repairs_purdy" {
   identifier_prefix                  = local.identifier_prefix
   glue_scripts_bucket_id             = module.glue_scripts.bucket_id
   glue_role_arn                      = aws_iam_role.glue_role.arn
+  number_of_workers_for_glue_job     = 10
   glue_crawler_excluded_blobs        = local.glue_crawler_excluded_blobs
   glue_temp_storage_bucket_url       = module.glue_temp_storage.bucket_url
   refined_zone_bucket_id             = module.refined_zone.bucket_id
