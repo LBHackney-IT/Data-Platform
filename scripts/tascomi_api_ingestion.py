@@ -30,9 +30,10 @@ def not_today(date_str):
     return date.date() != datetime.now().date()
 
 def get_tascomi_resource(page_number, url, body):
-    logger.info(f"Calling API to get page {page_number}")
     global public_key
     global private_key
+
+    print(f"Calling API to get page {page_number}")
 
     headers = {
         'content-type': "application/json",
@@ -45,7 +46,7 @@ def get_tascomi_resource(page_number, url, body):
     try:
         res = requests.get(url, data=body, headers=headers)
         if not res.text or json.loads(res.text) == None:
-            logger.info(f"Null data response, with status code {res.status_code} for page {page_number}")
+            print(f"Null data response, with status code {res.status_code} for page {page_number}")
             return ([""], url, res.status_code, "Null data response.")
         records = json.loads(res.text)
 
@@ -55,7 +56,7 @@ def get_tascomi_resource(page_number, url, body):
 
     except Exception as e:
         exception = str(e)
-        logger.info(f"ERROR: {exception} when getting page {page_number}. Status code {res.status_code}, response text {res.text}")
+        print(f"ERROR: {exception} when getting page {page_number}. Status code {res.status_code}, response text {res.text}")
         return ([""], url, res.status_code, exception)
 
 def calculate_auth_hash(public_key, private_key):
