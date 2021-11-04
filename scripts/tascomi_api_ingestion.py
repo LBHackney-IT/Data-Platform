@@ -24,14 +24,13 @@ def authenticate_tascomi(headers, public_key, private_key):
     return headers
 
 def not_today(date_str):
-    print(f"date_str: {date_str}")
     if not date_str:
         return True
     date = datetime.strptime(date_str[:19], "%Y-%m-%d %H:%M:%S")
     return date.date() != datetime.now().date()
 
 def get_tascomi_resource(page_number, url, body):
-    print(f"Calling API to get page {page_number}")
+    logger.info(f"Calling API to get page {page_number}")
     global public_key
     global private_key
 
@@ -46,7 +45,7 @@ def get_tascomi_resource(page_number, url, body):
     try:
         res = requests.get(url, data=body, headers=headers)
         if not res.text or json.loads(res.text) == None:
-            print(f"Null data response, with status code {res.status_code} for page {page_number}")
+            logger.info(f"Null data response, with status code {res.status_code} for page {page_number}")
             return ([""], url, res.status_code, "Null data response.")
         records = json.loads(res.text)
 
@@ -56,7 +55,7 @@ def get_tascomi_resource(page_number, url, body):
 
     except Exception as e:
         exception = str(e)
-        print(f"ERROR: {exception} when getting page {page_number}. Status code {res.status_code}, response text {res.text}")
+        logger.info(f"ERROR: {exception} when getting page {page_number}. Status code {res.status_code}, response text {res.text}")
         return ([""], url, res.status_code, exception)
 
 def calculate_auth_hash(public_key, private_key):
@@ -81,7 +80,7 @@ def get_number_of_pages(resource, query = ""):
     url = f'https://hackney-planning.tascomi.com/rest/v1/{resource}{query}'
     res = requests.get(url, data="", headers=headers)
     if res.status_code == 202:
-        print(f"received status code 202, whilst getting number of pages for {resource}, with query {query}")
+        logger.info(f"received status code 202, whilst getting number of pages for {resource}, with query {query}")
         return { 'success': True, 'number_of_pages': 0 }
     if res.status_code == 200:
         number_of_results = res.headers['X-Number-Of-Results']
@@ -89,7 +88,7 @@ def get_number_of_pages(resource, query = ""):
 
         return { 'success': True, 'number_of_pages': ceil(int(number_of_results) / int(results_per_page)) }
     error_message = f"Recieved status code {res.status_code} whilst trying to get number of pages for {resource}, {query}"
-    print(error_message)
+    logger.info(error_message)
     return { 'success': False, 'error_message': error_message }
 
 def get_days_since_last_import(last_import_date):
@@ -104,7 +103,7 @@ def get_last_import_date(glue_context, database, resource):
     tables = glue_context.tables(database)
 
     table_exists = tables.filter(tables.tableName == f"api_response_{resource}").count() == 1
-    print(f"table_exists: {table_exists}")
+    logger.info(f"found table for {resource} api response in {database}: {table_exists}")
 
     if not table_exists:
         return None
@@ -124,7 +123,7 @@ def get_requests(last_import_date, resource):
             throw_if_unsuccessful(number_of_pages_reponse.get("success"), number_of_pages_reponse.get("error_message"))
 
             number_of_pages = number_of_pages_reponse["number_of_pages"]
-            print(f"Number of pages to retrieve for {day}: {number_of_pages}")
+            logger.info(f"Number of pages to retrieve for {day}: {number_of_pages}")
             requests_list += [ RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}&last_updated={day}', "") for page_number in range(1, number_of_pages + 1)]
         return requests_list
     else:
@@ -133,7 +132,7 @@ def get_requests(last_import_date, resource):
         throw_if_unsuccessful(number_of_pages_reponse.get("success"), number_of_pages_reponse.get("error_message"))
 
         number_of_pages = number_of_pages_reponse["number_of_pages"]
-        print(f"Number of pages to retrieve: {number_of_pages}")
+        logger.info(f"Number of pages to retrieve: {number_of_pages}")
         return [RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "") for page_number in range(1, number_of_pages + 1)]
 
 def calculate_number_of_partitions(number_of_requests, number_of_workers):
@@ -194,7 +193,7 @@ s3_target_url = "s3://" + bucket_target + "/" + prefix + resource + "/"
 
 if resource == '':
     raise Exception("--resource value must be defined in the job aruguments")
-print(f"Getting resource {resource}")
+logger.info(f"Getting resource {resource}")
 
 api_response_schema = StructType([
     StructField("response_data", ArrayType(StringType(), True)),
@@ -207,7 +206,7 @@ get_tascomi_resource_udf = udf(get_tascomi_resource, api_response_schema)
 RequestRow = Row("page_number", "url", "body")
 
 last_import_date = get_last_import_date(glue_context, target_database_name, resource)
-print(f"last import date: {last_import_date}")
+logger.info(f"Maximum import date found: {last_import_date}")
 
 requests_list = get_requests(last_import_date, resource)
 number_of_requests = len(requests_list)
@@ -218,20 +217,20 @@ requests_list = glue_context.createDataFrame(requests_list)
 attempt = 0
 number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
 partitions = calculate_number_of_partitions(number_of_requests, number_of_workers)
-print(f"Using {partitions} partitions to repartition the RDD.")
+logger.info(f"Using {partitions} partitions to repartition the RDD.")
 
 while attempt < 3 and number_of_requests > 0:
     attempt+=1
-    print(f"Running attempt {attempt} to ingest API data")
+    logger.info(f"Running attempt {attempt} to ingest API data")
     tascomi_responses = retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions, attempt)
     requests_list = get_failed_requests(tascomi_responses)
     number_of_requests = requests_list.count()
-    print(f"found {number_of_requests} failed requests after attempt {attempt}")
+    logger.info(f"Received {number_of_requests} failed requests after attempt {attempt}")
 
-print(f"After attempt {attempt}, there are {number_of_requests} remaining failed requests")
+logger.info(f"After final attempt {attempt}, there are {number_of_requests} remaining failed requests")
 if number_of_requests > 0:
-    print("After three attempts there are stilll outstanding pages to retrieve, failing job")
-    print(f"There are {number_of_requests} requests still failing")
+    logger.info("After three attempts there are still outstanding pages to retrieve, failing job")
+    logger.info(f"There are {number_of_requests} requests still failing")
     raise Exception(f"Failing Tascomi Ingestion glue job after {attempt} attempts of retrying API calls. There are {number_of_requests} outstanding pages still not imported.")
 
 job.commit()
