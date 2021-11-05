@@ -1,6 +1,6 @@
 
 locals {
-  number_of_workers   = 6
+  number_of_workers   = 4
   max_concurrent_runs = max(length(local.tascomi_table_names), length(local.tascomi_static_tables))
   tascomi_table_names = [
     "applications",
@@ -54,7 +54,7 @@ module "ingest_tascomi_data" {
   source = "../modules/aws-glue-job"
 
   department                      = module.department_planning
-  number_of_workers_for_glue_job  = 4
+  number_of_workers_for_glue_job  = local.number_of_workers
   max_concurrent_runs_of_glue_job = local.max_concurrent_runs
   job_name                        = "${local.short_identifier_prefix}Ingest tascomi data"
   job_parameters = {
