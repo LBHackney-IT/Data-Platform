@@ -21,7 +21,10 @@ resource "aws_glue_job" "job" {
 
   glue_version = "2.0"
 
-  default_arguments = var.job_parameters
+  default_arguments = merge(var.job_parameters,
+    {
+      "--TempDir" = "${var.glue_temp_storage_bucket_url}/${var.department.identifier}/"
+  })
 }
 
 locals {
