@@ -16,6 +16,7 @@ from awsglue.job import Job
 from math import ceil
 from helpers import get_glue_env_var, get_secret, add_import_time_columns, PARTITION_KEYS, table_exists_in_catalog
 import json
+from distutils.util import strtobool
 
 def authenticate_tascomi(headers, public_key, private_key):
     auth_hash = calculate_auth_hash(public_key, private_key)
@@ -113,26 +114,53 @@ def throw_if_unsuccessful(success_state, message):
     if not success_state:
         raise Exception(message)
 
-def get_requests(last_import_date, resource):
-    if last_import_date:
-        requests_list = []
-        for day in get_days_since_last_import(last_import_date):
-            number_of_pages_reponse = get_number_of_pages(f"{resource}", f"?last_updated={day}")
-
-            throw_if_unsuccessful(number_of_pages_reponse.get("success"), number_of_pages_reponse.get("error_message"))
-
-            number_of_pages = number_of_pages_reponse["number_of_pages"]
-            logger.info(f"Number of pages to retrieve for {day}: {number_of_pages}")
-            requests_list += [ RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}&last_updated={day}', "") for page_number in range(1, number_of_pages + 1)]
-        return requests_list
-    else:
-        number_of_pages_reponse = get_number_of_pages(resource)
+def get_failures_from_last_import(database, resource, last_import_date):
+    return glue_context.sql(f"SELECT page_number, import_api_url_requested as url, '' as body from `{database}`.api_response_{resource} where import_api_status_code != '200' and import_date={last_import_date}")
+    
+def get_requests_since_last_import(resource, last_import_date):
+    requests_list = []
+    for day in get_days_since_last_import(last_import_date):
+        number_of_pages_reponse = get_number_of_pages(f"{resource}", f"?last_updated={day}")
 
         throw_if_unsuccessful(number_of_pages_reponse.get("success"), number_of_pages_reponse.get("error_message"))
 
         number_of_pages = number_of_pages_reponse["number_of_pages"]
-        logger.info(f"Number of pages to retrieve: {number_of_pages}")
-        return [RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "") for page_number in range(1, number_of_pages + 1)]
+        logger.info(f"Number of pages to retrieve for {day}: {number_of_pages}")
+        requests_list += [ RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}&last_updated={day}', "") for page_number in range(1, number_of_pages + 1)]
+    requests_list = sc.parallelize(requests_list)
+    requests_list = glue_context.createDataFrame(requests_list)
+    return requests_list
+
+def get_requests_for_full_load(resource):
+    number_of_pages_reponse = get_number_of_pages(resource)
+
+    throw_if_unsuccessful(number_of_pages_reponse.get("success"), number_of_pages_reponse.get("error_message"))
+
+    number_of_pages = number_of_pages_reponse["number_of_pages"]
+    logger.info(f"Number of pages to retrieve: {number_of_pages}")
+    requests_list = [RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "") for page_number in range(1, number_of_pages + 1)]
+    requests_list = sc.parallelize(requests_list)
+    requests_list = glue_context.createDataFrame(requests_list)
+    return requests_list 
+
+
+def get_requests(last_import_date, resource, database):
+    retry_arg_value = get_glue_env_var('retry_failure_from_previous_import', 'false')
+    try:
+        retry_failures = strtobool(retry_arg_value)
+    except ValueError:
+        raise Exception(f"--retry_failure_from_previous_import value must be recognised as a bool, received: {retry_arg_value}.")
+
+    if not last_import_date:
+        logger.info(f"Retrieving full load of data")
+        return get_requests_for_full_load(resource)
+    if retry_failures:
+        logger.info(f"Getting failed requests from import on date {last_import_date}")
+        return get_failures_from_last_import(database, resource, last_import_date)
+
+    logger.info(f"Getting any records updated since {last_import_date}")
+    return get_requests_since_last_import(resource, last_import_date)
+
 
 def calculate_number_of_partitions(number_of_requests, number_of_workers):
     max_partitions = (2 * number_of_workers - 1) * 4
@@ -146,7 +174,7 @@ def remove_gis_image(records):
     records.pop("gis_map_image_base64", None)
     return records
 
-def retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions, import_attempt):
+def retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions):
     request_df = requests_list.repartition(partitions)
     response_df = request_df.withColumn("response", get_tascomi_resource_udf(col("page_number"), col("url"), col("body")))
 
@@ -155,8 +183,7 @@ def retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, reque
         explode(col("response.response_data")).alias(f"{resource}"), \
         col("response.import_api_url_requested").alias("import_api_url_requested"), \
         col("response.import_api_status_code").alias("import_api_status_code"), \
-        col("response.import_exception_thrown").alias("import_exception_thrown"), \
-        lit(import_attempt).alias("import_attempt"))
+        col("response.import_exception_thrown").alias("import_exception_thrown"))
 
     tascomi_responses_df = add_import_time_columns(tascomi_responses_df)
 
@@ -207,31 +234,16 @@ RequestRow = Row("page_number", "url", "body")
 last_import_date = get_last_import_date(glue_context, target_database_name, resource)
 logger.info(f"Maximum import date found: {last_import_date}")
 
-requests_list = get_requests(last_import_date, resource)
-number_of_requests = len(requests_list)
+requests_list = get_requests(last_import_date, resource, target_database_name)
+number_of_requests = requests_list.count()
 
 if number_of_requests > 0:
-    requests_list = sc.parallelize(requests_list)
-    requests_list = glue_context.createDataFrame(requests_list)
-
     number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
     partitions = calculate_number_of_partitions(number_of_requests, number_of_workers)
     logger.info(f"Using {partitions} partitions to repartition the RDD.")
 
-attempt = 0
-
-while attempt < 3 and number_of_requests > 0:
-    attempt+=1
-    logger.info(f"Running attempt {attempt} to ingest API data")
-    tascomi_responses = retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions, attempt)
-    requests_list = get_failed_requests(tascomi_responses)
-    number_of_requests = requests_list.count()
-    logger.info(f"Received {number_of_requests} failed requests after attempt {attempt}")
-
-logger.info(f"After final attempt {attempt}, there are {number_of_requests} remaining failed requests")
-if number_of_requests > 0:
-    logger.info("After three attempts there are still outstanding pages to retrieve, failing job")
-    logger.info(f"There are {number_of_requests} requests still failing")
-    raise Exception(f"Failing Tascomi Ingestion glue job after {attempt} attempts of retrying API calls. There are {number_of_requests} outstanding pages still not imported.")
+    tascomi_responses = retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions)
+else:
+    logger.info("No requests, exiting job")
 
 job.commit()
