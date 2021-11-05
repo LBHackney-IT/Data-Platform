@@ -7,7 +7,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from pyspark.sql.functions import col
 from pyspark.sql.types import IntegerType, BooleanType, DateType, TimestampType, LongType, DoubleType
-from helpers import get_glue_env_var, PARTITION_KEYS
+from helpers import get_glue_env_var, PARTITION_KEYS, table_exists_in_catalog
 
 
 def castColumns(columnDict,tableName,df,typeName,dataType):
@@ -52,7 +52,12 @@ if __name__ == "__main__":
     columnsDictionary = spark.read.option("multiline", "true").json(column_dict_path).rdd.collect()[0]
     
     for nameOfTableToRecast in table_list:
+        if not table_exists_in_catalog(glueContext, nameOfTableToRecast, source_catalog_database):
+            logger.info(f"Couldn't find table {nameOfTableToRecast} in database {source_catalog_database}, moving onto next table.")
+            continue
+
         #   load data
+
         source_ddf = glueContext.create_dynamic_frame.from_catalog(
             name_space=source_catalog_database,
             table_name=nameOfTableToRecast
