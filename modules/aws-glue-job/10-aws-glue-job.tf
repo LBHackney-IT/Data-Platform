@@ -2,6 +2,7 @@ locals {
   glue_role_arn   = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
   s3_object_tags = { for k, v in var.department.tags : k => v if k != "PlatformDepartment" }
 }
+
 resource "aws_s3_bucket_object" "job_script" {
   count = var.script_s3_object_key == null ? 1 : 0
   tags = local.s3_object_tags
@@ -15,7 +16,7 @@ resource "aws_s3_bucket_object" "job_script" {
 
 locals {
   object_key = var.script_s3_object_key == null ? var.script_s3_object_key : aws_s3_bucket_object.job_script[0].key
-
+  script_location = "s3://${var.department.glue_scripts_bucket.bucket_id}/${local.object_key}"
 }
 
 resource "aws_glue_job" "job" {
@@ -27,7 +28,7 @@ resource "aws_glue_job" "job" {
   role_arn          = local.glue_role_arn
   command {
     python_version  = "3"
-    script_location = "s3://${var.glue_scripts_bucket_id}/${local.object_key}"
+    script_location = local.script_location
   }
 
   execution_property {
@@ -38,7 +39,7 @@ resource "aws_glue_job" "job" {
 
   default_arguments = merge(var.job_parameters,
     {
-      "--TempDir" = "${var.glue_temp_storage_bucket_url}/${var.department.identifier}/"
+      "--TempDir" = "s3://${var.department.glue_temp_bucket.bucket_id}/${var.department.identifier}/"
   })
 }
 

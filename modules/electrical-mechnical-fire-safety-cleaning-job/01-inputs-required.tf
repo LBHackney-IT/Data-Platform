@@ -12,6 +12,12 @@ variable "department" {
     refined_zone_catalog_database_name = string
     raw_zone_catalog_database_name     = string
     tags                               = map(string)
+    glue_temp_bucket = object({
+      bucket_id = string
+    })
+    glue_scripts_bucket = object({
+      bucket_id = string
+    })
   })
 }
 

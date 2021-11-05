@@ -4,7 +4,6 @@ module "housing_repairs_google_sheets_address_cleaning" {
   department = var.department
   job_name   = "${local.glue_job_name} Address Cleaning"
   job_parameters = {
-    "--TempDir"                            = "${var.glue_temp_storage_bucket_url}/${var.department.identifier}/"
     "--extra-py-files"                     = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
     "--source_catalog_database"            = var.refined_zone_catalog_database_name
     "--source_catalog_table"               = "housing_repairs_${replace(var.dataset_name, "-", "_")}_cleaned"
@@ -12,10 +11,9 @@ module "housing_repairs_google_sheets_address_cleaning" {
     "--source_address_column_header"       = "property_address"
     "--source_postcode_column_header"      = "None"
   }
-  script_name            = var.address_cleaning_script_key
-  workflow_name          = var.workflow_name
-  triggered_by_crawler   = module.housing_repairs_google_sheets_cleaning.crawler_name
-  glue_scripts_bucket_id = var.glue_scripts_bucket_id
+  script_name          = var.address_cleaning_script_key
+  workflow_name        = var.workflow_name
+  triggered_by_crawler = module.housing_repairs_google_sheets_cleaning.crawler_name
   crawler_details = {
     table_prefix       = "housing_repairs_${replace(var.dataset_name, "-", "_")}_"
     database_name      = var.refined_zone_catalog_database_name

@@ -4,6 +4,12 @@ variable "department" {
     identifier    = string
     glue_role_arn = string
     tags          = map(string)
+    glue_temp_bucket = object({
+      bucket_id = string
+    })
+    glue_scripts_bucket = object({
+      bucket_id = string
+    })
   })
 }
 

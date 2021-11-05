@@ -40,12 +40,6 @@ variable "job_parameters" {
   default     = null
 }
 
-variable "glue_temp_storage_bucket_url" {
-  description = "Glue temp storage S3 bucket url"
-  type        = string
-  default     = null
-}
-
 variable "workflow_name" {
   description = "Optional. Workflow to add the triggers to."
   type        = string
