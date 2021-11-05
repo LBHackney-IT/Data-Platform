@@ -8,7 +8,7 @@ from pyspark.sql.window import Window
 from pyspark.sql.functions import col, max, from_json
 from pyspark.sql import SparkSession
 
-from helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe
+from helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog
 
 
 def get_max_import_date(dataframe, column, date):
@@ -39,8 +39,12 @@ if __name__ == "__main__":
     # loop through each table
     for table in table_list:
 
-        # get table name without prefix for use in parsing function
+        # Add prefix to table name to retrieve API data
         result_table_name = f'api_response_{table}'
+
+        if not table_exists_in_catalog(glueContext, result_table_name, source_catalog_database):
+            logger.info(f"Couldn't find table {result_table_name} in database {source_catalog_database}, moving onto next table.")
+            continue
 
         source_data = glueContext.create_dynamic_frame.from_catalog(
             name_space=source_catalog_database,

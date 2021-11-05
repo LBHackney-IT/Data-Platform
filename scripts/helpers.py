@@ -174,3 +174,8 @@ def parse_json_into_dataframe(spark, column, dataframe):
     # drop columns no longer needed
     dataframe = dataframe.drop(column, 'json')
     return dataframe
+
+def table_exists_in_catalog(glue_context, table, database):
+    tables = glue_context.tables(database)
+
+    return tables.filter(tables.tableName == table).count() == 1

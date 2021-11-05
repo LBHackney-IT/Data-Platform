@@ -14,7 +14,7 @@ from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from math import ceil
-from helpers import get_glue_env_var, get_secret, add_import_time_columns, PARTITION_KEYS
+from helpers import get_glue_env_var, get_secret, add_import_time_columns, PARTITION_KEYS, table_exists_in_catalog
 import json
 
 def authenticate_tascomi(headers, public_key, private_key):
@@ -101,14 +101,12 @@ def get_days_since_last_import(last_import_date):
     return days
 
 def get_last_import_date(glue_context, database, resource):
-    tables = glue_context.tables(database)
 
-    table_exists = tables.filter(tables.tableName == f"api_response_{resource}").count() == 1
-    logger.info(f"found table for {resource} api response in {database}: {table_exists}")
-
-    if not table_exists:
+    if not table_exists_in_catalog(glue_context, f"api_response_{resource}", database):
+        logger.info(f"Couldn't find table api_response_{resource} in database {database}.")
         return None
 
+    logger.info(f"found table for {resource} api response in {database}")
     return glue_context.sql(f"SELECT max(import_date) as max_import_date FROM `{database}`.api_response_{resource} where import_api_status_code = '200'").take(1)[0].max_import_date
 
 def throw_if_unsuccessful(success_state, message):
