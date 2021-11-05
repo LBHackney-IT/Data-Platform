@@ -212,13 +212,15 @@ logger.info(f"Maximum import date found: {last_import_date}")
 requests_list = get_requests(last_import_date, resource)
 number_of_requests = len(requests_list)
 
-requests_list = sc.parallelize(requests_list)
-requests_list = glue_context.createDataFrame(requests_list)
+if number_of_requests > 0:
+    requests_list = sc.parallelize(requests_list)
+    requests_list = glue_context.createDataFrame(requests_list)
+
+    number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
+    partitions = calculate_number_of_partitions(number_of_requests, number_of_workers)
+    logger.info(f"Using {partitions} partitions to repartition the RDD.")
 
 attempt = 0
-number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
-partitions = calculate_number_of_partitions(number_of_requests, number_of_workers)
-logger.info(f"Using {partitions} partitions to repartition the RDD.")
 
 while attempt < 3 and number_of_requests > 0:
     attempt+=1
