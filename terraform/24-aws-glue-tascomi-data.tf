@@ -94,7 +94,7 @@ resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
   schedule = "cron(0 3 * * ? *)"
-  enabled  = true
+  enabled  = local.is_live_environment
 
   actions {
     job_name = module.ingest_tascomi_data.job_name
@@ -111,7 +111,7 @@ resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
   schedule = "cron(0 22 ? * SUN *)"
-  enabled  = true
+  enabled  = local.is_live_environment
 
   actions {
     job_name = module.ingest_tascomi_data.job_name
