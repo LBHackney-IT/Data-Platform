@@ -62,8 +62,9 @@ module "get_uprn_from_uhref_job" {
   source = "../modules/aws-glue-job"
   count  = local.is_live_environment ? 1 : 0
 
-  department = module.department_housing_repairs
-  job_name   = "${local.short_identifier_prefix}Get UPRN from UHref DLO repairs"
+  department    = module.department_housing_repairs
+  job_name      = "${local.short_identifier_prefix}Get UPRN from UHref DLO repairs"
+  glue_role_arn = aws_iam_role.glue_role.arn
   job_parameters = {
     "--lookup_catalogue_table"      = "datainsight_data_and_insight"
     "--lookup_database"             = "dataplatform-stg-raw-zone-database"
