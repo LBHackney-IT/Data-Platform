@@ -1,7 +1,7 @@
 locals {
   script_name     = var.script_name == null ? "scripts/${var.job_name}.py" : var.script_name
   script_location = "s3://${var.glue_scripts_bucket_id}/${local.script_name}"
-  glue_role_arn   = var.glue_role_arn ? var.glue_role_arn : var.department.glue_role_arn
+  glue_role_arn   = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
 }
 
 resource "aws_glue_job" "job" {
