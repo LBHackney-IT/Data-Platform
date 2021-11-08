@@ -115,7 +115,8 @@ def throw_if_unsuccessful(success_state, message):
         raise Exception(message)
 
 def get_failures_from_last_import(database, resource, last_import_date):
-    return glue_context.sql(f"SELECT page_number, import_api_url_requested as url, '' as body from `{database}`.api_response_{resource} where import_api_status_code != '200' and import_date={last_import_date}")
+    requests_df = glue_context.sql(f"SELECT page_number, import_api_url_requested as url, '' as body from `{database}`.api_response_{resource} where import_api_status_code != '200' and import_date={last_import_date}")
+    return { "requests": requests_df, "count": requests_df.count() }
     
 def get_requests_since_last_import(resource, last_import_date):
     requests_list = []
@@ -127,9 +128,12 @@ def get_requests_since_last_import(resource, last_import_date):
         number_of_pages = number_of_pages_reponse["number_of_pages"]
         logger.info(f"Number of pages to retrieve for {day}: {number_of_pages}")
         requests_list += [ RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}&last_updated={day}', "") for page_number in range(1, number_of_pages + 1)]
+    number_of_requests = len(requests_list)
+    if number_of_requests == 0:
+        return { "requests": [], "count": 0 }
     requests_list = sc.parallelize(requests_list)
     requests_list = glue_context.createDataFrame(requests_list)
-    return requests_list
+    return { "requests": requests_list, "count": number_of_requests }
 
 def get_requests_for_full_load(resource):
     number_of_pages_reponse = get_number_of_pages(resource)
@@ -139,9 +143,10 @@ def get_requests_for_full_load(resource):
     number_of_pages = number_of_pages_reponse["number_of_pages"]
     logger.info(f"Number of pages to retrieve: {number_of_pages}")
     requests_list = [RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "") for page_number in range(1, number_of_pages + 1)]
+    number_of_requests = len(requests_list)
     requests_list = sc.parallelize(requests_list)
     requests_list = glue_context.createDataFrame(requests_list)
-    return requests_list 
+    return { "requests": requests_list, "count": number_of_requests }
 
 
 def get_requests(last_import_date, resource, database):
@@ -235,14 +240,13 @@ last_import_date = get_last_import_date(glue_context, target_database_name, reso
 logger.info(f"Maximum import date found: {last_import_date}")
 
 requests_list = get_requests(last_import_date, resource, target_database_name)
-number_of_requests = requests_list.count()
 
-if number_of_requests > 0:
+if requests_list["count"] > 0:
     number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
-    partitions = calculate_number_of_partitions(number_of_requests, number_of_workers)
+    partitions = calculate_number_of_partitions(requests_list["count"], number_of_workers)
     logger.info(f"Using {partitions} partitions to repartition the RDD.")
 
-    tascomi_responses = retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions)
+    tascomi_responses = retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list["requests"], partitions)
 else:
     logger.info("No requests, exiting job")
 
