@@ -118,3 +118,9 @@ variable "trigger_enabled" {
   type        = bool
   default     = true
 }
+
+variable "glue_role_arn" {
+  description = "Glue Role ARN that the job will use to execute"
+  type        = string
+  default     = null
+}
