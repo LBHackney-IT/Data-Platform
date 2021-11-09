@@ -65,3 +65,25 @@ module "manually_uploaded_parking_data_to_raw" {
     })
   }
 }
+
+      
+ module "glue_module_test_housing_repairs" {
+  source = "../modules/aws-glue-job"
+
+  count = local.is_live_environment ? 1 : 0
+
+  department             = module.department_housing_repairs
+  job_name               = "${local.short_identifier_prefix}Housing Repairs Glue test"
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-enable"
+    "--s3_bucket_target"    = "s3://${module.raw_zone.bucket_id}/housing_repairs/test"
+    "--s3_bucket_source"    = "s3://${module.raw_zone.bucket_id}/housing_repairs/repairs-alpha-track"
+    "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+    
+    
+  script_name     = "glue_module_test.py"
+  trigger_enabled = false
+
+}
