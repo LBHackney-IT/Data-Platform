@@ -1,6 +1,6 @@
 locals {
   s3_object_tags = { for k, v in var.department.tags : k => v if k != "PlatformDepartment" }
-  object_key     = "scripts/${var.department.identifier}/${var.script_name}.py"
+  object_key     = "scripts/${var.department.identifier}/${var.data_cleaning_script_name}.py"
 }
 
 resource "aws_s3_bucket_object" "housing_repairs_repairs_cleaning_script" {
