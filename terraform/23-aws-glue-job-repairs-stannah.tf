@@ -21,9 +21,9 @@ module "housing_repairs_stannah" {
   trusted_zone_bucket_id             = module.trusted_zone.bucket_id
 
   data_cleaning_script_name = "repairs_stannah_cleaning"
-  source_catalog_table     = "housing_repairs_repairs_stannah"
-  trigger_crawler_name     = module.repairs_stannah[0].crawler_name
-  workflow_name            = module.repairs_stannah[0].workflow_name
-  dataset_name             = "repairs-stannah"
-  match_to_property_shell  = "forbid"
+  source_catalog_table      = "housing_repairs_repairs_stannah"
+  trigger_crawler_name      = module.repairs_stannah[0].crawler_name
+  workflow_name             = module.repairs_stannah[0].workflow_name
+  dataset_name              = "repairs-stannah"
+  match_to_property_shell   = "forbid"
 }

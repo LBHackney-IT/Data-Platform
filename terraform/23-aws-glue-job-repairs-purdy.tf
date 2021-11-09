@@ -21,9 +21,9 @@ module "housing_repairs_purdy" {
   trusted_zone_bucket_id             = module.trusted_zone.bucket_id
 
   data_cleaning_script_name = "repairs_purdy_cleaning"
-  source_catalog_table     = "housing_repairs_repairs_purdy"
-  trigger_crawler_name     = module.repairs_purdy[0].crawler_name
-  workflow_name            = module.repairs_purdy[0].workflow_name
-  dataset_name             = "repairs-purdy"
-  match_to_property_shell  = "allow"
+  source_catalog_table      = "housing_repairs_repairs_purdy"
+  trigger_crawler_name      = module.repairs_purdy[0].crawler_name
+  workflow_name             = module.repairs_purdy[0].workflow_name
+  dataset_name              = "repairs-purdy"
+  match_to_property_shell   = "allow"
 }

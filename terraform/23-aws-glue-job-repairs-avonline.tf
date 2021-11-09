@@ -21,9 +21,9 @@ module "housing_repairs_avonline" {
   trusted_zone_bucket_id             = module.trusted_zone.bucket_id
 
   data_cleaning_script_name = "repairs_avonline_cleaning"
-  source_catalog_table     = "housing_repairs_repairs_avonline"
-  trigger_crawler_name     = module.repairs_avonline[0].crawler_name
-  workflow_name            = module.repairs_avonline[0].workflow_name
-  dataset_name             = "repairs-avonline"
-  match_to_property_shell  = "forbid"
+  source_catalog_table      = "housing_repairs_repairs_avonline"
+  trigger_crawler_name      = module.repairs_avonline[0].crawler_name
+  workflow_name             = module.repairs_avonline[0].workflow_name
+  dataset_name              = "repairs-avonline"
+  match_to_property_shell   = "forbid"
 }
