@@ -1,13 +1,3 @@
-resource "aws_s3_bucket_object" "housing_repairs_repairs_alpha_track_cleaning_script" {
-  tags = module.tags.values
-
-  bucket = module.glue_scripts.bucket_id
-  key    = "scripts/repairs_alpha_track_cleaning.py"
-  acl    = "private"
-  source = "../scripts/repairs_alpha_track_cleaning.py"
-  etag   = filemd5("../scripts/repairs_alpha_track_cleaning.py")
-}
-
 module "housing_repairs_alphatrack" {
   count = local.is_live_environment ? 1 : 0
 
@@ -30,7 +20,7 @@ module "housing_repairs_alphatrack" {
   address_matching_script_key        = aws_s3_bucket_object.levenshtein_address_matching.key
   trusted_zone_bucket_id             = module.trusted_zone.bucket_id
 
-  data_cleaning_script_key = aws_s3_bucket_object.housing_repairs_repairs_alpha_track_cleaning_script.key
+  data_cleaning_script_name = "repairs_alpha_track_cleaning"
   source_catalog_table     = "housing_repairs_repairs_alpha_track"
   trigger_crawler_name     = module.repairs_alpha_track[0].crawler_name
   workflow_name            = module.repairs_alpha_track[0].workflow_name

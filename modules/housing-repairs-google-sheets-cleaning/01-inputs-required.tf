@@ -3,8 +3,8 @@ variable "identifier_prefix" {
   type        = string
 }
 
-variable "data_cleaning_script_key" {
-  description = "Key of the location of the data cleaning script"
+variable "data_cleaning_script_name" {
+  description = "Name of the data cleaning script file"
   type        = string
 }
 
