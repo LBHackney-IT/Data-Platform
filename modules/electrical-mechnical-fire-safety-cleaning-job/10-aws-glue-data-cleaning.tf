@@ -1,3 +1,18 @@
+locals {
+  s3_object_tags = { for k, v in var.department.tags : k => v if k != "PlatformDepartment" }
+  object_key     = "scripts/${var.department.identifier}/${var.script_name}.py"
+}
+
+resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_data_cleaning_script" {
+  tags = local.s3_object_tags
+
+  bucket = var.glue_scripts_bucket_id
+  key    = local.object_key
+  acl    = "private"
+  source = "../${local.object_key}"
+  etag   = filemd5("../${local.object_key}")
+}
+
 module "housing_repairs_elec_mech_fire_cleaning" {
   source = "../aws-glue-job"
 
@@ -14,7 +29,7 @@ module "housing_repairs_elec_mech_fire_cleaning" {
     "--extra-jars"                       = var.deequ_jar_file_path
   }
   workflow_name        = var.worksheet_resource.workflow_name
-  script_name          = var.script_key
+  script_name          = aws_s3_bucket_object.housing_repairs_elec_mech_fire_data_cleaning_script.key
   triggered_by_crawler = var.worksheet_resource.crawler_name
   crawler_details = {
     database_name      = local.refined_zone_catalog_database_name

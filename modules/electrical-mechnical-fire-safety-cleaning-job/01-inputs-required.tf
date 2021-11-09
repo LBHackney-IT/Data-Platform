@@ -14,8 +14,8 @@ variable "department" {
   })
 }
 
-variable "script_key" {
-  description = "Key of the script"
+variable "script_name" {
+  description = "Name of the script file"
   type        = string
 }
 
