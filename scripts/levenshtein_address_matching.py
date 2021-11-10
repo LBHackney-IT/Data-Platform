@@ -14,6 +14,8 @@ from helpers import get_glue_env_var, PARTITION_KEYS
 PARTITION_KEYS.append("data_source")
 
 glueContext = GlueContext(SparkContext.getOrCreate())
+glue_context = GlueContext(sc)
+logger = glue_context.get_logger()
 job = Job(glueContext)
 
 
@@ -55,7 +57,8 @@ query_addresses_ddf = glueContext.create_dynamic_frame.from_catalog(
 
 query_addresses = query_addresses_ddf.toDF()
 query_addresses = get_latest_partitions(query_addresses)
-query_addresses.count()
+logger.info(f"Getting latest partitions query addresses from catalog: {query_addresses}")
+logger.info(f"number of query addresses records: {query_addresses.count()}")
 
 query_addresses_sample = query_addresses.filter(
     "concatenated_string_to_match != ''")
@@ -79,6 +82,7 @@ target_addresses_ddf = glueContext.create_dynamic_frame.from_catalog(
 
 target_addresses = target_addresses_ddf.toDF()
 target_addresses = get_latest_partitions(target_addresses)
+logger.info(f"Getting addresses API data latest partitions: {target_addresses}, records: {target_addresses.count()}")
 
 # set property shell preferences
 if match_to_property_shell == 'force': 
@@ -138,8 +142,8 @@ cross_compare = cross_compare.withColumn("levenshtein_medium", F.levenshtein(
 cross_compare = cross_compare.withColumn("levenshtein_10char", F.levenshtein(
     F.substring(F.col("query_address"), 1, 10), F.substring(F.col("target_address"), 1, 10)))
 
-
-
+logger.info(f"Cross compare query addresses and target addresses: {cross_compare}")
+logger.info(f"Cross compare records count: {cross_compare.count()}")
 
 # ROUND 0 - look for perfect
 perfectFull = cross_compare.filter("levenshtein = 0").dropDuplicates(['prinx'])
@@ -184,6 +188,9 @@ perfectMatch = perfectFull.union(perfectShort).union(
     perfectMedium).union(perfect10char)
 perfectMatch = perfectMatch.withColumn("round", F.lit("round 0"))
 
+logger.info(f"Round 0 perfect match: {perfectMatch}")
+logger.info(f"Round 0 perfect match record count: {perfectMatch.count()}")
+
 # ROUND 1 - now look at imperfect with same postcode
 
 cross_compare = cross_compare\
@@ -202,7 +209,8 @@ bestMatch_round1 = bestMatch_round1.withColumn("round", F.lit("round 1"))
 
 bestMatch_round1 = bestMatch_round1.select("prinx", "query_address", F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type", "round")
 
-
+logger.info(f"Round 1 best match: {bestMatch_round1}")
+logger.info(f"Round 1 best match record count: {bestMatch_round1.count()}")
 # ROUND 2
 
 cross_compare = cross_compare.join(bestMatch_round1, "prinx", "left_anti")
@@ -218,6 +226,8 @@ bestMatch_round2 = bestMatch_round2.withColumn(
 bestMatch_round2 = bestMatch_round2.withColumn("round", F.lit("round 2"))
 bestMatch_round2 = bestMatch_round2.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
 
+logger.info(f"Round 2 best match: {bestMatch_round2}")
+logger.info(f"Round 2 best match record count: {bestMatch_round2.count()}")
 
 # ROUND 3
 
@@ -235,6 +245,8 @@ bestMatch_round3 = bestMatch_round3.withColumn(
 bestMatch_round3 = bestMatch_round3.withColumn("round", F.lit("round 3"))
 bestMatch_round3 = bestMatch_round3.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
 
+logger.info(f"Round 3 best match: {bestMatch_round3}")
+logger.info(f"Round 3 best match record count: {bestMatch_round3.count()}")
 
 # Prepare rounds 4 to 7: take all the unmatched, allow mismatched postcodes
 cross_with_any_postcode = query_concat\
@@ -268,6 +280,8 @@ bestMatch_round4 = bestMatch_round4.withColumn("round", F.lit("round 4"))
 
 bestMatch_round4 = bestMatch_round4.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
 
+logger.info(f"Round 4 best match: {bestMatch_round4}")
+logger.info(f"Round 4 best match record count: {bestMatch_round4.count()}")
 
 # ROUND 5
 
@@ -286,6 +300,8 @@ bestMatch_round5 = bestMatch_round5.withColumn("round", F.lit("round 5"))
 
 bestMatch_round5 = bestMatch_round5.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
 
+logger.info(f"Round 5 best match: {bestMatch_round5}")
+logger.info(f"Round 5 best match record count: {bestMatch_round5.count()}")
 
 # ROUND 6
 
@@ -305,7 +321,8 @@ bestMatch_round6 = bestMatch_round6.withColumn("round", F.lit("round 6"))
 
 bestMatch_round6 = bestMatch_round6.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
 
-
+logger.info(f"Round 6 best match: {bestMatch_round6}")
+logger.info(f"Round 6 best match record count: {bestMatch_round6.count()}")
 # ROUND 7 - last chance
 
 # take all the rest and mark as unmatched
@@ -332,19 +349,26 @@ bestMatch_lastChance = bestMatch_lastChance.withColumn("match_type", udf_matchty
 bestMatch_lastChance = bestMatch_lastChance.withColumn("round", F.lit("last chance"))
 bestMatch_lastChance = bestMatch_lastChance.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
 
+logger.info(f"Round 7 best match: {bestMatch_lastChance}")
+logger.info(f"Round 7 best match record count: {bestMatch_lastChance.count()}")
 
 # PUT RESULTS OF ALL ROUNDS TOGETHER
 
 all_best_match = perfectMatch.union(bestMatch_round1).union(bestMatch_round2).union(bestMatch_round3).union(
     bestMatch_round4).union(bestMatch_round5).union(bestMatch_round6).union(bestMatch_lastChance)
 
+logger.info(f"all round results together: {all_best_match}")
+logger.info(f"all round results together: {all_best_match.count()}")
 # JOIN MATCH RESULTS WITH INITIAL DATASET
 
 matchingResults = query_addresses.join(all_best_match, "prinx", "left")
+logger.info(f"joined match results with initial dataset: {matchingResults}")
+logger.info(f"joined match results with initial dataset: {matchingResults.count()}")
 
 resultDataFrame = DynamicFrame.fromDF(
     matchingResults, glueContext, "resultDataFrame")
 
+logger.info(f"writing result dataframe {resultDataFrame}")
 parquetData = glueContext.write_dynamic_frame.from_options(
     frame=resultDataFrame,
     connection_type="s3",
