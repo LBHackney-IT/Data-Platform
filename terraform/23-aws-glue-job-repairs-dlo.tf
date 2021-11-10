@@ -101,6 +101,7 @@ module "repairs_dlo_levenshtein_address_matching" {
     "--target_destination"          = "s3://${module.trusted_zone.bucket_id}/housing-repairs/repairs/"
     "--TempDir"                     = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
     "--extra-py-files"              = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--enable-continuous-cloudwatch-log" = "true"
   }
   script_name                    = aws_s3_bucket_object.levenshtein_address_matching.key
   workflow_name                  = module.repairs_dlo[0].workflow_name
