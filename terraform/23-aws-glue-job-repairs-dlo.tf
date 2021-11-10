@@ -21,10 +21,11 @@ module "housing_repairs_dlo_cleaning_job" {
     "--TempDir"                          = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
   }
-  script_name            = aws_s3_bucket_object.housing_repairs_dlo_cleaning_script.key
-  workflow_name          = module.repairs_dlo[0].workflow_name
-  triggered_by_crawler   = module.repairs_dlo[0].crawler_name
-  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  script_name                    = aws_s3_bucket_object.housing_repairs_dlo_cleaning_script.key
+  workflow_name                  = module.repairs_dlo[0].workflow_name
+  triggered_by_crawler           = module.repairs_dlo[0].crawler_name
+  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
+  number_of_workers_for_glue_job = 12
   crawler_details = {
     table_prefix       = "housing_repairs_repairs_dlo_"
     database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
