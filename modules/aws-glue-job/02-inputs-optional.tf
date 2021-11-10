@@ -86,8 +86,8 @@ variable "number_of_workers_for_glue_job" {
   default     = 2
 
   validation {
-    condition     = var.number_of_workers_for_glue_job >= 2 && var.number_of_workers_for_glue_job < 12
-    error_message = "Number of workers should be greater than or equal to 2 and less than 12."
+    condition     = var.number_of_workers_for_glue_job >= 2 && var.number_of_workers_for_glue_job <= 16
+    error_message = "Number of workers should be greater than or equal to 2 and less than or equal to 16."
   }
 }
 

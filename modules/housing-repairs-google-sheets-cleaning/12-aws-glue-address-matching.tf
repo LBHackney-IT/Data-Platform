@@ -14,7 +14,7 @@ module "housing_repairs_google_sheets_address_matching" {
     "--match_to_property_shell"     = var.match_to_property_shell
   }
   glue_job_worker_type           = "G.1X"
-  number_of_workers_for_glue_job = 6
+  number_of_workers_for_glue_job = var.number_of_workers_for_glue_job
   script_name                    = var.address_matching_script_key
   workflow_name                  = var.workflow_name
   triggered_by_crawler           = module.housing_repairs_google_sheets_address_cleaning.crawler_name

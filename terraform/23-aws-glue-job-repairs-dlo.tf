@@ -107,5 +107,5 @@ module "repairs_dlo_levenshtein_address_matching" {
   triggered_by_crawler           = module.get_uprn_from_uhref_job[0].crawler_name
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_job_worker_type           = "G.1X"
-  number_of_workers_for_glue_job = 6
+  number_of_workers_for_glue_job = 12
 }
