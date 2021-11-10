@@ -1,13 +1,3 @@
-resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_electrical_supplies_cleaning_script" {
-  tags = module.tags.values
-
-  bucket = module.glue_scripts.bucket_id
-  key    = "scripts/elec_mech_fire_electrical_supplies_cleaning.py"
-  acl    = "private"
-  source = "../scripts/elec_mech_fire_electrical_supplies_cleaning.py"
-  etag   = filemd5("../scripts/elec_mech_fire_electrical_supplies_cleaning.py")
-}
-
 module "electrical_supplies" {
   count = local.is_live_environment ? 1 : 0
 
@@ -16,7 +6,7 @@ module "electrical_supplies" {
   short_identifier_prefix      = local.short_identifier_prefix
   identifier_prefix            = local.identifier_prefix
   department                   = module.department_housing_repairs
-  script_key                   = aws_s3_bucket_object.housing_repairs_elec_mech_fire_electrical_supplies_cleaning_script.key
+  script_name                  = "elec_mech_fire_electrical_supplies_cleaning"
   glue_scripts_bucket_id       = module.glue_scripts.bucket_id
   glue_role_arn                = aws_iam_role.glue_role.arn
   glue_crawler_excluded_blobs  = local.glue_crawler_excluded_blobs
