@@ -4,8 +4,8 @@ resource "aws_s3_bucket_object" "google_sheets_import_script" {
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/google_sheets_import.py"
   acl    = "private"
-  source = "../scripts/google_sheets_import.py"
-  etag   = filemd5("../scripts/google_sheets_import.py")
+  source = "../scripts/jobs/google_sheets_import.py"
+  etag   = filemd5("../scripts/jobs/google_sheets_import.py")
 }
 
 resource "aws_s3_bucket_object" "address_matching" {
@@ -14,8 +14,8 @@ resource "aws_s3_bucket_object" "address_matching" {
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/address_matching.py"
   acl    = "private"
-  source = "../scripts/address_matching.py"
-  etag   = filemd5("../scripts/address_matching.py")
+  source = "../scripts/jobs/address_matching.py"
+  etag   = filemd5("../scripts/jobs/address_matching.py")
 }
 
 resource "aws_s3_bucket_object" "levenshtein_address_matching" {
@@ -24,8 +24,8 @@ resource "aws_s3_bucket_object" "levenshtein_address_matching" {
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/levenshtein_address_matching.py"
   acl    = "private"
-  source = "../scripts/levenshtein_address_matching.py"
-  etag   = filemd5("../scripts/levenshtein_address_matching.py")
+  source = "../scripts/jobs/levenshtein_address_matching.py"
+  etag   = filemd5("../scripts/jobs/levenshtein_address_matching.py")
 }
 
 resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
@@ -34,8 +34,8 @@ resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/copy_manually_uploaded_csv_data_to_raw.py"
   acl    = "private"
-  source = "../scripts/copy_manually_uploaded_csv_data_to_raw.py"
-  etag   = filemd5("../scripts/copy_manually_uploaded_csv_data_to_raw.py")
+  source = "../scripts/jobs/copy_manually_uploaded_csv_data_to_raw.py"
+  etag   = filemd5("../scripts/jobs/copy_manually_uploaded_csv_data_to_raw.py")
 }
 
 resource "aws_s3_bucket_object" "address_cleaning" {
@@ -44,8 +44,8 @@ resource "aws_s3_bucket_object" "address_cleaning" {
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/address_cleaning.py"
   acl    = "private"
-  source = "../scripts/address_cleaning.py"
-  etag   = filemd5("../scripts/address_cleaning.py")
+  source = "../scripts/jobs/address_cleaning.py"
+  etag   = filemd5("../scripts/jobs/address_cleaning.py")
 }
 
 resource "aws_s3_bucket_object" "helpers" {
@@ -54,8 +54,8 @@ resource "aws_s3_bucket_object" "helpers" {
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/helpers.py"
   acl    = "private"
-  source = "../scripts/helpers.py"
-  etag   = filemd5("../scripts/helpers.py")
+  source = "../scripts/jobs/helpers/helpers.py"
+  etag   = filemd5("../scripts/jobs/helpers/helpers.py")
 }
 
 resource "aws_s3_bucket_object" "jars" {
@@ -92,10 +92,10 @@ resource "aws_s3_bucket_object" "repairs_cleaning_helpers" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/housing-repairs/repairs_cleaning_helpers.py"
+  key    = "scripts/housing_repairs/repairs_cleaning_helpers.py"
   acl    = "private"
-  source = "../scripts/housing-repairs/repairs_cleaning_helpers.py"
-  etag   = filemd5("../scripts/housing-repairs/repairs_cleaning_helpers.py")
+  source = "../scripts/jobs/helpers/repairs.py"
+  etag   = filemd5("../scripts/jobs/helpers/repairs.py")
 }
 
 resource "aws_s3_bucket_object" "xlsx_import_script" {
@@ -104,18 +104,18 @@ resource "aws_s3_bucket_object" "xlsx_import_script" {
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/xlsx_import.py"
   acl    = "private"
-  source = "../scripts/xlsx_import.py"
-  etag   = filemd5("../scripts/xlsx_import.py")
+  source = "../scripts/jobs/xlsx_import.py"
+  etag   = filemd5("../scripts/jobs/xlsx_import.py")
 }
 
 resource "aws_s3_bucket_object" "get_uprn_from_uhref" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/get_uprn_from_uhref.py"
+  key    = "scripts/housing_repairs/get_uprn_from_uhref.py"
   acl    = "private"
-  source = "../scripts/get_uprn_from_uhref.py"
-  etag   = filemd5("../scripts/get_uprn_from_uhref.py")
+  source = "../scripts/jobs/housing_repairs/get_uprn_from_uhref.py"
+  etag   = filemd5("../scripts/jobs/housing_repairs/get_uprn_from_uhref.py")
 }
 
 resource "aws_s3_bucket_object" "copy_liberator_landing_to_raw" {
@@ -124,7 +124,7 @@ resource "aws_s3_bucket_object" "copy_liberator_landing_to_raw" {
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/copy_liberator_landing_to_raw.py"
   acl    = "private"
-  source = "../scripts/copy_liberator_landing_to_raw.py"
-  etag   = filemd5("../scripts/copy_liberator_landing_to_raw.py")
+  source = "../scripts/jobs/copy_liberator_landing_to_raw.py"
+  etag   = filemd5("../scripts/jobs/copy_liberator_landing_to_raw.py")
 }
 

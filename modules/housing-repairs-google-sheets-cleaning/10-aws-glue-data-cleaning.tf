@@ -1,16 +1,16 @@
 locals {
   s3_object_tags = { for k, v in var.department.tags : k => v if k != "PlatformDepartment" }
-  object_key     = "scripts/${var.department.identifier}/${var.data_cleaning_script_name}.py"
+  object_key     = "${var.department.identifier_snake_case}/${var.data_cleaning_script_name}.py"
 }
 
 resource "aws_s3_bucket_object" "housing_repairs_repairs_cleaning_script" {
   tags = local.s3_object_tags
 
   bucket = var.glue_scripts_bucket_id
-  key    = local.object_key
+  key    = "scripts/${local.object_key}"
   acl    = "private"
-  source = "../${local.object_key}"
-  etag   = filemd5("../${local.object_key}")
+  source = "../scripts/jobs/${local.object_key}"
+  etag   = filemd5("../scripts/jobs/${local.object_key}")
 }
 
 module "housing_repairs_google_sheets_cleaning" {
