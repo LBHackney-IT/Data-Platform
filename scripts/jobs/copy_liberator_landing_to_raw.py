@@ -8,7 +8,7 @@ from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 
-from jobs.helpers.helpers import get_glue_env_var, add_timestamp_column, PARTITION_KEYS
+from helpers import get_glue_env_var, add_timestamp_column, PARTITION_KEYS
 
 ## @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])

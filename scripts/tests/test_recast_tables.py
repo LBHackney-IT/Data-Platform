@@ -5,8 +5,8 @@ from datetime import datetime, date
 
 class TestRecastTables:
 
-    column_type_dictionary_path =  "./tests/stubs/column_type_dictionary.json"
-    column_type_dictionary_partial_path =  "./tests/stubs/column_type_dictionary_partial.json"
+    column_type_dictionary_path =  "./stubs/column_type_dictionary.json"
+    column_type_dictionary_partial_path =  "./stubs/column_type_dictionary_partial.json"
     def test_castColumns_timestamp(self, spark):
         input_data = [{'submit_date': '2021-09-24 08:58:47'}]
         expected = [{'submit_date': datetime(2021, 9, 24, 8, 58, 47)}]

@@ -1,15 +1,20 @@
-from jobs.housing_repairs.repairs_avonline_cleaning import clean_avonline_repairs
+from repairs_avonline_cleaning import clean_avonline_repairs
 from pyspark.sql import Row
-from tests.helpers import assertions
+from unittest.case import TestCase
+import pytest
 
 class TestAvonlineCleaning:
     def test_title_case_conversion(self, spark):
         response = self.clean_avonline_repairs(spark, [{'contact_information': 'joe bloggs'}])
 
-        assertions.dictionaryContains({'contact_information': 'Joe Bloggs'}, response[0])
+        self.assertDictionaryContains({'contact_information': 'Joe Bloggs'}, response[0])
+
+    def assertDictionaryContains(self, expected, actual):
+        TestCase().assertEqual(actual, {**actual,  **expected})
 
     def clean_avonline_repairs(self, spark, repairs):
         repairs_with_imports = [{'import_year': '2021', 'import_month': '08', 'import_day': '19', **i} for i in repairs]
+        logger = DummyLogger()
         query_repairs = spark.createDataFrame(
             spark.sparkContext.parallelize(
                 [Row(**i) for i in repairs_with_imports]
