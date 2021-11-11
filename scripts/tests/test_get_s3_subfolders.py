@@ -2,7 +2,7 @@ from unittest import TestCase
 import botocore.session
 from botocore.stub import Stubber
 
-from jobs.helpers import get_s3_subfolders
+from jobs.helpers.helpers import get_s3_subfolders
 
 
 generic_list_objects_response_keys = {
