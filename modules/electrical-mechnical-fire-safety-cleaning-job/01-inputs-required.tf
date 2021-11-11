@@ -7,7 +7,6 @@ variable "department" {
   description = "The department with all its properties"
   type = object({
     identifier                         = string
-    identifier_snake_case              = string
     glue_role_arn                      = string
     refined_zone_catalog_database_name = string
     raw_zone_catalog_database_name     = string

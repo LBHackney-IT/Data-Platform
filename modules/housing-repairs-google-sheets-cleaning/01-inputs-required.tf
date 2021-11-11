@@ -108,9 +108,8 @@ variable "match_to_property_shell" {
 variable "department" {
   description = "The department with all its properties"
   type = object({
-    identifier            = string
-    glue_role_arn         = string
-    tags                  = map(string)
-    identifier_snake_case = string
+    identifier    = string
+    glue_role_arn = string
+    tags          = map(string)
   })
 }

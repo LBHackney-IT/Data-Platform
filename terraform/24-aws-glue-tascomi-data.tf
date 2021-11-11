@@ -44,10 +44,10 @@ resource "aws_s3_bucket_object" "ingest_tascomi_data" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/planning/tascomi_api_ingestion.py"
+  key    = "scripts/tascomi_api_ingestion.py"
   acl    = "private"
-  source = "../scripts/jobs/planning/tascomi_api_ingestion.py"
-  etag   = filemd5("../scripts/jobs/planning/tascomi_api_ingestion.py")
+  source = "../scripts/tascomi_api_ingestion.py"
+  etag   = filemd5("../scripts/tascomi_api_ingestion.py")
 }
 
 module "ingest_tascomi_data" {
@@ -126,10 +126,10 @@ resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
 resource "aws_s3_bucket_object" "parse_tascomi_tables_script" {
   tags   = module.tags.values
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/planning/tascomi_parse_tables.py"
+  key    = "scripts/tascomi_parse_tables.py"
   acl    = "private"
-  source = "../scripts/jobs/planning/tascomi_parse_tables.py"
-  etag   = filemd5("../scripts/jobs/planning/tascomi_parse_tables.py")
+  source = "../scripts/tascomi_parse_tables.py"
+  etag   = filemd5("../scripts/tascomi_parse_tables.py")
 }
 
 module "parse_tascomi_tables" {
@@ -174,8 +174,8 @@ resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/planning/tascomi-column-type-dictionary.json"
   acl    = "private"
-  source = "../scripts/jobs/planning/tascomi-column-type-dictionary.json"
-  etag   = filemd5("../scripts/jobs/planning/tascomi-column-type-dictionary.json")
+  source = "../scripts/tascomi-column-type-dictionary.json"
+  etag   = filemd5("../scripts/tascomi-column-type-dictionary.json")
 }
 
 resource "aws_s3_bucket_object" "recast_tables_script" {
@@ -183,8 +183,8 @@ resource "aws_s3_bucket_object" "recast_tables_script" {
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/recast_tables.py"
   acl    = "private"
-  source = "../scripts/jobs/recast_tables.py"
-  etag   = filemd5("../scripts/jobs/recast_tables.py")
+  source = "../scripts/recast_tables.py"
+  etag   = filemd5("../scripts/recast_tables.py")
 }
 
 module "recast_tascomi_tables" {
