@@ -14,8 +14,7 @@ from helpers import get_glue_env_var, PARTITION_KEYS
 PARTITION_KEYS.append("data_source")
 
 glueContext = GlueContext(SparkContext.getOrCreate())
-glue_context = GlueContext(sc)
-logger = glue_context.get_logger()
+logger = glueContext.get_logger()
 job = Job(glueContext)
 
 
