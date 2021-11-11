@@ -7,7 +7,7 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql import SQLContext
 
-from jobs.helpers.helpers import get_glue_env_var, add_import_time_columns, clean_column_names, PARTITION_KEYS
+from helpers import get_glue_env_var, normalize_column_name, add_import_time_columns, clean_column_names, PARTITION_KEYS
 
 s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 s3_bucket_target = get_glue_env_var('s3_bucket_target', '')

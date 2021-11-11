@@ -1,6 +1,6 @@
 import pytest
 from pyspark.sql import Row
-from jobs.helpers.helpers import cancel_job_if_failing_quality_checks
+from jobs.helpers import cancel_job_if_failing_quality_checks
 
 class TestCancelJobIfFailingQualityChecks:
   def test_all_checks_passed(self, spark):

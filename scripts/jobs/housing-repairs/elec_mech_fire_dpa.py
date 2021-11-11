@@ -10,8 +10,8 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 
-from jobs.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from jobs.helpers.repairs import clean_column_names, map_repair_priority
+from helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from repairs_cleaning_helpers import clean_column_names, map_repair_priority
 
 
 def clean_mech_fire_data(dataframe):

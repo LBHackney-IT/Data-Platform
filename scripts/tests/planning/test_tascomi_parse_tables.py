@@ -1,4 +1,4 @@
-from jobs.helpers.helpers import parse_json_into_dataframe
+from helpers import parse_json_into_dataframe
 from pyspark.sql import Row
 from datetime import datetime
 from unittest import TestCase
