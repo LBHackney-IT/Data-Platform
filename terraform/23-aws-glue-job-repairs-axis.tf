@@ -12,7 +12,6 @@ module "housing_repairs_axis" {
   glue_temp_storage_bucket_url       = module.glue_temp_storage.bucket_url
   refined_zone_bucket_id             = module.refined_zone.bucket_id
   helper_script_key                  = aws_s3_bucket_object.helpers.key
-  cleaning_helper_script_key         = aws_s3_bucket_object.repairs_cleaning_helpers.key
   catalog_database                   = module.department_housing_repairs.raw_zone_catalog_database_name
   refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
   address_cleaning_script_key        = aws_s3_bucket_object.address_cleaning.key

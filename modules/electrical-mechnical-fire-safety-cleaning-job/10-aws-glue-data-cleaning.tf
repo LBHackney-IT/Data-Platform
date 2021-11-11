@@ -25,7 +25,7 @@ module "housing_repairs_elec_mech_fire_cleaning" {
     "--source_catalog_table"             = var.worksheet_resource.catalog_table
     "--deequ_metrics_location"           = "s3://${var.refined_zone_bucket_id}/quality-metrics/department=${var.department.identifier}/dataset=${var.dataset_name}-cleaned/deequ-metrics.json"
     "--TempDir"                          = "${var.glue_temp_storage_bucket_url}/${var.department.identifier}/"
-    "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.cleaning_helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.pydeequ_zip_key}"
+    "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.pydeequ_zip_key}"
     "--extra-jars"                       = var.deequ_jar_file_path
   }
   workflow_name        = var.worksheet_resource.workflow_name

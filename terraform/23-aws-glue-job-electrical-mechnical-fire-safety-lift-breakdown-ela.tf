@@ -15,7 +15,6 @@ module "lift_breakdown_el" {
   helper_script_key            = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key              = aws_s3_bucket_object.pydeequ.key
   deequ_jar_file_path          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.deeque_jar.key}"
-  cleaning_helper_script_key   = aws_s3_bucket_object.repairs_cleaning_helpers.key
   worksheet_resource           = module.repairs_fire_alarm_aov[0].worksheet_resources["lift-breakdown---ela"]
   dataset_name                 = "lift-breakdown-ela"
   address_cleaning_script_key  = aws_s3_bucket_object.address_cleaning.key

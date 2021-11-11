@@ -13,7 +13,6 @@ module "housing_repairs_herts_heritage" {
   glue_temp_storage_bucket_url = module.glue_temp_storage.bucket_url
   refined_zone_bucket_id       = module.refined_zone.bucket_id
   helper_script_key            = aws_s3_bucket_object.helpers.key
-  cleaning_helper_script_key   = aws_s3_bucket_object.repairs_cleaning_helpers.key
   catalog_database             = module.department_housing_repairs.raw_zone_catalog_database_name
   addresses_api_data_catalog   = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
   address_matching_script_key  = aws_s3_bucket_object.levenshtein_address_matching.key

@@ -1,0 +1,4 @@
+pytest-watch
+freezegun
+setuptools
+wheel
