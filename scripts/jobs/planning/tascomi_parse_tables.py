@@ -8,7 +8,7 @@ from pyspark.sql.window import Window
 from pyspark.sql.functions import col, max, from_json
 from pyspark.sql import SparkSession
 
-from helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog
+from jobs.helpers.helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog
 
 
 def get_max_import_date(dataframe, column, date):

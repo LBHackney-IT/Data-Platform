@@ -34,9 +34,3 @@ class TestAvonlineCleaning:
     #     response = self.clean_addresses(spark, [{'address': input_postcode}], 'address')
     #
     #     self.assertDictionaryContains({'postcode': expected_postcode}, response[0])
-
-
-
-class DummyLogger:
-    def info(self, message):
-        return
