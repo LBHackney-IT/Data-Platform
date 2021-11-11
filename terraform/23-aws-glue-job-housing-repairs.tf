@@ -36,3 +36,20 @@ module "address_cleaning_glue_job" {
   }
   script_name = aws_s3_bucket_object.address_cleaning.key
 }
+
+module "testing_glue_module_housing_repairs" {
+  source = "../modules/aws-glue-job"
+
+  count = local.is_live_environment ? 1 : 0
+
+  department             = module.department_housing_repairs
+  job_name               = "${local.short_identifier_prefix}housing repairs testing glue module"
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  job_parameters = {
+    "--TempDir"        = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
+    "--extra-py-files" = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
+    "--s3_bucket_target" = "s3://${module.raw_zone.bucket_id}/housing-repairs/test-folder/"
+  }
+  script_name = "glue_module_test"
+  job_description = "A test job"
+}
