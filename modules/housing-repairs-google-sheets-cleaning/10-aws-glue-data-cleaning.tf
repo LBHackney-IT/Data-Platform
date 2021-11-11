@@ -23,7 +23,7 @@ module "housing_repairs_google_sheets_cleaning" {
     "--source_catalog_table"             = var.source_catalog_table
     "--cleaned_repairs_s3_bucket_target" = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/cleaned/"
     "--TempDir"                          = "${var.glue_temp_storage_bucket_url}/${var.department.identifier}/"
-    "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.cleaning_helper_script_key}"
+    "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
   }
   script_name            = aws_s3_bucket_object.housing_repairs_repairs_cleaning_script.key
   workflow_name          = var.workflow_name

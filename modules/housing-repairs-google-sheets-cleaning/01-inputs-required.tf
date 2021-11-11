@@ -33,11 +33,6 @@ variable "helper_script_key" {
   type        = string
 }
 
-variable "cleaning_helper_script_key" {
-  description = "Cleaning helpers script key"
-  type        = string
-}
-
 variable "glue_crawler_excluded_blobs" {
   description = "A list of blobs to ignore when crawling the job"
   type        = list(string)

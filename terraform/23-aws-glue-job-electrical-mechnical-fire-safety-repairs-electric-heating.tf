@@ -15,7 +15,6 @@ module "electric_heating" {
   helper_script_key            = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key              = aws_s3_bucket_object.pydeequ.key
   deequ_jar_file_path          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.deeque_jar.key}"
-  cleaning_helper_script_key   = aws_s3_bucket_object.repairs_cleaning_helpers.key
   worksheet_resource           = module.repairs_fire_alarm_aov[0].worksheet_resources["electric-heating"]
   dataset_name                 = "electric-heating"
   address_cleaning_script_key  = aws_s3_bucket_object.address_cleaning.key

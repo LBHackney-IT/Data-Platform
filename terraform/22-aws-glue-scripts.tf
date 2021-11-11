@@ -52,10 +52,10 @@ resource "aws_s3_bucket_object" "helpers" {
   tags = module.tags.values
 
   bucket = module.glue_scripts.bucket_id
-  key    = "scripts/helpers.py"
+  key    = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
   acl    = "private"
-  source = "../scripts/jobs/helpers/helpers.py"
-  etag   = filemd5("../scripts/jobs/helpers/helpers.py")
+  source = "../scripts/dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
+  etag   = filemd5("../scripts/dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl")
 }
 
 resource "aws_s3_bucket_object" "jars" {
@@ -86,16 +86,6 @@ resource "aws_s3_bucket_object" "pydeequ" {
   acl    = "private"
   source = "../external-lib/target/pydeequ-1.0.1.zip"
   etag   = filemd5("../external-lib/target/pydeequ-1.0.1.zip")
-}
-
-resource "aws_s3_bucket_object" "repairs_cleaning_helpers" {
-  tags = module.tags.values
-
-  bucket = module.glue_scripts.bucket_id
-  key    = "scripts/housing_repairs/repairs_cleaning_helpers.py"
-  acl    = "private"
-  source = "../scripts/jobs/helpers/repairs.py"
-  etag   = filemd5("../scripts/jobs/helpers/repairs.py")
 }
 
 resource "aws_s3_bucket_object" "xlsx_import_script" {
