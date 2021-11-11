@@ -13,7 +13,7 @@ from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 
 from jobs.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from jobs.helpers.helpers import map_repair_priority 
+from jobs.helpers.repairs import map_repair_priority 
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
