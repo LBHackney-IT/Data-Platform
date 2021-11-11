@@ -3,7 +3,7 @@ from pyspark.sql import Row
 from datetime import datetime
 from unittest import TestCase
 
-from unit_testing_helpers import assertDictionaryContains, DummyLogger
+from tests.helpers import assertions
 
 
 class TestTascomiParsingRefinement:
@@ -28,7 +28,7 @@ class TestTascomiParsingRefinement:
                      'import_datetime': datetime(2021, 9, 16, 13, 10), 'import_timestamp': '1631797859.247579',
                      'import_year': '2021', 'import_month': '09', 'import_day': '16',
                      'import_date': '20210916'}
-        assertDictionaryContains(response[0], expected)
+        assertions.dictionaryContains(response[0], expected)
 
     def parse_json_into_dataframe(self, spark, column, data):
         data_with_imports = [{'page_number': 691,
@@ -37,7 +37,6 @@ class TestTascomiParsingRefinement:
                               'import_datetime': datetime(2021, 9, 16, 13, 10), 'import_timestamp': '1631797859.247579',
                               'import_year': '2021', 'import_month': '09', 'import_day': '16',
                               'import_date': '20210916', **i} for i in data]
-        logger = DummyLogger()
         query_data = spark.createDataFrame(
             spark.sparkContext.parallelize(
                 [Row(**i) for i in data_with_imports]
