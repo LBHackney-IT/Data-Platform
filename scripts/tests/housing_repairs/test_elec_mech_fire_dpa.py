@@ -1,7 +1,7 @@
 from jobs.housing_repairs.elec_mech_fire_dpa import clean_mech_fire_data 
 import datetime
 from pyspark.sql import Row
-from tests.helpers import assertions, dummy_logger
+from tests.helpers import assertions
 
 class TestMechFireDpaCleaning:
     def test_date_conversion(self, spark):
@@ -17,7 +17,6 @@ class TestMechFireDpaCleaning:
 
     def clean_mech_fire_data(self, spark, repairs):
         repairs_with_imports = [{'import_year': '2021', 'import_month': '08', 'import_day': '19','date':datetime.datetime(2002, 1, 10, 0, 0),'order_status':'Y', **i} for i in repairs]
-        logger = dummy_logger.Logger()
         query_repairs = spark.createDataFrame(
             spark.sparkContext.parallelize(
                 [Row(**i) for i in repairs_with_imports]
