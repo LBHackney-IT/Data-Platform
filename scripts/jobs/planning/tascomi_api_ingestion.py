@@ -94,7 +94,7 @@ def get_number_of_pages(resource, query = ""):
     return { 'success': False, 'error_message': error_message }
 
 def get_days_since_last_import(last_import_date):
-    yesterday = datetime.now() - timedelta(days=1)
+    yesterday = datetime.now()
     last_import_datetime = datetime.strptime(last_import_date, "%Y%m%d")
     number_days_to_query = (yesterday - last_import_datetime).days
     days = [ datetime.strftime(yesterday - timedelta(days=day), "%Y-%m-%d") for day in range(1, number_days_to_query + 1)]
@@ -206,48 +206,49 @@ def get_failed_requests(data_frame):
         .where((data_frame.import_api_status_code != '200') & (data_frame.import_api_status_code != '202'))\
         .select(data_frame.page_number.alias("page_number"), data_frame.import_api_url_requested.alias("url"), lit("").alias("body"))
 
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
-sc = SparkContext.getOrCreate()
-glue_context = GlueContext(sc)
-logger = glue_context.get_logger()
-job = Job(glue_context)
-job.init(args['JOB_NAME'], args)
-spark_session = glue_context.spark_session
+if __name__ == "__main__":
+    args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+    sc = SparkContext.getOrCreate()
+    glue_context = GlueContext(sc)
+    logger = glue_context.get_logger()
+    job = Job(glue_context)
+    job.init(args['JOB_NAME'], args)
+    spark_session = glue_context.spark_session
 
-resource = get_glue_env_var('resource', '')
-target_database_name = get_glue_env_var('target_database_name', '')
-public_key = get_secret(get_glue_env_var('public_key_secret_id', ''), "eu-west-2")
-private_key = get_secret(get_glue_env_var('private_key_secret_id', ''), "eu-west-2")
-bucket_target = get_glue_env_var('s3_bucket_target', '')
-prefix = get_glue_env_var('s3_prefix', '')
-s3_target_url = "s3://" + bucket_target + "/" + prefix + resource + "/"
+    resource = get_glue_env_var('resource', '')
+    target_database_name = get_glue_env_var('target_database_name', '')
+    public_key = get_secret(get_glue_env_var('public_key_secret_id', ''), "eu-west-2")
+    private_key = get_secret(get_glue_env_var('private_key_secret_id', ''), "eu-west-2")
+    bucket_target = get_glue_env_var('s3_bucket_target', '')
+    prefix = get_glue_env_var('s3_prefix', '')
+    s3_target_url = "s3://" + bucket_target + "/" + prefix + resource + "/"
 
-if resource == '':
-    raise Exception("--resource value must be defined in the job aruguments")
-logger.info(f"Getting resource {resource}")
+    if resource == '':
+        raise Exception("--resource value must be defined in the job aruguments")
+    logger.info(f"Getting resource {resource}")
 
-api_response_schema = StructType([
-    StructField("response_data", ArrayType(StringType(), True)),
-    StructField("import_api_url_requested", StringType(), True),
-    StructField("import_api_status_code", StringType(), True),
-    StructField("import_exception_thrown", StringType(), True)
-])
-get_tascomi_resource_udf = udf(get_tascomi_resource, api_response_schema)
+    api_response_schema = StructType([
+        StructField("response_data", ArrayType(StringType(), True)),
+        StructField("import_api_url_requested", StringType(), True),
+        StructField("import_api_status_code", StringType(), True),
+        StructField("import_exception_thrown", StringType(), True)
+    ])
+    get_tascomi_resource_udf = udf(get_tascomi_resource, api_response_schema)
 
-RequestRow = Row("page_number", "url", "body")
+    RequestRow = Row("page_number", "url", "body")
 
-last_import_date = get_last_import_date(glue_context, target_database_name, resource)
-logger.info(f"Maximum import date found: {last_import_date}")
+    last_import_date = get_last_import_date(glue_context, target_database_name, resource)
+    logger.info(f"Maximum import date found: {last_import_date}")
 
-requests_list = get_requests(last_import_date, resource, target_database_name)
+    requests_list = get_requests(last_import_date, resource, target_database_name)
 
-if requests_list["count"] > 0:
-    number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
-    partitions = calculate_number_of_partitions(requests_list["count"], number_of_workers)
-    logger.info(f"Using {partitions} partitions to repartition the RDD.")
+    if requests_list["count"] > 0:
+        number_of_workers = int(get_glue_env_var('number_of_workers', '2'))
+        partitions = calculate_number_of_partitions(requests_list["count"], number_of_workers)
+        logger.info(f"Using {partitions} partitions to repartition the RDD.")
 
-    tascomi_responses = retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list["requests"], partitions)
-else:
-    logger.info("No requests, exiting job")
+        tascomi_responses = retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list["requests"], partitions)
+    else:
+        logger.info("No requests, exiting job")
 
-job.commit()
+    job.commit()
