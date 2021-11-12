@@ -15,6 +15,25 @@ variable "job_description" {
   default     = null
 }
 
+variable "script_name" {
+  description = <<EOF
+    Name of the Glue job script file.
+    Must match the name of file holding the glue script in this repository
+    This is required if the script isn't already saved in S3.
+  EOF
+  type        = string
+  default     = null
+}
+
+variable "script_s3_object_key" {
+  description = <<EOF
+    The S3 object key for the glue job script.
+    If the script is not saved in S3 then leave this blank.
+  EOF
+  type        = string
+  default     = null
+}
+
 variable "job_parameters" {
   description = "Optional. Parameters to add to the Glue job"
   type        = map(string)
