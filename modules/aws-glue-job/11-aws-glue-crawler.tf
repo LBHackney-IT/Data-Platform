@@ -3,7 +3,7 @@ resource "aws_glue_crawler" "crawler" {
   tags  = var.department.tags
 
   database_name = var.crawler_details.database_name
-  name          = local.job_name_identifier
+  name          = "${var.department.identifier}-${local.job_name_identifier}"
   role          = var.department.glue_role_arn
   table_prefix  = var.crawler_details.table_prefix
 
