@@ -1,9 +1,10 @@
 variable "department" {
   description = "The department with all its properties"
   type = object({
-    identifier    = string
-    glue_role_arn = string
-    tags          = map(string)
+    identifier_snake_case = string
+    identifier            = string
+    glue_role_arn         = string
+    tags                  = map(string)
     google_service_account = object({
       credentials_secret = object({
         name = string

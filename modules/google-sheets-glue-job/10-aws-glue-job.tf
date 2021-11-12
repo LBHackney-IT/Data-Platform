@@ -23,7 +23,7 @@ module "google_sheet_import" {
   crawler_details = {
     database_name      = var.glue_catalog_database_name
     s3_target_location = local.full_output_path
-    table_prefix       = "${var.department.identifier}_"
+    table_prefix       = "${var.department.identifier_snake_case}_"
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
