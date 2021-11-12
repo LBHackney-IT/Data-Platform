@@ -19,7 +19,7 @@ module "housing_repairs_dlo_cleaning_job" {
     "--source_catalog_table"             = "housing_repairs_repairs_dlo"
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned"
     "--TempDir"                          = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
   script_name            = aws_s3_bucket_object.housing_repairs_dlo_cleaning_script.key
   workflow_name          = module.repairs_dlo[0].workflow_name
@@ -40,7 +40,7 @@ module "housing_repairs_dlo_address_cleaning_job" {
   job_name   = "${local.short_identifier_prefix}DLO Repairs - Address Cleaning"
   job_parameters = {
     "--TempDir"                            = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
-    "--extra-py-files"                     = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.repairs_cleaning_helpers.key}"
+    "--extra-py-files"                     = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--source_catalog_database"            = module.department_housing_repairs.refined_zone_catalog_database_name
     "--source_catalog_table"               = "housing_repairs_repairs_dlo_cleaned"
     "--cleaned_addresses_s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses"

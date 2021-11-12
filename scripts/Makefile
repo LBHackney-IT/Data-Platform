@@ -1,4 +1,4 @@
-.PHONY: $(MAKECMDGOALS)
+.PHONY: test test-watch history-server shell
 
 filename ?= ""
 test:
@@ -12,3 +12,13 @@ history-server:
 
 shell:
 	docker run --rm -it -w /root/scripts -v ${PWD}:/root/scripts amazon/aws-glue-libs:glue_libs_1.0.0_image_01 bash
+
+.venv/bin/python:
+	python3 -m venv .venv
+
+.venv/.install.stamp: .venv/bin/python requirements.txt
+	.venv/bin/python -m pip install -r requirements.txt
+	touch .venv/.install.stamp
+	
+dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl: .venv/.install.stamp ./helpers/*
+	./package-helpers.sh
