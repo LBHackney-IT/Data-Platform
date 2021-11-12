@@ -68,7 +68,7 @@ module "ingest_tascomi_data" {
     "--target_database_name"             = aws_glue_catalog_database.raw_zone_tascomi.name
     "--enable-continuous-cloudwatch-log" = "true"
   }
-  script_name = aws_s3_bucket_object.ingest_tascomi_data.key
+  script_s3_object_key = aws_s3_bucket_object.ingest_tascomi_data.key
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.raw_zone_tascomi.name
@@ -143,7 +143,7 @@ module "parse_tascomi_tables" {
     "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name
     "--table_list"              = local.table_list
   }
-  script_name          = aws_s3_bucket_object.parse_tascomi_tables_script.key
+  script_s3_object_key = aws_s3_bucket_object.parse_tascomi_tables_script.key
   triggered_by_crawler = module.ingest_tascomi_data.crawler_name
 
   crawler_details = {
@@ -198,7 +198,7 @@ module "recast_tascomi_tables" {
     "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name
     "--table_list"              = local.table_list
   }
-  script_name          = aws_s3_bucket_object.recast_tables_script.key
+  script_s3_object_key = aws_s3_bucket_object.recast_tables_script.key
   triggered_by_crawler = module.parse_tascomi_tables.crawler_name
 
   crawler_details = {

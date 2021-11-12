@@ -12,8 +12,8 @@ module "xlsx_import" {
     "--extra-py-files"    = "s3://${var.glue_scripts_bucket_id}/${var.helpers_script_key}"
     "--extra-jars"        = "s3://${var.glue_scripts_bucket_id}/${var.jars_key}"
   }
-  script_name   = var.xlsx_import_script_key
-  workflow_name = aws_glue_workflow.workflow.name
+  script_s3_object_key = var.xlsx_import_script_key
+  workflow_name        = aws_glue_workflow.workflow.name
   crawler_details = {
     table_prefix       = "${replace(var.department.identifier, "-", "_")}_"
     database_name      = var.glue_catalog_database_name

@@ -3,9 +3,9 @@
 module "google_sheet_import" {
   source = "../aws-glue-job"
 
-  department  = var.department
-  job_name    = "Google Sheets Import Job - ${local.import_name}"
-  script_name = var.google_sheets_import_script_key
+  department           = var.department
+  job_name             = "Google Sheets Import Job - ${local.import_name}"
+  script_s3_object_key = var.google_sheets_import_script_key
   job_parameters = {
     "--additional-python-modules" = "gspread==3.7.0, google-auth==1.27.1, pyspark==3.1.1"
     "--document_key"              = var.google_sheets_document_id

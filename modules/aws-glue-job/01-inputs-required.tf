@@ -1,9 +1,10 @@
 variable "department" {
   description = "The department with all its properties"
   type = object({
-    identifier    = string
-    glue_role_arn = string
-    tags          = map(string)
+    identifier            = string
+    glue_role_arn         = string
+    identifier_snake_case = string
+    tags                  = map(string)
     glue_temp_bucket = object({
       bucket_id = string
     })

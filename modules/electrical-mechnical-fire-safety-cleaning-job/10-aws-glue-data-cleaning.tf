@@ -27,7 +27,7 @@ module "housing_repairs_elec_mech_fire_cleaning" {
     "--extra-jars"                       = var.deequ_jar_file_path
   }
   workflow_name        = var.worksheet_resource.workflow_name
-  script_name          = aws_s3_bucket_object.housing_repairs_elec_mech_fire_data_cleaning_script.key
+  script_s3_object_key = aws_s3_bucket_object.housing_repairs_elec_mech_fire_data_cleaning_script.key
   triggered_by_crawler = var.worksheet_resource.crawler_name
   crawler_details = {
     database_name      = local.refined_zone_catalog_database_name

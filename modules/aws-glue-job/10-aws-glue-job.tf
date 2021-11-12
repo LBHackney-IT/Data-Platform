@@ -1,21 +1,21 @@
 locals {
-  glue_role_arn   = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
+  glue_role_arn  = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
   s3_object_tags = { for k, v in var.department.tags : k => v if k != "PlatformDepartment" }
 }
 
 resource "aws_s3_bucket_object" "job_script" {
   count = var.script_s3_object_key == null ? 1 : 0
-  tags = local.s3_object_tags
+  tags  = local.s3_object_tags
 
-  bucket = var.glue_scripts_bucket_id
+  bucket = var.department.glue_scripts_bucket.bucket_id
   key    = "scripts/${var.department.identifier}/${var.script_name}.py"
   acl    = "private"
-  source = "../scripts/${var.department.identifier}/${var.script_name}.py"
-  etag   = filemd5("../scripts/${var.department.identifier}/${var.script_name}.py")
+  source = "../scripts/${var.department.identifier_snake_case}/${var.script_name}.py"
+  etag   = filemd5("../scripts/${var.department.identifier_snake_case}/${var.script_name}.py")
 }
 
 locals {
-  object_key = var.script_s3_object_key == null ? var.script_s3_object_key : aws_s3_bucket_object.job_script[0].key
+  object_key      = var.script_s3_object_key == null ? var.script_s3_object_key : aws_s3_bucket_object.job_script[0].key
   script_location = "s3://${var.department.glue_scripts_bucket.bucket_id}/${local.object_key}"
 }
 

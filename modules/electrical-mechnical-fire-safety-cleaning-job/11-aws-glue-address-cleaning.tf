@@ -12,7 +12,7 @@ module "housing_repairs_elec_mech_fire_address_cleaning" {
     "--source_postcode_column_header"      = "None"
   }
   workflow_name        = var.worksheet_resource.workflow_name
-  script_name          = var.address_cleaning_script_key
+  script_s3_object_key = var.address_cleaning_script_key
   triggered_by_crawler = module.housing_repairs_elec_mech_fire_cleaning.crawler_name
   crawler_details = {
     database_name      = local.refined_zone_catalog_database_name
