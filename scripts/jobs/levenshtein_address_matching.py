@@ -9,7 +9,7 @@ from awsglue.job import Job
 from pyspark.sql.functions import col, max
 from pyspark.sql.types import StringType
 
-from jobs.helpers.helpers import get_glue_env_var, PARTITION_KEYS
+from helpers.helpers import get_glue_env_var, PARTITION_KEYS
 
 PARTITION_KEYS.append("data_source")
 

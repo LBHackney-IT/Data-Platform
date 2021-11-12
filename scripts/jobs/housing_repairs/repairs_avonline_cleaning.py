@@ -13,8 +13,8 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
 
-from jobs.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from jobs.helpers.repairs import map_repair_priority, clean_column_names
+from helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from helpers.repairs import map_repair_priority, clean_column_names
 
 
 def clean_avonline_repairs(dataframe):

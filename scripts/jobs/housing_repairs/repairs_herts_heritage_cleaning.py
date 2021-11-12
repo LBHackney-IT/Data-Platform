@@ -9,8 +9,8 @@ from pyspark.sql.functions import col, max
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
-from jobs.helpers.helpers import get_latest_partitions, get_glue_env_var, PARTITION_KEYS
-from jobs.helpers.repairs import map_repair_priority, clean_column_names
+from helpers.helpers import get_latest_partitions, get_glue_env_var, PARTITION_KEYS
+from helpers.repairs import map_repair_priority, clean_column_names
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
