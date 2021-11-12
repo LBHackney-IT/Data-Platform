@@ -93,7 +93,6 @@ module "repairs_dlo_levenshtein_address_matching" {
     "--source_catalog_table"             = "housing_repairs_repairs_dlo_with_uprn_from_uhref"
     "--match_to_property_shell"          = "forbid"
     "--target_destination"               = "s3://${module.trusted_zone.bucket_id}/housing-repairs/repairs/"
-    "--TempDir"                          = "${module.glue_temp_storage.bucket_url}/${module.department_housing_repairs.identifier}/"
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-continuous-cloudwatch-log" = "true"
   }
