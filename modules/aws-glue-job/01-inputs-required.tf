@@ -17,16 +17,6 @@ variable "job_name" {
   }
 }
 
-variable "script_name" {
-  description = <<EOF
-    Optional.
-    Name of the Glue job script. If no value is provided,
-    then it will be the same as the job name
-  EOF
-  type        = string
-}
-
-
 variable "glue_scripts_bucket_id" {
   description = "S3 bucket which contains the Glue scripts"
   type        = string
