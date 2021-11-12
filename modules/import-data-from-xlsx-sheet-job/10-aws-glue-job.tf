@@ -17,7 +17,7 @@ module "xlsx_import" {
   workflow_name          = aws_glue_workflow.workflow.name
   glue_scripts_bucket_id = var.glue_scripts_bucket_id
   crawler_details = {
-    table_prefix       = "${replace(var.department.identifier, "-", "_")}_"
+    table_prefix       = "${var.department.identifier_snake_case}_"
     database_name      = var.glue_catalog_database_name
     s3_target_location = local.s3_output_path
   }
