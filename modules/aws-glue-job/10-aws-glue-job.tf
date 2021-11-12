@@ -15,7 +15,7 @@ resource "aws_s3_bucket_object" "job_script" {
 }
 
 locals {
-  object_key      = var.script_s3_object_key == null ? var.script_s3_object_key : aws_s3_bucket_object.job_script[0].key
+  object_key      = var.script_s3_object_key == null ?  aws_s3_bucket_object.job_script[0].key : var.script_s3_object_key
   script_location = "s3://${var.department.glue_scripts_bucket.bucket_id}/${local.object_key}"
 }
 
