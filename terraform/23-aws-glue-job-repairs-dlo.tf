@@ -25,7 +25,7 @@ module "housing_repairs_dlo_cleaning_job" {
   triggered_by_crawler = module.repairs_dlo[0].crawler_name
   crawler_details = {
     table_prefix       = "housing_repairs_repairs_dlo_"
-    database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
+    database_name      = module.department_housing_repairs.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone.bucket_id}/housing-repairs/repairs-dlo/cleaned/"
   }
 }
