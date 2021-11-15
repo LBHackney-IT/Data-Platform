@@ -40,7 +40,7 @@ resource "aws_glue_job" "job" {
   default_arguments = merge(var.job_parameters,
     {
       "--TempDir"        = "s3://${var.department.glue_temp_bucket.bucket_id}/${var.department.identifier}/"
-      "--extra-py-files" = "s3://${var.department.glue_scripts_bucket}/${var.helper_module_key},s3://${var.department.glue_scripts_bucket}/${var.pydeequ_zip_key}"
+      "--extra-py-files" = "s3://${var.department.glue_scripts_bucket.bucket_id}/${var.helper_module_key},s3://${var.department.glue_scripts_bucket.bucket_id}/${var.pydeequ_zip_key}"
   })
 }
 
