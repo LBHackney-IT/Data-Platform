@@ -15,7 +15,7 @@ resource "aws_s3_bucket_object" "job_script" {
 }
 
 locals {
-  object_key      = var.script_s3_object_key == null ?  aws_s3_bucket_object.job_script[0].key : var.script_s3_object_key
+  object_key      = var.script_s3_object_key == null ? aws_s3_bucket_object.job_script[0].key : var.script_s3_object_key
   script_location = "s3://${var.department.glue_scripts_bucket.bucket_id}/${local.object_key}"
 }
 
@@ -39,7 +39,8 @@ resource "aws_glue_job" "job" {
 
   default_arguments = merge(var.job_parameters,
     {
-      "--TempDir" = "s3://${var.department.glue_temp_bucket.bucket_id}/${var.department.identifier}/"
+      "--TempDir"        = "s3://${var.department.glue_temp_bucket.bucket_id}/${var.department.identifier}/"
+      "--extra-py-files" = "s3://${var.department.glue_scripts_bucket}/${var.helper_module_key},s3://${var.department.glue_scripts_bucket}/${var.pydeequ_zip_key}"
   })
 }
 

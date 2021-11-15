@@ -28,8 +28,8 @@ variable "refined_zone_bucket_id" {
   type        = string
 }
 
-variable "helper_script_key" {
-  description = "Helpers script key"
+variable "helper_module_key" {
+  description = "Helpers Python module S3 object key"
   type        = string
 }
 
@@ -98,6 +98,11 @@ variable "match_to_property_shell" {
   description = "Set a strategy for address matching, excluding or including property shells"
   type        = string
   default     = ""
+}
+
+variable "pydeequ_zip_key" {
+  description = "Pydeequ module to be used in Glue scripts"
+  type        = string
 }
 
 variable "department" {
