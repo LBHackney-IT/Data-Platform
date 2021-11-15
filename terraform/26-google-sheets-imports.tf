@@ -5,7 +5,8 @@ module "repairs_dlo" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -25,7 +26,8 @@ module "repairs_herts_heritage" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -45,7 +47,8 @@ module "repairs_avonline" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -65,7 +68,8 @@ module "repairs_alpha_track" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -85,7 +89,8 @@ module "repairs_stannah" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -105,7 +110,8 @@ module "repairs_purdy" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -125,7 +131,8 @@ module "repairs_axis" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   glue_catalog_database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -144,7 +151,8 @@ module "parking_spreadsheet_estate_permit_limits" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   glue_catalog_database_name      = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -163,7 +171,8 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   glue_catalog_database_name      = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
@@ -185,7 +194,8 @@ module "dni_david_testing" {
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  helpers_script_key              = aws_s3_bucket_object.helpers.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   glue_catalog_database_name      = module.department_data_and_insight.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs

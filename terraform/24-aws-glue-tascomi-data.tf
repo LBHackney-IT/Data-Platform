@@ -57,10 +57,11 @@ module "ingest_tascomi_data" {
   number_of_workers_for_glue_job  = local.number_of_workers
   max_concurrent_runs_of_glue_job = local.max_concurrent_runs
   job_name                        = "${local.short_identifier_prefix}Ingest tascomi data"
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "planning/tascomi/api-responses/"
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog"          = "true"
     "--public_key_secret_id"             = aws_secretsmanager_secret.tascomi_api_public_key.id
     "--private_key_secret_id"            = aws_secretsmanager_secret.tascomi_api_private_key.id
@@ -134,11 +135,12 @@ resource "aws_s3_bucket_object" "parse_tascomi_tables_script" {
 module "parse_tascomi_tables" {
   source = "../modules/aws-glue-job"
 
-  department = module.department_planning
-  job_name   = "${local.short_identifier_prefix}Parse tascomi tables"
+  department        = module.department_planning
+  job_name          = "${local.short_identifier_prefix}Parse tascomi tables"
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
   job_parameters = {
     "--s3_bucket_target"        = "s3://${module.raw_zone.bucket_id}/planning/tascomi/parsed/"
-    "--extra-py-files"          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name
     "--table_list"              = local.table_list
@@ -188,12 +190,13 @@ resource "aws_s3_bucket_object" "recast_tables_script" {
 module "recast_tascomi_tables" {
   source = "../modules/aws-glue-job"
 
-  department = module.department_planning
-  job_name   = "${local.short_identifier_prefix}Recast tascomi tables"
+  department        = module.department_planning
+  job_name          = "${local.short_identifier_prefix}Recast tascomi tables"
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
   job_parameters = {
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/planning/tascomi/"
     "--column_dict_path"        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.tascomi_column_type_dictionary.key}"
-    "--extra-py-files"          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name
     "--table_list"              = local.table_list

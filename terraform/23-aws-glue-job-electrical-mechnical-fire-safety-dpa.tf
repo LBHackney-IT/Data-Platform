@@ -12,7 +12,7 @@ module "dpa" {
   glue_crawler_excluded_blobs  = local.glue_crawler_excluded_blobs
   glue_temp_storage_bucket_url = module.glue_temp_storage.bucket_url
   refined_zone_bucket_id       = module.refined_zone.bucket_id
-  helper_script_key            = aws_s3_bucket_object.helpers.key
+  helper_module_key            = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key              = aws_s3_bucket_object.pydeequ.key
   deequ_jar_file_path          = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.deeque_jar.key}"
   worksheet_resource           = module.repairs_fire_alarm_aov[0].worksheet_resources["dpa"]

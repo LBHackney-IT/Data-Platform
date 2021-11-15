@@ -3,8 +3,10 @@ module "manually_uploaded_parking_data_to_raw" {
 
   count = local.is_live_environment ? 1 : 0
 
-  department = module.department_parking
-  job_name   = "${local.short_identifier_prefix}Parking Copy Manually Uploaded CSVs to Raw"
+  department        = module.department_parking
+  job_name          = "${local.short_identifier_prefix}Parking Copy Manually Uploaded CSVs to Raw"
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--s3_bucket_target"    = module.raw_zone.bucket_id

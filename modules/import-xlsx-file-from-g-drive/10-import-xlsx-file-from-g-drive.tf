@@ -22,7 +22,8 @@ module "import_data_from_xlsx_sheet_job" {
   glue_scripts_bucket_id         = var.glue_scripts_bucket_id
   glue_temp_storage_bucket_id    = var.glue_temp_storage_bucket_id
   glue_catalog_database_name     = var.glue_catalog_database_name
-  helpers_script_key             = var.helpers_script_key
+  helper_module_key              = var.helper_module_key
+  pydeequ_zip_key                = var.pydeequ_zip_key
   jars_key                       = var.jars_key
   xlsx_import_script_key         = var.xlsx_import_script_key
   lambda_artefact_storage_bucket = var.lambda_artefact_storage_bucket

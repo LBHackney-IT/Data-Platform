@@ -51,8 +51,8 @@ variable "trusted_zone_bucket_id" {
   type        = string
 }
 
-variable "helper_script_key" {
-  description = "Helpers script key"
+variable "helper_module_key" {
+  description = "Helpers Python module S3 object key"
   type        = string
 }
 

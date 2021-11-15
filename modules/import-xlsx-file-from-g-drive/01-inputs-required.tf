@@ -29,8 +29,8 @@ variable "xlsx_import_script_key" {
   type        = string
 }
 
-variable "helpers_script_key" {
-  description = "Helpers script key"
+variable "helper_module_key" {
+  description = "Helpers Python module S3 object key"
   type        = string
 }
 
@@ -97,4 +97,9 @@ variable "worksheets" {
       worksheet_name    = string
     })
   )
+}
+
+variable "pydeequ_zip_key" {
+  description = "Pydeequ module to be used in Glue scripts"
+  type        = string
 }

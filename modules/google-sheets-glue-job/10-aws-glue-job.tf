@@ -5,6 +5,8 @@ module "google_sheet_import" {
 
   department           = var.department
   job_name             = "Google Sheets Import Job - ${local.import_name}"
+  helper_module_key    = var.helper_module_key
+  pydeequ_zip_key      = var.pydeequ_zip_key
   script_s3_object_key = var.google_sheets_import_script_key
   job_parameters = {
     "--additional-python-modules" = "gspread==3.7.0, google-auth==1.27.1, pyspark==3.1.1"
@@ -13,7 +15,6 @@ module "google_sheet_import" {
     "--header_row_number"         = var.google_sheet_header_row_number
     "--secret_id"                 = local.sheets_credentials_name
     "--s3_bucket_target"          = local.full_output_path
-    "--extra-py-files"            = "s3://${var.glue_scripts_bucket_id}/${var.helpers_script_key}"
   }
   workflow_name   = aws_glue_workflow.workflow.name
   schedule        = var.google_sheet_import_schedule

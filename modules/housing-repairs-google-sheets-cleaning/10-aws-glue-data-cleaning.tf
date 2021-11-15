@@ -16,13 +16,14 @@ resource "aws_s3_bucket_object" "housing_repairs_repairs_cleaning_script" {
 module "housing_repairs_google_sheets_cleaning" {
   source = "../aws-glue-job"
 
-  department = var.department
-  job_name   = "${local.glue_job_name} Cleaning"
+  department        = var.department
+  job_name          = "${local.glue_job_name} Cleaning"
+  helper_module_key = var.helper_module_key
+  pydeequ_zip_key   = var.pydeequ_zip_key
   job_parameters = {
     "--source_catalog_database"          = var.catalog_database
     "--source_catalog_table"             = var.source_catalog_table
     "--cleaned_repairs_s3_bucket_target" = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/cleaned/"
-    "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
   }
   script_s3_object_key = aws_s3_bucket_object.housing_repairs_repairs_cleaning_script.key
   workflow_name        = var.workflow_name

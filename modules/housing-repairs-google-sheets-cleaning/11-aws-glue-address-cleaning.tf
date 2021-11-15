@@ -1,10 +1,11 @@
 module "housing_repairs_google_sheets_address_cleaning" {
   source = "../aws-glue-job"
 
-  department = var.department
-  job_name   = "${local.glue_job_name} Address Cleaning"
+  department        = var.department
+  job_name          = "${local.glue_job_name} Address Cleaning"
+  helper_module_key = var.helper_module_key
+  pydeequ_zip_key   = var.pydeequ_zip_key
   job_parameters = {
-    "--extra-py-files"                     = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key}"
     "--source_catalog_database"            = var.refined_zone_catalog_database_name
     "--source_catalog_table"               = "housing_repairs_${replace(var.dataset_name, "-", "_")}_cleaned"
     "--cleaned_addresses_s3_bucket_target" = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/with-cleaned-addresses"
