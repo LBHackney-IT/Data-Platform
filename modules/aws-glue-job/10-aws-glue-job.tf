@@ -41,6 +41,7 @@ resource "aws_glue_job" "job" {
     {
       "--TempDir"        = "s3://${var.department.glue_temp_bucket.bucket_id}/${var.department.identifier}/"
       "--extra-py-files" = "s3://${var.department.glue_scripts_bucket.bucket_id}/${var.helper_module_key},s3://${var.department.glue_scripts_bucket.bucket_id}/${var.pydeequ_zip_key}"
+      "--extra-jars"     = "s3://${var.department.glue_scripts_bucket.bucket_id}/jars/deequ-1.0.3.jar"
   })
 }
 
