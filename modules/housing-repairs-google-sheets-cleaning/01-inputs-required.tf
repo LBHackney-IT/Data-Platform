@@ -39,11 +39,6 @@ variable "glue_crawler_excluded_blobs" {
   default     = []
 }
 
-variable "catalog_database" {
-  description = "Catalog data name"
-  type        = string
-}
-
 variable "source_catalog_table" {
   description = "Name of the source table in the catalog"
   type        = string
@@ -56,11 +51,6 @@ variable "trigger_crawler_name" {
 
 variable "workflow_name" {
   description = "Name of the workflow to add all the triggers created here to"
-  type        = string
-}
-
-variable "refined_zone_catalog_database_name" {
-  description = "Refined zone catalog database name"
   type        = string
 }
 
@@ -108,10 +98,12 @@ variable "pydeequ_zip_key" {
 variable "department" {
   description = "The department with all its properties"
   type = object({
-    identifier            = string
-    glue_role_arn         = string
-    tags                  = map(string)
-    identifier_snake_case = string
+    identifier                         = string
+    glue_role_arn                      = string
+    refined_zone_catalog_database_name = string
+    raw_zone_catalog_database_name     = string
+    tags                               = map(string)
+    identifier_snake_case              = string
     glue_temp_bucket = object({
       bucket_id = string
     })

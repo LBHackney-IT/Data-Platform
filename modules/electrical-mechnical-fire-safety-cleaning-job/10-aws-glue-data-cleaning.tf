@@ -22,7 +22,7 @@ module "housing_repairs_elec_mech_fire_cleaning" {
   pydeequ_zip_key   = var.pydeequ_zip_key
   job_parameters = {
     "--cleaned_repairs_s3_bucket_target" = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/cleaned/"
-    "--source_catalog_database"          = local.catalog_database
+    "--source_catalog_database"          = local.raw_zone_catalog_database_name
     "--source_catalog_table"             = var.worksheet_resource.catalog_table
     "--deequ_metrics_location"           = "s3://${var.refined_zone_bucket_id}/quality-metrics/department=${var.department.identifier}/dataset=${var.dataset_name}-cleaned/deequ-metrics.json"
     "--extra-jars"                       = var.deequ_jar_file_path
