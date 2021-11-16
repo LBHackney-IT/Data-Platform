@@ -105,7 +105,7 @@ resource "aws_redshift_cluster" "redshift_cluster" {
 resource "aws_secretsmanager_secret" "redshift_cluster_master_password" {
   tags = var.tags
 
-  name        = "${var.identifier_prefix}-redshift-cluster-master-password"
+  name_prefix = "${var.identifier_prefix}-redshift-cluster-master-password"
   description = "Password for the redshift cluster master user "
   kms_key_id  = var.secrets_manager_key
 }
