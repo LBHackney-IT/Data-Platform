@@ -1,7 +1,7 @@
 resource "aws_iam_user" "qlik_user" {
-  name = "${local.short_identifier_prefix}qlik-user"
-
-  tags = module.tags.values
+  name          = "${local.short_identifier_prefix}qlik-user"
+  force_destroy = !local.is_live_environment
+  tags          = module.tags.values
 }
 
 resource "aws_iam_access_key" "qlik_access_key" {

@@ -140,6 +140,7 @@ resource "aws_security_group" "qlik_sense_enterprise" {
 resource "aws_instance" "qlik_sense_enterprise" {
   tags = merge(var.tags, {
     "Name" : "${var.identifier_prefix}-qlik-sense-enterprise",
+    "OOOShutdown" : "true"
   })
 
   ami                  = data.aws_ami.latest_windows.id
