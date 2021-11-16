@@ -8,7 +8,7 @@ module "housing_repairs_google_sheets_address_matching" {
   job_parameters = {
     "--addresses_api_data_database" = var.addresses_api_data_catalog
     "--addresses_api_data_table"    = "unrestricted_address_api_dbo_hackney_address"
-    "--source_catalog_database"     = var.refined_zone_catalog_database_name
+    "--source_catalog_database"     = local.refined_zone_catalog_database_name
     "--source_catalog_table"        = "housing_repairs_${replace(var.dataset_name, "-", "_")}_with_cleaned_addresses"
     "--target_destination"          = "s3://${var.trusted_zone_bucket_id}/housing-repairs/repairs/"
     "--match_to_property_shell"     = var.match_to_property_shell

@@ -14,7 +14,6 @@ module "housing_repairs_herts_heritage" {
   refined_zone_bucket_id       = module.refined_zone.bucket_id
   helper_module_key            = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key              = aws_s3_bucket_object.pydeequ.key
-  catalog_database             = module.department_housing_repairs.raw_zone_catalog_database_name
   addresses_api_data_catalog   = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
   address_matching_script_key  = aws_s3_bucket_object.levenshtein_address_matching.key
   trusted_zone_bucket_id       = module.trusted_zone.bucket_id
@@ -23,8 +22,7 @@ module "housing_repairs_herts_heritage" {
   trigger_crawler_name = module.repairs_herts_heritage[0].crawler_name
   workflow_name        = module.repairs_herts_heritage[0].workflow_name
 
-  refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
-  dataset_name                       = "repairs-herts-heritage"
-  address_cleaning_script_key        = aws_s3_bucket_object.address_cleaning.key
-  match_to_property_shell            = "forbid"
+  dataset_name                = "repairs-herts-heritage"
+  address_cleaning_script_key = aws_s3_bucket_object.address_cleaning.key
+  match_to_property_shell     = "forbid"
 }
