@@ -92,13 +92,12 @@ module "repairs_dlo_levenshtein_address_matching" {
   helper_module_key = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
   job_parameters = {
-    "--addresses_api_data_database"      = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
-    "--addresses_api_data_table"         = "unrestricted_address_api_dbo_hackney_address"
-    "--source_catalog_database"          = module.department_housing_repairs.refined_zone_catalog_database_name
-    "--source_catalog_table"             = "housing_repairs_repairs_dlo_with_uprn_from_uhref"
-    "--match_to_property_shell"          = "forbid"
-    "--target_destination"               = "s3://${module.trusted_zone.bucket_id}/housing-repairs/repairs/"
-    "--enable-continuous-cloudwatch-log" = "true"
+    "--addresses_api_data_database" = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
+    "--addresses_api_data_table"    = "unrestricted_address_api_dbo_hackney_address"
+    "--source_catalog_database"     = module.department_housing_repairs.refined_zone_catalog_database_name
+    "--source_catalog_table"        = "housing_repairs_repairs_dlo_with_uprn_from_uhref"
+    "--match_to_property_shell"     = "forbid"
+    "--target_destination"          = "s3://${module.trusted_zone.bucket_id}/housing-repairs/repairs/"
   }
   script_s3_object_key           = aws_s3_bucket_object.levenshtein_address_matching.key
   workflow_name                  = module.repairs_dlo[0].workflow_name
