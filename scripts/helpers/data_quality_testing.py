@@ -1,3 +1,4 @@
+from pyspark.sql import DataFrame
 from helpers.helpers import get_glue_env_var
 
 def get_metrics_target_location():
