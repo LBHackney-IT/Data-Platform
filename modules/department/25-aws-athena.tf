@@ -4,6 +4,8 @@ resource "aws_athena_workgroup" "department_workgroup" {
   name  = "${var.short_identifier_prefix}${local.department_identifier}"
   state = "ENABLED"
 
+  force_destroy = !var.is_live_environment
+
   configuration {
     enforce_workgroup_configuration    = true
     publish_cloudwatch_metrics_enabled = true
