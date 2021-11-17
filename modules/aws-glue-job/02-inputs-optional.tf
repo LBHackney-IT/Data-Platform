@@ -15,6 +15,25 @@ variable "job_description" {
   default     = null
 }
 
+variable "script_name" {
+  description = <<EOF
+    Name of the Glue job script file.
+    Must match the name of file holding the glue script in this repository
+    This is required if the script isn't already saved in S3.
+  EOF
+  type        = string
+  default     = null
+}
+
+variable "script_s3_object_key" {
+  description = <<EOF
+    The S3 object key for the glue job script.
+    If the script is not saved in S3 then leave this blank.
+  EOF
+  type        = string
+  default     = null
+}
+
 variable "job_parameters" {
   description = "Optional. Parameters to add to the Glue job"
   type        = map(string)
@@ -23,16 +42,6 @@ variable "job_parameters" {
 
 variable "workflow_name" {
   description = "Optional. Workflow to add the triggers to."
-  type        = string
-  default     = null
-}
-
-variable "script_name" {
-  description = <<EOF
-    Optional.
-    Name of the Glue job script. If no value is provided,
-    then it will be the same as the job name
-  EOF
   type        = string
   default     = null
 }
@@ -86,8 +95,8 @@ variable "number_of_workers_for_glue_job" {
   default     = 2
 
   validation {
-    condition     = var.number_of_workers_for_glue_job >= 2 && var.number_of_workers_for_glue_job < 12
-    error_message = "Number of workers should be greater than or equal to 2 and less than 12."
+    condition     = var.number_of_workers_for_glue_job >= 2 && var.number_of_workers_for_glue_job <= 16
+    error_message = "Number of workers should be greater than or equal to 2 and less than or equal to 16."
   }
 }
 
@@ -117,4 +126,10 @@ variable "trigger_enabled" {
   description = "Set to false to disable scheduled or conditional triggers for the glue job"
   type        = bool
   default     = true
+}
+
+variable "glue_role_arn" {
+  description = "Glue Role ARN that the job will use to execute"
+  type        = string
+  default     = null
 }

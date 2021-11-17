@@ -18,6 +18,11 @@ output "identifier" {
   value       = local.department_identifier
 }
 
+output "identifier_snake_case" {
+  description = "The name of the department in snake case"
+  value       = replace(local.department_identifier, "-", "_")
+}
+
 output "landing_zone_catalog_database_name" {
   description = "Landing Zone Catalog Database Name"
   value       = aws_glue_catalog_database.landing_zone_catalog_database.name
@@ -56,4 +61,14 @@ output "glue_role_arn" {
 output "tags" {
   description = "Tags for each resource with department name"
   value       = merge(var.tags, { "PlatformDepartment" = local.department_identifier })
+}
+
+output "glue_temp_bucket" {
+  description = "Bucket for glue to store temporary files"
+  value       = var.glue_temp_storage_bucket
+}
+
+output "glue_scripts_bucket" {
+  description = "Bucket where we store glue scripts"
+  value       = var.glue_scripts_bucket
 }

@@ -26,7 +26,7 @@ docker compose up unit_tests
 
 2. To run all the tests and have them automatically rerun when a file changes:
 ```sh
-docker compose run --entrypoint "bash -c 'pip install pytest-watch && pytest-watch'" unit_tests
+docker compose run --entrypoint "bash -c 'pip install -r requirements.test.txt  && pytest-watch'" unit_tests
 ```
 
 3. To run a single test file, replace ./my-test-file.py with the name of the test file:

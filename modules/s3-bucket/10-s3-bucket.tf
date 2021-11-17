@@ -79,6 +79,8 @@ resource "aws_s3_bucket" "bucket" {
 
   bucket = lower("${var.identifier_prefix}-${var.bucket_identifier}")
 
+  force_destroy = (var.environment == "dev")
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {

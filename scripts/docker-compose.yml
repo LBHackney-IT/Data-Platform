@@ -6,6 +6,6 @@ services:
     working_dir: /root/scripts
     ports:
       - "4041:4040"
-    entrypoint: /home/aws-glue-libs/bin/gluepytest ./${filename}
+    entrypoint: bash -c "pip install -r ./requirements.test.txt && /home/aws-glue-libs/bin/gluepytest ./${filename}"
     volumes:
       - .:/root/scripts

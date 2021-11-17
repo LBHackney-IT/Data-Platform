@@ -7,15 +7,22 @@ variable "department" {
   description = "The department with all its properties"
   type = object({
     identifier                         = string
+    identifier_snake_case              = string
     glue_role_arn                      = string
     refined_zone_catalog_database_name = string
     raw_zone_catalog_database_name     = string
     tags                               = map(string)
+    glue_temp_bucket = object({
+      bucket_id = string
+    })
+    glue_scripts_bucket = object({
+      bucket_id = string
+    })
   })
 }
 
-variable "script_key" {
-  description = "Key of the script"
+variable "script_name" {
+  description = "Name of the script file"
   type        = string
 }
 
@@ -44,18 +51,13 @@ variable "trusted_zone_bucket_id" {
   type        = string
 }
 
-variable "helper_script_key" {
-  description = "Helpers script key"
+variable "helper_module_key" {
+  description = "Helpers Python module S3 object key"
   type        = string
 }
 
 variable "deequ_jar_file_path" {
   description = "Object key for Deequ jar"
-  type        = string
-}
-
-variable "cleaning_helper_script_key" {
-  description = "Cleaning helpers script key"
   type        = string
 }
 

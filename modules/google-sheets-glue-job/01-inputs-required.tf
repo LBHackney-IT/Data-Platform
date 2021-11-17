@@ -1,9 +1,16 @@
 variable "department" {
   description = "The department with all its properties"
   type = object({
-    identifier    = string
-    glue_role_arn = string
-    tags          = map(string)
+    identifier            = string
+    glue_role_arn         = string
+    tags                  = map(string)
+    identifier_snake_case = string
+    glue_temp_bucket = object({
+      bucket_id = string
+    })
+    glue_scripts_bucket = object({
+      bucket_id = string
+    })
     google_service_account = object({
       credentials_secret = object({
         name = string
@@ -32,8 +39,8 @@ variable "google_sheets_import_script_key" {
   type        = string
 }
 
-variable "helpers_script_key" {
-  description = "Helpers script key"
+variable "helper_module_key" {
+  description = "Helpers Python module S3 object key"
   type        = string
 }
 
@@ -64,5 +71,10 @@ variable "google_sheets_worksheet_name" {
 
 variable "dataset_name" {
   description = "Output folder name"
+  type        = string
+}
+
+variable "pydeequ_zip_key" {
+  description = "Pydeequ module to be used in Glue scripts"
   type        = string
 }

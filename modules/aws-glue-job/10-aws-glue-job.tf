@@ -1,6 +1,22 @@
 locals {
-  script_name     = var.script_name == null ? "scripts/${var.job_name}.py" : var.script_name
-  script_location = "s3://${var.glue_scripts_bucket_id}/${local.script_name}"
+  glue_role_arn  = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
+  s3_object_tags = { for k, v in var.department.tags : k => v if k != "PlatformDepartment" }
+}
+
+resource "aws_s3_bucket_object" "job_script" {
+  count = var.script_s3_object_key == null ? 1 : 0
+  tags  = local.s3_object_tags
+
+  bucket = var.department.glue_scripts_bucket.bucket_id
+  key    = "scripts/${var.department.identifier}/${var.script_name}.py"
+  acl    = "private"
+  source = "../scripts/${var.department.identifier_snake_case}/${var.script_name}.py"
+  etag   = filemd5("../scripts/${var.department.identifier_snake_case}/${var.script_name}.py")
+}
+
+locals {
+  object_key      = var.script_s3_object_key == null ? aws_s3_bucket_object.job_script[0].key : var.script_s3_object_key
+  script_location = "s3://${var.department.glue_scripts_bucket.bucket_id}/${local.object_key}"
 }
 
 resource "aws_glue_job" "job" {
@@ -9,7 +25,7 @@ resource "aws_glue_job" "job" {
   name              = var.job_name
   number_of_workers = var.number_of_workers_for_glue_job
   worker_type       = var.glue_job_worker_type
-  role_arn          = var.department.glue_role_arn
+  role_arn          = local.glue_role_arn
   command {
     python_version  = "3"
     script_location = local.script_location
@@ -21,7 +37,12 @@ resource "aws_glue_job" "job" {
 
   glue_version = "2.0"
 
-  default_arguments = var.job_parameters
+  default_arguments = merge(var.job_parameters,
+    {
+      "--TempDir"                          = "s3://${var.department.glue_temp_bucket.bucket_id}/${var.department.identifier}/"
+      "--extra-py-files"                   = "s3://${var.department.glue_scripts_bucket.bucket_id}/${var.helper_module_key},s3://${var.department.glue_scripts_bucket.bucket_id}/${var.pydeequ_zip_key}",
+      "--enable-continuous-cloudwatch-log" = "true"
+  })
 }
 
 locals {

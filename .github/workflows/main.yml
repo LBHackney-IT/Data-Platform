@@ -26,6 +26,9 @@ jobs:
       - name: Download external dependencies
         working-directory: "./external-lib"
         run: make all
+      - name: Package glue job helpers module
+        working-directory: "./scripts"
+        run: make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
       - name: Run `terraform validate` on Terraform Networking
         working-directory: "./terraform-networking"
         run: |

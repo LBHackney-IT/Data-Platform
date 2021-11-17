@@ -1,9 +1,16 @@
 variable "department" {
   description = "The department with all its properties"
   type = object({
-    identifier    = string
-    glue_role_arn = string
-    tags          = map(string)
+    identifier            = string
+    glue_role_arn         = string
+    identifier_snake_case = string
+    tags                  = map(string)
+    glue_temp_bucket = object({
+      bucket_id = string
+    })
+    glue_scripts_bucket = object({
+      bucket_id = string
+    })
   })
 }
 
@@ -17,12 +24,12 @@ variable "job_name" {
   }
 }
 
-variable "glue_scripts_bucket_id" {
-  description = "S3 bucket which contains the Glue scripts"
+variable "helper_module_key" {
+  description = "Helpers Python module S3 object key"
   type        = string
+}
 
-  validation {
-    condition     = length(var.glue_scripts_bucket_id) > 7
-    error_message = "The bucket ID variable must be set to `module.glue_scripts.bucket_id`."
-  }
+variable "pydeequ_zip_key" {
+  description = "Pydeequ module to be used in Glue scripts"
+  type        = string
 }
