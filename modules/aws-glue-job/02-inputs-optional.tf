@@ -133,3 +133,9 @@ variable "glue_role_arn" {
   type        = string
   default     = null
 }
+
+variable "jars_key" {
+  description = "Jars key"
+  type        = string
+  default     = null
+}
