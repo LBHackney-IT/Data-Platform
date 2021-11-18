@@ -27,3 +27,18 @@ module "manually_uploaded_parking_data_to_raw" {
     })
   }
 }
+
+module "Parking_CEO_Average_On_Street" {
+  source            = "../modules/aws-glue-job"
+  department        = module.department_parking
+  job_name          = "${local.short_identifier_prefix}Parking_CEO_Average_On_Street"
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  script_name       = "Parking_CEO_Average_On_Street"
+  triggered_by_job  = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  job_description   = "This job creates the Permit de-normalised data"
+  workflow_name     = aws_glue_workflow.parking_liberator_data.name
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-enable"
+  }
+}
