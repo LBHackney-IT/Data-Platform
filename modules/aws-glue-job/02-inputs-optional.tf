@@ -134,8 +134,8 @@ variable "glue_role_arn" {
   default     = null
 }
 
-variable "jars_key" {
-  description = "Jars key"
-  type        = string
+variable "extra_jars" {
+  description = "S3 path for extra jars to be used in Glue jobs"
+  type        = list(string)
   default     = null
 }
