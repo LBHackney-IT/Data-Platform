@@ -1,7 +1,7 @@
 locals {
   glue_role_arn  = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
   s3_object_tags = { for k, v in var.department.tags : k => v if k != "PlatformDepartment" }
-  extra_jars     = var.extra_jars == null ? "s3://${var.department.glue_scripts_bucket.bucket_id}/jars/deequ-1.0.3.jar" : join(",", [join(",", var.extra_jars), "s3://${var.department.glue_scripts_bucket.bucket_id}/jars/deequ-1.0.3.jar"])
+  extra_jars     = join(",", concat(var.extra_jars, ["s3://${var.department.glue_scripts_bucket.bucket_id}/jars/deequ-1.0.3.jar"]))
 }
 
 resource "aws_s3_bucket_object" "job_script" {
