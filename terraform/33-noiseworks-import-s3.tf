@@ -21,7 +21,7 @@ resource "aws_iam_access_key" "noiseworks_access_key" {
 
 resource "aws_iam_user_policy" "noiseworks_user_policy" {
   name = "${local.short_identifier_prefix}noiseworks-user-policy"
-  user = aws_iam_user.liberator_user.name
+  user = aws_iam_user.noiseworks_user.name
 
   policy = data.aws_iam_policy_document.noiseworks_can_write_to_s3.json
 }
