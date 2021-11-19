@@ -1,11 +1,145 @@
 // WARNING! All statement blocks MUST have a UNIQUE SID, this is to allow the individual documents to be merged.
 // Statement blocks with the same SID will replace each other when merged.
 
-# When updating user roles, while this will be deployed to staging it won't update the role that the SSO users assume.
-# To update the SSO role, you will need to ask the Cloud Engineering team responsible for maintaining the SSO
-# to copy over the updated role to SSO.
+// S3 read only access policy
+data "aws_iam_policy_document" "read_only_s3_department_access" {
+  statement {
+    sid    = "ListAllS3AndKmsKeys"
+    effect = "Allow"
+    actions = [
+      "s3:ListAllMyBuckets",
+      "kms:ListAliases",
+    ]
+    resources = ["*"]
+  }
 
-// S3 access policy
+  statement {
+    sid    = "KmsKeyFullAccess"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+    ]
+    resources = [
+      var.landing_zone_bucket.kms_key_arn,
+      var.raw_zone_bucket.kms_key_arn,
+      var.refined_zone_bucket.kms_key_arn,
+      var.trusted_zone_bucket.kms_key_arn,
+      var.athena_storage_bucket.kms_key_arn,
+      var.glue_scripts_bucket.kms_key_arn
+    ]
+  }
+
+  statement {
+    sid    = "S3ReadAllDepartmentAreasInBuckets"
+    effect = "Allow"
+    actions = [
+      "s3:AbortMultipartUpload",
+      "s3:DescribeJob",
+      "s3:Get*",
+      "s3:List*",
+    ]
+    resources = [
+
+      var.athena_storage_bucket.bucket_arn,
+      "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
+
+      var.glue_scripts_bucket.bucket_arn,
+      "${var.glue_scripts_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.glue_scripts_bucket.bucket_arn}/custom/*",
+
+      var.landing_zone_bucket.bucket_arn,
+      "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
+      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
+      # "${var.landing_zone_bucket.bucket_arn}/unrestricted/*", shuold unrestricted data be in the landing zone?
+
+      var.raw_zone_bucket.bucket_arn,
+      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
+      "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
+
+      var.refined_zone_bucket.bucket_arn,
+      "${var.refined_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
+      "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
+      "${var.refined_zone_bucket.bucket_arn}/unrestricted/*",
+
+      var.trusted_zone_bucket.bucket_arn,
+      "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
+      "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
+      "${var.trusted_zone_bucket.bucket_arn}/unrestricted/*",
+    ]
+  }
+
+  statement {
+    sid    = "S3WriteToManualFolder"
+    effect = "Allow"
+    actions = [
+      "s3:Put*",
+      "s3:Delete*"
+    ]
+    resources = [
+      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "read_only_s3_access" {
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-s3-department-access")
+  policy = data.aws_iam_policy_document.read_only_s3_department_access.json
+}
+
+// Glue read only access policy
+data "aws_iam_policy_document" "read_only_glue_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "athena:*",
+      "logs:DescribeLogGroups",
+      "tag:GetResources",
+      "iam:ListRoles",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:FilterLogEvents",
+      "logs:DescribeLogStreams",
+      "logs:GetLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:/aws-glue/*"
+    ]
+  }
+
+  // Glue Access
+  statement {
+    sid = "AwsGlue"
+    actions = [
+      "glue:Batch*",
+      "glue:CheckSchemaVersionValidity",
+      "glue:Get*",
+      "glue:List*",
+      "glue:SearchTables",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "read_only_glue_access" {
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-access")
+  policy = data.aws_iam_policy_document.read_only_glue_access.json
+}
+
+// Full departmental S3 access policy
 data "aws_iam_policy_document" "s3_department_access" {
   statement {
     sid    = "ListAllS3AndKmsKeys"
@@ -45,32 +179,34 @@ data "aws_iam_policy_document" "s3_department_access" {
       "s3:AbortMultipartUpload",
       "s3:DescribeJob",
       "s3:Get*",
-      "s3:ListBucket",
-      "s3:ListBucketMultipartUploads",
-      "s3:ListBucketVersions",
-      "s3:ListJobs",
-      "s3:ListMultipartUploadParts",
-      "s3:ListStorageLensConfigurations",
+      "s3:List*",
       "s3:PutObject",
     ]
     resources = [
+      var.landing_zone_bucket.bucket_arn,
+      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
+      "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
+
+      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
+      "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
+
       var.refined_zone_bucket.bucket_arn,
       "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
       "${var.refined_zone_bucket.bucket_arn}/unrestricted/*",
+      "${var.refined_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
+
       var.trusted_zone_bucket.bucket_arn,
       "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
       "${var.trusted_zone_bucket.bucket_arn}/unrestricted/*",
+      "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
+
       var.athena_storage_bucket.bucket_arn,
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
-      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
-      "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
-      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
-      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
-      "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
-      "${var.refined_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
-      "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*"
+      var.glue_temp_storage_bucket.bucket_arn,
+      var.glue_scripts_bucket.bucket_arn,
     ]
   }
 
@@ -83,43 +219,16 @@ data "aws_iam_policy_document" "s3_department_access" {
     resources = [
       "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
       "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
+
       "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
+
       "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.refined_zone_bucket.bucket_arn}/unrestricted/*",
-      "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
-      "${var.glue_temp_storage_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.refined_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
-      "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*"
-    ]
-  }
 
-  statement {
-    sid    = "S3ReadOnly"
-    effect = "Allow"
-    actions = [
-      "s3:Get*",
-      "s3:List*"
-    ]
-    resources = [
-      var.raw_zone_bucket.bucket_arn,
-      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
-      "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
-      var.landing_zone_bucket.bucket_arn,
-      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/*",
-      "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
-    ]
-  }
-
-  statement {
-    sid    = "S3List"
-    effect = "Allow"
-    actions = [
-      "s3:List*"
-    ]
-    resources = [
-      var.glue_temp_storage_bucket.bucket_arn,
-      var.glue_scripts_bucket.bucket_arn,
+      "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
     ]
   }
 
@@ -143,7 +252,7 @@ resource "aws_iam_policy" "s3_access" {
   policy = data.aws_iam_policy_document.s3_department_access.json
 }
 
-// Glue access policy
+// Departmental Glue access policy
 data "aws_iam_policy_document" "glue_access" {
   statement {
     effect = "Allow"
@@ -241,7 +350,7 @@ resource "aws_iam_policy" "glue_access" {
   policy = data.aws_iam_policy_document.glue_access.json
 }
 
-// Secrets policy
+// Read only Secrets policy
 data "aws_iam_policy_document" "secrets_manager_read_only" {
   statement {
     effect = "Allow"
@@ -308,7 +417,7 @@ resource "aws_iam_policy" "glue_scripts_read_only" {
   policy = data.aws_iam_policy_document.glue_scripts_read_only.json
 }
 
-// Glue Agent cloudwatch
+// Glue Agent write to cloudwatch policy
 data "aws_iam_policy_document" "glue_can_write_to_cloudwatch" {
   statement {
     effect = "Allow"
@@ -359,57 +468,4 @@ resource "aws_iam_policy" "full_glue_access" {
 
   name   = lower("${var.identifier_prefix}-${local.department_identifier}-full-glue-access")
   policy = data.aws_iam_policy_document.full_glue_access.json
-}
-
-// User Role - This role is a combination of all the rules ready to be applied to sso.
-data "aws_iam_policy_document" "sso_user_policy" {
-  override_policy_documents = [
-    data.aws_iam_policy_document.s3_department_access.json,
-    data.aws_iam_policy_document.glue_access.json,
-    data.aws_iam_policy_document.secrets_manager_read_only.json
-  ]
-}
-
-// Glue role + attachments
-data "aws_iam_policy_document" "glue_agent_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      identifiers = ["glue.amazonaws.com"]
-      type        = "Service"
-    }
-  }
-}
-
-resource "aws_iam_role" "glue_agent" {
-  tags = var.tags
-
-  name               = lower("${var.identifier_prefix}-glue-${local.department_identifier}")
-  assume_role_policy = data.aws_iam_policy_document.glue_agent_assume_role.json
-}
-
-resource "aws_iam_role_policy_attachment" "glue_agent_s3_access" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.s3_access.arn
-}
-
-resource "aws_iam_role_policy_attachment" "glue_agents_secrets_manager_read_only" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.glue_can_write_to_cloudwatch.arn
-}
-
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_scripts_read_only" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.glue_scripts_read_only.arn
-}
-
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_can_write_to_cloudwatch" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.secrets_manager_read_only.arn
-}
-
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_full_access" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.full_glue_access.arn
 }
