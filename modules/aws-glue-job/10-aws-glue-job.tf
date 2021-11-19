@@ -11,8 +11,8 @@ resource "aws_s3_bucket_object" "job_script" {
   bucket = var.department.glue_scripts_bucket.bucket_id
   key    = "scripts/${var.department.identifier}/${var.script_name}.py"
   acl    = "private"
-  source = "../scripts/${var.department.identifier_snake_case}/${var.script_name}.py"
-  etag   = filemd5("../scripts/${var.department.identifier_snake_case}/${var.script_name}.py")
+  source = "../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py"
+  etag   = filemd5("../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py")
 }
 
 locals {
