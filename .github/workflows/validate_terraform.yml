@@ -1,10 +1,10 @@
-name: Main Terraform Validate
+name: Validate All Terraform
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: ['*']
     paths:
+      - "modules/**"
       - "terraform-networking/**"
       - "terraform-backend-setup/**"
       - "terraform/**"
