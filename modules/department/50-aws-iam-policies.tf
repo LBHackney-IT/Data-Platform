@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
 resource "aws_iam_policy" "read_only_s3_access" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${local.department_identifier}-s3-department-access")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-read-only-s3-department-access")
   policy = data.aws_iam_policy_document.read_only_s3_department_access.json
 }
 
@@ -134,7 +134,7 @@ data "aws_iam_policy_document" "read_only_glue_access" {
 resource "aws_iam_policy" "read_only_glue_access" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-access")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-read-only-glue-access")
   policy = data.aws_iam_policy_document.read_only_glue_access.json
 }
 
