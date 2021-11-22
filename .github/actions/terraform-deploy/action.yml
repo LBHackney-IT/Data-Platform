@@ -63,7 +63,7 @@ runs:
     - name: Setup build environment
       id: setup
       run: |
-        ${{ github.action_path }}/../box.sh "Setting up build environment"
+        ${{ github.action_path }}/../.helpers/box.sh "Setting up build environment"
         echo -e "Installing TFLint"
         curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip
         echo -e "\n"
@@ -73,7 +73,7 @@ runs:
     - name: Terraform Init
       id: init
       run: |
-        ${{ github.action_path }}/../box.sh "Running Terraform init"
+        ${{ github.action_path }}/../.helpers/box.sh "Running Terraform init"
         echo -e "Configuring AWS credentials."
         aws configure set default.region eu-west-2 > /dev/null 2>&1
         aws configure set aws_access_key_id ${{ inputs.aws_access_key_id }} > /dev/null 2>&1
@@ -89,7 +89,7 @@ runs:
       id: import
       run: |
         if [ "${{ inputs.terraform_import }}" != "" ]; then
-            ${{ github.action_path }}/../box.sh "Running Terraform import"
+            ${{ github.action_path }}/../.helpers/box.sh "Running Terraform import"
             if [ "${{ inputs.branch }}" == "main" ]; then
               terraform import -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' ${{ inputs.terraform_import }}
             else
@@ -103,7 +103,7 @@ runs:
       id: remove
       run: |
         if [ "${{ inputs.terraform_remove }}" != "" ]; then
-            ${{ github.action_path }}/../box.sh "Running Terraform remove"
+            ${{ github.action_path }}/../.helpers/box.sh "Running Terraform remove"
             if [ "${{ inputs.branch }}" == "main" ]; then
               terraform state rm ${{ inputs.terraform_remove }}
             else
@@ -116,7 +116,7 @@ runs:
     - name: Terraform Validate
       id: validate
       run: |
-        ${{ github.action_path }}/../box.sh "Running Terraform validate"
+        ${{ github.action_path }}/../.helpers/box.sh "Running Terraform validate"
         terraform validate
         echo -e "\n"
       shell: bash
@@ -125,7 +125,7 @@ runs:
     - name: TFLint
       id: lint
       run: |
-        ${{ github.action_path }}/../box.sh "Running TFLint"
+        ${{ github.action_path }}/../.helpers/box.sh "Running TFLint"
         ./tflint --init --config=${{ github.action_path }}/../../../.tflint.hcl
         ./tflint --var-file='../config/terraform/${{ inputs.environment }}.tfvars' --var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' --var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' --var 'aws_api_account=${{ inputs.aws_api_account }}' --var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' --var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ inputs.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' --module --config=${{ github.action_path }}/../../../.tflint.hcl --loglevel=warn .
         echo -e "\n"
@@ -136,10 +136,10 @@ runs:
       id: destroy
       run: |
         if [ "${{ inputs.terraform_destroy }}" == "destroy_me" ]; then
-            ${{ github.action_path }}/../box.sh "Running Terraform destroy"
+            ${{ github.action_path }}/../.helpers/box.sh "Running Terraform destroy"
             if [ "${{ inputs.branch }}" == "main" ]; then
               terraform destroy -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -auto-approve
-              ${{ github.action_path }}/../success_destroy.sh
+              ${{ github.action_path }}/../.helpers/success_destroy.sh
               echo -e "Terraform run completed successfully."
             else
               echo -e "Not on default branch branch, so skipping Terraform destroy."
@@ -152,7 +152,7 @@ runs:
       id: plan
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
-          ${{ github.action_path }}/../box.sh "Running Terraform plan"
+          ${{ github.action_path }}/../.helpers/box.sh "Running Terraform plan"
           terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account=${{ inputs.aws_deploy_account }}' -var 'aws_api_account=${{ inputs.aws_api_account }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -input=false -out=plan.out
           echo -e "\n"
         fi
@@ -164,12 +164,12 @@ runs:
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
           if [ "${{ inputs.branch }}" == "main" ]; then
-            ${{ github.action_path }}/../box.sh "Running Terraform apply"
+            ${{ github.action_path }}/../.helpers/box.sh "Running Terraform apply"
             terraform apply -auto-approve -input=false plan.out
           else
             echo -e "Not on main branch, so skipping Terraform apply."
           fi
-          ${{ github.action_path }}/../success.sh
+          ${{ github.action_path }}/../.helpers/success.sh
           echo -e "Terraform run completed successfully."
         fi
       shell: bash

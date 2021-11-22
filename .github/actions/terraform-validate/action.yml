@@ -23,7 +23,7 @@ runs:
     - name: Setup build environment
       id: setup
       run: |
-        ${{ github.action_path }}/../box.sh "Setting up build environment"
+        ${{ github.action_path }}/../.helpers/box.sh "Setting up build environment"
         echo -e "Installing TFLint"
         curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip
         echo -e "\n"
@@ -33,7 +33,7 @@ runs:
     - name: Terraform Init
       id: init
       run: |
-        ${{ github.action_path }}/../box.sh "Running Terraform init"
+        ${{ github.action_path }}/../.helpers/box.sh "Running Terraform init"
         echo -e "Configuring AWS credentials."
         aws configure set default.region eu-west-2 > /dev/null 2>&1
         aws configure set aws_access_key_id ${{ inputs.aws_access_key_id }} > /dev/null 2>&1
@@ -48,7 +48,7 @@ runs:
     - name: Terraform Validate
       id: validate
       run: |
-        ${{ github.action_path }}/../box.sh "Running Terraform validate"
+        ${{ github.action_path }}/../.helpers/box.sh "Running Terraform validate"
         terraform validate
         echo -e "\n"
       shell: bash
