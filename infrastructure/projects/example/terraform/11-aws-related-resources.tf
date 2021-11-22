@@ -1,1 +1,0 @@
-# We try to group related AWS resources together by prefixing the .tf file numerically
