@@ -186,6 +186,7 @@ data "aws_iam_policy_document" "s3_department_access" {
       "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
       "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
 
+      var.raw_zone_bucket.bucket_arn,
       "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
       "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
