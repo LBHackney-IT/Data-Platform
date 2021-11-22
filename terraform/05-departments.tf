@@ -18,6 +18,7 @@ module "department_housing_repairs" {
   source                          = "../modules/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
+  environment                     = var.environment
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
@@ -44,6 +45,7 @@ module "department_parking" {
   source                          = "../modules/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
+  environment                     = var.environment
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
@@ -71,6 +73,7 @@ module "department_finance" {
   source                          = "../modules/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
+  environment                     = var.environment
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
@@ -97,6 +100,7 @@ module "department_data_and_insight" {
   source                          = "../modules/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
+  environment                     = var.environment
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
@@ -124,6 +128,7 @@ module "department_env_enforcement" {
   source                          = "../modules/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
+  environment                     = var.environment
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
@@ -150,6 +155,7 @@ module "department_planning" {
   source                          = "../modules/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
+  environment                     = var.environment
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
@@ -177,6 +183,7 @@ module "department_unrestricted" {
   source                          = "../modules/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
+  environment                     = var.environment
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
