@@ -70,7 +70,7 @@ jobs:
           terraform_version: 0.14.9
       - name: Add a key to allow access to Infastructure
         run: |
-          echo ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}' > id_rsa
+          echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > id_rsa
           ssh-keyscan github.com > known_hosts
           chmod 400 id_rsa known_hosts
       - name: Setup Node.js 14
