@@ -1,8 +1,0 @@
-{
-    "name": "AWS Terraform Workflow",
-    "description": "LBHackney AWS Terraform workflow template.",
-    "iconName": "aws-terraform-icon",
-    "categories": [
-        "HCL"
-    ]
-}

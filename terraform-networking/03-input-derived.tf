@@ -1,6 +1,6 @@
 # General
 module "tags" {
-  source = "../infrastructure/modules/tags"
+  source = "git@github.com:LBHackney-IT/infrastructure.git//modules/aws-tags-lbh/module?ref=master"
 
   application          = var.application
   automation_build_url = var.automation_build_url

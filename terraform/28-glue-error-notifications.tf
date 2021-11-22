@@ -9,8 +9,6 @@ data "archive_file" "glue_job_failure_notification_lambda" {
 }
 
 resource "aws_s3_bucket_object" "glue_job_failure_notification_lambda" {
-  tags = module.tags.values
-
   bucket = module.lambda_artefact_storage.bucket_id
   key    = "glue-failure-notifications.zip"
   source = data.archive_file.glue_job_failure_notification_lambda.output_path

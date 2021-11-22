@@ -1,5 +1,5 @@
 project = "DataPlatform"
-department = "HackIT"
+department = "Data And Insight"
 phase = "Discovery"
 automation_build_url = "https://example.com"
 confidentiality = "Restricted"

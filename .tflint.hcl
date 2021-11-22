@@ -14,4 +14,9 @@ plugin "aws" {
 rule "aws_resource_missing_tags" {
   enabled = true
   tags = ["AutomationBuildUrl", "Environment", "Team", "Department", "Application", "Phase", "Stack", "Project", "Confidentiality"]
+  exclude = ["aws_s3_bucket_object"] 
+}
+
+rule "terraform_module_pinned_source" {
+  enabled = false
 }

@@ -11,40 +11,11 @@ The Data Dictionary & Playbook can be found on the [Document Site](http://playbo
 
 ## Architecture Decision Records
 
-We use Architecture Decision Records (ADRs) to document architecture decisions that we make. They can be found in
-`documentation/architecture-decisions` and contributed to with [adr-tools](https://github.com/npryce/adr-tools).
-
-## Hackney Infrastructure (Copy)
-
-While in the initial phase of development, we have decided to manage our terraform in our own repository with the
-future intention of potentially merging it into the infrastructure project in the future if there is relevant value add.
-
-However, to ensure that we are using the shared modules contained in infrastructure we have used `git subtree` to include
-the project code into this repository for reference.
-
-The following commands outline how the infrastructure project was attached to the data platform project.
-
-***WARNING:*** You do NOT need to run these commands as part of project setup.
-
-The following commands *were* used to link the infrastructure repository to the data platform project. They are run from the root of the project after cloning.
-
-`git remote add -f infrastructure git@github.com:LBHackney-IT/infrastructure.git`
-
-`git subtree add --prefix infrastructure infrastructure master --squash`
-
-The first command adds the infrastructure repository as a remote named `infrastructure` and the second command adds the infrastructure project as a subtree under the infrastructure directory using the master branch as a reference.
-
-### Updating Hackney Infrastructure (Copy)
-
-In the event that changes have been made to the infrastructure project, you can run the following command in the root of the project
-
-***WARNING:*** You do NOT need to run these commands as part of project setup, only if you explicity need to update the infrastructure project code
-
-`git fetch infrastructure master; git subtree pull --prefix infrastructure infrastructure master --squash`
-
+We use Architecture Decision Records (ADRs) to document architecture decisions that we make. They can be found in the
+[Data Platform - Playbook](http://playbook.hackney.gov.uk/)
 ## Terraform Deployment
 
-The terraform will be deployed using Github Actions on push to main / when a Pull Request is merged into main
+The Terraform will be deployed, using GitHub Actions, on push to main / when a Pull Request is merged into main
 
 ## Terraform Development
 

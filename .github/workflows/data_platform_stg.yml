@@ -18,9 +18,6 @@ env:
 on:
   push:
     branches: ['*']
-    paths-ignore:
-      - "infrastructure/projects/**"
-      - "infrastructure/platform/**"
   workflow_dispatch:
     inputs:
       terraform_import:
@@ -32,7 +29,7 @@ on:
 
 jobs:
   tests:
-    name: Run tests
+    name: Test Python Jobs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -41,14 +38,28 @@ jobs:
         run: |
           cd scripts
           make test
+
   validate:
-    name: AWS Terraform Validate
+    name: Validate Terraform
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1.3.2
+        with:
+          terraform_version: 1.0.11
+
+      - name: Add a key to allow access to Infastructure
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
+
       - name: Terraform Validate
-        uses: ./.github/actions/aws-terraform/terraform-validate
+        uses: ./.github/actions/terraform-validate
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -59,42 +70,64 @@ jobs:
   build:
     needs: [tests, validate]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.tests.result == 'success' && needs.validate.result == 'success'
-    name: AWS Terraform
+    name: Deploy Terraform
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1.3.2
+        with:
+          terraform_wrapper: false
+          terraform_version: 1.0.11
+
+      - name: Add a key to allow access to Infastructure
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
+
       - name: Setup Node.js 14
         uses: actions/setup-node@v2
         with:
           node-version: "14"
+
       - name: Install pipenv
         run: |
           sudo apt-get update
           sudo apt-get install pipenv
-      - name: Install dependencies in rds-database-snapshot-replicator lambda
-        working-directory: "./lambdas/rds-database-snapshot-replicator"
-        run: npm install
-      - name: Install dependencies in liberator-sftp-to-s3 lambda
-        working-directory: "./lambdas/liberator-sftp-to-s3"
-        run: npm install
+
       - name: Set up Google Cloud Credentials
         run: |
           echo $GOOGLE_CREDENTIALS >> ./google_service_account_creds.json
         shell: bash
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
-      - name: Install dependencies in g-drive-to-s3 lambda
+
+      - name: Install Dependencies for rds-database-snapshot-replicator Lambda
+        working-directory: "./lambdas/rds-database-snapshot-replicator"
+        run: npm install
+
+      - name: Install Dependencies for liberator-sftp-to-s3 Lambda
+        working-directory: "./lambdas/liberator-sftp-to-s3"
+        run: npm install
+
+      - name: Install Dependencies for g-drive-to-s3 Lambda
         working-directory: "./lambdas/g_drive_to_s3"
         run: make install-requirements
-      - name: Download external dependencies
+
+      - name: Download External Python Dependencies
         working-directory: "./external-lib"
         run: make all
-      - name: Package glue job helpers module
+
+      - name: Package AWS Glue Job Helpers Module
         working-directory: "./scripts"
         run: make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
+
       - name: Deploy Data Platform Network
-        uses: ./.github/actions/aws-terraform
+        uses: ./.github/actions/terraform-deploy
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -117,13 +150,15 @@ jobs:
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
+
       - name: Assign Network Properties
         working-directory: "./terraform-networking"
         run: |
           VPC_ID=$(terraform output vpc_id)
           echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/stg.tfvars
+
       - name: Deploy Data Platform Infastructure
-        uses: ./.github/actions/aws-terraform
+        uses: ./.github/actions/terraform-deploy
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -146,7 +181,8 @@ jobs:
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
-      - name: Build and delpoy image to ECR
+
+      - name: Build and Deploy SQL to Parquet Image to ECR
         run: |
           echo "[profile deploy_role]" >> ~/.aws/config
           echo "role_arn=arn:aws:iam::${{ env.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}" >> ~/.aws/config

@@ -1,6 +1,4 @@
 resource "aws_s3_bucket_object" "housing_repairs_dlo_cleaning_script" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/housing_repairs/repairs_dlo_cleaning.py"
   acl    = "private"

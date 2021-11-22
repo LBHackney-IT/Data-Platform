@@ -1,17 +1,17 @@
 locals {
   glue_role_arn  = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
   s3_object_tags = { for k, v in var.department.tags : k => v if k != "PlatformDepartment" }
+  extra_jars     = join(",", concat(var.extra_jars, ["s3://${var.department.glue_scripts_bucket.bucket_id}/jars/deequ-1.0.3.jar"]))
 }
 
 resource "aws_s3_bucket_object" "job_script" {
   count = var.script_s3_object_key == null ? 1 : 0
-  tags  = local.s3_object_tags
 
   bucket = var.department.glue_scripts_bucket.bucket_id
   key    = "scripts/${var.department.identifier}/${var.script_name}.py"
   acl    = "private"
-  source = "../scripts/${var.department.identifier_snake_case}/${var.script_name}.py"
-  etag   = filemd5("../scripts/${var.department.identifier_snake_case}/${var.script_name}.py")
+  source = "../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py"
+  etag   = filemd5("../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py")
 }
 
 locals {
@@ -41,7 +41,7 @@ resource "aws_glue_job" "job" {
     {
       "--TempDir"                          = "s3://${var.department.glue_temp_bucket.bucket_id}/${var.department.identifier}/"
       "--extra-py-files"                   = "s3://${var.department.glue_scripts_bucket.bucket_id}/${var.helper_module_key},s3://${var.department.glue_scripts_bucket.bucket_id}/${var.pydeequ_zip_key}"
-      "--extra-jars"                       = "s3://${var.department.glue_scripts_bucket.bucket_id}/jars/deequ-1.0.3.jar"   
+      "--extra-jars"                       = local.extra_jars
       "--enable-continuous-cloudwatch-log" = "true"
   })
 }

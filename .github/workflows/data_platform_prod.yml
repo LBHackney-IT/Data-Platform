@@ -17,9 +17,6 @@ env:
 on:
   release:
     types: [published]
-    paths-ignore:
-      - "infrastructure/projects/**"
-      - "infrastructure/platform/**"
   workflow_dispatch:
     inputs:
       terraform_import:
@@ -36,6 +33,17 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1.3.2
+        with:
+          terraform_wrapper: false
+          terraform_version: 1.0.11
+      - name: Add a key to allow access to Infastructure
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
       - name: Setup Node.js 14
         uses: actions/setup-node@v2
         with:
@@ -66,7 +74,7 @@ jobs:
         working-directory: "./scripts"
         run: make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
       - name: Deploy Data Platform Network
-        uses: ./.github/actions/aws-terraform
+        uses: ./.github/actions/terraform-deploy
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -93,7 +101,7 @@ jobs:
           VPC_ID=$(terraform output vpc_id)
           echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/prod.tfvars
       - name: Deploy Data Platform Infastructure
-        uses: ./.github/actions/aws-terraform
+        uses: ./.github/actions/terraform-deploy
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -114,7 +122,7 @@ jobs:
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
-      - name: Build and delpoy image to ECR
+      - name: Build and deploy image to ECR
         run: |
           echo "[profile deploy_role]" >> ~/.aws/config
           echo "role_arn=arn:aws:iam::${{ env.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}" >> ~/.aws/config

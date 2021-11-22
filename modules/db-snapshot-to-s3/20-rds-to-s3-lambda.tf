@@ -121,9 +121,6 @@ data "archive_file" "rds_snapshot_to_s3_lambda" {
 }
 
 resource "aws_s3_bucket_object" "rds_snapshot_to_s3_lambda" {
-
-  tags = var.tags
-
   bucket = var.lambda_artefact_storage_bucket
   key    = "rds-snapshot-to-s3.zip"
   source = data.archive_file.rds_snapshot_to_s3_lambda.output_path
