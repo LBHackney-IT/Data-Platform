@@ -8,6 +8,11 @@ variable "is_live_environment" {
   type        = bool
 }
 
+variable "environment" {
+  description = "Environment e.g. Dev, Stg, Prod, Mgmt."
+  type        = string
+}
+
 variable "landing_zone_bucket" {
   description = "Landing zone S3 bucket"
   type = object({
