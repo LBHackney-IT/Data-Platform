@@ -15,3 +15,7 @@ rule "aws_resource_missing_tags" {
   enabled = true
   tags = ["AutomationBuildUrl", "Environment", "Team", "Department", "Application", "Phase", "Stack", "Project", "Confidentiality"]
 }
+
+rule "terraform_module_pinned_source" {
+  enabled = false
+}
