@@ -19,6 +19,11 @@ jobs:
         uses: hashicorp/setup-terraform@v1.2.1
         with:
           terraform_version: 0.14.9
+      - name: Add a key to allow access to Infastructure
+        run: |
+          echo ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}' > id_rsa
+          ssh-keyscan github.com > known_hosts
+          chmod 400 id_rsa known_hosts
       - name: Set up dummy Google Cloud Credentials
         run: |
           echo "{}" >> ./google_service_account_creds.json

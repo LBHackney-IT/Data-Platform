@@ -64,6 +64,15 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1.2.1
+        with:
+          terraform_version: 0.14.9
+      - name: Add a key to allow access to Infastructure
+        run: |
+          echo ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}' > id_rsa
+          ssh-keyscan github.com > known_hosts
+          chmod 400 id_rsa known_hosts
       - name: Setup Node.js 14
         uses: actions/setup-node@v2
         with:
