@@ -18,9 +18,6 @@ env:
 on:
   push:
     branches: ['*']
-    paths-ignore:
-      - "infrastructure/projects/**"
-      - "infrastructure/platform/**"
   workflow_dispatch:
     inputs:
       terraform_import:
@@ -48,7 +45,7 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v2
       - name: Terraform Validate
-        uses: ./.github/actions/aws-terraform/terraform-validate
+        uses: ./.github/actions/terraform-validate
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -104,7 +101,7 @@ jobs:
         working-directory: "./scripts"
         run: make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
       - name: Deploy Data Platform Network
-        uses: ./.github/actions/aws-terraform
+        uses: ./.github/actions/terraform-deploy
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -133,7 +130,7 @@ jobs:
           VPC_ID=$(terraform output vpc_id)
           echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/stg.tfvars
       - name: Deploy Data Platform Infastructure
-        uses: ./.github/actions/aws-terraform
+        uses: ./.github/actions/terraform-deploy
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

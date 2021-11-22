@@ -76,7 +76,7 @@ jobs:
         working-directory: "./scripts"
         run: make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
       - name: Deploy Data Platform Network
-        uses: ./.github/actions/aws-terraform
+        uses: ./.github/actions/terraform-deploy
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -103,7 +103,7 @@ jobs:
           VPC_ID=$(terraform output vpc_id)
           echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/prod.tfvars
       - name: Deploy Data Platform Infastructure
-        uses: ./.github/actions/aws-terraform
+        uses: ./.github/actions/terraform-deploy
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
