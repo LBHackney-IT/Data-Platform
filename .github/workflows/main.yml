@@ -101,9 +101,15 @@ jobs:
           aws configure set aws_access_key_id ${{ env.aws_access_key_id }} > /dev/null 2>&1
           aws configure set aws_secret_access_key ${{ env.aws_secret_access_key }} > /dev/null 2>&1
           terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ env.main_state_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ env.main_state_prefix }}/${{ env.environment }}-terraform.tfstate"
-      - name: Run `tflint` on Terraform
+      - name: Run `tflint` on main Terraform
         working-directory: "./terraform"
         run: |
           terraform init -backend=false
           ../tflint --init --config="../.tflint.hcl"
           ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account=${{ env.aws_deploy_account }}' --var 'aws_api_account=${{ env.aws_api_account }}' --var 'aws_hackit_account_id=${{ env.aws_hackit_account_id }}' --var 'aws_deploy_iam_role_name=${{ env.aws_deploy_iam_role_name }}' --var 'environment=${{ env.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ env.automation_build_url }}' --var 'aws_api_vpc_id=${{ env.aws_api_vpc_id }}' --module --config="../.tflint.hcl" --loglevel=warn .
+      - name: Run `tflint` on modules
+        working-directory: "./modules"
+        run: |
+          terraform init -backend=false
+          ../tflint --init --config="../.tflint.hcl"
+          for module in $(ls .); do echo $module && ../tflint --var-file='../../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account=${{ env.aws_deploy_account }}' --var 'aws_api_account=${{ env.aws_api_account }}' --var 'aws_hackit_account_id=${{ env.aws_hackit_account_id }}' --var 'aws_deploy_iam_role_name=${{ env.aws_deploy_iam_role_name }}' --var 'environment=${{ env.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ env.automation_build_url }}' --var 'aws_api_vpc_id=${{ env.aws_api_vpc_id }}' --module --config="../.tflint.hcl" --loglevel=warn $module ; done
