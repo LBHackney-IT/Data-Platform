@@ -1,4 +1,4 @@
-name: Validate All Terraform
+name: Validate Terraform
 
 on:
   pull_request:
