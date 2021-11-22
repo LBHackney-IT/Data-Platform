@@ -52,7 +52,6 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       var.landing_zone_bucket.bucket_arn,
       "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
       "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
-      # "${var.landing_zone_bucket.bucket_arn}/unrestricted/*", shuold unrestricted data be in the landing zone?
 
       var.raw_zone_bucket.bucket_arn,
       "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
