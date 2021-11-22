@@ -3,11 +3,6 @@ name: Validate All Terraform
 on:
   pull_request:
     branches: ['*']
-    paths:
-      - "modules/**"
-      - "terraform-networking/**"
-      - "terraform-backend-setup/**"
-      - "terraform/**"
 
 jobs:
   validate:

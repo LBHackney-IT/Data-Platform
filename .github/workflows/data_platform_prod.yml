@@ -17,9 +17,6 @@ env:
 on:
   release:
     types: [published]
-    paths-ignore:
-      - "infrastructure/projects/**"
-      - "infrastructure/platform/**"
   workflow_dispatch:
     inputs:
       terraform_import:
