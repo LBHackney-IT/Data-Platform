@@ -155,19 +155,7 @@ jobs:
         working-directory: "./terraform-networking"
         run: |
           VPC_ID=$(terraform output vpc_id)
-          VPC_ID_RAW=$(terraform output -raw vpc_id)
-          VPC_ID_JSON=$(terraform output -json vpc_id)
-          echo "vpc id ---------"
-          echo $VPC_ID
-          echo "vpc id raw ---------"
-          echo $VPC_ID_RAW
-          echo "vpc id json  ---------"
-          echo $VPC_ID_JSON
           echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/stg.tfvars
-
-      - name: Print config file
-        working-directory: "./config"
-        run: cat ./terraform/stg.tfvars
 
       - name: Deploy Data Platform Infastructure
         uses: ./.github/actions/terraform-deploy
