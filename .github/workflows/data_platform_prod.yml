@@ -36,6 +36,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v1.3.2
         with:
+          terraform_wrapper: false
           terraform_version: 1.0.11
       - name: Add a key to allow access to Infastructure
         run: |
