@@ -6,7 +6,6 @@ locals {
 
 resource "aws_s3_bucket_object" "job_script" {
   count = var.script_s3_object_key == null ? 1 : 0
-  tags  = local.s3_object_tags
 
   bucket = var.department.glue_scripts_bucket.bucket_id
   key    = "scripts/${var.department.identifier}/${var.script_name}.py"

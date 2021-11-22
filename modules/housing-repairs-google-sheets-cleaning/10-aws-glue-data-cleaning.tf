@@ -4,8 +4,6 @@ locals {
 }
 
 resource "aws_s3_bucket_object" "housing_repairs_repairs_cleaning_script" {
-  tags = local.s3_object_tags
-
   bucket = var.glue_scripts_bucket_id
   key    = "scripts/${local.object_key}"
   acl    = "private"

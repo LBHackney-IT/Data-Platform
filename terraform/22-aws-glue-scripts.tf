@@ -1,6 +1,4 @@
 resource "aws_s3_bucket_object" "google_sheets_import_script" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/google_sheets_import.py"
   acl    = "private"
@@ -9,8 +7,6 @@ resource "aws_s3_bucket_object" "google_sheets_import_script" {
 }
 
 resource "aws_s3_bucket_object" "address_matching" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/address_matching.py"
   acl    = "private"
@@ -19,8 +15,6 @@ resource "aws_s3_bucket_object" "address_matching" {
 }
 
 resource "aws_s3_bucket_object" "levenshtein_address_matching" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/levenshtein_address_matching.py"
   acl    = "private"
@@ -29,8 +23,6 @@ resource "aws_s3_bucket_object" "levenshtein_address_matching" {
 }
 
 resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/copy_manually_uploaded_csv_data_to_raw.py"
   acl    = "private"
@@ -39,8 +31,6 @@ resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
 }
 
 resource "aws_s3_bucket_object" "address_cleaning" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/address_cleaning.py"
   acl    = "private"
@@ -49,8 +39,6 @@ resource "aws_s3_bucket_object" "address_cleaning" {
 }
 
 resource "aws_s3_bucket_object" "helpers" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
   acl    = "private"
@@ -59,8 +47,6 @@ resource "aws_s3_bucket_object" "helpers" {
 }
 
 resource "aws_s3_bucket_object" "jars" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
   acl    = "private"
@@ -69,8 +55,6 @@ resource "aws_s3_bucket_object" "jars" {
 }
 
 resource "aws_s3_bucket_object" "deeque_jar" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "jars/deequ-1.0.3.jar"
   acl    = "private"
@@ -79,8 +63,6 @@ resource "aws_s3_bucket_object" "deeque_jar" {
 }
 
 resource "aws_s3_bucket_object" "pydeequ" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "python-modules/pydeequ-1.0.1.zip"
   acl    = "private"
@@ -89,8 +71,6 @@ resource "aws_s3_bucket_object" "pydeequ" {
 }
 
 resource "aws_s3_bucket_object" "xlsx_import_script" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/xlsx_import.py"
   acl    = "private"
@@ -99,8 +79,6 @@ resource "aws_s3_bucket_object" "xlsx_import_script" {
 }
 
 resource "aws_s3_bucket_object" "get_uprn_from_uhref" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/housing_repairs/get_uprn_from_uhref.py"
   acl    = "private"
@@ -109,8 +87,6 @@ resource "aws_s3_bucket_object" "get_uprn_from_uhref" {
 }
 
 resource "aws_s3_bucket_object" "copy_liberator_landing_to_raw" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/copy_liberator_landing_to_raw.py"
   acl    = "private"

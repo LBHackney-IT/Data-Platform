@@ -41,8 +41,6 @@ locals {
 
 ## Glue job, database and crawler
 resource "aws_s3_bucket_object" "ingest_tascomi_data" {
-  tags = module.tags.values
-
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/planning/tascomi_api_ingestion.py"
   acl    = "private"
@@ -123,7 +121,6 @@ resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
 
 
 resource "aws_s3_bucket_object" "parse_tascomi_tables_script" {
-  tags   = module.tags.values
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/planning/tascomi_parse_tables.py"
   acl    = "private"
@@ -169,7 +166,6 @@ resource "aws_glue_catalog_database" "refined_zone_tascomi" {
 
 
 resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
-  tags   = module.tags.values
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/planning/tascomi-column-type-dictionary.json"
   acl    = "private"
@@ -178,7 +174,6 @@ resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
 }
 
 resource "aws_s3_bucket_object" "recast_tables_script" {
-  tags   = module.tags.values
   bucket = module.glue_scripts.bucket_id
   key    = "scripts/recast_tables.py"
   acl    = "private"
