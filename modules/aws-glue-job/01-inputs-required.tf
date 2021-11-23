@@ -5,6 +5,7 @@ variable "department" {
     glue_role_arn         = string
     identifier_snake_case = string
     tags                  = map(string)
+    environment           = string
     glue_temp_bucket = object({
       bucket_id = string
     })
