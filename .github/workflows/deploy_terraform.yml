@@ -1,11 +1,11 @@
-name: Data-Platform (Staging)
-concurrency: staging-deploy
+name: Deploy Data-Platform
+concurrency: deploy
 env:
-  aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+  # aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
   aws_deploy_region: "eu-west-2"
-  google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
-  environment: "stg"
-  automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+  # google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
+  # environment: "stg"
+  # automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
 
   network_state_prefix: "data-platform-network"
   network_build_path: "./terraform-networking"
@@ -14,10 +14,7 @@ env:
   main_build_path: "./terraform"
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_call:
     inputs:
       terraform_import:
         description: "Terraform import statements"
@@ -25,17 +22,65 @@ on:
       terraform_remove:
         description: "Terraform state rm statements"
         required: false
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: string
+      automation_build_url:
+        description: "Link to where the build pipeline is defined"
+        type: string
+        required: true
+    secrets:
+      google_project_id:
+        required: true
+        type: string
+      aws_deploy_account:
+        description: "ID of Account being deployed to"
+        required: true
+        type: string
 
 jobs:
-  pre-deploy-checks:
-    uses: ".."
-  build-and-deploy:
-    needs: ["pre-deploy-checks"]
-    uses: ".."
-  build:
-    needs: [tests, validate]
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.tests.result == 'success' && needs.validate.result == 'success'
-    name: Deploy Terraform
+  # tests:
+  #   name: Test Python Jobs
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Run `make test`
+  #       run: |
+  #         cd scripts
+  #         make test
+
+  # validate:
+  #   name: Validate Terraform
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Source
+  #       uses: actions/checkout@v2
+
+  #     - name: Install Terraform
+  #       uses: hashicorp/setup-terraform@v1.3.2
+  #       with:
+  #         terraform_version: 1.0.11
+
+  #     - name: Add a key to allow access to Infastructure
+  #       run: |
+  #         mkdir -p ~/.ssh
+  #         ssh-keyscan github.com >> ~/.ssh/known_hosts
+  #         echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+  #         chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
+
+  #     - name: Terraform Validate
+  #       uses: ./.github/actions/terraform-validate
+  #       with:
+  #         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         terraform_state_s3_key_prefix: ${{ env.network_state_prefix }}
+  #         build_path: ${{ env.network_build_path }}
+  #         environment: ${{ env.environment }}
+
+  deploy:
+    name: Deploy Data Platform
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
@@ -99,17 +144,17 @@ jobs:
           aws_deploy_region: ${{ env.aws_deploy_region }}
           terraform_state_s3_key_prefix: ${{ env.network_state_prefix }}
           build_path: ${{ env.network_build_path }}
-          automation_build_url: ${{ env.automation_build_url }}
-          environment: ${{ env.environment }}
-          google_project_id: ${{ env.google_project_id }}
-          aws_deploy_account: ${{ env.aws_deploy_account }}
+          automation_build_url: ${{ inputs.automation_build_url }}
+          environment: ${{ inputs.environment }}
+          google_project_id: ${{ secrets.google_project_id }}
+          aws_deploy_account: ${{ secrets.aws_deploy_account }}
           aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           branch: ${GITHUB_REF##*/}
-          terraform_import: ${{ github.event.inputs.terraform_import }}
-          terraform_remove: ${{ github.event.inputs.terraform_remove }}
+          terraform_import: ${{ inputs.terraform_import }}
+          terraform_remove: ${{ inputs.terraform_remove }}
           # DANGER ZONE
           # In order to allow you to run a Terraform destroy (that will delete all AWS resources managed by Terraform,
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
@@ -130,17 +175,17 @@ jobs:
           aws_deploy_region: ${{ env.aws_deploy_region }}
           terraform_state_s3_key_prefix: ${{ env.main_state_prefix }}
           build_path: ${{ env.main_build_path }}
-          automation_build_url: ${{ env.automation_build_url }}
-          environment: ${{ env.environment }}
-          google_project_id: ${{ env.google_project_id }}
-          aws_deploy_account: ${{ env.aws_deploy_account }}
+          automation_build_url: ${{ inputs.automation_build_url }}
+          environment: ${{ inputs.environment }}
+          google_project_id: ${{ secrets.google_project_id }}
+          aws_deploy_account: ${{ secrets.aws_deploy_account }}
           aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           branch: ${GITHUB_REF##*/}
-          terraform_import: ${{ github.event.inputs.terraform_import }}
-          terraform_remove: ${{ github.event.inputs.terraform_remove }}
+          terraform_import: ${{ inputs.terraform_import }}
+          terraform_remove: ${{ inputs.terraform_remove }}
           # DANGER ZONE
           # In order to allow you to run a Terraform destroy (that will delete all AWS resources managed by Terraform,
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
