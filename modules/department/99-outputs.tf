@@ -72,3 +72,8 @@ output "glue_scripts_bucket" {
   description = "Bucket where we store glue scripts"
   value       = var.glue_scripts_bucket
 }
+
+output "environment" {
+  description = "Environment e.g. dev, stg, prod"
+  value       = var.environment
+}

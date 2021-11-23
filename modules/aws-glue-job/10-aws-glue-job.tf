@@ -17,12 +17,13 @@ resource "aws_s3_bucket_object" "job_script" {
 locals {
   object_key      = var.script_s3_object_key == null ? aws_s3_bucket_object.job_script[0].key : var.script_s3_object_key
   script_location = "s3://${var.department.glue_scripts_bucket.bucket_id}/${local.object_key}"
+  job_name_prefix = var.department.environment == "stg" ? "stg " : ""
 }
 
 resource "aws_glue_job" "job" {
   tags = var.department.tags
 
-  name              = var.job_name
+  name              = "${local.job_name_prefix}${var.job_name}"
   number_of_workers = var.number_of_workers_for_glue_job
   worker_type       = var.glue_job_worker_type
   role_arn          = local.glue_role_arn
