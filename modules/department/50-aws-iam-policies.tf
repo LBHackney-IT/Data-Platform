@@ -46,8 +46,7 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
 
       var.glue_scripts_bucket.bucket_arn,
-      "${var.glue_scripts_bucket.bucket_arn}/${local.department_identifier}/*",
-      "${var.glue_scripts_bucket.bucket_arn}/custom/*",
+      "${var.glue_scripts_bucket.bucket_arn}/*",
 
       var.landing_zone_bucket.bucket_arn,
       "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
@@ -206,7 +205,19 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.athena_storage_bucket.bucket_arn,
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
       var.glue_temp_storage_bucket.bucket_arn,
+    ]
+  }
+
+  statement {
+    sid    = "ReadAllScripts"
+    effect = "Allow"
+    actions = [
+      "s3:Get*",
+      "s3:List*"
+    ]
+    resources = [
       var.glue_scripts_bucket.bucket_arn,
+      "${var.glue_scripts_bucket.bucket_arn}/*",
     ]
   }
 
