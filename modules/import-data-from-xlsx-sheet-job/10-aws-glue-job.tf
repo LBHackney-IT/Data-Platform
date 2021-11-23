@@ -6,6 +6,7 @@ module "xlsx_import" {
   job_name          = "Xlsx Import Job - ${var.glue_job_name}"
   helper_module_key = var.helper_module_key
   pydeequ_zip_key   = var.pydeequ_zip_key
+  glue_role_arn     = var.glue_role_arn
   job_parameters = {
     "--s3_bucket_source"  = "s3://${var.landing_zone_bucket_id}/${var.department.identifier}/${var.input_file_name}"
     "--s3_bucket_target"  = local.s3_output_path
