@@ -1,11 +1,7 @@
 name: Deploy Data-Platform
 concurrency: deploy
 env:
-  # aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
   aws_deploy_region: "eu-west-2"
-  # google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
-  # environment: "stg"
-  # automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
 
   network_state_prefix: "data-platform-network"
   network_build_path: "./terraform-networking"
@@ -40,45 +36,6 @@ on:
         type: string
 
 jobs:
-  # tests:
-  #   name: Test Python Jobs
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #     - name: Run `make test`
-  #       run: |
-  #         cd scripts
-  #         make test
-
-  # validate:
-  #   name: Validate Terraform
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Source
-  #       uses: actions/checkout@v2
-
-  #     - name: Install Terraform
-  #       uses: hashicorp/setup-terraform@v1.3.2
-  #       with:
-  #         terraform_version: 1.0.11
-
-  #     - name: Add a key to allow access to Infastructure
-  #       run: |
-  #         mkdir -p ~/.ssh
-  #         ssh-keyscan github.com >> ~/.ssh/known_hosts
-  #         echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-  #         chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
-
-  #     - name: Terraform Validate
-  #       uses: ./.github/actions/terraform-validate
-  #       with:
-  #         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         terraform_state_s3_key_prefix: ${{ env.network_state_prefix }}
-  #         build_path: ${{ env.network_build_path }}
-  #         environment: ${{ env.environment }}
-
   deploy:
     name: Deploy Data Platform
     runs-on: ubuntu-latest

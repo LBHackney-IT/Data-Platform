@@ -19,7 +19,14 @@ env:
   aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 
-on: [ pull_request, push ]
+on: 
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches-ignore: 
+      - "main"
+  workflow_call:
 
 jobs:
   tests:
@@ -87,13 +94,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v1.2.1
         with:
-          terraform_version: 0.14.9
+          terraform_version: 1.0.11
+
+      - name: Add a key to allow access to Infastructure
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
+
       - name: Install tflint
         run: |
           curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip
+
       - name: Configuring AWS credentials
         working-directory: "./terraform"
         run: |
@@ -101,18 +118,21 @@ jobs:
           aws configure set aws_access_key_id ${{ env.aws_access_key_id }} > /dev/null 2>&1
           aws configure set aws_secret_access_key ${{ env.aws_secret_access_key }} > /dev/null 2>&1
           terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ env.main_state_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ env.main_state_prefix }}/${{ env.environment }}-terraform.tfstate"
+
       - name: Run `tflint` on Terraform Backend Setup
         working-directory: "./terraform-backend-setup"
         run: |
           terraform init -backend=false
           ../tflint --init --config="../.tflint.hcl"
           ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account=${{ env.aws_deploy_account }}' --var 'aws_api_account=${{ env.aws_api_account }}' --var 'aws_hackit_account_id=${{ env.aws_hackit_account_id }}' --var 'aws_deploy_iam_role_name=${{ env.aws_deploy_iam_role_name }}' --var 'environment=${{ env.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ env.automation_build_url }}' --var 'aws_api_vpc_id=${{ env.aws_api_vpc_id }}' --module --config="../.tflint.hcl" --loglevel=warn .
+
       - name: Run `tflint` on networking Terraform
         working-directory: "./terraform-networking"
         run: |
           terraform init -backend=false
           ../tflint --init --config="../.tflint.hcl"
           ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account=${{ env.aws_deploy_account }}' --var 'aws_api_account=${{ env.aws_api_account }}' --var 'aws_hackit_account_id=${{ env.aws_hackit_account_id }}' --var 'aws_deploy_iam_role_name=${{ env.aws_deploy_iam_role_name }}' --var 'environment=${{ env.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ env.automation_build_url }}' --var 'aws_api_vpc_id=${{ env.aws_api_vpc_id }}' --module --config="../.tflint.hcl" --loglevel=warn .
+
       - name: Run `tflint` on main Terraform
         working-directory: "./terraform"
         run: |
