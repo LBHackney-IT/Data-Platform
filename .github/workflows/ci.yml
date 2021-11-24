@@ -1,10 +1,6 @@
 name: CI
 env:
-  aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
-  aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
   aws_deploy_region: "eu-west-2"
-  google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
-  aws_api_vpc_id : ${{ secrets.AWS_API_VPC_ID }}
   environment: "stg"
   automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
 
@@ -13,11 +9,6 @@ env:
 
   main_state_prefix: "data-platform"
   main_build_path: "./terraform"
-  aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
-  aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
 
 on: 
   pull_request:
@@ -27,6 +18,12 @@ on:
     branches-ignore: 
       - "main"
   workflow_call:
+    secrets:
+      google_project_id:
+        default: ${{ secrets.GOOGLE_PROJECT_ID_STG }} 
+      aws_deploy_account:
+        description: "ID of Account being deployed to"
+        default: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
 
 jobs:
   tests:
@@ -115,8 +112,8 @@ jobs:
         working-directory: "./terraform"
         run: |
           aws configure set region eu-west-2 > /dev/null 2>&1
-          aws configure set aws_access_key_id ${{ env.aws_access_key_id }} > /dev/null 2>&1
-          aws configure set aws_secret_access_key ${{ env.aws_secret_access_key }} > /dev/null 2>&1
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} > /dev/null 2>&1
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} > /dev/null 2>&1
           terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ env.main_state_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ env.main_state_prefix }}/${{ env.environment }}-terraform.tfstate"
 
       - name: Run `tflint` on Terraform Backend Setup
@@ -124,18 +121,18 @@ jobs:
         run: |
           terraform init -backend=false
           ../tflint --init --config="../.tflint.hcl"
-          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account=${{ env.aws_deploy_account }}' --var 'aws_api_account=${{ env.aws_api_account }}' --var 'aws_hackit_account_id=${{ env.aws_hackit_account_id }}' --var 'aws_deploy_iam_role_name=${{ env.aws_deploy_iam_role_name }}' --var 'environment=${{ env.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ env.automation_build_url }}' --var 'aws_api_vpc_id=${{ env.aws_api_vpc_id }}' --module --config="../.tflint.hcl" --loglevel=warn .
+          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account=${{ env.aws_deploy_account }}' --var 'aws_api_account=${{ secrets.AWS_API_ACCOUNT_PROD }}' --var 'aws_hackit_account_id=${{ secrets.AWS_HACKIT_ACCOUNT_ID }}' --var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' --var 'environment=${{ env.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ env.automation_build_url }}' --var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}' --module --config="../.tflint.hcl" --loglevel=warn .
 
       - name: Run `tflint` on networking Terraform
         working-directory: "./terraform-networking"
         run: |
           terraform init -backend=false
           ../tflint --init --config="../.tflint.hcl"
-          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account=${{ env.aws_deploy_account }}' --var 'aws_api_account=${{ env.aws_api_account }}' --var 'aws_hackit_account_id=${{ env.aws_hackit_account_id }}' --var 'aws_deploy_iam_role_name=${{ env.aws_deploy_iam_role_name }}' --var 'environment=${{ env.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ env.automation_build_url }}' --var 'aws_api_vpc_id=${{ env.aws_api_vpc_id }}' --module --config="../.tflint.hcl" --loglevel=warn .
+          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account=${{ env.aws_deploy_account }}' --var 'aws_api_account=${{ secrets.AWS_API_ACCOUNT_PROD }}' --var 'aws_hackit_account_id=${{ secrets.AWS_HACKIT_ACCOUNT_ID }}' --var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' --var 'environment=${{ env.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ env.automation_build_url }}' --var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}' --module --config="../.tflint.hcl" --loglevel=warn .
 
       - name: Run `tflint` on main Terraform
         working-directory: "./terraform"
         run: |
           terraform init -backend=false
           ../tflint --init --config="../.tflint.hcl"
-          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account=${{ env.aws_deploy_account }}' --var 'aws_api_account=${{ env.aws_api_account }}' --var 'aws_hackit_account_id=${{ env.aws_hackit_account_id }}' --var 'aws_deploy_iam_role_name=${{ env.aws_deploy_iam_role_name }}' --var 'environment=${{ env.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ env.automation_build_url }}' --var 'aws_api_vpc_id=${{ env.aws_api_vpc_id }}' --module --config="../.tflint.hcl" --loglevel=warn .
+          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account=${{ env.aws_deploy_account }}' --var 'aws_api_account=${{ secrets.AWS_API_ACCOUNT_PROD }}' --var 'aws_hackit_account_id=${{ secrets.AWS_HACKIT_ACCOUNT_ID }}' --var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' --var 'environment=${{ env.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ env.automation_build_url }}' --var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}' --module --config="../.tflint.hcl" --loglevel=warn .
