@@ -42,3 +42,17 @@ module "Parking_CEO_Average_On_Street" {
     "--job-bookmark-option" = "job-bookmark-enable"
   }
 }
+
+module "Parking_PCN_Denormalisation" {
+  source            = "../modules/aws-glue-job"
+  department        = module.department_parking
+  job_name          = "${local.short_identifier_prefix}parking_pcn_denormalisation"
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  script_name       = "parking_pcn_denormalisation"
+  triggered_by_job  = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  job_description   = "This job creates a single de-normalised PCN record with the latest details against it (Events, finance, ETA, etc.). This can then be queried (WITHOUT joins)."
+  workflow_name     = aws_glue_workflow.parking_liberator_data.name
+  job_parameters = {
+  }
+}
