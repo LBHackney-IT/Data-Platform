@@ -27,14 +27,14 @@ class TestSnapshotCreation:
     def test_prepare_several_days_increments(self, spark):
         '''when applying several days increments containing several changes of the sane application, we should prepare the increment only keeping the latest version'''
         input_increment = [{'id': 1, 'application_stage': 5, 'last_updated': datetime(2021, 9, 24, 1, 0, 0)},{'id': 1, 'application_stage': 6, 'last_updated': datetime(2021, 9, 25, 0, 0, 0)}]
-        expected = [{'id': 1, 'application_stage': 6, 'last_updated': datetime(2021, 9, 25, 0, 0, 0), 'snapshot_year': self.snapshotYear, 'snapshot_month': self.snapshotMonth, 'snapshot_day': self.snapshotDay, 'snapshot_date': self.snapshotDate}]
+        expected = [{'id': 1, 'application_stage': 6, 'last_updated': datetime(2021, 9, 25, 0, 0, 0)}]
         response = self.prepare_increments(spark, input_increment)
         assert (response == expected)
 
     def test_prepare_several_records_increments(self, spark):
         '''when applying several days increments containing several applications, we should prepare the increment keeping one record per application'''
         input_increment = [{'id': 1, 'application_stage': 5, 'last_updated': datetime(2021, 9, 24, 0, 0, 0)},{'id': 2, 'application_stage': 5, 'last_updated': datetime(2021, 9, 25, 0, 0, 0)}]
-        expected = [{'id': 1, 'application_stage': 5, 'last_updated': datetime(2021, 9, 24, 0, 0, 0), 'snapshot_year': self.snapshotYear, 'snapshot_month': self.snapshotMonth, 'snapshot_day': self.snapshotDay, 'snapshot_date': self.snapshotDate},{'id': 2, 'application_stage': 5, 'last_updated': datetime(2021, 9, 25, 0, 0, 0), 'snapshot_year': self.snapshotYear, 'snapshot_month': self.snapshotMonth, 'snapshot_day': self.snapshotDay, 'snapshot_date': self.snapshotDate}]
+        expected = [{'id': 1, 'application_stage': 5, 'last_updated': datetime(2021, 9, 24, 0, 0, 0)},{'id': 2, 'application_stage': 5, 'last_updated': datetime(2021, 9, 25, 0, 0, 0)}]
         response = self.prepare_increments(spark, input_increment)
         assert (response == expected)
   
