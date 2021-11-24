@@ -42,3 +42,16 @@ module "Parking_CEO_Average_On_Street" {
     "--job-bookmark-option" = "job-bookmark-enable"
   }
 }
+module "parking_pcn_persistent_evaders" {
+  source            = "../modules/aws-glue-job"
+  department        = module.department_parking
+  job_name          = "${local.short_identifier_prefix}Parking_PCN_Persistent_Evaders"
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  script_name       = "parking_pcn_persistent_evaders"
+  triggered_by_job  = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  workflow_name     = aws_glue_workflow.parking_liberator_data.name
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-enable"
+  }
+}
