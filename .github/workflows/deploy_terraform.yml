@@ -89,7 +89,7 @@ jobs:
           echo $GOOGLE_CREDENTIALS >> ./google_service_account_creds.json
         shell: bash
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       - name: Install Dependencies for rds-database-snapshot-replicator Lambda
         working-directory: "./lambdas/rds-database-snapshot-replicator"
