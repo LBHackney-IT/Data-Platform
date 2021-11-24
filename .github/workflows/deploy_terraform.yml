@@ -33,11 +33,9 @@ on:
     secrets:
       google_project_id:
         required: true
-        type: string
       aws_deploy_account:
         description: "ID of Account being deployed to"
         required: true
-        type: string
 
 jobs:
   deploy:
