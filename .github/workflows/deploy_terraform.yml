@@ -47,6 +47,8 @@ on:
         required: true
       AWS_ROLE_TO_ASSUME:
         required: true
+      AWS_API_VPC_ID:
+      required: true 
 
 jobs:
   deploy:
