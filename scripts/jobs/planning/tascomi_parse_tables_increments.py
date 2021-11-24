@@ -7,7 +7,7 @@ from awsglue.job import Job
 from pyspark.context import SparkContext
 from pyspark.sql import SparkSession
 
-from helpers.helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog
+from helpers.helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog, createPushDownPredicate
 
 # TODO this needs to go in helpers and behaviour needs to change
 def check_if_dataframe_empty(df):
@@ -44,18 +44,19 @@ if __name__ == "__main__":
             logger.info(f"Couldn't find table {source_table_name} in database {source_catalog_database}, moving onto next table.")
             continue
 
+        pushDownPredicate = createPushDownPredicate(partitionDateColumn='import_date',daysBuffer=5)
         source_data = glueContext.create_dynamic_frame.from_catalog(
             name_space=source_catalog_database,
             table_name=source_table_name,
             transformation_ctx = "data_source" + source_table_name,
-            push_down_predicate = "import_date>=date_format(date_sub(current_date, 5), 'yyyyMMdd')"
+            push_down_predicate = pushDownPredicate
         )
 
         df = source_data.toDF()
 
         # check_if_dataframe_empty(df=df)
         if df.rdd.isEmpty():
-            logger.info(f"No oncrement found for {source_table_name}, moving onto next table.")
+            logger.info(f"No increment found for {source_table_name}, moving onto next table.")
             continue
 
         # keep only rows where api_response_code == 200

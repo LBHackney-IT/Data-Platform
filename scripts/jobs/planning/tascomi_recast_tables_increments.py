@@ -7,7 +7,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from pyspark.sql.functions import col
 from pyspark.sql.types import IntegerType, BooleanType, DateType, TimestampType, LongType, DoubleType
-from helpers.helpers import get_glue_env_var, PARTITION_KEYS, table_exists_in_catalog
+from helpers.helpers import get_glue_env_var, PARTITION_KEYS, table_exists_in_catalog, createPushDownPredicate
 
 
 def castColumns(columnDict,tableName,df,typeName,dataType):
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     #   load columns dictionary
     columnsDictionary = spark.read.option("multiline", "true").json(column_dict_path).rdd.collect()[0]
     # Prepare pushdown predicate for loading
-    pushDownPredicate = createPushDownPredicate(daysBuffer=5)
+    pushDownPredicate = createPushDownPredicate(partitionDateColumn='import_date',daysBuffer=5)
     
     for nameOfTableToRecast in table_list:
         if not table_exists_in_catalog(glueContext, nameOfTableToRecast, source_catalog_database):
