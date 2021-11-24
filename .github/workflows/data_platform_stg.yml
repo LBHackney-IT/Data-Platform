@@ -47,5 +47,5 @@ jobs:
       AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }} 
       AWS_API_VPC_ID: ${{ secrets.AWS_API_VPC_ID }} 
-      GOOGLE_CREDENTIALS: ${{ secrets..GOOGLE_CREDENTIALS_STG }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
 
