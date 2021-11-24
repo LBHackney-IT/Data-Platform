@@ -49,6 +49,9 @@ on:
         required: true
       AWS_API_VPC_ID:
         required: true 
+      GOOGLE_CREDENTIALS:
+        required: true
+
 
 jobs:
   deploy:
