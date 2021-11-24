@@ -9,18 +9,11 @@ import pyspark.sql.functions as F
 from pyspark.sql.functions import col, max, date_format, date_sub, current_date
 from pyspark.sql import Window
 from datetime import datetime
-from helpers.helpers import get_glue_env_var, table_exists_in_catalog, createPushDownPredicate
+from helpers.helpers import get_glue_env_var, table_exists_in_catalog, create_pushdown_predicate
 
 
 
 
-# def createPushDownPredicate(partitionDateColumn, daysBuffer):
-#     if daysBuffer > 0:
-#         pushDownPredicate = f"{partitionDateColumn}>=date_format(date_sub(current_date, {daysBuffer}), 'yyyyMMdd')"
-#     else:
-#         pushDownPredicate = ''
-#     return pushDownPredicate
-    
 def get_latest_snapshot(dfa):
    dfa = dfa.where(col('snapshot_date') == dfa.select(max('snapshot_date')).first()[0])
    return dfa
@@ -99,7 +92,7 @@ if __name__ == "__main__":
         
         # snapshot table in glue catalogue
         else:
-            pushDownPredicate = createPushDownPredicate(partitionDateColumn='snapshot_date',daysBuffer=10)
+            pushDownPredicate = create_pushdown_predicate(partitionDateColumn='snapshot_date',daysBuffer=10)
             #   load latest snpashot
             snapshot_ddf = glueContext.create_dynamic_frame.from_catalog(
                 name_space = source_catalog_database,

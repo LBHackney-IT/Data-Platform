@@ -7,13 +7,7 @@ from awsglue.job import Job
 from pyspark.context import SparkContext
 from pyspark.sql import SparkSession
 
-from helpers.helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog, createPushDownPredicate
-
-# TODO this needs to go in helpers and behaviour needs to change
-def check_if_dataframe_empty(df):
-    if df.rdd.isEmpty():
-        raise Exception('Dataframe is empty')
-
+from helpers.helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog, create_pushdown_predicate
 
 
 if __name__ == "__main__":
@@ -44,7 +38,7 @@ if __name__ == "__main__":
             logger.info(f"Couldn't find table {source_table_name} in database {source_catalog_database}, moving onto next table.")
             continue
 
-        pushDownPredicate = createPushDownPredicate(partitionDateColumn='import_date',daysBuffer=5)
+        pushDownPredicate = create_pushdown_predicate(partitionDateColumn='import_date',daysBuffer=5)
         source_data = glueContext.create_dynamic_frame.from_catalog(
             name_space=source_catalog_database,
             table_name=source_table_name,

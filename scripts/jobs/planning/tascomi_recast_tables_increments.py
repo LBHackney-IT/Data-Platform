@@ -7,7 +7,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from pyspark.sql.functions import col
 from pyspark.sql.types import IntegerType, BooleanType, DateType, TimestampType, LongType, DoubleType
-from helpers.helpers import get_glue_env_var, PARTITION_KEYS, table_exists_in_catalog, createPushDownPredicate
+from helpers.helpers import get_glue_env_var, PARTITION_KEYS, table_exists_in_catalog, create_pushdown_predicate
 
 
 def castColumns(columnDict,tableName,df,typeName,dataType):
@@ -30,12 +30,6 @@ def castColumnsAllTypes(columnDict,tableName,df):
     df = castColumns(columnDict=columnDict, tableName=tableName, df=df, typeName="date", dataType=DateType())
     return df
 
-def createPushDownPredicate(daysBuffer):
-    if daysBuffer > 0:
-        pushDownPredicate = f"import_date>=date_format(date_sub(current_date, {daysBuffer}), 'yyyyMMdd')"
-    else:
-        pushDownPredicate = ''
-    return pushDownPredicate
 
 if __name__ == "__main__":
     args = getResolvedOptions(sys.argv, ['JOB_NAME'])
@@ -45,8 +39,7 @@ if __name__ == "__main__":
     s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
     column_dict_path = get_glue_env_var('column_dict_path', '')
 
-    # conf = SparkConf().set("spark.sql.sources.partitionOverwriteMode","dynamic")
-    # sc = SparkContext.getOrCreate(conf)
+
     sc = SparkContext.getOrCreate()
     glueContext = GlueContext(sc)
     spark = SparkSession(sc)
@@ -59,7 +52,7 @@ if __name__ == "__main__":
     #   load columns dictionary
     columnsDictionary = spark.read.option("multiline", "true").json(column_dict_path).rdd.collect()[0]
     # Prepare pushdown predicate for loading
-    pushDownPredicate = createPushDownPredicate(partitionDateColumn='import_date',daysBuffer=5)
+    pushDownPredicate = create_pushdown_predicate(partitionDateColumn='import_date',daysBuffer=5)
     
     for nameOfTableToRecast in table_list:
         if not table_exists_in_catalog(glueContext, nameOfTableToRecast, source_catalog_database):
@@ -86,7 +79,6 @@ if __name__ == "__main__":
             resultDataFrame = DynamicFrame.fromDF(source_df, glueContext, "resultDataFrame")
             target_destination = s3_bucket_target + nameOfTableToRecast
     
-            # resultDataFrame.toDF().write.mode("overwrite").format("parquet").partitionBy(PARTITION_KEYS).save(target_destination)
             parquetData = glueContext.write_dynamic_frame.from_options(
                 frame=resultDataFrame,
                 connection_type="s3",
