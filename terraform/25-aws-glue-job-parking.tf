@@ -42,3 +42,15 @@ module "Parking_CEO_Average_On_Street" {
     "--job-bookmark-option" = "job-bookmark-enable"
   }
 }
+module "parking_kpi_gds_summary" {
+  source            = "../modules/aws-glue-job"
+  department        = module.department_parking
+  job_name          = "${local.short_identifier_prefix}parking_kpi_gds_summary"
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  script_name       = "parking_kpi_gds_summary"
+  job_description   = "parking_kpi_gds_summary testing instructions"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+  }
+}
