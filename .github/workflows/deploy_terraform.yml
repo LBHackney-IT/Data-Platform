@@ -15,9 +15,13 @@ on:
       terraform_import:
         description: "Terraform import statements"
         required: false
+        default: ""
+        type: string
       terraform_remove:
         description: "Terraform state rm statements"
         required: false
+        default: ""
+        type: string
       environment:
         description: "Environment to deploy to"
         required: true
