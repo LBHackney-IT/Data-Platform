@@ -16,7 +16,7 @@ on:
 
 jobs:
   pre-deploy-checks:
-    uses:  LBHackney-IT/Data-Platform/.github/workflows/ci.yml@main
+    uses:  LBHackney-IT/Data-Platform/.github/workflows/test-and-validate.yml@workflows
   build-and-deploy:
     needs: ["pre-deploy-checks"]
     uses: LBHackney-IT/Data-Platform/.github/workflows/deploy_terraform.yml@main
@@ -28,3 +28,11 @@ jobs:
     secrets:
       google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
       aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+      INFRASTRUCTURE_PRIVATE_KEY: ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_API_ACCOUNT_PROD: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+      AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }} 
+      AWS_API_VPC_ID: ${{ secrets.AWS_API_VPC_ID }} 
+

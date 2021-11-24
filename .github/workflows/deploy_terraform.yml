@@ -35,6 +35,18 @@ on:
       aws_deploy_account:
         description: "ID of Account being deployed to"
         required: true
+      INFRASTRUCTURE_PRIVATE_KEY:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_API_ACCOUNT_PROD:
+        required: true
+      AWS_HACKIT_ACCOUNT_ID: 
+        required: true
+      AWS_ROLE_TO_ASSUME:
+        required: true
 
 jobs:
   deploy:
