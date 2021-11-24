@@ -1,5 +1,4 @@
 name: Deploy Data-Platform
-concurrency: deploy
 env:
   aws_deploy_region: "eu-west-2"
 
