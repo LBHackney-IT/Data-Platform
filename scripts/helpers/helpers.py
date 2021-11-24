@@ -153,3 +153,16 @@ def table_exists_in_catalog(glue_context, table, database):
     tables = glue_context.tables(database)
 
     return tables.filter(tables.tableName == table).count() == 1
+
+def createPushDownPredicate(partitionDateColumn, daysBuffer):
+    '''
+    This method creates a pushdown predicate to pass when reading data and creating a DDF. 
+    The partition date column will in most cases be 'import_date'. 
+    The daysBuffer is the number of days we want to load before the current day.
+    If passing daysBuffer=0, we create no pushdown predicate and the whole dataset will be loaded.
+    '''
+    if daysBuffer > 0:
+        pushDownPredicate = f"{partitionDateColumn}>=date_format(date_sub(current_date, {daysBuffer}), 'yyyyMMdd')"
+    else:
+        pushDownPredicate = ''
+    return pushDownPredicate
