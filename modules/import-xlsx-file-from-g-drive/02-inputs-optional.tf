@@ -22,3 +22,9 @@ variable "tags" {
   type        = map(string)
   default     = null
 }
+
+variable "glue_role_arn" {
+  description = "Role to use for Glue jobs"
+  type        = string
+  default     = null
+}
