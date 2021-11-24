@@ -166,7 +166,8 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.raw_zone_bucket.kms_key_arn,
       var.refined_zone_bucket.kms_key_arn,
       var.trusted_zone_bucket.kms_key_arn,
-      var.athena_storage_bucket.kms_key_arn
+      var.athena_storage_bucket.kms_key_arn,
+      var.glue_scripts_bucket.kms_key_arn
     ]
   }
 
