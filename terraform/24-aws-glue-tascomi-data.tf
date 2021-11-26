@@ -34,7 +34,7 @@ locals {
     "public_consultations"
   ]
 
-  table_list = "appeals,applications,contacts,documents,dtf_locations,emails,enforcements,public_comments,communications,fee_payments,appeal_status,appeal_types,committees,communications,communication_types,contact_types,document_types,fee_types,public_consultations,users,ps_development_codes,decision_types,appeal_decision"
+  table_list = "appeals,applications,contacts,documents,dtf_locations,emails,enforcements,public_comments,communications,fee_payments,appeal_status,appeal_types,committees,communications,communication_types,contact_types,document_types,fee_types,public_consultations,users,ps_development_codes,decision_types,appeal_decision,fees"
 
 }
 
