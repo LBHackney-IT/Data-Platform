@@ -47,7 +47,7 @@ def loadIncrementsSinceDate(increment_table_name, name_space, date):
     increment_ddf = glueContext.create_dynamic_frame.from_catalog(
         name_space=name_space,
         table_name=increment_table_name,
-        push_down_predicate = f"import_date>{last_snapshot_date}"
+        push_down_predicate = f"import_date>{date}"
     )
     increment_df = increment_ddf.toDF()
     return increment_df
