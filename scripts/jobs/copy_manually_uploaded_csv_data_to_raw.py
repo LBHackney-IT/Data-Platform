@@ -9,7 +9,7 @@ from pyspark.sql import functions as f
 from awsglue.dynamicframe import DynamicFrame
 import boto3
 
-from helpers.helpers import get_glue_env_var, add_import_time_columns, get_s3_subfolders, PARTITION_KEYS
+from helpers.helpers import get_glue_env_var, add_import_time_columns, get_s3_subfolders, PARTITION_KEYS, clean_column_names
 
 s3_client = boto3.client('s3')
 sc = SparkContext()
@@ -32,6 +32,7 @@ def data_source_landing_to_raw(bucket_source, bucket_target, key, glue_context):
   logger.info(f"Retrieved data source from s3 path {bucket_source}/{key}")
 
   data_frame = remove_empty_columns(data_source.toDF())
+  data_frame = clean_column_names(data_frame)
   logger.info("Using Columns: " + str(data_frame.columns))
   data_frame = add_import_time_columns(data_frame)
 

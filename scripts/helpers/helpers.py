@@ -6,23 +6,20 @@ import unicodedata
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as f
 from pyspark.sql.functions import col, from_json
-from pyspark.sql import DataFrame
-from pyspark.sql.types import StringType, StructType, StructField
+from pyspark.sql.types import StringType, StructType 
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 
+def format_name(col_name):
+    non_alpha_num_chars_stripped = re.sub('[^a-zA-Z0-9]+', "_", col_name)
+    no_trailing_underscores = re.sub("_$", "", non_alpha_num_chars_stripped)
+    return no_trailing_underscores.lower()
+
 
 def clean_column_names(df):
-    # remove full stops from column names
-    df = df.select([f.col("`{0}`".format(c)).alias(
-        c.replace('.', '')) for c in df.columns])
-    # remove trialing underscores
-    df = df.select([f.col(col).alias(re.sub("_$", "", col))
-                   for col in df.columns])
-    # lowercase and remove double underscores
-    df2 = df.select([f.col(col).alias(
-        re.sub("[^0-9a-zA-Z$]+", "_", col.lower())) for col in df.columns])
-    return df2
+    for col_name in df.columns:
+        df = df.withColumnRenamed(col_name, format_name(col_name))
+    return df
 
 
 def get_glue_env_var(key, default=None):
