@@ -12,17 +12,17 @@ variable "core_azs" {
 }
 
 variable "core_cidr_blocks" {
-  type    = list(any)
+  type = list(any)
 }
 
 variable "application" {
-  type    = string
+  type = string
 }
 
 variable "department" {
-  type    = string
+  type = string
 }
 
 variable "environment" {
-  type    = string
+  type = string
 }
