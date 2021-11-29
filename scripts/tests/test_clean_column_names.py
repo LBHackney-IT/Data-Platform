@@ -26,10 +26,10 @@ class TestCleanColumnNames:
 
   def test_will_only_have_one_underscore_in_a_row(self, spark):
     input_data = [
-      {"Col?three": 6, "for -this": "hello", "percentage%%diff": 45}
+      {"Col?three": 6, "for -this": "hello", "percentage%%diff": 45, "my_/data": True}
     ]
     expected_response = [
-      { "col_three": 6, "for_this": "hello", "percentage_diff": 45}
+      { "col_three": 6, "for_this": "hello", "percentage_diff": 45, "my_data": True}
     ]
     response = dataframe_to_list(clean_column_names(list_to_dataframe(spark, input_data)))
     assert response == expected_response

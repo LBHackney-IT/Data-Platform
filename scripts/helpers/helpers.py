@@ -11,7 +11,7 @@ from pyspark.sql.types import StringType, StructType
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 
 def format_name(col_name):
-    non_alpha_num_chars_stripped = re.sub('[^a-zA-Z0-9_]+', "_", col_name)
+    non_alpha_num_chars_stripped = re.sub('[^a-zA-Z0-9]+', "_", col_name)
     no_trailing_underscores = re.sub("_$", "", non_alpha_num_chars_stripped)
     return no_trailing_underscores.lower()
 
