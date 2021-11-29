@@ -62,8 +62,8 @@ if __name__ == "__main__":
         #   load data
 
         source_ddf = glueContext.create_dynamic_frame.from_catalog(
-            name_space=source_catalog_database,
-            table_name="increment_" + nameOfTableToRecast,
+            name_space = source_catalog_database,
+            table_name = nameOfTableToRecast,
             push_down_predicate = pushDownPredicate,
             transformation_ctx = f"datasource_{nameOfTableToRecast}"
         )
