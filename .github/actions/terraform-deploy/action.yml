@@ -33,10 +33,10 @@ inputs:
     description: "AWS api account id to deploy to"
     required: true
   aws_housing_prod_account_id:
-    description: "AWS Housing prod account id to deploy to"
+    description: "AWS Housing prod account id to connect to"
     required: true
   aws_mosaic_prod_account_id:
-    description: "AWS Mosaic prod account id to deploy to"
+    description: "AWS Mosaic prod account id to connect to"
     required: true
   aws_api_vpc_id:
     description: "AWS API Account VPC ID"
