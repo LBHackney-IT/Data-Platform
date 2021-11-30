@@ -12,15 +12,15 @@ https://www.confluent.io/
 
 The environment is built using Infrastructure as Code utilising Terraform.  
 
-Environment definitions : https://github.com/LBHackney-IT/infrastructure/tree/master/projects/qlikview/config/terraform
+Environment definitions : https://github.com/LBHackney-IT/infrastructure/tree/master/projects/mmh-streaming/config/
 
-The CI/CD process is run via GitHub actions pipeline :  https://github.com/LBHackney-IT/infrastructure/blob/360516d17c67a288c12d31da2952cba61f8fe5e4/.github/workflows/project_qlikview_prod.yml
+The CI/CD process is run via GitHub actions pipeline :  https://github.com/LBHackney-IT/infrastructure/blob/360516d17c67a288c12d31da2952cba61f8fe5e4/.github/workflows/data_platform_stg.yml
 
 ## Setting Up Git
 
 To clone repo Localy : git@github.com:LBHackney-IT/infrastructure.git
 
-To make changes to the QLik project :
+To make changes to the project :
     > cd projects/mmh-streaming
  
 To Check branch :
