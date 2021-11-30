@@ -165,7 +165,7 @@ module "tascomi_recast_tables_increments" {
     "--column_dict_path"        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.tascomi_column_type_dictionary.key}"
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/planning/tascomi/increment/"
     "--enable-glue-datacatalog" = "true"
-    "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
+    "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name
     "--table_list"              = local.table_list
   }
   script_name = "tascomi_recast_tables_increments"
