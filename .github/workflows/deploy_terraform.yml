@@ -127,7 +127,7 @@ jobs:
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          branch: ${GITHUB_REF##*/}
+          branch: "main"
           terraform_import: ${{ inputs.terraform_import }}
           terraform_remove: ${{ inputs.terraform_remove }}
           # DANGER ZONE
@@ -140,7 +140,7 @@ jobs:
         working-directory: "./terraform-networking"
         run: |
           VPC_ID=$(terraform output vpc_id)
-          echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/stg.tfvars
+          echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/${{ inputs.environment }}.tfvars
 
       - name: Deploy Data Platform Infastructure
         uses: ./.github/actions/terraform-deploy
@@ -158,7 +158,7 @@ jobs:
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          branch: ${GITHUB_REF##*/}
+          branch: "main"
           terraform_import: ${{ inputs.terraform_import }}
           terraform_remove: ${{ inputs.terraform_remove }}
           # DANGER ZONE
