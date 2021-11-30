@@ -21,6 +21,16 @@ def clean_column_names(df):
         df = df.withColumnRenamed(col_name, format_name(col_name))
     return df
 
+def normalize_column_name(column: str) -> str:
+    """
+    Normalize column name by replacing all non alphanumeric characters with underscores
+    strips accents and make lowercase
+    :param column: column name
+    :return: normalized column name
+    Example of applying: df.columns = map(clean_column_names, panada_df.columns)
+    """
+    formatted_name = format_name(column)
+    return unicodedata.normalize('NFKD', formatted_name).encode('ASCII', 'ignore').decode()
 
 def get_glue_env_var(key, default=None):
     if f'--{key}' in sys.argv:
@@ -45,19 +55,6 @@ def get_secret(secret_name, region_name):
         return get_secret_value_response['SecretString']
     else:
         return get_secret_value_response['SecretBinary'].decode('ascii')
-
-
-def normalize_column_name(column: str) -> str:
-    """
-    Normalize column name by replacing invalid characters with underscore
-    strips accents and make lowercase
-    :param column: column name
-    :return: normalized column name
-    Example of applying: df.columns = map(normalize, panada_df.columns)
-    """
-    n = re.sub(r"[ .',;{}()\n\t=_-]+", '_', column.lower().strip())
-    return unicodedata.normalize('NFKD', n).encode('ASCII', 'ignore').decode()
-
 
 def add_timestamp_column(data_frame):
     now = datetime.datetime.now()
