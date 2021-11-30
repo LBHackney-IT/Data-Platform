@@ -45,6 +45,15 @@ resource "aws_glue_catalog_database" "refined_zone_tascomi" {
   name = "${local.identifier_prefix}-tascomi-refined-zone"
 }
 
+# Columns type dictionary resources
+resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
+  bucket = module.glue_scripts.bucket_id
+  key    = "scripts/planning/tascomi-column-type-dictionary.json"
+  acl    = "private"
+  source = "../scripts/jobs/planning/tascomi-column-type-dictionary.json"
+  etag   = filemd5("../scripts/jobs/planning/tascomi-column-type-dictionary.json")
+}
+
 module "ingest_tascomi_data" {
   source = "../modules/aws-glue-job"
 
