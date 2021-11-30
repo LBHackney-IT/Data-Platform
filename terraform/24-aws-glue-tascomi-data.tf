@@ -54,6 +54,7 @@ resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
   etag   = filemd5("../scripts/jobs/planning/tascomi-column-type-dictionary.json")
 }
 
+# Ingestion
 module "ingest_tascomi_data" {
   source = "../modules/aws-glue-job"
 
@@ -86,6 +87,42 @@ module "ingest_tascomi_data" {
     })
   }
 }
+
+# Triggers for ingestion
+resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
+  tags     = module.tags.values
+  for_each = toset(local.tascomi_table_names)
+
+  name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 3 * * ? *)"
+  enabled  = local.is_live_environment
+
+  actions {
+    job_name = module.ingest_tascomi_data.job_name
+    arguments = {
+      "--resource" = each.value
+    }
+  }
+}
+
+resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
+  tags     = module.tags.values
+  for_each = toset(local.tascomi_static_tables)
+
+  name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 22 ? * SUN *)"
+  enabled  = local.is_live_environment
+
+  actions {
+    job_name = module.ingest_tascomi_data.job_name
+    arguments = {
+      "--resource" = each.value
+    }
+  }
+}
+
 
 module "tascomi_parse_tables_increments" {
   source = "../modules/aws-glue-job"
