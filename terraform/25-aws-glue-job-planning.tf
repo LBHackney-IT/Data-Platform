@@ -37,6 +37,14 @@ locals {
 
 }
 
+# Database resources
+resource "aws_glue_catalog_database" "raw_zone_tascomi" {
+  name = "${local.identifier_prefix}-tascomi-raw-zone"
+}
+resource "aws_glue_catalog_database" "refined_zone_tascomi" {
+  name = "${local.identifier_prefix}-tascomi-refined-zone"
+}
+
 module "ingest_tascomi_data" {
   source = "../modules/aws-glue-job"
 
