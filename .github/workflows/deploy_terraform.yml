@@ -140,7 +140,7 @@ jobs:
         working-directory: "./terraform-networking"
         run: |
           VPC_ID=$(terraform output vpc_id)
-          echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/stg.tfvars
+          echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/${{ inputs.environment }}.tfvars
 
       - name: Deploy Data Platform Infastructure
         uses: ./.github/actions/terraform-deploy
