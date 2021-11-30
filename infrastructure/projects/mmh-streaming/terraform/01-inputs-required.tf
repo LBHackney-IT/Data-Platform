@@ -8,11 +8,11 @@ variable "core_cidr" {
 }
 
 variable "core_azs" {
-  type = list(any)
+  type = list(string)
 }
 
 variable "core_cidr_blocks" {
-  type = list(any)
+  type = list(string)
 }
 
 variable "application" {
