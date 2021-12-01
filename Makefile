@@ -32,4 +32,6 @@ plan:
 validate:
 	cd scripts && make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
 	cd external-lib && make all
-	cd terraform && make validate
+	$(MAKE) -C terraform validate
+	$(MAKE) -C terraform-networking validate
+	$(MAKE) -C terraform-backend-setup validate
