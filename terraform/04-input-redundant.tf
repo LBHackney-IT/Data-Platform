@@ -17,3 +17,19 @@ variable "transit_gateway_availability_zones" {
 variable "transit_gateway_cidr" {
   default = false
 }
+
+variable "aws_mosaic_vpc_id" {
+  default = false
+}
+
+variable "aws_housing_vpc_id" {
+  default = false
+}
+
+variable "aws_housing_prod_account_id" {
+  default = false
+}
+
+variable "aws_mosaic_prod_account_id" {
+  default = false
+}
