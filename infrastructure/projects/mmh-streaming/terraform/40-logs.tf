@@ -7,24 +7,23 @@ resource "aws_s3_bucket" "bucket" {
   acl    = "private"
 }
 
+data "aws_iam_policy_document" "firehose_assume_role" {
+  provider = aws.core
+
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      identifiers = ["firehose.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
 resource "aws_iam_role" "firehose_role" {
   name = "firehose_msk_role"
 
-  assume_role_policy = <<EOF
-{
-"Version": "2012-10-17",
-"Statement": [
-  {
-    "Action": "sts:AssumeRole",
-    "Principal": {
-      "Service": "firehose.amazonaws.com"
-    },
-    "Effect": "Allow",
-    "Sid": ""
-  }
-  ]
-}
-EOF
+  assume_role_policy = data.aws_iam_policy_document.firehose_assume_role.json
 }
 
 resource "aws_kinesis_firehose_delivery_stream" "mmh_delivery_logs_stream" {
