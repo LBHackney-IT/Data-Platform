@@ -6,10 +6,6 @@ locals {
 }
 
 module "vpc_peering_cross_account" {
-  providers = {
-    aws.accepter = aws.aws_api_account
-    aws.requester = aws
-  }
   enabled = false
   tags = module.tags.values
 
