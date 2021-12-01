@@ -15,7 +15,7 @@ on:
 
 jobs:
   pre-deploy-checks:
-    uses:  LBHackney-IT/Data-Platform/.github/workflows/test-and-validate.yml@workflows
+    uses:  LBHackney-IT/Data-Platform/.github/workflows/test-and-validate.yml@main
     with:
       environment: "prod"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
