@@ -43,12 +43,20 @@ on:
         required: true
       AWS_API_ACCOUNT_PROD:
         required: true
+      AWS_HOUSING_PROD_ACCOUNT_ID:
+        required: true
+      AWS_MOSAIC_PROD_ACCOUNT_ID:
+        required: true
       AWS_HACKIT_ACCOUNT_ID: 
         required: true
       AWS_ROLE_TO_ASSUME:
         required: true
       AWS_API_VPC_ID:
-        required: true 
+        required: true
+      AWS_HOUSING_VPC_ID:
+        required: true
+      AWS_MOSAIC_VPC_ID:
+        required: true
       GOOGLE_CREDENTIALS:
         required: true
 
@@ -124,7 +132,11 @@ jobs:
           google_project_id: ${{ secrets.google_project_id }}
           aws_deploy_account: ${{ secrets.aws_deploy_account }}
           aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+          aws_housing_prod_account_id: ${{ secrets.AWS_HOUSING_PROD_ACCOUNT_ID }}
+          aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
+          aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
+          aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           branch: "main"
@@ -155,7 +167,11 @@ jobs:
           google_project_id: ${{ secrets.google_project_id }}
           aws_deploy_account: ${{ secrets.aws_deploy_account }}
           aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+          aws_housing_prod_account_id: ${{ secrets.AWS_HOUSING_PROD_ACCOUNT_ID }}
+          aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
+          aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
+          aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           branch: "main"

@@ -35,7 +35,28 @@ variable "transit_gateway_private_subnets" {
   type        = list(string)
 }
 
+variable "aws_housing_prod_account_id" {
+  description = "AWS Housing Prod account ID"
+  type        = string
+}
+
+variable "aws_mosaic_prod_account_id" {
+  description = "AWS Mosaic Prod account ID"
+  type        = string
+}
+
 variable "aws_api_vpc_id" {
   description = "Staging APIs peer VPC ID"
   type        = string
 }
+
+variable "aws_housing_vpc_id" {
+  description = "Housing peer VPC ID"
+  type        = string
+}
+
+variable "aws_mosaic_vpc_id" {
+  description = "Mosaic peer VPC ID"
+  type        = string
+}
+
