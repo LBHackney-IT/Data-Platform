@@ -30,6 +30,10 @@ on:
         required: true
       AWS_API_ACCOUNT_PROD:
         required: true
+      AWS_HOUSING_PROD_ACCOUNT_ID:
+        required: true
+      AWS_MOSAIC_PROD_ACCOUNT_ID:
+        required: true
       AWS_HACKIT_ACCOUNT_ID: 
         required: true
       AWS_ROLE_TO_ASSUME:
