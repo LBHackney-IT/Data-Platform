@@ -116,7 +116,7 @@ if __name__ == "__main__":
             if table_exists_in_catalog(glueContext, increment_table_name, source_catalog_database):
                 increment_df = loadIncrementsSinceDate(increment_table_name=increment_table_name, name_space=source_catalog_database, date=last_snapshot_date)
                 if increment_df.rdd.isEmpty():
-                    if last_snapshot_date == now_as_string()
+                    if last_snapshot_date == now_as_string():
                         logger.info(f"No new increment in {increment_table_name}, and we already have a snapshot for today, going to the next table")
                         continue
                     else:
