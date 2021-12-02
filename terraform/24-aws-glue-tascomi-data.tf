@@ -74,18 +74,6 @@ module "ingest_tascomi_data" {
     "--target_database_name"    = aws_glue_catalog_database.raw_zone_tascomi.name
   }
   script_name = "tascomi_api_ingestion"
-
-  # crawler_details = {
-  #   database_name      = aws_glue_catalog_database.raw_zone_tascomi.name
-  #   s3_target_location = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
-  #   table_prefix       = "api_response_"
-  #   configuration = jsonencode({
-  #     Version = 1.0
-  #     Grouping = {
-  #       TableLevelConfiguration = 5
-  #     }
-  #   })
-  # }
 }
 
 
@@ -129,7 +117,7 @@ resource "aws_glue_crawler" "tascomi_api_response_crawler" {
 
   database_name = aws_glue_catalog_database.raw_zone_tascomi.name
   name          = "${local.identifier_prefix}-tascomi-api-response-crawler"
-  role          = aws_iam_role.glue_role.arn
+  role          = module.department_planning.glue_role_arn
 
   s3_target {
     path       = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
@@ -148,7 +136,7 @@ resource "aws_glue_trigger" "tascomi_api_response_crawler_trigger" {
 
   name     = "${local.short_identifier_prefix}Tascomi API response crawler Trigger"
   type     = "SCHEDULED"
-  schedule = "cron(0 4 * * ? *)"
+  schedule = "cron(0 4,5 * * ? *)"
   enabled  = local.is_live_environment
 
   actions {
