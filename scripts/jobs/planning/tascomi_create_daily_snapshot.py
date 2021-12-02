@@ -17,14 +17,6 @@ from helpers.helpers import get_glue_env_var, table_exists_in_catalog, create_pu
 def get_latest_snapshot(dfa):
    dfa = dfa.where(col('snapshot_date') == dfa.select(max('snapshot_date')).first()[0])
    return dfa
-   
-def now_as_string():
-    now = datetime.now()
-    snapshotYear = str(now.year)
-    snapshotMonth = str(now.month).zfill(2)
-    snapshotDay = str(now.day).zfill(2)
-    snapshotDate = snapshotYear + snapshotMonth + snapshotDay
-    return snapshotDate
 
 def add_snapshot_date_columns(data_frame):
     now = datetime.now()
@@ -116,8 +108,8 @@ if __name__ == "__main__":
             if table_exists_in_catalog(glueContext, increment_table_name, source_catalog_database):
                 increment_df = loadIncrementsSinceDate(increment_table_name=increment_table_name, name_space=source_catalog_database, date=last_snapshot_date)
                 if increment_df.rdd.isEmpty():
-                    if last_snapshot_date == now_as_string():
-                        logger.info(f"No new increment in {increment_table_name}, and we already have a snapshot for today, going to the next table")
+                    if last_snapshot_date == datetime.strftime(datetime.now(), "%Y%m%d"):
+                        logger.info(f"No new increment in {increment_table_name} and we already have a snapshot for today, going to the next table")
                         continue
                     else:
                         logger.info(f"No new increment in {increment_table_name}, saving same snapshot as yesterday")
