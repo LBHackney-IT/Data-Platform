@@ -212,6 +212,7 @@ module "tascomi_create_daily_snapshot" {
   helper_module_key = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
   job_parameters = {
+    "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/planning/tascomi/snapshot/"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name

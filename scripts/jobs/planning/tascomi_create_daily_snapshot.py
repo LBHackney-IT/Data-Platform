@@ -18,6 +18,14 @@ def get_latest_snapshot(dfa):
    dfa = dfa.where(col('snapshot_date') == dfa.select(max('snapshot_date')).first()[0])
    return dfa
    
+def now_as_string():
+    now = datetime.now()
+    snapshotYear = str(now.year)
+    snapshotMonth = str(now.month).zfill(2)
+    snapshotDay = str(now.day).zfill(2)
+    snapshotDate = snapshotYear + snapshotMonth + snapshotDay
+    return snapshotDate
+
 def add_snapshot_date_columns(data_frame):
     now = datetime.now()
     snapshotYear = str(now.year)
@@ -47,7 +55,8 @@ def loadIncrementsSinceDate(increment_table_name, name_space, date):
     increment_ddf = glueContext.create_dynamic_frame.from_catalog(
         name_space=name_space,
         table_name=increment_table_name,
-        push_down_predicate = f"import_date>{date}"
+        push_down_predicate = f"import_date>={date}",
+        transformation_ctx = f"datasource_{increment_table_name}"
     )
     increment_df = increment_ddf.toDF()
     return increment_df
@@ -107,7 +116,11 @@ if __name__ == "__main__":
             if table_exists_in_catalog(glueContext, increment_table_name, source_catalog_database):
                 increment_df = loadIncrementsSinceDate(increment_table_name=increment_table_name, name_space=source_catalog_database, date=last_snapshot_date)
                 if increment_df.rdd.isEmpty():
-                    logger.info(f"No new increment in {increment_table_name}, saving same snapshot as yesterday")
+                    if last_snapshot_date == now_as_string()
+                        logger.info(f"No new increment in {increment_table_name}, and we already have a snapshot for today, going to the next table")
+                        continue
+                    else:
+                        logger.info(f"No new increment in {increment_table_name}, saving same snapshot as yesterday")
                 else:
                     # prepare COU
                     increment_df = prepare_increments(increment_df)
@@ -129,8 +142,7 @@ if __name__ == "__main__":
             frame=resultDataFrame,
             connection_type="s3",
             format="parquet",
-            connection_options={"path": target_destination, "partitionKeys": PARTITION_KEYS},
-            transformation_ctx="parquetData"
+            connection_options={"path": target_destination, "partitionKeys": PARTITION_KEYS}
         )
     
     job.commit()
