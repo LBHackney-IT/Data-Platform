@@ -128,7 +128,7 @@ resource "aws_glue_crawler" "tascomi_api_response_crawler" {
   tags = module.tags.values
 
   database_name = aws_glue_catalog_database.raw_zone_tascomi.name
-  name          = "${local.identifier_prefix}-tascomi-api-response-crawler"
+  name          = "${local.short_identifier_prefix}tascomi-api-response-crawler"
   role          = aws_iam_role.glue_role.arn
 
   s3_target {
