@@ -72,9 +72,9 @@ if __name__ == "__main__":
     #   load table list
     table_list = table_list_string.split(',')
 
-    for nameOfTableToRecast in table_list:
-        snapshot_table_name = f"snapshot_{nameOfTableToRecast}"
-        increment_table_name = f"increment_{nameOfTableToRecast}"
+    for table_name in table_list:
+        snapshot_table_name = table_name
+        increment_table_name = f"increment_{table_name}"
         
         # Snapshot table not in glue catalogue
         if not table_exists_in_catalog(glueContext, snapshot_table_name, source_catalog_database):
@@ -129,7 +129,7 @@ if __name__ == "__main__":
         
         # WRITE TO S3
         resultDataFrame = DynamicFrame.fromDF(snapshot_df, glueContext, "resultDataFrame")
-        target_destination = s3_bucket_target + nameOfTableToRecast
+        target_destination = s3_bucket_target + table_name
         parquetData = glueContext.write_dynamic_frame.from_options(
             frame=resultDataFrame,
             connection_type="s3",
