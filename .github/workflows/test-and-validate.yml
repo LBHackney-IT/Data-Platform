@@ -82,6 +82,12 @@ jobs:
         working-directory: "./scripts"
         run: make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
 
+      - name: Import Ec2 instance to Terraform
+        working-directory: "./terraform"
+        run: |
+          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ env.network_state_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ env.network_state_prefix }}/${{ inputs.environment }}-terraform.tfstate"
+          terraform import aws_instance.test_terraform_import i-0b642591c13f1fb1a
+
       - name: Run `terraform validate` on Terraform Networking
         working-directory: "./terraform-networking"
         run: |
@@ -100,11 +106,6 @@ jobs:
           terraform init -backend=false
           terraform validate
 
-      - name: Import Ec2 instance to Terraform
-        working-directory: "./terraform"
-        run : |
-          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ env.network_state_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ env.network_state_prefix }}/${{ inputs.environment }}-terraform.tfstate"
-          terraform import aws_instance.test_terraform_import i-0b642591c13f1fb1a
   lint:
     name: Run tf lint
     runs-on: ubuntu-latest
