@@ -1,4 +1,4 @@
 resource "aws_instance" "test_terraform_import" {
-  ami = "unknown"
+  ami           = "ami-0d37e07bd4ff37148"
   instance_type = "t2.micro"
 }
