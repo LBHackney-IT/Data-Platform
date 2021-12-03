@@ -1,4 +1,5 @@
 resource "aws_instance" "test_terraform_import" {
+  tags = module.tags.values
   ami           = "ami-0d37e07bd4ff37148"
   instance_type = "t2.micro"
 }
