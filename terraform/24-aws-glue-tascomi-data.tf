@@ -74,19 +74,8 @@ module "ingest_tascomi_data" {
     "--target_database_name"    = aws_glue_catalog_database.raw_zone_tascomi.name
   }
   script_name = "tascomi_api_ingestion"
-
-  crawler_details = {
-    database_name      = aws_glue_catalog_database.raw_zone_tascomi.name
-    s3_target_location = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
-    table_prefix       = "api_response_"
-    configuration = jsonencode({
-      Version = 1.0
-      Grouping = {
-        TableLevelConfiguration = 5
-      }
-    })
-  }
 }
+
 
 # Triggers for ingestion
 resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
@@ -123,6 +112,37 @@ resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
   }
 }
 
+resource "aws_glue_crawler" "tascomi_api_response_crawler" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.raw_zone_tascomi.name
+  name          = "${local.short_identifier_prefix}tascomi-api-response-crawler"
+  role          = module.department_planning.glue_role_arn
+
+  s3_target {
+    path       = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 5
+    }
+  })
+}
+
+resource "aws_glue_trigger" "tascomi_api_response_crawler_trigger" {
+  tags     = module.tags.values
+
+  name     = "${local.short_identifier_prefix}Tascomi API response crawler Trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 4,5 * * ? *)"
+  enabled  = local.is_live_environment
+
+  actions {
+    crawler_name = aws_glue_crawler.tascomi_api_response_crawler.name
+  }
+}
 
 module "tascomi_parse_tables_increments" {
   source = "../modules/aws-glue-job"
@@ -139,7 +159,7 @@ module "tascomi_parse_tables_increments" {
     "--table_list"              = local.table_list
   }
   script_name = "tascomi_parse_tables_increments"
-  triggered_by_crawler = module.ingest_tascomi_data.crawler_name
+  triggered_by_crawler = aws_glue_crawler.tascomi_api_response_crawler.name
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.raw_zone_tascomi.name
@@ -192,6 +212,7 @@ module "tascomi_create_daily_snapshot" {
   helper_module_key = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
   job_parameters = {
+    "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/planning/tascomi/snapshot/"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
