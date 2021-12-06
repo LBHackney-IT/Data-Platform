@@ -5,3 +5,23 @@ resource "aws_secretsmanager_secret" "redshift_cluster_credentials" {
   description = "Credentials for the redshift cluster ${local.department_identifier} user"
   kms_key_id  = var.secrets_manager_kms_key.key_id
 }
+
+resource "random_password" "redshift_password" {
+  length  = 24
+  special = false
+}
+
+locals {
+  redshift_creds = {
+    "Host Name or IP" = "One of ${var.redshift_ip_addresses[0]} OR ${var.redshift_ip_addresses[1]}",
+    "Port"            = "5439"
+    "Database"        = "data_platform"
+    "Username"        = local.department_identifier
+    "Password"        = random_password.redshift_password.result
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "example" {
+  secret_id     = aws_secretsmanager_secret.redshift_cluster_credentials.id
+  secret_string = jsonencode(local.redshift_creds)
+}

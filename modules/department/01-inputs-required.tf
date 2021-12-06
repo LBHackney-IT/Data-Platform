@@ -113,3 +113,8 @@ variable "identity_store_id" {
   description = "The ID of the Identity Store used to configure SSO on the main HackIT account"
   type        = string
 }
+
+variable "redshift_ip_addresses" {
+  type        = list(string)
+  description = "Public IP addresses for the redshift cluster"
+}

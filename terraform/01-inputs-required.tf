@@ -44,3 +44,13 @@ variable "qlik_server_instance_type" {
   description = "The instance type to use for the Qlik server"
   type        = string
 }
+
+variable "redshift_public_ips" {
+  description = "Public IP addresses for the redshift cluster"
+  type        = list(string)
+
+  validation {
+    condition     = length(var.redshift_public_ips) >= 2
+    error_message = "The redshift cluster shoud have 2 public IP addresses."
+  }
+}
