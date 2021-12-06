@@ -154,7 +154,7 @@ jobs:
           VPC_ID=$(terraform output vpc_id)
           echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/${{ inputs.environment }}.tfvars
 
-      - name: Import EC2 instance to Terraform
+      - name: Import Qlik EC2 instance to Terraform
           working-directory: "./terraform"
           run: |
             aws configure set default.region eu-west-2 > /dev/null 2>&1
