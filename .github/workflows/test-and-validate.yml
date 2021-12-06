@@ -6,6 +6,7 @@ env:
 
   main_state_prefix: "data-platform"
   main_build_path: "./terraform"
+  environment: "stg"
 
 on:
   workflow_call:
@@ -85,7 +86,7 @@ jobs:
       - name: Import Ec2 instance to Terraform
         working-directory: "./terraform"
         run: |
-          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ env.network_state_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ env.network_state_prefix }}/${{ inputs.environment }}-terraform.tfstate"
+          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ env.network_state_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ env.network_state_prefix }}/${{ env.environment }}-terraform.tfstate"
           terraform import aws_instance.test_terraform_import i-0b642591c13f1fb1a
 
       - name: Run `terraform validate` on Terraform Networking
