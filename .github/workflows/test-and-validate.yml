@@ -82,17 +82,6 @@ jobs:
         working-directory: "./scripts"
         run: make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
 
-      - name: Import Ec2 instance to Terraform
-        working-directory: "./terraform"
-        run: |
-          aws configure set default.region eu-west-2 > /dev/null 2>&1
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} > /dev/null 2>&1
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} > /dev/null 2>&1
-          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ env.network_state_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ env.network_state_prefix }}/${{ inputs.environment }}-terraform.tfstate"
-          terraform import aws_instance.test_terraform_import i-0b642591c13f1fb1a
-          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ env.aws_deploy_region }}' -var 'aws_deploy_account=${{ secrets.aws_deploy_account }}' -var 'aws_api_account=${{ secrets.aws_api_account }}' -var 'aws_housing_prod_account_id=${{ secrets.aws_housing_prod_account_id }}' -var 'aws_mosaic_prod_account_id=${{ secrets.aws_mosaic_prod_account_id }}' -var 'aws_hackit_account_id=${{ secrets.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ secrets.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}' -input=false -out=plan.out
-          echo -e "\n"
-
       - name: Run `terraform validate` on Terraform Networking
         working-directory: "./terraform-networking"
         run: |
