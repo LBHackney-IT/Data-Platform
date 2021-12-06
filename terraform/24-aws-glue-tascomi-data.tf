@@ -122,7 +122,7 @@ resource "aws_glue_crawler" "tascomi_api_response_crawler" {
   s3_target {
     path       = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
   }
-
+  table_prefix  = "api_response_"
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
