@@ -50,12 +50,11 @@ locals {
 
   redshift_users = [
     {
-      user_name  = module.department_parking.identifier
+      user_name  = module.department_parking.identifier_snake_case
       secret_arn = module.department_parking.redshift_cluster_secret
       schemas_to_grant_access_to = concat([
         "liberator_raw_zone",
         "liberator_refined_zone",
-        "parking_trusted_zone_liberator",
         "parking_refined_zone_liberator",
         "parking_raw_zone_liberator",
         "parking_raw_zone",
@@ -65,7 +64,7 @@ locals {
       ], local.unrestricted_schemas)
     },
     {
-      user_name  = module.department_planning.identifier
+      user_name  = module.department_planning.identifier_snake_case
       secret_arn = module.department_planning.redshift_cluster_secret
       schemas_to_grant_access_to = concat([
         "planning_refined_zone",
@@ -73,12 +72,12 @@ locals {
       ], local.unrestricted_schemas)
     },
     {
-      user_name                  = module.department_data_and_insight.identifier
+      user_name                  = module.department_data_and_insight.identifier_snake_case
       secret_arn                 = module.department_data_and_insight.redshift_cluster_secret
       schemas_to_grant_access_to = concat([], local.unrestricted_schemas)
     },
     {
-      user_name  = module.department_housing_repairs.identifier
+      user_name  = module.department_housing_repairs.identifier_snake_case
       secret_arn = module.department_housing_repairs.redshift_cluster_secret
       schemas_to_grant_access_to = concat([
         "housing_repairs_raw_zone",
