@@ -1,21 +1,4 @@
 # This grabs the latest version of Windows AMI
-data "aws_ami" "latest_windows" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["Windows_Server-2019-English-Full-Base-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  # Owner: Amazon
-  owners = ["801119661308"]
-}
-
 resource "tls_private_key" "qlik_sense_server_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -30,14 +13,14 @@ resource "aws_ssm_parameter" "qlik_sense_server_key" {
   value       = tls_private_key.qlik_sense_server_key.private_key_pem
 }
 
-resource "aws_ssm_parameter" "qlik_sense_admin_password" {
-  tags = var.tags
-
-  name        = "/${var.identifier_prefix}/ec2/qlik_sense_admin_password"
-  type        = "SecureString"
-  description = "The Administrator password for the Qlik Sense instance"
-  value       = rsadecrypt(aws_instance.qlik_sense.password_data, tls_private_key.qlik_sense_server_key.private_key_pem)
-}
+#resource "aws_ssm_parameter" "qlik_sense_admin_password" {
+#  tags = var.tags
+#
+#  name        = "/${var.identifier_prefix}/ec2/qlik_sense_admin_password"
+#  type        = "SecureString"
+#  description = "The Administrator password for the Qlik Sense instance"
+#  value       = ""
+#}
 
 resource "aws_key_pair" "qlik_sense_server_key" {
   tags = var.tags
@@ -128,21 +111,52 @@ resource "aws_security_group" "qlik_sense" {
   })
 }
 
-resource "aws_instance" "qlik_sense" {
-  tags = merge(var.tags, {
-    "Name" : "${var.identifier_prefix}-qlik-sense",
-  })
-
-  ami                  = data.aws_ami.latest_windows.id
-  instance_type        = var.instance_type
-  key_name             = aws_key_pair.qlik_sense_server_key.key_name
-  iam_instance_profile = aws_iam_instance_profile.qlik_sense.name
-
-  subnet_id              = local.instance_subnet_id
-  vpc_security_group_ids = [aws_security_group.qlik_sense.id]
-  get_password_data      = "true"
-
-  lifecycle {
-    ignore_changes = [subnet_id, ami]
+data "aws_iam_policy_document" "key_policy" {
+  statement {
+    effect    = "Allow"
+    actions   = [
+      "kms:*"
+    ]
+    resources = [
+      "*"
+    ]
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
   }
 }
+
+resource "aws_kms_key" "key" {
+  tags = var.tags
+
+  description             = "${var.identifier_prefix} - Qlik Sense EBS Key"
+  deletion_window_in_days = 10
+  enable_key_rotation     = true
+
+  policy = data.aws_iam_policy_document.key_policy.json
+}
+
+resource "aws_kms_alias" "key_alias" {
+  name          = lower("alias/${var.identifier_prefix}-ebs-qlik-sense")
+  target_key_id = aws_kms_key.key.key_id
+}
+
+#resource "aws_instance" "qlik_sense" {
+#  tags = merge(var.tags, {
+#    "Name" : "${var.identifier_prefix}-qlik-sense",
+#  })
+#
+#  ami                  = data.aws_ami.latest_windows.id
+#  instance_type        = var.instance_type
+#  key_name             = aws_key_pair.qlik_sense_server_key.key_name
+#  iam_instance_profile = aws_iam_instance_profile.qlik_sense.name
+#
+#  subnet_id              = local.instance_subnet_id
+#  vpc_security_group_ids = [aws_security_group.qlik_sense.id]
+#  get_password_data      = "true"
+#
+#  lifecycle {
+#    ignore_changes = [subnet_id, ami]
+#  }
+#}
