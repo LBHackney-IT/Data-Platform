@@ -13,3 +13,4 @@ transit_gateway_private_subnets = ["10.120.32.0/26", "10.120.32.64/26", "10.120.
 rds_instance_ids = ["addresses-api-db-production-emergency-temp", "geolive-db"]
 deployment_user_arn = "arn:aws:iam::338027813792:user/automation_deployer"
 qlik_server_instance_type = "m5.2xlarge"
+redshift_public_ips = ["18.168.126.173"]

@@ -190,17 +190,24 @@ jobs:
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
-      - name: Configure Redshift users, external schemas and user permissions for external schema
-        working-directory: "./terraform"
-        run: |
-          python ../scripts/redshift_setup.py $(terraform output -json)
-
-      - name: Build and Deploy SQL to Parquet Image to ECR
+      - name: Setup deployment user profile
         run: |
           echo "[profile deploy_role]" >> ~/.aws/config
           echo "role_arn=arn:aws:iam::${{ secrets.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}" >> ~/.aws/config
           echo "source_profile=default" >> ~/.aws/config
-          echo "role_session_name=deploy-image-to-ecr" >> ~/.aws/config
+          echo "role_session_name=deploy" >> ~/.aws/config
+          echo "region=eu-west-2" >> ~/.aws/config
+
+      - name: Configure Redshift users, external schemas and user permissions for external schema
+        working-directory: "./terraform"
+        run: |
+          terraform_outputs=$(terraform output -json)
+          cd ../scripts
+          source .venv/bin/activate
+          AWS_PROFILE=deploy_role python ../scripts/configure_redshift.py "$terraform_outputs"
+
+      - name: Build and Deploy SQL to Parquet Image to ECR
+        run: |
           AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
 
       - name: Generate Self Signed certificate

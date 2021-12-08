@@ -12,8 +12,9 @@ resource "random_password" "redshift_password" {
 }
 
 locals {
+  hostname = length(var.redshift_ip_addresses) == 1 ? var.redshift_ip_addresses[0] : "One of ${var.redshift_ip_addresses[0]} OR ${var.redshift_ip_addresses[1]}"
   redshift_creds = {
-    "Host Name or IP" = "One of ${var.redshift_ip_addresses[0]} OR ${var.redshift_ip_addresses[1]}",
+    "Host Name or IP" = local.hostname,
     "Port"            = "5439"
     "Database"        = "data_platform"
     "Username"        = local.department_identifier
@@ -21,7 +22,7 @@ locals {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "example" {
+resource "aws_secretsmanager_secret_version" "redshift_creds" {
   secret_id     = aws_secretsmanager_secret.redshift_cluster_credentials.id
   secret_string = jsonencode(local.redshift_creds)
 }
