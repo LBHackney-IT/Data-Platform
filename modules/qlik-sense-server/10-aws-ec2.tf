@@ -13,15 +13,6 @@ resource "aws_ssm_parameter" "qlik_sense_server_key" {
   value       = tls_private_key.qlik_sense_server_key.private_key_pem
 }
 
-#resource "aws_ssm_parameter" "qlik_sense_admin_password" {
-#  tags = var.tags
-#
-#  name        = "/${var.identifier_prefix}/ec2/qlik_sense_admin_password"
-#  type        = "SecureString"
-#  description = "The Administrator password for the Qlik Sense instance"
-#  value       = ""
-#}
-
 resource "aws_key_pair" "qlik_sense_server_key" {
   tags = var.tags
 
@@ -141,22 +132,3 @@ resource "aws_kms_alias" "key_alias" {
   name          = lower("alias/${var.identifier_prefix}-ebs-qlik-sense")
   target_key_id = aws_kms_key.key.key_id
 }
-
-#resource "aws_instance" "qlik_sense" {
-#  tags = merge(var.tags, {
-#    "Name" : "${var.identifier_prefix}-qlik-sense",
-#  })
-#
-#  ami                  = data.aws_ami.latest_windows.id
-#  instance_type        = var.instance_type
-#  key_name             = aws_key_pair.qlik_sense_server_key.key_name
-#  iam_instance_profile = aws_iam_instance_profile.qlik_sense.name
-#
-#  subnet_id              = local.instance_subnet_id
-#  vpc_security_group_ids = [aws_security_group.qlik_sense.id]
-#  get_password_data      = "true"
-#
-#  lifecycle {
-#    ignore_changes = [subnet_id, ami]
-#  }
-#}
