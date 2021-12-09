@@ -34,7 +34,11 @@ on:
         required: true
       AWS_MOSAIC_PROD_ACCOUNT_ID:
         required: true
-      AWS_HACKIT_ACCOUNT_ID: 
+      AWS_ACCOUNT_DATA_PLATFORM_STG:
+        required: true
+      AWS_ACCOUNT_DATA_PLATFORM_DEV:
+        required: true
+      AWS_HACKIT_ACCOUNT_ID:
         required: true
       AWS_ROLE_TO_ASSUME:
         required: true
