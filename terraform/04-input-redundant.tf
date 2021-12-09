@@ -33,3 +33,11 @@ variable "aws_housing_prod_account_id" {
 variable "aws_mosaic_prod_account_id" {
   default = false
 }
+
+variable "aws_account_data_platform" {
+  default = false
+}
+
+variable "aws_dp_vpc_id" {
+  default = false
+}
