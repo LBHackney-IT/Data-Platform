@@ -47,11 +47,9 @@ on:
         required: true
       AWS_MOSAIC_PROD_ACCOUNT_ID:
         required: true
-      AWS_ACCOUNT_DATA_PLATFORM_STG:
+      AWS_ACCOUNT_DATA_PLATFORM:
         required: true
-      AWS_ACCOUNT_DATA_PLATFORM_DEV:
-        required: true
-      AWS_HACKIT_ACCOUNT_ID: 
+      AWS_HACKIT_ACCOUNT_ID:
         required: true
       AWS_ROLE_TO_ASSUME:
         required: true
@@ -61,9 +59,7 @@ on:
         required: true
       AWS_MOSAIC_VPC_ID:
         required: true
-      AWS_DP_STG_VPC_ID:
-        required: true
-      AWS_DP_DEV_VPC_ID:
+      AWS_DP_VPC_ID:
         required: true
       GOOGLE_CREDENTIALS:
         required: true
@@ -142,12 +138,11 @@ jobs:
           aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
           aws_housing_prod_account_id: ${{ secrets.AWS_HOUSING_PROD_ACCOUNT_ID }}
           aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
-          aws_account_data_platform_stg: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
-          aws_account_data_platform_dev: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_DEV }}
+          aws_account_data_platform: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
           aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
           aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
-          aws_dp_stg_vpc_id: ${{ secrets.AWS_DP_STG_VPC_ID }}
+          aws_dp_vpc_id: ${{ secrets.AWS_DP_VPC_ID }}
           aws_dp_dev_vpc_id: ${{ secrets.AWS_DP_DEV_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
@@ -181,13 +176,11 @@ jobs:
           aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
           aws_housing_prod_account_id: ${{ secrets.AWS_HOUSING_PROD_ACCOUNT_ID }}
           aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
-          aws_account_data_platform_stg: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
-          aws_account_data_platform_dev: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_DEV }}
+          aws_account_data_platform: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
           aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
           aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
-          aws_dp_stg_vpc_id: ${{ secrets.AWS_DP_STG_VPC_ID }}
-          aws_dp_dev_vpc_id: ${{ secrets.AWS_DP_DEV_VPC_ID }}
+          aws_dp_vpc_id: ${{ secrets.AWS_DP_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           branch: "main"

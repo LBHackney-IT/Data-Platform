@@ -60,22 +60,12 @@ variable "aws_mosaic_vpc_id" {
   type        = string
 }
 
-variable "aws_dp_stg_vpc_id" {
-  description = "Data Platform Stg VPC ID"
+variable "aws_dp_vpc_id" {
+  description = "Data Platform VPC ID"
   type        = string
 }
 
-variable "aws_dp_dev_vpc_id" {
-  description = "Data Platform Dev VPC ID"
-  type        = string
-}
-
-variable "aws_account_data_platform_stg" {
-  description = "Data Platform Stg account ID"
-  type        = string
-}
-
-variable "aws_account_data_platform_dev" {
-  description = "Data Platform Dev account ID"
+variable "aws_account_data_platform" {
+  description = "Data Platform account ID"
   type        = string
 }
