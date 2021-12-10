@@ -143,10 +143,12 @@ def parse_json_into_dataframe(spark, column, dataframe):
     dataframe = dataframe.drop(column, 'json')
     return dataframe
 
+
 def table_exists_in_catalog(glue_context, table, database):
     tables = glue_context.tables(database)
 
     return tables.filter(tables.tableName == table).count() == 1
+
 
 def create_pushdown_predicate(partitionDateColumn, daysBuffer):
     '''
@@ -161,9 +163,32 @@ def create_pushdown_predicate(partitionDateColumn, daysBuffer):
         pushDownPredicate = ''
     return pushDownPredicate
 
+
 def check_if_dataframe_empty(df):
     '''
     This method returns an exception if the dataframe is empty.
     '''
     if df.rdd.isEmpty():
         raise Exception('Dataframe is empty')
+
+
+def get_data_quality_check_results(check_results):
+    """
+    This will return the contraint messages for the data quality checks.
+    """
+    messages = [
+        f'{message.constraint} finished with status {message.constraint_status}. {message.constraint_message}'
+        for message in check_results.collect()
+    ]
+    return messages
+
+
+def get_success_metrics(success_metrics):
+    """
+    This will return the success metrics for the passed data quality checks.
+    """
+    messages = [
+        f'{message.entity} {message.instance}, {message.name}, {message.value}'
+        for message in success_metrics.collect()
+    ]
+    return messages
