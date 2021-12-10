@@ -7,7 +7,7 @@ locals {
 }
 
 module "api_vpc_peering_cross_account" {
-  tags = module.tags.values
+  tags    = module.tags.values
   enabled = false
 
   source = "git::https://github.com/cloudposse/terraform-aws-vpc-peering-multi-account.git?ref=tags/0.16.0"
@@ -25,7 +25,7 @@ module "api_vpc_peering_cross_account" {
 }
 
 module "housing_vpc_peering_cross_account" {
-  tags = module.tags.values
+  tags    = module.tags.values
   enabled = false
 
   source = "git::https://github.com/cloudposse/terraform-aws-vpc-peering-multi-account.git?ref=tags/0.16.0"
@@ -43,7 +43,7 @@ module "housing_vpc_peering_cross_account" {
 }
 
 module "mosaic_vpc_peering_cross_account" {
-  tags = module.tags.values
+  tags    = module.tags.values
   enabled = false
 
   source = "git::https://github.com/cloudposse/terraform-aws-vpc-peering-multi-account.git?ref=tags/0.16.0"
@@ -61,7 +61,7 @@ module "mosaic_vpc_peering_cross_account" {
 }
 
 module "dp_stg_prod_vpc_peering_cross_account" {
-  tags = module.tags.values
+  tags    = module.tags.values
   enabled = false
 
   source = "git::https://github.com/cloudposse/terraform-aws-vpc-peering-multi-account.git?ref=tags/0.16.0"

@@ -120,9 +120,9 @@ resource "aws_glue_crawler" "tascomi_api_response_crawler" {
   role          = module.department_planning.glue_role_arn
 
   s3_target {
-    path       = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
+    path = "s3://${module.raw_zone.bucket_id}/planning/tascomi/api-responses/"
   }
-  table_prefix  = "api_response_"
+  table_prefix = "api_response_"
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
@@ -132,7 +132,7 @@ resource "aws_glue_crawler" "tascomi_api_response_crawler" {
 }
 
 resource "aws_glue_trigger" "tascomi_api_response_crawler_trigger" {
-  tags     = module.tags.values
+  tags = module.tags.values
 
   name     = "${local.short_identifier_prefix}Tascomi API response crawler Trigger"
   type     = "SCHEDULED"
@@ -158,7 +158,7 @@ module "tascomi_parse_tables_increments" {
     "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name
     "--table_list"              = local.table_list
   }
-  script_name = "tascomi_parse_tables_increments"
+  script_name          = "tascomi_parse_tables_increments"
   triggered_by_crawler = aws_glue_crawler.tascomi_api_response_crawler.name
 
   crawler_details = {
@@ -188,7 +188,7 @@ module "tascomi_recast_tables_increments" {
     "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name
     "--table_list"              = local.table_list
   }
-  script_name = "tascomi_recast_tables_increments"
+  script_name          = "tascomi_recast_tables_increments"
   triggered_by_crawler = module.tascomi_parse_tables_increments.crawler_name
 
   crawler_details = {
@@ -218,7 +218,7 @@ module "tascomi_create_daily_snapshot" {
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
     "--table_list"              = local.table_list
   }
-  script_name = "tascomi_create_daily_snapshot"
+  script_name          = "tascomi_create_daily_snapshot"
   triggered_by_crawler = module.tascomi_recast_tables_increments.crawler_name
 
   crawler_details = {

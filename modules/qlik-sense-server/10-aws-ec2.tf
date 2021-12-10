@@ -104,8 +104,8 @@ resource "aws_security_group" "qlik_sense" {
 
 data "aws_iam_policy_document" "key_policy" {
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "kms:*"
     ]
     resources = [
