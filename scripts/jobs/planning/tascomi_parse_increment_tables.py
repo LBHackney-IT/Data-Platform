@@ -10,10 +10,10 @@ from pydeequ.verification import VerificationSuite, VerificationResult
 from pyspark.context import SparkContext
 from pyspark.sql import SparkSession
 
-from helpers.data_quality_testing import get_metrics_target_location
-from helpers.helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog, \
-    check_if_dataframe_empty, create_pushdown_predicate, cancel_job_if_failing_quality_checks, \
+from helpers.data_quality_testing import get_metrics_target_location, cancel_job_if_failing_quality_checks, \
     get_data_quality_check_results, get_success_metrics
+from helpers.helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog, \
+    check_if_dataframe_empty, create_pushdown_predicate
 
 
 # dict containing parameters for DQ checks
