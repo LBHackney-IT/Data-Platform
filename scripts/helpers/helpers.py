@@ -171,24 +171,3 @@ def check_if_dataframe_empty(df):
     if df.rdd.isEmpty():
         raise Exception('Dataframe is empty')
 
-
-def get_data_quality_check_results(check_results):
-    """
-    This will return the contraint messages for the data quality checks.
-    """
-    messages = [
-        f'{message.constraint} finished with status {message.constraint_status}. {message.constraint_message}'
-        for message in check_results.collect()
-    ]
-    return messages
-
-
-def get_success_metrics(success_metrics):
-    """
-    This will return the success metrics for the passed data quality checks.
-    """
-    messages = [
-        f'{message.entity} {message.instance}, {message.name}, {message.value}'
-        for message in success_metrics.collect()
-    ]
-    return messages
