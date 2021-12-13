@@ -157,6 +157,7 @@ module "tascomi_parse_tables_increments" {
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name
     "--table_list"              = local.table_list
+    "--deequ_metrics_location"  = "s3://${module.raw_zone.bucket_id}/quality-metrics/planning/tascomi/deequ-metrics.json"
   }
   script_name          = "tascomi_parse_tables_increments"
   triggered_by_crawler = aws_glue_crawler.tascomi_api_response_crawler.name

@@ -143,10 +143,12 @@ def parse_json_into_dataframe(spark, column, dataframe):
     dataframe = dataframe.drop(column, 'json')
     return dataframe
 
+
 def table_exists_in_catalog(glue_context, table, database):
     tables = glue_context.tables(database)
 
     return tables.filter(tables.tableName == table).count() == 1
+
 
 def create_pushdown_predicate(partitionDateColumn, daysBuffer):
     '''
@@ -161,9 +163,11 @@ def create_pushdown_predicate(partitionDateColumn, daysBuffer):
         pushDownPredicate = ''
     return pushDownPredicate
 
+
 def check_if_dataframe_empty(df):
     '''
     This method returns an exception if the dataframe is empty.
     '''
     if df.rdd.isEmpty():
         raise Exception('Dataframe is empty')
+
