@@ -1,17 +1,15 @@
 import sys
 from awsglue.utils import getResolvedOptions
-from pyspark import SparkContext, SparkConf
+from pyspark import SparkContext
 from pyspark.sql import SparkSession
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 import pyspark.sql.functions as F
-from pyspark.sql.functions import col, max, date_format, date_sub, current_date
+from pyspark.sql.functions import col, max
 from pyspark.sql import Window
 from datetime import datetime
 from helpers.helpers import get_glue_env_var, table_exists_in_catalog, create_pushdown_predicate
-
-
 
 
 def get_latest_snapshot(dfa):
@@ -93,7 +91,7 @@ if __name__ == "__main__":
         
         # snapshot table in glue catalogue
         else:
-            pushDownPredicate = create_pushdown_predicate(partitionDateColumn='snapshot_date',daysBuffer=10)
+            pushDownPredicate = create_pushdown_predicate(partitionDateColumn='snapshot_date',daysBuffer=14)
             #   load latest snpashot
             snapshot_ddf = glueContext.create_dynamic_frame.from_catalog(
                 name_space = source_catalog_database,

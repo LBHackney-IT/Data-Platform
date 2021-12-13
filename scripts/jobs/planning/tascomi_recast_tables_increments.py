@@ -1,6 +1,6 @@
 import sys
 from awsglue.utils import getResolvedOptions
-from pyspark import SparkContext, SparkConf
+from pyspark import SparkContext
 from pyspark.sql import SparkSession
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     #   load columns dictionary
     columnsDictionary = spark.read.option("multiline", "true").json(column_dict_path).rdd.collect()[0]
     # Prepare pushdown predicate for loading
-    pushDownPredicate = create_pushdown_predicate(partitionDateColumn='import_date',daysBuffer=5)
+    pushDownPredicate = create_pushdown_predicate(partitionDateColumn='import_date',daysBuffer=14)
     
     for nameOfTableToRecast in table_list:
         if not table_exists_in_catalog(glueContext, nameOfTableToRecast, source_catalog_database):

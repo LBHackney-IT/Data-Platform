@@ -79,7 +79,7 @@ if __name__ == "__main__":
             dq_messages.append(f"Couldn't find table {source_table_name} in database {source_catalog_database}, moving onto next table.")
             continue
 
-        pushdown_predicate = create_pushdown_predicate(partitionDateColumn='import_date', daysBuffer=5)
+        pushdown_predicate = create_pushdown_predicate(partitionDateColumn='import_date', daysBuffer=14)
         source_data = glueContext.create_dynamic_frame.from_catalog(
             name_space=source_catalog_database,
             table_name=source_table_name,
