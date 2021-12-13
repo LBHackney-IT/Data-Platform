@@ -2,17 +2,17 @@ locals {
   number_of_workers   = 4
   max_concurrent_runs = max(length(local.tascomi_table_names), length(local.tascomi_static_tables))
   tascomi_table_names = [
+    "appeals",
     "applications",
+    "communications",
     "contacts",
+    "documents",
+    "dtf_locations",
     "emails",
     "enforcements",
+    "fee_payments",
     "fees",
     "public_comments",
-    "communications",
-    "fee_payments",
-    "appeals",
-    "dtf_locations",
-    "documents",
     "users"
   ]
 
