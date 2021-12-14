@@ -11,12 +11,22 @@ env:
 on:
   workflow_call:
     inputs:
-      terraform_import:
+      terraform_infra_import:
         description: "Terraform import statements"
         required: false
         default: ""
         type: string
-      terraform_remove:
+      terraform_infra_remove:
+        description: "Terraform state rm statements"
+        required: false
+        default: ""
+        type: string
+      terraform_network_import:
+        description: "Terraform import statements"
+        required: false
+        default: ""
+        type: string
+      terraform_network_remove:
         description: "Terraform state rm statements"
         required: false
         default: ""
@@ -146,8 +156,8 @@ jobs:
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           branch: "main"
-          terraform_import: ${{ inputs.terraform_import }}
-          terraform_remove: ${{ inputs.terraform_remove }}
+          terraform_import: ${{ inputs.terraform_network_import }}
+          terraform_remove: ${{ inputs.terraform_netowrk_remove }}
           # DANGER ZONE
           # In order to allow you to run a Terraform destroy (that will delete all AWS resources managed by Terraform,
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
@@ -183,8 +193,8 @@ jobs:
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           branch: "main"
-          terraform_import: ${{ inputs.terraform_import }}
-          terraform_remove: ${{ inputs.terraform_remove }}
+          terraform_import: ${{ inputs.terraform_infra_import }}
+          terraform_remove: ${{ inputs.terraform_infra_remove }}
           # DANGER ZONE
           # In order to allow you to run a Terraform destroy (that will delete all AWS resources managed by Terraform,
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
