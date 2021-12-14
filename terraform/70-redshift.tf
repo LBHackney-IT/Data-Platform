@@ -38,9 +38,7 @@ locals {
     housing_repairs_raw_zone     = module.department_housing_repairs.raw_zone_catalog_database_name
     housing_repairs_trusted_zone = module.department_housing_repairs.trusted_zone_catalog_database_name
 
-    liberator_raw_zone             = aws_glue_catalog_database.raw_zone_liberator.name
     parking_raw_zone_liberator     = aws_glue_catalog_database.raw_zone_liberator.name
-    liberator_refined_zone         = aws_glue_catalog_database.refined_zone_liberator.name
     parking_refined_zone_liberator = aws_glue_catalog_database.refined_zone_liberator.name
 
     parking_raw_zone     = module.department_parking.raw_zone_catalog_database_name
@@ -53,8 +51,6 @@ locals {
       user_name  = module.department_parking.identifier_snake_case
       secret_arn = module.department_parking.redshift_cluster_secret
       schemas_to_grant_access_to = concat([
-        "liberator_raw_zone",
-        "liberator_refined_zone",
         "parking_refined_zone_liberator",
         "parking_raw_zone_liberator",
         "parking_raw_zone",
