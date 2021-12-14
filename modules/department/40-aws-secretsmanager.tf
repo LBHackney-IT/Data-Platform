@@ -9,6 +9,9 @@ resource "aws_secretsmanager_secret" "redshift_cluster_credentials" {
 resource "random_password" "redshift_password" {
   length  = 24
   special = false
+  number  = true
+  upper   = true
+  lower   = true
 }
 
 locals {
