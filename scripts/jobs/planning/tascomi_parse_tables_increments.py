@@ -9,6 +9,7 @@ from pydeequ.repository import FileSystemMetricsRepository, ResultKey
 from pydeequ.verification import VerificationSuite, VerificationResult
 from pyspark.context import SparkContext
 from pyspark.sql import SparkSession
+from awsglue.dynamicframe import DynamicFrame
 
 from helpers.data_quality_testing import get_metrics_target_location, cancel_job_if_failing_quality_checks, \
     get_data_quality_check_results, get_success_metrics
