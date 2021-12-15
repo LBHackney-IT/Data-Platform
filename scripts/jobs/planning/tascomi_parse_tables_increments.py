@@ -107,12 +107,16 @@ if __name__ == "__main__":
                 "glue_job_id": args['JOB_RUN_ID']
             })
 
+            check = Check(spark, CheckLevel.Error, "Data quality failure") 
+            if(dq_params.get(table, {}).get("unique")):
+                check = check.hasUniqueness(dq_params[table]["unique"], lambda x: x == 1 , f'{dq_params[table]["unique"]} are not unique')
+            if(dq_params.get(table, {}).get("complete")):
+                check = check.isComplete(dq_params[table]["complete"], f'{dq_params[table]["complete"]} has missing values')
+
             verificationSuite = VerificationSuite(spark) \
                 .onData(df) \
                 .useRepository(metricsRepository) \
-                .addCheck(Check(spark, CheckLevel.Error, "Data quality failure") \
-                        .hasUniqueness(dq_params.get(table, {}).get("unique", []), lambda x: x == 1 , f'{dq_params.get(table, {}).get("unique", {})} are not unique') \
-                        .isComplete(dq_params.get(table, {}).get("complete", ""), f'{dq_params.get(table, {}).get("complete", {})} has missing values'))
+                .addCheck(check)
 
             try:
 
@@ -148,6 +152,7 @@ if __name__ == "__main__":
                     transformation_ctx="parquet_data")
         job.commit()
     finally:
-        logger.error(f'DQ Errors: {dq_errors}')
+        if len(dq_errors) > 0:
+            logger.error(f'DQ Errors: {dq_errors}')
         spark.sparkContext._gateway.close()
         spark.stop()
