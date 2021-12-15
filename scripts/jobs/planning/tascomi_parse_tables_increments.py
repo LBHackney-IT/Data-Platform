@@ -111,8 +111,8 @@ if __name__ == "__main__":
                 .onData(df) \
                 .useRepository(metricsRepository) \
                 .addCheck(Check(spark, CheckLevel.Error, "Data quality failure") \
-                        .hasUniqueness(dq_params.get(table, {}).get("unique", ""), lambda x: x == 1 , f'{dq_params.get(table, {}).get("unique", {})} are not unique') \
-                        .isComplete(dq_params.get(table, {}).get("complete", {}), f'{dq_params.get(table, {}).get("complete", {})} has missing values'))
+                        .hasUniqueness(dq_params.get(table, {}).get("unique", []), lambda x: x == 1 , f'{dq_params.get(table, {}).get("unique", {})} are not unique') \
+                        .isComplete(dq_params.get(table, {}).get("complete", ""), f'{dq_params.get(table, {}).get("complete", {})} has missing values'))
 
             try:
 
