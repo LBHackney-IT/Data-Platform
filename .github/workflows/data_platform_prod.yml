@@ -7,16 +7,16 @@ on:
   workflow_dispatch:
     inputs:
       terraform_infra_import:
-        description: "Terraform import statements"
+        description: "Infrastructure terraform import statements"
         required: false
       terraform_infra_remove:
-        description: "Terraform state rm statements"
+        description: "Infrastructure terraform state rm statements"
         required: false
       terraform_network_import:
-        description: "Terraform import statements"
+        description: "Network terraform import statements"
         required: false
       terraform_network_remove:
-        description: "Terraform state rm statements"
+        description: "Network terraform state rm statements"
         required: false
 
 jobs:
