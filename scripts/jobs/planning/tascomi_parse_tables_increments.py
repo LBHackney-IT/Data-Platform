@@ -13,7 +13,7 @@ from pyspark.sql import SparkSession
 from helpers.data_quality_testing import get_metrics_target_location, cancel_job_if_failing_quality_checks, \
     get_data_quality_check_results, get_success_metrics
 from helpers.helpers import get_glue_env_var, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog, \
-    check_if_dataframe_empty, create_pushdown_predicate
+    create_pushdown_predicate
 
 
 # dict containing parameters for DQ checks
@@ -40,7 +40,7 @@ dq_params = {'appeals': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'public_comments': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'public_consultations': {'unique': ['id', 'import_date'], 'complete': 'document_id'},
              'users': {'unique': ['id', 'import_date'], 'complete': 'id'}
-             };
+             }
 
 
 if __name__ == "__main__":
@@ -64,98 +64,89 @@ if __name__ == "__main__":
     failed_tables = []
 
     # create list to contains success metrics and constrain messages for each table
-    dq_messages = []
+    dq_errors = []
+    try:
+        # loop through each table
+        for table in table_list:
+            logger.info(f"Table being processed is: {table} in database {source_catalog_database}.")
 
-    # loop through each table
-    for table in table_list:
-        logger.info(f"Table being processed is: {table} in database {source_catalog_database}.")
-        dq_messages.append(f"TABLE: {table} in database {source_catalog_database}.")
+            # Add prefix to table name to retrieve API data
+            source_table_name = f'api_response_{table}'
 
-        # Add prefix to table name to retrieve API data
-        source_table_name = f'api_response_{table}'
+            if not table_exists_in_catalog(glueContext, source_table_name, source_catalog_database):
+                logger.info(f"Couldn't find table {source_table_name} in database {source_catalog_database}, moving onto next table.")
+                continue
 
-        if not table_exists_in_catalog(glueContext, source_table_name, source_catalog_database):
-            logger.info(f"Couldn't find table {source_table_name} in database {source_catalog_database}, moving onto next table.")
-            dq_messages.append(f"Couldn't find table {source_table_name} in database {source_catalog_database}, moving onto next table.")
-            continue
+            pushdown_predicate = create_pushdown_predicate(partitionDateColumn='import_date', daysBuffer=14)
+            source_data = glueContext.create_dynamic_frame.from_catalog(
+                name_space=source_catalog_database,
+                table_name=source_table_name,
+                transformation_ctx = "data_source" + source_table_name,
+                push_down_predicate = pushdown_predicate
+            )
 
-        pushdown_predicate = create_pushdown_predicate(partitionDateColumn='import_date', daysBuffer=14)
-        source_data = glueContext.create_dynamic_frame.from_catalog(
-            name_space=source_catalog_database,
-            table_name=source_table_name,
-            transformation_ctx = "data_source" + source_table_name,
-            push_down_predicate = pushdown_predicate
-        )
+            df = source_data.toDF()
+            logger.info(f"{source_table_name} - number of rows: {df.count()}")
 
-        df = source_data.toDF()
-        dq_messages.append(f"{source_table_name} - number of rows: {df.count()}")
+            if df.rdd.isEmpty():
+                logger.info(f"No increment found for {source_table_name}, moving onto next table.")
+                continue
 
-        if df.rdd.isEmpty():
-            logger.info(f"No increment found for {source_table_name}, moving onto next table.")
-            dq_messages.append(f"No increment found for {source_table_name}, moving onto next table.")
-            continue
+            # keep only rows where api_response_code == 200
+            df = df.where(df.import_api_status_code == '200')
 
-        # keep only rows where api_response_code == 200
-        df = df.where(df.import_api_status_code == '200')
+            # parse data
+            df = parse_json_into_dataframe(spark=spark, column=table, dataframe=df)
 
-        # parse data
-        df = parse_json_into_dataframe(spark=spark, column=table, dataframe=df)
+            metricsRepository = FileSystemMetricsRepository(spark, metrics_target_location)
+            resultKey = ResultKey(spark, ResultKey.current_milli_time(), {
+                "job_timestamp": datetime.datetime.now(),
+                "source_database": source_catalog_database,
+                "source_table": table,
+                "glue_job_id": args['JOB_RUN_ID']
+            })
 
-        metricsRepository = FileSystemMetricsRepository(spark, metrics_target_location)
-        resultKey = ResultKey(spark, ResultKey.current_milli_time(), {
-            "job_timestamp": datetime.datetime.now(),
-            "source_database": source_catalog_database,
-            "source_table": table,
-            "glue_job_id": args['JOB_RUN_ID']
-        })
+            verificationSuite = VerificationSuite(spark) \
+                .onData(df) \
+                .useRepository(metricsRepository) \
+                .addCheck(Check(spark, CheckLevel.Error, "Data quality failure") \
+                        .hasUniqueness(dq_params.get(table, {}).get("unique", ""), lambda x: x == 1 , f'{dq_params.get(table, {}).get("unique", {})} are not unique') \
+                        .isComplete(dq_params.get(table, {}).get("complete", {}), f'{dq_params.get(table, {}).get("complete", {})} has missing values'))
 
-        verificationSuite = VerificationSuite(spark) \
-            .onData(df) \
-            .useRepository(metricsRepository) \
-            .addCheck(Check(spark, CheckLevel.Error, "Data quality failure") \
-                      .hasUniqueness(dq_params.get(table, {}).get("unique", ""), lambda x: x == 1 , f'{dq_params.get(table, {}).get("unique", {})} are not unique') \
-                      .isComplete(dq_params.get(table, {}).get("complete", {}), f'{dq_params.get(table, {}).get("complete", {})} has missing values'))
+            try:
 
-        try:
+                verificationRun = verificationSuite.run()
 
-            verificationRun = verificationSuite.run()
+                # check if any errors and raise exception if true
+                cancel_job_if_failing_quality_checks(VerificationResult.checkResultsAsDataFrame(spark, verificationRun))
 
-            # check if any errors and raise exception if true
-            cancel_job_if_failing_quality_checks(VerificationResult.checkResultsAsDataFrame(spark, verificationRun))
+                logger.info(f'Data quality checks applied to {table}. Data quality test results: {get_data_quality_check_results(VerificationResult.checkResultsAsDataFrame(spark, verificationRun))}')
+                logger.info(f'Success metrics for {table}: {get_success_metrics(VerificationResult.successMetricsAsDataFrame(spark, verificationRun))}')
 
-            logger.info(f'Data quality checks applied to {table}. Data quality test results: {get_data_quality_check_results(VerificationResult.checkResultsAsDataFrame(spark, verificationRun))}')
-            logger.info(f'Success metrics for {table}: {get_success_metrics(VerificationResult.successMetricsAsDataFrame(spark, verificationRun))}')
-            dq_messages.append(f"Success metrics for {table}: {get_success_metrics(VerificationResult.successMetricsAsDataFrame(spark, verificationRun))}")
-            dq_messages.append(f"Data quality checks applied to {table}. Data quality test results: {get_data_quality_check_results(VerificationResult.checkResultsAsDataFrame(spark, verificationRun))}")
+            except Exception as verificationError:
+                logger.info(f'Job cancelled due to data quality test failure, continuing to next table.')
+                message = verificationError.args
+                logger.info(f"{message[0]}")
+                dq_errors.append(f'Job for table {table} cancelled due to data quality test failure.')
+                dq_errors.append(f'{message[0]}...Continuing to next table...')
 
-        except Exception as verificationError:
-            logger.info(f'Job cancelled due to data quality test failure, continuing to next table.')
-            message = verificationError.args
-            logger.info(f"{message[0]}")
-            dq_messages.append(f'Job cancelled due to data quality test failure.')
-            dq_messages.append(f'{message[0]}...Continuing to next table...')
-            continue
+            else:
+                logger.info(f'Data quality tests passed, appending data quality results to JSON and moving onto data parsing.')
+                verificationSuite.saveOrAppendResult(resultKey).run()
 
-        else:
-            logger.info(f'Data quality tests passed, appending data quality results to JSON and moving onto data parsing.')
-            dq_messages.append(f'Data quality tests passed, appending data quality results to JSON and moving onto data parsing.')
-            verificationSuite.saveOrAppendResult(resultKey).run()
+                # if data quality tests succeed, write to S3
+                target_destination = s3_bucket_target + table
 
-            # if data quality tests succeed, write to S3
-            target_destination = s3_bucket_target + table
+                parsed_df = DynamicFrame.fromDF(df, glueContext, "cleanedDataframe")
 
-            parsed_df = DynamicFrame.fromDF(df, glueContext, "cleanedDataframe")
-
-            parquet_data = glueContext.write_dynamic_frame.from_options(
-                frame=parsed_df,
-                connection_type="s3",
-                format="parquet",
-                connection_options={"path": target_destination, "partitionKeys": PARTITION_KEYS},
-                transformation_ctx="parquet_data")
-
-
-    logger.info(f'Processing information: {dq_messages}')
-    spark.sparkContext._gateway.close()
-    spark.stop()
-
-    job.commit()
+                parquet_data = glueContext.write_dynamic_frame.from_options(
+                    frame=parsed_df,
+                    connection_type="s3",
+                    format="parquet",
+                    connection_options={"path": target_destination, "partitionKeys": PARTITION_KEYS},
+                    transformation_ctx="parquet_data")
+        job.commit()
+    finally:
+        logger.error(f'DQ Errors: {dq_errors}')
+        spark.sparkContext._gateway.close()
+        spark.stop()
