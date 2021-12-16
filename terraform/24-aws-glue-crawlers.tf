@@ -34,3 +34,16 @@ resource "aws_glue_crawler" "raw_zone_unrestricted_address_api_crawler" {
     }
   })
 }
+
+resource "aws_glue_trigger" "addresses_api_crawler_trigger" {
+  tags = module.tags.values
+
+  name     = "${local.short_identifier_prefix}Addresses API crawler Trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 6 * * ? *)"
+  enabled  = local.is_live_environment
+
+  actions {
+    crawler_name = aws_glue_crawler.raw_zone_unrestricted_address_api_crawler.name
+  }
+}
