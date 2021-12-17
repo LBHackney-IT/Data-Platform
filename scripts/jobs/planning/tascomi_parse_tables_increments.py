@@ -64,7 +64,7 @@ if __name__ == "__main__":
     table_list = table_list_string.split(',')
     failed_tables = []
 
-    # create list to contains success metrics and constrain messages for each table
+    # create list to contain success metrics and constrain messages for each table
     dq_errors = []
     try:
         # loop through each table
@@ -109,7 +109,7 @@ if __name__ == "__main__":
 
             check = Check(spark, CheckLevel.Error, "Data quality failure") 
             if(dq_params.get(table, {}).get("unique")):
-                check = check.hasUniqueness(dq_params[table]["unique"], lambda x: x == 1 , f'{dq_params[table]["unique"]} are not unique')
+                check = check.hasUniqueness(dq_params[table]["unique"], lambda x: x == 1, f'{dq_params[table]["unique"]} are not unique')
             if(dq_params.get(table, {}).get("complete")):
                 check = check.isComplete(dq_params[table]["complete"], f'{dq_params[table]["complete"]} has missing values')
 
