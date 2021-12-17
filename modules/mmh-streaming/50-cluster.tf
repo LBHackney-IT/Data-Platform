@@ -1,16 +1,12 @@
-resource "aws_msk_cluster" "hackit" {
-  cluster_name           = "hackit"
+resource "aws_msk_cluster" "mmh_streaming" {
+  cluster_name           = "${var.identifier_prefix}mmh_streaming"
   kafka_version          = "2.8.1"
   number_of_broker_nodes = 3
 
   broker_node_group_info {
     instance_type   = "kafka.t3.small"
     ebs_volume_size = 1000
-    client_subnets = [
-      aws_subnet.subnet_az1.id,
-      aws_subnet.subnet_az2.id,
-      aws_subnet.subnet_az3.id,
-    ]
+    client_subnets  = var.subnet_ids
     security_groups = [aws_security_group.sg.id]
   }
 
@@ -47,7 +43,5 @@ resource "aws_msk_cluster" "hackit" {
     }
   }
 
-  tags = {
-    streaming = "mmh"
-  }
+  tags = var.tags
 }
