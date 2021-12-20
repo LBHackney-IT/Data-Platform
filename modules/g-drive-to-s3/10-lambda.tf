@@ -128,6 +128,7 @@ resource "aws_cloudwatch_event_rule" "every_day_at_6" {
   name                = "g-drive-to-s3-copier-every-day-at-6"
   description         = "Fires every dat at "
   schedule_expression = "cron(0 6 * * ? *)"
+  is_enabled          = false
 }
 
 resource "aws_cloudwatch_event_target" "run_lambda_every_day_at_6" {
