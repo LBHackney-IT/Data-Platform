@@ -49,3 +49,8 @@ variable "redshift_public_ips" {
   description = "Public IP addresses for the redshift cluster"
   type        = list(string)
 }
+
+variable "redshift_port" {
+  description = "Port that the redshift cluster is running on"
+  type        = number
+}
