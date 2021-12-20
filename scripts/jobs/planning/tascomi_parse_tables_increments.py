@@ -111,7 +111,7 @@ if __name__ == "__main__":
             if(dq_params.get(table, {}).get("unique")):
                 check = check.hasUniqueness(dq_params[table]["unique"], lambda x: x == 1, f'{dq_params[table]["unique"]} are not unique')
             if(dq_params.get(table, {}).get("complete")):
-                check = check.isComplete(dq_params[table]["complete"], f'{dq_params[table]["complete"]} has missing values')
+                check = check.hasCompleteness(dq_params[table]["complete"], lambda x: x >= 0.99, f'{dq_params[table]["complete"]} has missing values')
 
             verificationSuite = VerificationSuite(spark) \
                 .onData(df) \
