@@ -21,7 +21,7 @@ locals {
   hostname = length(var.redshift_ip_addresses) == 1 ? var.redshift_ip_addresses[0] : "One of ${var.redshift_ip_addresses[0]} OR ${var.redshift_ip_addresses[1]}"
   redshift_creds = {
     "Host Name or IP" = local.hostname,
-    "Port"            = "5439"
+    "Port"            = var.redshift_port
     "Database"        = "data_platform"
     "Username"        = local.department_identifier
     "Password"        = random_password.redshift_password.result

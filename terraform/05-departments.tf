@@ -32,6 +32,7 @@ module "department_housing_repairs" {
   glue_temp_storage_bucket        = module.glue_temp_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
@@ -60,6 +61,7 @@ module "department_parking" {
   glue_temp_storage_bucket        = module.glue_temp_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
@@ -89,6 +91,7 @@ module "department_finance" {
   glue_temp_storage_bucket        = module.glue_temp_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
@@ -117,6 +120,7 @@ module "department_data_and_insight" {
   glue_temp_storage_bucket        = module.glue_temp_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
@@ -146,6 +150,7 @@ module "department_env_enforcement" {
   glue_temp_storage_bucket        = module.glue_temp_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
@@ -174,6 +179,7 @@ module "department_planning" {
   glue_temp_storage_bucket        = module.glue_temp_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
@@ -203,6 +209,7 @@ module "department_unrestricted" {
   glue_temp_storage_bucket        = module.glue_temp_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
