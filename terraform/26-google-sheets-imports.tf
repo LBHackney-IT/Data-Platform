@@ -17,6 +17,7 @@ module "repairs_dlo" {
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-dlo"
+  enable_glue_trigger             = false
 }
 
 module "repairs_herts_heritage" {
@@ -38,6 +39,7 @@ module "repairs_herts_heritage" {
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-herts-heritage"
+  enable_glue_trigger             = false
 }
 
 module "repairs_avonline" {
@@ -59,6 +61,7 @@ module "repairs_avonline" {
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-avonline"
+  enable_glue_trigger             = false
 }
 
 module "repairs_alpha_track" {
@@ -80,6 +83,7 @@ module "repairs_alpha_track" {
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-alpha-track"
+  enable_glue_trigger             = false
 }
 
 module "repairs_stannah" {
@@ -101,6 +105,7 @@ module "repairs_stannah" {
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-stannah"
+  enable_glue_trigger             = false
 }
 
 module "repairs_purdy" {
@@ -122,6 +127,7 @@ module "repairs_purdy" {
   google_sheets_worksheet_name    = "FormresponsesPUR"
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-purdy"
+  enable_glue_trigger             = false
 }
 
 module "repairs_axis" {
@@ -143,6 +149,7 @@ module "repairs_axis" {
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-axis"
+  enable_glue_trigger             = false
 }
 
 module "parking_spreadsheet_estate_permit_limits" {
