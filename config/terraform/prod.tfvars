@@ -14,3 +14,4 @@ rds_instance_ids = ["addresses-api-db-production-emergency-temp", "geolive-db"]
 deployment_user_arn = "arn:aws:iam::338027813792:user/automation_deployer"
 qlik_server_instance_type = "m5.2xlarge"
 redshift_public_ips = ["18.168.126.173"]
+redshift_port = 5439
