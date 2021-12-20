@@ -21,6 +21,7 @@ module "xlsx_import" {
     database_name      = var.glue_catalog_database_name
     s3_target_location = local.s3_output_path
   }
+  trigger_enabled = false
 }
 
 resource "aws_glue_workflow" "workflow" {

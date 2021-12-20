@@ -31,4 +31,5 @@ module "housing_repairs_google_sheets_cleaning" {
     database_name      = local.refined_zone_catalog_database_name
     s3_target_location = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/cleaned/"
   }
+  trigger_enabled = false
 }
