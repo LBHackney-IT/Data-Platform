@@ -14,3 +14,7 @@ variable "vpc_id" {
 variable "subnet_ids" {
   type = list(string)
 }
+
+variable "role_arns_to_share_access_with" {
+  description = ""
+}
