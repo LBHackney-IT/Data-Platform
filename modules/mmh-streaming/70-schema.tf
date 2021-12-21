@@ -9,5 +9,5 @@ resource "aws_glue_schema" "mmh_tenure_schema" {
   data_format       = "AVRO"
   compatibility     = "NONE"
   tags              = var.tags
-  schema_definition = jsondecode(file("${path.module}/schemas/mmh_tenure.json"))
+  schema_definition = file("${path.module}/schemas/mmh_tenure.json")
 }
