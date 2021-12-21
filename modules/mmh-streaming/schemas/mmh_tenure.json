@@ -1,6 +1,6 @@
 {
   "type": "record",
-  "namespace": "mmh",
+  "namespace": "TenureSchema",
   "name": "TenureInformation",
   "fields": [
     {
@@ -26,12 +26,15 @@
               "logicalType": "uuid"
             },
             {
-              "name": "HouseholdMembersType",
-              "type": "enum",
-              "symbols": [
-                "Person",
-                "Organization"
-              ]
+              "name": "HouseholdMembers",
+              "type": {
+                "name": "HouseholdMembersType",
+                "type": "enum",
+                "symbols": [
+                  "Person",
+                  "Organization"
+                ]
+              }
             },
             {
               "name": "FullName",
@@ -47,15 +50,18 @@
               "logicalType": "date"
             },
             {
-              "name": "PersonTenureType",
-              "type": "enum",
-              "symbols": [
-                "Tenant",
-                "Leaseholder",
-                "Freeholder",
-                "HouseholdMember",
-                "Occupant"
-              ]
+              "name": "PersonTenure",
+              "type": {
+                "name": "PersonTenureType",
+                "type": "enum",
+                "symbols": [
+                  "Tenant",
+                  "Leaseholder",
+                  "Freeholder",
+                  "HouseholdMember",
+                  "Occupant"
+                ]
+              }
             }
           ]
         }
@@ -65,7 +71,7 @@
       "name": "TenuredAsset",
       "type": {
         "type": "record",
-        "name": "tenured_asset",
+        "name": "TenuredAsset",
         "fields": [
           {
             "name": "Id",
@@ -73,17 +79,20 @@
             "logicalType": "uuid"
           },
           {
-            "name": "TenuredAssetType",
-            "type": "enum",
-            "symbols": [
-              "Block",
-              "Concierge",
-              "Dwelling",
-              "LettableNonDwelling",
-              "MediumRiseBlock",
-              "NA",
-              "TravellerSite"
-            ]
+            "name": "TenuredAsset",
+            "type": {
+              "name": "TenuredAssetType",
+              "type": "enum",
+              "symbols": [
+                "Block",
+                "Concierge",
+                "Dwelling",
+                "LettableNonDwelling",
+                "MediumRiseBlock",
+                "NA",
+                "TravellerSite"
+              ]
+            }
           },
           {
             "name": "FullAddress",
@@ -104,7 +113,7 @@
       "name": "Charges",
       "type": {
         "type": "record",
-        "name": "charge",
+        "name": "Charges",
         "fields": [
           {
             "name": "Rent",
@@ -163,7 +172,7 @@
       "name": "TenureType",
       "type": {
         "type": "record",
-        "name": "charge",
+        "name": "TenureType",
         "fields": [
           {
             "name": "Rent",
@@ -216,7 +225,7 @@
       "name": "Terminated",
       "type": {
         "type": "record",
-        "name": "charge",
+        "name": "Terminated",
         "fields": [
           {
             "name": "IsTerminated",
@@ -238,7 +247,7 @@
       "name": "AgreementType",
       "type": {
         "type": "record",
-        "name": "charge",
+        "name": "AgreementType",
         "fields": [
           {
             "name": "Code",
@@ -265,7 +274,7 @@
       "name": "Notices",
       "type": {
         "type": "record",
-        "name": "Notice",
+        "name": "Notices",
         "fields": [
           {
             "name": "Type",
@@ -298,7 +307,7 @@
       "name": "LegacyReferences",
       "type": {
         "type": "record",
-        "name": "charge",
+        "name": "LegacyReferences",
         "fields": [
           {
             "name": "Name",
