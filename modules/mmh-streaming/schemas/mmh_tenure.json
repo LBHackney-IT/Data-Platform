@@ -26,7 +26,7 @@
               "logicalType": "uuid"
             },
             {
-              "name": "HouseholdMembers",
+              "name": "HouseholdMembersType",
               "type": {
                 "name": "HouseholdMembersType",
                 "type": "enum",
@@ -50,7 +50,7 @@
               "logicalType": "date"
             },
             {
-              "name": "PersonTenure",
+              "name": "PersonTenureType",
               "type": {
                 "name": "PersonTenureType",
                 "type": "enum",
@@ -79,8 +79,8 @@
             "logicalType": "uuid"
           },
           {
-            "name": "TenuredAsset",
-            "type": {
+            "name": "TenuredAssetType",
+            "type": [{
               "name": "TenuredAssetType",
               "type": "enum",
               "symbols": [
@@ -92,7 +92,7 @@
                 "NA",
                 "TravellerSite"
               ]
-            }
+            }, "null"]
           },
           {
             "name": "FullAddress",
@@ -160,12 +160,12 @@
     },
     {
       "name": "StartOfTenureDate",
-      "type": "int",
+      "type": ["int", "null"],
       "logicalType": "date"
     },
     {
       "name": "EndOfTenureDate",
-      "type": "int",
+      "type": ["int", "null"],
       "logicalType": "date"
     },
     {
@@ -175,51 +175,19 @@
         "name": "TenureType",
         "fields": [
           {
-            "name": "Rent",
-            "type": "float"
-          },
-          {
-            "name": "CurrentBalance",
-            "type": "float"
-          },
-          {
-            "name": "BillingFrequency",
+            "name": "Code",
             "type": "string"
           },
           {
-            "name": "ServiceCharge",
-            "type": "float"
-          },
-          {
-            "name": "OtherCharges",
-            "type": "float"
-          },
-          {
-            "name": "CombinedServiceCharges",
-            "type": "float"
-          },
-          {
-            "name": "CombinedRentCharges",
-            "type": "float"
-          },
-          {
-            "name": "TenancyInsuranceCharge",
-            "type": "float"
-          },
-          {
-            "name": "OriginalRentCharge",
-            "type": "float"
-          },
-          {
-            "name": "OriginalServiceCharge",
-            "type": "float"
+            "name": "Description",
+            "type": "string"
           }
         ]
       }
     },
     {
       "name": "IsTenanted",
-      "type": "boolean"
+      "type": ["boolean", "null"]
     },
     {
       "name": "Terminated",
@@ -240,7 +208,7 @@
     },
     {
       "name": "SuccessionDate",
-      "type": "int",
+      "type": ["int", "null"],
       "logicalType": "date"
     },
     {
@@ -262,79 +230,85 @@
     },
     {
       "name": "EvictionDate",
-      "type": "int",
+      "type": ["int", "null"],
       "logicalType": "date"
     },
     {
       "name": "PotentialEndDate",
-      "type": "int",
+      "type": ["int", "null"],
       "logicalType": "date"
     },
     {
       "name": "Notices",
       "type": {
-        "type": "record",
-        "name": "Notices",
-        "fields": [
-          {
-            "name": "Type",
-            "type": "string"
-          },
-          {
-            "name": "ServedDate",
-            "type": "int",
-            "logicalType": "date"
-          },
-          {
-            "name": "ExpiryDate",
-            "type": "int",
-            "logicalType": "date"
-          },
-          {
-            "name": "EffectiveDate",
-            "type": "int",
-            "logicalType": "date"
-          },
-          {
-            "name": "EndDate",
-            "type": "int",
-            "logicalType": "date"
-          }
-        ]
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Notices",
+          "fields": [
+            {
+              "name": "Type",
+              "type": "string"
+            },
+            {
+              "name": "ServedDate",
+              "type": "int",
+              "logicalType": "date"
+            },
+            {
+              "name": "ExpiryDate",
+              "type": "int",
+              "logicalType": "date"
+            },
+            {
+              "name": "EffectiveDate",
+              "type": "int",
+              "logicalType": "date"
+            },
+            {
+              "name": "EndDate",
+              "type": ["int", "null"],
+              "logicalType": "date"
+            }
+          ]
+        }
       }
     },
     {
       "name": "LegacyReferences",
       "type": {
-        "type": "record",
-        "name": "LegacyReferences",
-        "fields": [
-          {
-            "name": "Name",
-            "type": "string"
-          },
-          {
-            "name": "Value",
-            "type": "string"
-          }
-        ]
+        "type": "array",
+          "items": {
+          "type": "record",
+          "name": "LegacyReferences",
+          "fields": [
+            {
+              "name": "Name",
+              "type": "string"
+            },
+            {
+              "name": "Value",
+              "type": "string"
+            }
+          ]
+        }
       }
     },
     {
       "name": "IsMutualExchange",
-      "type": "boolean"
+      "type": ["boolean", "null"]
     },
     {
       "name": "InformHousingBenefitsForChanges",
-      "type": "boolean"
+      "type": ["boolean", "null"]
     },
     {
       "name": "IsSublet",
-      "type": "boolean"
+      "type": ["boolean", "null"]
     },
     {
       "name": "SubletEndDate",
-      "type": "int",
+      "type": ["int", "null"],
       "logicalType": "date"
     },
     {
