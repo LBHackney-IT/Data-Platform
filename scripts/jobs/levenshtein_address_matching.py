@@ -9,7 +9,7 @@ from awsglue.job import Job
 from pyspark.sql.functions import col, max
 from pyspark.sql.types import StringType
 
-from helpers.helpers import get_glue_env_var, PARTITION_KEYS
+from helpers.helpers import get_glue_env_var, PARTITION_KEYS, create_pushdown_predicate
 
 PARTITION_KEYS.append("data_source")
 
@@ -49,12 +49,12 @@ source_catalog_table = get_glue_env_var('source_catalog_table', '')
 target_destination = get_glue_env_var('target_destination', '')
 match_to_property_shell = get_glue_env_var('match_to_property_shell', '')
 
-query_addresses_ddf = glueContext.create_dynamic_frame.from_catalog(
+query_addresses = glueContext.create_dynamic_frame.from_catalog(
     name_space=source_catalog_database,
     table_name=source_catalog_table,
 )
 
-query_addresses = query_addresses_ddf.toDF()
+query_addresses = query_addresses.toDF()
 query_addresses = get_latest_partitions(query_addresses)
 logger.info(f"Getting latest partitions query addresses from catalog: {query_addresses}")
 logger.info(f"number of query addresses records: {query_addresses.count()}")
@@ -74,12 +74,14 @@ query_concat = query_concat.select(
 
 # PREP ADDRESSES API DATA
 
-target_addresses_ddf = glueContext.create_dynamic_frame.from_catalog(
+pushDownPredicate = create_pushdown_predicate(partitionDateColumn='import_date',daysBuffer=3)
+target_addresses = glueContext.create_dynamic_frame.from_catalog(
     name_space=addresses_api_data_database,
     table_name=addresses_api_data_table,
+    push_down_predicate = pushDownPredicate
 )
 
-target_addresses = target_addresses_ddf.toDF()
+target_addresses = target_addresses.toDF()
 target_addresses = get_latest_partitions(target_addresses)
 logger.info(f"Getting addresses API data latest partitions: {target_addresses}, records: {target_addresses.count()}")
 
@@ -248,14 +250,14 @@ logger.info(f"Round 3 best match: {bestMatch_round3}")
 logger.info(f"Round 3 best match record count: {bestMatch_round3.count()}")
 
 # Prepare rounds 4 to 7: take all the unmatched, allow mismatched postcodes
-cross_with_any_postcode = query_concat\
+cross_compare = query_concat\
     .join(perfectMatch, "prinx", "left_anti")\
     .join(bestMatch_round1, "prinx", "left_anti")\
     .join(bestMatch_round2, "prinx", "left_anti")\
     .join(bestMatch_round3, "prinx", "left_anti")\
     .crossJoin(target_concat)
 
-cross_compare = cross_with_any_postcode.withColumn(
+cross_compare = cross_compare.withColumn(
     "levenshtein", F.levenshtein(F.col("query_address"), F.col("target_address")))
 cross_compare = cross_compare.withColumn("levenshtein_short", F.levenshtein(
     F.col("query_address"), F.col("target_address_short")))
@@ -324,7 +326,7 @@ logger.info(f"Round 6 best match: {bestMatch_round6}")
 logger.info(f"Round 6 best match record count: {bestMatch_round6.count()}")
 # ROUND 7 - last chance
 
-# take all the rest and mark as unmatched
+# take all the rest (including empty postcodes) and mark as unmatched
 unmatched = query_concat\
     .join(perfectMatch, "prinx", "left_anti")\
     .join(bestMatch_round1, "prinx", "left_anti")\
