@@ -307,6 +307,73 @@ def match_addresses(query_concat, target_concat, logger):
     
     return all_best_match
     
+def round_0(query_concat, target_concat, logger):
+    # COMPARE QUERY AND TARGET
+
+    cross_with_same_postcode = query_concat.join(
+        target_concat, query_concat.query_postcode == target_concat.target_postcode, "fullouter")
+
+
+    cross_compare = cross_with_same_postcode.withColumn(
+        "levenshtein", F.levenshtein(F.col("query_address"), F.col("target_address")))
+    cross_compare = cross_compare.withColumn("levenshtein_short", F.levenshtein(
+        F.col("query_address"), F.col("target_address_short")))
+    cross_compare = cross_compare.withColumn("levenshtein_medium", F.levenshtein(
+        F.col("query_address"), F.col("target_address_medium")))
+    cross_compare = cross_compare.withColumn("levenshtein_10char", F.levenshtein(
+        F.substring(F.col("query_address"), 1, 10), F.substring(F.col("target_address"), 1, 10)))
+
+    logger.info(f"Cross compare query addresses and target addresses: {cross_compare}")
+    logger.info(f"Cross compare records count: {cross_compare.count()}")
+
+    # ROUND 0 - look for perfect
+    perfectFull = cross_compare.filter("levenshtein = 0").dropDuplicates(['prinx'])
+    perfectFull = perfectFull.withColumn("match_type", F.lit("perfect"))
+    perfectFull = perfectFull.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
+
+
+
+    perfectShort = cross_compare\
+        .join(perfectFull, "prinx", "left_anti")\
+        .filter("levenshtein_short = 0")\
+        .dropDuplicates(['prinx'])
+
+    perfectShort = perfectShort.withColumn("match_type", F.lit("perfect on first line and postcode"))
+    perfectShort = perfectShort.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
+
+
+
+    perfectMedium = cross_compare\
+        .join(perfectFull, "prinx", "left_anti")\
+        .join(perfectShort, "prinx", "left_anti")\
+        .filter("levenshtein_medium = 0")\
+        .dropDuplicates(['prinx'])
+
+    perfectMedium = perfectMedium.withColumn("match_type", F.lit("perfect on first 2 lines and postcode"))
+    perfectMedium = perfectMedium.select(F.col("prinx"), F.col("query_address"), 
+    F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
+
+
+    perfect10char = cross_compare\
+        .join(perfectFull, "prinx", "left_anti")\
+        .join(perfectShort, "prinx", "left_anti")\
+        .join(perfectMedium, "prinx", "left_anti")\
+        .filter("levenshtein_10char = 0").dropDuplicates(['prinx'])
+
+    perfect10char = perfect10char.withColumn("match_type", F.lit("perfect on first 10 characters and postcode"))
+    perfect10char = perfect10char.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
+
+
+    # put all 'perfect' together
+    perfectMatch = perfectFull.union(perfectShort).union(
+        perfectMedium).union(perfect10char)
+    perfectMatch = perfectMatch.withColumn("round", F.lit("round 0"))
+
+    logger.info(f"Round 0 perfect match: {perfectMatch}")
+    logger.info(f"Round 0 perfect match record count: {perfectMatch.count()}")
+
+    all_best_match = perfectMatch
+    return all_best_match
 
 if __name__ == "__main__":
     glueContext = GlueContext(SparkContext.getOrCreate())
