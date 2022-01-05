@@ -27,6 +27,7 @@ resource "aws_glue_job" "job" {
   number_of_workers = var.number_of_workers_for_glue_job
   worker_type       = var.glue_job_worker_type
   role_arn          = local.glue_role_arn
+  timeout           = var.glue_job_timeout
   command {
     python_version  = "3"
     script_location = local.script_location
