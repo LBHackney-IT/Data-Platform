@@ -1,6 +1,6 @@
 {
   "type": "record",
-  "namespace": "TenureSchema",
+  "namespace": "MMH",
   "name": "TenureInformation",
   "fields": [
     {
@@ -188,6 +188,10 @@
     {
       "name": "IsTenanted",
       "type": ["boolean", "null"]
+    },
+    {
+      "name": "IsActive",
+      "type": "boolean"
     },
     {
       "name": "Terminated",
