@@ -32,7 +32,7 @@
                 "type": "enum",
                 "symbols": [
                   "Person",
-                  "Organization"
+                  "Organisation"
                 ]
               }
             },
@@ -79,7 +79,7 @@
             "logicalType": "uuid"
           },
           {
-            "name": "TenuredAssetType",
+            "name": "Type",
             "type": [{
               "name": "TenuredAssetType",
               "type": "enum",
