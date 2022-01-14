@@ -18,6 +18,8 @@ init:
 	cd external-lib && make all
 	cd scripts && make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
 	cd terraform && make init
+	cd terraform-networking && make init
+	cd terraform-backend-setup && make init
 
 apply:
 	cd scripts && make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
