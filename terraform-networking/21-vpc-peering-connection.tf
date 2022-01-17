@@ -1,9 +1,9 @@
 locals {
-  requester_assume_role_arn            = "arn:aws:iam::${var.aws_deploy_account}:role/${var.aws_deploy_iam_role_name}"
-  aws_api_accepter_assume_role_arn     = "arn:aws:iam::${var.aws_api_account}:role/${var.aws_deploy_iam_role_name}"
+  requester_assume_role_arn            = "arn:aws:iam::${var.aws_deploy_account_id}:role/${var.aws_deploy_iam_role_name}"
+  aws_api_accepter_assume_role_arn     = "arn:aws:iam::${var.aws_api_account_id}:role/${var.aws_deploy_iam_role_name}"
   aws_housing_accepter_assume_role_arn = "arn:aws:iam::${var.aws_housing_prod_account_id}:role/${var.aws_deploy_iam_role_name}"
   aws_mosaic_accepter_assume_role_arn  = "arn:aws:iam::${var.aws_mosaic_prod_account_id}:role/${var.aws_deploy_iam_role_name}"
-  accepter_assume_role_arn             = "arn:aws:iam::${var.aws_account_data_platform}:role/${var.aws_deploy_iam_role_name}"
+  accepter_assume_role_arn             = "arn:aws:iam::${var.aws_data_platform_account_id}:role/${var.aws_deploy_iam_role_name}"
 }
 
 module "api_vpc_peering_cross_account" {

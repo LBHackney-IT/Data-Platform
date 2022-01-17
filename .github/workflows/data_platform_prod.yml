@@ -26,8 +26,8 @@ jobs:
       environment: "prod"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
     secrets:
-      google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
-      aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
+      AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
       INFRASTRUCTURE_PRIVATE_KEY: ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -35,7 +35,7 @@ jobs:
       AWS_HOUSING_PROD_ACCOUNT_ID: ${{ secrets.AWS_HOUSING_PROD_ACCOUNT_ID }}
       AWS_MOSAIC_PROD_ACCOUNT_ID: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
       AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
-      AWS_ACCOUNT_DATA_PLATFORM: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
   build-and-deploy:
     needs: ["pre-deploy-checks"]
@@ -48,8 +48,8 @@ jobs:
       environment: "prod"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
     secrets:
-      google_project_id: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
-      aws_deploy_account: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
+      AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
       INFRASTRUCTURE_PRIVATE_KEY: ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -57,7 +57,7 @@ jobs:
       AWS_HOUSING_PROD_ACCOUNT_ID: ${{ secrets.AWS_HOUSING_PROD_ACCOUNT_ID }}
       AWS_MOSAIC_PROD_ACCOUNT_ID: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
       AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
-      AWS_ACCOUNT_DATA_PLATFORM: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       AWS_API_VPC_ID: ${{ secrets.AWS_API_VPC_ID }}
       AWS_HOUSING_VPC_ID: ${{ secrets.AWS_HOUSING_VPC_ID }}

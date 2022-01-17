@@ -40,9 +40,9 @@ on:
         type: string
         required: true
     secrets:
-      google_project_id:
+      GOOGLE_PROJECT_ID:
         required: true
-      aws_deploy_account:
+      AWS_DEPLOY_ACCOUNT_ID:
         description: "ID of Account being deployed to"
         required: true
       INFRASTRUCTURE_PRIVATE_KEY:
@@ -57,7 +57,7 @@ on:
         required: true
       AWS_MOSAIC_PROD_ACCOUNT_ID:
         required: true
-      AWS_ACCOUNT_DATA_PLATFORM:
+      AWS_DATA_PLATFORM_ACCOUNT_ID:
         required: true
       AWS_HACKIT_ACCOUNT_ID:
         required: true
@@ -143,12 +143,12 @@ jobs:
           build_path: ${{ env.network_build_path }}
           automation_build_url: ${{ inputs.automation_build_url }}
           environment: ${{ inputs.environment }}
-          google_project_id: ${{ secrets.google_project_id }}
-          aws_deploy_account: ${{ secrets.aws_deploy_account }}
-          aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+          google_project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
+          aws_deploy_account_id: ${{ secrets.AWS_DEPLOY_ACCOUNT_ID }}
+          aws_api_account_id: ${{ secrets.AWS_API_ACCOUNT_PROD }}
           aws_housing_prod_account_id: ${{ secrets.AWS_HOUSING_PROD_ACCOUNT_ID }}
           aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
-          aws_account_data_platform: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM }}
+          aws_data_platform_account_id: ${{ secrets.AWS_DATA_PLATFORM_ACCOUNT_ID }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
           aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
           aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
@@ -180,12 +180,12 @@ jobs:
           build_path: ${{ env.main_build_path }}
           automation_build_url: ${{ inputs.automation_build_url }}
           environment: ${{ inputs.environment }}
-          google_project_id: ${{ secrets.google_project_id }}
-          aws_deploy_account: ${{ secrets.aws_deploy_account }}
-          aws_api_account: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+          google_project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
+          aws_deploy_account_id: ${{ secrets.AWS_DEPLOY_ACCOUNT_ID }}
+          aws_api_account_id: ${{ secrets.AWS_API_ACCOUNT_PROD }}
           aws_housing_prod_account_id: ${{ secrets.AWS_HOUSING_PROD_ACCOUNT_ID }}
           aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
-          aws_account_data_platform: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM }}
+          aws_data_platform_account_id: ${{ secrets.AWS_DATA_PLATFORM_ACCOUNT_ID }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
           aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
           aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
@@ -203,7 +203,7 @@ jobs:
       - name: Setup deployment user profile
         run: |
           echo "[profile deploy_role]" >> ~/.aws/config
-          echo "role_arn=arn:aws:iam::${{ secrets.aws_deploy_account }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}" >> ~/.aws/config
+          echo "role_arn=arn:aws:iam::${{ secrets.aws_deploy_account_id }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}" >> ~/.aws/config
           echo "source_profile=default" >> ~/.aws/config
           echo "role_session_name=deploy" >> ~/.aws/config
           echo "region=eu-west-2" >> ~/.aws/config

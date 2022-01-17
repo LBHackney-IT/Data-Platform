@@ -34,7 +34,7 @@ variable "aws_mosaic_prod_account_id" {
   default = false
 }
 
-variable "aws_account_data_platform" {
+variable "aws_data_platform_account_id" {
   default = false
 }
 

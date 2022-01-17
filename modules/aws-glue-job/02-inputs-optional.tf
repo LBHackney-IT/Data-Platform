@@ -139,3 +139,9 @@ variable "extra_jars" {
   type        = list(string)
   default     = []
 }
+
+variable "glue_job_timeout" {
+  description = "Set the timeout for the glue job in minutes. By default this is set to 120"
+  type        = number
+  default     = 120
+}
