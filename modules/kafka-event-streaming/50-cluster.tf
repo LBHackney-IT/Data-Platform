@@ -1,30 +1,30 @@
-#resource "aws_msk_cluster" "mmh_streaming" {
-#  cluster_name           = "${var.identifier_prefix}mmh_streaming"
-#  kafka_version          = "2.8.1"
-#  number_of_broker_nodes = 3
-#
-#  broker_node_group_info {
-#    instance_type   = "kafka.t3.small"
-#    ebs_volume_size = 1000
-#    client_subnets  = var.subnet_ids
-#    security_groups = [aws_security_group.sg.id]
-#  }
-#
-#  encryption_info {
-#    encryption_at_rest_kms_key_arn = aws_kms_key.kms.arn
-#  }
-#
-#  open_monitoring {
-#    prometheus {
-#      jmx_exporter {
-#        enabled_in_broker = true
-#      }
-#      node_exporter {
-#        enabled_in_broker = true
-#      }
-#    }
-#  }
-#
+resource "aws_msk_cluster" "kafka_cluster" {
+  cluster_name           = "${var.identifier_prefix}event-streaming"
+  kafka_version          = "2.8.1"
+  number_of_broker_nodes = 3
+
+  broker_node_group_info {
+    instance_type   = "kafka.t3.small"
+    ebs_volume_size = 1000
+    client_subnets  = var.subnet_ids
+    security_groups = [aws_security_group.kafka.id]
+  }
+
+  encryption_info {
+    encryption_at_rest_kms_key_arn = aws_kms_key.kafka.arn
+  }
+
+  open_monitoring {
+    prometheus {
+      jmx_exporter {
+        enabled_in_broker = true
+      }
+      node_exporter {
+        enabled_in_broker = true
+      }
+    }
+  }
+
 #  logging_info {
 #    broker_logs {
 #      cloudwatch_logs {
@@ -42,6 +42,6 @@
 #      }
 #    }
 #  }
-#
-#  tags = var.tags
-#}
+
+  tags = var.tags
+}

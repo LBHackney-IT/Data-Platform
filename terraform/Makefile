@@ -22,7 +22,7 @@ workspace-list:
 	aws-vault exec hackney-dataplatform-development -- terraform workspace list
 
 workspace-select:
-    aws-vault exec hackney-dataplatform-development -- terraform workspace select ${WORKSPACE}
+	aws-vault exec hackney-dataplatform-development -- terraform workspace select ${WORKSPACE}
 
 format:
 	terraform fmt .

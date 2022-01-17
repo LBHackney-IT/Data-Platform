@@ -1,7 +1,6 @@
 {
   "type": "record",
   "name": "TenureAPIChangeEvent",
-  "namespace": "MMH",
   "fields": [
     {
         "name": "Id",
