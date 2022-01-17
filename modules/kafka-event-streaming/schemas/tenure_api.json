@@ -35,17 +35,20 @@
     },
     {
         "name": "User",
-        "type": "record",
-        "fields": [
+        "type": {
+          "type": "record",
+          "name": "User",
+          "fields": [
             {
-                "name": "Name",
-                "type": "string"
+              "name": "Name",
+              "type": "string"
             },
             {
-                "name": "Email",
-                "type": "string"
+              "name": "Email",
+              "type": "string"
             }
-        ]
+          ]
+        }
     },
     {
       "name": "Tenure",
