@@ -27,8 +27,8 @@ The Terraform will be deployed, using GitHub Actions, on push to main / when a P
 2. Update the following required variables in the newly created file:
 
 - `environment` - Environment you're working in (this is normally `dev`)
-- `aws_api_account` - API AWS Account number to deploy RDS Export Lambda to, ie. the number after the #, beneath the public account name (for development purposes this is normally the account named DevScratch)
-- `aws_deploy_account` Primary AWS Account number to deploy to (for development purposes this is normally the account named DataPlatform-Development)
+- `aws_api_account_id` - API AWS Account number to deploy RDS Export Lambda to, ie. the number after the #, beneath the public account name (for development purposes this is normally the account named DevScratch)
+- `aws_deploy_account_id` Primary AWS Account number to deploy to (for development purposes this is normally the account named DataPlatform-Development)
 - `aws_deploy_iam_role_name` - This is the role that will be used to deploy the infrastructure (for development purposes this is normally `LBH_Automation_Deployment_Role`)
 - `google_project_id` - The Google Project to create service accounts in (for DevScratch `dataplatform-dev0`)
 
@@ -61,7 +61,7 @@ LDHD-CKXW
 There are {number} AWS accounts available to you.
 ```
 
-Below the final line there will be a box which can be scrolled through using the arrow keys, select with <kbd>Enter</kbd> the account which corresponds to the `aws_api_account` used in step 2 above (normally DevScratch)
+Below the final line there will be a box which can be scrolled through using the arrow keys, select with <kbd>Enter</kbd> the account which corresponds to the `aws_api_account_id` used in step 2 above (normally DevScratch)
 
 ```
 Using the account ID {number}
