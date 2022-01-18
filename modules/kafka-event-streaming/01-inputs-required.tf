@@ -28,3 +28,8 @@ variable "subnet_ids" {
 variable "role_arns_to_share_access_with" {
   description = ""
 }
+
+variable "cross_account_lambda_roles" {
+  type        = list(string)
+  description = "Role ARNs of Lambda functions in other accounts that need to access the glue schema registry"
+}
