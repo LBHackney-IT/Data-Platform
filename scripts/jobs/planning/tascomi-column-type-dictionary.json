@@ -469,7 +469,8 @@
             "appeals": ["admin_officer_id","agent_id","allocated_inspector_id","appeal_decision_id","appeal_format","appeal_status_id","appeal_type_id","applicant_id","application_id","community_id","creation_user_id","enforcement_id","id","inspectorate_contact_id","inspectorate_team","last_updated_by","offender_id","officer_id","user_team_id","ward_id"],
             "dtf_locations": ["creation_user_id","custodian_code_id","id","last_updated_by","merge_source_id","street_id"],
             "documents": ["appeal_id","application_id","asset_constraint_id","communication_id","consultation_duration","creation_user_id","document_type_id","email_id","enforcement_id","id","last_updated_by","legal_agreement_id","officer_id","parent_document_id","preapplication_id","publication_id","public_comment_id","publicity_duration","publicity_justification_id","public_record_id","uploaded_file_id"],
-            "users": ["creation_user_id","id","last_updated_by"]
+            "users": ["creation_user_id","id","last_updated_by"],
+            "application_types": ["id","target_days","received_stage_target_days","incomplete_stage_target_days","complete_stage_target_days","consultation_stage_target_days","consultation_complete_stage_target_days","assessment_stage_target_days","recommendation_stage_target_days","committee_stage_target_days","determination_referred_stage_target_days","decision_issued_stage_target_days","under_appeal_stage_target_days","default_decision_expiry_months","default_decision_expiry_years"]
         },
         "boolean": {
             "applications": [
@@ -846,7 +847,8 @@
             "appeals": ["ceased"],
             "dtf_locations": ["ceased"],
             "documents": ["ceased","sent"],
-            "users": ["ceased","enabled","manager","officer"]
+            "users": ["ceased","enabled","manager","officer"],
+            "application_types": ["show_on_portal","exclude_from_weekly_lists","received_stage_required","incomplete_stage_required","complete_stage_required","consultation_stage_required","consultation_complete_stage_required","assessment_stage_required","recommendation_stage_required","committee_stage_required","determination_referred_stage_required","decision_issued_stage_required","under_appeal_stage_required","exclude_from_stat_returns"]
         },
         "float": {
             "applications": [
