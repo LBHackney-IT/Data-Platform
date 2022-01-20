@@ -1,3 +1,9 @@
+locals {
+  default_arn = [
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+  ]
+}
+
 resource "aws_kms_key" "kafka" {
   tags        = var.tags
   description = "${var.identifier_prefix} - Kafka Streaming"
@@ -5,7 +11,20 @@ resource "aws_kms_key" "kafka" {
   deletion_window_in_days = 10
   enable_key_rotation     = true
 
-  // policy = ??
+  policy = data.aws_iam_policy_document.kafka_client_access.json
+}
+
+data "aws_iam_policy_document" "kafka_client_access" {
+  statement {
+    actions = ["kms:*"]
+
+    principals {
+      identifiers = concat(var.cross_account_lambda_roles, local.default_arn)
+      type        = "AWS"
+    }
+
+    resources = ["*"]
+  }
 }
 
 resource "aws_kms_alias" "key_alias" {
