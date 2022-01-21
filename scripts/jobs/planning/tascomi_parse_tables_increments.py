@@ -40,7 +40,8 @@ dq_params = {'appeals': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'ps_development_codes': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'public_comments': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'public_consultations': {'unique': ['id', 'import_date'], 'complete': 'document_id'},
-             'users': {'unique': ['id', 'import_date'], 'complete': 'id'}
+             'users': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'committee_application_map': {'unique': ['id', 'import_date'], 'complete': 'id'}
              }
 
 
