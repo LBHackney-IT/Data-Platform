@@ -13,7 +13,8 @@ locals {
     "fee_payments",
     "fees",
     "public_comments",
-    "users"
+    "users",
+    "committee_application_map"
   ]
 
   tascomi_static_tables = [
@@ -30,8 +31,7 @@ locals {
     "document_types",
     "fee_types",
     "ps_development_codes",
-    "public_consultations",
-    "committee_application_map"
+    "public_consultations"
   ]
 
   table_list = join(",", concat(local.tascomi_table_names, local.tascomi_static_tables))
