@@ -76,7 +76,14 @@ resource "aws_secretsmanager_secret" "noiseworks_user_private_key" {
   kms_key_id = aws_kms_key.secrets_manager_key.id
 }
 
+locals {
+  noisework_access_keys = {
+    "Access Key ID" = aws_iam_access_key.noiseworks_access_key.id
+    "Secret Access key" = aws_iam_access_key.noiseworks_access_key.secret
+  }
+}
+
 resource "aws_secretsmanager_secret_version" "noiseworks_user_private_key_version" {
   secret_id     = aws_secretsmanager_secret.noiseworks_user_private_key.id
-  secret_string = aws_iam_access_key.noiseworks_access_key.secret
+  secret_string = jsonencode(local.noisework_access_keys)
 }
