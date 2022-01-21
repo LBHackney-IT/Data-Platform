@@ -13,7 +13,8 @@ locals {
     "fee_payments",
     "fees",
     "public_comments",
-    "users"
+    "users",
+    "committee_application_map"
   ]
 
   tascomi_static_tables = [
@@ -31,6 +32,8 @@ locals {
     "fee_types",
     "ps_development_codes",
     "public_consultations",
+    "user_teams",
+    "user_team_map",
     "application_types"
   ]
 
