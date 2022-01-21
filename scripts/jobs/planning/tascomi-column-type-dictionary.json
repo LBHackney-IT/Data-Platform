@@ -470,7 +470,8 @@
             "dtf_locations": ["creation_user_id","custodian_code_id","id","last_updated_by","merge_source_id","street_id"],
             "documents": ["appeal_id","application_id","asset_constraint_id","communication_id","consultation_duration","creation_user_id","document_type_id","email_id","enforcement_id","id","last_updated_by","legal_agreement_id","officer_id","parent_document_id","preapplication_id","publication_id","public_comment_id","publicity_duration","publicity_justification_id","public_record_id","uploaded_file_id"],
             "users": ["creation_user_id","id","last_updated_by"],
-            "committee_application_map": ["id","load_order"]
+            "committee_application_map": ["id","load_order"],
+            "user_teams": ["id"]
         },
         "boolean": {
             "applications": [
