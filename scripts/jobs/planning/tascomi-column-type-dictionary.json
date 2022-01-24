@@ -852,7 +852,7 @@
             "documents": ["ceased","sent"],
             "users": ["ceased","enabled","manager","officer"],
             "committee_application_map": ["determined_at_this_committee"],
-            "application_types": ["show_on_portal","exclude_from_weekly_lists","received_stage_required","incomplete_stage_required","complete_stage_required","consultation_stage_required","consultation_complete_stage_required","assessment_stage_required","recommendation_stage_required","committee_stage_required","determination_referred_stage_required","decision_issued_stage_required","under_appeal_stage_required","exclude_from_stat_returns"]
+            "application_types": ["show_on_portal","received_stage_required","incomplete_stage_required","complete_stage_required","consultation_stage_required","consultation_complete_stage_required","assessment_stage_required","recommendation_stage_required","committee_stage_required","determination_referred_stage_required","decision_issued_stage_required","under_appeal_stage_required","exclude_from_stat_returns"]
         },
         "float": {
             "applications": [
