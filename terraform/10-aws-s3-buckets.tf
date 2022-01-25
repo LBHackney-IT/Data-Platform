@@ -1,4 +1,4 @@
-module "landing_zone" {
+ module "landing_zone" {
   source            = "../modules/s3-bucket"
   tags              = module.tags.values
   project           = var.project
@@ -79,6 +79,16 @@ module "lambda_artefact_storage" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Lambda Artefact Storage"
   bucket_identifier = "dp-lambda-artefact-storage"
+}
+
+ module "noiseworks_data_storage" {
+  source            = "../modules/s3-bucket"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "Noiseworks Data Storage"
+  bucket_identifier = "noiseworks-data-storage"
 }
 
 # This is a public bucket, used by the playbook documentation,
