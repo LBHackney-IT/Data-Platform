@@ -86,3 +86,32 @@ resource "aws_secretsmanager_secret_version" "noiseworks_user_private_key_versio
   secret_id     = aws_secretsmanager_secret.noiseworks_user_private_key.id
   secret_string = jsonencode(local.noisework_access_keys)
 }
+
+
+module "noiseworks_to_raw_zone" {
+  source = "../modules/aws-glue-job"
+
+  department        = module.department_env_enforcement
+  job_name          = "${local.short_identifier_prefix}noiseworks_to_raw_zone"
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  job_parameters = {
+    "--job-bookmark-option"     = "job-bookmark-enable"
+    "--s3_bucket_source"        = "s3://${module.noiseworks_data_storage.bucket_id}/"
+    "--s3_bucket_target"        = "s3://${module.raw_zone.bucket_id}/env-enforcement/noiseworks/"
+    "--table_list"              = "Action,User,Complaint,Case,HistoricalCase,Case_perpetrators"
+    "--deequ_metrics_location"  = "s3://${module.raw_zone.bucket_id}/quality-metrics/department=env-enforcement/deequ-metrics.json"
+  }
+  script_name          = "noiseworks_copy_csv_to_raw"
+  schedule             = "cron(0 2 * * ? *)"
+
+  crawler_details = {
+    database_name      = module.department_env_enforcement.raw_zone_catalog_database_name
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/env-enforcement/noiseworks/"
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+      }
+    })
+  }
+}
