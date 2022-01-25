@@ -1,4 +1,3 @@
-
 module "noiseworks_data_storage" {
   source            = "../modules/s3-bucket"
   tags              = module.tags.values

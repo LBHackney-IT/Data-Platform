@@ -111,7 +111,8 @@ resource "aws_iam_policy" "glue_access_policy" {
           "${module.refined_zone.bucket_arn}/*",
           "${module.trusted_zone.bucket_arn}/*",
           "${module.glue_scripts.bucket_arn}/*",
-          "${module.glue_temp_storage.bucket_arn}/*"
+          "${module.glue_temp_storage.bucket_arn}/*",
+          "${module.noiseworks_data_storage.bucket_arn}/*"
         ]
       },
       {
@@ -129,6 +130,7 @@ resource "aws_iam_policy" "glue_access_policy" {
           module.raw_zone.kms_key_arn,
           module.refined_zone.kms_key_arn,
           module.trusted_zone.kms_key_arn,
+          module.noiseworks_data_storage.kms_key_arn,
           aws_kms_key.secrets_manager_key.arn
         ]
       },
