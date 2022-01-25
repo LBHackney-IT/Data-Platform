@@ -110,8 +110,6 @@ module "noiseworks_to_raw_zone" {
     s3_target_location = "s3://${module.raw_zone.bucket_id}/env-enforcement/noiseworks/"
     configuration = jsonencode({
       Version = 1.0
-      Grouping = {
-      }
     })
   }
 }
