@@ -1,3 +1,140 @@
+data "aws_iam_policy_document" "kafka_connector_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      identifiers = ["kafkaconnect.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
+resource "aws_iam_role" "kafka_connector" {
+  tags = var.tags
+
+  name               = "${var.identifier_prefix}kafka-connector"
+  assume_role_policy = data.aws_iam_policy_document.kafka_connector_assume_role.json
+}
+
+data "aws_iam_policy_document" "kafka_connector_write_to_s3" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+      "s3:GetBucketLocation"
+    ]
+    resources = [
+      var.bucket_arn
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:Get*",
+      "s3:ListObjectsV2",
+      "s3:PutObject",
+      "s3:PutObjectAcl"
+    ]
+    resources = [
+      var.bucket_arn
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
+    ]
+    resources = [
+      var.kms_key_arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "kafka_connector_cloud_watch" {
+  statement {
+    effect = "Allow"
+    sid = "CloudWatchLogWriting"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:AssociateKmsKey"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    sid = "CloudWatchMetricRecording"
+    actions = [
+      "cloudwatch:PutMetricData",
+    ]
+    resources = [
+      "*"
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "kafka_connector_kafka_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "kafka-cluster:Connect",
+      "kafka-cluster:AlterCluster",
+      "kafka-cluster:DescribeCluster"
+    ]
+    resources = [
+      aws_msk_cluster.kafka_cluster.arn
+    ]
+  }
+  statement {
+    effect = "Allow"
+    action = [
+      "kafka-cluster:*Topic*",
+      "kafka-cluster:WriteData",
+      "kafka-cluster:ReadData"
+    ]
+    resources = [
+      aws_msk_cluster.kafka_cluster.arn
+    ]
+  }
+  statement {
+    effect = "Allow"
+    action = [
+      "kafka-cluster:AlterGroup",
+      "kafka-cluster:DescribeGroup"
+    ]
+    resources = [
+      aws_msk_cluster.kafka_cluster.arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "kafka_connector" {
+  source_policy_documents = [
+    data.aws_iam_policy_document.kafka_connector_write_to_s3.json,
+    data.aws_iam_policy_document.kafka_connector_cloud_watch.json,
+    data.aws_iam_policy_document.kafka_connector_kafka_access.json
+  ]
+}
+
+resource "aws_iam_policy" "kafka_connector" {
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}kafka-connector")
+  policy = data.aws_iam_policy_document.kafka_connector.json
+}
+
 #locals {
 #  default_arn = [
 #    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",

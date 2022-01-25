@@ -1,3 +1,9 @@
+resource "aws_cloudwatch_log_group" "connector_log_group" {
+  name = "${var.identifier_prefix}kafka-connector"
+
+  tags = var.tags
+}
+
 #resource "aws_cloudwatch_log_group" "mmh_log_group" {
 #  tags = var.tags
 #  name = "${var.identifier_prefix}msk_broker_logs"

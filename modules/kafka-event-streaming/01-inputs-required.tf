@@ -33,3 +33,23 @@ variable "cross_account_lambda_roles" {
   type        = list(string)
   description = "Role ARNs of Lambda functions in other accounts that need to access the glue schema registry"
 }
+
+variable "bucket_name" {
+  type = string
+  description = "Name of the bucket where events will be saved"
+}
+
+variable "bucket_arn" {
+  type = string
+  description = "ARN of the bukcet where events will be saved"
+}
+
+variable "kms_key_id" {
+  type = string
+  description = "KMS key ID for the bucket where events will be saved"
+}
+
+variable "kms_key_arn" {
+  type = string
+  description = "KMS key ARN for the bucket where events will be saved"
+}

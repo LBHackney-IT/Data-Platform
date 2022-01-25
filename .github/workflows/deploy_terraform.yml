@@ -220,9 +220,10 @@ jobs:
         working-directory: "./terraform"
         run: |
           terraform_outputs=$(terraform output -json)
-          cd ../scripts
+          cd ../modules/kafka-event-streaming/scripts
+          make .venv/.install.stamp
           source .venv/bin/activate
-          AWS_PROFILE=deploy_role python ./kafka_connector.py --input "$terraform_outputs"
+          AWS_PROFILE=deploy_role python ./install_kafka_connectors.py --input "$terraform_outputs"
 
       - name: Build and Deploy SQL to Parquet Image to ECR
         run: |
