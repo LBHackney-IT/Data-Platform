@@ -17,6 +17,9 @@ resource "aws_msk_cluster" "kafka_cluster" {
 
   encryption_info {
     encryption_at_rest_kms_key_arn = aws_kms_key.kafka.arn
+    # encryption_in_transit {
+    #   client_broker = "PLAINTEXT"
+    # }
   }
 
   open_monitoring {

@@ -1,5 +1,6 @@
 data "aws_iam_policy_document" "kafka_connector_assume_role" {
   statement {
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -24,7 +25,7 @@ data "aws_iam_policy_document" "kafka_connector_write_to_s3" {
       "s3:GetBucketLocation"
     ]
     resources = [
-      var.bucket_arn
+      var.s3_bucket_to_write_to.bucket_arn
     ]
   }
 
@@ -34,10 +35,11 @@ data "aws_iam_policy_document" "kafka_connector_write_to_s3" {
       "s3:Get*",
       "s3:ListObjectsV2",
       "s3:PutObject",
-      "s3:PutObjectAcl"
+      "s3:PutObjectAcl",
+      "s3:*" # to remove
     ]
     resources = [
-      var.bucket_arn
+      var.s3_bucket_to_write_to.bucket_arn
     ]
   }
 
@@ -53,7 +55,7 @@ data "aws_iam_policy_document" "kafka_connector_write_to_s3" {
       "kms:RetireGrant"
     ]
     resources = [
-      var.kms_key_arn
+      var.s3_bucket_to_write_to.kms_key_arn
     ]
   }
 }
@@ -61,7 +63,7 @@ data "aws_iam_policy_document" "kafka_connector_write_to_s3" {
 data "aws_iam_policy_document" "kafka_connector_cloud_watch" {
   statement {
     effect = "Allow"
-    sid = "CloudWatchLogWriting"
+    sid    = "CloudWatchLogWriting"
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
@@ -75,7 +77,7 @@ data "aws_iam_policy_document" "kafka_connector_cloud_watch" {
 
   statement {
     effect = "Allow"
-    sid = "CloudWatchMetricRecording"
+    sid    = "CloudWatchMetricRecording"
     actions = [
       "cloudwatch:PutMetricData",
     ]
@@ -99,23 +101,25 @@ data "aws_iam_policy_document" "kafka_connector_kafka_access" {
   }
   statement {
     effect = "Allow"
-    action = [
+    actions = [
       "kafka-cluster:*Topic*",
       "kafka-cluster:WriteData",
-      "kafka-cluster:ReadData"
+      "kafka-cluster:ReadData",
     ]
     resources = [
-      aws_msk_cluster.kafka_cluster.arn
+      aws_msk_cluster.kafka_cluster.arn, # dont need?
+      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:topic/${aws_msk_cluster.kafka_cluster.cluster_name}/*"
     ]
   }
   statement {
     effect = "Allow"
-    action = [
+    actions = [
       "kafka-cluster:AlterGroup",
       "kafka-cluster:DescribeGroup"
     ]
     resources = [
-      aws_msk_cluster.kafka_cluster.arn
+      aws_msk_cluster.kafka_cluster.arn, # dont need?
+      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:group/${aws_msk_cluster.kafka_cluster.cluster_name}/*"
     ]
   }
 }

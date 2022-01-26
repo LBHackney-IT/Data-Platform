@@ -44,3 +44,15 @@ output "redshift_schemas" {
 output "redshift_users" {
   value = local.redshift_users
 }
+
+output "default_s3_plugin_configuration" {
+  value = module.kafka_event_streaming.default_s3_plugin_configuration
+}
+
+output "cluster_config" {
+  value = module.kafka_event_streaming.cluster_config
+}
+
+output "tenure_connector_name" {
+  value = module.kafka_event_streaming.tenure_connector_name
+}

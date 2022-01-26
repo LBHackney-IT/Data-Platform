@@ -1,7 +1,7 @@
 resource "aws_msk_configuration" "event_streaming" {
   kafka_versions = ["2.1.0"]
-# TODO: Rename config name
-  name           = "${var.identifier_prefix}mmh"
+  # TODO: Rename config name
+  name = "${var.identifier_prefix}mmh"
 
   server_properties = <<PROPERTIES
 auto.create.topics.enable=true
