@@ -162,6 +162,7 @@ module "noiseworks_to_raw_zone" {
   crawler_details = {
     database_name      = module.department_env_enforcement.raw_zone_catalog_database_name
     s3_target_location = "s3://${module.raw_zone.bucket_id}/env-enforcement/noiseworks/"
+    table_prefix       = "noiseworks_"
     configuration = jsonencode({
       Version = 1.0
     })
