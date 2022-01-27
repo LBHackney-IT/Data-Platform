@@ -10,7 +10,7 @@ variable "aws_deploy_region" {
   type        = string
 }
 
-variable "aws_deploy_account" {
+variable "aws_deploy_account_id" {
   description = "AWS account id to deploy to"
   type        = string
 }
@@ -65,7 +65,7 @@ variable "aws_dp_vpc_id" {
   type        = string
 }
 
-variable "aws_account_data_platform" {
+variable "aws_data_platform_account_id" {
   description = "Data Platform account ID"
   type        = string
 }

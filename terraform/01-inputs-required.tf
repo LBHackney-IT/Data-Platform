@@ -10,7 +10,7 @@ variable "aws_deploy_region" {
   type        = string
 }
 
-variable "aws_deploy_account" {
+variable "aws_deploy_account_id" {
   description = "AWS account id to deploy to"
   type        = string
 }
@@ -20,7 +20,7 @@ variable "aws_deploy_iam_role_name" {
   type        = string
 }
 
-variable "aws_api_account" {
+variable "aws_api_account_id" {
   description = "AWS api account id"
   type        = string
 }
