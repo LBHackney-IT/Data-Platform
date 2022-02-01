@@ -207,7 +207,11 @@
             "appeals": ["appeal_decision_date","appeal_start_date","appellant_statement_received_date","ceased_date","evidence_submitted_date","final_comments_due_date","final_comments_sent_date","hearing_date","hearing_notification_due_date","last_updated","proof_of_evidence_due_date","public_inquiry_date","public_inquiry_notification_due_date","questionaire_due_date","questionaire_sent_date","statement_due_date","statement_of_common_ground_due_date","statement_of_common_ground_submitted_date","statement_sent_date","submit_date","target_for_appeal_determination"],
             "dtf_locations": ["ceased_date","last_updated","submit_date"],
             "documents": ["ceased_date","document_date","last_updated","submit_date"],
-            "users": ["ceased_date","last_login","last_password_change","last_updated","submit_date"]
+            "users": ["ceased_date","last_login","last_password_change","last_updated","submit_date"],
+            "user_team_map": ["last_updated","submit_date"],
+            "user_teams": ["last_updated","submit_date"],
+            "committee_application_map": ["ceased_date","last_updated","submit_date"],
+            "application_types": ["last_updated","submit_date"]
         },
         "integer": {
             "applications": [
@@ -470,10 +474,10 @@
             "dtf_locations": ["creation_user_id","custodian_code_id","id","last_updated_by","merge_source_id","street_id"],
             "documents": ["appeal_id","application_id","asset_constraint_id","communication_id","consultation_duration","creation_user_id","document_type_id","email_id","enforcement_id","id","last_updated_by","legal_agreement_id","officer_id","parent_document_id","preapplication_id","publication_id","public_comment_id","publicity_duration","publicity_justification_id","public_record_id","uploaded_file_id"],
             "users": ["creation_user_id","id","last_updated_by"],
-            "committee_application_map": ["id","load_order","creation_user_id","application_id","committee_id"],
-            "user_teams": ["id","creation_user_id"],
-            "user_team_map": ["id","creation_user_id","user_id","user_team_id"],
-            "application_types": ["id","creation_user_id","target_days","received_stage_target_days","incomplete_stage_target_days","complete_stage_target_days","consultation_stage_target_days","consultation_complete_stage_target_days","assessment_stage_target_days","recommendation_stage_target_days","committee_stage_target_days","determination_referred_stage_target_days","decision_issued_stage_target_days","under_appeal_stage_target_days","default_decision_expiry_months","default_decision_expiry_years"]
+            "committee_application_map": ["application_id","committee_id","creation_user_id","id","last_updated_by","load_order"],
+            "user_teams": ["creation_user_id","id","last_updated_by"],
+            "user_team_map": ["creation_user_id","id","last_updated_by","user_id","user_team_id"],
+            "application_types": ["assessment_stage_target_days","committee_stage_target_days","complete_stage_target_days","consultation_complete_stage_target_days","consultation_stage_target_days","creation_user_id","decision_issued_stage_target_days","default_decision_expiry_months","default_decision_expiry_years","determination_referred_stage_target_days","id","incomplete_stage_target_days","last_updated_by","received_stage_target_days","recommendation_stage_target_days","target_days","under_appeal_stage_target_days"]        
         },
         "boolean": {
             "applications": [
@@ -851,8 +855,9 @@
             "dtf_locations": ["ceased"],
             "documents": ["ceased","sent"],
             "users": ["ceased","enabled","manager","officer"],
-            "committee_application_map": ["determined_at_this_committee"],
-            "application_types": ["show_on_portal","received_stage_required","incomplete_stage_required","complete_stage_required","consultation_stage_required","consultation_complete_stage_required","assessment_stage_required","recommendation_stage_required","committee_stage_required","determination_referred_stage_required","decision_issued_stage_required","under_appeal_stage_required","exclude_from_stat_returns"]
+            "committee_application_map": ["ceased","determined_at_this_committee"],
+            "user_teams": ["enabled"],
+            "application_types": ["assessment_stage_required","committee_stage_required","complete_stage_required","consultation_complete_stage_required","consultation_stage_required","decision_issued_stage_required","determination_referred_stage_required","enabled","exclude_from_stat_returns","incomplete_stage_required","received_stage_required","recommendation_stage_required","show_on_portal","under_appeal_stage_required"]
         },
         "float": {
             "applications": [
@@ -967,11 +972,6 @@
                 "site_address_y",
                 "tree_location_x",
                 "tree_location_y"
-            ],
-            "emails": [
-                "last_updated",
-                "submit_date",
-                "ceased_date"
             ],
             "enforcements": [
                 "complaint_location_x",
