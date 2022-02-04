@@ -50,8 +50,8 @@ resource "aws_s3_bucket_object" "convertbng" {
   bucket = module.glue_scripts.bucket_id
   key    = "python-modules/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
   acl    = "private"
-  source = "../lib/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
-  etag   = filemd5("../lib/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
+  source = "../scripts/lib/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+  etag   = filemd5("../scripts/lib/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
 }
 
 resource "aws_s3_bucket_object" "jars" {
