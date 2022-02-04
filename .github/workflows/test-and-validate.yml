@@ -80,7 +80,7 @@ jobs:
         working-directory: "./external-lib"
         run: make all
 
-      - name: Package glue job helpers module
+      - name: Package AWS Glue Job Helpers Module & Python modules
         working-directory: "./scripts"
         run: make all
 
