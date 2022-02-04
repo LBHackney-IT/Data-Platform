@@ -5,3 +5,5 @@ dist/
 *.egg-info
 .pytest_cache
 .venv
+lib/*
+!lib/.keep
