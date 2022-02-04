@@ -17,39 +17,16 @@ resource "aws_msk_cluster" "kafka_cluster" {
 
   encryption_info {
     encryption_at_rest_kms_key_arn = aws_kms_key.kafka.arn
-    # encryption_in_transit {
-    #   client_broker = "PLAINTEXT"
-    # }
   }
 
-  open_monitoring {
-    prometheus {
-      jmx_exporter {
-        enabled_in_broker = true
-      }
-      node_exporter {
-        enabled_in_broker = true
+  logging_info {
+    broker_logs {
+      cloudwatch_logs {
+        enabled   = true
+        log_group = aws_cloudwatch_log_group.broker_log_group.name
       }
     }
   }
-
-#  logging_info {
-#    broker_logs {
-#      cloudwatch_logs {
-#        enabled   = true
-#        log_group = aws_cloudwatch_log_group.mmh_log_group.name
-#      }
-#      firehose {
-#        enabled         = true
-#        delivery_stream = aws_kinesis_firehose_delivery_stream.mmh_delivery_logs_stream.name
-#      }
-#      s3 {
-#        enabled = true
-#        bucket  = aws_s3_bucket.bucket.id
-#        prefix  = "logs/msk-"
-#      }
-#    }
-#  }
 
   tags = var.tags
 }

@@ -22,23 +22,29 @@ output "default_s3_plugin_configuration" {
     connector_s3_plugin = {
       bucket_arn = module.kafka_dependency_storage.bucket_arn
       file_key   = aws_s3_bucket_object.kafka_connector_s3.key
-      name       = "confluentinc-kafka-connect-s3-10-0-5"
+      name       = "kafka-connect-s3-with-aws-glue-schema-registry"
     }
     connector_configuration = {
-      "connector.class"              = "io.confluent.connect.s3.S3SinkConnector"
-      "tasks.max"                    = "2"
-      "flush.size"                   = "1"
-      "enhanced.avro.schema.support" = "true"
-      "schema.compatibility"         = "NONE"
-      "s3.region"                    = "eu-west-2"
-      "s3.bucket.name"               = var.s3_bucket_to_write_to.bucket_id
-      "s3.sse.kms.key.id"            = var.s3_bucket_to_write_to.kms_key_id
-      "topics"                       = "mtfh-reporting-data-listener"
-      "storage.class"                = "io.confluent.connect.s3.storage.S3Storage"
-      "format.class"                 = "io.confluent.connect.s3.format.parquet.ParquetFormat"
-      "partitioner.class"            = "io.confluent.connect.storage.partitioner.DefaultPartitioner"
-      "key.converter"                = "io.confluent.connect.avro.AvroConverter"
-      "value.converter"              = "io.confluent.connect.avro.AvroConverter"
+      "flush.size"           = "1"
+      "tasks.max"            = "2"
+      "connector.class"      = "io.confluent.connect.s3.S3SinkConnector"
+      "s3.region"            = "eu-west-2"
+      "s3.bucket.name"       = var.s3_bucket_to_write_to.bucket_id
+      "s3.sse.kms.key.id"    = var.s3_bucket_to_write_to.kms_key_id
+      "format.class"         = "io.confluent.connect.s3.format.parquet.ParquetFormat"
+      "topics"               = "tenure-api"
+      "schema.compatibility" = "BACKWARD"
+      "partitioner.class"    = "io.confluent.connect.storage.partitioner.DefaultPartitioner"
+      "storage.class"        = "io.confluent.connect.s3.storage.S3Storage"
+
+      "value.converter.schemaAutoRegistrationEnabled" = "true"
+      "value.converter.avroRecordType"                = "GENERIC_RECORD"
+      "value.converter"                               = "com.amazonaws.services.schemaregistry.kafkaconnect.AWSKafkaAvroConverter"
+      "value.converter.schemaName"                    = var.aws_glue_schema.schema_name
+      "value.converter.registry.name"                 = var.aws_glue_registry.registry_name
+      "value.converter.region"                        = "eu-west-2"
+      "value.converter.schemas.enable"                = "true"
+      "key.converter"                                 = "org.apache.kafka.connect.storage.StringConverter"
     }
   }
 }

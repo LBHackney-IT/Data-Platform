@@ -104,11 +104,9 @@ def check_connector_exists_with_config(connector_config: ConnectorConfiguration)
         connectorArn=connectorArn
     )
 
+# these checks dont work
     if description["connectorDescription"] == connector_config.description:
         print("Needs Recreation because of description")
-        print(description["connectorDescription"])
-        print(connector_config.description)
-
         return {"action": "RECREATE", "arn": description["connectorArn"], "version": description["currentVersion"]}
     if description["kafkaConnectVersion"] == connector_config.kafka_connect_version:
         print("Needs Recreation because of version")

@@ -87,6 +87,16 @@ data "aws_iam_policy_document" "kafka_connector_cloud_watch" {
   }
 }
 
+# TODO: make this less permissive
+data "aws_iam_policy_document" "glue_schema_access" {
+  statement {
+    effect    = "Allow"
+    sid       = "GetSchema"
+    actions   = ["glue:*"]
+    resources = ["*"]
+  }
+}
+
 data "aws_iam_policy_document" "kafka_connector_kafka_access" {
   statement {
     effect = "Allow"
@@ -128,7 +138,8 @@ data "aws_iam_policy_document" "kafka_connector" {
   source_policy_documents = [
     data.aws_iam_policy_document.kafka_connector_write_to_s3.json,
     data.aws_iam_policy_document.kafka_connector_cloud_watch.json,
-    data.aws_iam_policy_document.kafka_connector_kafka_access.json
+    data.aws_iam_policy_document.kafka_connector_kafka_access.json,
+    data.aws_iam_policy_document.glue_schema_access.json
   ]
 }
 
@@ -137,6 +148,12 @@ resource "aws_iam_policy" "kafka_connector" {
 
   name   = lower("${var.identifier_prefix}kafka-connector")
   policy = data.aws_iam_policy_document.kafka_connector.json
+}
+
+resource "aws_iam_role_policy_attachment" "kafka_connector" {
+
+  role       = aws_iam_role.kafka_connector.name
+  policy_arn = aws_iam_policy.kafka_connector.arn
 }
 
 #locals {
