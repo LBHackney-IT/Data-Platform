@@ -129,9 +129,10 @@ jobs:
         working-directory: "./external-lib"
         run: make all
 
-      - name: Package AWS Glue Job Helpers Module
+      - name: Package AWS Glue Job Helpers Module & Python modules
         working-directory: "./scripts"
-        run: make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
+        run: make all
+
 
       - name: Deploy Data Platform Network
         uses: ./.github/actions/terraform-deploy
