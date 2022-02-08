@@ -212,7 +212,7 @@ module "data_and_insight_covid_locations" {
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
     
-module "data_and_insight_covid_vaccinations_daro" {
+module "data_and_insight_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
@@ -228,6 +228,6 @@ module "data_and_insight_covid_vaccinations_daro" {
   google_sheets_document_id       = "1-ZNoQGu0LGlaKYDBWD8MUo8hqfcnE5YbgCXVz2MUxSw"
   google_sheets_worksheet_name    = "vaccinations"
   department                      = module.department_data_and_insight
-  dataset_name                    = "covid_vaccinations_daro"
+  dataset_name                    = "covid_vaccinations"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
