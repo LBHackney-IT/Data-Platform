@@ -192,7 +192,7 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
     
-module "data_and_insight_covid_locations_daro" {
+module "data_and_insight_covid_locations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
