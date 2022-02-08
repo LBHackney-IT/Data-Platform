@@ -208,7 +208,7 @@ module "data_and_insight_covid_locations" {
   google_sheets_document_id       = "1-ZNoQGu0LGlaKYDBWD8MUo8hqfcnE5YbgCXVz2MUxSw"
   google_sheets_worksheet_name    = "locations"
   department                      = module.department_data_and_insight
-  dataset_name                    = "covid_locations_daro"
+  dataset_name                    = "covid_locations"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
     
