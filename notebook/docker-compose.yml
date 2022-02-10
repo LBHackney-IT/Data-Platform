@@ -4,6 +4,8 @@ services:
     container_name: glue_jupyter
     image: amazon/aws-glue-libs:glue_libs_1.0.0_image_01
     env_file: .env
+    environment:
+      - DISABLE_SSL="true"
     ports:
       - "8888:8888"
       - "4040:4040"
