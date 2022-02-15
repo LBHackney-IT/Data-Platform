@@ -246,7 +246,6 @@ module "sandbox_daro_covid_vaccinations" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_sandbox.name
   google_sheets_document_id       = "187SSANhwBF1SBL8EMG9YMEYcImZDZ4qHdSYlbmwQsjU"
   google_sheets_worksheet_name    = "locations"
   department                      = module.department_sandbox
@@ -268,7 +267,6 @@ module "sandbox_daro_covid_vaccinations" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_sandbox.name
   google_sheets_document_id       = "187SSANhwBF1SBL8EMG9YMEYcImZDZ4qHdSYlbmwQsjU"
   google_sheets_worksheet_name    = "vaccinations"
   department                      = module.department_sandbox
