@@ -1,9 +1,11 @@
 module "load_locations_vaccine_to_refined_sandbox" {
   source = "../modules/aws-glue-job"
 
-  department  = module.department_sandbox
-  job_name    = "${local.short_identifier_prefix}covid_locations_and_vaccinations"
-  script_name = "covid_locations_and_vaccinations"
+  department        = module.department_sandbox
+  job_name          = "${local.short_identifier_prefix}covid_locations_and_vaccinations"
+  script_name       = "covid_locations_and_vaccinations"
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  helper_module_key = aws_s3_bucket_object.helpers.key
   job_parameters = {
     "--cleaned_covid_locations_s3_bucket_target" = "${module.refined_zone.bucket_id}/sandbox/covid-locations-vaccinations-cleaned"
     "--source_catalog_database"                  = module.department_sandbox.raw_zone_catalog_database_name
