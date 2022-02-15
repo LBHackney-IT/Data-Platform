@@ -232,7 +232,7 @@ module "sandbox_daro_covid_vaccinations" {
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
     
-module "sandbox_covid_vaccinations_ben" {
+module "sandbox_covid_locations_ben" {
   count = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
