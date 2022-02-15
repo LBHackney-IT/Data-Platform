@@ -191,8 +191,8 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
   dataset_name                    = "parkmap_restrictions_report"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
-    
-module "data_and_insight_covid_locations" {
+
+module "sandbox_daro_covid_locations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
@@ -208,11 +208,11 @@ module "data_and_insight_covid_locations" {
   google_sheets_document_id       = "1-ZNoQGu0LGlaKYDBWD8MUo8hqfcnE5YbgCXVz2MUxSw"
   google_sheets_worksheet_name    = "locations"
   department                      = module.department_sandbox
-  dataset_name                    = "covid_locations"
+  dataset_name                    = "daro_covid_locations"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
-    
-module "data_and_insight_covid_vaccinations" {
+
+module "sandbox_daro_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
@@ -228,6 +228,6 @@ module "data_and_insight_covid_vaccinations" {
   google_sheets_document_id       = "1-ZNoQGu0LGlaKYDBWD8MUo8hqfcnE5YbgCXVz2MUxSw"
   google_sheets_worksheet_name    = "vaccinations"
   department                      = module.department_sandbox
-  dataset_name                    = "covid_vaccinations"
+  dataset_name                    = "daro_covid_vaccinations"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
