@@ -200,14 +200,14 @@ module "data_and_insight_covid_locations" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helper_module_key               = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
-  glue_catalog_database_name      = module.department_data_and_insight.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_sandbox.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   google_sheets_document_id       = "1-ZNoQGu0LGlaKYDBWD8MUo8hqfcnE5YbgCXVz2MUxSw"
   google_sheets_worksheet_name    = "locations"
-  department                      = module.department_data_and_insight
+  department                      = module.department_sandbox
   dataset_name                    = "covid_locations"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
@@ -220,14 +220,14 @@ module "data_and_insight_covid_vaccinations" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   helper_module_key               = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
-  glue_catalog_database_name      = module.department_data_and_insight.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_sandbox.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   google_sheets_document_id       = "1-ZNoQGu0LGlaKYDBWD8MUo8hqfcnE5YbgCXVz2MUxSw"
   google_sheets_worksheet_name    = "vaccinations"
-  department                      = module.department_data_and_insight
+  department                      = module.department_sandbox
   dataset_name                    = "covid_vaccinations"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
 }
