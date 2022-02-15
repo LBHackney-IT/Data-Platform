@@ -26,10 +26,6 @@ variable "aws_housing_vpc_id" {
   default = false
 }
 
-variable "aws_housing_prod_account_id" {
-  default = false
-}
-
 variable "aws_mosaic_prod_account_id" {
   default = false
 }

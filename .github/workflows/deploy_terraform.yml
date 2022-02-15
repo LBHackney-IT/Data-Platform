@@ -53,8 +53,6 @@ on:
         required: true
       AWS_API_ACCOUNT_PROD:
         required: true
-      AWS_HOUSING_PROD_ACCOUNT_ID:
-        required: true
       AWS_MOSAIC_PROD_ACCOUNT_ID:
         required: true
       AWS_DATA_PLATFORM_ACCOUNT_ID:
@@ -147,7 +145,6 @@ jobs:
           google_project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
           aws_deploy_account_id: ${{ secrets.AWS_DEPLOY_ACCOUNT_ID }}
           aws_api_account_id: ${{ secrets.AWS_API_ACCOUNT_PROD }}
-          aws_housing_prod_account_id: ${{ secrets.AWS_HOUSING_PROD_ACCOUNT_ID }}
           aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
           aws_data_platform_account_id: ${{ secrets.AWS_DATA_PLATFORM_ACCOUNT_ID }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
@@ -184,7 +181,6 @@ jobs:
           google_project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
           aws_deploy_account_id: ${{ secrets.AWS_DEPLOY_ACCOUNT_ID }}
           aws_api_account_id: ${{ secrets.AWS_API_ACCOUNT_PROD }}
-          aws_housing_prod_account_id: ${{ secrets.AWS_HOUSING_PROD_ACCOUNT_ID }}
           aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
           aws_data_platform_account_id: ${{ secrets.AWS_DATA_PLATFORM_ACCOUNT_ID }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
