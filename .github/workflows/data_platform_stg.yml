@@ -22,7 +22,7 @@ on:
 
 jobs:
   pre-deploy-checks:
-    uses:  LBHackney-IT/Data-Platform/.github/workflows/test-and-validate.yml@main
+    uses: ./.github/workflows/test-and-validate.yml
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
@@ -40,7 +40,7 @@ jobs:
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
   build-and-deploy:
     needs: ["pre-deploy-checks"]
-    uses: LBHackney-IT/Data-Platform/.github/workflows/deploy_terraform.yml@main
+    uses: ./.github/workflows/deploy_terraform.yml
     with:
       terraform_infra_import: ${{ github.event.inputs.terraform_infra_import }}
       terraform_infra_remove: ${{ github.event.inputs.terraform_infra_remove }}

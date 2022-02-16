@@ -80,9 +80,9 @@ jobs:
         working-directory: "./external-lib"
         run: make all
 
-      - name: Package glue job helpers module
+      - name: Package AWS Glue Job Helpers Module & Python modules
         working-directory: "./scripts"
-        run: make dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl
+        run: make all
 
       - name: Run `terraform validate` on Terraform Networking
         working-directory: "./terraform-networking"

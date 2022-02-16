@@ -30,10 +30,15 @@ def add_snapshot_date_columns(data_frame):
     
 def prepare_increments(increment_df):
     # In case there are several days worth of increments: only keep the latest version of a record
-    w = Window.partitionBy('id')
-    increment_df = increment_df.withColumn('latest', F.max('last_updated').over(w))\
-    .where(F.col('last_updated') == F.col('latest'))\
-    .drop('latest')
+    id_partition = Window.partitionBy('id')
+    # preparation step: create a temporary column to replace NULL last_updated values with 01/01/2020
+    increment_df = increment_df.withColumn("last_updated_nonull", \
+        F.when(F.isnull("last_updated"), F.to_timestamp(F.lit('2020-01-01 00:00:00.000'))) \
+        .otherwise(F.col("last_updated")))
+    # order and only keep most recent
+    increment_df = increment_df.withColumn('latest', F.max('last_updated_nonull').over(id_partition))\
+        .where(F.col('last_updated_nonull') == F.col('latest'))\
+        .drop('latest', 'last_updated_nonull')
     return increment_df
     
 def apply_increments(snapshot_df, increment_df):

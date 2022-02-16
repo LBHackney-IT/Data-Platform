@@ -42,8 +42,16 @@ resource "aws_s3_bucket_object" "helpers" {
   bucket = module.glue_scripts.bucket_id
   key    = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
   acl    = "private"
-  source = "../scripts/dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
-  etag   = filemd5("../scripts/dist/data_platform_glue_job_helpers-1.0-py3-none-any.whl")
+  source = "../scripts/lib/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
+  etag   = filemd5("../scripts/lib/data_platform_glue_job_helpers-1.0-py3-none-any.whl")
+}
+
+resource "aws_s3_bucket_object" "convertbng" {
+  bucket = module.glue_scripts.bucket_id
+  key    = "python-modules/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+  acl    = "private"
+  source = "../scripts/lib/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+  etag   = filemd5("../scripts/lib/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
 }
 
 resource "aws_s3_bucket_object" "jars" {
