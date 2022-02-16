@@ -55,14 +55,12 @@ variable "redshift_port" {
   type        = number
 }
 
-// for testing purposes only, delete after
-
-variable "test_db_username" {
-  description = "rds test db username"
-  type = string
+variable "academy_production_database_username" {
+  description = "Username for Academy Production Insights Database"
+  type        = string
 }
 
-variable "test_db_password" {
-  description = "rds test db password"
-  type = string
+variable "academy_production_database_password" {
+  description = "Password for Academy Production Insights Database"
+  type        = string
 }

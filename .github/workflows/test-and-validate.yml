@@ -40,6 +40,10 @@ on:
         required: true
       AWS_ROLE_TO_ASSUME:
         required: true
+      ACADEMY_PRODUCTION_DATABASE_USERNAME:
+        required: true
+      ACADEMY_PRODUCTION_DATABASE_PASSWORD:
+        required: true
 
 jobs:
   tests:
@@ -137,18 +141,18 @@ jobs:
         run: |
           terraform init -backend=false
           ../tflint --init --config="../.tflint.hcl"
-          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account_id=${{ secrets.aws_deploy_account_id }}' --var 'aws_api_account_id=${{ secrets.AWS_API_ACCOUNT_PROD }}' --var 'aws_hackit_account_id=${{ secrets.AWS_HACKIT_ACCOUNT_ID }}' --var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}' --module --config="../.tflint.hcl" --loglevel=warn .
+          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account_id=${{ secrets.aws_deploy_account_id }}' --var 'aws_api_account_id=${{ secrets.AWS_API_ACCOUNT_PROD }}' --var 'aws_hackit_account_id=${{ secrets.AWS_HACKIT_ACCOUNT_ID }}' --var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}' --var 'academy_production_database_username=${{ secrets.ACADEMY_PRODUCTION_DATABASE_USERNAME }}' --var 'academy_production_database_password=${{ secrets.ACADEMY_PRODUCTION_DATABASE_PASSWORD }}' --module --config="../.tflint.hcl" --loglevel=warn .
 
       - name: Run `tflint` on networking Terraform
         working-directory: "./terraform-networking"
         run: |
           terraform init -backend=false
           ../tflint --init --config="../.tflint.hcl"
-          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account_id=${{ secrets.aws_deploy_account_id }}' --var 'aws_api_account_id=${{ secrets.AWS_API_ACCOUNT_PROD }}' --var 'aws_hackit_account_id=${{ secrets.AWS_HACKIT_ACCOUNT_ID }}' --var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}' --module --config="../.tflint.hcl" --loglevel=warn .
+          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account_id=${{ secrets.aws_deploy_account_id }}' --var 'aws_api_account_id=${{ secrets.AWS_API_ACCOUNT_PROD }}' --var 'aws_hackit_account_id=${{ secrets.AWS_HACKIT_ACCOUNT_ID }}' --var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}'  --module --config="../.tflint.hcl" --loglevel=warn .
 
       - name: Run `tflint` on main Terraform
         working-directory: "./terraform"
         run: |
           terraform init -backend=false
           ../tflint --init --config="../.tflint.hcl"
-          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account_id=${{ secrets.aws_deploy_account_id }}' --var 'aws_api_account_id=${{ secrets.AWS_API_ACCOUNT_PROD }}' --var 'aws_hackit_account_id=${{ secrets.AWS_HACKIT_ACCOUNT_ID }}' --var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}' --module --config="../.tflint.hcl" --loglevel=warn .
+          ../tflint --var-file='../config/terraform/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account_id=${{ secrets.aws_deploy_account_id }}' --var 'aws_api_account_id=${{ secrets.AWS_API_ACCOUNT_PROD }}' --var 'aws_hackit_account_id=${{ secrets.AWS_HACKIT_ACCOUNT_ID }}' --var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}' --var 'academy_production_database_username=${{ secrets.ACADEMY_PRODUCTION_DATABASE_USERNAME }}' --var 'academy_production_database_password=${{ secrets.ACADEMY_PRODUCTION_DATABASE_PASSWORD }}' --module --config="../.tflint.hcl" --loglevel=warn .
