@@ -47,3 +47,23 @@ resource "aws_glue_trigger" "addresses_api_crawler_trigger" {
     crawler_name = aws_glue_crawler.raw_zone_unrestricted_address_api_crawler.name
   }
 }
+
+resource "aws_glue_crawler" "refined_zone_sandbox_crawler" {
+  tags = module.tags.values
+
+  database_name = module.department_sandbox.refined_zone_catalog_database_name
+  name          = "${local.short_identifier_prefix}sandbox-refined-zone"
+  role          = aws_iam_role.glue_role.arn
+
+  s3_target {
+    path       = "s3://${module.refined_zone.bucket_id}/sandbox/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 3
+    }
+  })
+}
