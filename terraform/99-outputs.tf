@@ -44,3 +44,23 @@ output "redshift_schemas" {
 output "redshift_users" {
   value = local.redshift_users
 }
+
+output "mssql_connection_sg_id" {
+  value = aws_security_group.mssql_connection.id
+}
+
+output "vpc_subnet_ids_object" {
+  value = data.aws_subnet_ids.all
+}
+
+output "vpc_subnet_ids" {
+  value = data.aws_subnet_ids.all.ids
+}
+
+output "aws_subnet_list" {
+  value = local.subnet_ids_list
+}
+
+output "aws_subnet_list_first" {
+  value = data.aws_subnet.each[0].arn
+}

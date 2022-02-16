@@ -54,3 +54,15 @@ variable "redshift_port" {
   description = "Port that the redshift cluster is running on"
   type        = number
 }
+
+// for testing purposes only, delete after
+
+variable "test_db_username" {
+  description = "rds test db username"
+  type = string
+}
+
+variable "test_db_password" {
+  description = "rds test db password"
+  type = string
+}
