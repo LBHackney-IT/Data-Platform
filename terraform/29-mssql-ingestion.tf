@@ -27,7 +27,7 @@ module "get_lbhatestrbviews_core_crcheqref_table" {
   glue_role_arn     = aws_iam_role.glue_role.arn
   job_parameters = {
     "--source_data_catalogue_table" = "table_lbhatestrbviews_core_crcheqref"
-    "--source_data_database"        = one(module.academy_mssql_database_ingestion[*].ingestion_database_name)
+    "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_target"                   = "s3://${module.refined_zone.bucket_id}/data-and-insight/lbhatestrbviews/core-crcheqref/"
   }
   script_name = "copy_lbhatestrbviews_core_crcheqref_to_landing"
@@ -36,5 +36,4 @@ module "get_lbhatestrbviews_core_crcheqref_table" {
     database_name      = module.department_data_and_insight.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone.bucket_id}/data-and-insight/lbhatestrbviews/core-crcheqref/"
   }
-  depends_on = [module.academy_mssql_database_ingestion]
 }
