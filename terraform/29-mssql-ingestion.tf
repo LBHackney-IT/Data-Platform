@@ -36,4 +36,5 @@ module "get_lbhatestrbviews_core_crcheqref_table" {
     database_name      = module.department_data_and_insight.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone.bucket_id}/data-and-insight/lbhatestrbviews/core-crcheqref/"
   }
+  depends_on = [module.academy_mssql_database_ingestion]
 }
