@@ -63,6 +63,6 @@ data "aws_iam_policy_document" "crawler_can_access_jdbc_connection" {
 resource "aws_iam_policy" "crawler_can_access_jdbc_connection" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-crawler-can-access-jdbc-connection")
+  name   = lower("${var.short_identifier_prefix}-crawler-can-access-jdbc-connection")
   policy = data.aws_iam_policy_document.crawler_can_access_jdbc_connection.json
 }

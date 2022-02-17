@@ -12,7 +12,6 @@ module "academy_mssql_database_ingestion" {
   database_password           = var.academy_production_database_password
   database_username           = var.academy_production_database_username
   short_identifier_prefix     = local.short_identifier_prefix
-  identifier_prefix           = local.identifier_prefix
   vpc_id                      = data.aws_vpc.network.id
 }
 

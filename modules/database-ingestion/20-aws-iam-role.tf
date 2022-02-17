@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "jdbc_connection_crawler_role" {
 resource "aws_iam_role" "jdbc_connection_crawler_role" {
   tags = var.tags
 
-  name               = "${var.identifier_prefix}-glue-connection-crawler-role"
+  name               = "${var.short_identifier_prefix}-glue-connection-crawler-role"
   assume_role_policy = data.aws_iam_policy_document.jdbc_connection_crawler_role.json
 }
 
