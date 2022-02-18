@@ -71,3 +71,9 @@ variable "email_to_notify" {
   type        = string
   default     = null
 }
+
+variable "copy_liberator_to_pre_prod_lambda_execution_role" {
+  description = ""
+  type = string
+  default = null
+}
