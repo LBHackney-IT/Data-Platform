@@ -54,3 +54,13 @@ variable "redshift_port" {
   description = "Port that the redshift cluster is running on"
   type        = number
 }
+
+variable "academy_production_database_username" {
+  description = "Username for Academy Production Insights Database"
+  type        = string
+}
+
+variable "academy_production_database_password" {
+  description = "Password for Academy Production Insights Database"
+  type        = string
+}
