@@ -478,6 +478,6 @@ module "sandbox_covid_locations_adam" {
   google_sheets_document_id       = "1jUk8NvVOqBNPZHsikoZ8Oi3K9xZbfJza6qOXRS3ewII"
   google_sheets_worksheet_name    = "locations"
   department                      = module.department_sandbox
-  dataset_name                    = "covid_vaccinations_adam"
+  dataset_name                    = "covid_locations_adam"
   enable_glue_trigger             = false
 }    
