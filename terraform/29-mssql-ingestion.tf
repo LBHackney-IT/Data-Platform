@@ -19,11 +19,11 @@ resource "aws_s3_bucket_object" "academy_get_lbhatestrbviews_core_crcheqref_tabl
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  bucket = module.landing_zone.bucket_id
-  key    = "scripts/copy_lbhatestrbviews_core_crcheqref_to_landing.py"
-  acl    = "private"
-  source = "../scripts/jobs/copy_lbhatestrbviews_core_crcheqref_to_landing.py"
-  etag   = filemd5("../scripts/jobs/copy_lbhatestrbviews_core_crcheqref_to_landing.py")
+  bucket      = module.landing_zone.bucket_id
+  key         = "scripts/copy_lbhatestrbviews_core_crcheqref_to_landing.py"
+  acl         = "private"
+  source      = "../scripts/jobs/copy_lbhatestrbviews_core_crcheqref_to_landing.py"
+  source_hash = filemd5("../scripts/jobs/copy_lbhatestrbviews_core_crcheqref_to_landing.py")
 }
 
 resource "aws_glue_job" "get_lbhatestrbviews_core_crcheqref_table" {
