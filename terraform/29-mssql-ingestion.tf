@@ -15,24 +15,65 @@ module "academy_mssql_database_ingestion" {
   vpc_id                      = data.aws_vpc.network.id
 }
 
-module "get_lbhatestrbviews_core_crcheqref_table" {
-  source = "../modules/aws-glue-job"
-  count  = local.is_live_environment ? 1 : 0
+resource "aws_s3_bucket_object" "academy_get_lbhatestrbviews_core_crcheqref_table_script" {
+  count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
 
-  department        = module.department_data_and_insight
-  job_name          = "${local.short_identifier_prefix}Get lbhatestrbviews core crcheqref table"
-  helper_module_key = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
-  glue_role_arn     = aws_iam_role.glue_role.arn
-  job_parameters = {
-    "--source_data_catalogue_table" = "table_lbhatestrbviews_core_crcheqref"
-    "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
-    "--s3_target"                   = "s3://${module.refined_zone.bucket_id}/data-and-insight/lbhatestrbviews/core-crcheqref/"
+  bucket      = module.landing_zone.bucket_id
+  key         = "scripts/copy_lbhatestrbviews_core_crcheqref_to_landing.py"
+  acl         = "private"
+  source      = "../scripts/jobs/copy_lbhatestrbviews_core_crcheqref_to_landing.py"
+  source_hash = filemd5("../scripts/jobs/copy_lbhatestrbviews_core_crcheqref_to_landing.py")
+}
+
+resource "aws_glue_job" "get_lbhatestrbviews_core_crcheqref_table" {
+  count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
+
+  name              = "${local.short_identifier_prefix}Academy Import Job - lbhatestrbviews_core_crcheqref"
+  number_of_workers = 12
+  worker_type       = "Standard"
+  role_arn          = aws_iam_role.glue_role.arn
+  timeout           = 120
+  command {
+    python_version  = "3"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.academy_get_lbhatestrbviews_core_crcheqref_table_script[0].key}"
   }
-  script_name = "copy_lbhatestrbviews_core_crcheqref_to_landing"
-  crawler_details = {
-    table_prefix       = "lbhatestrbviews_"
-    database_name      = module.department_data_and_insight.refined_zone_catalog_database_name
-    s3_target_location = "s3://${module.refined_zone.bucket_id}/data-and-insight/lbhatestrbviews/core-crcheqref/"
+
+  glue_version = "2.0"
+
+  default_arguments = {
+    "--source_data_catalogue_table"      = "table_lbhatestrbviews_core_crcheqref"
+    "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
+    "--s3_target"                        = "s3://${module.landing_zone.bucket_id}/academy/core-crcheqref/"
+    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
+    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-jars"                       = "s3://${module.glue_scripts.bucket_id}/jars/deequ-1.0.3.jar"
+    "--enable-continuous-cloudwatch-log" = "true"
   }
+}
+
+resource "aws_glue_catalog_database" "landing_zone_academy" {
+  name = "${local.short_identifier_prefix}academy-landing-zone"
+}
+
+resource "aws_glue_crawler" "landing_zone_academy" {
+  tags  = module.tags.values
+  count = local.is_live_environment ? 1 : 0
+
+  name          = "${local.short_identifier_prefix}academy-landing-zone"
+  database_name = aws_glue_catalog_database.landing_zone_academy.name
+  role          = aws_iam_role.glue_role.arn
+
+  s3_target {
+    path       = "s3://${module.landing_zone.bucket_id}/academy/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 3
+    }
+  })
 }
