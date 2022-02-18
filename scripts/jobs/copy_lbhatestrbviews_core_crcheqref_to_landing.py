@@ -26,24 +26,8 @@ source_ddf = glueContext.create_dynamic_frame.from_catalog(
     transformation_ctx="parquetData",
 )
 
-apply_mapping = ApplyMapping.apply(
-    frame=source_ddf,
-    mappings=[
-        ("ref", "string", "ref", "string"),
-        ("amount", "decimal", "amount", "decimal"),
-        ("dhp_ind", "short", "dhp_ind", "short"),
-        ("cheque_num", "int", "cheque_num", "int"),
-        ("pay_type", "string", "pay_type", "string"),
-        ("bank_acc", "int", "bank_acc", "int"),
-        ("prop_ref", "string", "prop_ref", "string"),
-        ("authority_id", "short", "authority_id", "short"),
-        ("seq", "short", "seq", "short"),
-    ],
-    transformation_ctx="apply_mapping",
-)
-
 target_ddf = glueContext.write_dynamic_frame.from_options(
-    frame=apply_mapping,
+    frame=source_ddf,
     connection_type="s3",
     format="parquet",
     connection_options={
