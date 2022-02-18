@@ -4,7 +4,7 @@ module "academy_mssql_database_ingestion" {
 
   source = "../modules/database-ingestion"
 
-  jdbc_connection_url         = "jdbc:sqlserver://127.0.0.1:1433;databaseName=LBHATestRBViews"
+  jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHATestRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHATestRBViews database"
   jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]
   database_availability_zone  = "eu-west-2a"
