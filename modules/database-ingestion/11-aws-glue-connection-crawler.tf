@@ -13,7 +13,6 @@ resource "aws_glue_crawler" "ingestion_database_connection" {
     connection_name = aws_glue_connection.ingestion_database.name
     path            = "${var.database_name}/%"
   }
-  table_prefix = "${local.database_name_lowercase}_"
 
   depends_on = [
     aws_glue_connection.ingestion_database
