@@ -1,7 +1,7 @@
 resource "aws_glue_connection" "ingestion_database" {
   tags = var.tags
 
-  name        = "${var.short_identifier_prefix}${local.database_name_lowercase}-connection"
+  name        = "${var.identifier_prefix}${local.database_name_lowercase}-connection"
   description = var.jdbc_connection_description
   connection_properties = {
     JDBC_CONNECTION_URL = var.jdbc_connection_url
@@ -19,7 +19,7 @@ resource "aws_glue_connection" "ingestion_database" {
 resource "aws_security_group" "ingestion_database_connection" {
   tags = var.tags
 
-  name   = "${var.short_identifier_prefix}${local.database_name_lowercase}-connection-sg"
+  name   = "${var.identifier_prefix}${local.database_name_lowercase}-connection-sg"
   vpc_id = var.vpc_id
 }
 

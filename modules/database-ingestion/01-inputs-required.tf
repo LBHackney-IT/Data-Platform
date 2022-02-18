@@ -38,7 +38,7 @@ variable "jdbc_connection_subnet_id" {
   type        = string
 }
 
-variable "short_identifier_prefix" {
+variable "identifier_prefix" {
   description = "Project wide short resource identifier prefix"
   type        = string
 }

@@ -1,12 +1,12 @@
 resource "aws_glue_catalog_database" "ingestion_database" {
-  name = "${var.short_identifier_prefix}${local.database_name_lowercase}-catalog-database"
+  name = "${var.identifier_prefix}${local.database_name_lowercase}-catalog-database"
 }
 
 resource "aws_glue_crawler" "ingestion_database_connection" {
   tags = var.tags
 
   database_name = aws_glue_catalog_database.ingestion_database.name
-  name          = "${var.short_identifier_prefix}${local.database_name_lowercase}-crawler"
+  name          = "${var.identifier_prefix}${local.database_name_lowercase}-crawler"
   role          = aws_iam_role.jdbc_connection_crawler_role.arn
 
   jdbc_target {
