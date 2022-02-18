@@ -356,10 +356,10 @@ module "huu_do_covid_vaccinations_vaccinations" {
   department                      = module.department_sandbox
   dataset_name                    = "huu_do_sandbox_covid_vaccinations"
   enable_glue_trigger             = false
-}    
-    
+}
+
 module "sandbox_covid_locations_ben" {
-  count = local.is_live_environment ? 1 : 0
+  count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
@@ -379,7 +379,7 @@ module "sandbox_covid_locations_ben" {
 }
 
 module "sandbox_covid_vaccinations_ben" {
-  count = local.is_live_environment ? 1 : 0
+  count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
