@@ -17,7 +17,8 @@ ASSETS=s3://aws-glue-jes-prod-eu-west-2-assets/sagemaker/assets/
 
 aws s3 cp $ASSETS . --recursive
 
-bash "/home/ec2-user/glue/Miniconda2-4.5.12-Linux-x86_64.sh" -b -u -p "/home/ec2-user/glue/miniconda"
+wget "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O /home/ec2-user/glue/Miniconda3-latest-Linux-x86_64.sh
+bash "/home/ec2-user/glue/Miniconda3-latest-Linux-x86_64.sh" -b -u -p "/home/ec2-user/glue/miniconda"
 
 source "/home/ec2-user/glue/miniconda/bin/activate"
 
@@ -49,8 +50,11 @@ if [ -f "$CONNECTION_CHECKER_FILE" ]; then
     python3 $CONNECTION_CHECKER_FILE
 fi
 
-source "/home/ec2-user/glue/miniconda/bin/deactivate"
+conda install pip
+/home/ec2-user/glue/miniconda/bin/pip install sparksql-magic
 
-rm -rf "/home/ec2-user/glue/Miniconda2-4.5.12-Linux-x86_64.sh"
+conda "/home/ec2-user/glue/miniconda/bin/deactivate"
+
+rm -rf "/home/ec2-user/glue/Miniconda3-latest-Linux-x86_64.sh"
 
 sudo touch /home/ec2-user/glue_ready

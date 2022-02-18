@@ -32,8 +32,8 @@ data "aws_iam_policy_document" "notebook" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:logs:region-code:account-id:log-group:/aws/sagemaker/*",
-      "arn:aws:logs:region-code:account-id:log-group:/aws/sagemaker/*:log-stream:aws-glue-*"
+      "arn:aws:logs:*:*:log-group:/aws/sagemaker/*",
+      "arn:aws:logs:*:*:log-group:/aws/sagemaker/*:log-stream:aws-glue-*"
     ]
   }
   statement {
