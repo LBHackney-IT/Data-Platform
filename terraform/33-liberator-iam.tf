@@ -66,6 +66,9 @@ resource "aws_secretsmanager_secret" "liberator_user_private_key" {
 }
 
 resource "aws_secretsmanager_secret_version" "liberator_user_private_key_version" {
-  secret_id     = aws_secretsmanager_secret.liberator_user_private_key.id
-  secret_string = aws_iam_access_key.liberator_access_key.secret
+  secret_id = aws_secretsmanager_secret.liberator_user_private_key.id
+  secret_string = jsonencode({
+    "Access Key ID"     = aws_iam_access_key.liberator_access_key.id
+    "Secret Access key" = aws_iam_access_key.liberator_access_key.secret
+  })
 }
