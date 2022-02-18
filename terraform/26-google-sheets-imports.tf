@@ -439,3 +439,25 @@ module "sandbox_covid_vaccinations_marta" {
   dataset_name                    = "sandbox_covid_vaccinations_marta"
   enable_glue_trigger             = false
 }
+
+module "sandbox_covid_vaccinations_adam" {
+  count = local.is_live_environment ? 1 : 0
+
+  source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_sandbox.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone.bucket_id
+  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_sandbox.name
+  google_sheets_document_id       = "1jUk8NvVOqBNPZHsikoZ8Oi3K9xZbfJza6qOXRS3ewII"
+  google_sheets_worksheet_name    = "vaccinations"
+  department                      = module.department_sandbox
+  dataset_name                    = "covid_vaccinations_adam"
+  enable_glue_trigger             = false
+}    
