@@ -20,13 +20,13 @@ source_catalog_database = get_glue_env_var('source_data_database', '')
 source_catalog_table    = get_glue_env_var('source_data_catalogue_table', '')
 s3_bucket_target = get_glue_env_var('s3_target', '')
 
-source_ddf = glueContext.create_dynamic_frame.from_catalog(
+source_ddf = glue_context.create_dynamic_frame.from_catalog(
     database=source_catalog_database,
     table_name=source_catalog_table,
     transformation_ctx="parquetData",
 )
 
-target_ddf = glueContext.write_dynamic_frame.from_options(
+target_ddf = glue_context.write_dynamic_frame.from_options(
     frame=source_ddf,
     connection_type="s3",
     format="parquet",
