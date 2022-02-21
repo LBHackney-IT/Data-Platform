@@ -34,7 +34,7 @@ resource "aws_glue_job" "get_lbhatestrbviews_core_crcheqref_table" {
   worker_type       = "Standard"
   role_arn          = aws_iam_role.glue_role.arn
   timeout           = 120
-  connections       = [module.academy_mssql_database_ingestion.jdbc_connection_name]
+  connections       = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
   command {
     python_version  = "3"
     script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.academy_get_lbhatestrbviews_core_crcheqref_table_script[0].key}"
