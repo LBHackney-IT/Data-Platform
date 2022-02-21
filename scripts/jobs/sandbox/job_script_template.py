@@ -1,12 +1,17 @@
+ # This is a template for prototyping jobs. It loads the latest data from S3 using the Glue catalogue, performs an empty transformation, and writes the result to a target location in S3.
+ # Before running your job, go to the Job Details tab and customise:
+    # - the role Glue should use to run the job (it should match the department where the data is stored - if not, you will get permissions errors)
+    # - the temporary storage path (same as above)
+    # - the job parameters (replace the template values coming from the Terraform with real values)
+
 import sys
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-import pyspark.sql.functions as F
+from pyspark.sql.functions import col, max, lit
 from awsglue.dynamicframe import DynamicFrame
-# import a few helper functions
 from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS
 
 # Define the functions that will be used in your job (optional)
@@ -16,6 +21,7 @@ def someDataProcessing(df):
 
 # The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":
+    
     # read job parameters
     args = getResolvedOptions(sys.argv, ['JOB_NAME'])
     source_catalog_table = get_glue_env_var('source_catalog_table','')
@@ -28,7 +34,7 @@ if __name__ == "__main__":
     job = Job(glueContext)
     job.init(args['JOB_NAME'], args)
 
-    # Log something. This will be ouput in the log of this Glue job [all logs>xxxx_driver]
+    # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
     logger.info(f'The job is starting. The source table is {source_catalog_database}.{source_catalog_table}')
 
 
@@ -36,7 +42,7 @@ if __name__ == "__main__":
     data_source = glueContext.create_dynamic_frame.from_catalog(
         name_space = source_catalog_database,
         table_name = source_catalog_table,
-        # if the source data is partitionned by import_date, use a pushdown predicate to optimise the job by only loading a few days worth of data  
+        # if the source data is partitionned by import_date, use a pushdown predicate to only load a few days worth of data and speed up the job   
         pushdown_predicate = create_pushdown_predicate('import_date', 2)
     )
 
@@ -64,3 +70,5 @@ if __name__ == "__main__":
         transformation_ctx="target_data_to_write")
 
     job.commit()
+
+   
