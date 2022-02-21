@@ -18,7 +18,7 @@ module "academy_mssql_database_ingestion" {
 resource "aws_s3_bucket_object" "academy_get_lbhatestrbviews_core_crcheqref_table_script" {
   count = local.is_live_environment ? 1 : 0
 
-  bucket      = module.landing_zone.bucket_id
+  bucket      = module.glue_scripts.bucket_id
   key         = "scripts/copy_lbhatestrbviews_core_crcheqref_to_landing.py"
   acl         = "private"
   source      = "../scripts/jobs/copy_lbhatestrbviews_core_crcheqref_to_landing.py"
