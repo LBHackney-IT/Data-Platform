@@ -11,6 +11,6 @@ output "rds_instance_id" {
 output "cloudwatch_event_rule_name" {
   value = aws_cloudwatch_event_rule.new_s3_object.name
 }
- output "cloudwatch_event_rule_arn" {
-   value = aws_cloudwatch_event_rule.new_s3_object.arn
- }
+output "cloudwatch_event_rule_arn" {
+  value = aws_cloudwatch_event_rule.new_s3_object.arn
+}

@@ -397,7 +397,7 @@ module "sandbox_covid_vaccinations_ben" {
   dataset_name                    = "covid_vaccinations_ben"
   enable_glue_trigger             = false
 }
-    
+
 module "sandbox_covid_locations_marta" {
   count = local.is_live_environment ? 1 : 0
 
@@ -459,8 +459,8 @@ module "sandbox_covid_vaccinations_adam" {
   department                      = module.department_sandbox
   dataset_name                    = "covid_vaccinations_adam"
   enable_glue_trigger             = false
-}    
-    
+}
+
 module "sandbox_covid_locations_adam" {
   count = local.is_live_environment ? 1 : 0
 
@@ -480,4 +480,4 @@ module "sandbox_covid_locations_adam" {
   department                      = module.department_sandbox
   dataset_name                    = "covid_locations_adam"
   enable_glue_trigger             = false
-}    
+}

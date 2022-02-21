@@ -1,13 +1,13 @@
 
 module "liberator_data_storage" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Liberator Data Storage"
-  bucket_identifier = "liberator-data-storage"
-  role_arns_to_share_access_with = var.environment == "stg" ? [var.copy_liberator_to_pre_prod_lambda_execution_role] : []
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Liberator Data Storage"
+  bucket_identifier              = "liberator-data-storage"
+  role_arns_to_share_access_with = var.environment == "stg" && var.copy_liberator_to_pre_prod_lambda_execution_role != null ? [var.copy_liberator_to_pre_prod_lambda_execution_role] : []
 }
 
 module "liberator_dump_to_rds_snapshot" {
@@ -43,26 +43,25 @@ module "liberator_db_snapshot_to_s3" {
   workflow_arn                   = aws_glue_workflow.parking_liberator_data.arn
 }
 
-# Move production .zip to pre production .zip
-
+# Move .zip in production to pre production
 locals {
   is_production_environment = var.environment == "prod"
 }
 
 # Cloudwatch event target
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_liberator_prod_to_pre_prod_lambda" {
+  count         = local.is_production_environment ? 1 : 0
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.liberator_prod_to_pre_prod.function_name
+  function_name = aws_lambda_function.liberator_prod_to_pre_prod[0].function_name
   principal     = "events.amazonaws.com"
-  source_arn = module.liberator_dump_to_rds_snapshot[0].cloudwatch_event_rule_arn
+  source_arn    = module.liberator_dump_to_rds_snapshot[0].cloudwatch_event_rule_arn
 }
 
 resource "aws_cloudwatch_event_target" "run_liberator_prod_to_pre_prod_lambda" {
-  # count = local.is_production_environment ? 1 : 0
-  count     = true ? 1 : 0
+  count     = local.is_production_environment ? 1 : 0
   target_id = "copy-liberator-zip-from-prod-to-pre-prod-lambda"
-  arn       = aws_lambda_function.liberator_prod_to_pre_prod.arn
+  arn       = aws_lambda_function.liberator_prod_to_pre_prod[0].arn
 
   rule = module.liberator_dump_to_rds_snapshot[0].cloudwatch_event_rule_name
 }
@@ -83,6 +82,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 }
 
 resource "aws_iam_role" "liberator_prod_to_pre_prod_lambda" {
+  count              = local.is_production_environment ? 1 : 0
   tags               = module.tags.values
   name               = "${local.short_identifier_prefix}liberator-prod-to-pre-prod-lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
@@ -101,7 +101,7 @@ data "aws_iam_policy_document" "move_liberator_to_pre_prod" {
     ]
   }
 
-# get from liberator storage bucket in production
+  # get from liberator storage bucket in production
   statement {
     actions = [
       "kms:*",
@@ -123,20 +123,25 @@ data "aws_iam_policy_document" "move_liberator_to_pre_prod" {
       "s3:Put*"
     ]
     effect = "Allow"
-    resources = []
+    resources = [
+      "arn:aws:s3:::dataplatform-stg-liberator-data-storage*",
+      var.pre_production_liberator_data_storage_kms_key_arn
+    ]
   }
 }
 
 resource "aws_iam_policy" "move_liberator_to_pre_prod" {
-  tags = module.tags.values
+  count = local.is_production_environment ? 1 : 0
+  tags  = module.tags.values
 
   name   = "${local.short_identifier_prefix}move-libertor-to-pre-prod"
   policy = data.aws_iam_policy_document.move_liberator_to_pre_prod.json
 }
 
 resource "aws_iam_role_policy_attachment" "move_liberator_to_pre_prod" {
-  role       = aws_iam_role.liberator_prod_to_pre_prod_lambda.name
-  policy_arn = aws_iam_policy.move_liberator_to_pre_prod.arn
+  count      = local.is_production_environment ? 1 : 0
+  role       = aws_iam_role.liberator_prod_to_pre_prod_lambda[0].name
+  policy_arn = aws_iam_policy.move_liberator_to_pre_prod[0].arn
 }
 
 #  Lambda function 
@@ -155,16 +160,16 @@ resource "aws_s3_bucket_object" "liberator_prod_to_pre_prod" {
 }
 
 resource "aws_lambda_function_event_invoke_config" "liberator_prod_to_pre_prod" {
-
-  function_name          = aws_lambda_function.liberator_prod_to_pre_prod.function_name
+  function_name          = aws_lambda_function.liberator_prod_to_pre_prod[0].function_name
   maximum_retry_attempts = 0
   qualifier              = "$LATEST"
 }
 
 resource "aws_lambda_function" "liberator_prod_to_pre_prod" {
-  tags = module.tags.values
+  count = local.is_production_environment ? 1 : 0
+  tags  = module.tags.values
 
-  role             = aws_iam_role.liberator_prod_to_pre_prod_lambda.arn
+  role             = aws_iam_role.liberator_prod_to_pre_prod_lambda[0].arn
   handler          = "main.lambda_handler"
   runtime          = "python3.8"
   function_name    = "${local.short_identifier_prefix}liberator-prod-to-pre-prod"
@@ -176,7 +181,7 @@ resource "aws_lambda_function" "liberator_prod_to_pre_prod" {
   environment {
     variables = {
       "TARGET_BUCKET_ID" = "dataplatform-stg-liberator-data-storage",
-      "TARGET_PREFIX"    = "testing-backfilling"
+      "TARGET_PREFIX"    = ""
     }
   }
 }
