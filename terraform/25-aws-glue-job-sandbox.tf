@@ -17,3 +17,18 @@ module "load_locations_vaccine_to_refined_sandbox" {
     s3_target_location = "${module.refined_zone.bucket_id}/sandbox/daro-covid-locations-vaccinations-cleaned"
   }
 }
+
+module "job_template" {
+  source = "../modules/aws-glue-job"
+
+  department        = module.department_sandbox
+  job_name          = "${local.short_identifier_prefix}job_template"
+  script_name       = "job_script_template"
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  job_parameters = {
+    "--s3_bucket_target" = "${module.refined_zone.bucket_id}/sandbox/some-target-location-in-the-refined-zone"
+    "--source_catalog_database"                  = module.department_sandbox.raw_zone_catalog_database_name
+    "--source_catalog_table"                     = "some_table_name"
+  }
+}
