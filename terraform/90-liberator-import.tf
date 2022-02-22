@@ -89,6 +89,8 @@ resource "aws_iam_role" "liberator_prod_to_pre_prod_lambda" {
 }
 
 data "aws_iam_policy_document" "move_liberator_to_pre_prod" {
+  count = local.is_production_environment ? 1 : 0
+
   statement {
     actions = [
       "logs:CreateLogGroup",
@@ -135,7 +137,7 @@ resource "aws_iam_policy" "move_liberator_to_pre_prod" {
   tags  = module.tags.values
 
   name   = "${local.short_identifier_prefix}move-libertor-to-pre-prod"
-  policy = data.aws_iam_policy_document.move_liberator_to_pre_prod.json
+  policy = data.aws_iam_policy_document.move_liberator_to_pre_prod[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "move_liberator_to_pre_prod" {
@@ -160,6 +162,7 @@ resource "aws_s3_bucket_object" "liberator_prod_to_pre_prod" {
 }
 
 resource "aws_lambda_function_event_invoke_config" "liberator_prod_to_pre_prod" {
+  count                  = local.is_production_environment ? 1 : 0
   function_name          = aws_lambda_function.liberator_prod_to_pre_prod[0].function_name
   maximum_retry_attempts = 0
   qualifier              = "$LATEST"
