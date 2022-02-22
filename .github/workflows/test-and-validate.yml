@@ -47,14 +47,18 @@ on:
 
 jobs:
   tests:
-    name: Test Python Jobs
+    name: Test Python Jobs & Lambda Functions
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Run `make test`
+      - name: Test Python Jobs
         run: |
           cd scripts
+          make test
+      - name: Test Lambda Functions
+        run: |
+          cd lambdas
           make test
   validate:
     name: Validate Terraform

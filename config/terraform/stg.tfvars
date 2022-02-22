@@ -15,3 +15,4 @@ deployment_user_arn = "arn:aws:iam::338027813792:user/automation_deployer"
 qlik_server_instance_type = "m5.2xlarge"
 redshift_public_ips = ["18.168.126.173"]
 redshift_port = 5440
+copy_liberator_to_pre_prod_lambda_execution_role = null # Need to populate this after initial deployment
