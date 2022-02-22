@@ -14,7 +14,7 @@ from pyspark.sql.functions import col, max, lit
 from awsglue.dynamicframe import DynamicFrame
 from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS
 
-# Define the functions that will be used in your job (optional)
+# Define the functions that will be used in your job (optional). For Production jobs, these functions should be tested via unit testing.
 def someDataProcessing(df):
     # do something
     return df
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     data_source = glueContext.create_dynamic_frame.from_catalog(
         name_space = source_catalog_database,
         table_name = source_catalog_table,
-        # if the source data is partitionned by import_date, use a pushdown predicate to only load a few days worth of data and speed up the job   
+        # if the source data IS partitionned by import_date, you can use a pushdown predicate to only load a few days worth of data and speed up the job   
         pushdown_predicate = create_pushdown_predicate('import_date', 2)
     )
 
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # Transform data using the fuctions defined outside the main block
     df = someDataProcessing(df)
     
-    # Add import time columns with today's information (do not use if the source data is already partitionned by import_date)
+    # If the source data was NOT partitioned by import_date, you can add create time columns now (you'll never use statements line 46 and 59 in the same job)
     df = add_import_time_columns(df)
     
     # Convert data frame to dynamic frame 
