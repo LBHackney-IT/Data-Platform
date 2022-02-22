@@ -1,13 +1,14 @@
-run-notebook:
+save-credentials:
 	-(aws-vault exec hackney-dataplatform-staging -- env | grep  ^AWS_)  > ./.env
+
+run-notebook: save-credentials
 	docker compose up notebook
 
-run-notebook-v3:
-	-(aws-vault exec hackney-dataplatform-staging -- env | grep  ^AWS_)  > ./.env
-	docker run -it -p 8888:8888 -p 4040:4040 -e DISABLE_SSL="true" \
-	--env-file ./.env \
-	--name glue_jupyter_v4 -v $$PWD/scripts:/home/glue_user/workspace/jupyter_workspace \
-	amazon/aws-glue-libs:glue_libs_3.0.0_image_01
+run-notebook-v2: save-credentials
+	docker compose up notebook-v2
+
+run-notebook-v3: save-credentials
+	docker compose run --service-ports notebook-v3 
 # /home/glue_user/jupyter/jupyter_start.sh
 
 remove-images:
@@ -20,4 +21,4 @@ thrift-server:
 spark-sql:
 	docker compose exec notebook /home/spark-2.4.3-bin-spark-2.4.3-bin-hadoop2.8/bin/beeline -u jdbc:hive2://localhost:10000/default -n root -p ""
 
-.PHONY: run-notebook run-notebook-v3
+.PHONY: run-notebook run-notebook-v3 run-notebook-v2
