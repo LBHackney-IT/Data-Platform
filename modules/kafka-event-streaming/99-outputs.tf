@@ -40,8 +40,8 @@ output "default_s3_plugin_configuration" {
       "value.converter.schemaAutoRegistrationEnabled" = "true"
       "value.converter.avroRecordType"                = "GENERIC_RECORD"
       "value.converter"                               = "com.amazonaws.services.schemaregistry.kafkaconnect.AWSKafkaAvroConverter"
-      "value.converter.schemaName"                    = var.aws_glue_schema.schema_name
-      "value.converter.registry.name"                 = var.aws_glue_registry.registry_name
+      //"value.converter.schemaName"                    = aws_glue_schema.tenure_api.schema_name
+      //"value.converter.registry.name"                 = aws_glue_schema.tenure_api.registry_name
       "value.converter.region"                        = "eu-west-2"
       "value.converter.schemas.enable"                = "true"
       "key.converter"                                 = "org.apache.kafka.connect.storage.StringConverter"

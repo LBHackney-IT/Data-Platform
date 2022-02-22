@@ -12,13 +12,12 @@ resource "aws_glue_schema" "tenure_api" {
   schema_definition = file("${path.module}/schemas/tenure_api.json")
 }
 
-
 data "aws_iam_policy_document" "get_schemas_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
 
     principals {
-      identifiers = var.cross_account_lambda_roles
+      identifiers = concat(var.cross_account_lambda_roles, local.default_arn)
       type        = "AWS"
     }
   }
