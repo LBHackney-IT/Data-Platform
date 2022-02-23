@@ -31,12 +31,4 @@ module "job_template" {
     "--source_catalog_database"                  = module.department_sandbox.raw_zone_catalog_database_name
     "--source_catalog_table"                     = "some_table_name"
   }
-
-  crawler_details = {
-    database_name      = module.department_sandbox.refined_zone_catalog_database_name
-    s3_target_location = "s3://${module.refined_zone.bucket_id}/sandbox/some-target-location-in-the-refined-zone"
-    configuration = jsonencode({
-      Version = 1.0
-    })
-  }
 }
