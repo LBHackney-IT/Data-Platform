@@ -26,7 +26,7 @@ if __name__ == "__main__":
     args = getResolvedOptions(sys.argv, ['JOB_NAME'])
     source_catalog_table = get_glue_env_var('source_catalog_table','')
     source_catalog_database = get_glue_env_var('source_catalog_database', '')
-    target_bucket = get_glue_env_var('s3_bucket_target', '')
+    s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
  
     # start the Spark session and the logger
     glueContext = GlueContext(SparkContext.getOrCreate()) 
@@ -41,32 +41,33 @@ if __name__ == "__main__":
     # Load data from glue catalog
     data_source = glueContext.create_dynamic_frame.from_catalog(
         name_space = source_catalog_database,
-        table_name = source_catalog_table,
-        # if the source data IS partitionned by import_date, you can use a pushdown predicate to only load a few days worth of data and speed up the job   
-        pushdown_predicate = create_pushdown_predicate('import_date', 2)
+        table_name = source_catalog_table
+        # if the source data IS partitionned by import_date and there is a lot of historic data there that you don't need, consider using a pushdown predicate to only load a few days worth of data and speed up the job   
+        # pushdown_predicate = create_pushdown_predicate('import_date', 2)
     )
 
     # convert dynamic frame to data frame
     df = data_source.toDF()
 
-    # only keep the latest imported data
-    df = get_latest_partitions(df)
+    # If the source data IS partitionned by import_date, you have loaded several days but only need the latest version, use the get_latest_partitions() helper
+    # df = get_latest_partitions(df)
 
     # Transform data using the fuctions defined outside the main block
     df = someDataProcessing(df)
     
-    # If the source data was NOT partitioned by import_date, you can add create time columns now (you'll never use statements line 46 and 59 in the same job)
-    df = add_import_time_columns(df)
+    # If the source data is NOT partitioned by import_date, create the necessary import_ columns now and populate them with today's date so the result data gets partitionned as per the DP standards. 
+    # Clarification: You normally won't use this if you have used pushdown_predicate and/or get_latest_partition earlier (unless you have dropped or renamed the import_ columns of the source data and want fresh dates to partition the result by processing date)
+    # df = add_import_time_columns(df)
     
     # Convert data frame to dynamic frame 
-    dyanmic_frame = DynamicFrame.fromDF(df, glueContext, "target_data_to_write")
+    dynamic_frame = DynamicFrame.fromDF(df, glueContext, "target_data_to_write")
 
     # Write the data to S3
     parquet_data = glueContext.write_dynamic_frame.from_options(
-        frame=dyanmic_frame,
+        frame=dynamic_frame,
         connection_type="s3",
         format="parquet",
-        connection_options={"path": target_bucket, "partitionKeys": PARTITION_KEYS},
+        connection_options={"path": s3_bucket_target, "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
     job.commit()
