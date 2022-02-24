@@ -1,0 +1,47 @@
+resource "aws_budgets_budget" "actual_cost_budget" {
+  name         = "actual-cost-budget"
+  budget_type  = "COST"
+  limit_amount = "1000" # Initial value. Will be overwritten by the scheduled lambda function
+  limit_unit   = "USD"
+  time_unit    = "MONTHLY"
+
+  lifecycle {
+    ignore_changes = [
+      limit_amount,
+    ]
+  }
+
+  notification {
+    comparison_operator        = "GREATER_THAN"
+    threshold                  = "100"
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "ACTUAL"
+    subscriber_email_addresses = [
+      "saml-aws-data-platform-admins@hackney.gov.uk"
+      ]
+  }
+}
+
+resource "aws_budgets_budget" "forecast_cost_budget" {
+  name         = "forecast-cost-budget"
+  budget_type  = "COST"
+  limit_amount = "1000" # Initial value. Will be overwritten by the scheduled lambda function
+  limit_unit   = "USD"
+  time_unit    = "MONTHLY"
+
+  lifecycle {
+    ignore_changes = [
+      limit_amount,
+    ]
+  }
+
+  notification {
+    comparison_operator        = "GREATER_THAN"
+    threshold                  = "100"
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "FORECASTED"
+    subscriber_email_addresses = [
+      "saml-aws-data-platform-admins@hackney.gov.uk"
+    ]
+  }
+}
