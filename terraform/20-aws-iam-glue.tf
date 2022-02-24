@@ -1,12 +1,3 @@
-locals {
-  glue_crawler_excluded_blobs = [
-    "*.json",
-    "*.txt",
-    "*.zip",
-    "*.xlsx"
-  ]
-}
-
 data "aws_iam_policy_document" "glue_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -50,6 +41,18 @@ data "aws_iam_policy_document" "glue_can_write_to_cloudwatch" {
   }
 }
 
+resource "aws_iam_policy" "glue_can_write_to_cloudwatch" {
+  tags = module.tags.values
+
+  name   = "${local.identifier_prefix}-glue-can-write-to-cloudwatch"
+  policy = data.aws_iam_policy_document.glue_can_write_to_cloudwatch.json
+}
+
+resource "aws_iam_role_policy_attachment" "glue_role_can_write_to_cloudwatch" {
+  role       = aws_iam_role.glue_role.name
+  policy_arn = aws_iam_policy.glue_can_write_to_cloudwatch.arn
+}
+
 data "aws_iam_policy_document" "full_glue_access" {
   statement {
     effect = "Allow"
@@ -69,19 +72,12 @@ resource "aws_iam_policy" "full_glue_access" {
   policy = data.aws_iam_policy_document.full_glue_access.json
 }
 
-resource "aws_iam_policy" "glue_can_write_to_cloudwatch" {
-  tags = module.tags.values
-
-  name   = "${local.identifier_prefix}-glue-can-write-to-cloudwatch"
-  policy = data.aws_iam_policy_document.glue_can_write_to_cloudwatch.json
-}
-
-resource "aws_iam_role_policy_attachment" "glue_role_can_write_to_cloudwatch" {
+resource "aws_iam_role_policy_attachment" "attach_full_glue_access_to_glue_role" {
   role       = aws_iam_role.glue_role.name
-  policy_arn = aws_iam_policy.glue_can_write_to_cloudwatch.arn
+  policy_arn = aws_iam_policy.full_glue_access.arn
 }
 
-resource "aws_iam_policy" "glue_access_policy" {
+resource "aws_iam_policy" "glue_access_to_s3_iam_and_secrets" {
   tags = module.tags.values
 
   name = "${local.identifier_prefix}-glue-access-policy"
@@ -149,12 +145,87 @@ resource "aws_iam_policy" "glue_access_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "attach_glue_access_policy_to_glue_role" {
+resource "aws_iam_role_policy_attachment" "attach_glue_access_to_s3_iam_and_secrets_policy_to_glue_role" {
   role       = aws_iam_role.glue_role.name
-  policy_arn = aws_iam_policy.glue_access_policy.arn
+  policy_arn = aws_iam_policy.glue_access_to_s3_iam_and_secrets.arn
 }
 
-resource "aws_iam_role_policy_attachment" "attach_full_glue_access_to_glue_role" {
-  role       = aws_iam_role.glue_role.name
-  policy_arn = aws_iam_policy.full_glue_access.arn
+
+
+data "aws_iam_policy_document" "can_assume_dynamo_db_role" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole"
+    ]
+    resources = [
+      "arn:aws:iam::937934410339:role/glue-can-read-dynamo-db-from-dp-dev-account"
+    ]
+  }
 }
+
+resource "aws_iam_policy" "can_assume_dynamo_db_role" {
+  tags = module.tags.values
+
+  name   = "${local.short_identifier_prefix}can-assume-read-dynamo-db-role"
+  policy = data.aws_iam_policy_document.can_assume_dynamo_db_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_can_assume_dynamo_db_role_to_glue_role" {
+  role       = aws_iam_role.glue_role.name
+  policy_arn = aws_iam_policy.can_assume_dynamo_db_role.arn
+}
+
+
+# Stuff for other team to create a role with 
+
+# data "aws_iam_policy_document" "can_read_dynamo_db" {
+#   statement {
+#     effect = "Allow"
+#     actions = [
+#       "dynamodb:List*",
+#       "dynamodb:Get*",
+#       "dynamodb:Query",
+#       "dynamodb:Scan",
+#       "dynamodb:BatchGet*",
+#       "dynamodb:DescribeTable*",
+#       "dynamodb:DescribeStream*",
+#     ]
+#     resources = [
+#       "arn:aws:dynamodb:*"
+#     ]
+#   }
+# }
+
+# resource "aws_iam_policy" "can_read_dynamo_db" {
+#   tags = module.tags.values
+
+#   name   = "${local.short_identifier_prefix}can-read-dynamo-db"
+#   policy = data.aws_iam_policy_document.can_read_dynamo_db.json
+# }
+
+# resource "aws_iam_role_policy_attachment" "attach_glue_can_read_dynamodb_to_glue_role" {
+#   role       = aws_iam_role.glue_role.name
+#   policy_arn = aws_iam_policy.can_read_dynamo_db.arn
+# }
+
+
+# resource "aws_iam_role" "role_for_dp_glue_to_assume" {
+#   description = "Allows glue in the data platform development account to read data from dynamo db"
+#   name               = "${local.identifier_prefix}-glue-role"
+
+# Assume role policy
+# {
+#     "Version": "2012-10-17",
+#     "Statement": [
+#         {
+#             "Effect": "Allow",
+#             "Action": "sts:AssumeRole",
+#             "Principal": {
+#                 "AWS": "484466746276"
+#             },
+#             "Condition": {}
+#         }
+#     ]
+# }
+# }
