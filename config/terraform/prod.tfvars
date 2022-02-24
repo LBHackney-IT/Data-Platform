@@ -15,3 +15,4 @@ deployment_user_arn = "arn:aws:iam::338027813792:user/automation_deployer"
 qlik_server_instance_type = "m5.2xlarge"
 redshift_public_ips = ["18.168.126.173"]
 redshift_port = 5439
+pre_production_liberator_data_storage_kms_key_arn="arn:aws:kms:eu-west-2:120038763019:key/dcef6adb-0ddf-45da-97f3-3226f278222f"

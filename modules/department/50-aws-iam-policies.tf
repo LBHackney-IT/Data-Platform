@@ -125,6 +125,7 @@ data "aws_iam_policy_document" "read_only_glue_access" {
       "glue:Get*",
       "glue:List*",
       "glue:SearchTables",
+      "glue:Query*",
     ]
     resources = ["*"]
   }
@@ -352,6 +353,7 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
       "glue:UpdateTrigger",
+      "glue:Query*",
     ]
     resources = ["*"]
   }

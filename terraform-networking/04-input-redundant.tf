@@ -17,3 +17,11 @@ variable "email_to_notify" {
 variable "aws_vpc_id" {
   default = false
 }
+
+variable "academy_production_database_username" {
+  default = false
+}
+
+variable "academy_production_database_password" {
+  default = false
+}
