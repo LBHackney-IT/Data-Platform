@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "set_budget_limit_amount_lambda_assume_role" {
 
 resource "aws_iam_role" "set_budget_limit_amount_lambda" {
   tags               = var.tags
-  name               = lower("${var.identifier_prefix}-from-g-drive-${var.lambda_name}")
+  name               = lower("${var.identifier_prefix}-set-budget-limit-${var.lambda_name}")
   assume_role_policy = data.aws_iam_policy_document.set_budget_limit_amount_lambda_assume_role.json
 }
 
@@ -58,7 +58,7 @@ resource "aws_s3_bucket_object" "set_budget_limit_amount_lambda" {
   key    = "set_budget_limit_amount.zip"
   source = data.archive_file.set_budget_limit_amount_lambda.output_path
   acl    = "private"
-  etag   = data.archive_file.set_budget_limit_amount_lambda.output_md5
+  source_hash   = data.archive_file.set_budget_limit_amount_lambda.output_md5
   depends_on = [
     data.archive_file.set_budget_limit_amount_lambda
   ]
@@ -69,8 +69,8 @@ resource "aws_lambda_function" "set_budget_limit_amount_lambda" {
 
   role             = aws_iam_role.set_budget_limit_amount_lambda.arn
   handler          = "main.lambda_handler"
-  runtime          = "python3.8"
-  function_name    = lower("${var.identifier_prefix}from-g-drive-${var.lambda_name}")
+  runtime          = "python3.9"
+  function_name    = lower("${var.identifier_prefix}set-budget-limit-${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_bucket_object.set_budget_limit_amount_lambda.key
   source_code_hash = data.archive_file.set_budget_limit_amount_lambda.output_base64sha256
@@ -81,10 +81,6 @@ resource "aws_lambda_function" "set_budget_limit_amount_lambda" {
       AccountId = var.account_id
     }
   }
-
-  depends_on = [
-    aws_s3_bucket_object.set_budget_limit_amount_lambda,
-  ]
 }
 
 resource "aws_lambda_function_event_invoke_config" "set_budget_limit_amount_lambda" {
@@ -92,22 +88,18 @@ resource "aws_lambda_function_event_invoke_config" "set_budget_limit_amount_lamb
   function_name          = aws_lambda_function.set_budget_limit_amount_lambda.function_name
   maximum_retry_attempts = 0
   qualifier              = "$LATEST"
-
-  depends_on = [
-    aws_lambda_function.set_budget_limit_amount_lambda
-  ]
 }
 
-resource "aws_cloudwatch_event_rule" "run_lambda_once_a_month" {
-  name                = "run_lambda_once_a_month"
-  description         = "Once per month"
+resource "aws_cloudwatch_event_rule" "run_lambda_to_update_budget_once_a_month" {
+  name                = "run_lambda_to_update_budget_once_a_month"
+  description         = "triggers the budget update lambda once per month"
   schedule_expression = "cron(0 0 1 * ? *)"
   is_enabled          = false
 }
 
-resource "aws_cloudwatch_event_target" "run_lambda_once_a_month" {
-  rule      = aws_cloudwatch_event_rule.run_lambda_once_a_month.name
-  target_id = "set_budget_limit_amount_lambda"
+resource "aws_cloudwatch_event_target" "run_lambda_to_update_budget_once_a_month" {
+  rule      = aws_cloudwatch_event_rule.run_lambda_to_update_budget_once_a_month.name
+  target_id = "run_lambda_to_update_budget_once_a_month"
   arn       = aws_lambda_function.set_budget_limit_amount_lambda.arn
 }
 
@@ -116,5 +108,5 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_set_budget_limit_amou
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.set_budget_limit_amount_lambda.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.run_lambda_once_a_month.arn
+  source_arn    = aws_cloudwatch_event_rule.run_lambda_to_update_budget_once_a_month.arn
 }

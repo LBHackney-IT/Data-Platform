@@ -6,7 +6,7 @@ import os
 
 def lambda_handler(event, context):
     
-    ce = boto3.client('ce')
+    cost_explorer_client = boto3.client('ce')
     
     end = datetime.date.today().replace(day=1)
     start = end + relativedelta(months=-3)
@@ -14,7 +14,7 @@ def lambda_handler(event, context):
     start = start.strftime("%Y-%m-%d")
     end = end.strftime("%Y-%m-%d")
     
-    response = ce.get_cost_and_usage(
+    response = cost_explorer_client.get_cost_and_usage(
         Granularity='MONTHLY',
         Metrics=[
             'UnblendedCost',
@@ -44,11 +44,11 @@ def lambda_handler(event, context):
         'start': start,
     })
     
-    bd = boto3.client('budgets')
+    budget_client = boto3.client('budgets')
     
     accountId = os.environ['AccountId']
 
-    bd.update_budget(
+    budget_client.update_budget(
         AccountId=accountId,
         NewBudget={
             'BudgetName': 'actual-cost-budget',
@@ -61,7 +61,7 @@ def lambda_handler(event, context):
         }
     )
 
-    bd.update_budget(
+    budget_client.update_budget(
         AccountId=accountId,
         NewBudget={
             'BudgetName': 'forecast-cost-budget',
