@@ -14,6 +14,22 @@ services:
     volumes:
       - ./aws-config:/root/.aws:rw
       - ./scripts:/home/jupyter/jupyter_default_dir
+
+  notebook-v2:
+    container_name: glue_v2_jupyter
+    image: amazon/aws-glue-libs:glue_libs_2.0.0_image_01
+    env_file: .env
+    environment:
+      - DISABLE_SSL="true"
+    ports:
+      - "8888:8888"
+      - "4040:4040"
+      - "10000:10000"
+    entrypoint: /home/glue_user/jupyter/jupyter_start.sh
+    volumes:
+      - ./aws-config:/root/.aws:rw
+      - ./scripts:/home/glue_user/workspace/jupyter_workspace
+
   notebook-v3:
     container_name: glue_v3_jupyter
     image: amazon/aws-glue-libs:glue_libs_3.0.0_image_01
@@ -27,20 +43,6 @@ services:
       - "4040:4040"
       - "10000:10000"
     entrypoint: /bin/bash /home/glue_user/jupyter/jupyter_start.sh
-    volumes:
-      - ./aws-config:/root/.aws:rw
-      - ./scripts:/home/glue_user/workspace/jupyter_workspace
-  notebook-v2:
-    container_name: glue_v2_jupyter
-    image: amazon/aws-glue-libs:glue_libs_2.0.0_image_01
-    env_file: .env
-    environment:
-      - DISABLE_SSL="true"
-    ports:
-      - "8888:8888"
-      - "4040:4040"
-      - "10000:10000"
-    entrypoint: /home/glue_user/jupyter/jupyter_start.sh
     volumes:
       - ./aws-config:/root/.aws:rw
       - ./scripts:/home/glue_user/workspace/jupyter_workspace
