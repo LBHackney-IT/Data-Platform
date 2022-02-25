@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "set_budget_limit_amount_lambda_assume_role" {
 
 resource "aws_iam_role" "set_budget_limit_amount_lambda" {
   tags               = var.tags
-  name               = lower("${var.identifier_prefix}-set-budget-limit-${var.lambda_name}")
+  name               = lower("${var.identifier_prefix}set-budget-limit-${var.lambda_name}")
   assume_role_policy = data.aws_iam_policy_document.set_budget_limit_amount_lambda_assume_role.json
 }
 
@@ -37,7 +37,7 @@ data "aws_iam_policy_document" "set_budget_limit_amount_lambda" {
 resource "aws_iam_policy" "set_budget_limit_amount_lambda" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-set-budget-limit-amount-lambda")
+  name   = lower("${var.identifier_prefix}set-budget-limit-amount-lambda")
   policy = data.aws_iam_policy_document.set_budget_limit_amount_lambda.json
 }
 
