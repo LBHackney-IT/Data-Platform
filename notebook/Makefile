@@ -9,7 +9,6 @@ run-notebook-v2: save-credentials
 
 run-notebook-v3: save-credentials
 	docker compose run --service-ports notebook-v3 
-# /home/glue_user/jupyter/jupyter_start.sh
 
 remove-images:
 	-docker kill glue_jupyter
