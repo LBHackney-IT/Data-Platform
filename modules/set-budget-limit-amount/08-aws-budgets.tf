@@ -1,5 +1,5 @@
 resource "aws_budgets_budget" "actual_cost_budget" {
-  name         = "actual-cost-budget"
+  name         = lower("${var.identifier_prefix}actual-cost-budget")
   budget_type  = "COST"
   limit_amount = "1000" # Initial value. Will be overwritten by the scheduled lambda function
   limit_unit   = "USD"
@@ -13,7 +13,7 @@ resource "aws_budgets_budget" "actual_cost_budget" {
 
   notification {
     comparison_operator        = "GREATER_THAN"
-    threshold                  = "100"
+    threshold                  = "110"
     threshold_type             = "PERCENTAGE"
     notification_type          = "ACTUAL"
     subscriber_email_addresses = [
@@ -23,7 +23,7 @@ resource "aws_budgets_budget" "actual_cost_budget" {
 }
 
 resource "aws_budgets_budget" "forecast_cost_budget" {
-  name         = "forecast-cost-budget"
+  name         = lower("${var.identifier_prefix}forecast-cost-budget")
   budget_type  = "COST"
   limit_amount = "1000" # Initial value. Will be overwritten by the scheduled lambda function
   limit_unit   = "USD"
@@ -37,7 +37,7 @@ resource "aws_budgets_budget" "forecast_cost_budget" {
 
   notification {
     comparison_operator        = "GREATER_THAN"
-    threshold                  = "100"
+    threshold                  = "110"
     threshold_type             = "PERCENTAGE"
     notification_type          = "FORECASTED"
     subscriber_email_addresses = [

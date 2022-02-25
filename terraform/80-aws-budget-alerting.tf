@@ -2,7 +2,7 @@ module "set_budget_limit_amount" {
   source                         = "../modules/set-budget-limit-amount"
   tags                           = module.tags.values
   environment                    = var.environment
-  identifier_prefix              = local.identifier_prefix
+  identifier_prefix              = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   lambda_name                    = "set_budget_limit_amount"
   service_area                   = "housing"
