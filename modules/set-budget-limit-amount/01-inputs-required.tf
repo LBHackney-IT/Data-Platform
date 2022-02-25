@@ -33,5 +33,5 @@ variable "service_area" {
 
 variable "account_id" {
   description = "Account ID associated with budget being updated"
-  type = string
+  type        = string
 }

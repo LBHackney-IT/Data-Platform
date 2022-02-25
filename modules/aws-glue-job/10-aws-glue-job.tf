@@ -7,11 +7,11 @@ locals {
 resource "aws_s3_bucket_object" "job_script" {
   count = var.script_s3_object_key == null ? 1 : 0
 
-  bucket = var.department.glue_scripts_bucket.bucket_id
-  key    = "scripts/${var.department.identifier}/${var.script_name}.py"
-  acl    = "private"
-  source = "../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py"
-  etag   = filemd5("../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py")
+  bucket      = var.department.glue_scripts_bucket.bucket_id
+  key         = "scripts/${var.department.identifier}/${var.script_name}.py"
+  acl         = "private"
+  source      = "../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py"
+  source_hash = filemd5("../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py")
 }
 
 locals {
