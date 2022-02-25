@@ -12,13 +12,13 @@ resource "aws_budgets_budget" "actual_cost_budget" {
   }
 
   notification {
-    comparison_operator        = "GREATER_THAN"
-    threshold                  = "110"
-    threshold_type             = "PERCENTAGE"
-    notification_type          = "ACTUAL"
+    comparison_operator = "GREATER_THAN"
+    threshold           = "110"
+    threshold_type      = "PERCENTAGE"
+    notification_type   = "ACTUAL"
     subscriber_email_addresses = [
       "saml-aws-data-platform-admins@hackney.gov.uk"
-      ]
+    ]
   }
 }
 
@@ -36,10 +36,10 @@ resource "aws_budgets_budget" "forecast_cost_budget" {
   }
 
   notification {
-    comparison_operator        = "GREATER_THAN"
-    threshold                  = "110"
-    threshold_type             = "PERCENTAGE"
-    notification_type          = "FORECASTED"
+    comparison_operator = "GREATER_THAN"
+    threshold           = "110"
+    threshold_type      = "PERCENTAGE"
+    notification_type   = "FORECASTED"
     subscriber_email_addresses = [
       "saml-aws-data-platform-admins@hackney.gov.uk"
     ]

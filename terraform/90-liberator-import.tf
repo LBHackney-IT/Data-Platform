@@ -154,11 +154,11 @@ data "archive_file" "liberator_prod_to_pre_prod" {
 }
 
 resource "aws_s3_bucket_object" "liberator_prod_to_pre_prod" {
-  bucket = module.lambda_artefact_storage.bucket_id
-  key    = "liberator_prod_to_pre_prod.zip"
-  source = data.archive_file.liberator_prod_to_pre_prod.output_path
-  acl    = "private"
-  etag   = data.archive_file.liberator_prod_to_pre_prod.output_md5
+  bucket      = module.lambda_artefact_storage.bucket_id
+  key         = "liberator_prod_to_pre_prod.zip"
+  source      = data.archive_file.liberator_prod_to_pre_prod.output_path
+  acl         = "private"
+  source_hash = data.archive_file.liberator_prod_to_pre_prod.output_md5
 }
 
 resource "aws_lambda_function_event_invoke_config" "liberator_prod_to_pre_prod" {
