@@ -145,3 +145,12 @@ variable "glue_job_timeout" {
   type        = number
   default     = 120
 }
+
+variable "is_department_job" {
+  description = <<EOF
+    Flag to determine if the Glue job created is department specific.
+    Creates a Glue job that is not department specific if set to false
+  EOF
+  type = bool
+  default = true
+}

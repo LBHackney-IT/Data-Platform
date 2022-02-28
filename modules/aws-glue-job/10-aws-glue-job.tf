@@ -4,6 +4,15 @@ locals {
   extra_jars     = join(",", concat(var.extra_jars, ["s3://${var.department.glue_scripts_bucket.bucket_id}/jars/deequ-1.0.3.jar"]))
 }
 
+locals {
+  scripts_bucket = var.is_department_job ? var.department.glue_scripts_bucket.bucket_id :
+  scripts_key = ""
+  scripts_source = ""
+  tags = ""
+  temp_directory =""
+  environment = ""
+}
+
 resource "aws_s3_bucket_object" "job_script" {
   count = var.script_s3_object_key == null ? 1 : 0
 
