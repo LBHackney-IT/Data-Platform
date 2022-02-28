@@ -45,6 +45,11 @@ variable "qlik_server_instance_type" {
   type        = string
 }
 
+variable "qlik_ssl_certificate_domain" {
+  description = "The domain name associated with an existing AWS Certificate Manager certificate"
+  type        = string
+}
+
 variable "redshift_public_ips" {
   description = "Public IP addresses for the redshift cluster"
   type        = list(string)

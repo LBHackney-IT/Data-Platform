@@ -15,8 +15,14 @@ validate:
 destroy:
 	aws-vault exec hackney-dataplatform-development -- terraform destroy -var-file="../config/terraform/env.tfvars"
 
-new:
+workspace-new:
 	aws-vault exec hackney-dataplatform-development -- terraform workspace new ${WORKSPACE}
+
+workspace-select:
+	aws-vault exec hackney-dataplatform-development -- terraform workspace select ${WORKSPACE}
+
+workspace-list:
+	aws-vault exec hackney-dataplatform-development -- terraform workspace list
 
 format:
 	terraform fmt .
