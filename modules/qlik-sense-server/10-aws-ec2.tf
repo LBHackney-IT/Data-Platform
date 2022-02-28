@@ -55,7 +55,7 @@ resource "aws_iam_instance_profile" "qlik_sense" {
   role = aws_iam_role.qlik_sense.id
 }
 
-resource "aws_security_group" "qlik_sense_server" {
+resource "aws_security_group" "qlik_sense" {
   name                   = "${var.short_identifier_prefix}qlik-sense"
   description            = "Restricts access to Qlik Sense EC2 instances"
   vpc_id                 = var.vpc_id
