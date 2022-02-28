@@ -7,4 +7,5 @@ module "set_budget_limit_amount" {
   lambda_name                    = "set_budget_limit_amount"
   service_area                   = "housing"
   account_id                     = data.aws_caller_identity.data_platform.account_id
+  emails_to_notify               = var.emails_to_notify_with_budget_alerts
 }

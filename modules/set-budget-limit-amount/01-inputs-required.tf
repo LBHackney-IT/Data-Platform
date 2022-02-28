@@ -35,3 +35,8 @@ variable "account_id" {
   description = "Account ID associated with budget being updated"
   type        = string
 }
+
+variable "emails_to_notify" {
+  description = "Array of emails or email groups who will be notified by the budget reporting"
+  type        = list(string)
+}

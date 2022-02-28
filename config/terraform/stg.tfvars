@@ -16,3 +16,4 @@ qlik_server_instance_type = "m5.2xlarge"
 redshift_public_ips = ["18.168.126.173"]
 redshift_port = 5440
 copy_liberator_to_pre_prod_lambda_execution_role = "arn:aws:iam::365719730767:role/liberator-prod-to-pre-prod-lambda"
+emails_to_notify_with_budget_alerts = ["saml-aws-data-platform-admins@hackney.gov.uk"]
