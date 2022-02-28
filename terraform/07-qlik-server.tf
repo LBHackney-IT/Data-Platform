@@ -2,7 +2,6 @@ module "qlik_server" {
   count = local.is_live_environment ? 1 : 0
 
   source                  = "../modules/qlik-sense-server"
-  is_live_environment     = local.is_live_environment
   tags                    = module.tags.values
   vpc_id                  = data.aws_vpc.network.id
   vpc_subnet_ids          = local.subnet_ids_list
