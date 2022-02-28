@@ -36,6 +36,7 @@ resource "aws_glue_job" "job" {
   worker_type       = var.glue_job_worker_type
   role_arn          = local.glue_role_arn
   timeout           = var.glue_job_timeout
+  connections       = var.jdbc_connections
   command {
     python_version  = "3"
     script_location = "s3://${local.scripts_bucket_id}/${local.object_key}"

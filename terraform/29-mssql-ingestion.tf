@@ -2,7 +2,7 @@ module "academy_mssql_database_ingestion" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  source = "../modules/database-ingestion"
+  source = "../modules/database-ingestion-via-jdbc-connection"
 
   jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHATestRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHATestRBViews database"
@@ -15,33 +15,26 @@ module "academy_mssql_database_ingestion" {
   vpc_id                      = data.aws_vpc.network.id
 }
 
-resource "aws_s3_bucket_object" "academy_get_lbhatestrbviews_core_crcheqref_table_script" {
-  count = local.is_live_environment ? 1 : 0
-
-  bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/copy_all_lbhatestrbviews_tables_to_landing.py"
-  acl         = "private"
-  source      = "../scripts/jobs/copy_all_lbhatestrbviews_tables_to_landing.py"
-  source_hash = filemd5("../scripts/jobs/copy_all_lbhatestrbviews_tables_to_landing.py")
+resource "aws_glue_catalog_database" "landing_zone_academy" {
+  name = "${local.short_identifier_prefix}academy-landing-zone"
 }
 
-resource "aws_glue_job" "copy_lbhatestrbviews_tables_to_landing_zone" {
+module "ingest_lbhatestrbviews_to_landing_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  name              = "${local.short_identifier_prefix}Academy lbhatestrbviews Import Job - all tables"
-  number_of_workers = 2
-  worker_type       = "Standard"
-  role_arn          = aws_iam_role.glue_role.arn
-  connections       = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
-  command {
-    python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.academy_get_lbhatestrbviews_core_crcheqref_table_script[0].key}"
-  }
+  source = "../modules/aws-glue-job"
 
-  glue_version = "2.0"
-
-  default_arguments = {
+  job_name               = "${local.short_identifier_prefix}Academy lbhatestrbviews Import Job"
+  script_name            = "ingest_database_tables_via_jdbc_connection"
+  environment            = var.environment
+  pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
+  helper_module_key      = aws_s3_bucket_object.helpers.key
+  jdbc_connections       = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
+  glue_role_arn          = aws_iam_role.glue_role.arn
+  glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  job_parameters = {
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"       = "s3://${module.landing_zone.bucket_id}/academy/tables/"
     "--s3_ingestion_details_target"      = "s3://${module.landing_zone.bucket_id}/academy/tables/ingestion-details/"
@@ -50,29 +43,14 @@ resource "aws_glue_job" "copy_lbhatestrbviews_tables_to_landing_zone" {
     "--extra-jars"                       = "s3://${module.glue_scripts.bucket_id}/jars/deequ-1.0.3.jar"
     "--enable-continuous-cloudwatch-log" = "true"
   }
-}
-
-resource "aws_glue_catalog_database" "landing_zone_academy" {
-  name = "${local.short_identifier_prefix}academy-landing-zone"
-}
-
-resource "aws_glue_crawler" "landing_zone_academy" {
-  tags  = module.tags.values
-  count = local.is_live_environment ? 1 : 0
-
-  name          = "${local.short_identifier_prefix}academy-landing-zone"
-  database_name = aws_glue_catalog_database.landing_zone_academy.name
-  role          = aws_iam_role.glue_role.arn
-
-  s3_target {
-    path       = "s3://${module.landing_zone.bucket_id}/academy/tables/"
-    exclusions = local.glue_crawler_excluded_blobs
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.landing_zone_academy.name
+    s3_target_location = "s3://${module.landing_zone.bucket_id}/academy/tables/"
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+        TableLevelConfiguration = 4
+      }
+    })
   }
-
-  configuration = jsonencode({
-    Version = 1.0
-    Grouping = {
-      TableLevelConfiguration = 4
-    }
-  })
 }
