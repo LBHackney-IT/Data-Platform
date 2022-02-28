@@ -29,7 +29,7 @@ resource "aws_glue_job" "copy_lbhatestrbviews_tables_to_landing_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  name              = "${local.short_identifier_prefix}Academy Import Job - all tables"
+  name              = "${local.short_identifier_prefix}Academy lbhatestrbviews Import Job - all tables"
   number_of_workers = 2
   worker_type       = "Standard"
   role_arn          = aws_iam_role.glue_role.arn
