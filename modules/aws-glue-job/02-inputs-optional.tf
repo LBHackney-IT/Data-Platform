@@ -1,3 +1,21 @@
+variable "department" {
+  description = "The department with all its properties."
+  default     = null
+  type = object({
+    identifier            = string
+    glue_role_arn         = string
+    identifier_snake_case = string
+    tags                  = map(string)
+    environment           = string
+    glue_temp_bucket = object({
+      bucket_id = string
+    })
+    glue_scripts_bucket = object({
+      bucket_id = string
+    })
+  })
+}
+
 variable "glue_crawler_excluded_blobs" {
   description = "A list of blobs to ignore when crawling the job"
   type        = list(string)
@@ -128,12 +146,6 @@ variable "trigger_enabled" {
   default     = true
 }
 
-variable "glue_role_arn" {
-  description = "Glue Role ARN that the job will use to execute"
-  type        = string
-  default     = null
-}
-
 variable "extra_jars" {
   description = "S3 path for extra jars to be used in Glue jobs"
   type        = list(string)
@@ -144,4 +156,35 @@ variable "glue_job_timeout" {
   description = "Set the timeout for the glue job in minutes. By default this is set to 120"
   type        = number
   default     = 120
+}
+
+variable "glue_role_arn" {
+  description = "Glue Role ARN that the job will use to execute. Must be populated if department is not provided."
+  type        = string
+  default     = null
+}
+
+
+variable "glue_scripts_bucket_id" {
+  description = "Bucket ID where the glue scripts are saved. Must be populated if department is not provided."
+  type        = string
+  default     = null
+}
+
+variable "glue_temp_bucket_id" {
+  description = "Bucket ID for glue temporary storage. Must be populated if department is not provided."
+  type        = string
+  default     = null
+}
+
+variable "environment" {
+  description = "Environment e.g. Dev, Stg, Prod. Must be populated if department is not provided."
+  type        = string
+  default     = null
+}
+
+variable "tags" {
+  description = "AWS tags. Must be populated if department is not provided."
+  type        = map(string)
+  default     = null
 }
