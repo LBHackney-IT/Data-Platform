@@ -77,11 +77,11 @@ data "archive_file" "g_drive_to_s3_copier_lambda" {
 }
 
 resource "aws_s3_bucket_object" "g_drive_to_s3_copier_lambda" {
-  bucket = var.lambda_artefact_storage_bucket
-  key    = "g_drive_to_s3.zip"
-  source = data.archive_file.g_drive_to_s3_copier_lambda.output_path
-  acl    = "private"
-  etag   = data.archive_file.g_drive_to_s3_copier_lambda.output_md5
+  bucket      = var.lambda_artefact_storage_bucket
+  key         = "g_drive_to_s3.zip"
+  source      = data.archive_file.g_drive_to_s3_copier_lambda.output_path
+  acl         = "private"
+  source_hash = data.archive_file.g_drive_to_s3_copier_lambda.output_md5
   depends_on = [
     data.archive_file.g_drive_to_s3_copier_lambda
   ]

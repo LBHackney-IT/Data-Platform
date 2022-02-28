@@ -4,11 +4,11 @@ locals {
 }
 
 resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_data_cleaning_script" {
-  bucket = var.glue_scripts_bucket_id
-  key    = "scripts/${local.object_key}"
-  acl    = "private"
-  source = "../scripts/jobs/${local.object_key}"
-  etag   = filemd5("../scripts/jobs/${local.object_key}")
+  bucket      = var.glue_scripts_bucket_id
+  key         = "scripts/${local.object_key}"
+  acl         = "private"
+  source      = "../scripts/jobs/${local.object_key}"
+  source_hash = filemd5("../scripts/jobs/${local.object_key}")
 }
 
 module "housing_repairs_elec_mech_fire_cleaning" {
