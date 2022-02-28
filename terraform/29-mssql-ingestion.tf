@@ -19,21 +19,20 @@ resource "aws_s3_bucket_object" "academy_get_lbhatestrbviews_core_crcheqref_tabl
   count = local.is_live_environment ? 1 : 0
 
   bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/copy_lbhatestrbviews_core_crcheqref_to_landing.py"
+  key         = "scripts/copy_all_lbhatestrbviews_tables_to_landing.py"
   acl         = "private"
-  source      = "../scripts/jobs/copy_lbhatestrbviews_core_crcheqref_to_landing.py"
-  source_hash = filemd5("../scripts/jobs/copy_lbhatestrbviews_core_crcheqref_to_landing.py")
+  source      = "../scripts/jobs/copy_all_lbhatestrbviews_tables_to_landing.py"
+  source_hash = filemd5("../scripts/jobs/copy_all_lbhatestrbviews_tables_to_landing.py")
 }
 
-resource "aws_glue_job" "get_lbhatestrbviews_core_crcheqref_table" {
+resource "aws_glue_job" "copy_lbhatestrbviews_tables_to_landing_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  name              = "${local.short_identifier_prefix}Academy Import Job - lbhatestrbviews_core_crcheqref"
-  number_of_workers = 12
+  name              = "${local.short_identifier_prefix}Academy Import Job - all tables"
+  number_of_workers = 2
   worker_type       = "Standard"
   role_arn          = aws_iam_role.glue_role.arn
-  timeout           = 120
   connections       = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
   command {
     python_version  = "3"
@@ -43,9 +42,9 @@ resource "aws_glue_job" "get_lbhatestrbviews_core_crcheqref_table" {
   glue_version = "2.0"
 
   default_arguments = {
-    "--source_data_catalogue_table"      = "table_lbhatestrbviews_core_crcheqref"
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
-    "--s3_target"                        = "s3://${module.landing_zone.bucket_id}/academy/core-crcheqref/"
+    "--s3_ingestion_bucket_target"       = "s3://${module.landing_zone.bucket_id}/academy/tables/"
+    "--s3_ingestion_details_target"      = "s3://${module.landing_zone.bucket_id}/academy/tables/ingestion-details/"
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--extra-jars"                       = "s3://${module.glue_scripts.bucket_id}/jars/deequ-1.0.3.jar"
@@ -66,14 +65,14 @@ resource "aws_glue_crawler" "landing_zone_academy" {
   role          = aws_iam_role.glue_role.arn
 
   s3_target {
-    path       = "s3://${module.landing_zone.bucket_id}/academy/"
+    path       = "s3://${module.landing_zone.bucket_id}/academy/tables/"
     exclusions = local.glue_crawler_excluded_blobs
   }
 
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
-      TableLevelConfiguration = 3
+      TableLevelConfiguration = 4
     }
   })
 }
