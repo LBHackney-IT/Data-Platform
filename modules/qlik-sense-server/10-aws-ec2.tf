@@ -56,7 +56,7 @@ resource "aws_iam_instance_profile" "qlik_sense" {
 }
 
 resource "aws_security_group" "qlik_sense_server" {
-  name                   = "${var.short_identifier_prefix}-qlik-sense-server"
+  name                   = "${var.short_identifier_prefix}qlik-sense-server"
   description            = "Restricts access to Qlik Sense EC2 instances"
   vpc_id                 = var.vpc_id
   revoke_rules_on_delete = true
@@ -129,6 +129,6 @@ resource "aws_kms_key" "key" {
 }
 
 resource "aws_kms_alias" "key_alias" {
-  name          = lower("alias/${var.identifier_prefix}ebs-qlik-sense")
+  name          = lower("alias/${var.identifier_prefix}-ebs-qlik-sense")
   target_key_id = aws_kms_key.key.key_id
 }
