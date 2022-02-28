@@ -1,9 +1,9 @@
 resource "aws_s3_bucket_object" "housing_repairs_dlo_cleaning_script" {
-  bucket = module.glue_scripts.bucket_id
-  key    = "scripts/housing_repairs/repairs_dlo_cleaning.py"
-  acl    = "private"
-  source = "../scripts/jobs/housing_repairs/repairs_dlo_cleaning.py"
-  etag   = filemd5("../scripts/jobs/housing_repairs/repairs_dlo_cleaning.py")
+  bucket      = module.glue_scripts.bucket_id
+  key         = "scripts/housing_repairs/repairs_dlo_cleaning.py"
+  acl         = "private"
+  source      = "../scripts/jobs/housing_repairs/repairs_dlo_cleaning.py"
+  source_hash = filemd5("../scripts/jobs/housing_repairs/repairs_dlo_cleaning.py")
 }
 
 module "housing_repairs_dlo_cleaning_job" {

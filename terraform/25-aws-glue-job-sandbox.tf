@@ -27,8 +27,8 @@ module "job_template" {
   pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
   helper_module_key = aws_s3_bucket_object.helpers.key
   job_parameters = {
-    "--s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/sandbox/some-target-location-in-the-refined-zone"
-    "--source_catalog_database"                  = module.department_sandbox.raw_zone_catalog_database_name
-    "--source_catalog_table"                     = "some_table_name"
+    "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/sandbox/some-target-location-in-the-refined-zone"
+    "--source_catalog_database" = module.department_sandbox.raw_zone_catalog_database_name
+    "--source_catalog_table"    = "some_table_name"
   }
 }

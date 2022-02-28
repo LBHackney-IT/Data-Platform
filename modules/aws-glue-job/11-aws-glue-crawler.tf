@@ -1,10 +1,10 @@
 resource "aws_glue_crawler" "crawler" {
   count = var.crawler_details.database_name == null ? 0 : 1
-  tags  = var.department.tags
+  tags  = local.tags
 
   database_name = var.crawler_details.database_name
   name          = local.job_name_identifier
-  role          = var.department.glue_role_arn
+  role          = local.glue_role_arn
   table_prefix  = var.crawler_details.table_prefix
 
   s3_target {
@@ -18,7 +18,7 @@ resource "aws_glue_crawler" "crawler" {
 
 resource "aws_glue_trigger" "crawler_trigger" {
   count = var.crawler_details.database_name == null ? 0 : 1
-  tags  = var.department.tags
+  tags  = local.tags
 
   name          = "${local.job_name_identifier}-crawler-trigger"
   type          = "CONDITIONAL"
