@@ -1,23 +1,26 @@
 locals {
   is_department_job = var.department != null
   scripts_bucket_id = local.is_department_job ? var.department.glue_scripts_bucket.bucket_id : var.glue_scripts_bucket_id
-  script_key        = local.is_department_job ? "scripts/${var.department.identifier}/${var.script_name}.py" : "scripts/${var.script_name}.py"
-  script_source     = local.is_department_job && var.script_s3_object_key == null ? "../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py" : "../scripts/jobs/${var.script_name}"
   tags              = local.is_department_job ? var.department.tags : var.tags
   temp_directory    = local.is_department_job ? "s3://${var.department.glue_temp_bucket.bucket_id}/${var.department.identifier}/" : "s3://${var.glue_temp_bucket_id}/"
   environment       = local.is_department_job ? var.department.environment : var.environment
   glue_role_arn     = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
   extra_jars        = join(",", concat(var.extra_jars, ["s3://${local.scripts_bucket_id}/jars/deequ-1.0.3.jar"]))
+
+  script = var.script_s3_object_key == null ? {} : {
+    key    = local.is_department_job ? "scripts/${var.department.identifier}/${var.script_name}.py" : "scripts/${var.script_name}.py"
+    source = local.is_department_job ? "../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py" : "../scripts/jobs/${var.script_name}"
+  }
 }
 
 resource "aws_s3_bucket_object" "job_script" {
   count = var.script_s3_object_key == null ? 1 : 0
 
   bucket      = local.scripts_bucket_id
-  key         = local.script_key
+  key         = local.script.key
   acl         = "private"
-  source      = local.script_source
-  source_hash = filemd5(local.script_source)
+  source      = local.script.source
+  source_hash = filemd5(local.script.source)
 }
 
 locals {
