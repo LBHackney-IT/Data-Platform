@@ -9,7 +9,8 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from pyspark.sql import SparkSession, Row
 
-from helpers.helpers import get_glue_env_var, get_all_database_tables, update_table_ingestion_details
+from helpers.helpers import get_glue_env_var
+from helpers.database_ingestion_helpers import get_all_database_tables, update_table_ingestion_details
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
@@ -25,9 +26,7 @@ source_catalog_database = get_glue_env_var('source_data_database', '')
 s3_ingestion_bucket_target = get_glue_env_var('s3_ingestion_bucket_target', '')
 s3_ingestion_details_target = get_glue_env_var('s3_ingestion_details_target', '')
 
-glue_client = boto3.client('glue')
-
-database_tables = get_all_database_tables(source_catalog_database, glue_client)
+database_tables = get_all_database_tables(source_catalog_database)
 logger.info(f"Number of tables to copy: {len(database_tables)}")
 
 table_ingestion_details = []
@@ -58,11 +57,13 @@ for table in database_tables:
         logger.info(f"Finished writing table: {table} to s3. Time taken: {minutes_taken} mins.")
         num_copied_tables += 1
         logger.info(f'Copied: {num_copied_tables} tables')
-        update_table_ingestion_details(table_name=table, minutes_taken=minutes_taken, error='False', error_details='None')
+        table_ingestion_details = update_table_ingestion_details(table_ingestion_details=table_ingestion_details,
+                                                                    table_name=table, minutes_taken=minutes_taken, error='False', error_details='None')
 
     except Exception as e:
         logger.info(f"Failed to ingest table: {table}, error: {e}")
-        update_table_ingestion_details(table_name=table, minutes_taken=0, error='True', error_details=e)
+        table_ingestion_details = update_table_ingestion_details(table_ingestion_details=table_ingestion_details,
+                                                                    table_name=table, minutes_taken=0, error='True', error_details=e)
 
 table_ingestion_details_df = spark_session.createDataFrame([Row(**i) for i in table_ingestion_details])
 table_ingestion_details_ddf = DynamicFrame.fromDF(table_ingestion_details_df, glue_context, "table_ingestion_details")
