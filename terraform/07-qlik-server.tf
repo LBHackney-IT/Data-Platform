@@ -1,5 +1,5 @@
 module "qlik_server" {
-  count = local.is_live_environment ? 1 : 0
+  //count = local.is_live_environment ? 1 : 0
 
   source                  = "../modules/qlik-sense-server"
   tags                    = module.tags.values
