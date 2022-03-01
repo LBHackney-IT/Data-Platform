@@ -27,13 +27,13 @@ s3_ingestion_details_target = get_glue_env_var('s3_ingestion_details_target', ''
 
 glue_client = boto3.client('glue')
 
-academy_tables = get_all_database_tables(source_catalog_database, glue_client)
-logger.info(f"Number of tables to copy: {len(academy_tables)}")
+database_tables = get_all_database_tables(source_catalog_database, glue_client)
+logger.info(f"Number of tables to copy: {len(database_tables)}")
 
 table_ingestion_details = []
 num_copied_tables = 0
 
-for table in academy_tables:
+for table in database_tables:
     start = time.time()
     logger.info(f"Reading in table: {table}, preparing to write table to s3. Timer started")
     try:
