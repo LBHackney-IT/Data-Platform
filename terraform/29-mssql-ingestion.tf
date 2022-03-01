@@ -8,9 +8,7 @@ module "academy_mssql_database_ingestion" {
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHATestRBViews database"
   jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]
   database_availability_zone  = "eu-west-2a"
-  database_name               = "LBHATestRBViews"
-  database_password           = var.academy_production_database_password
-  database_username           = var.academy_production_database_username
+  database_secret_name        = "academy-lbhatestrbviews-database-credentials"
   identifier_prefix           = local.short_identifier_prefix
   vpc_id                      = data.aws_vpc.network.id
 }

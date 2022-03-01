@@ -11,7 +11,7 @@ resource "aws_glue_crawler" "ingestion_database_connection" {
 
   jdbc_target {
     connection_name = aws_glue_connection.ingestion_database.name
-    path            = "${var.database_name}/%"
+    path            = "${local.database_name}/%"
   }
 
   depends_on = [
