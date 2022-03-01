@@ -69,3 +69,8 @@ variable "academy_production_database_password" {
   description = "Password for Academy Production Insights Database"
   type        = string
 }
+
+variable "emails_to_notify_with_budget_alerts" {
+  description = "Array of emails or email groups who will be notified by the budget reporting"
+  type        = list(string)
+}
