@@ -56,7 +56,7 @@ resource "aws_iam_instance_profile" "qlik_sense" {
 }
 
 resource "aws_security_group" "qlik_sense" {
-  name                   = "${var.identifier_prefix}-qlik-sense"
+  name                   = "${var.short_identifier_prefix}qlik-sense"
   description            = "Restricts access to Qlik Sense EC2 instances"
   vpc_id                 = var.vpc_id
   revoke_rules_on_delete = true
@@ -98,7 +98,7 @@ resource "aws_security_group" "qlik_sense" {
   }
 
   tags = merge(var.tags, {
-    "Name" : "Qlik Sense"
+    "Name" : "Qlik Sense Server"
   })
 }
 
@@ -121,7 +121,7 @@ data "aws_iam_policy_document" "key_policy" {
 resource "aws_kms_key" "key" {
   tags = var.tags
 
-  description             = "${var.identifier_prefix} - Qlik Sense EBS Key"
+  description             = "Qlik Sense EBS Key"
   deletion_window_in_days = 10
   enable_key_rotation     = true
 
