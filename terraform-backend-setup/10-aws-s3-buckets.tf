@@ -10,7 +10,10 @@ resource "aws_s3_bucket" "terraform_state_storage" {
   tags = module.tags.values
 
   bucket = lower("${var.project}-terraform-state")
+}
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_storage" {
+  bucket = aws_s3_bucket.terraform_state_storage.id
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {

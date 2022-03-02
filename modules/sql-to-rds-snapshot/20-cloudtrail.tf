@@ -73,9 +73,13 @@ resource "aws_s3_bucket" "cloudtrail" {
   force_destroy = true
 
   policy = data.aws_iam_policy_document.cloudtrail_bucket_policy.json
+}
 
-  lifecycle_rule {
-    enabled = true
+resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail" {
+  bucket = aws_s3_bucket.cloudtrail.id
+  rule {
+    id = "Keep previous version 30 days"
+    status = "Enabled"
     expiration {
       days = 30
     }
