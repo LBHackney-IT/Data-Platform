@@ -41,7 +41,7 @@ for table in database_tables:
         source_ddf = glue_context.create_dynamic_frame.from_catalog(
             database=source_catalog_database,
             table_name=table,
-            transformation_ctx="parquetData",
+            transformation_ctx=f"{table}_source_data"
         )
 
         target_ddf = glue_context.write_dynamic_frame.from_options(
@@ -51,7 +51,7 @@ for table in database_tables:
             connection_options={
                 "path": s3_ingestion_bucket_target + "/" + table + "/"
             },
-            transformation_ctx="parquetData",
+            transformation_ctx=f"{table}_output_data"
         )
 
         end = time.time()
