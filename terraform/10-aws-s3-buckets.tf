@@ -96,7 +96,9 @@ resource "aws_s3_bucket" "ssl_connection_resources" {
 }
 
 resource "aws_s3_bucket_acl" "ssl_connection_resources" {
-  bucket = aws_s3_bucket.ssl_connection_resources.id
+  count = local.is_live_environment ? 1 : 0
+
+  bucket = aws_s3_bucket.ssl_connection_resources[0].id
   acl    = "public-read"
 }
 
