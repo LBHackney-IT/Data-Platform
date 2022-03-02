@@ -9,7 +9,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from pyspark.sql import SparkSession, Row
 
-from helpers.helpers import get_glue_env_var
+from helpers.helpers import get_glue_env_var, add_import_time_columns, PARTITION_KEYS
 from helpers.database_ingestion_helpers import get_all_database_tables, update_table_ingestion_details
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
@@ -44,12 +44,19 @@ for table in database_tables:
             transformation_ctx=f"{table}_source_data"
         )
 
+        data_frame = source_ddf.toDF()
+        data_frame = data_frame.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
+        data_frame_with_import_columns = add_import_time_columns(data_frame)
+
+        dynamic_frame_to_write = DynamicFrame.fromDF(data_frame_with_import_columns, glue_context, f"{table}_output_data")
+
         target_ddf = glue_context.write_dynamic_frame.from_options(
-            frame=source_ddf,
+            frame=dynamic_frame_to_write,
             connection_type="s3",
             format="parquet",
             connection_options={
-                "path": s3_ingestion_bucket_target + "/" + table + "/"
+                "path": s3_ingestion_bucket_target + "/" + table + "/",
+                "partitionKeys": PARTITION_KEYS
             },
             transformation_ctx=f"{table}_output_data"
         )
@@ -75,7 +82,8 @@ target_ddf = glue_context.write_dynamic_frame.from_options(
     connection_type="s3",
     format="parquet",
     connection_options={
-        "path": s3_ingestion_details_target
+        "path": s3_ingestion_details_target,
+        "partitionKeys": PARTITION_KEYS
     },
     transformation_ctx="parquetData",
 )
