@@ -77,72 +77,71 @@ resource "aws_iam_role_policy_attachment" "attach_full_glue_access_to_glue_role"
   policy_arn = aws_iam_policy.full_glue_access.arn
 }
 
+data "aws_iam_policy_document" "access_to_s3_iam_and_secrets" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:ListAllMyBuckets",
+      "iam:ListRolePolicies",
+      "iam:GetRole",
+      "iam:GetRolePolicy",
+    ]
+    resources = [
+      "*"
+    ]
+  }
+  statement {
+    effect  = "Allow"
+    actions = ["s3:*"]
+    resources = [
+      "${module.landing_zone.bucket_arn}/*",
+      "${module.raw_zone.bucket_arn}/*",
+      "${module.refined_zone.bucket_arn}/*",
+      "${module.trusted_zone.bucket_arn}/*",
+      "${module.glue_scripts.bucket_arn}/*",
+      "${module.glue_temp_storage.bucket_arn}/*",
+      "${module.noiseworks_data_storage.bucket_arn}/*"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:GenerateDataKey",
+    ]
+    resources = [
+      module.glue_scripts.kms_key_arn,
+      module.glue_temp_storage.kms_key_arn,
+      module.athena_storage.kms_key_arn,
+      module.landing_zone.kms_key_arn,
+      module.raw_zone.kms_key_arn,
+      module.refined_zone.kms_key_arn,
+      module.trusted_zone.kms_key_arn,
+      module.noiseworks_data_storage.kms_key_arn,
+      aws_kms_key.secrets_manager_key.arn
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "secretsmanager:GetSecretValue"
+    ]
+    resources = [
+      aws_secretsmanager_secret.sheets_credentials_housing.arn,
+      aws_secretsmanager_secret.tascomi_api_public_key.id,
+      aws_secretsmanager_secret.tascomi_api_private_key.id
+    ]
+  }
+}
+
 resource "aws_iam_policy" "glue_access_to_s3_iam_and_secrets" {
   tags = module.tags.values
 
-  name = "${local.identifier_prefix}-glue-access-policy"
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        Effect : "Allow",
-        Action : [
-          "s3:GetBucketLocation",
-          "s3:ListBucket",
-          "s3:ListAllMyBuckets",
-          "iam:ListRolePolicies",
-          "iam:GetRole",
-          "iam:GetRolePolicy",
-        ],
-        Resource : [
-          "*"
-        ]
-      },
-      {
-        Effect : "Allow",
-        Action : "s3:*",
-        Resource : [
-          "${module.landing_zone.bucket_arn}/*",
-          "${module.raw_zone.bucket_arn}/*",
-          "${module.refined_zone.bucket_arn}/*",
-          "${module.trusted_zone.bucket_arn}/*",
-          "${module.glue_scripts.bucket_arn}/*",
-          "${module.glue_temp_storage.bucket_arn}/*",
-          "${module.noiseworks_data_storage.bucket_arn}/*"
-        ]
-      },
-      {
-        Effect : "Allow",
-        Action : [
-          "kms:Encrypt",
-          "kms:Decrypt",
-          "kms:GenerateDataKey",
-        ],
-        Resource : [
-          module.glue_scripts.kms_key_arn,
-          module.glue_temp_storage.kms_key_arn,
-          module.athena_storage.kms_key_arn,
-          module.landing_zone.kms_key_arn,
-          module.raw_zone.kms_key_arn,
-          module.refined_zone.kms_key_arn,
-          module.trusted_zone.kms_key_arn,
-          module.noiseworks_data_storage.kms_key_arn,
-          aws_kms_key.secrets_manager_key.arn
-        ]
-      },
-      {
-        Effect : "Allow",
-        Action : [
-          "secretsmanager:GetSecretValue"
-        ],
-        Resource : [
-          aws_secretsmanager_secret.sheets_credentials_housing.arn,
-          aws_secretsmanager_secret.tascomi_api_public_key.id,
-          aws_secretsmanager_secret.tascomi_api_private_key.id
-        ]
-      }
-    ]
-  })
+  name   = "${local.identifier_prefix}-glue-access-policy"
+  policy = data.aws_iam_policy_document.access_to_s3_iam_and_secrets.json
 }
 
 resource "aws_iam_role_policy_attachment" "attach_glue_access_to_s3_iam_and_secrets_policy_to_glue_role" {
