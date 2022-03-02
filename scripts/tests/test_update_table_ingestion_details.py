@@ -20,3 +20,25 @@ class TestDatabaseIngestionHelpers:
     update_table_ingestion_details(table, table_name, minutes_taken, error, error_details)
 
     assert table == expected_response
+
+  def test_update_table_ingestion_details_adds_multiple_table_ingestion_details(self):
+    table = []
+
+    expected_response = [
+      {
+        "table_name": "testTable",
+        "minutes_taken": 3,
+        "error": "False",
+        "error_details": "None"
+      },
+      {
+        "table_name": "testTable2",
+        "minutes_taken": 0,
+        "error": "True",
+        "error_details": "Cannot execute query 'SELECT * FROM db.table'"
+      },
+    ]
+    update_table_ingestion_details(table, table_name="testTable", minutes_taken=3, error="False", error_details="None")
+    update_table_ingestion_details(table, table_name="testTable2", minutes_taken=0, error="True", error_details="Cannot execute query 'SELECT * FROM db.table'")
+
+    assert table == expected_response
