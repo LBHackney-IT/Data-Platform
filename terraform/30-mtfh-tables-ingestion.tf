@@ -36,8 +36,9 @@ module "ingest_mtfh_tables" {
   }
 
   crawler_details = {
-    database_name      = aws_glue_catalog_database.mtfh_landing_zone.name
+    database_name      = aws_glue_catalog_database.landing_zone_catalog_database.name
     s3_target_location = "s3://${module.landing_zone.bucket_id}/mtfh/"
+    table_prefix       = "mtfh_"
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
@@ -45,8 +46,4 @@ module "ingest_mtfh_tables" {
       }
     })
   }
-}
-
-resource "aws_glue_catalog_database" "mtfh_landing_zone" {
-  name = "${local.short_identifier_prefix}mtfh-landing-zone"
 }
