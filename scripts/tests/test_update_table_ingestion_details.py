@@ -16,6 +16,7 @@ class TestDatabaseIngestionHelpers:
         "error_details": "None"
       }
     ]
-    response = update_table_ingestion_details(table, table_name, minutes_taken, error, error_details)
 
-    assert response == expected_response
+    update_table_ingestion_details(table, table_name, minutes_taken, error, error_details)
+
+    assert table == expected_response
