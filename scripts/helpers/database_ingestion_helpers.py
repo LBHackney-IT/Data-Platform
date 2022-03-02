@@ -1,7 +1,6 @@
 import boto3
 
-def get_all_database_tables(source_catalog_database):
-    glue_client = boto3.client('glue')
+def get_all_database_tables(glue_client, source_catalog_database):
     all_tables = []
 
     response = glue_client.get_tables(
