@@ -4,6 +4,7 @@ module "academy_mssql_database_ingestion" {
 
   source = "../modules/database-ingestion-via-jdbc-connection"
 
+  jdbc_connection_name        = "Revenue Benefits and Council Tax"
   jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHATestRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHATestRBViews database"
   jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]

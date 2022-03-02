@@ -3,6 +3,10 @@ variable "jdbc_connection_url" {
   type        = string
 }
 
+variable "jdbc_connection_name" {
+  description = "Name of the dataset that will be ingested."
+}
+
 variable "jdbc_connection_description" {
   description = "The type of connection and database that is used for data ingestion"
   type        = string
@@ -37,3 +41,4 @@ variable "vpc_id" {
   description = "Id of Data Platform VPC"
   type        = string
 }
+
