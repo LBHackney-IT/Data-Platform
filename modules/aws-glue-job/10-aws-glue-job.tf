@@ -9,7 +9,7 @@ locals {
 
   script = var.script_s3_object_key == null ? {
     key    = local.is_department_job ? "scripts/${var.department.identifier}/${var.script_name}.py" : "scripts/${var.script_name}.py"
-    source = local.is_department_job ? "../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py" : "../scripts/jobs/${var.script_name}"
+    source = local.is_department_job ? "../scripts/jobs/${var.department.identifier_snake_case}/${var.script_name}.py" : "../scripts/jobs/${var.script_name}.py"
   } : {}
 }
 
