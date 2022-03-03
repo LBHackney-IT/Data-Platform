@@ -23,11 +23,6 @@ output "identifier_snake_case" {
   value       = replace(local.department_identifier, "-", "_")
 }
 
-output "landing_zone_catalog_database_name" {
-  description = "Landing Zone Catalog Database Name"
-  value       = aws_glue_catalog_database.landing_zone_catalog_database.name
-}
-
 output "raw_zone_catalog_database_name" {
   description = "Raw Zone Catalog Database Name"
   value       = aws_glue_catalog_database.raw_zone_catalog_database.name
