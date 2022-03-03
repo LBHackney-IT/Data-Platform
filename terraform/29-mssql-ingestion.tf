@@ -35,8 +35,8 @@ module "ingest_lbhatestrbviews_to_landing_zone" {
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   job_parameters = {
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
-    "--s3_ingestion_bucket_target"       = "s3://${module.landing_zone.bucket_id}/academy/tables/"
-    "--s3_ingestion_details_target"      = "s3://${module.landing_zone.bucket_id}/academy/tables/ingestion-details/"
+    "--s3_ingestion_bucket_target"       = "s3://${module.landing_zone.bucket_id}/academy/"
+    "--s3_ingestion_details_target"      = "s3://${module.landing_zone.bucket_id}/academy/ingestion-details/"
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--extra-jars"                       = "s3://${module.glue_scripts.bucket_id}/jars/deequ-1.0.3.jar"
@@ -44,11 +44,11 @@ module "ingest_lbhatestrbviews_to_landing_zone" {
   }
   crawler_details = {
     database_name      = aws_glue_catalog_database.landing_zone_academy.name
-    s3_target_location = "s3://${module.landing_zone.bucket_id}/academy/tables/"
+    s3_target_location = "s3://${module.landing_zone.bucket_id}/academy/"
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
-        TableLevelConfiguration = 4
+        TableLevelConfiguration = 3
       }
     })
   }
