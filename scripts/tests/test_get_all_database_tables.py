@@ -78,4 +78,3 @@ class GetDatabaseTablesTest(TestCase):
     self.stubber.activate()
     return get_all_database_tables(self.glue, *args)
 
-#     assert table == expected_response
