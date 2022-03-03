@@ -3,6 +3,10 @@ variable "jdbc_connection_url" {
   type        = string
 }
 
+variable "jdbc_connection_name" {
+  description = "Name of the dataset that will be ingested."
+}
+
 variable "jdbc_connection_description" {
   description = "The type of connection and database that is used for data ingestion"
   type        = string
@@ -13,19 +17,9 @@ variable "database_availability_zone" {
   type        = string
 }
 
-variable "database_name" {
-  description = "Name of database to establish the connection to"
-  type        = string
-}
-
-variable "database_username" {
-  description = "Database login username"
-  type        = string
-}
-
-variable "database_password" {
-  description = "Database login password"
-  type        = string
+variable "database_secret_name" {
+  description = "Name of secret for database credentials"
+  type = string
 }
 
 variable "tags" {
@@ -47,3 +41,4 @@ variable "vpc_id" {
   description = "Id of Data Platform VPC"
   type        = string
 }
+

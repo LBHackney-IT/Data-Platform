@@ -188,3 +188,9 @@ variable "tags" {
   type        = map(string)
   default     = null
 }
+
+variable "jdbc_connections" {
+  description = "A list of JDBC connections to use in Glue job"
+  type = list(string)
+  default = null
+}

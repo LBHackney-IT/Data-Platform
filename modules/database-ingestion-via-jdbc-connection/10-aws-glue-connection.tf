@@ -1,12 +1,27 @@
+data "aws_secretsmanager_secret" "database_credentials" {
+  name = var.database_secret_name
+}
+
+data "aws_secretsmanager_secret_version" "database_credentials" {
+  secret_id = data.aws_secretsmanager_secret.database_credentials.id
+}
+
+locals {
+  secret_string = jsondecode(data.aws_secretsmanager_secret_version.database_credentials.secret_string)
+  database_username = local.secret_string["username"]
+  database_password = local.secret_string["password"]
+  database_name = local.secret_string["database_name"]
+}
+
 resource "aws_glue_connection" "ingestion_database" {
   tags = var.tags
 
-  name        = "${var.identifier_prefix}${local.database_name_lowercase}-connection"
+  name        = "${var.identifier_prefix}${local.jdbc_connection_name_lowercase}"
   description = var.jdbc_connection_description
   connection_properties = {
     JDBC_CONNECTION_URL = var.jdbc_connection_url
-    PASSWORD            = var.database_password
-    USERNAME            = var.database_username
+    PASSWORD            = local.database_password
+    USERNAME            = local.database_username
   }
 
   physical_connection_requirements {
@@ -17,9 +32,11 @@ resource "aws_glue_connection" "ingestion_database" {
 }
 
 resource "aws_security_group" "ingestion_database_connection" {
-  tags = var.tags
+  tags = merge(var.tags, {
+    "Name" : "${var.jdbc_connection_name} Glue Connection"
+  })
 
-  name   = "${var.identifier_prefix}${local.database_name_lowercase}-connection-sg"
+  name   = "${var.identifier_prefix}${local.jdbc_connection_name_lowercase}-glue-connection"
   vpc_id = var.vpc_id
 }
 
