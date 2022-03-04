@@ -30,8 +30,6 @@ on:
         required: true
       AWS_API_ACCOUNT_PROD:
         required: true
-      AWS_HOUSING_PROD_ACCOUNT_ID:
-        required: true
       AWS_MOSAIC_PROD_ACCOUNT_ID:
         required: true
       AWS_DATA_PLATFORM_ACCOUNT_ID:
@@ -43,14 +41,18 @@ on:
 
 jobs:
   tests:
-    name: Test Python Jobs
+    name: Test Python Jobs & Lambda Functions
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Run `make test`
+      - name: Test Python Jobs
         run: |
           cd scripts
+          make test
+      - name: Test Lambda Functions
+        run: |
+          cd lambdas
           make test
   validate:
     name: Validate Terraform

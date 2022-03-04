@@ -29,3 +29,12 @@ data "aws_caller_identity" "data_platform" {}
 data "aws_caller_identity" "api_account" {
   provider = aws.aws_api_account
 }
+
+locals {
+  glue_crawler_excluded_blobs = [
+    "*.json",
+    "*.txt",
+    "*.zip",
+    "*.xlsx"
+  ]
+}

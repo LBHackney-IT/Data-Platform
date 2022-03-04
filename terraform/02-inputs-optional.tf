@@ -71,3 +71,15 @@ variable "email_to_notify" {
   type        = string
   default     = null
 }
+
+variable "copy_liberator_to_pre_prod_lambda_execution_role" {
+  description = ""
+  type        = string
+  default     = null
+}
+
+variable "pre_production_liberator_data_storage_kms_key_arn" {
+  description = "KMS Key ARN for the liberator data storage bucket in pre production"
+  type        = string
+  default     = null
+}

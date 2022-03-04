@@ -9,11 +9,11 @@ data "archive_file" "glue_job_failure_notification_lambda" {
 }
 
 resource "aws_s3_bucket_object" "glue_job_failure_notification_lambda" {
-  bucket = module.lambda_artefact_storage.bucket_id
-  key    = "glue-failure-notifications.zip"
-  source = data.archive_file.glue_job_failure_notification_lambda.output_path
-  acl    = "private"
-  etag   = data.archive_file.glue_job_failure_notification_lambda.output_md5
+  bucket      = module.lambda_artefact_storage.bucket_id
+  key         = "glue-failure-notifications.zip"
+  source      = data.archive_file.glue_job_failure_notification_lambda.output_path
+  acl         = "private"
+  source_hash = data.archive_file.glue_job_failure_notification_lambda.output_md5
 }
 
 resource "aws_lambda_function" "glue_failure_notification_lambda" {

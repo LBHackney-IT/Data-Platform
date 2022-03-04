@@ -18,11 +18,11 @@ destroy:
 workspace-new:
 	aws-vault exec hackney-dataplatform-development -- terraform workspace new ${WORKSPACE}
 
-workspace-list:
-	aws-vault exec hackney-dataplatform-development -- terraform workspace list
-
 workspace-select:
 	aws-vault exec hackney-dataplatform-development -- terraform workspace select ${WORKSPACE}
+
+workspace-list:
+	aws-vault exec hackney-dataplatform-development -- terraform workspace list
 
 format:
 	terraform fmt .

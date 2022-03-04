@@ -127,6 +127,6 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = [aws_security_group.bastion.id]
 
   lifecycle {
-    ignore_changes = [subnet_id]
+    ignore_changes = [ami, subnet_id]
   }
 }
