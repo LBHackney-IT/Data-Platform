@@ -16,7 +16,7 @@ locals {
 resource "aws_glue_connection" "ingestion_database" {
   tags = var.tags
 
-  name        = "${var.identifier_prefix}${local.jdbc_connection_name_lowercase}"
+  name        = "${var.identifier_prefix}${var.name}"
   description = var.jdbc_connection_description
   connection_properties = {
     JDBC_CONNECTION_URL = var.jdbc_connection_url
@@ -33,10 +33,10 @@ resource "aws_glue_connection" "ingestion_database" {
 
 resource "aws_security_group" "ingestion_database_connection" {
   tags = merge(var.tags, {
-    "Name" : "${var.jdbc_connection_name} Glue Connection"
+    "Name" : "${var.name} Glue Connection"
   })
 
-  name   = "${var.identifier_prefix}${local.jdbc_connection_name_lowercase}-glue-connection"
+  name   = "${var.identifier_prefix}${var.name}-glue-connection"
   vpc_id = var.vpc_id
 }
 

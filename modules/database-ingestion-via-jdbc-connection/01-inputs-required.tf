@@ -3,7 +3,7 @@ variable "jdbc_connection_url" {
   type        = string
 }
 
-variable "jdbc_connection_name" {
+variable "name" {
   description = "Name of the dataset that will be ingested."
 }
 

@@ -4,7 +4,7 @@ module "parking_geolive_database_ingestion" {
 
     source = "../modules/database-ingestion-via-jdbc-connection"
 
-    jdbc_connection_name        = "Geolive Parking schema"
+    name                        = "geolive-parking-schema"
     jdbc_connection_url         = "jdbc:postgresql://10.120.8.145:5432/geolive"
     jdbc_connection_description = "JDBC connection to Geolive Potgis database, to access the parking schema only"
     jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]
