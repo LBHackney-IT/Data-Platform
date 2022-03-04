@@ -18,13 +18,13 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
   name = "${local.short_identifier_prefix}academy-landing-zone"
 }
 
-module "ingest_lbhatestrbviews_to_landing_zone" {
+module "ingest_rev_bev_council_tax_to_landing_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Academy lbhatestrbviews Import Job"
+  job_name               = "${local.short_identifier_prefix}Revenue & Benefits and Council Tax Database Ingestion"
   script_name            = "ingest_database_tables_via_jdbc_connection"
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
