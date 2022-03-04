@@ -19,12 +19,17 @@ resource "aws_glue_crawler" "ingestion_database_connection" {
   ]
 }
 
-resource "aws_glue_trigger" "crawler_trigger" {
+resource "aws_glue_workflow" "database_ingestion" {
+  name = "${var.identifier_prefix}${var.name}"
+}
+
+resource "aws_glue_trigger" "ingestion_crawler" {
   tags  = var.tags
 
-  name          = "${var.name}-crawler-trigger"
+  name          = "${var.identifier_prefix}${var.name}"
   type          = "SCHEDULED"
   schedule      = "cron(0 0 6 ? * MON,TUE,WED,THU,FRI *)"
+  workflow_name = aws_glue_workflow.database_ingestion.name
 
   actions {
     crawler_name = aws_glue_crawler.ingestion_database_connection.name

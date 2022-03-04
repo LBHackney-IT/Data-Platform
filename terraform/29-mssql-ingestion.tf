@@ -33,6 +33,8 @@ module "ingest_lbhatestrbviews_to_landing_zone" {
   glue_role_arn          = aws_iam_role.glue_role.arn
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
+  triggered_by_crawler   = module.academy_mssql_database_ingestion[0].crawler_name
   job_parameters = {
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"       = "s3://${module.landing_zone.bucket_id}/academy/"
