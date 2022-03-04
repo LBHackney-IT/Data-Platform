@@ -18,3 +18,15 @@ resource "aws_glue_crawler" "ingestion_database_connection" {
     aws_glue_connection.ingestion_database
   ]
 }
+
+resource "aws_glue_trigger" "crawler_trigger" {
+  tags  = var.tags
+
+  name          = "${var.name}-crawler-trigger"
+  type          = "SCHEDULED"
+  schedule      = "cron(0 0 6 ? * MON,TUE,WED,THU,FRI *)"
+
+  actions {
+    crawler_name = aws_glue_crawler.ingestion_database_connection.name
+  }
+}
