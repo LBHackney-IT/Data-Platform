@@ -21,7 +21,9 @@ module "parking_geolive_ingestion_job" {
   department  = module.parking
   job_name    = "${local.short_identifier_prefix}geolive parking schema ingestion"
   script_name = "ingest_database_tables_via_jdbc_connection"
-  connections = [module.parking_geolive_database_ingestion[0].jdbc_connection_name]
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key = aws_s3_bucket_object.pydeequ.key
+  jdbc_connections = [module.parking_geolive_database_ingestion[0].jdbc_connection_name]
   triggered_by_crawler = module.parking_geolive_database_ingestion[0].crawler_name
   workflow_name = module.parking_geolive_database_ingestion[0].workflow_name
   job_parameters = {
