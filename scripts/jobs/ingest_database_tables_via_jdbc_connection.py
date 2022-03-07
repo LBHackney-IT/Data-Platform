@@ -83,6 +83,7 @@ target_ddf = glue_context.write_dynamic_frame.from_options(
     format="parquet",
     connection_options={
         "path": s3_ingestion_details_target,
+        "partitionKeys": PARTITION_KEYS
     },
     transformation_ctx=f"{source_catalog_database}_ingestion_details",
 )
