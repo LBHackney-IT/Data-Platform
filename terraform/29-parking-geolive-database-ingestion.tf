@@ -18,7 +18,7 @@ module "parking_geolive_database_ingestion" {
 module "parking_geolive_ingestion_job" {
   source = "../modules/aws-glue-job"
 
-  department  = module.parking
+  department  = module.department_parking
   job_name    = "${local.short_identifier_prefix}geolive parking schema ingestion"
   script_name = "ingest_database_tables_via_jdbc_connection"
   helper_module_key = aws_s3_bucket_object.helpers.key
