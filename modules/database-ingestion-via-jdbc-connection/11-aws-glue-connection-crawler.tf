@@ -2,6 +2,10 @@ resource "aws_glue_catalog_database" "ingestion_database" {
   name = "${var.identifier_prefix}${var.name}"
 }
 
+locals {
+  jdbc_target_path = var.schema_name != null ? "${local.database_name}/${var.schema_name}/%" : "${local.database_name}/%"
+}
+
 resource "aws_glue_crawler" "ingestion_database_connection" {
   tags = var.tags
 
@@ -11,7 +15,7 @@ resource "aws_glue_crawler" "ingestion_database_connection" {
 
   jdbc_target {
     connection_name = aws_glue_connection.ingestion_database.name
-    path            = "${local.database_name}/%"
+    path            = local.jdbc_target_path
   }
 
   depends_on = [
