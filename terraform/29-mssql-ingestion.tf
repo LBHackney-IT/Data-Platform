@@ -4,7 +4,7 @@ module "academy_mssql_database_ingestion" {
 
   source = "../modules/database-ingestion-via-jdbc-connection"
 
-  jdbc_connection_name        = "Revenue Benefits and Council Tax"
+  name                        = "revenue-benefits-and-council-tax"
   jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHATestRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHATestRBViews database"
   jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]
@@ -18,13 +18,13 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
   name = "${local.short_identifier_prefix}academy-landing-zone"
 }
 
-module "ingest_lbhatestrbviews_to_landing_zone" {
+module "ingest_rev_bev_council_tax_to_landing_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Academy lbhatestrbviews Import Job"
+  job_name               = "${local.short_identifier_prefix}Revenue & Benefits and Council Tax Database Ingestion"
   script_name            = "ingest_database_tables_via_jdbc_connection"
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
@@ -33,6 +33,8 @@ module "ingest_lbhatestrbviews_to_landing_zone" {
   glue_role_arn          = aws_iam_role.glue_role.arn
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
+  triggered_by_crawler   = module.academy_mssql_database_ingestion[0].crawler_name
   job_parameters = {
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"       = "s3://${module.landing_zone.bucket_id}/academy/"

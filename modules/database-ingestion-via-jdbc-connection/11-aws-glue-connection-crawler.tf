@@ -1,20 +1,41 @@
 resource "aws_glue_catalog_database" "ingestion_database" {
-  name = "${var.identifier_prefix}${local.jdbc_connection_name_lowercase}"
+  name = "${var.identifier_prefix}${var.name}"
+}
+
+locals {
+  jdbc_target_path = var.schema_name != null ? "${local.database_name}/${var.schema_name}/%" : "${local.database_name}/%"
 }
 
 resource "aws_glue_crawler" "ingestion_database_connection" {
   tags = var.tags
 
   database_name = aws_glue_catalog_database.ingestion_database.name
-  name          = "${var.identifier_prefix}${local.jdbc_connection_name_lowercase}"
+  name          = "${var.identifier_prefix}${var.name}"
   role          = aws_iam_role.jdbc_connection_crawler_role.arn
 
   jdbc_target {
     connection_name = aws_glue_connection.ingestion_database.name
-    path            = "${local.database_name}/%"
+    path            = local.jdbc_target_path
   }
 
   depends_on = [
     aws_glue_connection.ingestion_database
   ]
+}
+
+resource "aws_glue_workflow" "database_ingestion" {
+  name = "${var.identifier_prefix}${var.name}"
+}
+
+resource "aws_glue_trigger" "ingestion_crawler" {
+  tags  = var.tags
+
+  name          = "${var.identifier_prefix}${var.name}"
+  type          = "SCHEDULED"
+  schedule      = "cron(0 0 6 ? * MON,TUE,WED,THU,FRI *)"
+  workflow_name = aws_glue_workflow.database_ingestion.name
+
+  actions {
+    crawler_name = aws_glue_crawler.ingestion_database_connection.name
+  }
 }
