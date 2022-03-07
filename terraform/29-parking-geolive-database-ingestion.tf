@@ -16,6 +16,7 @@ module "parking_geolive_database_ingestion" {
 }
 
 module "parking_geolive_ingestion_job" {
+  count  = local.is_live_environment ? 1 : 0
   source = "../modules/aws-glue-job"
 
   department           = module.department_parking
