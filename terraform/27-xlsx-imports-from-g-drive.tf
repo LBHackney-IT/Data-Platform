@@ -135,7 +135,7 @@ module "env_enforcement_fix_my_street_noise" {
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
   google_sheets_document_id      = "1kUizzzxaD6T1qX2hMNIrxuowdWUCxvbP"
-  glue_job_name                  = Fix My Street Noise"
+  glue_job_name                  = "Fix My Street Noise"
   output_folder_name             = "fix-my-street-noise"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "noise_fms_01012021_to_date.xlsx"
