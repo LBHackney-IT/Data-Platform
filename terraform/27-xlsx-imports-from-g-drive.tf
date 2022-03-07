@@ -73,7 +73,7 @@ module "repairs_fire_alarm_aov" {
   }
 }
     
-module "env_enforcement_estate_cleaning {
+module "env_enforcement_estate_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-xlsx-file-from-g-drive"
@@ -116,7 +116,7 @@ module "env_enforcement_estate_cleaning {
   }
 }
 
-module "env_enforcement_fix_my_street_noise {
+module "env_enforcement_fix_my_street_noise" {
   count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-xlsx-file-from-g-drive"
@@ -147,7 +147,7 @@ module "env_enforcement_fix_my_street_noise {
   }
 }
 
-module "env_enforcement_cc_tv {
+module "env_enforcement_cc_tv" {
   count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-xlsx-file-from-g-drive"
