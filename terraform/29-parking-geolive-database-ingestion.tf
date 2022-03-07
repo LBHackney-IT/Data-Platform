@@ -14,3 +14,29 @@ module "parking_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   vpc_id                      = data.aws_vpc.network.id
 }
+
+module "parking_geolive_ingestion_job" {
+  source = "../modules/aws-glue-job"
+
+  department  = module.parking
+  job_name    = "${local.short_identifier_prefix}geolive parking schema ingestion"
+  script_name = "ingest_database_tables_via_jdbc_connection"
+  connections = [module.parking_geolive_database_ingestion[0].jdbc_connection_name]
+  triggered_by_crawler = module.parking_geolive_database_ingestion[0].crawler_name
+  workflow_name = module.parking_geolive_database_ingestion[0].workflow_name
+  job_parameters = {
+    "--s3_ingestion_bucket_target" = "s3://${module.raw_zone.bucket_id}/parking/geolive/"
+    "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/parking/geolive/ingestion-details/"
+    "--source_data_database" = module.parking_geolive_database_ingestion[0].ingestion_database_name
+  }
+  crawler_details = {
+    database_name      = module.parking_geolive_database_ingestion[0].ingestion_database_name
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/parking/geolive/"
+    configuration = jsonencode({
+        Version = 1.0
+        Grouping = {
+            TableLevelConfiguration = 4
+        }
+    })
+  }
+}
