@@ -166,7 +166,7 @@ module "env_enforcement_cc_tv" {
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
   google_sheets_document_id      = "13uiSwGDj-EPTVTUJtJgqbz2UabyRuFmw"
-  glue_job_name                  = CCTV"
+  glue_job_name                  = "CCTV"
   output_folder_name             = "cc-tv"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "cctv.xlsx"
