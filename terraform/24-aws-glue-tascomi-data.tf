@@ -253,11 +253,12 @@ module "tascomi_applications_to_trusted" {
     "--source_catalog_table"    = "increment_applications"
     "--source_catalog_table2"   = "increment_application_types"
     "--source_catalog_table3"   = "increment_ps_development_codes"
+  }
     
   crawler_details = {
     database_name = module.department_planning.trusted_zone_catalog_database_name
       s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/applications_reporting"
 }
     
-  }
+  
   }
