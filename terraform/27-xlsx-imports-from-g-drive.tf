@@ -72,7 +72,7 @@ module "repairs_fire_alarm_aov" {
     }
   }
 }
-    
+
 module "env_enforcement_estate_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
