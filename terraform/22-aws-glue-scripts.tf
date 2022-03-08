@@ -102,3 +102,10 @@ resource "aws_s3_bucket_object" "copy_liberator_landing_to_raw" {
   source_hash = filemd5("../scripts/jobs/copy_liberator_landing_to_raw.py")
 }
 
+resource "aws_s3_bucket_object" "ingest_database_tables_via_jdbc_connection" {
+  bucket      = module.glue_scripts.bucket_id
+  key         = "scripts/ingest_database_tables_via_jdbc_connection.py"
+  acl         = "private"
+  source      = "../scripts/jobs/ingest_database_tables_via_jdbc_connection.py"
+  source_hash = filemd5("../scripts/jobs/ingest_database_tables_via_jdbc_connection.py")
+}
