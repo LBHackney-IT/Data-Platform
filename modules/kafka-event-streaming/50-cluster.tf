@@ -3,14 +3,9 @@ resource "aws_msk_cluster" "kafka_cluster" {
   kafka_version          = "2.8.1"
   number_of_broker_nodes = 3
 
-  configuration_info {
-    arn      = aws_msk_configuration.event_streaming.arn
-    revision = aws_msk_configuration.event_streaming.latest_revision
-  }
-
   broker_node_group_info {
     instance_type   = "kafka.t3.small"
-    ebs_volume_size = 1000
+    ebs_volume_size = 200
     client_subnets  = var.subnet_ids
     security_groups = [aws_security_group.kafka.id]
   }
