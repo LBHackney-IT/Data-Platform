@@ -53,8 +53,6 @@ module "load_covid_data_to_refined_marta" {
   }
 }
 
-}
-   
 module "job_template_tim" {
   source = "../modules/aws-glue-job"
 
