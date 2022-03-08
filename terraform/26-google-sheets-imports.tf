@@ -481,7 +481,7 @@ module "sandbox_covid_locations_adam" {
   dataset_name                    = "covid_locations_adam"
   enable_glue_trigger             = false
 }
-    
+
 module "sandbox_estates_round_crew_data" {
   count = local.is_live_environment ? 1 : 0
 
@@ -502,9 +502,9 @@ module "sandbox_estates_round_crew_data" {
   dataset_name                    = "estate_round_crew_data"
   enable_glue_trigger             = false
 }
-    
+
 module "env_enforcement_asb_warnings" {
-   count = local.is_live_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
 
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
@@ -522,4 +522,4 @@ module "env_enforcement_asb_warnings" {
   department                      = module.department_env_enforcement
   dataset_name                    = "asb_warnings"
   enable_glue_trigger             = true
- }
+}
