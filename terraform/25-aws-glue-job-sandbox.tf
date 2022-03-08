@@ -32,3 +32,23 @@ module "job_template" {
     "--source_catalog_table"    = "some_table_name"
   }
 }
+
+module "steve_covid_locations_and_vaccinations_sandbox" {
+  source = "../modules/aws-glue-job"
+
+  department  = module.department_sandbox
+  job_name    = "${local.short_identifier_prefix}steve_covid_locations_and_vaccinations"
+  script_name = "steve_covid_locations_and_vaccinations"
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  job_parameters = {
+    "--s3_bucket_target" = "s3://${module.refined_zone.bucket_id}/sandbox/steve-covid-vaccinations-locations"
+    "--source_catalog_database" = "sandbox-raw-zone"
+    "--source_locations_table" = "sandbox_daro_covid_locations"
+    "--source_vaccinations_table" = "sandbox_daro_covid_vaccinations"
+  }
+  crawler_details = {
+    database_name      = module.department_sandbox.refined_zone_catalog_database_name
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/sandbox/steve-covid-vaccinations-locations"
+    table_prefix       = "sandbox_"
+  }
+}
