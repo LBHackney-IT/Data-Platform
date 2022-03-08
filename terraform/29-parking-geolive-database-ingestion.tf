@@ -33,7 +33,7 @@ module "parking_geolive_ingestion_job" {
     "--source_data_database"        = module.parking_geolive_database_ingestion[0].ingestion_database_name
   }
   crawler_details = {
-    database_name      = module.parking_geolive_database_ingestion[0].ingestion_database_name
+    database_name      = module.department_parking.raw_zone_catalog_database_name
     s3_target_location = "s3://${module.raw_zone.bucket_id}/parking/geolive/"
     configuration = jsonencode({
       Version = 1.0
