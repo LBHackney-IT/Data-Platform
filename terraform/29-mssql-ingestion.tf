@@ -25,7 +25,7 @@ module "ingest_rev_bev_council_tax_to_landing_zone" {
   source = "../modules/aws-glue-job"
 
   job_name               = "${local.short_identifier_prefix}Revenue & Benefits and Council Tax Database Ingestion"
-  script_name            = "ingest_database_tables_via_jdbc_connection"
+  script_s3_object_key   = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
   helper_module_key      = aws_s3_bucket_object.helpers.key
