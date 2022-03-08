@@ -31,6 +31,7 @@ module "job_template" {
     "--source_catalog_database" = module.department_sandbox.raw_zone_catalog_database_name
     "--source_catalog_table"    = "some_table_name"
   }
+ }
     
 module "load_covid_data_to_refined_marta" {
   source = "../modules/aws-glue-job"
@@ -51,4 +52,4 @@ module "load_covid_data_to_refined_marta" {
     s3_target_location = "s3://${module.refined_zone.bucket_id}/sandbox/marta-covid-locations-vaccinations-cleaned"
   }
 }
-}
+
