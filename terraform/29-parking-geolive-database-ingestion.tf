@@ -21,7 +21,7 @@ module "parking_geolive_ingestion_job" {
 
   department           = module.department_parking
   job_name             = "${local.short_identifier_prefix}geolive parking schema ingestion"
-  script_name          = "ingest_database_tables_via_jdbc_connection"
+  script_s3_object_key = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
   helper_module_key    = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key      = aws_s3_bucket_object.pydeequ.key
   jdbc_connections     = [module.parking_geolive_database_ingestion[0].jdbc_connection_name]
