@@ -32,10 +32,8 @@ module "job_template" {
     "--source_catalog_table"    = "some_table_name"
   }
 }
-    
-    
-    
-    module "load_covid_data_to_refined_adam" {
+
+module "load_covid_data_to_refined_adam" {
   source = "../modules/aws-glue-job"
 
   department        = module.department_sandbox
@@ -54,3 +52,20 @@ module "job_template" {
       s3_target_location = "s3://${module.refined_zone.bucket_id}/sandbox/covid_adam"
 }
   }
+
+   
+module "job_template_tim" {
+  source = "../modules/aws-glue-job"
+
+  department        = module.department_sandbox
+  job_name          = "${local.short_identifier_prefix}training_job_tim"
+  script_name       = "training_job_tim"
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  job_parameters = {
+    "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/sandbox/tim-covid-vaccinations"
+    "--source_catalog_database" = module.department_sandbox.raw_zone_catalog_database_name
+    "--source_locations_table"    = "sandbox_tim_covid_vaccination_locations"
+    "--source_vaccinations_table" = "sandbox_tim_covid_vaccination_vaccinations"   
+  }
+}
