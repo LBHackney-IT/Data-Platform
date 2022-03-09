@@ -4,7 +4,7 @@ module "academy_mssql_database_ingestion" {
 
   source = "../modules/database-ingestion-via-jdbc-connection"
 
-  name                        = "academy-housing-benefits-and-revenues"
+  name                        = "academy-benefits-housing-needs-and-revenues"
   jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHATestRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHATestRBViews database"
   jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]
@@ -18,13 +18,13 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
   name = "${local.short_identifier_prefix}academy-landing-zone"
 }
 
-module "ingest_academy_revenues_and_housing_benefits_to_landing_zone" {
+module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Revenue & Benefits and Council Tax Database Ingestion"
+  job_name               = "${local.short_identifier_prefix}Academy Revenues & Benefits Housing Needs Database Ingestion"
   script_s3_object_key   = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
@@ -58,19 +58,19 @@ module "ingest_academy_revenues_and_housing_benefits_to_landing_zone" {
 
 resource "aws_s3_bucket_object" "copy_academy_revenues_and_housing_benefits_landing_to_raw" {
   bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/copy_academy_revenues_and_housing_benefits_landing_to_raw.py"
+  key         = "scripts/copy_academy_revenues_and_benefits_housing_needs_landing_to_raw.py"
   acl         = "private"
-  source      = "../scripts/jobs/copy_academy_revenues_and_housing_benefits_landing_to_raw.py"
-  source_hash = filemd5("../scripts/jobs/copy_academy_revenues_and_housing_benefits_landing_to_raw.py")
+  source      = "../scripts/jobs/copy_academy_revenues_and_benefits_housing_needs_landing_to_raw.py"
+  source_hash = filemd5("../scripts/jobs/copy_academy_revenues_and_benefits_housing_needs_landing_to_raw.py")
 }
 
-module "move_academy_housing_benefits_to_raw_zone" {
+module "copy_academy_benefits_housing_needs_to_raw_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Copy Academy Housing and Benefits to raw zone"
+  job_name               = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
   script_s3_object_key   = aws_s3_bucket_object.copy_academy_revenues_and_housing_benefits_landing_to_raw.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
@@ -80,7 +80,7 @@ module "move_academy_housing_benefits_to_raw_zone" {
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
-  triggered_by_crawler   = module.ingest_academy_revenues_and_housing_benefits_to_landing_zone[0].crawler_name
+  triggered_by_crawler   = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].crawler_name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "benefits-housing-needs/"
@@ -96,7 +96,7 @@ module "move_academy_housing_benefits_to_raw_zone" {
   }
 }
 
-module "move_academy_revenues_to_raw_zone" {
+module "copy_academy_revenues_to_raw_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
@@ -112,7 +112,7 @@ module "move_academy_revenues_to_raw_zone" {
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
-  triggered_by_crawler   = module.ingest_academy_revenues_and_housing_benefits_to_landing_zone[0].crawler_name
+  triggered_by_crawler   = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].crawler_name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "revenues/"
