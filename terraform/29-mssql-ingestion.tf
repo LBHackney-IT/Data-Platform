@@ -86,7 +86,7 @@ module "move_academy_housing_benefits_to_raw_zone" {
     "--s3_prefix"                        = "housing-and-benefits/"
     "--table_filter_expression"          = "^lbhatestrbviews_core_hb.*"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
-    "--glue_database_name_target"        = module.department_housing_and_benefits.raw_zone_catalog_database_name
+    "--glue_database_name_target"        = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
     "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--extra-jars"                       = "s3://${module.glue_scripts.bucket_id}/jars/deequ-1.0.3.jar"
