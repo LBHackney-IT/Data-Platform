@@ -258,7 +258,7 @@ module "department_benefits_and_housing_needs" {
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
-  name                            = "Benefits and Housing Needs"
+  name                            = "Benefits Housing Needs"
   landing_zone_bucket             = module.landing_zone
   raw_zone_bucket                 = module.raw_zone
   refined_zone_bucket             = module.refined_zone
