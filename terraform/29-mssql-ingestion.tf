@@ -83,7 +83,7 @@ module "move_academy_housing_benefits_to_raw_zone" {
   triggered_by_crawler   = module.ingest_academy_revenues_and_housing_benefits_to_landing_zone[0].crawler_name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
-    "--s3_prefix"                        = "housing-and-benefits/"
+    "--s3_prefix"                        = "benefits-housing-needs/"
     "--table_filter_expression"          = "^lbhatestrbviews_core_hb.*"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
