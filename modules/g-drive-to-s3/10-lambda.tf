@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
 resource "aws_iam_policy" "g_drive_to_s3_copier_lambda" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-g-drive-to-s3-copier-lambda")
+  name   = lower("${var.identifier_prefix}-from-g-drive-to-s3-copier-lambda")
   policy = data.aws_iam_policy_document.g_drive_to_s3_copier_lambda.json
 }
 

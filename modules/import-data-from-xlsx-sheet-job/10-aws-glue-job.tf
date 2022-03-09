@@ -25,7 +25,7 @@ module "xlsx_import" {
 }
 
 resource "aws_glue_workflow" "workflow" {
-  name = "${var.identifier_prefix}${local.import_name}"
+  name = "${var.identifier_prefix}work${local.import_name}"
 }
 
 
