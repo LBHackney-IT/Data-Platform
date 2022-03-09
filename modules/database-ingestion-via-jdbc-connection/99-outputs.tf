@@ -3,7 +3,7 @@ output "jdbc_connection_name" {
 }
 
 output "ingestion_database_name" {
-  value = aws_glue_catalog_database.ingestion_database.name
+  value = aws_glue_catalog_database.ingestion_connection.name
 }
 
 output "workflow_name" {

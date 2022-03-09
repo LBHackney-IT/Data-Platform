@@ -1,4 +1,4 @@
-resource "aws_glue_catalog_database" "ingestion_database" {
+resource "aws_glue_catalog_database" "ingestion_connection" {
   name = "${var.identifier_prefix}${var.name}"
 }
 
@@ -9,7 +9,7 @@ locals {
 resource "aws_glue_crawler" "ingestion_database_connection" {
   tags = var.tags
 
-  database_name = aws_glue_catalog_database.ingestion_database.name
+  database_name = aws_glue_catalog_database.ingestion_connection.name
   name          = "${var.identifier_prefix}${var.name}"
   role          = aws_iam_role.jdbc_connection_crawler_role.arn
 
