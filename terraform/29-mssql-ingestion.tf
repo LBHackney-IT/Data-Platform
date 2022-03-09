@@ -18,7 +18,7 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
   name = "${local.short_identifier_prefix}academy-landing-zone"
 }
 
-module "ingest_rev_bev_council_tax_to_landing_zone" {
+module "ingest_academy_revenues_and_housing_benefits_to_landing_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
@@ -56,12 +56,12 @@ module "ingest_rev_bev_council_tax_to_landing_zone" {
   }
 }
 
-resource "aws_s3_bucket_object" "copy_academy_revenues_landing_to_raw" {
+resource "aws_s3_bucket_object" "copy_academy_revenues_and_housing_benefits_landing_to_raw" {
   bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/copy_academy_revenues_landing_to_raw.py"
+  key         = "scripts/copy_academy_revenues_and_housing_benefits_landing_to_raw.py"
   acl         = "private"
-  source      = "../scripts/jobs/copy_academy_revenues_landing_to_raw.py"
-  source_hash = filemd5("../scripts/jobs/copy_academy_revenues_landing_to_raw.py")
+  source      = "../scripts/jobs/copy_academy_revenues_and_housing_benefits_landing_to_raw.py"
+  source_hash = filemd5("../scripts/jobs/copy_academy_revenues_and_housing_benefits_landing_to_raw.py")
 }
 
 module "move_academy_housing_benefits_to_raw_zone" {
@@ -71,7 +71,7 @@ module "move_academy_housing_benefits_to_raw_zone" {
   source = "../modules/aws-glue-job"
 
   job_name               = "${local.short_identifier_prefix}Move Academy Housing and Benefits to raw zone"
-  script_s3_object_key   = aws_s3_bucket_object.copy_academy_landing_to_raw.key
+  script_s3_object_key   = aws_s3_bucket_object.copy_academy_revenues_and_housing_benefits_landing_to_raw.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
   helper_module_key      = aws_s3_bucket_object.helpers.key
@@ -80,7 +80,7 @@ module "move_academy_housing_benefits_to_raw_zone" {
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
-  triggered_by_crawler   = module.ingest_rev_bev_council_tax_to_landing_zone[0].crawler_name
+  triggered_by_crawler   = module.ingest_academy_revenues_and_housing_benefits_to_landing_zone[0].crawler_name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "housing-and-benefits/"
@@ -95,13 +95,6 @@ module "move_academy_housing_benefits_to_raw_zone" {
     "--job-bookmark-option"              = "job-bookmark-enable"
   }
 }
-resource "aws_s3_bucket_object" "copy_academy_landing_to_raw" {
-  bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/copy_academy_revenues_landing_to_raw.py"
-  acl         = "private"
-  source      = "../scripts/jobs/copy_academy_revenues_landing_to_raw.py"
-  source_hash = filemd5("../scripts/jobs/copy_academy_revenues_landing_to_raw.py")
-}
 
 module "move_academy_revenues_to_raw_zone" {
   count = local.is_live_environment ? 1 : 0
@@ -110,7 +103,7 @@ module "move_academy_revenues_to_raw_zone" {
   source = "../modules/aws-glue-job"
 
   job_name               = "${local.short_identifier_prefix}Move Academy Revenues to raw zone"
-  script_s3_object_key   = aws_s3_bucket_object.copy_academy_landing_to_raw.key
+  script_s3_object_key   = aws_s3_bucket_object.copy_academy_revenues_and_housing_benefits_landing_to_raw.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
   helper_module_key      = aws_s3_bucket_object.helpers.key
@@ -119,7 +112,7 @@ module "move_academy_revenues_to_raw_zone" {
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
-  triggered_by_crawler   = module.ingest_rev_bev_council_tax_to_landing_zone[0].crawler_name
+  triggered_by_crawler   = module.ingest_academy_revenues_and_housing_benefits_to_landing_zone[0].crawler_name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "revenues/"
