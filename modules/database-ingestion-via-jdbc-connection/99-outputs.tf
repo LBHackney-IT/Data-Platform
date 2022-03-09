@@ -1,5 +1,5 @@
 output "jdbc_connection_name" {
-  value = aws_glue_connection.ingestion_database.name
+  value = aws_glue_connection.jdbc_database_ingestion.name
 }
 
 output "ingestion_database_name" {

@@ -13,10 +13,10 @@ locals {
   database_name = local.secret_string["database_name"]
 }
 
-resource "aws_glue_connection" "ingestion_database" {
+resource "aws_glue_connection" "jdbc_database_ingestion" {
   tags = var.tags
 
-  name        = "${var.identifier_prefix}${var.name}"
+  name        = "${var.identifier_prefix}${var.name}-${local.database_name_lowercase}"
   description = var.jdbc_connection_description
   connection_properties = {
     JDBC_CONNECTION_URL = var.jdbc_connection_url
