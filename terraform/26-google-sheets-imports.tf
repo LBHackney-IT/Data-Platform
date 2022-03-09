@@ -518,7 +518,7 @@ module "env_enforcement_asb_warnings" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
   google_sheets_document_id       = "1lPmgGbN_LuhObVAwE3BPdgUrFEFDWh9he4MO21DrxLY"
-  google_sheets_worksheet_name    = "Form Responses 1"
+  google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_env_enforcement
   dataset_name                    = "asb_warnings"
   enable_glue_trigger             = true
