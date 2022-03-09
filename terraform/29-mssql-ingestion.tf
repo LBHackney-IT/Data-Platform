@@ -4,7 +4,7 @@ module "academy_mssql_database_ingestion" {
 
   source = "../modules/database-ingestion-via-jdbc-connection"
 
-  name                        = "revenue-benefits-and-council-tax"
+  name                        = "academy-housing-benefits-and-revenues"
   jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHATestRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHATestRBViews database"
   jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]
@@ -70,7 +70,7 @@ module "move_academy_housing_benefits_to_raw_zone" {
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Move Academy Housing and Benefits to raw zone"
+  job_name               = "${local.short_identifier_prefix}Copy Academy Housing and Benefits to raw zone"
   script_s3_object_key   = aws_s3_bucket_object.copy_academy_revenues_and_housing_benefits_landing_to_raw.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
@@ -102,7 +102,7 @@ module "move_academy_revenues_to_raw_zone" {
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Move Academy Revenues to raw zone"
+  job_name               = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
   script_s3_object_key   = aws_s3_bucket_object.copy_academy_revenues_and_housing_benefits_landing_to_raw.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
