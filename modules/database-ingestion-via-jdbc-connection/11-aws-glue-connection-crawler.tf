@@ -1,5 +1,5 @@
 resource "aws_glue_catalog_database" "ingestion_connection" {
-  name = "${var.identifier_prefix}${var.name}-${local.database_name_lowercase}"
+  name = "${var.identifier_prefix}${var.name}"
 }
 
 locals {
