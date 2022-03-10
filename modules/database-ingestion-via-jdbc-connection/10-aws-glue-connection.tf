@@ -16,7 +16,7 @@ locals {
 resource "aws_glue_connection" "jdbc_database_ingestion" {
   tags = var.tags
 
-  name        = "${var.identifier_prefix}${var.name}"
+  name        = "${var.identifier_prefix}${var.name}-${var.database_availability_zone}"
   description = var.jdbc_connection_description
   connection_properties = {
     JDBC_CONNECTION_URL = var.jdbc_connection_url
