@@ -75,7 +75,6 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
   helper_module_key      = aws_s3_bucket_object.helpers.key
-  jdbc_connections       = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
   glue_role_arn          = aws_iam_role.glue_role.arn
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
@@ -107,7 +106,6 @@ module "copy_academy_revenues_to_raw_zone" {
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
   helper_module_key      = aws_s3_bucket_object.helpers.key
-  jdbc_connections       = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
   glue_role_arn          = aws_iam_role.glue_role.arn
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
