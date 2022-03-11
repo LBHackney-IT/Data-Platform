@@ -20,14 +20,14 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
 
 locals {
   filter_expressions = [
-    "lbhatestrbviews_core_hbrent[s].*",
-    "lbhatestrbviews_core_hbc.*",
-    "lbhatestrbviews_core_hbrentclaim",
-    "lbhatestrbviews_core_hbrenttrans",
-    "lbhatestrbviews_core_hbrent[^tsc].*",
-    "lbhatestrbviews_core_hbmember",
-    "lbhatestrbviews_core_hbincome",
-    "lbhatestrbviews_core_hb[abdefghjklnopsw]",
+    "^lbhatestrbviews_core_hbrent[s].*",
+    "^lbhatestrbviews_core_hbc.*",
+    "^lbhatestrbviews_core_hbrentclaim",
+    "^lbhatestrbviews_core_hbrenttrans",
+    "^lbhatestrbviews_core_hbrent[^tsc].*",
+    "^lbhatestrbviews_core_hbmember",
+    "^lbhatestrbviews_core_hbincome",
+    "^lbhatestrbviews_core_hb[abdefghjklnopsw]",
   ]
   academy_ingestion_max_concurrent_runs = length(local.filter_expressions)
 }
