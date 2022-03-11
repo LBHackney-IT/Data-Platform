@@ -19,7 +19,7 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
 }
 
 locals {
-  filter_expressions = [
+  table_filter_expressions = [
     "^lbhatestrbviews_core_hbrent[s].*",
     "^lbhatestrbviews_core_hbc.*",
     "^lbhatestrbviews_core_hbrentclaim",
@@ -29,13 +29,13 @@ locals {
     "^lbhatestrbviews_core_hbincome",
     "^lbhatestrbviews_core_hb[abdefghjklnopsw]",
   ]
-  academy_ingestion_max_concurrent_runs = length(local.filter_expressions)
+  academy_ingestion_max_concurrent_runs = length(local.table_filter_expressions)
 }
 
 resource "aws_glue_trigger" "filter_ingestion_tables" {
   tags  = module.tags.values
   
-  for_each = toset(local.filter_expressions)
+  for_each = toset(local.table_filter_expressions)
   name     = "${local.short_identifier_prefix}filter-${each.value}"
   type     = "CONDITIONAL"
 
