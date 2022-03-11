@@ -485,3 +485,49 @@ resource "aws_iam_policy" "full_glue_access" {
   name   = lower("${var.identifier_prefix}-${local.department_identifier}-full-glue-access")
   policy = data.aws_iam_policy_document.full_glue_access.json
 }
+
+// Crawler can access JDBC Glue connection
+data "aws_iam_policy_document" "crawler_can_access_jdbc_connection" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeSubnets",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeVPCs",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:DescribeVpcEndpoints",
+      "ec2:DescribeRouteTables",
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeNetworkInterfaces"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateTags",
+      "ec2:DeleteTags",
+    ]
+    condition {
+      test     = "ForAllValues:StringEquals"
+      variable = "aws:TagKeys"
+      values   = ["aws-glue-service-resource"]
+    }
+    resources = [
+      "arn:aws:ec2:*:*:network-interface/*",
+      "arn:aws:ec2:*:*:security-group/*",
+      "arn:aws:ec2:*:*:instance/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "crawler_can_access_jdbc_connection" {
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-crawler-can-access-jdbc-connection")
+  policy = data.aws_iam_policy_document.crawler_can_access_jdbc_connection.json
+}
