@@ -64,7 +64,7 @@ module "ingest_tascomi_data" {
 
   department                      = module.department_planning
   number_of_workers_for_glue_job  = local.number_of_workers
-  max_concurrent_runs_of_glue_job = local.max_concurrent_runs
+  max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
   job_name                        = "${local.short_identifier_prefix}tascomi_api_ingestion_planning"
   helper_module_key               = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
