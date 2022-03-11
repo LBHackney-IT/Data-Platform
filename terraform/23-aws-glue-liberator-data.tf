@@ -72,7 +72,7 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_liberator_landing_to_raw.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_landing_to_raw.key}"
   }
 
   glue_version = "2.0"
@@ -98,7 +98,7 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw" {
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_liberator_landing_to_raw.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_landing_to_raw.key}"
   }
 
   glue_version = "2.0"

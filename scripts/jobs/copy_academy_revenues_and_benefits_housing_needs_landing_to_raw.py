@@ -25,15 +25,10 @@ database_name_target = get_glue_env_var("glue_database_name_target")
 bucket_target = get_glue_env_var("s3_bucket_target")
 prefix = get_glue_env_var("s3_prefix")
 table_filter_expression = get_glue_env_var("table_filter_expression")
-
 logger = glue_context.get_logger()
 
 filtering_pattern = re.compile(table_filter_expression)
-
 tables_to_move = [table for table in glue_context.tableNames(dbName=database_name_source) if filtering_pattern.match(table)]
-
-logger.info(f"tables to move: {tables_to_move}")
-logger.info(f"Number of tables: {len(tables_to_move)}")
 
 for table_name in tables_to_move:
   logger.info(f"Starting copying table {database_name_source}.{table_name}")
@@ -41,8 +36,7 @@ for table_name in tables_to_move:
       name_space = database_name_source,
       table_name = table_name,
       transformation_ctx = "data_source" + table_name,
-    #   push_down_predicate = "import_date>=date_format(date_sub(current_date, 5), 'yyyyMMdd')"
-    # Academy tables were ingested without adding the import_date columns so this won't work, however the ingestion script will add these columns (partitions)
+      push_down_predicate = "import_date>=date_format(date_sub(current_date, 5), 'yyyyMMdd')"
   ).toDF()
 
   if(len(table_data_frame.columns) == 0):
@@ -55,8 +49,7 @@ for table_name in tables_to_move:
     path = "s3://" + bucket_target + "/" + prefix + table_name + "/",
     connection_type = "s3",
     updateBehavior = "UPDATE_IN_DATABASE",
-    # partitionKeys = PARTITION_KEYS,
-    # Academy tables were ingested without adding the import_date columns so this won't work, however the ingestion script will add these columns (partitions)
+    partitionKeys = PARTITION_KEYS,
     enableUpdateCatalog = True,
     transformation_ctx = "data_sink" + table_name
   )
