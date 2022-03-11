@@ -29,9 +29,11 @@ logger = glue_context.get_logger()
 
 filtering_pattern = re.compile(table_filter_expression)
 tables_to_copy = [table for table in glue_context.tableNames(dbName=database_name_source) if filtering_pattern.match(table)]
+logger.info(f"Tables to copy: {tables_to_copy}")
+logger.info(f"Number of tables to copy: {len(tables_to_copy)}")
 
 for table_name in tables_to_copy:
-  logger.info(f"Starting copying table {database_name_source}.{table_name}")
+  logger.info(f"Starting to copy table {database_name_source}.{table_name}")
   table_data_frame = glue_context.create_dynamic_frame.from_catalog(
       name_space = database_name_source,
       table_name = table_name,
@@ -40,7 +42,7 @@ for table_name in tables_to_copy:
   ).toDF()
 
   if(len(table_data_frame.columns) == 0):
-    logger.info(f"Aborting copying data for table {database_name_source}.{table_name}, as it has empty columns.")
+    logger.info(f"Aborting copy of data for table {database_name_source}.{table_name}, as it has empty columns.")
     continue
 
   table_with_timestamp = add_timestamp_column(table_data_frame)
