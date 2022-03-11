@@ -36,7 +36,7 @@ resource "aws_glue_trigger" "filter_ingestion_tables" {
   tags  = module.tags.values
   
   for_each = toset(local.filter_expressions)
-  name     = "${local.short_identifier_prefix}filter-academy-ingestion-tables"
+  name     = "${local.short_identifier_prefix}filter-${each.value}"
   type     = "CONDITIONAL"
 
   actions {
