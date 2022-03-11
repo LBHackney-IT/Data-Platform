@@ -258,7 +258,7 @@ module "department_benefits_and_housing_needs" {
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
-  name                            = "Benefits Housing Needs"
+  name                            = "Bens Housing Needss"
   landing_zone_bucket             = module.landing_zone
   raw_zone_bucket                 = module.raw_zone
   refined_zone_bucket             = module.refined_zone
@@ -272,7 +272,7 @@ module "department_benefits_and_housing_needs" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-//  google_group_display_name       = "saml-aws-data-platform-collaborator-benefits-housing-needs@hackney.gov.uk"
+  google_group_display_name       = "saml-aws-data-platform-collaborator-benefits-housing-needs@hackney.gov.uk"
 }
 
 module "department_revenues" {
@@ -302,7 +302,7 @@ module "department_revenues" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-//  google_group_display_name       = "saml-aws-data-platform-collaborator-council-tax@hackney.gov.uk"
+  google_group_display_name       = "saml-aws-data-platform-collaborator-council-tax@hackney.gov.uk"
 }
 
 module "department_environmental_services" {
@@ -318,7 +318,7 @@ module "department_environmental_services" {
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
-  name                            = "Environmental Services"
+  name                            = "Env Services"
   landing_zone_bucket             = module.landing_zone
   raw_zone_bucket                 = module.raw_zone
   refined_zone_bucket             = module.refined_zone
@@ -332,5 +332,5 @@ module "department_environmental_services" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-//  google_group_display_name       = "saml-aws-data-platform-collaborator-environmental-services@hackney.gov.uk"
+  google_group_display_name       = "saml-aws-data-platform-collaborator-environmental-services@hackney.gov.uk"
 }
