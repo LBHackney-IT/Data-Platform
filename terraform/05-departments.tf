@@ -272,7 +272,7 @@ module "department_benefits_and_housing_needs" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-  google_group_display_name       = "saml-aws-data-platform-collaborator-benefits-housing-needs@hackney.gov.uk"
+//  google_group_display_name       = "saml-aws-data-platform-collaborator-benefits-housing-needs@hackney.gov.uk"
 }
 
 module "department_revenues" {
@@ -302,7 +302,7 @@ module "department_revenues" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-  google_group_display_name       = "saml-aws-data-platform-collaborator-council-tax@hackney.gov.uk"
+//  google_group_display_name       = "saml-aws-data-platform-collaborator-council-tax@hackney.gov.uk"
 }
 
 module "department_environmental_services" {
@@ -332,5 +332,5 @@ module "department_environmental_services" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-  google_group_display_name       = "saml-aws-data-platform-collaborator-environmental-services@hackney.gov.uk"
+//  google_group_display_name       = "saml-aws-data-platform-collaborator-environmental-services@hackney.gov.uk"
 }
