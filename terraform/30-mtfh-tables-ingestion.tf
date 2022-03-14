@@ -1,11 +1,3 @@
-resource "aws_s3_bucket_object" "dynamodb_tables_ingest" {
-  bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/ingest_tables_from_dynamo_db.py"
-  acl         = "private"
-  source      = "../scripts/jobs/ingest_tables_from_dynamo_db.py"
-  source_hash = filemd5("../scripts/jobs/ingest_tables_from_dynamo_db.py")
-}
-
 locals {
   number_of_workers_for_mtfh_ingestion = 12
 }
