@@ -83,10 +83,6 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"       = "s3://${module.landing_zone.bucket_id}/academy/"
     "--s3_ingestion_details_target"      = "s3://${module.landing_zone.bucket_id}/academy/ingestion-details/"
-    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
-    "--extra-jars"                       = "s3://${module.glue_scripts.bucket_id}/jars/deequ-1.0.3.jar"
-    "--enable-continuous-cloudwatch-log" = "true"
   }
 }
 
@@ -144,11 +140,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
     "--table_filter_expression"          = "(^lbhatestrbviews_core_hb.*|^lbhatestrbviews_current_hb.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
-    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
-    "--extra-jars"                       = "s3://${module.glue_scripts.bucket_id}/jars/deequ-1.0.3.jar"
     "--enable-glue-datacatalog"          = "true"
-    "--enable-continuous-cloudwatch-log" = "true"
     "--job-bookmark-option"              = "job-bookmark-enable"
   }
 }
@@ -176,10 +168,6 @@ module "copy_academy_revenues_to_raw_zone" {
     "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*|^lbhatestrbviews_current_(?!hb).*|^lbhatestrbviews_xdbvw_.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
-    "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
-    "--extra-py-files"                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
-    "--extra-jars"                       = "s3://${module.glue_scripts.bucket_id}/jars/deequ-1.0.3.jar"
-    "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
     "--job-bookmark-option"              = "job-bookmark-enable"
   }
