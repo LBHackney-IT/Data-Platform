@@ -1,6 +1,6 @@
 locals {
   number_of_workers   = 4
-  max_concurrent_runs = max(length(local.tascomi_table_names), length(local.tascomi_static_tables))
+  tascomi_ingestion_max_concurrent_runs = max(length(local.tascomi_table_names), length(local.tascomi_static_tables))
   tascomi_table_names = [
     "appeals",
     "applications",
@@ -64,7 +64,7 @@ module "ingest_tascomi_data" {
 
   department                      = module.department_planning
   number_of_workers_for_glue_job  = local.number_of_workers
-  max_concurrent_runs_of_glue_job = local.max_concurrent_runs
+  max_concurrent_runs_of_glue_job = local.tascomi_ingestion_max_concurrent_runs
   job_name                        = "${local.short_identifier_prefix}tascomi_api_ingestion_planning"
   helper_module_key               = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
