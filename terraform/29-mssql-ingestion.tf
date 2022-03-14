@@ -49,7 +49,7 @@ resource "aws_glue_trigger" "filter_ingestion_tables" {
   predicate {
     conditions {
       crawler_name = module.academy_mssql_database_ingestion[0].crawler_name
-      state        = "SUCCEEDED"
+      crawl_state  = "SUCCEEDED"
     }
   }
 }
