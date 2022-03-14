@@ -94,12 +94,12 @@ resource "aws_s3_bucket_object" "get_uprn_from_uhref" {
   source_hash = filemd5("../scripts/jobs/housing_repairs/get_uprn_from_uhref.py")
 }
 
-resource "aws_s3_bucket_object" "copy_landing_to_raw" {
+resource "aws_s3_bucket_object" "copy_tables_landing_to_raw" {
   bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/copy_landing_to_raw.py"
+  key         = "scripts/copy_tables_landing_to_raw.py"
   acl         = "private"
-  source      = "../scripts/jobs/copy_landing_to_raw.py"
-  source_hash = filemd5("../scripts/jobs/copy_landing_to_raw.py")
+  source      = "../scripts/jobs/copy_tables_landing_to_raw.py"
+  source_hash = filemd5("../scripts/jobs/copy_tables_landing_to_raw.py")
 }
 
 resource "aws_s3_bucket_object" "ingest_database_tables_via_jdbc_connection" {

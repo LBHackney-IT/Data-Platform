@@ -63,7 +63,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   source = "../modules/aws-glue-job"
 
   job_name               = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
-  script_s3_object_key   = aws_s3_bucket_object.copy_landing_to_raw.key
+  script_s3_object_key   = aws_s3_bucket_object.copy_tables_landing_to_raw.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
   helper_module_key      = aws_s3_bucket_object.helpers.key
@@ -94,7 +94,7 @@ module "copy_academy_revenues_to_raw_zone" {
   source = "../modules/aws-glue-job"
 
   job_name               = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
-  script_s3_object_key   = aws_s3_bucket_object.copy_landing_to_raw.key
+  script_s3_object_key   = aws_s3_bucket_object.copy_tables_landing_to_raw.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
   helper_module_key      = aws_s3_bucket_object.helpers.key
