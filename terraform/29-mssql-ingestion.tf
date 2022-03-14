@@ -33,11 +33,12 @@ locals {
 }
 
 resource "aws_glue_trigger" "filter_ingestion_tables" {
-  tags  = module.tags.values
-  
-  for_each = toset(local.table_filter_expressions)
-  name     = "${local.short_identifier_prefix}filter-${each.value}"
-  type     = "CONDITIONAL"
+  tags = module.tags.values
+
+  for_each      = toset(local.table_filter_expressions)
+  name          = "${local.short_identifier_prefix}filter-${each.value}"
+  type          = "CONDITIONAL"
+  workflow_name = module.academy_mssql_database_ingestion[0].workflow_name
 
   actions {
     job_name = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].job_name
