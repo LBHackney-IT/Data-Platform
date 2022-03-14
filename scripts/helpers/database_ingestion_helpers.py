@@ -19,11 +19,11 @@ def get_all_database_tables(glue_client, source_catalog_database, table_filter_e
             all_tables.append(table['Name'])
 
     if table_filter_expression:
-      return filtered_tables(all_tables, table_filter_expression)
+      return get_filtered_tables(all_tables, table_filter_expression)
 
     return all_tables
 
-def filtered_tables(tables, table_filter_expression):
+def get_filtered_tables(tables, table_filter_expression):
     filtering_pattern = re.compile(table_filter_expression)
     filtered_tables = [table for table in tables if filtering_pattern.match(table)]
 
