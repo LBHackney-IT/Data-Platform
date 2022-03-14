@@ -194,3 +194,9 @@ variable "jdbc_connections" {
   type = list(string)
   default = null
 }
+
+variable "create_starting_trigger" {
+  description = "Set to false to disable the creation of a starting trigger for Glue job in a workflow."
+  type        = bool
+  default     = true
+}

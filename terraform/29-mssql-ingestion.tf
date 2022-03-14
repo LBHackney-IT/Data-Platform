@@ -71,7 +71,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
-  trigger_enabled                 = false
+  create_starting_trigger         = false
   workflow_name                   = module.academy_mssql_database_ingestion[0].workflow_name
   job_parameters = {
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
