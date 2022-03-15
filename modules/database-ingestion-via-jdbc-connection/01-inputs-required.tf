@@ -19,7 +19,7 @@ variable "database_availability_zone" {
 
 variable "database_secret_name" {
   description = "Name of secret for database credentials"
-  type = string
+  type        = string
 }
 
 variable "tags" {

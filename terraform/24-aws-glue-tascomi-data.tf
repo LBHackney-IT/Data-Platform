@@ -1,5 +1,5 @@
 locals {
-  number_of_workers   = 4
+  number_of_workers                     = 4
   tascomi_ingestion_max_concurrent_runs = max(length(local.tascomi_table_names), length(local.tascomi_static_tables))
   tascomi_table_names = [
     "appeals",

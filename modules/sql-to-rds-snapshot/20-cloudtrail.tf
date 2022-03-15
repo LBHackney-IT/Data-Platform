@@ -82,7 +82,7 @@ resource "aws_s3_bucket_policy" "example" {
 resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
   rule {
-    id = "Keep previous version 30 days"
+    id     = "Keep previous version 30 days"
     status = "Enabled"
     expiration {
       days = 30
