@@ -23,7 +23,7 @@ The Terraform will be deployed, using GitHub Actions, on push to main / when a P
 
 #### Set up
 
-1.Create a env.tfvars file for local deployment, this can be done by running `cp config/terraform/env.tfvars.example config/terraform/env.tfvars` from the project root directory.
+1. Create a env.tfvars file for local deployment, this can be done by running `cp config/terraform/env.tfvars.example config/terraform/env.tfvars` from the project root directory.
 2. Update the following required variables in the newly created file:
 
 - `environment` - Environment you're working in (this is normally `dev`)
