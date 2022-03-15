@@ -9,6 +9,12 @@ then
   exit 0;
 fi
 
+if ! command -v git &> /dev/null
+then
+  echo "Git not installed"
+  exit 0;
+fi
+
 #Format all the terraform files in the repo
 formatted_files=$(terraform fmt -recursive)
 
