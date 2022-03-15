@@ -7,10 +7,10 @@ data "aws_secretsmanager_secret_version" "database_credentials" {
 }
 
 locals {
-  secret_string = jsondecode(data.aws_secretsmanager_secret_version.database_credentials.secret_string)
+  secret_string     = jsondecode(data.aws_secretsmanager_secret_version.database_credentials.secret_string)
   database_username = local.secret_string["username"]
   database_password = local.secret_string["password"]
-  database_name = local.secret_string["database_name"]
+  database_name     = local.secret_string["database_name"]
 }
 
 resource "aws_glue_connection" "jdbc_database_ingestion" {

@@ -54,6 +54,15 @@ resource "aws_alb_target_group" "qlik-sense" {
   port     = 443
   protocol = "HTTP"
   vpc_id   = var.vpc_id
+
+  health_check {
+    path    = "/healthcheck"
+    matcher = "200"
+  }
+
+  stickiness {
+    type = "lb_cookie"
+  }
 }
 
 resource "aws_alb" "qlik_sense" {

@@ -28,7 +28,7 @@ resource "aws_glue_workflow" "database_ingestion" {
 }
 
 resource "aws_glue_trigger" "ingestion_crawler" {
-  tags  = var.tags
+  tags = var.tags
 
   name          = "${var.identifier_prefix}${var.name}"
   type          = "SCHEDULED"
