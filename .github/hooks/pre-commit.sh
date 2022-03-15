@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+# Check if terraform is installed otherwise skip pre-commit hook
+if ! command -v terraform &> /dev/null
+then
+  echo "Terraform not installed"
+  exit 0;
+fi
+
+#Format all the terraform files in the repo
+formatted_files=$(terraform fmt -recursive)
+
+#Git add all formatted files so you don't have to do it again manually
+for formatted_file in $formatted_files; do
+   git add "$formatted_file"
+done
+
