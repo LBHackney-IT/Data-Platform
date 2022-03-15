@@ -18,6 +18,7 @@ init:
 	cd external-lib && make all
 	cd scripts && make all
 	cd terraform && make init
+	git config core.hooksPath .github/hooks
 
 apply:
 	cd scripts && make all

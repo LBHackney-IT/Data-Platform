@@ -118,10 +118,6 @@ $ WORKSPACE={developer} make new
    This will initialize terraform using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
    - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
    - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform directory
-    
-Setup Terraform formatting local commit hook
-
-1. Configure you local commit hooks directory by running the following command from the base of the repository: `git config core.hooksPath ./.github/hooks`
 
 #### Terraform commands
 

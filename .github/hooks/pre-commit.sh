@@ -16,4 +16,3 @@ formatted_files=$(terraform fmt -recursive)
 for formatted_file in $formatted_files; do
    git add "$formatted_file"
 done
-
