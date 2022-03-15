@@ -23,7 +23,7 @@ The Terraform will be deployed, using GitHub Actions, on push to main / when a P
 
 #### Set up
 
-1. Create a env.tfvars file for local deployment, this can be done by running `cp config/terraform/env.tfvars.example config/terraform/env.tfvars` from the project root directory.
+1.Create a env.tfvars file for local deployment, this can be done by running `cp config/terraform/env.tfvars.example config/terraform/env.tfvars` from the project root directory.
 2. Update the following required variables in the newly created file:
 
 - `environment` - Environment you're working in (this is normally `dev`)
@@ -118,6 +118,10 @@ $ WORKSPACE={developer} make new
    This will initialize terraform using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
    - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
    - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform directory
+    
+Setup Terraform formatting local commit hook
+
+1. Configure you local commit hooks directory by running the following command from the base of the repository: `git config core.hooksPath ./.github/hooks`
 
 #### Terraform commands
 
