@@ -26,7 +26,7 @@ def lambda_handler(event, lambda_context, s3Client = None):
     s3.copy_object(
         CopySource=copy_source,
         Bucket=target_bucket,
-        Key=f"{target_prefix}/{source_object_key}"
+        Key=f"{target_prefix}{source_object_key}"
     )
 
 
