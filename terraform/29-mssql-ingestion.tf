@@ -94,14 +94,6 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   }
 }
 
-resource "aws_s3_bucket_object" "copy_academy_revenues_and_housing_benefits_landing_to_raw" {
-  bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/copy_academy_revenues_and_benefits_housing_needs_landing_to_raw.py"
-  acl         = "private"
-  source      = "../scripts/jobs/copy_academy_revenues_and_benefits_housing_needs_landing_to_raw.py"
-  source_hash = filemd5("../scripts/jobs/copy_academy_revenues_and_benefits_housing_needs_landing_to_raw.py")
-}
-
 module "copy_academy_benefits_housing_needs_to_raw_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
@@ -109,7 +101,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   source = "../modules/aws-glue-job"
 
   job_name               = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
-  script_s3_object_key   = aws_s3_bucket_object.copy_academy_revenues_and_housing_benefits_landing_to_raw.key
+  script_s3_object_key   = aws_s3_bucket_object.copy_tables_landing_to_raw.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
   helper_module_key      = aws_s3_bucket_object.helpers.key
@@ -140,7 +132,7 @@ module "copy_academy_revenues_to_raw_zone" {
   source = "../modules/aws-glue-job"
 
   job_name               = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
-  script_s3_object_key   = aws_s3_bucket_object.copy_academy_revenues_and_housing_benefits_landing_to_raw.key
+  script_s3_object_key   = aws_s3_bucket_object.copy_tables_landing_to_raw.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
   helper_module_key      = aws_s3_bucket_object.helpers.key
