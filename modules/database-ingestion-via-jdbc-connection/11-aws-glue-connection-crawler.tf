@@ -32,7 +32,7 @@ resource "aws_glue_trigger" "ingestion_crawler" {
 
   name          = "${var.identifier_prefix}${var.name}"
   type          = "SCHEDULED"
-  schedule      = "cron(0 0 2 ? * MON-FRI *)"
+  schedule      = "cron(0 0 1 ? * MON,TUE,WED,THU,FRI *)"
   workflow_name = aws_glue_workflow.database_ingestion.name
 
   actions {
