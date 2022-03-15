@@ -56,7 +56,7 @@ resource "aws_alb_target_group" "qlik-sense" {
   vpc_id   = var.vpc_id
 
   health_check {
-    path    = "/healthcheck"
+    path                      = "/healthcheck"
     matcher = "200"
   }
 
