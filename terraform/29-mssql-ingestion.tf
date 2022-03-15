@@ -28,9 +28,16 @@ locals {
     "^lbhatestrbviews_core_hbmember",
     "^lbhatestrbviews_core_hbincome",
     "^lbhatestrbviews_core_hb[abdefghjklnopsw]",
+    "^lbhatestrbviews_core_ct[dt].*",
+    "^lbhatestrbviews_current_ctax.*",
+    "^lbhatestrbviews_current_[hbn].*",
+    "^lbhatestrbviews_core_ct[abcefghijklmnopqrsvw].*",
+    "(^lbhatestrbviews_core_cr.*)|(^lbhatestrbviews_core_[ins].*)|(^lbhatestrbviews_xdbvw.*|lbhatestrbviews_current_im.*)"
   ]
   academy_ingestion_max_concurrent_runs = length(local.table_filter_expressions)
 }
+
+
 
 resource "aws_glue_trigger" "filter_ingestion_tables" {
   tags = module.tags.values
