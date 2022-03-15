@@ -19,3 +19,4 @@ notebook/aws-config/credentials
 .gitmessage
 **/.venv
 **/__pycache__
+/venv/
