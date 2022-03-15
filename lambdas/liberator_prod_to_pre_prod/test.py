@@ -33,7 +33,8 @@ class LiberatorProdToPreProdTests(TestCase):
         'CopySource': {
             'Bucket': 'source-bucket',
             'Key': 'some-folder/maybe-another/the-best-file.txt'
-        }
+        },
+        'ACL': 'bucket-owner-full-control',
       }
     )
 
@@ -66,7 +67,8 @@ class LiberatorProdToPreProdTests(TestCase):
           'CopySource': {
               'Bucket': 'source-bucket',
               'Key': 'some-folder/maybe-another/the-best-file.txt'
-          }
+          },
+          'ACL': 'bucket-owner-full-control',
         }
       )
 
