@@ -19,7 +19,7 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
 }
 
 locals {
-  table_filter_expressions = [
+  table_filter_expressions = local.is_live_environment ? [
     "^lbhatestrbviews_core_hbrent[s].*",
     "^lbhatestrbviews_core_hbc.*",
     "^lbhatestrbviews_core_hbrentclaim",
@@ -33,8 +33,8 @@ locals {
     "^lbhatestrbviews_current_[hbn].*",
     "^lbhatestrbviews_core_ct[abcefghijklmnopqrsvw].*",
     "(^lbhatestrbviews_core_cr.*)|(^lbhatestrbviews_core_[ins].*)|(^lbhatestrbviews_xdbvw.*|lbhatestrbviews_current_im.*)"
-  ]
-  academy_ingestion_max_concurrent_runs = length(local.table_filter_expressions)
+  ] : []
+  academy_ingestion_max_concurrent_runs = local.is_live_environment ? length(local.table_filter_expressions) : 1
 }
 
 
