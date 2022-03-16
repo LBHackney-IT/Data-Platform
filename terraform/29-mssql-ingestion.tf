@@ -19,7 +19,7 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
 }
 
 locals {
-  table_filter_expressions = [
+  table_filter_expressions = local.is_live_environment ? [
     "^lbhatestrbviews_core_hbrent[s].*",
     "^lbhatestrbviews_core_hbc.*",
     "^lbhatestrbviews_core_hbrentclaim",
@@ -28,7 +28,7 @@ locals {
     "^lbhatestrbviews_core_hbmember",
     "^lbhatestrbviews_core_hbincome",
     "^lbhatestrbviews_core_hb[abdefghjklnopsw]",
-  ]
+  ] : []
   academy_ingestion_max_concurrent_runs = length(local.table_filter_expressions)
 }
 
@@ -70,7 +70,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
+  max_concurrent_runs_of_glue_job = local.is_live_environment ? local.academy_ingestion_max_concurrent_runs : 1
   create_starting_trigger         = false
   workflow_name                   = module.academy_mssql_database_ingestion[0].workflow_name
   job_parameters = {
