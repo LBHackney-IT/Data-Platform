@@ -79,7 +79,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
   create_starting_trigger         = false
-  glue_job_timeout                = 250
+  glue_job_timeout                = 300
   workflow_name                   = module.academy_mssql_database_ingestion[0].workflow_name
   job_parameters = {
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
@@ -90,15 +90,36 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
     "--extra-jars"                       = "s3://${module.glue_scripts.bucket_id}/jars/deequ-1.0.3.jar"
     "--enable-continuous-cloudwatch-log" = "true"
   }
-  crawler_details = {
-    database_name      = aws_glue_catalog_database.landing_zone_academy.name
-    s3_target_location = "s3://${module.landing_zone.bucket_id}/academy/"
-    configuration = jsonencode({
-      Version = 1.0
-      Grouping = {
-        TableLevelConfiguration = 3
-      }
-    })
+}
+
+resource "aws_glue_crawler" "academy_revenues_and_benefits_housing_needs_landing_zone" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.landing_zone_academy.name
+  name          = "${local.short_identifier_prefix}academy-revenues-benefits-housing-needs-database-ingestion"
+  role          = aws_iam_role.glue_role.arn
+
+  s3_target {
+    path = "s3://${module.landing_zone.bucket_id}/academy/"
+  }
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 3
+    }
+  })
+}
+
+resource "aws_glue_trigger" "academy_revenues_and_benefits_housing_needs_landing_zone_crawler" {
+  tags = module.tags.values
+
+  name     = "${local.short_identifier_prefix}academy-revenues-benefits-housing-needs-database-ingestion-crawler-trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 0 5,6 ? * MON,TUE,WED,THU,FRI *)"
+  enabled  = local.is_live_environment
+
+  actions {
+    crawler_name = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   }
 }
 
@@ -116,8 +137,9 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   glue_role_arn          = aws_iam_role.glue_role.arn
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  glue_job_timeout       = 200
   workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
-  triggered_by_crawler   = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].crawler_name
+  triggered_by_crawler   = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "benefits-housing-needs/"
@@ -147,8 +169,9 @@ module "copy_academy_revenues_to_raw_zone" {
   glue_role_arn          = aws_iam_role.glue_role.arn
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  glue_job_timeout       = 200
   workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
-  triggered_by_crawler   = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].crawler_name
+  triggered_by_crawler   = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "revenues/"
