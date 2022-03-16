@@ -104,7 +104,7 @@ $ make init
 Initialise your Workspace (note capitalisation)
 
 ```
-$ WORKSPACE={developer} make new
+$ WORKSPACE={developer} make workspace-new
 ```
 
 4. Set up Google credentials
