@@ -79,7 +79,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
   create_starting_trigger         = false
-  glue_job_timeout                = 250
+  glue_job_timeout                = 300
   workflow_name                   = module.academy_mssql_database_ingestion[0].workflow_name
   job_parameters = {
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
@@ -137,6 +137,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   glue_role_arn          = aws_iam_role.glue_role.arn
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  glue_job_timeout       = 200
   workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
   triggered_by_crawler   = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
@@ -168,6 +169,7 @@ module "copy_academy_revenues_to_raw_zone" {
   glue_role_arn          = aws_iam_role.glue_role.arn
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  glue_job_timeout       = 200
   workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
   triggered_by_crawler   = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
