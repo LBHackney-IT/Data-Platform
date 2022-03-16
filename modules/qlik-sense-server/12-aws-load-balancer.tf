@@ -52,7 +52,7 @@ resource "aws_security_group" "qlik_sense_alb" {
 resource "aws_alb_target_group" "qlik-sense" {
   name     = "${var.short_identifier_prefix}qlik-sense"
   port     = 443
-  protocol = "HTTP"
+  protocol = "HTTPS"
   vpc_id   = var.vpc_id
 
   health_check {
