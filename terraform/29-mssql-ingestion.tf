@@ -143,7 +143,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "benefits-housing-needs/"
-    "--table_filter_expression"          = "^lbhatestrbviews_core_hb.*"
+    "--table_filter_expression"          = "(^lbhatestrbviews_core_hb.*|^lbhatestrbviews_current_hb.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
@@ -175,7 +175,7 @@ module "copy_academy_revenues_to_raw_zone" {
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "revenues/"
-    "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*)|(^lbhatestrbviews_current_.*)|(^lbhatestrbviews_xdbvw_.*)"
+    "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*|^lbhatestrbviews_current_(?!hb).*)|(^lbhatestrbviews_xdbvw_.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
