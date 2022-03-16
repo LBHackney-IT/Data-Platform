@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "task_role" {
 resource "aws_iam_role" "fargate" {
   tags = var.tags
 
-  name               = lower("${var.identifier_prefix}-fargate")
+  name               = lower("${var.identifier_prefix}-${var.instance_name}-fargate")
   assume_role_policy = data.aws_iam_policy_document.fargate_assume_role.json
 }
 
