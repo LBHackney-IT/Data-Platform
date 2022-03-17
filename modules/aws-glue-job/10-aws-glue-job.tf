@@ -66,7 +66,6 @@ locals {
 }
 
 resource "aws_glue_trigger" "job_trigger" {
-  count = var.create_starting_trigger ? 1 : 0
   tags  = local.tags
 
   name          = "${local.job_name_identifier}-job-trigger"

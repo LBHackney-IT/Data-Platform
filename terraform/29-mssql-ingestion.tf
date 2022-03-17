@@ -11,6 +11,7 @@ module "academy_mssql_database_ingestion" {
   database_availability_zone  = "eu-west-2a"
   database_secret_name        = "database-credentials/lbhatestrbviews-benefits-housing-needs-revenues"
   identifier_prefix           = local.short_identifier_prefix
+  create_workflow             = false
   vpc_id                      = data.aws_vpc.network.id
 }
 
@@ -42,10 +43,9 @@ locals {
 resource "aws_glue_trigger" "filter_ingestion_tables" {
   tags = module.tags.values
 
-  for_each      = toset(local.table_filter_expressions)
-  name          = "${local.short_identifier_prefix}filter-${each.value}"
-  type          = "CONDITIONAL"
-  workflow_name = module.academy_mssql_database_ingestion[0].workflow_name
+  for_each = toset(local.table_filter_expressions)
+  name     = "${local.short_identifier_prefix}filter-${each.value}"
+  type     = "CONDITIONAL"
 
   actions {
     job_name = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].job_name
@@ -78,9 +78,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
-  create_starting_trigger         = false
   glue_job_timeout                = 300
-  workflow_name                   = module.academy_mssql_database_ingestion[0].workflow_name
   job_parameters = {
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"       = "s3://${module.landing_zone.bucket_id}/academy/"
@@ -138,12 +136,11 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   glue_job_timeout       = 200
-  workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
   triggered_by_crawler   = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "benefits-housing-needs/"
-    "--table_filter_expression"          = "^lbhatestrbviews_core_hb.*"
+    "--table_filter_expression"          = "(^lbhatestrbviews_core_hb.*|^lbhatestrbviews_current_hb.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
@@ -170,12 +167,11 @@ module "copy_academy_revenues_to_raw_zone" {
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
   glue_job_timeout       = 200
-  workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
   triggered_by_crawler   = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "revenues/"
-    "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*)|(^lbhatestrbviews_current_.*)|(^lbhatestrbviews_xdbvw_.*)"
+    "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*|^lbhatestrbviews_current_(?!hb).*)|(^lbhatestrbviews_xdbvw_.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"

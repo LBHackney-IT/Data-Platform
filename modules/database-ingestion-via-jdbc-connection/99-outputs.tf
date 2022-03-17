@@ -7,7 +7,7 @@ output "ingestion_database_name" {
 }
 
 output "workflow_name" {
-  value = aws_glue_workflow.database_ingestion.name
+  value = aws_glue_workflow.database_ingestion[0].name
 }
 
 output "crawler_name" {
