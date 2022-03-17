@@ -19,7 +19,9 @@ data "template_file" "task_definition_template" {
     "cpu": 2,
     "image": "$${REPOSITORY_URL}:latest",
     "environment": [
-      { "name": "NAME",      "value": "$${NAME}" }
+      { "name": "NUMBER_OF_DAYS_TO_RETAIN", "value": "$${NUMBER_OF_DAYS_TO_RETAIN}" },
+      { "name": "S3_SYNC_TARGET", "value": "$${S3_SYNC_TARGET}" },
+      { "name": "S3_SYNC_SOURCE", "value": "$${S3_SYNC_SOURCE}" }
     ],
     "LogConfiguration": {
       "LogDriver": "awslogs",
@@ -29,14 +31,16 @@ data "template_file" "task_definition_template" {
         "awslogs-stream-prefix": "$${OPERATION_NAME}"
       }
     }
-
   }]
   TEMPLATE
+
   vars = {
-    OPERATION_NAME  = local.operation_name
-    REPOSITORY_URL  = aws_ecr_repository.worker.repository_url
-    LOG_GROUP       = aws_cloudwatch_log_group.ecs_task_logs.name
-    NAME      = "Emma"
+    OPERATION_NAME           = local.operation_name
+    REPOSITORY_URL           = aws_ecr_repository.worker.repository_url
+    LOG_GROUP                = aws_cloudwatch_log_group.ecs_task_logs.name
+    NUMBER_OF_DAYS_TO_RETAIN = 7
+    S3_SYNC_SOURCE           = "dataplatform-prod-raw-zone"
+    S3_SYNC_TARGET           = "dataplatform-stg-raw-zone-prod-copy"
   }
 }
 
@@ -92,9 +96,24 @@ resource "aws_iam_role_policy" "task_role" {
 
 data "aws_iam_policy_document" "task_role" {
   statement {
-    effect    = "Allow"
-    actions   = ["s3:GetObject"]
-    resources = ["arn:aws:s3:::*"]
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:ListBucket"
+    ]
+    resources = [
+      "arn:aws:s3:::*" # production bucket
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:PutObject"
+    ]
+    resources = [
+      "arn:aws:s3:::*" # pre-production bucket
+    ]
   }
 }
 

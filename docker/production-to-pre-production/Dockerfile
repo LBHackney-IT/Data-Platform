@@ -18,4 +18,4 @@ COPY ./backfilling.py .
 RUN pip3 install --upgrade pip \
     && pip3 install -r requirements.txt
 
-CMD python3 ./backfilling.py
+CMD ./sync-last-x-days.sh
