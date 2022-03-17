@@ -36,3 +36,8 @@ validate:
 	$(MAKE) -C terraform validate
 	$(MAKE) -C terraform-networking validate
 	$(MAKE) -C terraform-backend-setup validate
+
+start-qlik-ssm-session:
+	@echo "Environment: "; read ENVIRONMENT; \
+	echo "Qlik instance id: "; read QLIK_INSTANCE_ID; \
+	aws-vault exec hackney-dataplatform-$$ENVIRONMENT -- aws ssm start-session --target $$QLIK_INSTANCE_ID --document-name AWS-StartPortForwardingSession --parameters '{"portNumber":["3389"],"localPortNumber":["3389"]}'

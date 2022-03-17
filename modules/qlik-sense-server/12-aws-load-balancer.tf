@@ -56,8 +56,8 @@ resource "aws_alb_target_group" "qlik-sense" {
   vpc_id   = var.vpc_id
 
   health_check {
-    path    = "/healthcheck"
-    matcher = "200"
+    path    = "/saml/hub/"
+    matcher = "301"
   }
 
   stickiness {
@@ -71,6 +71,7 @@ resource "aws_alb" "qlik_sense" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.qlik_sense_alb.id]
   subnets            = data.aws_subnet.subnets.*.id
+  idle_timeout       = 4000
 }
 
 resource "aws_alb_listener" "qlik_sense_http" {
