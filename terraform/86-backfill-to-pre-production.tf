@@ -41,7 +41,7 @@ data "template_file" "task_definition_template" {
     REPOSITORY_URL           = aws_ecr_repository.worker.repository_url
     LOG_GROUP                = aws_cloudwatch_log_group.ecs_task_logs.name
     NUMBER_OF_DAYS_TO_RETAIN = 7
-    S3_SYNC_SOURCE           = "dataplatform-prod-raw-zone"
+    S3_SYNC_SOURCE           = module.raw_zone.bucket_id
     S3_SYNC_TARGET           = "dataplatform-stg-raw-zone-prod-copy"
   }
 }
@@ -106,7 +106,8 @@ data "aws_iam_policy_document" "task_role" {
       "s3:ListBucket"
     ]
     resources = [
-      "arn:aws:s3:::*" # production bucket
+      module.raw_zone.bucket_arn,
+      "${module.raw_zone.bucket_arn}/*"
     ]
   }
 
@@ -116,7 +117,7 @@ data "aws_iam_policy_document" "task_role" {
       "s3:PutObject"
     ]
     resources = [
-      "arn:aws:s3:::*" # pre-production bucket
+      "arn:aws:s3:::dataplatform-stg-raw-zone-prod-copy*"
     ]
   }
 }
