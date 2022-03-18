@@ -17,8 +17,8 @@ output "liberator_dump_to_rds_snapshot_ecr_repository_worker_endpoint" {
   value = try(module.liberator_dump_to_rds_snapshot[0].ecr_repository_worker_endpoint, null)
 }
 
-output "backfilling_ecr_repository_worker_endpoint" {
-  value = aws_ecr_repository.worker.repository_url
+output "prod_to_pre_prod_ecr_repository_endpoint" {
+  value = module.sync_production_to_pre_production.ecr_repository_worker_endpoint
 }
 
 output "ssl_connection_resources_bucket_id" {
