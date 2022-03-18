@@ -28,7 +28,7 @@ resource "aws_iam_role" "task_role" {
   tags = var.tags
 
   name               = "${var.operation_name}-task-role"
-  assume_role_policy = data.aws_iam_policy_document.fargate_assume_role
+  assume_role_policy = data.aws_iam_policy_document.fargate_assume_role.json
 }
 
 resource "aws_iam_role_policy" "task_role" {
