@@ -3,10 +3,12 @@ locals {
 }
 
 resource "aws_ecr_repository" "worker" {
+  tags = module.tags.values
   name = local.operation_name
 }
 
 resource "aws_ecs_cluster" "ecs_cluster" {
+  tags = module.tags.values
   name = local.operation_name
 }
 
@@ -45,6 +47,8 @@ data "template_file" "task_definition_template" {
 }
 
 resource "aws_ecs_task_definition" "task_definition" {
+  tags = module.tags.values
+
   family                   = local.operation_name
   container_definitions    = data.template_file.task_definition_template.rendered
   requires_compatibilities = ["FARGATE"]
