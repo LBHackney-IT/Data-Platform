@@ -33,7 +33,7 @@ locals {
     "^lbhatestrbviews_current_ctax.*",
     "^lbhatestrbviews_current_[hbn].*",
     "^lbhatestrbviews_core_ct[abcefghijklmnopqrsvw].*",
-    "(^lbhatestrbviews_core_cr.*)|(^lbhatestrbviews_core_[ins].*)|(^lbhatestrbviews_xdbvw.*|lbhatestrbviews_current_im.*)"
+    "(^lbhatestrbviews_core_cr.*|^lbhatestrbviews_core_[ins].*|^lbhatestrbviews_xdbvw.*|^lbhatestrbviews_current_im.*)"
   ] : []
   academy_ingestion_max_concurrent_runs = local.is_live_environment ? length(local.table_filter_expressions) : 1
 }
@@ -127,16 +127,17 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
-  script_s3_object_key   = aws_s3_bucket_object.copy_tables_landing_to_raw.key
-  environment            = var.environment
-  pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
-  helper_module_key      = aws_s3_bucket_object.helpers.key
-  glue_role_arn          = aws_iam_role.glue_role.arn
-  glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
-  glue_scripts_bucket_id = module.glue_scripts.bucket_id
-  glue_job_timeout       = 200
-  triggered_by_crawler   = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
+  job_name                        = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
+  script_s3_object_key            = aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  environment                     = var.environment
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  glue_role_arn                   = aws_iam_role.glue_role.arn
+  glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_job_timeout                = 220
+  max_concurrent_runs_of_glue_job = 2
+  triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "benefits-housing-needs/"
@@ -158,20 +159,21 @@ module "copy_academy_revenues_to_raw_zone" {
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
-  script_s3_object_key   = aws_s3_bucket_object.copy_tables_landing_to_raw.key
-  environment            = var.environment
-  pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
-  helper_module_key      = aws_s3_bucket_object.helpers.key
-  glue_role_arn          = aws_iam_role.glue_role.arn
-  glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
-  glue_scripts_bucket_id = module.glue_scripts.bucket_id
-  glue_job_timeout       = 200
-  triggered_by_crawler   = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
+  job_name                        = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
+  script_s3_object_key            = aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  environment                     = var.environment
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  glue_role_arn                   = aws_iam_role.glue_role.arn
+  glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_job_timeout                = 220
+  max_concurrent_runs_of_glue_job = 2
+  triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "revenues/"
-    "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*|^lbhatestrbviews_current_(?!hb).*)|(^lbhatestrbviews_xdbvw_.*)"
+    "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*|^lbhatestrbviews_current_(?!hb).*)|^lbhatestrbviews_xdbvw_.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
