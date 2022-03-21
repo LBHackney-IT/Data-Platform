@@ -4,8 +4,8 @@ variable "operation_name" {
 }
 
 variable "environment_variables" {
-  type        = list(object({
-    name = string
+  type = list(object({
+    name  = string
     value = string
   }))
   description = "A list of objects containing environment variables as key value pairs for the task's task definition."

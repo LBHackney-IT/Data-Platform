@@ -24,11 +24,11 @@ data "template_file" "task_definition_template" {
   TEMPLATE
 
   vars = {
-      OPERATION_NAME = var.operation_name
-      REPOSITORY_URL = aws_ecr_repository.worker.repository_url
-      LOG_GROUP      = aws_cloudwatch_log_group.ecs_task_logs.name
-      ENVIRONMENT_VARIABLES = jsonencode(var.environment_variables)
-    }
+    OPERATION_NAME        = var.operation_name
+    REPOSITORY_URL        = aws_ecr_repository.worker.repository_url
+    LOG_GROUP             = aws_cloudwatch_log_group.ecs_task_logs.name
+    ENVIRONMENT_VARIABLES = jsonencode(var.environment_variables)
+  }
 }
 
 resource "aws_ecs_task_definition" "task_definition" {
@@ -45,7 +45,7 @@ resource "aws_ecs_task_definition" "task_definition" {
 
   runtime_platform {
     operating_system_family = "LINUX"
-    cpu_architecture= "X86_64"
+    cpu_architecture        = "X86_64"
   }
 }
 
