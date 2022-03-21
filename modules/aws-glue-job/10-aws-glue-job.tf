@@ -6,6 +6,7 @@ locals {
   environment       = local.is_department_job ? var.department.environment : var.environment
   glue_role_arn     = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
   extra_jars        = join(",", concat(var.extra_jars, ["s3://${local.scripts_bucket_id}/jars/deequ-1.0.3.jar"]))
+  spark_ui_storage  = local.is_department_job ? "s3://${module.spark_ui_output_storage.bucket_id}/${var.department.identifier}" : "s3://${module.spark_ui_output_storage.bucket_id}/"
 
   script = var.script_s3_object_key == null ? {
     key    = local.is_department_job ? "scripts/${var.department.identifier}/${var.script_name}.py" : "scripts/${var.script_name}.py"
@@ -54,6 +55,8 @@ resource "aws_glue_job" "job" {
       "--extra-py-files"                   = "s3://${local.scripts_bucket_id}/${var.helper_module_key},s3://${local.scripts_bucket_id}/${var.pydeequ_zip_key}"
       "--extra-jars"                       = local.extra_jars
       "--enable-continuous-cloudwatch-log" = "true"
+      "--enable-spark-ui"                  = "true"
+      "--spark-event-logs-path"            = local.spark_ui_storage
   })
 }
 

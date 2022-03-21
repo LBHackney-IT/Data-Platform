@@ -81,6 +81,16 @@ module "lambda_artefact_storage" {
   bucket_identifier = "dp-lambda-artefact-storage"
 }
 
+module "spark_ui_output_storage" {
+  source            = "../modules/s3-bucket"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "Spark UI Storage"
+  bucket_identifier = "spark-ui-output-storage"
+}
+
 # This is a public bucket, used by the playbook documentation,
 # "Connecting to the redshift cluster from Google Data Studio"
 #

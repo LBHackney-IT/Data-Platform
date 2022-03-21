@@ -102,7 +102,8 @@ data "aws_iam_policy_document" "access_to_s3_iam_and_secrets" {
       "${module.trusted_zone.bucket_arn}/*",
       "${module.glue_scripts.bucket_arn}/*",
       "${module.glue_temp_storage.bucket_arn}/*",
-      "${module.noiseworks_data_storage.bucket_arn}/*"
+      "${module.noiseworks_data_storage.bucket_arn}/*",
+      "${module.spark_ui_output_storage.bucket_arn}/*"
     ]
   }
   statement {
