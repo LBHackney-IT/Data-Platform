@@ -36,3 +36,56 @@ resource "aws_iam_role_policy" "task_role" {
   role   = aws_iam_role.task_role.id
   policy = var.ecs_task_role_policy_document
 }
+
+resource "aws_iam_role" "cloudwatch_run_ecs_events" {
+  name               = "${var.operation_name}-run-ecs-task"
+  assume_role_policy = data.aws_iam_policy_document.cloudwatch_assume_role.json
+}
+
+data "aws_iam_policy_document" "cloudwatch_assume_role" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "events.amazonaws.com"
+      ]
+      type = "Service"
+    }
+  }
+}
+
+resource "aws_iam_role_policy" "ecs_events_run_task" {
+  name   = "${var.operation_name}-ecs-events-run-task"
+  role   = aws_iam_role.cloudwatch_run_ecs_events.id
+  policy = data.aws_iam_policy_document.event_run_policy.json
+}
+
+data "aws_iam_policy_document" "event_run_policy" {
+  statement {
+    effect  = "Allow"
+    actions = ["iam:PassRole"]
+    resources = [
+      aws_iam_role.task_role.arn,
+      aws_iam_role.fargate.arn
+    ]
+    condition {
+      test     = "StringLike"
+      variable = "iam:PassedToService"
+      values   = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+
+  statement {
+    effect    = "Allow"
+    actions   = ["ecs:RunTask"]
+    resources = [replace(aws_ecs_task_definition.task_definition.arn, "/:\\d+$/", ":*")]
+
+    condition {
+      test     = "StringLike"
+      variable = "ecs:cluster"
+      values   = [aws_ecs_cluster.ecs_cluster.arn]
+    }
+  }
+}

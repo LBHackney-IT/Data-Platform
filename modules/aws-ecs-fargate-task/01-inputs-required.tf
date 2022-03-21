@@ -18,5 +18,15 @@ variable "tags" {
 
 variable "ecs_task_role_policy_document" {
   description = "Policy document to attach to the ECS task definition iam role"
-  type = string
+  type        = string
+}
+
+variable "aws_subnet_ids" {
+  description = "Array of subnet IDs"
+  type        = list(string)
+}
+
+variable "task_schedule" {
+  description = "Schedule to run ECS tasks"
+  type        = string
 }
