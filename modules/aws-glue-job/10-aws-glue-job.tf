@@ -6,7 +6,7 @@ locals {
   environment       = local.is_department_job ? var.department.environment : var.environment
   glue_role_arn     = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
   extra_jars        = join(",", concat(var.extra_jars, ["s3://${local.scripts_bucket_id}/jars/deequ-1.0.3.jar"]))
-  spark_ui_storage  = local.is_department_job ? "s3://${module.spark_ui_output_storage.bucket_id}/${var.department.identifier}" : "s3://${module.spark_ui_output_storage.bucket_id}/"
+  spark_ui_storage  = local.is_department_job ? "s3://${var.spark_ui_output_storage_id}/${var.department.identifier}" : "s3://${var.spark_ui_output_storage_id}/"
 
   script = var.script_s3_object_key == null ? {
     key    = local.is_department_job ? "scripts/${var.department.identifier}/${var.script_name}.py" : "scripts/${var.script_name}.py"
@@ -69,7 +69,7 @@ locals {
 }
 
 resource "aws_glue_trigger" "job_trigger" {
-  tags  = local.tags
+  tags = local.tags
 
   name          = "${local.job_name_identifier}-job-trigger"
   type          = local.trigger_type

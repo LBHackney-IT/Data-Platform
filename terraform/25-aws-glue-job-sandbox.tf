@@ -1,11 +1,12 @@
 module "load_locations_vaccine_to_refined_sandbox" {
   source = "../modules/aws-glue-job"
 
-  department        = module.department_sandbox
-  job_name          = "${local.short_identifier_prefix}daro_covid_locations_and_vaccinations"
-  script_name       = "daro_covid_locations_and_vaccinations"
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
-  helper_module_key = aws_s3_bucket_object.helpers.key
+  department                 = module.department_sandbox
+  job_name                   = "${local.short_identifier_prefix}daro_covid_locations_and_vaccinations"
+  script_name                = "daro_covid_locations_and_vaccinations"
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--cleaned_covid_locations_s3_bucket_target" = "${module.refined_zone.bucket_id}/sandbox/daro-covid-locations-vaccinations-cleaned"
     "--source_catalog_database"                  = module.department_sandbox.raw_zone_catalog_database_name
@@ -21,11 +22,12 @@ module "load_locations_vaccine_to_refined_sandbox" {
 module "job_template" {
   source = "../modules/aws-glue-job"
 
-  department        = module.department_sandbox
-  job_name          = "${local.short_identifier_prefix}job_template"
-  script_name       = "job_script_template"
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
-  helper_module_key = aws_s3_bucket_object.helpers.key
+  department                 = module.department_sandbox
+  job_name                   = "${local.short_identifier_prefix}job_template"
+  script_name                = "job_script_template"
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/sandbox/some-target-location-in-the-refined-zone"
     "--source_catalog_database" = module.department_sandbox.raw_zone_catalog_database_name
@@ -36,11 +38,12 @@ module "job_template" {
 module "job_template_tim" {
   source = "../modules/aws-glue-job"
 
-  department        = module.department_sandbox
-  job_name          = "${local.short_identifier_prefix}training_job_tim"
-  script_name       = "training_job_tim"
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
-  helper_module_key = aws_s3_bucket_object.helpers.key
+  department                 = module.department_sandbox
+  job_name                   = "${local.short_identifier_prefix}training_job_tim"
+  script_name                = "training_job_tim"
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--s3_bucket_target"          = "s3://${module.refined_zone.bucket_id}/sandbox/tim-covid-vaccinations"
     "--source_catalog_database"   = module.department_sandbox.raw_zone_catalog_database_name
@@ -52,11 +55,12 @@ module "job_template_tim" {
 module "steve_covid_locations_and_vaccinations_sandbox" {
   source = "../modules/aws-glue-job"
 
-  department        = module.department_sandbox
-  job_name          = "${local.short_identifier_prefix}steve_covid_locations_and_vaccinations"
-  script_name       = "steve_covid_locations_and_vaccinations"
-  helper_module_key = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  department                 = module.department_sandbox
+  job_name                   = "${local.short_identifier_prefix}steve_covid_locations_and_vaccinations"
+  script_name                = "steve_covid_locations_and_vaccinations"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--s3_bucket_target"          = "s3://${module.refined_zone.bucket_id}/sandbox/steve-covid-vaccinations-locations"
     "--source_catalog_database"   = "sandbox-raw-zone"

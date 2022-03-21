@@ -16,6 +16,7 @@ module "housing_repairs_google_sheets_address_matching" {
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = var.number_of_workers_for_glue_job
   script_s3_object_key           = var.address_matching_script_key
+  spark_ui_output_storage_id     = var.spark_ui_output_storage_id
   workflow_name                  = var.workflow_name
   triggered_by_crawler           = module.housing_repairs_google_sheets_address_cleaning.crawler_name
 }

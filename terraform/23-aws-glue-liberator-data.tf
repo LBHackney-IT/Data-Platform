@@ -87,7 +87,7 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
     "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog"   = "true"
     "--enable-spark-ui"           = "true"
-    "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage.bucket_id}/parking/liberator"   
+    "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage.bucket_id}/parking/liberator"
   }
 }
 
@@ -115,7 +115,7 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw" {
     "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog"   = "true"
     "--enable-spark-ui"           = "true"
-    "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage.bucket_id}/env-enforcement/liberator"   
+    "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage.bucket_id}/env-enforcement/liberator"
   }
 }
 
