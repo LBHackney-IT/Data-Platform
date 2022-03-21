@@ -42,6 +42,11 @@ resource "aws_ecs_task_definition" "task_definition" {
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.fargate.arn
   task_role_arn            = aws_iam_role.task_role.arn
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture= "X86_64"
+  }
 }
 
 resource "aws_cloudwatch_log_group" "ecs_task_logs" {
