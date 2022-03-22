@@ -19,7 +19,7 @@ module "liberator_dump_to_rds_snapshot" {
   environment                = var.environment
   identifier_prefix          = local.identifier_prefix
   is_live_environment        = local.is_live_environment
-  instance_name              = lower("${local.identifier_prefix}-liberator-to-rds-snapshot")
+  instance_name              = "${local.short_identifier_prefix}liberator-to-rds-snapshot"
   watched_bucket_name        = module.liberator_data_storage.bucket_id
   watched_bucket_kms_key_arn = module.liberator_data_storage.kms_key_arn
   aws_subnet_ids             = data.aws_subnet_ids.network.ids
