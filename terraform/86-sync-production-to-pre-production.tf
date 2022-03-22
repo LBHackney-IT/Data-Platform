@@ -54,4 +54,5 @@ module "sync_production_to_pre_production" {
   ecs_task_role_policy_document = data.aws_iam_policy_document.task_role.json
   aws_subnet_ids                = data.aws_subnet_ids.network.ids
   task_schedule                 = "cron(40 15 ? * TUE *)"
+  ecs_cluster_arn               = aws_ecs_cluster.workers.arn
 }

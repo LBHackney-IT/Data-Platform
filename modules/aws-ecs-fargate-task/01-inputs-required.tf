@@ -3,6 +3,11 @@ variable "operation_name" {
   description = "A unique name for your task definition, ecs cluster and repository."
 }
 
+variable "ecs_cluster_arn" {
+  type        = string
+  description = "The ECS cluster ARN in which to run the task"
+}
+
 variable "environment_variables" {
   type = list(object({
     name  = string

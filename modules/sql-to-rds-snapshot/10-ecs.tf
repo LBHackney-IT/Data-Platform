@@ -2,10 +2,6 @@ resource "aws_ecr_repository" "worker" {
   name = var.instance_name
 }
 
-resource "aws_ecs_cluster" "ecs_cluster" {
-  name = var.instance_name
-}
-
 data "template_file" "task_definition_template" {
   template = file("${path.module}/task_definition_template.json")
   vars = {
