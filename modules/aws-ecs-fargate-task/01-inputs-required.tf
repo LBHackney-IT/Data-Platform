@@ -30,8 +30,3 @@ variable "aws_subnet_ids" {
   description = "Array of subnet IDs"
   type        = list(string)
 }
-
-variable "task_schedule" {
-  description = "Schedule to run ECS tasks"
-  type        = string
-}

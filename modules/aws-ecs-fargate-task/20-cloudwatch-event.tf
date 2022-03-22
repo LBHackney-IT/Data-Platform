@@ -1,7 +1,7 @@
-resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
+resource "aws_cloudwatch_event_target" "ecs_task" {
   target_id = "${var.operation_name}-schedule"
   arn       = var.ecs_cluster_arn
-  rule      = aws_cloudwatch_event_rule.task_schedule.name
+  rule      = aws_cloudwatch_event_rule.ecs_task.name
   role_arn  = aws_iam_role.cloudwatch_run_ecs_events.arn
 
   ecs_target {
@@ -17,10 +17,11 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
   }
 }
 
-resource "aws_cloudwatch_event_rule" "task_schedule" {
+resource "aws_cloudwatch_event_rule" "ecs_task" {
   tags = var.tags
 
   name                = "${var.operation_name}-scheduled-event"
-  description         = "Runs Fargate task ${var.operation_name}: ${var.task_schedule}"
-  schedule_expression = var.task_schedule
+  description         = "Runs Fargate task ${var.operation_name}"
+  schedule_expression = var.cloudwatch_rule_schedule_expression == null ? null : var.cloudwatch_rule_schedule_expression
+  event_pattern       = var.cloudwatch_rule_event_pattern == null ? null : var.cloudwatch_rule_event_pattern
 }
