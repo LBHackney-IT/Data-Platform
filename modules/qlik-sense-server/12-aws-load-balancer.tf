@@ -57,7 +57,7 @@ resource "aws_alb_target_group" "qlik-sense" {
 
   health_check {
     path    = "/saml/hub/"
-    matcher = "301"
+    matcher = "302"
   }
 
   stickiness {
