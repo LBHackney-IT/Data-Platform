@@ -219,7 +219,7 @@ jobs:
 
       - name: Build and Deploy Production to Pre-Production sync Image to ECR
         run: |
-          AWS_PROFILE=deploy_role ./docker/production-to-pre-production/deploy.sh
+          ENVIRONMENT=${{ inputs.environment }} AWS_PROFILE=deploy_role ./docker/production-to-pre-production/deploy.sh
 
       - name: Generate Self Signed certificate
         run: |

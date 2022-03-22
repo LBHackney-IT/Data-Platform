@@ -1,6 +1,12 @@
 #!/bin/bash
 set -eu -o pipefail
 
+if [[ $ENVIRONMENT != "prod" ]]
+then
+    echo "Exiting as not in production environment"
+    exit 0;
+fi
+
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 terraform_dir="${script_dir}/../../terraform"
