@@ -17,7 +17,8 @@ locals {
     "committee_application_map",
     "user_teams",
     "user_team_map",
-    "application_types"
+    "application_types",
+    "pre_applications"
   ]
 
   tascomi_static_tables = [
@@ -34,7 +35,9 @@ locals {
     "document_types",
     "fee_types",
     "ps_development_codes",
-    "public_consultations"
+    "public_consultations",
+    "pre_application_categories",
+    "asset_constraints"
   ]
 
   table_list = join(",", concat(local.tascomi_table_names, local.tascomi_static_tables))
