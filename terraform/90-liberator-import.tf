@@ -44,9 +44,6 @@ module "liberator_db_snapshot_to_s3" {
 }
 
 # Move .zip in production to pre production
-locals {
-  is_production_environment = var.environment == "prod"
-}
 
 # Cloudwatch event target
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_liberator_prod_to_pre_prod_lambda" {
