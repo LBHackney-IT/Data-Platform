@@ -3,3 +3,9 @@ variable "schema_name" {
   type        = string
   default     = null
 }
+
+variable "create_workflow" {
+  description = "Used to determine whether a workflow should be created for the ingestion process"
+  type        = bool
+  default     = true
+}

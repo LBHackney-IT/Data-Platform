@@ -9,8 +9,9 @@ module "academy_mssql_database_ingestion" {
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHATestRBViews database"
   jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]
   database_availability_zone  = "eu-west-2a"
-  database_secret_name        = "database-credentials/lbhatestrbviews-revenue-benefits-council-tax"
+  database_secret_name        = "database-credentials/lbhatestrbviews-benefits-housing-needs-revenues"
   identifier_prefix           = local.short_identifier_prefix
+  create_workflow             = false
   vpc_id                      = data.aws_vpc.network.id
 }
 
@@ -19,7 +20,7 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
 }
 
 locals {
-  table_filter_expressions = local.is_live_environment ? [
+  table_filter_expressions = [
     "^lbhatestrbviews_core_hbrent[s].*",
     "^lbhatestrbviews_core_hbc.*",
     "^lbhatestrbviews_core_hbrentclaim",
@@ -28,17 +29,23 @@ locals {
     "^lbhatestrbviews_core_hbmember",
     "^lbhatestrbviews_core_hbincome",
     "^lbhatestrbviews_core_hb[abdefghjklnopsw]",
-  ] : []
+    "^lbhatestrbviews_core_ct[dt].*",
+    "^lbhatestrbviews_current_ctax.*",
+    "^lbhatestrbviews_current_[hbn].*",
+    "^lbhatestrbviews_core_ct[abcefghijklmnopqrsvw].*",
+    "(^lbhatestrbviews_core_cr.*|^lbhatestrbviews_core_[ins].*|^lbhatestrbviews_xdbvw.*|^lbhatestrbviews_current_im.*)"
+  ]
   academy_ingestion_max_concurrent_runs = length(local.table_filter_expressions)
 }
+
+
 
 resource "aws_glue_trigger" "filter_ingestion_tables" {
   tags = module.tags.values
 
-  for_each      = toset(local.table_filter_expressions)
-  name          = "${local.short_identifier_prefix}filter-${each.value}"
-  type          = "CONDITIONAL"
-  workflow_name = module.academy_mssql_database_ingestion[0].workflow_name
+  for_each = toset(local.table_filter_expressions)
+  name     = "${local.short_identifier_prefix}filter-${each.value}"
+  type     = "CONDITIONAL"
 
   actions {
     job_name = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].job_name
@@ -70,9 +77,8 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  max_concurrent_runs_of_glue_job = local.is_live_environment ? local.academy_ingestion_max_concurrent_runs : 1
-  create_starting_trigger         = false
-  workflow_name                   = module.academy_mssql_database_ingestion[0].workflow_name
+  max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
+  glue_job_timeout                = 300
   job_parameters = {
     "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"       = "s3://${module.landing_zone.bucket_id}/academy/"
@@ -82,15 +88,36 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
     "--extra-jars"                       = "s3://${module.glue_scripts.bucket_id}/jars/deequ-1.0.3.jar"
     "--enable-continuous-cloudwatch-log" = "true"
   }
-  crawler_details = {
-    database_name      = aws_glue_catalog_database.landing_zone_academy.name
-    s3_target_location = "s3://${module.landing_zone.bucket_id}/academy/"
-    configuration = jsonencode({
-      Version = 1.0
-      Grouping = {
-        TableLevelConfiguration = 3
-      }
-    })
+}
+
+resource "aws_glue_crawler" "academy_revenues_and_benefits_housing_needs_landing_zone" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.landing_zone_academy.name
+  name          = "${local.short_identifier_prefix}academy-revenues-benefits-housing-needs-database-ingestion"
+  role          = aws_iam_role.glue_role.arn
+
+  s3_target {
+    path = "s3://${module.landing_zone.bucket_id}/academy/"
+  }
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 3
+    }
+  })
+}
+
+resource "aws_glue_trigger" "academy_revenues_and_benefits_housing_needs_landing_zone_crawler" {
+  tags = module.tags.values
+
+  name     = "${local.short_identifier_prefix}academy-revenues-benefits-housing-needs-database-ingestion-crawler-trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 0 5,6 ? * MON,TUE,WED,THU,FRI *)"
+  enabled  = local.is_live_environment
+
+  actions {
+    crawler_name = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   }
 }
 
@@ -100,20 +127,21 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
-  script_s3_object_key   = aws_s3_bucket_object.copy_tables_landing_to_raw.key
-  environment            = var.environment
-  pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
-  helper_module_key      = aws_s3_bucket_object.helpers.key
-  glue_role_arn          = aws_iam_role.glue_role.arn
-  glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
-  glue_scripts_bucket_id = module.glue_scripts.bucket_id
-  workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
-  triggered_by_crawler   = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].crawler_name
+  job_name                        = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
+  script_s3_object_key            = aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  environment                     = var.environment
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  glue_role_arn                   = aws_iam_role.glue_role.arn
+  glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_job_timeout                = 220
+  max_concurrent_runs_of_glue_job = 2
+  triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "benefits-housing-needs/"
-    "--table_filter_expression"          = "^lbhatestrbviews_core_hb.*"
+    "--table_filter_expression"          = "(^lbhatestrbviews_core_hb.*|^lbhatestrbviews_current_hb.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
@@ -131,20 +159,21 @@ module "copy_academy_revenues_to_raw_zone" {
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
-  script_s3_object_key   = aws_s3_bucket_object.copy_tables_landing_to_raw.key
-  environment            = var.environment
-  pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
-  helper_module_key      = aws_s3_bucket_object.helpers.key
-  glue_role_arn          = aws_iam_role.glue_role.arn
-  glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
-  glue_scripts_bucket_id = module.glue_scripts.bucket_id
-  workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
-  triggered_by_crawler   = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].crawler_name
+  job_name                        = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
+  script_s3_object_key            = aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  environment                     = var.environment
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  glue_role_arn                   = aws_iam_role.glue_role.arn
+  glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  glue_job_timeout                = 220
+  max_concurrent_runs_of_glue_job = 2
+  triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "revenues/"
-    "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*)|(^lbhatestrbviews_current_.*)|(^lbhatestrbviews_xdbvw_.*)"
+    "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*|^lbhatestrbviews_current_(?!hb).*)|^lbhatestrbviews_xdbvw_.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
     "--TempDir"                          = "s3://${module.glue_temp_storage.bucket_id}/"
