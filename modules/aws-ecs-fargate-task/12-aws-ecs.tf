@@ -9,7 +9,7 @@ data "template_file" "task_definition_template" {
     "essential": true,
     "memory": 512,
     "name": "$${OPERATION_NAME}",
-    "cpu": 2,
+    "cpu": 256,
     "image": "$${REPOSITORY_URL}:latest",
     "environment": $${ENVIRONMENT_VARIABLES},
     "LogConfiguration": {
