@@ -5,7 +5,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
   role_arn  = aws_iam_role.cloudwatch_run_ecs_events.arn
 
   ecs_target {
-    tags = var.tags
+    tags                = var.tags
     task_count          = 1
     task_definition_arn = aws_ecs_task_definition.task_definition.arn
     launch_type         = "FARGATE"

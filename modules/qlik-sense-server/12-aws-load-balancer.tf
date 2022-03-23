@@ -65,6 +65,12 @@ resource "aws_alb_target_group" "qlik-sense" {
   }
 }
 
+resource "aws_lb_target_group_attachment" "qlik-sense-tg-attachment" {
+  target_group_arn = aws_alb_target_group.qlik-sense.arn
+  target_id        = data.aws_instance.qlik-sense-aws-instance.id
+  port             = 443
+}
+
 resource "aws_alb" "qlik_sense" {
   name               = "${var.short_identifier_prefix}qlik-sense-alb"
   internal           = true
