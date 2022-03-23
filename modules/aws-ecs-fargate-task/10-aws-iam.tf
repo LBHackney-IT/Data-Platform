@@ -1,7 +1,7 @@
 resource "aws_iam_role" "fargate" {
   tags = var.tags
 
-  name               = "${var.operation_name}fargate"
+  name               = "${var.operation_name}-fargate"
   assume_role_policy = data.aws_iam_policy_document.fargate_assume_role.json
 }
 
