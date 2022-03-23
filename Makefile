@@ -18,6 +18,7 @@ init:
 	cd external-lib && make all
 	cd scripts && make all
 	cd terraform && make init
+	git config core.hooksPath .github/hooks
 
 apply:
 	cd scripts && make all
@@ -35,3 +36,8 @@ validate:
 	$(MAKE) -C terraform validate
 	$(MAKE) -C terraform-networking validate
 	$(MAKE) -C terraform-backend-setup validate
+
+start-qlik-ssm-session:
+	@echo "Environment (development,staging,production): "; read ENVIRONMENT; \
+	echo "Qlik instance id: "; read QLIK_INSTANCE_ID; \
+	aws-vault exec hackney-dataplatform-$$ENVIRONMENT -- aws ssm start-session --target $$QLIK_INSTANCE_ID --document-name AWS-StartPortForwardingSession --parameters '{"portNumber":["3389"],"localPortNumber":["3389"]}'
