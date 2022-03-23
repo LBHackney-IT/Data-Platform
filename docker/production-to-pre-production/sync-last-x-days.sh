@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu -o pipefail
 
 date=`date +"%Y%m%d"`
 
@@ -10,7 +11,7 @@ echo "S3 bucket source: $s3_sync_source"
 echo "S3 bucket target: $s3_sync_target"
 
 for i in $(seq 0 $((days_to_retain-1))); do
-    date_to_import=$(date -v "-${i}d" +"%Y%m%d")
+    date_to_import=$(date +"%Y%m%d" -d "${date} -${i} day")
 
     sync_include_opts+=( --include="*date=$date_to_import/*" )
     rm_exclude_opts+=( --exclude="*date=$date_to_import/*" )

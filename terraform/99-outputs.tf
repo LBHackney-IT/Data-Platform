@@ -48,3 +48,7 @@ output "redshift_schemas" {
 output "redshift_users" {
   value = local.redshift_users
 }
+
+output "sync_production_to_pre_production_task_role_arn" {
+  value = try(module.sync_production_to_pre_production[0].task_role, null)
+}
