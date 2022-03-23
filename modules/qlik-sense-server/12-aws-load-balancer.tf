@@ -66,6 +66,7 @@ resource "aws_alb_target_group" "qlik-sense" {
 }
 
 resource "aws_lb_target_group_attachment" "qlik-sense-tg-attachment" {
+  count            = data.aws_instance.qlik-sense-aws-instance.instance_state == "running" ? 1 : 0
   target_group_arn = aws_alb_target_group.qlik-sense.arn
   target_id        = data.aws_instance.qlik-sense-aws-instance.id
   port             = 443
