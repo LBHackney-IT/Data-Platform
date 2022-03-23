@@ -4,6 +4,7 @@ locals {
   tascomi_table_names = [
     "appeals",
     "applications",
+    "asset_constraints",
     "communications",
     "contacts",
     "documents",
@@ -17,7 +18,6 @@ locals {
     "committee_application_map",
     "user_teams",
     "user_team_map",
-    "application_types",
     "pre_applications"
   ]
 
@@ -25,6 +25,7 @@ locals {
     "appeal_decision",
     "appeal_status",
     "appeal_types",
+    "application_types",
     "breach_types",
     "committees",
     "communication_templates",
@@ -36,8 +37,7 @@ locals {
     "fee_types",
     "ps_development_codes",
     "public_consultations",
-    "pre_application_categories",
-    "asset_constraints"
+    "pre_application_categories"
   ]
 
   table_list = join(",", concat(local.tascomi_table_names, local.tascomi_static_tables))
