@@ -87,7 +87,7 @@ data "aws_iam_policy_document" "event_run_policy" {
     condition {
       test     = "StringLike"
       variable = "ecs:cluster"
-      values   = [aws_ecs_cluster.ecs_cluster.arn]
+      values   = [var.ecs_cluster_arn]
     }
   }
 }

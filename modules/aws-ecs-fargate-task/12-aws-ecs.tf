@@ -1,8 +1,3 @@
-resource "aws_ecs_cluster" "ecs_cluster" {
-  tags = var.tags
-  name = var.operation_name
-}
-
 data "template_file" "task_definition_template" {
   template = <<TEMPLATE
   [{

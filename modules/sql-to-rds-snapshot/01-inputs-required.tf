@@ -23,6 +23,11 @@ variable "instance_name" {
   type        = string
 }
 
+variable "ecs_cluster_arn" {
+  type        = string
+  description = "The ECS cluster ARN in which to run the task"
+}
+
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
