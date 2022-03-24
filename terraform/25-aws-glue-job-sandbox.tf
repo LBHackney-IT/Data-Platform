@@ -59,7 +59,7 @@ module "load_covid_data_to_refined_adam" {
 
   department        = module.department_sandbox
   job_name          = "${local.short_identifier_prefix}load_covid_data_to_refined_adam"
-  script_name       = "covid_adam"
+  script_name       = "adam_covid"
   pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
   helper_module_key = aws_s3_bucket_object.helpers.key
   job_parameters = {
