@@ -4,7 +4,6 @@ resource "aws_security_group" "kafka" {
   vpc_id      = var.vpc_id
   description = "Specifies rules for traffic to the kafka cluster"
 
-
 # TODO: Allow only traffic from port 80 & 443
   ingress {
     description      = "Allows all inbound traffic"
