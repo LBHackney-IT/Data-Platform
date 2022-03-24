@@ -30,11 +30,6 @@ variable "aws_hackit_account_id" {
   type        = string
 }
 
-variable "aws_vpc_id" {
-  description = "The ID of the AWS VPC"
-  type        = string
-}
-
 variable "google_project_id" {
   description = "The ID of the google project used as the target for resource deployment"
   type        = string
