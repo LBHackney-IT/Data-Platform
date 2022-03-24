@@ -41,5 +41,5 @@ locals {
 }
 
 data "aws_ssm_parameter" "aws_vpc_id" {
-  name = "aws_vpc_id"
+  name = "/${local.identifier_prefix}/vpc/vpc_id"
 }
