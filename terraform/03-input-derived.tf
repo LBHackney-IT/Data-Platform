@@ -39,3 +39,7 @@ locals {
     "*.xlsx"
   ]
 }
+
+data "aws_ssm_parameter" "aws_vpc_id" {
+  name = "aws_vpc_id"
+}
