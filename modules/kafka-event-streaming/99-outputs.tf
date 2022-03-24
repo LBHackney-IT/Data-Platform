@@ -22,7 +22,7 @@ output "default_s3_plugin_configuration" {
     connector_s3_plugin = {
       bucket_arn = module.kafka_dependency_storage.bucket_arn
       file_key   = aws_s3_bucket_object.kafka_connector_s3.key
-      name       = "kafka-connect-s3-with-aws-glue-schema-registry"
+      name       = aws_mskconnect_custom_plugin.tenure_api.name
     }
     connector_configuration = {
       "connector.class"                     = "io.confluent.connect.s3.S3SinkConnector"

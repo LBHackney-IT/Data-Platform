@@ -163,27 +163,6 @@ def get_plugin_if_exists(name: str):
         revision=plugin["latestRevision"]["revision"]
     ) for plugin in plugins if plugin["name"] == name), None)
 
-def create_custom_plugin(config: PluginConfig) -> PluginResponse:
-    client = boto3.client("kafkaconnect")
-    response = client.create_custom_plugin(
-        contentType="ZIP",
-        description="kafka connect plugin for hackney data platform",
-        location={
-            "s3Location": {
-                "bucketArn": config["bucket_arn"],
-                "fileKey": config["file_key"],
-            }
-        },
-        name=config["name"]
-    )
-
-    return PluginResponse(
-        name=response["name"],
-        state=response["customPluginState"],
-        arn=response["customPluginArn"],
-        revision=response["revision"]
-    )
-
 def get_capacity_request(connector_config: ConnectorCapacity):
     capacity = {}
     if connector_config.capacity.auto_scaling:
@@ -248,7 +227,7 @@ if __name__ == "__main__":
 
     plugin_config:PluginConfig = config["default_s3_plugin_configuration"]["value"]["connector_s3_plugin"]
 
-    plugin_response = get_plugin_if_exists(plugin_config["name"]) or create_custom_plugin(plugin_config)
+    plugin_response = get_plugin_if_exists(plugin_config["name"])
     logger.info(f"custom_plugin_response {plugin_response}")
 
     cluster_config_tf = config["cluster_config"]["value"]
