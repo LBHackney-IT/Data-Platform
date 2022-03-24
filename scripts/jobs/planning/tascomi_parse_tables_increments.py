@@ -44,7 +44,10 @@ dq_params = {'appeals': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'committee_application_map': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'user_teams': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'user_team_map': {'unique': ['id', 'import_date'], 'complete': 'id'},
-             'application_types': {'unique': ['id', 'import_date'], 'complete': 'id'}
+             'application_types': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'pre_applications': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'pre_application_categories': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'asset_constraints': {'unique': ['id', 'import_date'], 'complete': 'id'}
              }
 
 
