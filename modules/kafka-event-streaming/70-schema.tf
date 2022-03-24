@@ -31,7 +31,7 @@ resource "aws_iam_role" "get_schemas_role" {
 
 data "aws_iam_policy_document" "get_schemas" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "glue:Get*"
     ]
@@ -52,4 +52,15 @@ resource "aws_iam_policy" "get_schemas" {
 resource "aws_iam_role_policy_attachment" "get_schemas" {
   role       = aws_iam_role.get_schemas_role.name
   policy_arn = aws_iam_policy.get_schemas.arn
+}
+
+module "schema_registry" {
+  source            = "../kafka-schema-registry"
+  tags              = var.tags
+  environment       = var.environment
+  identifier_prefix = var.identifier_prefix
+  project           = var.project
+  vpc_id            = var.vpc_id
+  subnet_ids        = var.subnet_ids
+  bootstrap_servers = aws_msk_cluster.kafka_cluster.bootstrap_brokers_tls
 }

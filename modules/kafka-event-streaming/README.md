@@ -49,6 +49,9 @@ docker image and port forwarding to it via the bastian. It's a little convoluted
 
 ```shell
 docker pull landoop/schema-registry-ui
+docker run --rm -p 8000:8000 \
+           -e "SCHEMAREGISTRY_URL=http://localhost:8081" \
+           landoop/schema-registry-ui
 ```
 
 ### Bastian Tunnel
@@ -84,191 +87,55 @@ ssh -i .ssh/id_rsa -L 8081:{schema_repository_server_ip}:8081 ec2-user@localhost
 aws-vault exec hackney-dataplatform-{environment} -- aws ssm start-session --target {bastion_id} --document-name AWS-StartPortForwardingSession --parameters '{"portNumber":["8081"],"localPortNumber":["8081"]}'
 ```
 
+## Schema Registry
+Schema name should be: `{topic}-value` for example `tenure_api-value`
+
 
 ## MSK Connect
-
+Working Settings
 ```
 connector.class=io.confluent.connect.s3.S3SinkConnector
+s3.region=eu-west-2
 flush.size=1
+schema.compatibility=NONE
+tasks.max=2
+topics=tenure_api
+s3.sse.kms.key.id=8c5aa61d-8dab-4127-9190-5dfabc20d84c
+key.converter.schemas.enable=false
+value.converter.schema.registry.url=http://10.120.30.78:8081
 format.class=io.confluent.connect.s3.format.parquet.ParquetFormat
 partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
-s3.bucket.name=dataplatform-joates-raw-zone
-s3.region=eu-west-2
-s3.sse.kms.key.id=8c5aa61d-8dab-4127-9190-5dfabc20d84c
-schema.compatibility=BACKWARD
-storage.class=io.confluent.connect.s3.storage.S3Storage
-tasks.max=2
-topics=testing
-key.converter=org.apache.kafka.connect.storage.StringConverter
-value.converter=io.confluent.connect.avro.AvroConverter
-value.converter.schema.registry.url=http://10.120.30.15:8081
-```
-
-
-
-
-
-Current Settings
-```
-connector.class=io.confluent.connect.s3.S3SinkConnector
-s3.region=eu-west-2
-flush.size=1
-schema.compatibility=NONE
-tasks.max=2
-topics=mtfh-reporting-data-listener
-s3.part.size=5242880
-s3.sse.kms.key.id=8c5aa61d-8dab-4127-9190-5dfabc20d84c
-s3.compression.type=gzip
-partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
-storage.class=io.confluent.connect.s3.storage.S3Storage
-errors.log.enable=true
-s3.bucket.name=dataplatform-joates-raw-zone
-```
-
-AWS Example:
-```
-connector.class=io.confluent.connect.s3.S3SinkConnector,
-s3.region=us-east-1
-format.class=io.confluent.connect.s3.format.json.JsonFormat
-flush.size=1
-schema.compatibility=NONE
-topics=my-test-topic
-tasks.max=2
-partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
-storage.class=io.confluent.connect.s3.storage.S3Storage
-s3.bucket.name=my-test-bucket
-```
-
-This works! With strings
-```
-connector.class=io.confluent.connect.s3.S3SinkConnector
-s3.region=eu-west-2
-flush.size=1
-schema.compatibility=NONE
-topics=tenure_api_test
-tasks.max=2
-s3.sse.kms.key.id=8c5aa61d-8dab-4127-9190-5dfabc20d84c
-format.class=io.confluent.connect.s3.format.bytearray.ByteArrayFormat
-partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
-value.converter=org.apache.kafka.connect.converters.ByteArrayConverter
-storage.class=io.confluent.connect.s3.storage.S3Storage
-errors.log.enable=true
-key.converter=org.apache.kafka.connect.converters.ByteArrayConverter
-s3.bucket.name=dataplatform-joates-raw-zone
-```
-
-```
-connector.class=io.confluent.connect.s3.S3SinkConnector
-s3.region=eu-west-2
-flush.size=1
-schema.compatibility=NONE
-topics=tenure_api_test
-tasks.max=2
-s3.sse.kms.key.id=8c5aa61d-8dab-4127-9190-5dfabc20d84c
-format.class=io.confluent.connect.s3.format.bytearray.ByteArrayFormat
-partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
-storage.class=io.confluent.connect.s3.storage.S3Storage
-errors.log.enable=true
-s3.bucket.name=dataplatform-joates-raw-zone
-key.converter=org.apache.kafka.connect.storage.StringConverter
-key.converter.schemas.enable=false
-value.converter=io.confluent.connect.avro.AvroConverter
 value.converter.schemas.enable=true
-value.converter.schema.registry.url=http://10.120.30.15:8081
-value.converter.enhanced.avro.schema.support=true
-```
-
-Test15
-```
-connector.class=io.confluent.connect.s3.S3SinkConnector
-tasks.max=2
-topics=tenure_api_test
-s3.region=eu-west-2
-s3.bucket.name=dataplatform-joates-raw-zone
-s3.sse.kms.key.id=8c5aa61d-8dab-4127-9190-5dfabc20d84c
-flush.size=1
-storage.class=io.confluent.connect.s3.storage.S3Storage
-format.class=io.confluent.connect.s3.format.json.JsonFormat
-schema.generator.class=io.confluent.connect.storage.hive.schema.DefaultSchemaGenerator
-partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
-schema.compatibility=NONE
-key.converter=org.apache.kafka.connect.storage.StringConverter
-key.converter.schemas.enable=false
 value.converter=io.confluent.connect.avro.AvroConverter
-value.converter.schema.registry.url=http://10.120.30.15:8081
-value.converter.schemas.enable=true
+storage.class=io.confluent.connect.s3.storage.S3Storage
 errors.log.enable=true
-```
-
-```
-connector.class=io.confluent.connect.s3.S3SinkConnector
-s3.bucket.name=chris-test-data
-s3.region=us-west-2
-topics-dir=parquet-demo
-flush.size=3
-rotate.schedule.interval.ms=20000
-auto.register.schemas=false
-timezone=UTC
-parquet.codec=snappy
-storage.class=io.confluent.connect.s3.storage.S3Storage
-format.class=io.confluent.connect.s3.format.parquet.ParquetFormat
-schema.generator.class=io.confluent.connect.storage.hive.schema.DefaultSchemaGenerator
-partitioner.class=io.confluent.connect.storage.partitioner.DailyPartitioner
-locale=en-US
-key.converter.schemas.enable=false
+s3.bucket.name=dataplatform-joates-raw-zone
 key.converter=org.apache.kafka.connect.storage.StringConverter
-value.converter.schemas.enable=true
-value.converter.schema.registry.url=http://localhost:8081
-value.converter=io.confluent.connect.avro.AvroConverter
-tasks.max=1
-name=test-s3-ngap-sink
-topics=CDS_NGAP_SENDS
 ```
 
+Broken Settings
 ```
 connector.class=io.confluent.connect.s3.S3SinkConnector
-flush.size=1
-schema.compatibility=FULL
-tasks.max=2
-topics=testing
-format.class=io.confluent.connect.s3.format.parquet.ParquetFormat
-partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
-storage.class=io.confluent.connect.s3.storage.S3Storage
-s3.bucket.name=dataplatform-joates-landing-zone
-s3.region=eu-west-2
-s3.sse.kms.key.id=8c5aa61d-8dab-4127-9190-5dfabc20d84c
-topics.dir=testing
-key.converter=com.amazonaws.services.schemaregistry.kafkaconnect.AWSKafkaAvroConverter
-value.converter=com.amazonaws.services.schemaregistry.kafkaconnect.AWSKafkaAvroConverter
-key.converter.region=eu-west-2
-value.converter.region=eu-west-2
-key.converter.schemaAutoRegistrationEnabled=true
 value.converter.schemaAutoRegistrationEnabled=true
-key.converter.avroRecordType=GENERIC_RECORD
-value.converter.avroRecordType=GENERIC_RECORD
-key.converter.schemaName=testing-key
-value.converter.schemaName=testing-value
-key.converter.registry.name=joates-schema-registry
-value.converter.registry.name=joates-schema-registry
-```
-
-Test 31
-```
-connector.class=io.confluent.connect.s3.S3SinkConnector
-tasks.max=2
-topics=tenure_api_test
 s3.region=eu-west-2
-s3.bucket.name=dataplatform-joates-raw-zone
-s3.sse.kms.key.id=8c5aa61d-8dab-4127-9190-5dfabc20d84c
 flush.size=1
-storage.class=io.confluent.connect.s3.storage.S3Storage
-format.class=io.confluent.connect.s3.format.parquet.ParquetFormat
-partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
 schema.compatibility=NONE
-key.converter=org.apache.kafka.connect.storage.StringConverter
+tasks.max=2
+topics=tenure_api
+value.converter.registry.name=joates-schema-registry
+value.converter.avroRecordType=GENERIC_RECORD
+value.converter.region=eu-west-2
+s3.sse.kms.key.id=8c5aa61d-8dab-4127-9190-5dfabc20d84c
 key.converter.schemas.enable=false
-value.converter=io.confluent.connect.avro.AvroConverter
-value.converter.schema.registry.url=http://10.120.30.15:8081
+format.class=io.confluent.connect.s3.format.parquet.ParquetFormat
+value.converter.schemaName=joates-tenure-api
+partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
 value.converter.schemas.enable=true
+value.converter=com.amazonaws.services.schemaregistry.kafkaconnect.AWSKafkaAvroConverter
+storage.class=io.confluent.connect.s3.storage.S3Storage
 errors.log.enable=true
+key.converter=org.apache.kafka.connect.storage.StringConverter
+s3.bucket.name=dataplatform-joates-raw-zone
 ```
+Plugin: confluentinc-kafka-connect-s3-10-0-5-v3
+Name: tenure-api-with-s3-sink-and-aws-schema-registry-using-old-plugin
