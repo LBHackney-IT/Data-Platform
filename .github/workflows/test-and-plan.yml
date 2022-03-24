@@ -11,9 +11,11 @@ on:
     inputs:
       automation_build_url:
         default: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+        required: false
         type: string
       environment:
         default: "stg"
+        required: false
         type: string
     secrets:
       google_project_id:
@@ -36,6 +38,16 @@ on:
       AWS_HACKIT_ACCOUNT_ID:
         required: true
       AWS_ROLE_TO_ASSUME:
+        required: true
+      AWS_API_VPC_ID:
+        required: true
+      AWS_HOUSING_VPC_ID:
+        required: true
+      AWS_MOSAIC_VPC_ID:
+        required: true
+      AWS_DP_VPC_ID:
+        required: true
+      GOOGLE_CREDENTIALS:
         required: true
 
 jobs:
