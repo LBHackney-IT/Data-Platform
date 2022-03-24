@@ -1,9 +1,9 @@
 data "aws_vpc" "network" {
-  id = data.aws_vpc_id
+  id = var.aws_vpc_id
 }
 
 data "aws_subnet_ids" "network" {
-  vpc_id = data.aws_vpc_id
+  vpc_id = var.aws_vpc_id
 }
 
 data "aws_subnet" "network" {
