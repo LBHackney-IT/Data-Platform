@@ -86,6 +86,20 @@ jobs:
         working-directory: "./scripts"
         run: make all
 
+      - name: Run `terraform init` on Terraform Networking
+        run: |
+          ${{ github.action_path }}/../.helpers/box.sh "Running Terraform init"
+          echo -e "Configuring AWS credentials."
+          aws configure set default.region eu-west-2 > /dev/null 2>&1
+          aws configure set aws_access_key_id ${{ inputs.aws_access_key_id }} > /dev/null 2>&1
+          aws configure set aws_secret_access_key ${{ inputs.aws_secret_access_key }} > /dev/null 2>&1
+          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ inputs.terraform_state_s3_key_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.tfstate"
+          echo -e "Terraform S3 bucket: lbhackney-terraform-state"
+          echo -e "Terraform state file: ${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.state"
+          echo -e "\n"
+        shell: bash
+        working-directory: "./terraform-networking"
+
       - name: Run `terraform plan` on Terraform Networking
         run: |
             ${{ github.workspace }}/.github/actions/.helpers/box.sh "Running Terraform plan"
@@ -100,6 +114,20 @@ jobs:
           VPC_ID=$(terraform output vpc_id)
           echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/${{ inputs.environment }}.tfvars
 
+      - name: Run `terraform init` on Terraform Backend Setup
+        run: |
+          ${{ github.action_path }}/../.helpers/box.sh "Running Terraform init"
+          echo -e "Configuring AWS credentials."
+          aws configure set default.region eu-west-2 > /dev/null 2>&1
+          aws configure set aws_access_key_id ${{ inputs.aws_access_key_id }} > /dev/null 2>&1
+          aws configure set aws_secret_access_key ${{ inputs.aws_secret_access_key }} > /dev/null 2>&1
+          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ inputs.terraform_state_s3_key_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.tfstate"
+          echo -e "Terraform S3 bucket: lbhackney-terraform-state"
+          echo -e "Terraform state file: ${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.state"
+          echo -e "\n"
+        shell: bash
+        working-directory: "./terraform-backend-setup"
+
       - name: Run `terraform plan` on Terraform Backend Setup
         run: |
             ${{ github.action_path }}/../.helpers/box.sh "Running Terraform plan"
@@ -107,6 +135,20 @@ jobs:
             echo -e "\n"
         shell: bash
         working-directory: "./terraform-backend-setup"
+
+      - name: Run `terraform init` on Terraform
+        run: |
+          ${{ github.action_path }}/../.helpers/box.sh "Running Terraform init"
+          echo -e "Configuring AWS credentials."
+          aws configure set default.region eu-west-2 > /dev/null 2>&1
+          aws configure set aws_access_key_id ${{ inputs.aws_access_key_id }} > /dev/null 2>&1
+          aws configure set aws_secret_access_key ${{ inputs.aws_secret_access_key }} > /dev/null 2>&1
+          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ inputs.terraform_state_s3_key_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.tfstate"
+          echo -e "Terraform S3 bucket: lbhackney-terraform-state"
+          echo -e "Terraform state file: ${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.state"
+          echo -e "\n"
+        shell: bash
+        working-directory: "./terraform"
 
       - name: Run `terraform plan` on Terraform
         run: |
