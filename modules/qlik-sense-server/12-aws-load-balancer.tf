@@ -56,8 +56,9 @@ resource "aws_alb_target_group" "qlik-sense" {
   vpc_id   = var.vpc_id
 
   health_check {
-    path    = "/saml/hub/"
-    matcher = "302"
+    protocol = "HTTPS"
+    path     = "/saml/hub/"
+    matcher  = "302"
   }
 
   stickiness {
