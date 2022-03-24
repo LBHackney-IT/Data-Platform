@@ -25,10 +25,11 @@ job.init(args['JOB_NAME'], args)
 source_catalog_database = get_glue_env_var('source_data_database', '')
 s3_ingestion_bucket_target = get_glue_env_var('s3_ingestion_bucket_target', '')
 s3_ingestion_details_target = get_glue_env_var('s3_ingestion_details_target', '')
+table_filter_expression = get_glue_env_var('table_filter_expression')
 
 glue_client = boto3.client('glue')
 
-database_tables = get_all_database_tables(glue_client, source_catalog_database)
+database_tables = get_all_database_tables(glue_client, source_catalog_database, table_filter_expression)
 logger.info(f"Number of tables to copy: {len(database_tables)}")
 
 table_ingestion_details = []
@@ -82,7 +83,7 @@ target_ddf = glue_context.write_dynamic_frame.from_options(
     connection_type="s3",
     format="parquet",
     connection_options={
-        "path": s3_ingestion_details_target,
+        "path": s3_ingestion_details_target
     },
     transformation_ctx=f"{source_catalog_database}_ingestion_details",
 )

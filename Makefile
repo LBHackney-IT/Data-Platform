@@ -4,10 +4,7 @@ push-ecr:
 	aws-vault exec hackney-dataplatform-development -- ./docker/sql-to-parquet/deploy.sh
 
 format:
-	terraform fmt ./terraform
-	terraform fmt ./terraform-backend-setup
-	terraform fmt ./terraform-networking
-	terraform fmt -recursive ./modules
+	terraform fmt -recursive
 
 lint:
 	$(MAKE) -C terraform lint-init lint
@@ -20,6 +17,7 @@ init:
 	cd terraform && make init
 	cd terraform-networking && make init
 	cd terraform-backend-setup && make init
+	git config core.hooksPath .github/hooks
 
 apply:
 	cd scripts && make all
@@ -37,3 +35,8 @@ validate:
 	$(MAKE) -C terraform validate
 	$(MAKE) -C terraform-networking validate
 	$(MAKE) -C terraform-backend-setup validate
+
+start-qlik-ssm-session:
+	@echo "Environment (development,staging,production): "; read ENVIRONMENT; \
+	echo "Qlik instance id: "; read QLIK_INSTANCE_ID; \
+	aws-vault exec hackney-dataplatform-$$ENVIRONMENT -- aws ssm start-session --target $$QLIK_INSTANCE_ID --document-name AWS-StartPortForwardingSession --parameters '{"portNumber":["3389"],"localPortNumber":["3389"]}'

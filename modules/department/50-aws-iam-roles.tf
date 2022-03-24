@@ -59,3 +59,8 @@ resource "aws_iam_role_policy_attachment" "glue_agent_glue_full_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.full_glue_access.arn
 }
+
+resource "aws_iam_role_policy_attachment" "crawler_can_access_jdbc_connection" {
+  role       = aws_iam_role.glue_agent.name
+  policy_arn = aws_iam_policy.crawler_can_access_jdbc_connection.arn
+}

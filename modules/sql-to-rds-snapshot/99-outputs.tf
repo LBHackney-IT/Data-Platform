@@ -1,7 +1,7 @@
 # We make any output files clear by adding them to the 99-outputs.tf, meaning anyone can quickly check if they're consuming your module
 
 output "ecr_repository_worker_endpoint" {
-  value = aws_ecr_repository.worker.repository_url
+  value = module.sql_to_parquet.ecr_repository_worker_endpoint
 }
 
 output "rds_instance_id" {
@@ -9,8 +9,8 @@ output "rds_instance_id" {
 }
 
 output "cloudwatch_event_rule_name" {
-  value = aws_cloudwatch_event_rule.new_s3_object.name
+  value = module.sql_to_parquet.event_rule_name
 }
 output "cloudwatch_event_rule_arn" {
-  value = aws_cloudwatch_event_rule.new_s3_object.arn
+  value = module.sql_to_parquet.event_rule_arn
 }

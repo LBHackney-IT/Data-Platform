@@ -3,7 +3,7 @@ variable "jdbc_connection_url" {
   type        = string
 }
 
-variable "jdbc_connection_name" {
+variable "name" {
   description = "Name of the dataset that will be ingested."
 }
 
@@ -19,7 +19,7 @@ variable "database_availability_zone" {
 
 variable "database_secret_name" {
   description = "Name of secret for database credentials"
-  type = string
+  type        = string
 }
 
 variable "tags" {

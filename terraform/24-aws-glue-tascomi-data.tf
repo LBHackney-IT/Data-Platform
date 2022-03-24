@@ -1,9 +1,10 @@
 locals {
-  number_of_workers   = 4
-  max_concurrent_runs = max(length(local.tascomi_table_names), length(local.tascomi_static_tables))
+  number_of_workers                     = 4
+  tascomi_ingestion_max_concurrent_runs = max(length(local.tascomi_table_names), length(local.tascomi_static_tables))
   tascomi_table_names = [
     "appeals",
     "applications",
+    "asset_constraints",
     "communications",
     "contacts",
     "documents",
@@ -17,13 +18,14 @@ locals {
     "committee_application_map",
     "user_teams",
     "user_team_map",
-    "application_types"
+    "pre_applications"
   ]
 
   tascomi_static_tables = [
     "appeal_decision",
     "appeal_status",
     "appeal_types",
+    "application_types",
     "breach_types",
     "committees",
     "communication_templates",
@@ -34,7 +36,8 @@ locals {
     "document_types",
     "fee_types",
     "ps_development_codes",
-    "public_consultations"
+    "public_consultations",
+    "pre_application_categories"
   ]
 
   table_list = join(",", concat(local.tascomi_table_names, local.tascomi_static_tables))
@@ -64,7 +67,7 @@ module "ingest_tascomi_data" {
 
   department                      = module.department_planning
   number_of_workers_for_glue_job  = local.number_of_workers
-  max_concurrent_runs_of_glue_job = local.max_concurrent_runs
+  max_concurrent_runs_of_glue_job = local.tascomi_ingestion_max_concurrent_runs
   job_name                        = "${local.short_identifier_prefix}tascomi_api_ingestion_planning"
   helper_module_key               = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
@@ -238,3 +241,28 @@ module "tascomi_create_daily_snapshot" {
   }
 }
 
+module "tascomi_applications_to_trusted" {
+  source = "../modules/aws-glue-job"
+
+  department        = module.department_planning
+  job_name          = "${local.short_identifier_prefix}tascomi_applications_trusted"
+  helper_module_key = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  job_parameters = {
+    "--job-bookmark-option"     = "job-bookmark-enable"
+    "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/applications_reporting"
+    "--enable-glue-datacatalog" = "true"
+    "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
+    "--source_catalog_table"    = "increment_applications"
+    "--source_catalog_table2"   = "increment_application_types"
+    "--source_catalog_table3"   = "increment_ps_development_codes"
+  }
+  script_name = "tascomi_applications_trusted"
+
+  crawler_details = {
+    database_name      = module.department_planning.trusted_zone_catalog_database_name
+    s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/applications_reporting"
+  }
+
+
+}

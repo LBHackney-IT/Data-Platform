@@ -17,7 +17,8 @@ module "raw_zone" {
   bucket_name       = "Raw Zone"
   bucket_identifier = "raw-zone"
   role_arns_to_share_access_with = [
-    module.db_snapshot_to_s3.s3_to_s3_copier_lambda_role_arn
+    module.db_snapshot_to_s3.s3_to_s3_copier_lambda_role_arn,
+    var.sync_production_to_pre_production_task_role
   ]
 }
 

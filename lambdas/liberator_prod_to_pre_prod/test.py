@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 
 
-class GetS3SubfoldersTest(TestCase):
+class LiberatorProdToPreProdTests(TestCase):
   def setUp(self) -> None:
     self.boto_session = botocore.session.get_session()
     self.boto_session.set_credentials("", "")
@@ -25,7 +25,7 @@ class GetS3SubfoldersTest(TestCase):
     self.stubber.add_response('copy_object', response, expected_params)
     self.stubber.activate()
 
-  def test_copies_correct_object(self):
+  def test_copies_correct_object_with_prefix(self):
     self.set_up_copy_object_stub(
       {
         'Bucket': 'test-bucket',
@@ -33,12 +33,13 @@ class GetS3SubfoldersTest(TestCase):
         'CopySource': {
             'Bucket': 'source-bucket',
             'Key': 'some-folder/maybe-another/the-best-file.txt'
-        }
+        },
+        'ACL': 'bucket-owner-full-control',
       }
     )
 
     os.environ["TARGET_BUCKET_ID"] = "test-bucket"
-    os.environ["TARGET_PREFIX"] = "my-things"
+    os.environ["TARGET_PREFIX"] = "my-things/"
 
     event = {
       "detail": {
@@ -57,3 +58,37 @@ class GetS3SubfoldersTest(TestCase):
     }
 
     self.assertEqual(lambda_handler(event, {}, self.s3), None)
+
+  def test_copies_correct_object_without_prefix(self):
+      self.set_up_copy_object_stub(
+        {
+          'Bucket': 'test-bucket',
+          'Key': 'some-folder/maybe-another/the-best-file.txt',
+          'CopySource': {
+              'Bucket': 'source-bucket',
+              'Key': 'some-folder/maybe-another/the-best-file.txt'
+          },
+          'ACL': 'bucket-owner-full-control',
+        }
+      )
+
+      os.environ["TARGET_BUCKET_ID"] = "test-bucket"
+      os.environ["TARGET_PREFIX"] = ""
+
+      event = {
+        "detail": {
+          "resources": [
+              {
+                  "type": "AWS::S3::Object",
+                  "ARN": "arn:aws:s3:::source-bucket/some-folder/maybe-another/the-best-file.txt"
+              },
+              {
+                  "accountId": "494163742216",
+                  "type": "AWS::S3::Bucket",
+                  "ARN": "arn:aws:s3:::source-bucket"
+              }
+          ]
+        }
+      }
+
+      self.assertEqual(lambda_handler(event, {}, self.s3), None)

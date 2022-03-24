@@ -481,3 +481,83 @@ module "sandbox_covid_locations_adam" {
   dataset_name                    = "covid_locations_adam"
   enable_glue_trigger             = false
 }
+
+module "sandbox_estates_round_crew_data" {
+  count = local.is_live_environment ? 1 : 0
+
+  source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_sandbox.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone.bucket_id
+  google_sheets_document_id       = "1C5Afb_4qz2_7m7xPXAW9g40nWDt1jrdla3TBARAlCEM"
+  google_sheets_worksheet_name    = "EstatesRoundCrewData_07032022"
+  department                      = module.department_sandbox
+  dataset_name                    = "estate_round_crew_data"
+  enable_glue_trigger             = false
+}
+
+module "env_enforcement_asb_warnings" {
+  count = local.is_live_environment ? 1 : 0
+
+  source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_env_enforcement.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone.bucket_id
+  google_sheets_document_id       = "1lPmgGbN_LuhObVAwE3BPdgUrFEFDWh9he4MO21DrxLY"
+  google_sheets_worksheet_name    = "Form responses 1"
+  department                      = module.department_env_enforcement
+  dataset_name                    = "asb_warnings"
+  enable_glue_trigger             = true
+}
+
+module "sandbox_stevefarr_covid_vaccinations" {
+  count                           = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_sandbox.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone.bucket_id
+  google_sheets_document_id       = "1Wlfr6uUcVCMH3hN2GFgNbl0ENB5E14t62imgwk3dfU8"
+  google_sheets_worksheet_name    = "vaccinations"
+  department                      = module.department_sandbox
+  dataset_name                    = "stevefarr_covid_vaccinations"
+}
+
+module "sandbox_stevefarr_covid_locations" {
+  count                           = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_sandbox.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone.bucket_id
+  google_sheets_document_id       = "1Wlfr6uUcVCMH3hN2GFgNbl0ENB5E14t62imgwk3dfU8"
+  google_sheets_worksheet_name    = "locations"
+  department                      = module.department_sandbox
+  dataset_name                    = "stevefarr_covid_locations"
+}

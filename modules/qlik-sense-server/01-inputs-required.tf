@@ -32,3 +32,8 @@ variable "vpc_subnet_ids" {
   description = "A list of VPC Subnet IDs the server could be deployed in"
   type        = list(string)
 }
+
+variable "environment" {
+  description = "Enviroment e.g. dev, stg, prod, mgmt."
+  type        = string
+}
