@@ -20,7 +20,10 @@ terraform_directories=$(find "$(pwd)" -type f -name '*.tfvars' -or -name '*.tf' 
 
 #Format the files in the terraform directories and add
 for directory in $terraform_directories; do
-  for formatted_file in $(terraform fmt "$directory"); do
-    git add "$(pwd)"/"$formatted_file"
-  done
+  if [[ "$directory" != *".terraform"* ]]; then
+    echo "$directory"
+    for formatted_file in $(terraform fmt "$directory"); do
+      git add "$(pwd)"/"$formatted_file"
+    done
+  fi
 done
