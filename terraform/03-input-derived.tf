@@ -20,7 +20,7 @@ locals {
   team_snake                      = lower(replace(var.team, " ", "-"))
   environment                     = lower(replace(local.is_live_environment ? var.environment : terraform.workspace, " ", "-"))
   application_snake               = lower(replace(var.application, " ", "-"))
-  identifier_prefix               = local.is_live_environment ? lower("${local.application_snake}-${local.environment}") : lower("${local.application_snake}-dev")
+  identifier_prefix               = lower("${local.application_snake}-${local.is_live_environment ? local.environment : "dev"}")
   short_identifier_prefix         = lower(replace(local.is_live_environment ? "" : "${terraform.workspace}-", " ", "-"))
   google_group_admin_display_name = local.is_live_environment ? "saml-aws-data-platform-super-admins@hackney.gov.uk" : var.email_to_notify
 }
