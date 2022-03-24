@@ -117,7 +117,7 @@ module "stg_job_template_huu_do_sandbox" {
   source = "../modules/aws-glue-job"
 
   department        = module.department_sandbox
-  job_name          = "${local.short_identifier_prefix}stg_job_template_huu_do"
+  job_name          = "${local.short_identifier_prefix}job_template_huu_do"
   script_name       = "stg_job_template_huu_do"
   pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
   helper_module_key = aws_s3_bucket_object.helpers.key
