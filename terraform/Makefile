@@ -1,7 +1,7 @@
 .PHONY: $(MAKECMDGOALS)
 
 init:
-	aws-vault exec hackney-dataplatform-development -- terraform init -upgrade
+	aws-vault exec hackney-dataplatform-development -- terraform init
 
 plan:
 	aws-vault exec hackney-dataplatform-development -- terraform plan -var-file="../config/terraform/env.tfvars"
