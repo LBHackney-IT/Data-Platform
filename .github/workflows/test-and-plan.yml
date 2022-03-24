@@ -55,7 +55,7 @@ jobs:
           cd lambdas
           make test
   plan:
-    name: Plan Terraform
+    name: Validate Terraform
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
