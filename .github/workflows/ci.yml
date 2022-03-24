@@ -7,7 +7,7 @@ on:
 
 jobs:
   ci:
-    uses: ./.github/workflows/test-and-validate.yml
+    uses: ./.github/workflows/test-and-plan.yml
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
