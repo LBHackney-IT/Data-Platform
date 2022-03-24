@@ -62,8 +62,8 @@ module "core_vpc" {
   tags = module.tags.values
 }
 
-resource "aws_ssm_parameter" "aws_vpc_id" {
-  name  = "aws-vpc-id"
+resource "aws_ssm_parameter" "vpc_id" {
+  name  = "/${local.identifier_prefix}/vpc/vpc_id"
   type  = "String"
   value = module.core_vpc.vpc_id
   tags = merge(module.tags.values, {
