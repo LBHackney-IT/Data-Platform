@@ -20,7 +20,7 @@ on:
         required: false
 
 jobs:
-  validate-and-lint-terraform:
+  validate:
     uses: ./.github/workflows/validate-and-lint-terraform.yml
     with:
       environment: "prod"
@@ -43,7 +43,7 @@ jobs:
       AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
       AWS_DP_VPC_ID: ${{ secrets.AWS_DP_STG_VPC_ID }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_PROD }}
-  build-and-deploy:
+  deploy:
     needs: ["validate-and-lint-terraform"]
     uses: ./.github/workflows/deploy_terraform.yml
     with:

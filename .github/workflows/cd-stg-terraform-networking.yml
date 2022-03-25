@@ -32,9 +32,7 @@ on:
         required: false
 
 jobs:
-  test-python-and-lambda:
-    uses: ./.github/workflows/test-python-and-lambda.yml
-  validate-and-lint-terraform:
+  validate:
     uses: ./.github/workflows/validate-and-lint-terraform.yml
     with:
       environment: "stg"
@@ -57,8 +55,8 @@ jobs:
       AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
       AWS_DP_VPC_ID: ${{ secrets.AWS_DP_DEV_VPC_ID }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
-  build-and-deploy:
-    needs: ["test-python-and-lambda", "validate-and-lint-terraform"]
+  deploy:
+    needs: ["validate-and-lint-terraform"]
     uses: ./.github/workflows/deploy_terraform.yml
     with:
       terraform_infra_import: ${{ github.event.inputs.terraform_infra_import }}
