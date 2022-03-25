@@ -71,10 +71,19 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
+
       - name: Set up dummy Google Cloud Credentials
         run: |
           echo "{}" >> ./google_service_account_creds.json
         shell: bash
+
+      - name: Download external dependencies
+        working-directory: "./external-lib"
+        run: make all
+
+      - name: Package AWS Glue Job Helpers Module & Python modules
+        working-directory: "./scripts"
+        run: make all
 
       - name: Run `terraform validate` on ${{ inputs.build_path }}
         working-directory: ${{ inputs.build_path }}

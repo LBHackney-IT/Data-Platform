@@ -75,7 +75,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Data Platform
+    name: Deploy Data Platform in ${{ inputs.build_path }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
