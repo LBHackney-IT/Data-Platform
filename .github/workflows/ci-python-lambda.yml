@@ -1,0 +1,13 @@
+name: CI
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+    paths:
+      - 'scripts/**'
+      - 'lambdas/**'
+
+jobs:
+  ci:
+    uses: ./.github/workflows/test-and-plan.yml

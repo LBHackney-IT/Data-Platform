@@ -10,11 +10,12 @@ on:
 
 jobs:
   ci:
-    uses: ./.github/workflows/test-and-plan.yml
+    uses: ./.github/workflows/plan-and-lint-terraform.yml
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
       build_path: "./terraform"
+      terraform_state_s3_key_prefix: "data-platform"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
