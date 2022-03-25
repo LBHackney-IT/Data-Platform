@@ -5,8 +5,8 @@ on:
     branches-ignore:
       - "main"
     paths:
-      - './terraform-networking/**.tf'
-      - './config/stg.tfvars'
+      - 'terraform-networking/**'
+      - 'config/stg.tfvars'
 
 jobs:
   ci:

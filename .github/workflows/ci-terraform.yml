@@ -5,9 +5,9 @@ on:
     branches-ignore:
       - "main"
     paths:
-      - './terraform/**'
-      - './modules/**'
-      - './config/stg.tfvars'
+      - 'terraform/**'
+      - 'modules/**'
+      - 'config/stg.tfvars'
 
 jobs:
   ci:
