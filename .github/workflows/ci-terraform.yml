@@ -1,16 +1,25 @@
-name: CI
-
-on: 
+name: 'CI'
+on:
   push:
     branches-ignore:
       - "main"
+    paths-ignore:
+      - 'terraform-networking/**'
+      - 'terraform-backend-setup/**'
+      - 'scripts/**'
+      - 'lambdas/**'
+      - 'notebook/**'
+      - 'external-lib/**'
+      - 'docker/**'
 
 jobs:
-  ci:
-    uses: ./.github/workflows/test-and-validate.yml
+  CI:
+    uses: ./.github/workflows/plan-and-lint-terraform.yml
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+      build_path: "./terraform"
+      terraform_state_s3_key_prefix: "data-platform"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
@@ -19,6 +28,11 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_MOSAIC_PROD_ACCOUNT_ID: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
       AWS_API_ACCOUNT_PROD: ${{ secrets.AWS_API_ACCOUNT_PROD }}
-      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM }}
+      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_DEV }}
       AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      AWS_API_VPC_ID: ${{ secrets.AWS_API_VPC_ID }}
+      AWS_HOUSING_VPC_ID: ${{ secrets.AWS_HOUSING_VPC_ID }}
+      AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
+      AWS_DP_VPC_ID: ${{ secrets.AWS_DP_DEV_VPC_ID }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}

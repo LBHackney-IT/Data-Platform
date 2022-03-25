@@ -162,12 +162,6 @@ jobs:
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
 
-      - name: Assign Network Properties
-        working-directory: "./terraform-networking"
-        run: |
-          VPC_ID=$(terraform output vpc_id)
-          echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/${{ inputs.environment }}.tfvars
-
       - name: Deploy Data Platform Infastructure
         uses: ./.github/actions/terraform-deploy
         with:
