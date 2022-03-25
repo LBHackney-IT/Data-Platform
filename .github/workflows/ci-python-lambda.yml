@@ -10,4 +10,4 @@ on:
 
 jobs:
   ci:
-    uses: ./.github/workflow-templates/test-python-and-lambda.yml
+    uses: ./.github/workflows/test-python-and-lambda.yml

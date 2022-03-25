@@ -10,7 +10,7 @@ on:
 
 jobs:
   ci:
-    uses: ./.github/workflow-templates/validate-and-lint-terraform.yml
+    uses: ./.github/workflows/validate-and-lint-terraform.yml
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
