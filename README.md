@@ -27,7 +27,7 @@ The terraform-networking directory contains the networking aspect of the data pl
 
 #### /terraform-backend-setup
 
-The terraform-backend-setup directory is just for Dev’s bucket deployment, so it does not need a Github action. The terraform stata for this area is maintained in the repo and we run it locally.
+The terraform-backend-setup directory is just for Dev’s bucket deployment, so it does not need a Github action. The terraform state for this area is maintained in the repo and we run it locally.
 
 ## Terraform Development
 
