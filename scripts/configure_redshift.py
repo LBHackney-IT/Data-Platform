@@ -24,7 +24,7 @@ class Redshift:
             Sql=sql
         )
         status = ""
-        while (status != "FINISHED"):
+        while status != "FINISHED":
             query = self.describe_query(response['Id'])
             status = query['Status']
     
