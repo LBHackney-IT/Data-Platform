@@ -1,4 +1,4 @@
-name: Data-Platform (Production)
+name: Deploy Production Terraform
 concurrency: production-deploy
 
 on:

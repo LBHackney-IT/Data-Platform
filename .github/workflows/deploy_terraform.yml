@@ -2,12 +2,6 @@ name: Deploy Data-Platform
 env:
   aws_deploy_region: "eu-west-2"
 
-  network_state_prefix: "data-platform-network"
-  network_build_path: "./terraform-networking"
-
-  main_state_prefix: "data-platform"
-  main_build_path: "./terraform"
-
 on:
   workflow_call:
     inputs:

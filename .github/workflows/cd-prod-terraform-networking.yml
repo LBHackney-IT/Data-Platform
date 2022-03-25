@@ -1,4 +1,4 @@
-name: Data-Platform (Production)
+name: Deploy Production Terraform Networking
 concurrency: production-deploy
 
 on:
@@ -20,8 +20,6 @@ on:
         required: false
 
 jobs:
-  test-python-and-lambda:
-    uses: ./.github/workflows/test-python-and-lambda.yml
   validate-and-lint-terraform:
     uses: ./.github/workflows/validate-and-lint-terraform.yml
     with:
@@ -41,7 +39,7 @@ jobs:
       AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
   build-and-deploy:
-    needs: ["test-python-and-lambda", "validate-and-lint-terraform"]
+    needs: ["validate-and-lint-terraform"]
     uses: ./.github/workflows/deploy_terraform.yml
     with:
       terraform_infra_import: ${{ github.event.inputs.terraform_infra_import }}

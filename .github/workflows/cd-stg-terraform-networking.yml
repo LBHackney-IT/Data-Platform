@@ -1,4 +1,4 @@
-name: Deploy Terraform (Staging)
+name: Deploy Staging Terraform Networking
 concurrency: staging-deploy
 
 on:
