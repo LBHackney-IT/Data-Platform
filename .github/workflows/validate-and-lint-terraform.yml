@@ -83,7 +83,7 @@ jobs:
           terraform validate
 
   lint:
-    name: Run tf lint
+    name: Run tf lint in ${{ inputs.build_path }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

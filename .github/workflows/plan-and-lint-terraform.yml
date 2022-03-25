@@ -110,7 +110,7 @@ jobs:
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
   lint:
-    name: Run tf lint
+    name: Run tf lint in ${{ inputs.build_path }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
