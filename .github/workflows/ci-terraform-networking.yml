@@ -4,6 +4,9 @@ on:
   push:
     branches-ignore:
       - "main"
+    paths:
+      - './terraform-networking/**.tf'
+      - './config/stg.tfvars'
 
 jobs:
   ci:
@@ -11,6 +14,7 @@ jobs:
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+      build_path: "./terraform-networking"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
