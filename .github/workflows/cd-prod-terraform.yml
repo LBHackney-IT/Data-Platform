@@ -1,10 +1,9 @@
-name: Data-Platform (Staging)
-concurrency: staging-deploy
+name: Data-Platform (Production)
+concurrency: production-deploy
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       terraform_infra_import:
@@ -21,46 +20,52 @@ on:
         required: false
 
 jobs:
-  pre-deploy-checks:
-    uses: ./.github/workflows/test-and-validate.yml
+  test-python-and-lambda:
+    uses: ./.github/workflows/test-python-and-lambda.yml
+  validate-and-lint-terraform:
+    uses: ./.github/workflows/validate-and-lint-terraform.yml
     with:
-      environment: "stg"
-      automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+      environment: "prod"
+      automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
+      build_path: "./terraform"
+      terraform_state_s3_key_prefix: "data-platform"
     secrets:
-      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
-      AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
+      AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
       INFRASTRUCTURE_PRIVATE_KEY: ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_MOSAIC_PROD_ACCOUNT_ID: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
       AWS_API_ACCOUNT_PROD: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+      AWS_MOSAIC_PROD_ACCOUNT_ID: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
       AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
-      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_DEV }}
+      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
   build-and-deploy:
-    needs: ["pre-deploy-checks"]
+    needs: ["test-python-and-lambda", "validate-and-lint-terraform"]
     uses: ./.github/workflows/deploy_terraform.yml
     with:
       terraform_infra_import: ${{ github.event.inputs.terraform_infra_import }}
       terraform_infra_remove: ${{ github.event.inputs.terraform_infra_remove }}
       terraform_network_import: ${{ github.event.inputs.terraform_network_import }}
       terraform_network_remove: ${{ github.event.inputs.terraform_network_remove }}
-      environment: "stg"
-      automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+      environment: "prod"
+      automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
+      build_path: "./terraform"
+      terraform_state_s3_key_prefix: "data-platform"
     secrets:
-      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
-      AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
+      AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
       INFRASTRUCTURE_PRIVATE_KEY: ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_API_ACCOUNT_PROD: ${{ secrets.AWS_API_ACCOUNT_PROD }}
       AWS_MOSAIC_PROD_ACCOUNT_ID: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
       AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
-      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_DEV }}
+      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       AWS_API_VPC_ID: ${{ secrets.AWS_API_VPC_ID }}
       AWS_HOUSING_VPC_ID: ${{ secrets.AWS_HOUSING_VPC_ID }}
       AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
-      AWS_DP_VPC_ID: ${{ secrets.AWS_DP_DEV_VPC_ID }}
-      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
+      AWS_DP_VPC_ID: ${{ secrets.AWS_DP_STG_VPC_ID }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_PROD }}
 

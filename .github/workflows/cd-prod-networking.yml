@@ -20,11 +20,15 @@ on:
         required: false
 
 jobs:
-  pre-deploy-checks:
-    uses: ./.github/workflows/test-and-validate.yml
+  test-python-and-lambda:
+    uses: ./.github/workflows/test-python-and-lambda.yml
+  validate-and-lint-terraform:
+    uses: ./.github/workflows/validate-and-lint-terraform.yml
     with:
       environment: "prod"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
+      build_path: "./terraform-networking"
+      terraform_state_s3_key_prefix: "data-platform-network"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
@@ -37,7 +41,7 @@ jobs:
       AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
   build-and-deploy:
-    needs: ["pre-deploy-checks"]
+    needs: ["test-python-and-lambda", "validate-and-lint-terraform"]
     uses: ./.github/workflows/deploy_terraform.yml
     with:
       terraform_infra_import: ${{ github.event.inputs.terraform_infra_import }}
@@ -46,6 +50,8 @@ jobs:
       terraform_network_remove: ${{ github.event.inputs.terraform_network_remove }}
       environment: "prod"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
+      build_path: "./terraform-networking"
+      terraform_state_s3_key_prefix: "data-platform-network"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}

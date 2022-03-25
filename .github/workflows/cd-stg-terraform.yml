@@ -1,0 +1,75 @@
+name: Deploy Terraform (Staging)
+concurrency: staging-deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'terraform-networking/**'
+      - 'terraform-backend-setup/**'
+  workflow_dispatch:
+    inputs:
+      terraform_infra_import:
+        description: "Infrastructure terraform import statements"
+        required: false
+      terraform_infra_remove:
+        description: "Infrastructure terraform state rm statements"
+        required: false
+      terraform_network_import:
+        description: "Network terraform import statements"
+        required: false
+      terraform_network_remove:
+        description: "Network terraform state rm statements"
+        required: false
+
+jobs:
+  test-python-and-lambda:
+    uses: ./.github/workflows/test-python-and-lambda.yml
+  validate-and-lint-terraform:
+    uses: ./.github/workflows/validate-and-lint-terraform.yml
+    with:
+      environment: "stg"
+      automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+      build_path: "./terraform"
+      terraform_state_s3_key_prefix: "data-platform"
+    secrets:
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
+      AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+      INFRASTRUCTURE_PRIVATE_KEY: ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_MOSAIC_PROD_ACCOUNT_ID: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
+      AWS_API_ACCOUNT_PROD: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+      AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
+      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_DEV }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+  build-and-deploy:
+    needs: ["test-python-and-lambda", "validate-and-lint-terraform"]
+    uses: ./.github/workflows/deploy_terraform.yml
+    with:
+      terraform_infra_import: ${{ github.event.inputs.terraform_infra_import }}
+      terraform_infra_remove: ${{ github.event.inputs.terraform_infra_remove }}
+      terraform_network_import: ${{ github.event.inputs.terraform_network_import }}
+      terraform_network_remove: ${{ github.event.inputs.terraform_network_remove }}
+      environment: "stg"
+      automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+      build_path: "./terraform"
+      terraform_state_s3_key_prefix: "data-platform"
+    secrets:
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
+      AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+      INFRASTRUCTURE_PRIVATE_KEY: ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_API_ACCOUNT_PROD: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+      AWS_MOSAIC_PROD_ACCOUNT_ID: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
+      AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
+      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_DEV }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      AWS_API_VPC_ID: ${{ secrets.AWS_API_VPC_ID }}
+      AWS_HOUSING_VPC_ID: ${{ secrets.AWS_HOUSING_VPC_ID }}
+      AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
+      AWS_DP_VPC_ID: ${{ secrets.AWS_DP_DEV_VPC_ID }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
+
