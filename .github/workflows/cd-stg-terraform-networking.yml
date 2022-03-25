@@ -2,9 +2,12 @@ name: Deploy Staging Terraform Networking
 concurrency: staging-deploy
 
 on:
+#  push:
+#    branches:
+#      - main
   push:
-    branches:
-      - main
+    branches-ignore:
+      - "main"
     paths-ignore:
       - 'terraform/**'
       - 'terraform-backend-setup/**'
