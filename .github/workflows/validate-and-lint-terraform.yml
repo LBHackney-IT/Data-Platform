@@ -54,7 +54,7 @@ on:
 
 jobs:
   validate:
-    name: Validate Terraform in ${{ inputs.build_path }}
+    name: Test Terraform in ${{ inputs.build_path }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -76,14 +76,14 @@ jobs:
           echo "{}" >> ./google_service_account_creds.json
         shell: bash
 
-      - name: Run `terraform validate` on Backend Setup
-        working-directory: "./terraform-backend-setup"
+      - name: Run `terraform validate` on ${{ inputs.build_path }}
+        working-directory: ${{ inputs.build_path }}
         run: |
           terraform init -backend=false
           terraform validate
 
   lint:
-    name: Run tf lint in ${{ inputs.build_path }}
+    name: Lint Terraform in ${{ inputs.build_path }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
