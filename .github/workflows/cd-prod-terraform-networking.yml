@@ -44,7 +44,7 @@ jobs:
       AWS_DP_VPC_ID: ${{ secrets.AWS_DP_STG_VPC_ID }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_PROD }}
   deploy:
-    needs: ["validate-and-lint-terraform"]
+    needs: ["validate"]
     uses: ./.github/workflows/deploy_terraform.yml
     with:
       terraform_infra_import: ${{ github.event.inputs.terraform_infra_import }}
