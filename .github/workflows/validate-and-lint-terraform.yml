@@ -105,13 +105,13 @@ jobs:
         run: |
           curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip
 
-#      - name: Configuring AWS credentials
-#        working-directory: ${{ inputs.build_path }}
-#        run: |
-#          aws configure set region eu-west-2 > /dev/null 2>&1
-#          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} > /dev/null 2>&1
-#          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} > /dev/null 2>&1
-#          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ env.main_state_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ env.main_state_prefix }}/${{ inputs.environment }}-terraform.tfstate"
+      - name: Configuring AWS credentials
+        working-directory: ${{ inputs.build_path }}
+        run: |
+          aws configure set region eu-west-2 > /dev/null 2>&1
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} > /dev/null 2>&1
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} > /dev/null 2>&1
+          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ inputs.terraform_state_s3_key_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.tfstate"
 
       - name: Run `tflint` on ${{ inputs.build_path }}
         working-directory: ${{ inputs.build_path }}
