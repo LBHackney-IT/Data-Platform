@@ -5,12 +5,9 @@ on:
 #  push:
 #    branches:
 #      - main
-  push:
-    branches-ignore:
-      - "main"
-    paths-ignore:
-      - 'terraform-networking/**'
-      - 'terraform-backend-setup/**'
+#    paths-ignore:
+#      - 'terraform-networking/**'
+#      - 'terraform-backend-setup/**'
   workflow_dispatch:
     inputs:
       terraform_infra_import:

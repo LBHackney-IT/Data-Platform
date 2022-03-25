@@ -5,17 +5,14 @@ on:
 #  push:
 #    branches:
 #      - main
-  push:
-    branches-ignore:
-      - "main"
-    paths-ignore:
-      - 'terraform/**'
-      - 'terraform-backend-setup/**'
-      - 'scripts/**'
-      - 'lambdas/**'
-      - 'notebook/**'
-      - 'external-lib/**'
-      - 'docker/**'
+#    paths-ignore:
+#      - 'terraform/**'
+#      - 'terraform-backend-setup/**'
+#      - 'scripts/**'
+#      - 'lambdas/**'
+#      - 'notebook/**'
+#      - 'external-lib/**'
+#      - 'docker/**'
   workflow_dispatch:
     inputs:
       terraform_infra_import:
