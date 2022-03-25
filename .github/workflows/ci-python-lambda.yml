@@ -1,5 +1,3 @@
-name: CI Python and Lambda
-
 on:
   push:
     branches-ignore:
@@ -9,5 +7,5 @@ on:
       - 'lambdas/**'
 
 jobs:
-  ci:
+  CI:
     uses: ./.github/workflows/test-python-and-lambda.yml
