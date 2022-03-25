@@ -54,7 +54,7 @@ jobs:
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
   deploy:
     needs: ["validate"]
-    uses: ./.github/workflows/deploy_terraform.yml
+    uses: ./.github/workflows/deploy_terraform_networking.yml
     with:
       terraform_infra_import: ${{ github.event.inputs.terraform_infra_import }}
       terraform_infra_remove: ${{ github.event.inputs.terraform_infra_remove }}
