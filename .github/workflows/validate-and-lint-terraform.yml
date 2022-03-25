@@ -53,7 +53,7 @@ on:
         required: true
 
 jobs:
-  plan:
+  validate:
     name: Validate Terraform in ${{ inputs.build_path }}
     runs-on: ubuntu-latest
     steps:
@@ -71,43 +71,16 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
-
-      - name: Set up Google Cloud Credentials
+      - name: Set up dummy Google Cloud Credentials
         run: |
-          echo $GOOGLE_CREDENTIALS >> ./google_service_account_creds.json
+          echo "{}" >> ./google_service_account_creds.json
         shell: bash
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-      - name: Download external dependencies
-        working-directory: "./external-lib"
-        run: make all
-
-      - name: Package AWS Glue Job Helpers Module & Python modules
-        working-directory: "./scripts"
-        run: make all
-
-      - name: Plan Terraform in ${{ inputs.build_path }}
-        uses: ./.github/actions/terraform-plan
-        with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_deploy_region: ${{ env.aws_deploy_region }}
-          terraform_state_s3_key_prefix: ${{ inputs.terraform_state_s3_key_prefix }}
-          build_path: ${{ inputs.build_path }}
-          automation_build_url: ${{ inputs.automation_build_url }}
-          environment: ${{ inputs.environment }}
-          google_project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
-          aws_deploy_account_id: ${{ secrets.AWS_DEPLOY_ACCOUNT_ID }}
-          aws_api_account_id: ${{ secrets.AWS_API_ACCOUNT_PROD }}
-          aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
-          aws_data_platform_account_id: ${{ secrets.AWS_DATA_PLATFORM_ACCOUNT_ID }}
-          aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
-          aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
-          aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
-          aws_dp_vpc_id: ${{ secrets.AWS_DP_VPC_ID }}
-          aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
-          aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      - name: Run `terraform validate` on Backend Setup
+        working-directory: "./terraform-backend-setup"
+        run: |
+          terraform init -backend=false
+          terraform validate
 
   lint:
     name: Run tf lint
