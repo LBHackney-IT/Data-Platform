@@ -84,10 +84,12 @@ jobs:
           echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
 
-      - name: Set up dummy Google Cloud Credentials
+      - name: Set up Google Cloud Credentials
         run: |
-          echo "{}" >> ./google_service_account_creds.json
+          echo $GOOGLE_CREDENTIALS >> ./google_service_account_creds.json
         shell: bash
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       - name: Download external dependencies
         working-directory: "./external-lib"
