@@ -4,10 +4,9 @@ on:
   push:
     branches-ignore:
       - "main"
-    paths:
-      - 'terraform/**'
-      - 'modules/**'
-      - 'config/stg.tfvars'
+    paths-ignore:
+      - 'terraform-networking/**'
+      - 'terraform-backend-setup/**'
 
 jobs:
   ci:
