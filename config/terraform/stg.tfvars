@@ -18,4 +18,6 @@ redshift_public_ips                              = ["18.168.126.173"]
 redshift_port                                    = 5440
 copy_liberator_to_pre_prod_lambda_execution_role = "arn:aws:iam::365719730767:role/liberator-prod-to-pre-prod-lambda"
 emails_to_notify_with_budget_alerts              = ["saml-aws-data-platform-admins@hackney.gov.uk"]
-sync_production_to_pre_production_task_role      = "arn:aws:iam::365719730767:role/sync-production-to-pre-production-task-role"
+raw_zone_sync_production_to_pre_production_task_role      = "arn:aws:iam::365719730767:role/sync-production-to-pre-production-task-role"
+#landing_zone_sync_production_to_pre_production_task_role = "" // to be added once task is created
+#refined_zone_sync_production_to_pre_production_task_role = "" // to be added once task is created
