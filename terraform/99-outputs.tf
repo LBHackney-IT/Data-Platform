@@ -22,7 +22,7 @@ output "raw_zone_prod_to_pre_prod_ecr_repository_endpoint" {
 }
 
 output "landing_zone_prod_to_pre_prod_ecr_repository_endpoint" {
-  value = try(module.landing_zone_sync_production_to_pre_production[0].ecr_repository_worker_endpoint, null)
+  value = try(module.trusted_zone_sync_production_to_pre_production[0].ecr_repository_worker_endpoint, null)
 }
 
 output "refined_zone_prod_to_pre_prod_ecr_repository_endpoint" {

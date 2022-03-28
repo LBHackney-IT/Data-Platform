@@ -4,10 +4,10 @@ locals {
     { "name" = "S3_SYNC_SOURCE", "value" = module.raw_zone.bucket_id },
     { "name" = "S3_SYNC_TARGET", "value" = "dataplatform-stg-raw-zone-prod-copy" }
   ]
-  landing_zone_environment_variables = [
+  trusted_zone_environment_variables = [
     { "name" : "NUMBER_OF_DAYS_TO_RETAIN", "value" : "90" },
-    { "name" = "S3_SYNC_SOURCE", "value" = module.landing_zone.bucket_id },
-    { "name" = "S3_SYNC_TARGET", "value" = "dataplatform-stg-landing-zone-prod-copy" }
+    { "name" = "S3_SYNC_SOURCE", "value" = module.trusted_zone.bucket_id },
+    { "name" = "S3_SYNC_TARGET", "value" = "dataplatform-stg-trusted-zone-prod-copy" }
   ]
   refined_zone_environment_variables = [
     { "name" : "NUMBER_OF_DAYS_TO_RETAIN", "value" : "90" },
@@ -41,10 +41,10 @@ data "aws_iam_policy_document" "task_role" {
     resources = [
       module.raw_zone.bucket_arn,
       "${module.raw_zone.bucket_arn}/*",
-      module.landing_zone.bucket_arn,
-      "${module.landing_zone.bucket_arn}/*",
       module.refined_zone.bucket_arn,
-      "${module.refined_zone.bucket_arn}/*"
+      "${module.refined_zone.bucket_arn}/*",
+      module.trusted_zone.bucket_arn,
+      "${module.trusted_zone.bucket_arn}/*"
     ]
   }
 
@@ -57,8 +57,8 @@ data "aws_iam_policy_document" "task_role" {
     ]
     resources = [
       module.raw_zone.kms_key_arn,
-      module.landing_zone.kms_key_arn,
-      module.refined_zone.kms_key_arn
+      module.refined_zone.kms_key_arn,
+      module.trusted_zone.kms_key_arn
     ]
   }
 
@@ -71,8 +71,8 @@ data "aws_iam_policy_document" "task_role" {
     ]
     resources = [
       "arn:aws:s3:::dataplatform-stg-raw-zone-prod-copy*",
-      "arn:aws:s3:::dataplatform-stg-landing-zone-prod-copy*",
-      "arn:aws:s3:::dataplatform-stg-refined-zone-copy*"
+      "arn:aws:s3:::dataplatform-stg-refined-zone-copy*",
+      "arn:aws:s3:::dataplatform-stg-trusted-zone-prod-copy*"
     ]
   }
 
@@ -85,8 +85,8 @@ data "aws_iam_policy_document" "task_role" {
     ]
     resources = [
       "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0", // raw zone copy
-      "arn:aws:kms:eu-west-2:120038763019:key/16c05009-e071-4763-af20-b181b0f3d3d7", // landing zone copy
-      "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21"  // refined zone copy
+      "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21", // refined zone copy
+      "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"  // trusted zone copy
     ]
   }
 }
@@ -104,19 +104,6 @@ module "raw_zone_sync_production_to_pre_production" {
   ecs_cluster_arn                     = aws_ecs_cluster.workers.arn
 }
 
-module "landing_zone_sync_production_to_pre_production" {
-  source = "../modules/aws-ecs-fargate-task"
-  count  = local.is_production_environment ? 1 : 0
-
-  tags                                = module.tags.values
-  operation_name                      = "${local.short_identifier_prefix}landing-zone-sync-production-to-pre-production"
-  environment_variables               = local.landing_zone_environment_variables
-  ecs_task_role_policy_document       = data.aws_iam_policy_document.task_role.json
-  aws_subnet_ids                      = data.aws_subnet_ids.network.ids
-  cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
-  ecs_cluster_arn                     = aws_ecs_cluster.workers.arn
-}
-
 module "refined_zone_sync_production_to_pre_production" {
   source = "../modules/aws-ecs-fargate-task"
   count  = local.is_production_environment ? 1 : 0
@@ -124,6 +111,19 @@ module "refined_zone_sync_production_to_pre_production" {
   tags                                = module.tags.values
   operation_name                      = "${local.short_identifier_prefix}refined-zone-sync-production-to-pre-production"
   environment_variables               = local.refined_zone_environment_variables
+  ecs_task_role_policy_document       = data.aws_iam_policy_document.task_role.json
+  aws_subnet_ids                      = data.aws_subnet_ids.network.ids
+  cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
+  ecs_cluster_arn                     = aws_ecs_cluster.workers.arn
+}
+
+module "trusted_zone_sync_production_to_pre_production" {
+  source = "../modules/aws-ecs-fargate-task"
+  count  = local.is_production_environment ? 1 : 0
+
+  tags                                = module.tags.values
+  operation_name                      = "${local.short_identifier_prefix}trusted-zone-sync-production-to-pre-production"
+  environment_variables               = local.trusted_zone_environment_variables
   ecs_task_role_policy_document       = data.aws_iam_policy_document.task_role.json
   aws_subnet_ids                      = data.aws_subnet_ids.network.ids
   cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"

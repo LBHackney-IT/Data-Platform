@@ -6,9 +6,6 @@ module "landing_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Landing Zone"
   bucket_identifier = "landing-zone"
-  #  role_arns_to_share_access_with = [
-  #    var.landing_zone_sync_production_to_pre_production_task_role
-  #  ] // to be added once task is created
 }
 
 module "raw_zone" {
@@ -46,6 +43,9 @@ module "trusted_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Trusted Zone"
   bucket_identifier = "trusted-zone"
+  #  role_arns_to_share_access_with = [
+  #    var.trusted_zone_sync_production_to_pre_production_task_role
+  #  ] // to be added once task is created
 }
 
 module "glue_scripts" {
