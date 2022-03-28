@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_event_target" "ecs_task" {
-  for_each  = var.tasks
+  for_each  = { for task in var.tasks : task.task_prefix => task }
   target_id = "${each.value.task_prefix}${var.operation_name}-schedule"
   arn       = var.ecs_cluster_arn
   rule      = values(aws_cloudwatch_event_rule.ecs_task)[*].name
@@ -20,7 +20,7 @@ resource "aws_cloudwatch_event_target" "ecs_task" {
 
 resource "aws_cloudwatch_event_rule" "ecs_task" {
   tags     = var.tags
-  for_each = var.tasks
+  for_each = { for task in var.tasks : task.task_prefix => task }
 
   name                = "${each.value.task_prefix}${var.operation_name}-scheduled-event"
   description         = "Runs Fargate task ${each.value.task_prefix}${var.operation_name}"
