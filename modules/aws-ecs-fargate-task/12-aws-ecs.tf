@@ -48,7 +48,6 @@ resource "aws_ecs_task_definition" "task_definition" {
 
 resource "aws_cloudwatch_log_group" "ecs_task_logs" {
   tags = var.tags
-  for_each = var.tasks
 
   name = "${var.operation_name}-ecs-task-logs"
 }

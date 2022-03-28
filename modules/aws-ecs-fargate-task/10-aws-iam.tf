@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "event_run_policy" {
   statement {
     effect    = "Allow"
     actions   = ["ecs:RunTask"]
-    resources = [replace(aws_ecs_task_definition.task_definition.arn, "/:\\d+$/", ":*")]
+    resources = [for task_def in aws_ecs_task_definition.task_definition[*].arn : replace(task_def, "/:\\d+$/", ":*")]
 
     condition {
       test     = "StringLike"

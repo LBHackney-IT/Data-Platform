@@ -8,7 +8,7 @@ resource "aws_cloudwatch_event_target" "ecs_task" {
   ecs_target {
     tags                = var.tags
     task_count          = 1
-    task_definition_arn = aws_ecs_task_definition.task_definition.arn
+    task_definition_arn = aws_ecs_task_definition.task_definition[each.key].arn
     launch_type         = "FARGATE"
     platform_version    = "1.4.0"
 
