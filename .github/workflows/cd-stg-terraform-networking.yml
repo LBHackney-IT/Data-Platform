@@ -15,12 +15,6 @@ on:
       - 'docker/**'
   workflow_dispatch:
     inputs:
-      terraform_infra_import:
-        description: "Infrastructure terraform import statements"
-        required: false
-      terraform_infra_remove:
-        description: "Infrastructure terraform state rm statements"
-        required: false
       terraform_network_import:
         description: "Network terraform import statements"
         required: false
@@ -58,8 +52,6 @@ jobs:
     with:
       terraform_infra_import: ${{ github.event.inputs.terraform_infra_import }}
       terraform_infra_remove: ${{ github.event.inputs.terraform_infra_remove }}
-      terraform_network_import: ${{ github.event.inputs.terraform_network_import }}
-      terraform_network_remove: ${{ github.event.inputs.terraform_network_remove }}
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
       build_path: "./terraform-networking"
