@@ -168,6 +168,7 @@ module "copy_academy_revenues_to_raw_zone" {
     "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*|^lbhatestrbviews_current_(?!hb).*|^lbhatestrbviews_xdbvw_.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
+    "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
     "--job-bookmark-option"              = "job-bookmark-enable"
   }
