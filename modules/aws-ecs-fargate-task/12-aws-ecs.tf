@@ -1,4 +1,5 @@
 data "template_file" "task_definition_template" {
+  for_each = var.tasks
   template = <<TEMPLATE
   [{
     "essential": true,
@@ -22,15 +23,16 @@ data "template_file" "task_definition_template" {
     OPERATION_NAME        = var.operation_name
     REPOSITORY_URL        = aws_ecr_repository.worker.repository_url
     LOG_GROUP             = aws_cloudwatch_log_group.ecs_task_logs.name
-    ENVIRONMENT_VARIABLES = jsonencode(var.environment_variables)
+    ENVIRONMENT_VARIABLES = jsonencode(each.value.environment_variables)
   }
 }
 
 resource "aws_ecs_task_definition" "task_definition" {
-  tags = var.tags
+  tags     = var.tags
+  for_each = var.tasks
 
-  family                   = var.operation_name
-  container_definitions    = data.template_file.task_definition_template.rendered
+  family                   = "${each.value.task_prefix}${var.operation_name}"
+  container_definitions    = values(data.template_file.task_definition_template)[*].rendered
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
   memory                   = 512
@@ -46,6 +48,7 @@ resource "aws_ecs_task_definition" "task_definition" {
 
 resource "aws_cloudwatch_log_group" "ecs_task_logs" {
   tags = var.tags
+  for_each = var.tasks
 
   name = "${var.operation_name}-ecs-task-logs"
 }

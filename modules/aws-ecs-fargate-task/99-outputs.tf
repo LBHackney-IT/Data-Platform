@@ -7,9 +7,9 @@ output "task_role" {
 }
 
 output "event_rule_name" {
-  value = aws_cloudwatch_event_rule.ecs_task.name
+  value = aws_cloudwatch_event_rule.ecs_task[*].name
 }
 
 output "event_rule_arn" {
-  value = aws_cloudwatch_event_rule.ecs_task.arn
+  value = aws_cloudwatch_event_rule.ecs_task[*].arn
 }

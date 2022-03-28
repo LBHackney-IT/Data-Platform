@@ -57,9 +57,19 @@ module "sql_to_parquet" {
 
   tags                          = var.tags
   operation_name                = var.instance_name
-  environment_variables         = local.environment_variables
   ecs_task_role_policy_document = data.aws_iam_policy_document.task_role.json
   aws_subnet_ids                = var.aws_subnet_ids
   ecs_cluster_arn               = var.ecs_cluster_arn
-  cloudwatch_rule_event_pattern = local.event_pattern
+  tasks = [
+    {
+      cloudwatch_rule_event_pattern = local.event_pattern
+      environment_variables = [
+        { "name" : "MYSQL_HOST", "value" : aws_db_instance.ingestion_db.address },
+        { "name" : "MYSQL_USER", "value" : aws_db_instance.ingestion_db.username },
+        { "name" : "MYSQL_PASS", "value" : random_password.rds_password.result },
+        { "name" : "RDS_INSTANCE_ID", "value" : aws_db_instance.ingestion_db.id },
+        { "name" : "BUCKET_NAME", "value" : var.watched_bucket_name },
+      ]
+    }
+  ]
 }
