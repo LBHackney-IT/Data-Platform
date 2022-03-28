@@ -59,3 +59,13 @@ variable "emails_to_notify_with_budget_alerts" {
   description = "Array of emails or email groups who will be notified by the budget reporting"
   type        = list(string)
 }
+
+variable "datahub_instance_type" {
+  description = "The instance type to use for the DataHub server"
+  type        = string
+}
+
+variable "datahub_ssl_certificate_domain" {
+  description = "The domain name associated with an existing AWS Certificate Manager certificate"
+  type        = string
+}
