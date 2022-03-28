@@ -1,5 +1,5 @@
 data "template_file" "task_definition_template" {
-  for_each = { for task in var.tasks : task.task_prefix => task }
+  for_each = { for task in local.tasks : task.task_id => task }
   template = <<TEMPLATE
   [{
     "essential": true,
@@ -29,10 +29,10 @@ data "template_file" "task_definition_template" {
 
 resource "aws_ecs_task_definition" "task_definition" {
   tags     = var.tags
-  for_each = { for task in var.tasks : task.task_prefix => task }
+  for_each = { for task in local.tasks : task.task_id => task }
 
-  family                   = "${each.value.task_prefix}${var.operation_name}"
-  container_definitions    = values(data.template_file.task_definition_template)[*].rendered
+  family                   = "${each.value.task_id}${var.operation_name}"
+  container_definitions    = data.template_file.task_definition_template[each.key].rendered
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
   memory                   = 512

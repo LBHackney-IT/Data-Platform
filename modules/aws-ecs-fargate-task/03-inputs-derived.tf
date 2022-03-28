@@ -1,5 +1,3 @@
 locals {
-  default_task_details = defaults(var.tasks, {
-    task_prefix = ""
-  })
+  tasks = [for task in var.tasks : merge({ task_id = (task.task_prefix == null ? "" : task.task_prefix) }, task)]
 }
