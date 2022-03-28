@@ -15,31 +15,60 @@ module "core_vpc" {
 
   enable_s3_endpoint = true
 
-  enable_secretsmanager_endpoint             = true
-  secretsmanager_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
+  enable_secretsmanager_endpoint              = true
+  secretsmanager_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
+  secretsmanager_endpoint_private_dns_enabled = true
 
-  enable_ssm_endpoint             = true
-  ssm_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
+  enable_ssm_endpoint              = true
+  ssm_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
+  ssm_endpoint_private_dns_enabled = true
 
-  enable_ecr_api_endpoint             = true
-  ecr_api_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
+  enable_ssmmessages_endpoint              = true
+  ssmmessages_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
+  ssmmessages_endpoint_private_dns_enabled = true
 
-  enable_kms_endpoint             = true
-  kms_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
+  enable_ec2messages_endpoint              = true
+  ec2messages_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
+  ec2messages_endpoint_private_dns_enabled = true
 
-  enable_sqs_endpoint             = true
-  sqs_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
+  enable_ecr_api_endpoint              = true
+  ecr_api_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
+  ecr_api_endpoint_private_dns_enabled = true
 
-  enable_lambda_endpoint             = true
-  lambda_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
+  enable_ecr_dkr_endpoint              = true
+  ecr_dkr_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
+  ecr_dkr_endpoint_private_dns_enabled = true
 
-  enable_sns_endpoint             = true
-  sns_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
+  enable_kms_endpoint              = true
+  kms_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
+  kms_endpoint_private_dns_enabled = true
 
-  enable_ecs_endpoint             = true
-  ecs_endpoint_security_group_ids = [aws_security_group.service_endpoint.id]
+  enable_sqs_endpoint              = true
+  sqs_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
+  sqs_endpoint_private_dns_enabled = true
+
+  enable_lambda_endpoint              = true
+  lambda_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
+  lambda_endpoint_private_dns_enabled = true
+
+  enable_sns_endpoint              = true
+  sns_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
+  sns_endpoint_private_dns_enabled = true
+
+  enable_ecs_endpoint                    = true
+  ecs_endpoint_security_group_ids        = [aws_security_group.service_endpoint.id]
+  ecs_agent_endpoint_private_dns_enabled = true
 
   tags = module.tags.values
+}
+
+resource "aws_ssm_parameter" "vpc_id" {
+  name  = "/${local.identifier_prefix}/vpc/vpc_id"
+  type  = "String"
+  value = module.core_vpc.vpc_id
+  tags = merge(module.tags.values, {
+    "Name" : "VPC ID"
+  })
 }
 
 resource "aws_security_group" "service_endpoint" {

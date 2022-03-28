@@ -65,3 +65,27 @@ variable "aws_api_vpc_id" {
   type        = string
   default     = ""
 }
+
+variable "email_to_notify" {
+  description = "Email to notify when Glue jobs fail. This is only for local development"
+  type        = string
+  default     = null
+}
+
+variable "copy_liberator_to_pre_prod_lambda_execution_role" {
+  description = ""
+  type        = string
+  default     = null
+}
+
+variable "pre_production_liberator_data_storage_kms_key_arn" {
+  description = "KMS Key ARN for the liberator data storage bucket in pre production"
+  type        = string
+  default     = null
+}
+
+variable "sync_production_to_pre_production_task_role" {
+  description = "Role arn for the prod to pre-prod raw zone sync task. Only used in pre-production environment."
+  type        = string
+  default     = null
+}

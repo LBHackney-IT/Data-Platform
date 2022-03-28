@@ -10,7 +10,7 @@ variable "aws_deploy_region" {
   type        = string
 }
 
-variable "aws_deploy_account" {
+variable "aws_deploy_account_id" {
   description = "AWS account id to deploy to"
   type        = string
 }
@@ -35,7 +35,32 @@ variable "transit_gateway_private_subnets" {
   type        = list(string)
 }
 
+variable "aws_mosaic_prod_account_id" {
+  description = "AWS Mosaic Prod account ID"
+  type        = string
+}
+
 variable "aws_api_vpc_id" {
   description = "Staging APIs peer VPC ID"
+  type        = string
+}
+
+variable "aws_housing_vpc_id" {
+  description = "Housing peer VPC ID"
+  type        = string
+}
+
+variable "aws_mosaic_vpc_id" {
+  description = "Mosaic peer VPC ID"
+  type        = string
+}
+
+variable "aws_dp_vpc_id" {
+  description = "Data Platform VPC ID"
+  type        = string
+}
+
+variable "aws_data_platform_account_id" {
+  description = "Data Platform account ID"
   type        = string
 }

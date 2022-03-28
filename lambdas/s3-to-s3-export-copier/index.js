@@ -41,11 +41,15 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
         const [snapShotName, databaseName, tableName] = file.Key.split("/", 3);
 
         const fileName = file.Key.substr(`${snapShotName}/${databaseName}/${tableName}`.length + 1);
-        console.log("fileName====", fileName);
+        // remove extra partitions if necessary and get name of parquet files
+        const parquetFileName = getParquetFileName(fileName);
+
+        console.log("fileName:", fileName);
+        console.log("parquetFileName:", parquetFileName);
         const copyObjectParams = {
           Bucket: targetBucketName,
           CopySource: `${sourceBucketName}/${file.Key}`,
-          Key: `${targetPath}/${databaseName}/${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/import_date=${date}/${fileName}`,
+          Key: `${targetPath}/${databaseName}/${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/import_date=${date}/${parquetFileName}`,
           ACL: "bucket-owner-full-control",
         };
         console.log("copyObjectParams", copyObjectParams)
@@ -54,6 +58,14 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
       })
     );
   } while (listResponse.IsTruncated && listResponse.NextContinuationToken)
+}
+
+function getParquetFileName(fileName) {
+  if (!fileName.startsWith('p')) {
+    const index = fileName.lastIndexOf('/');
+    return fileName.substr(index + 1);
+  }
+  return fileName;
 }
 
 async function startWorkflowRun(workflowName) {

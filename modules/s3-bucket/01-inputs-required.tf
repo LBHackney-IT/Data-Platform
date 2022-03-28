@@ -9,7 +9,7 @@ variable "project" {
 }
 
 variable "environment" {
-  description = "Enviroment e.g. Dev, Stg, Prod, Mgmt."
+  description = "Enviroment e.g. dev, stg, prod, mgmt."
   type        = string
 }
 

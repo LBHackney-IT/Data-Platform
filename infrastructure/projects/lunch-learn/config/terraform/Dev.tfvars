@@ -1,6 +1,0 @@
-project = "Internal"
-department = "HackIT"
-phase = "Default"
-confidentiality = "Public"
-team = "CloudDeployment"
-application = "LunchLearn"

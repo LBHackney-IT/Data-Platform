@@ -1,6 +1,7 @@
 # This is no longer needed, but keeping this in as an example how the module should be used
 # module "repairs_spreadsheet" {
 #   source                         = "../modules/g-drive-to-s3"
+#   department                     = module.department_housing_repairs
 #   tags                           = module.tags.values
 #   identifier_prefix              = local.identifier_prefix
 #   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id

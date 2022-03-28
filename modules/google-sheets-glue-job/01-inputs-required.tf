@@ -1,6 +1,23 @@
-variable "tags" {
-  description = "AWS tags"
-  type        = map(string)
+variable "department" {
+  description = "The department with all its properties"
+  type = object({
+    identifier            = string
+    glue_role_arn         = string
+    tags                  = map(string)
+    identifier_snake_case = string
+    environment           = string
+    glue_temp_bucket = object({
+      bucket_id = string
+    })
+    glue_scripts_bucket = object({
+      bucket_id = string
+    })
+    google_service_account = object({
+      credentials_secret = object({
+        name = string
+      })
+    })
+  })
 }
 
 variable "is_live_environment" {
@@ -10,11 +27,6 @@ variable "is_live_environment" {
 
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
-  type        = string
-}
-
-variable "glue_role_arn" {
-  description = "Glue role arn"
   type        = string
 }
 
@@ -28,18 +40,13 @@ variable "google_sheets_import_script_key" {
   type        = string
 }
 
-variable "helpers_script_key" {
-  description = "Helpers script key"
+variable "helper_module_key" {
+  description = "Helpers Python module S3 object key"
   type        = string
 }
 
-variable "glue_temp_storage_bucket_id" {
-  description = "Glue temporary storage bucket id"
-  type        = string
-}
-
-variable "sheets_credentials_name" {
-  description = "Google sheets credentials"
+variable "glue_temp_storage_bucket_url" {
+  description = "Glue temp storage S3 bucket url"
   type        = string
 }
 
@@ -63,12 +70,12 @@ variable "google_sheets_worksheet_name" {
   type        = string
 }
 
-variable "department_name" {
-  description = "Department folder name"
+variable "dataset_name" {
+  description = "Output folder name"
   type        = string
 }
 
-variable "dataset_name" {
-  description = "Output folder name"
+variable "pydeequ_zip_key" {
+  description = "Pydeequ module to be used in Glue scripts"
   type        = string
 }

@@ -1,8 +1,8 @@
-resource "random_id" "random_subnet" {
-  byte_length = 2
-}
+data "aws_caller_identity" "current" {}
 
-locals {
-  subnet_ids_random_index = random_id.random_subnet.dec % length(var.vpc_subnet_ids)
-  instance_subnet_id      = var.vpc_subnet_ids[local.subnet_ids_random_index]
+data "aws_instance" "qlik-sense-aws-instance" {
+  filter {
+    name   = "tag:Name"
+    values = ["Qlik Migration ${upper(var.environment)}"]
+  }
 }

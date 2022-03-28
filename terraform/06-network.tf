@@ -1,9 +1,9 @@
 data "aws_vpc" "network" {
-  id = var.aws_vpc_id
+  id = data.aws_ssm_parameter.aws_vpc_id.value
 }
 
 data "aws_subnet_ids" "network" {
-  vpc_id = var.aws_vpc_id
+  vpc_id = data.aws_ssm_parameter.aws_vpc_id.value
 }
 
 data "aws_subnet" "network" {
@@ -114,7 +114,8 @@ resource "aws_security_group" "bastion" {
 
 resource "aws_instance" "bastion" {
   tags = merge(module.tags.values, {
-    "Name" : "${local.identifier_prefix}-bastion"
+    "Name" : "${local.identifier_prefix}-bastion",
+    "OOOShutdown" : "true"
   })
 
   ami                  = data.aws_ami.latest_amazon_linux_2.id
@@ -126,6 +127,6 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = [aws_security_group.bastion.id]
 
   lifecycle {
-    ignore_changes = [subnet_id]
+    ignore_changes = [ami, subnet_id]
   }
 }

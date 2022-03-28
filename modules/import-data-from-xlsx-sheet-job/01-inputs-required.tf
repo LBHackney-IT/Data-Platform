@@ -1,11 +1,18 @@
-variable "tags" {
-  description = "AWS tags"
-  type        = map(string)
-}
-
-variable "glue_role_arn" {
-  description = "Glue role arn"
-  type        = string
+variable "department" {
+  description = "The department with all its properties"
+  type = object({
+    identifier            = string
+    glue_role_arn         = string
+    tags                  = map(string)
+    identifier_snake_case = string
+    environment           = string
+    glue_temp_bucket = object({
+      bucket_id = string
+    })
+    glue_scripts_bucket = object({
+      bucket_id = string
+    })
+  })
 }
 
 variable "glue_catalog_database_name" {
@@ -23,8 +30,8 @@ variable "xlsx_import_script_key" {
   type        = string
 }
 
-variable "helpers_script_key" {
-  description = "Helpers script key"
+variable "helper_module_key" {
+  description = "Helpers Python module S3 object key"
   type        = string
 }
 
@@ -57,11 +64,6 @@ variable "glue_job_name" {
   type        = string
 }
 
-variable "department_folder_name" {
-  description = "Department folder name"
-  type        = string
-}
-
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
@@ -84,5 +86,10 @@ variable "input_file_name" {
 
 variable "worksheet_name" {
   description = "Name of xlsx worksheet in google drive"
+  type        = string
+}
+
+variable "pydeequ_zip_key" {
+  description = "Pydeequ module to be used in Glue scripts"
   type        = string
 }

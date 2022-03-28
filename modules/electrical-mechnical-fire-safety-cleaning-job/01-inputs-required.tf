@@ -1,20 +1,29 @@
-variable "tags" {
-  description = "AWS tags"
-  type        = map(string)
-}
-
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
 }
 
-variable "department_name" {
-  description = "Department folder name"
-  type        = string
+variable "department" {
+  description = "The department with all its properties"
+  type = object({
+    identifier                         = string
+    identifier_snake_case              = string
+    glue_role_arn                      = string
+    refined_zone_catalog_database_name = string
+    raw_zone_catalog_database_name     = string
+    tags                               = map(string)
+    environment                        = string
+    glue_temp_bucket = object({
+      bucket_id = string
+    })
+    glue_scripts_bucket = object({
+      bucket_id = string
+    })
+  })
 }
 
-variable "script_key" {
-  description = "Key of the script"
+variable "script_name" {
+  description = "Name of the script file"
   type        = string
 }
 
@@ -28,8 +37,8 @@ variable "glue_scripts_bucket_id" {
   type        = string
 }
 
-variable "glue_temp_storage_bucket_id" {
-  description = "Id of temp glue job storage"
+variable "glue_temp_storage_bucket_url" {
+  description = "Glue temp storage S3 bucket url"
   type        = string
 }
 
@@ -43,13 +52,13 @@ variable "trusted_zone_bucket_id" {
   type        = string
 }
 
-variable "helper_script_key" {
-  description = "Helpers script key"
+variable "helper_module_key" {
+  description = "Helpers Python module S3 object key"
   type        = string
 }
 
-variable "cleaning_helper_script_key" {
-  description = "Cleaning helpers script key"
+variable "deequ_jar_file_path" {
+  description = "Object key for Deequ jar"
   type        = string
 }
 
@@ -59,19 +68,9 @@ variable "glue_crawler_excluded_blobs" {
   default     = []
 }
 
-variable "catalog_database" {
-  description = "Catalog data name"
-  type        = string
-}
-
 variable "worksheet_resource" {
   description = "Object returned by module.repairs_fire_alarm_aov[0].worksheet_resources"
   type        = map(any)
-}
-
-variable "refined_zone_catalog_database_name" {
-  description = "Refined zone catalog database name"
-  type        = string
 }
 
 variable "dataset_name" {
@@ -103,4 +102,9 @@ variable "match_to_property_shell" {
   description = "Set a strategy for address matching, excluding or including property shells"
   type        = string
   default     = ""
+}
+
+variable "pydeequ_zip_key" {
+  description = "Pydeequ module to be used in Glue scripts"
+  type        = string
 }

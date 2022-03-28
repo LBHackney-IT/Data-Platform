@@ -8,7 +8,7 @@ resource "aws_ssoadmin_permission_set" "department" {
   provider = aws.aws_hackit_account
 
   // Name must not exceed 32 characters
-  name             = "DataPlatform${local.department_pascalcase}"
+  name             = "DataPlatform${local.department_pascalcase}${title(var.environment)}"
   description      = "This is a test permission set created by Terraform"
   instance_arn     = var.sso_instance_arn
   session_duration = "PT12H"
@@ -20,7 +20,7 @@ resource "aws_ssoadmin_permission_set_inline_policy" "department" {
 
   provider = aws.aws_hackit_account
 
-  inline_policy      = data.aws_iam_policy_document.sso_user_policy.json
+  inline_policy      = var.environment == "stg" ? data.aws_iam_policy_document.sso_staging_user_policy.json : data.aws_iam_policy_document.sso_production_user_policy.json
   instance_arn       = var.sso_instance_arn
   permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
 }

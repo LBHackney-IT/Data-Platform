@@ -91,7 +91,8 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   master_username              = "data_engineers"
   master_password              = random_password.redshift_cluster_master_password.result
   node_type                    = "dc2.large"
-  cluster_type                 = "single-node"
+  cluster_type                 = "multi-node"
+  number_of_nodes              = 3
   cluster_parameter_group_name = aws_redshift_parameter_group.require_ssl.name
   iam_roles                    = [aws_iam_role.redshift_role.arn]
   cluster_subnet_group_name    = aws_redshift_subnet_group.redshift.name
@@ -104,7 +105,7 @@ resource "aws_redshift_cluster" "redshift_cluster" {
 resource "aws_secretsmanager_secret" "redshift_cluster_master_password" {
   tags = var.tags
 
-  name        = "${var.identifier_prefix}-redshift-cluster-master-password"
+  name_prefix = "${var.identifier_prefix}-redshift-cluster-master-password"
   description = "Password for the redshift cluster master user "
   kms_key_id  = var.secrets_manager_key
 }

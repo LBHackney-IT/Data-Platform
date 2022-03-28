@@ -1,83 +1,35 @@
-resource "aws_glue_job" "housing_repairs_data_cleaning" {
-  tags = var.tags
+locals {
+  s3_object_tags = { for k, v in var.department.tags : k => v if k != "PlatformDepartment" }
+  object_key     = "${var.department.identifier_snake_case}/${var.data_cleaning_script_name}.py"
+}
 
-  name              = "${var.short_identifier_prefix}Housing Repairs - ${title(replace(var.dataset_name, "-", " "))} Cleaning"
-  number_of_workers = 10
-  worker_type       = "G.1X"
-  role_arn          = var.glue_role_arn
-  command {
-    python_version  = "3"
-    script_location = "s3://${var.glue_scripts_bucket_id}/${var.data_cleaning_script_key}"
-  }
+resource "aws_s3_bucket_object" "housing_repairs_repairs_cleaning_script" {
+  bucket      = var.glue_scripts_bucket_id
+  key         = "scripts/${local.object_key}"
+  acl         = "private"
+  source      = "../scripts/jobs/${local.object_key}"
+  source_hash = filemd5("../scripts/jobs/${local.object_key}")
+}
 
-  glue_version = "2.0"
+module "housing_repairs_google_sheets_cleaning" {
+  source = "../aws-glue-job"
 
-  default_arguments = {
-    "--cleaned_repairs_s3_bucket_target" = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/cleaned/"
-    "--source_catalog_database"          = var.catalog_database
+  department        = var.department
+  job_name          = "${local.glue_job_name} Cleaning"
+  helper_module_key = var.helper_module_key
+  pydeequ_zip_key   = var.pydeequ_zip_key
+  job_parameters = {
+    "--source_catalog_database"          = local.raw_zone_catalog_database_name
     "--source_catalog_table"             = var.source_catalog_table
-    "--TempDir"                          = var.glue_temp_storage_bucket_id
-    "--extra-py-files"                   = "s3://${var.glue_scripts_bucket_id}/${var.helper_script_key},s3://${var.glue_scripts_bucket_id}/${var.cleaning_helper_script_key}"
+    "--cleaned_repairs_s3_bucket_target" = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/cleaned/"
   }
-}
-
-resource "aws_glue_trigger" "housing_repairs_cleaning_job" {
-  tags = var.tags
-
-  name          = "${var.identifier_prefix}-housing-repairs-${var.dataset_name}-cleaning-job-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = var.workflow_name
-
-  predicate {
-    conditions {
-      crawler_name = var.trigger_crawler_name
-      crawl_state  = "SUCCEEDED"
-    }
+  script_s3_object_key = aws_s3_bucket_object.housing_repairs_repairs_cleaning_script.key
+  workflow_name        = var.workflow_name
+  triggered_by_crawler = var.trigger_crawler_name
+  crawler_details = {
+    table_prefix       = "housing_repairs_${replace(var.dataset_name, "-", "_")}_"
+    database_name      = local.refined_zone_catalog_database_name
+    s3_target_location = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/cleaned/"
   }
-
-  actions {
-    job_name = aws_glue_job.housing_repairs_data_cleaning.name
-  }
-}
-
-resource "aws_glue_crawler" "refined_zone_housing_repairs_cleaned_crawler" {
-  tags = var.tags
-
-  database_name = var.refined_zone_catalog_database_name
-  name          = "${var.short_identifier_prefix}refined-zone-housing-repairs-${var.dataset_name}-cleaned"
-  role          = var.glue_role_arn
-  table_prefix  = "housing_repairs_${replace(var.dataset_name, "-", "_")}_"
-
-  s3_target {
-    path       = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/cleaned/"
-    exclusions = var.glue_crawler_excluded_blobs
-  }
-
-  configuration = jsonencode({
-    Version = 1.0
-    CrawlerOutput = {
-      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
-    }
-    Grouping = {
-      TableLevelConfiguration = 4
-    }
-  })
-}
-
-resource "aws_glue_trigger" "housing_repairs_cleaned_crawler" {
-  tags = var.tags
-
-  name          = "${var.identifier_prefix}-housing-repairs-${var.dataset_name}-cleaning-crawler-trigger"
-  type          = "CONDITIONAL"
-  workflow_name = var.workflow_name
-
-  predicate {
-    conditions {
-      job_name = aws_glue_job.housing_repairs_data_cleaning.name
-      state    = "SUCCEEDED"
-    }
-  }
-  actions {
-    crawler_name = aws_glue_crawler.refined_zone_housing_repairs_cleaned_crawler.name
-  }
+  trigger_enabled = false
 }

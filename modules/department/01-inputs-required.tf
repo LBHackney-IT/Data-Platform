@@ -8,6 +8,11 @@ variable "is_live_environment" {
   type        = bool
 }
 
+variable "environment" {
+  description = "Environment e.g. Dev, Stg, Prod, Mgmt."
+  type        = string
+}
+
 variable "landing_zone_bucket" {
   description = "Landing zone S3 bucket"
   type = object({
@@ -107,4 +112,14 @@ variable "sso_instance_arn" {
 variable "identity_store_id" {
   description = "The ID of the Identity Store used to configure SSO on the main HackIT account"
   type        = string
+}
+
+variable "redshift_ip_addresses" {
+  type        = list(string)
+  description = "Public IP addresses for the redshift cluster"
+}
+
+variable "redshift_port" {
+  description = "Port that the redshift cluster is running on"
+  type        = number
 }

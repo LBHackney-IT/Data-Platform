@@ -9,7 +9,7 @@ lambdas/*/venv
 lambdas/*/*.zip
 lambdas/*.zip
 notebook/scripts/.ipynb_checkpoints/*
-jars/target/*
+external-lib/target/*
 env.tfvars
 dev.tfvars
 google_service_account_creds*.json
@@ -17,3 +17,6 @@ google_service_account_creds*.json
 */.env
 notebook/aws-config/credentials
 .gitmessage
+**/.venv
+**/__pycache__
+/venv/

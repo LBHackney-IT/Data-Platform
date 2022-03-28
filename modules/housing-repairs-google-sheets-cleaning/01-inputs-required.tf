@@ -1,20 +1,10 @@
-variable "tags" {
-  description = "AWS tags"
-  type        = map(string)
-}
-
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
 }
 
-variable "department_name" {
-  description = "Department folder name"
-  type        = string
-}
-
-variable "data_cleaning_script_key" {
-  description = "Key of the location of the data cleaning script"
+variable "data_cleaning_script_name" {
+  description = "Name of the data cleaning script file"
   type        = string
 }
 
@@ -28,8 +18,8 @@ variable "glue_scripts_bucket_id" {
   type        = string
 }
 
-variable "glue_temp_storage_bucket_id" {
-  description = "Id of temp glue job storage"
+variable "glue_temp_storage_bucket_url" {
+  description = "Glue temp storage S3 bucket url"
   type        = string
 }
 
@@ -38,13 +28,8 @@ variable "refined_zone_bucket_id" {
   type        = string
 }
 
-variable "helper_script_key" {
-  description = "Helpers script key"
-  type        = string
-}
-
-variable "cleaning_helper_script_key" {
-  description = "Cleaning helpers script key"
+variable "helper_module_key" {
+  description = "Helpers Python module S3 object key"
   type        = string
 }
 
@@ -52,11 +37,6 @@ variable "glue_crawler_excluded_blobs" {
   description = "A list of blobs to ignore when crawling the job"
   type        = list(string)
   default     = []
-}
-
-variable "catalog_database" {
-  description = "Catalog data name"
-  type        = string
 }
 
 variable "source_catalog_table" {
@@ -71,11 +51,6 @@ variable "trigger_crawler_name" {
 
 variable "workflow_name" {
   description = "Name of the workflow to add all the triggers created here to"
-  type        = string
-}
-
-variable "refined_zone_catalog_database_name" {
-  description = "Refined zone catalog database name"
   type        = string
 }
 
@@ -113,4 +88,28 @@ variable "match_to_property_shell" {
   description = "Set a strategy for address matching, excluding or including property shells"
   type        = string
   default     = ""
+}
+
+variable "pydeequ_zip_key" {
+  description = "Pydeequ module to be used in Glue scripts"
+  type        = string
+}
+
+variable "department" {
+  description = "The department with all its properties"
+  type = object({
+    identifier                         = string
+    glue_role_arn                      = string
+    refined_zone_catalog_database_name = string
+    raw_zone_catalog_database_name     = string
+    tags                               = map(string)
+    environment                        = string
+    identifier_snake_case              = string
+    glue_temp_bucket = object({
+      bucket_id = string
+    })
+    glue_scripts_bucket = object({
+      bucket_id = string
+    })
+  })
 }

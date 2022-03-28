@@ -1,9 +1,3 @@
-locals {
-  default_arn = [
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-  ]
-}
-
 data "aws_iam_policy_document" "key_policy" {
   statement {
     effect = "Allow"
@@ -15,7 +9,7 @@ data "aws_iam_policy_document" "key_policy" {
     ]
     principals {
       type        = "AWS"
-      identifiers = local.default_arn
+      identifiers = local.current_arn
     }
   }
 
@@ -36,7 +30,7 @@ data "aws_iam_policy_document" "key_policy" {
     ]
     principals {
       type        = "AWS"
-      identifiers = concat(var.role_arns_to_share_access_with, local.default_arn)
+      identifiers = local.role_arns_to_share_access_with
     }
   }
 }
@@ -69,7 +63,7 @@ data "aws_iam_policy_document" "bucket_policy_document" {
     ]
     principals {
       type        = "AWS"
-      identifiers = concat(var.role_arns_to_share_access_with, local.default_arn)
+      identifiers = local.role_arns_to_share_access_with
     }
   }
 }
@@ -79,12 +73,15 @@ resource "aws_s3_bucket" "bucket" {
 
   bucket = lower("${var.identifier_prefix}-${var.bucket_identifier}")
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.key.arn
-        sse_algorithm     = "aws:kms"
-      }
+  force_destroy = (var.environment == "dev")
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "bucket" {
+  bucket = aws_s3_bucket.bucket.id
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.key.arn
+      sse_algorithm     = "aws:kms"
     }
   }
 }

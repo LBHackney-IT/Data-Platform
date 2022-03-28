@@ -86,7 +86,7 @@ variable "google_project_id" {
   default     = false
 }
 
-variable "aws_api_account" {
+variable "aws_api_account_id" {
   description = "Not need for this module, declared to prevent terraform from throwing errors"
   default     = false
 }

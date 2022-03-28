@@ -16,3 +16,15 @@ variable "header_row_number" {
   type        = number
   default     = 0
 }
+
+variable "tags" {
+  description = "AWS tags"
+  type        = map(string)
+  default     = null
+}
+
+variable "glue_role_arn" {
+  description = "Role to use for Glue jobs"
+  type        = string
+  default     = null
+}

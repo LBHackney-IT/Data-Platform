@@ -1,0 +1,55 @@
+name: AWS Terraform Validate
+description: Runs Terraform against Hackney AWS
+inputs:
+  aws_access_key_id:
+    description: "AWS access key to use"
+    required: true
+  aws_secret_access_key:
+    description: "AWS secret access key to use"
+    required: true
+  terraform_state_s3_key_prefix:
+    description: "S3 key prefix for Terraform state"
+    required: true
+  build_path:
+    description: "Build path that contains the source"
+    required: true
+  environment:
+    description: "Name of the environemnt e.g. dev, stg, prod, mgmt"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup build environment
+      id: setup
+      run: |
+        ${{ github.action_path }}/../.helpers/box.sh "Setting up build environment"
+        echo -e "Installing TFLint"
+        curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip
+        echo -e "\n"
+      shell: bash
+      working-directory: "${{ inputs.build_path }}"
+
+    - name: Terraform Init
+      id: init
+      run: |
+        ${{ github.action_path }}/../.helpers/box.sh "Running Terraform init"
+        echo -e "Configuring AWS credentials."
+        aws configure set default.region eu-west-2 > /dev/null 2>&1
+        aws configure set aws_access_key_id ${{ inputs.aws_access_key_id }} > /dev/null 2>&1
+        aws configure set aws_secret_access_key ${{ inputs.aws_secret_access_key }} > /dev/null 2>&1
+        terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ inputs.terraform_state_s3_key_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.tfstate"
+        echo -e "Terraform S3 bucket: lbhackney-terraform-state"
+        echo -e "Terraform state file: ${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.state"
+        echo -e "\n"
+      shell: bash
+      working-directory: "${{ inputs.build_path }}"
+
+    - name: Terraform Validate
+      id: validate
+      run: |
+        ${{ github.action_path }}/../.helpers/box.sh "Running Terraform validate"
+        terraform validate
+        echo -e "\n"
+      shell: bash
+      working-directory: "${{ inputs.build_path }}"
