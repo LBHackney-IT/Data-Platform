@@ -73,7 +73,7 @@ data "aws_iam_policy_document" "task_role" {
   }
 }
 
-module "raw_zone_sync_production_to_pre_production" {
+module "sync_production_to_pre_production" {
   source = "../modules/aws-ecs-fargate-task"
   count  = local.is_production_environment ? 1 : 0
 

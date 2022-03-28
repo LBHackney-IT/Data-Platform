@@ -18,7 +18,7 @@ output "liberator_dump_to_rds_snapshot_ecr_repository_worker_endpoint" {
 }
 
 output "prod_to_pre_prod_ecr_repository_endpoint" {
-  value = try(module.raw_zone_sync_production_to_pre_production[0].ecr_repository_worker_endpoint, null)
+  value = try(module.sync_production_to_pre_production[0].ecr_repository_worker_endpoint, null)
 }
 
 output "ssl_connection_resources_bucket_id" {
@@ -50,5 +50,5 @@ output "redshift_users" {
 }
 
 output "sync_production_to_pre_production_task_role_arn" {
-  value = try(module.raw_zone_sync_production_to_pre_production[0].task_role, null)
+  value = try(module.sync_production_to_pre_production[0].task_role, null)
 }
