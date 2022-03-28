@@ -12,7 +12,6 @@ data "aws_iam_policy_document" "ecs_assume_role" {
   }
 }
 
-// do we want to create separate policies for each zone?
 data "aws_iam_policy_document" "task_role" {
   statement {
     effect = "Allow"
@@ -48,8 +47,7 @@ data "aws_iam_policy_document" "task_role" {
     effect = "Allow"
     actions = [
       "s3:ListBucket",
-      "s3:PutObject*",
-      "s3:CompleteMultipartUpload", // believe this s3 action is invalid/ deprecated
+      "s3:PutObject*"
     ]
     resources = [
       "arn:aws:s3:::dataplatform-stg-raw-zone-prod-copy*",
