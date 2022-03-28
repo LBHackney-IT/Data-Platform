@@ -90,14 +90,14 @@ variable "raw_zone_sync_production_to_pre_production_task_role" {
   default     = null
 }
 
-variable "landing_zone_sync_production_to_pre_production_task_role" {
-  description = "Role arn for the prod to pre-prod landing zone sync task. Only used in pre-production environment."
+variable "refined_zone_sync_production_to_pre_production_task_role" {
+  description = "Role arn for the prod to pre-prod refined zone sync task. Only used in pre-production environment."
   type        = string
   default     = null
 }
 
-variable "refined_zone_sync_production_to_pre_production_task_role" {
-  description = "Role arn for the prod to pre-prod refined zone sync task. Only used in pre-production environment."
+variable "trusted_zone_sync_production_to_pre_production_task_role" {
+  description = "Role arn for the prod to pre-prod trusted zone sync task. Only used in pre-production environment."
   type        = string
   default     = null
 }

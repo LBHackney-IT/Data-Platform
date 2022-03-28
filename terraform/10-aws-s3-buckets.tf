@@ -30,9 +30,9 @@ module "refined_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Refined Zone"
   bucket_identifier = "refined-zone"
-  #  role_arns_to_share_access_with = [
-  #    var.refined_zone_sync_production_to_pre_production_task_role
-  #  ] // to be added once task is created
+  role_arns_to_share_access_with = [
+    var.refined_zone_sync_production_to_pre_production_task_role
+  ]
 }
 
 module "trusted_zone" {
@@ -43,9 +43,9 @@ module "trusted_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Trusted Zone"
   bucket_identifier = "trusted-zone"
-  #  role_arns_to_share_access_with = [
-  #    var.trusted_zone_sync_production_to_pre_production_task_role
-  #  ] // to be added once task is created
+  role_arns_to_share_access_with = [
+    var.trusted_zone_sync_production_to_pre_production_task_role
+  ]
 }
 
 module "glue_scripts" {
