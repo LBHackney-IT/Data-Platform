@@ -80,9 +80,9 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
   glue_job_timeout                = 300
   job_parameters = {
-    "--source_data_database"             = module.academy_mssql_database_ingestion[0].ingestion_database_name
-    "--s3_ingestion_bucket_target"       = "s3://${module.landing_zone.bucket_id}/academy/"
-    "--s3_ingestion_details_target"      = "s3://${module.landing_zone.bucket_id}/academy/ingestion-details/"
+    "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
+    "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
+    "--s3_ingestion_details_target" = "s3://${module.landing_zone.bucket_id}/academy/ingestion-details/"
   }
 }
 
@@ -135,13 +135,13 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   max_concurrent_runs_of_glue_job = 2
   triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
-    "--s3_bucket_target"                 = module.raw_zone.bucket_id
-    "--s3_prefix"                        = "benefits-housing-needs/"
-    "--table_filter_expression"          = "(^lbhatestrbviews_core_hb.*|^lbhatestrbviews_current_hb.*)"
-    "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
-    "--glue_database_name_target"        = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
-    "--enable-glue-datacatalog"          = "true"
-    "--job-bookmark-option"              = "job-bookmark-enable"
+    "--s3_bucket_target"          = module.raw_zone.bucket_id
+    "--s3_prefix"                 = "benefits-housing-needs/"
+    "--table_filter_expression"   = "(^lbhatestrbviews_core_hb.*|^lbhatestrbviews_current_hb.*)"
+    "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_academy.name
+    "--glue_database_name_target" = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
+    "--enable-glue-datacatalog"   = "true"
+    "--job-bookmark-option"       = "job-bookmark-enable"
   }
 }
 

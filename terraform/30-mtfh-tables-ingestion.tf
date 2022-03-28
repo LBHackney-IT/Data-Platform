@@ -41,12 +41,12 @@ module "ingest_mtfh_tables" {
 }
 
 module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
-  count = local.is_live_environment ? 1 : 0
-  tags  = module.tags.values
+  tags = module.tags.values
 
   source = "../modules/aws-glue-job"
 
-  job_name               = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to department?? raw zone"
+  job_name               = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"
+  department             = module.department_housing
   script_s3_object_key   = aws_s3_bucket_object.copy_tables_landing_to_raw.key
   environment            = var.environment
   pydeequ_zip_key        = aws_s3_bucket_object.pydeequ.key
@@ -54,16 +54,14 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
   glue_role_arn          = aws_iam_role.glue_role.arn
   glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id = module.glue_scripts.bucket_id
-  workflow_name          = module.academy_mssql_database_ingestion[0].workflow_name
-  triggered_by_crawler   = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].crawler_name
+  triggered_by_crawler   = module.ingest_mtfh_tables.crawler_name
   job_parameters = {
-    "--s3_bucket_target"                 = module.raw_zone.bucket_id
-    "--table_filter_expression"          = "^mtfh_tenureinformation"
-    "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_catalog_database.name
-    "--enable-glue-datacatalog"          = "true"
-    "--job-bookmark-option"              = "job-bookmark-enable"
- # Not sure which department this should be moved to.
-    "--s3_prefix"                        = "benefits-housing-needs/"
-    "--glue_database_name_target"        = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
+    "--s3_bucket_target"          = module.raw_zone.bucket_id
+    "--table_filter_expression"   = "^mtfh_tenureinformation"
+    "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_catalog_database.name
+    "--enable-glue-datacatalog"   = "true"
+    "--job-bookmark-option"       = "job-bookmark-enable"
+    "--s3_prefix"                 = "housing/"
+    "--glue_database_name_target" = module.department_housing.raw_zone_catalog_database_name
   }
 }
