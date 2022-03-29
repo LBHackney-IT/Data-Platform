@@ -7,6 +7,26 @@ data "aws_subnet" "subnets" {
   id    = tolist(var.vpc_subnet_ids)[count.index]
 }
 
+resource "aws_security_group" "ecs_tasks" {
+  name        = "${var.short_identifier_prefix}datahub-ecs"
+  description = "Allow inbound access to the ECS service from the ALB only"
+
+  ingress {
+    protocol        = "tcp"
+    from_port       = 4000
+    to_port         = 4000
+    cidr_blocks     = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.datahub_alb.id]
+  }
+
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_security_group" "datahub_alb" {
   name                   = "${var.short_identifier_prefix}datahub-alb"
   description            = "Restricts access to the DataHub Application Load Balancer"
@@ -52,13 +72,6 @@ resource "aws_alb_target_group" "datahub" {
   vpc_id   = var.vpc_id
 }
 
-resource "aws_lb_target_group_attachment" "datahub_https" {
-  count            = aws_instance.datahub.instance_state == "running" ? 1 : 0
-  target_group_arn = aws_alb_target_group.datahub.arn
-  target_id        = aws_instance.datahub.id
-  port             = 443
-}
-
 resource "aws_alb" "datahub" {
   name               = "${var.short_identifier_prefix}datahub-alb"
   internal           = true
@@ -96,7 +109,6 @@ resource "aws_alb_listener" "datahub_https" {
   certificate_arn   = data.aws_acm_certificate.datahub.arn
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_alb_target_group.datahub.arn
+    type = "ip"
   }
 }

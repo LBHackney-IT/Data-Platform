@@ -8,16 +8,6 @@ variable "identifier_prefix" {
   type        = string
 }
 
-variable "short_identifier_prefix" {
-  description = "Project wide resource short identifier prefix"
-  type        = string
-}
-
-variable "instance_type" {
-  description = "The instance type to use for the Qlik server"
-  type        = string
-}
-
 variable "ssl_certificate_domain" {
   description = "The domain name associated with an existing AWS Certificate Manager certificate"
   type        = string
@@ -38,12 +28,25 @@ variable "environment" {
   type        = string
 }
 
-variable "aws_ami_id" {
-  description = "AMI ID for EC2 instance"
+variable "operation_name" {
   type        = string
+  description = "A unique name for your task definition, ecs cluster and repository."
 }
 
-variable "amazon_ssm_managed_instance_core_arn" {
-  description = "EC2 IAM Policy ARN"
+variable "ecs_cluster_arn" {
   type        = string
+  description = "The ECS cluster ARN in which to run the task"
+}
+
+variable "environment_variables" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+  description = "A list of objects containing environment variables as key value pairs for the task's task definition."
+}
+
+variable "aws_subnet_ids" {
+  description = "Array of subnet IDs"
+  type        = list(string)
 }
