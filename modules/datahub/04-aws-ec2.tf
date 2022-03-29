@@ -20,6 +20,10 @@ resource "aws_instance" "datahub" {
 
 data "template_file" "init_script" {
   template = file("${path.module}/installation/init.tpl")
+  vars = {
+    docker_compose_version = "1.29.2"
+    python_version         = "3.6"
+  }
 }
 
 data "template_file" "docker_compose_file" {

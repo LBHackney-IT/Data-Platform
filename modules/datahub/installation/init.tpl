@@ -12,12 +12,12 @@ sudo apt-get install jq.
 
 # Install Docker Compose
 # TODO Surface hardcoded version higher up the chain
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/${docker_compose_version}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
 # Install Python
 # TODO Surface hardcoded version higher up the chain
 sudo apt-get update
-sudo apt-get install python3.6
+sudo apt-get install python"${python_version}"
 
 # Install DataHub python CLI
 python3 -m pip install --upgrade pip wheel setuptools
