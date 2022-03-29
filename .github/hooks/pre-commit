@@ -15,10 +15,14 @@ then
   exit 0;
 fi
 
-# Format all the tf and tfvars files in the repo
-formatted_files=$(terraform fmt -recursive)
+#Find all the directories with terraform files in them
+terraform_directories=$(find "$(pwd)" -type f -name '*.tfvars' -or -name '*.tf' | sed -r 's|/[^/]+$||' | sort | uniq )
 
-# Git add all formatted files so you don't have to do it again manually
-for formatted_file in $formatted_files; do
-   git add "$formatted_file"
+#Format the files in the terraform directories and add
+for directory in $terraform_directories; do
+  if [[ "$directory" != *".terraform"* ]]; then
+    for formatted_file in $(terraform fmt "$directory"); do
+      git add "$(pwd)"/"$formatted_file"
+    done
+  fi
 done

@@ -6,10 +6,10 @@ output "task_role" {
   value = aws_iam_role.task_role.arn
 }
 
-output "event_rule_name" {
-  value = aws_cloudwatch_event_rule.ecs_task.name
+output "event_rule_names" {
+  value = [for event_rule in aws_cloudwatch_event_rule.ecs_task : event_rule.name]
 }
 
-output "event_rule_arn" {
-  value = aws_cloudwatch_event_rule.ecs_task.arn
+output "event_rule_arns" {
+  value = [for event_rule in aws_cloudwatch_event_rule.ecs_task : event_rule.arn]
 }

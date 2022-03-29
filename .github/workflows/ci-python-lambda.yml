@@ -1,0 +1,12 @@
+name: 'CI'
+on:
+  push:
+    branches-ignore:
+      - "main"
+    paths:
+      - 'scripts/**'
+      - 'lambdas/**'
+
+jobs:
+  CI:
+    uses: ./.github/workflows/test-python-and-lambda.yml

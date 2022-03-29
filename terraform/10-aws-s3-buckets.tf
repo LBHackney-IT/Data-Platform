@@ -18,7 +18,7 @@ module "raw_zone" {
   bucket_identifier = "raw-zone"
   role_arns_to_share_access_with = [
     module.db_snapshot_to_s3.s3_to_s3_copier_lambda_role_arn,
-    var.sync_production_to_pre_production_task_role
+    var.raw_zone_sync_production_to_pre_production_task_role
   ]
 }
 
@@ -30,6 +30,9 @@ module "refined_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Refined Zone"
   bucket_identifier = "refined-zone"
+  role_arns_to_share_access_with = [
+    var.refined_zone_sync_production_to_pre_production_task_role
+  ]
 }
 
 module "trusted_zone" {
@@ -40,6 +43,9 @@ module "trusted_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Trusted Zone"
   bucket_identifier = "trusted-zone"
+  role_arns_to_share_access_with = [
+    var.trusted_zone_sync_production_to_pre_production_task_role
+  ]
 }
 
 module "glue_scripts" {

@@ -9,8 +9,8 @@ output "rds_instance_id" {
 }
 
 output "cloudwatch_event_rule_name" {
-  value = module.sql_to_parquet.event_rule_name
+  value = module.sql_to_parquet.event_rule_names[0]
 }
 output "cloudwatch_event_rule_arn" {
-  value = module.sql_to_parquet.event_rule_arn
+  value = module.sql_to_parquet.event_rule_arns[0]
 }
