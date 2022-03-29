@@ -1,5 +1,5 @@
 module "datahub" {
-  source = "../modules/aws-ecs-fargate-service"
+  source = "../modules/datahub"
 
   tags                          = module.tags.values
   operation_name                = "${local.short_identifier_prefix}datahub"
@@ -13,6 +13,9 @@ module "datahub" {
   alb_id                        = aws_alb.datahub.id
   alb_target_group_arn          = aws_alb_target_group.datahub.arn
   vpc_subnet_ids                = local.subnet_ids_list
+  vpc_id                        = var.aws_dp_vpc_id
+  aws_deploy_account_id         = var.aws_deploy_account_id
+  aws_deploy_iam_role_name      = var.aws_deploy_iam_role_name
 }
 
 resource "aws_ecs_cluster" "datahub" {
@@ -80,11 +83,6 @@ resource "aws_alb" "datahub" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.datahub_alb.id]
   subnets            = data.aws_subnet.subnets.*.id
-  idle_timeout       = 4000
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_alb_listener" "datahub_http" {
