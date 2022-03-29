@@ -43,7 +43,7 @@ bin/kafka-topics.sh --command-config server.properties --create --topic {topic} 
 
 ## Schema Registry UI
 We haven't had chance to setup an UI for the schema registry in the environment yet, so I have instead been using the
-docker image and port forwarding to it via the bastian. It's a little convoluted, but it just works once setup.
+docker image and port forwarding to it via the bastion. It's a little convoluted, but it just works once setup.
 
 ### Docker
 
@@ -57,7 +57,7 @@ docker run --rm -p 8000:8000 \
 ### Bastion Tunnel
 
 #### Setup
-If your bastian has been re-deployed or is new, you will need to setup a few bits to allow the SSH tunneling to work.
+If your bastion has been re-deployed or is new, you will need to setup a few bits to allow the SSH tunneling to work.
 The guide presume you are using `aws ssm start-session --target i-*` to connect to the bastion
 ```shell
 sudo su ec2-user
