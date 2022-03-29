@@ -5,11 +5,11 @@ module "academy_mssql_database_ingestion" {
   source = "../modules/database-ingestion-via-jdbc-connection"
 
   name                        = "academy-benefits-housing-needs-and-revenues"
-  jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHATestRBViews"
-  jdbc_connection_description = "JDBC connection to Academy Production Insights LBHATestRBViews database"
+  jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHALiveRBViews"
+  jdbc_connection_description = "JDBC connection to Academy Production Insights LBHALiveRBViews database"
   jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]
   database_availability_zone  = "eu-west-2a"
-  database_secret_name        = "database-credentials/lbhatestrbviews-benefits-housing-needs-revenues"
+  database_secret_name        = "database-credentials/lbhaliverbviews-benefits-housing-needs-revenues"
   identifier_prefix           = local.short_identifier_prefix
   create_workflow             = false
   vpc_id                      = data.aws_vpc.network.id
