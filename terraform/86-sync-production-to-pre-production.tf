@@ -51,7 +51,7 @@ data "aws_iam_policy_document" "task_role" {
     ]
     resources = [
       "arn:aws:s3:::dataplatform-stg-raw-zone-prod-copy*",
-      "arn:aws:s3:::dataplatform-stg-refined-zone-copy*",
+      "arn:aws:s3:::dataplatform-stg-refined-zone-prod-copy*",
       "arn:aws:s3:::dataplatform-stg-trusted-zone-prod-copy*"
     ]
   }
