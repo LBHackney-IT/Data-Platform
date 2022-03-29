@@ -54,7 +54,7 @@ docker run --rm -p 8000:8000 \
            landoop/schema-registry-ui
 ```
 
-### Bastian Tunnel
+### Bastion Tunnel
 
 #### Setup
 If your bastian has been re-deployed or is new, you will need to setup a few bits to allow the SSH tunneling to work.
