@@ -8,6 +8,11 @@ variable "identifier_prefix" {
   type        = string
 }
 
+variable "short_identifier_prefix" {
+  description = "Project wide resource short identifier prefix"
+  type        = string
+}
+
 variable "ssl_certificate_domain" {
   description = "The domain name associated with an existing AWS Certificate Manager certificate"
   type        = string

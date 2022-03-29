@@ -9,6 +9,7 @@ module "datahub" {
   ecs_cluster_arn               = aws_ecs_cluster.workers.arn
   environment                   = var.environment
   identifier_prefix             = local.identifier_prefix
+  short_identifier_prefix       = local.short_identifier_prefix
   ssl_certificate_domain        = var.datahub_ssl_certificate_domain
   vpc_id                        = var.aws_dp_vpc_id
   vpc_subnet_ids                = local.subnet_ids_list
