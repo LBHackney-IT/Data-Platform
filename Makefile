@@ -15,6 +15,8 @@ init:
 	cd external-lib && make all
 	cd scripts && make all
 	cd terraform && make init
+	cd terraform-networking && make init
+	cd terraform-backend-setup && make init
 	git config core.hooksPath .github/hooks
 
 apply:
