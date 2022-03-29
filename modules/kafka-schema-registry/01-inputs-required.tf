@@ -27,5 +27,5 @@ variable "subnet_ids" {
 
 variable "bootstrap_servers" {
   description = "One or more DNS names (or IP addresses) and port pairs."
-  type = string
+  type        = string
 }

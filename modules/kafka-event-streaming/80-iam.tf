@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "kafka_connector_assume_role" {
 resource "aws_iam_role" "kafka_connector" {
   tags = var.tags
 
-  name               = "${var.identifier_prefix}kafka-connector"
+  name               = "${var.short_identifier_prefix}kafka-connector"
   assume_role_policy = data.aws_iam_policy_document.kafka_connector_assume_role.json
 }
 
@@ -146,7 +146,7 @@ data "aws_iam_policy_document" "kafka_connector" {
 resource "aws_iam_policy" "kafka_connector" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}kafka-connector")
+  name   = lower("${var.short_identifier_prefix}kafka-connector")
   policy = data.aws_iam_policy_document.kafka_connector.json
 }
 

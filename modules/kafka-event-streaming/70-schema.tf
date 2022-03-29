@@ -1,10 +1,10 @@
 resource "aws_glue_registry" "schema_registry" {
-  registry_name = "${var.identifier_prefix}schema-registry"
+  registry_name = "${var.short_identifier_prefix}schema-registry"
   tags          = var.tags
 }
 
 resource "aws_glue_schema" "tenure_api" {
-  schema_name       = "${var.identifier_prefix}tenure-api"
+  schema_name       = "${var.short_identifier_prefix}tenure-api"
   registry_arn      = aws_glue_registry.schema_registry.arn
   data_format       = "AVRO"
   compatibility     = "NONE"
@@ -25,13 +25,13 @@ data "aws_iam_policy_document" "get_schemas_assume_role" {
 
 resource "aws_iam_role" "get_schemas_role" {
   tags               = var.tags
-  name               = "${var.identifier_prefix}get-schemas-role"
+  name               = "${var.short_identifier_prefix}get-schemas-role"
   assume_role_policy = data.aws_iam_policy_document.get_schemas_assume_role.json
 }
 
 data "aws_iam_policy_document" "get_schemas" {
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "glue:Get*"
     ]
@@ -45,7 +45,7 @@ data "aws_iam_policy_document" "get_schemas" {
 resource "aws_iam_policy" "get_schemas" {
   tags = var.tags
 
-  name   = "${var.identifier_prefix}get-schemas"
+  name   = "${var.short_identifier_prefix}get-schemas"
   policy = data.aws_iam_policy_document.get_schemas.json
 }
 
@@ -58,7 +58,7 @@ module "schema_registry" {
   source            = "../kafka-schema-registry"
   tags              = var.tags
   environment       = var.environment
-  identifier_prefix = var.identifier_prefix
+  identifier_prefix = var.short_identifier_prefix
   project           = var.project
   vpc_id            = var.vpc_id
   subnet_ids        = var.subnet_ids

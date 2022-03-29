@@ -1,5 +1,5 @@
 resource "aws_msk_cluster" "kafka_cluster" {
-  cluster_name           = "${var.identifier_prefix}event-streaming"
+  cluster_name           = "${var.short_identifier_prefix}event-streaming"
   kafka_version          = "2.8.1"
   number_of_broker_nodes = 3
 

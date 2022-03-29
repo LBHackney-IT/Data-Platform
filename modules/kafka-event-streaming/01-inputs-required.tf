@@ -16,6 +16,11 @@ variable "identifier_prefix" {
   type = string
 }
 
+variable "short_identifier_prefix" {
+  description = "Short project wide resource identifier prefix"
+  type        = string
+}
+
 variable "vpc_id" {
   description = "VPC ID to deploy the kafta instance into"
   type        = string

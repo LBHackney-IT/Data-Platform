@@ -47,15 +47,15 @@ resource "aws_ecs_task_definition" "schema_registry" {
   cpu                      = 256
   memory                   = 1024
   //task_role_arn            = aws_iam_role.schema_registry.arn
-  execution_role_arn       = aws_iam_role.schema_registry.arn
+  execution_role_arn = aws_iam_role.schema_registry.arn
 
   container_definitions = jsonencode([
     {
-      name        = "schema-registry"
-      image       = "confluentinc/cp-schema-registry:5.3.0"
-      essential   = true
-      entryPoint  = ["sh", "-c"]
-      command     = [local.taskCommand]
+      name       = "schema-registry"
+      image      = "confluentinc/cp-schema-registry:5.3.0"
+      essential  = true
+      entryPoint = ["sh", "-c"]
+      command    = [local.taskCommand]
       environment = [
         { name = "SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS", value = "GET,POST,PUT,OPTIONS" },
         { name = "SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN", value = "*" },
@@ -71,7 +71,7 @@ resource "aws_ecs_task_definition" "schema_registry" {
       ],
       logConfiguration = {
         logDriver = "awslogs",
-        options   = {
+        options = {
           "awslogs-group"         = "/ecs/kafka-schema-registry",
           "awslogs-region"        = "eu-west-2",
           "awslogs-stream-prefix" = "ecs"

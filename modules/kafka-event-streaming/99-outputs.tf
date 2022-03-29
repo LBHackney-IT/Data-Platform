@@ -1,7 +1,7 @@
 output "default_s3_plugin_configuration" {
   value = {
-    connect_version               = "2.7.1"
-    service_execution_role_arn    = aws_iam_role.kafka_connector.arn
+    connect_version            = "2.7.1"
+    service_execution_role_arn = aws_iam_role.kafka_connector.arn
     connector_log_delivery_config = {
       log_group_enabled = true,
       log_group         = aws_cloudwatch_log_group.connector_log_group.name
@@ -11,7 +11,7 @@ output "default_s3_plugin_configuration" {
         "maxWorkerCount" = 3,
         "mcuCount"       = 1,
         "minWorkerCount" = 1,
-        "scaleInPolicy"  = {
+        "scaleInPolicy" = {
           "cpuUtilizationPercentage" = 20
         },
         "scaleOutPolicy" = {
