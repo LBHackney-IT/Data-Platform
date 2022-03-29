@@ -8,14 +8,6 @@ variable "ecs_cluster_arn" {
   description = "The ECS cluster ARN in which to run the task"
 }
 
-variable "environment_variables" {
-  type = list(object({
-    name  = string
-    value = string
-  }))
-  description = "A list of objects containing environment variables as key value pairs for the task's task definition."
-}
-
 variable "tags" {
   description = "AWS tags"
   type        = map(string)
@@ -29,4 +21,17 @@ variable "ecs_task_role_policy_document" {
 variable "aws_subnet_ids" {
   description = "Array of subnet IDs"
   type        = list(string)
+}
+
+variable "tasks" {
+  description = "An array of objects containing tasks to be created"
+  type = list(object({
+    task_prefix                         = optional(string)
+    cloudwatch_rule_schedule_expression = optional(string)
+    cloudwatch_rule_event_pattern       = optional(string)
+    environment_variables = list(object({
+      name  = string
+      value = string
+    }))
+  }))
 }
