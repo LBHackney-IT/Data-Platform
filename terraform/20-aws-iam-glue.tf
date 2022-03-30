@@ -77,6 +77,56 @@ resource "aws_iam_role_policy_attachment" "attach_full_glue_access_to_glue_role"
   policy_arn = aws_iam_policy.full_glue_access.arn
 }
 
+data "aws_iam_policy_document" "use_glue_connection" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeSubnets",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeVPCs",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:DescribeVpcEndpoints",
+      "ec2:DescribeRouteTables",
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeNetworkInterfaces"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateTags",
+      "ec2:DeleteTags",
+    ]
+    condition {
+      test     = "ForAllValues:StringEquals"
+      variable = "aws:TagKeys"
+      values   = ["aws-glue-service-resource"]
+    }
+    resources = [
+      "arn:aws:ec2:*:*:network-interface/*",
+      "arn:aws:ec2:*:*:security-group/*",
+      "arn:aws:ec2:*:*:instance/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "use_glue_connection" {
+  tags = module.tags.values
+
+  name   = lower("${local.identifier_prefix}-use-glue-connection")
+  policy = data.aws_iam_policy_document.use_glue_connection.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_use_glue_connection_to_glue_role" {
+  role       = aws_iam_role.glue_role.name
+  policy_arn = aws_iam_policy.use_glue_connection.arn
+}
+
 data "aws_iam_policy_document" "access_to_s3_iam_and_secrets" {
   statement {
     effect = "Allow"

@@ -21,19 +21,19 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
 
 locals {
   table_filter_expressions = local.is_live_environment ? [
-    "^lbhatestrbviews_core_hbrent[s].*",
-    "^lbhatestrbviews_core_hbc.*",
-    "^lbhatestrbviews_core_hbrentclaim",
-    "^lbhatestrbviews_core_hbrenttrans",
-    "^lbhatestrbviews_core_hbrent[^tsc].*",
-    "^lbhatestrbviews_core_hbmember",
-    "^lbhatestrbviews_core_hbincome",
-    "^lbhatestrbviews_core_hb[abdefghjklnopsw]",
-    "^lbhatestrbviews_core_ct[dt].*",
-    "^lbhatestrbviews_current_ctax.*",
-    "^lbhatestrbviews_current_[hbn].*",
-    "^lbhatestrbviews_core_ct[abcefghijklmnopqrsvw].*",
-    "(^lbhatestrbviews_core_cr.*|^lbhatestrbviews_core_[ins].*|^lbhatestrbviews_xdbvw.*|^lbhatestrbviews_current_im.*)"
+    "^lbhaliverbviews_core_hbrent[s].*",
+    "^lbhaliverbviews_core_hbc.*",
+    "^lbhaliverbviews_core_hbrentclaim",
+    "^lbhaliverbviews_core_hbrenttrans",
+    "^lbhaliverbviews_core_hbrent[^tsc].*",
+    "^lbhaliverbviews_core_hbmember",
+    "^lbhaliverbviews_core_hbincome",
+    "^lbhaliverbviews_core_hb[abdefghjklnopsw]",
+    "^lbhaliverbviews_core_ct[dt].*",
+    "^lbhaliverbviews_current_ctax.*",
+    "^lbhaliverbviews_current_[hbn].*",
+    "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*",
+    "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
   ] : []
   academy_ingestion_max_concurrent_runs = local.is_live_environment ? length(local.table_filter_expressions) : 1
 }
@@ -137,7 +137,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   job_parameters = {
     "--s3_bucket_target"          = module.raw_zone.bucket_id
     "--s3_prefix"                 = "benefits-housing-needs/"
-    "--table_filter_expression"   = "(^lbhatestrbviews_core_hb.*|^lbhatestrbviews_current_hb.*)"
+    "--table_filter_expression"   = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
     "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target" = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
     "--enable-glue-datacatalog"   = "true"
@@ -165,7 +165,7 @@ module "copy_academy_revenues_to_raw_zone" {
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "revenues/"
-    "--table_filter_expression"          = "(^lbhatestrbviews_core_(?!hb).*|^lbhatestrbviews_current_(?!hb).*|^lbhatestrbviews_xdbvw_.*)"
+    "--table_filter_expression"          = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)"
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
     "--enable-glue-datacatalog"          = "true"
