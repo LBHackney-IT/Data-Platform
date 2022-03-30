@@ -81,7 +81,6 @@ data "aws_iam_policy_document" "use_glue_connection" {
   statement {
     effect = "Allow"
     actions = [
-      "glue:*",
       "ec2:DescribeSubnets",
       "ec2:DescribeSecurityGroups",
       "ec2:DescribeVPCs",
