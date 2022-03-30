@@ -166,14 +166,14 @@ jobs:
           source .venv/bin/activate
           AWS_PROFILE=deploy_role python ./configure_redshift.py "$terraform_outputs"
 
-      - name: Configure kafka connect
-        working-directory: "./terraform"
-        run: |
-          terraform_outputs=$(terraform output -json)
-          cd ../modules/kafka-event-streaming/scripts
-          make .venv/.install.stamp
-          source .venv/bin/activate
-          AWS_PROFILE=deploy_role python ./install_kafka_connectors.py --input "$terraform_outputs"
+      # - name: Configure kafka connect
+      #   working-directory: "./terraform"
+      #   run: |
+      #     terraform_outputs=$(terraform output -json)
+      #     cd ../modules/kafka-event-streaming/scripts
+      #     make .venv/.install.stamp
+      #     source .venv/bin/activate
+      #     AWS_PROFILE=deploy_role python ./install_kafka_connectors.py --input "$terraform_outputs"
 
       - name: Build and Deploy SQL to Parquet Image to ECR
         run: |
