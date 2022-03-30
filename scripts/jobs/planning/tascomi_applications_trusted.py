@@ -26,6 +26,12 @@ def drop_null_columns(df):
     df = df.drop(*to_drop)
     
     return df
+   
+# Creates a function that returns only the latest snapshot
+def get_latest_snapshot(df):
+    
+   df = df.where(col('snapshot_date') == df.select(max('snapshot_date')).first()[0])
+   return df  
 
 # The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":
@@ -133,6 +139,10 @@ if __name__ == "__main__":
 # Applications Table
     
     df = data_source.toDF()
+  
+    # remove all but the latest snapshot
+    
+    df = get_latest_snapshot(df)
     
     # If the source data IS partitionned by import_date, you have loaded several days but only need the latest version, use the get_latest_partitions() helper
     # df = get_latest_partitions(df)    
@@ -178,6 +188,10 @@ if __name__ == "__main__":
 ## Load Application Types Table
 
     df2 = data_source2.toDF()
+ 
+    # remove all but the latest snapshot
+    
+    df2 = get_latest_snapshot(df2)
     
     # Rename Relevant Columns
     
@@ -191,6 +205,10 @@ if __name__ == "__main__":
  ## Load PS Codes   
     
     df3 = data_source3.toDF()
+   
+    # remove all but the latest snapshot
+    
+    df3 = get_latest_snapshot(df3)
     
     # Rename Relevant Columns
     
