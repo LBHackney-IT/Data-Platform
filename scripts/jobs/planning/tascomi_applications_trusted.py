@@ -150,6 +150,8 @@ if __name__ == "__main__":
         .selectExpr('*', 'date_sub(decision_issued_date, day_of_week-2) as decision_report_week') \
         .withColumn('day_of_week', F.dayofweek(F.col('registration_date'))) \
         .selectExpr('*', 'date_sub(registration_date, day_of_week-2) as registration_report_week') \
+        .withColumn('day_of_week', F.dayofweek(F.col('received_date'))) \
+        .selectExpr('*', 'date_sub(received_date, day_of_week-2) as received_report_week') \
         .withColumn('export_date', F.date_sub(current_date(),1)) \
         .withColumn('days_received_to_decision', F.datediff('decision_issued_date','received_date')) \
         .withColumn('days_received_to_valid', F.datediff('valid_date','received_date')) \
