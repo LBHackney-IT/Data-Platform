@@ -1,0 +1,1 @@
+FROM linkedin/datahub-gms:${DATAHUB_VERSION:-head}

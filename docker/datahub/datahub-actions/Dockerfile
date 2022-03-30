@@ -1,0 +1,1 @@
+FROM acryldata/acryl-datahub-actions:${ACTIONS_VERSION:-head}
