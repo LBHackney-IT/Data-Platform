@@ -3,8 +3,8 @@
     "name": "${OPERATION_NAME}",
     "image": "${REPOSITORY_URL}:latest",
     "essential": true,
-    "memory": 2048,
-    "cpu": 256,
+    "memory": "${MEMORY}",
+    "cpu": "${CPU}",
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
@@ -15,15 +15,15 @@
     },
     "portMappings": [
       {
-        "containerPort": 9002,
-        "hostPort": 9002,
+        "containerPort": "${PORT}",
+        "hostPort": "${PORT}",
         "protocol": "tcp"
       }
     ],
     "environment": [
       {
         "name": "PORT",
-        "value": "9002"
+        "value": "${PORT}"
       }
     ],
     "ulimits": [
