@@ -1,21 +1,19 @@
 module "datahub" {
   source = "../modules/datahub"
 
-  tags                          = module.tags.values
-  operation_name                = "${local.short_identifier_prefix}datahub"
-  environment_variables         = local.environment_variables
-  ecs_task_role_policy_document = data.aws_iam_policy_document.task_role.json
-  aws_subnet_ids                = data.aws_subnet_ids.network.ids
-  ecs_cluster_arn               = aws_ecs_cluster.datahub.arn
-  environment                   = var.environment
-  identifier_prefix             = local.identifier_prefix
-  short_identifier_prefix       = local.short_identifier_prefix
-  alb_id                        = aws_alb.datahub.id
-  alb_target_group_arn          = aws_alb_target_group.datahub.arn
-  vpc_subnet_ids                = local.subnet_ids_list
-  vpc_id                        = var.aws_dp_vpc_id
-  aws_deploy_account_id         = var.aws_deploy_account_id
-  aws_deploy_iam_role_name      = var.aws_deploy_iam_role_name
+  tags                    = module.tags.values
+  operation_name          = "${local.short_identifier_prefix}datahub-frontend-react"
+  environment_variables   = local.environment_variables
+  ecs_cluster_arn         = aws_ecs_cluster.datahub.arn
+  environment             = var.environment
+  identifier_prefix       = local.identifier_prefix
+  short_identifier_prefix = local.short_identifier_prefix
+  alb_id                  = aws_alb.datahub.id
+  alb_target_group_arn    = aws_alb_target_group.datahub.arn
+  alb_security_group_id   = aws_security_group.datahub_alb.id
+  aws_subnet_ids          = data.aws_subnet_ids.network.ids
+  vpc_id                  = var.aws_dp_vpc_id
+  ecr_repository_url      = aws_ecr_repository.datahub.repository_url
 }
 
 resource "aws_ecs_cluster" "datahub" {
@@ -23,9 +21,10 @@ resource "aws_ecs_cluster" "datahub" {
   name = "${local.identifier_prefix}-datahub"
 }
 
-data "aws_acm_certificate" "datahub" {
-  domain = var.datahub_ssl_certificate_domain
-}
+//data "aws_acm_certificate" "datahub" {
+//  domain = var.datahub_ssl_certificate_domain
+//  statuses = ["ISSUED"]
+//}
 
 data "aws_subnet" "subnets" {
   count = length(local.subnet_ids_list)
@@ -71,10 +70,11 @@ resource "aws_security_group" "datahub_alb" {
 }
 
 resource "aws_alb_target_group" "datahub" {
-  name     = "${local.short_identifier_prefix}datahub"
-  port     = 443
-  protocol = "HTTPS"
-  vpc_id   = var.aws_dp_vpc_id
+  name        = "${local.short_identifier_prefix}datahub"
+  port        = 443
+  protocol    = "HTTPS"
+  vpc_id      = var.aws_dp_vpc_id
+  target_type = "ip"
 }
 
 resource "aws_alb" "datahub" {
@@ -85,30 +85,83 @@ resource "aws_alb" "datahub" {
   subnets            = data.aws_subnet.subnets.*.id
 }
 
+//resource "aws_alb_listener" "datahub_http" {
+//  load_balancer_arn = aws_alb.datahub.arn
+//  port              = "80"
+//  protocol          = "HTTP"
+//
+//  default_action {
+//    type = "redirect"
+//
+//    redirect {
+//      port        = "443"
+//      protocol    = "HTTPS"
+//      status_code = "HTTP_301"
+//    }
+//  }
+//}
+
 resource "aws_alb_listener" "datahub_http" {
   load_balancer_arn = aws_alb.datahub.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    type = "redirect"
-
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.datahub.arn
   }
 }
 
-resource "aws_alb_listener" "datahub_https" {
-  load_balancer_arn = aws_alb.datahub.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = data.aws_acm_certificate.datahub.arn
+//resource "aws_alb_listener" "datahub_https" {
+//  load_balancer_arn = aws_alb.datahub.arn
+//  port              = "443"
+//  protocol          = "HTTPS"
+//  ssl_policy        = "ELBSecurityPolicy-2016-08"
+//  certificate_arn   = data.aws_acm_certificate.datahub.arn
+//
+//  default_action {
+//    type             = "forward"
+//    target_group_arn = aws_alb_target_group.datahub.arn
+//  }
+//}
 
-  default_action {
-    type = "ip"
-  }
+resource "aws_ecr_repository" "datahub" {
+  tags = module.tags.values
+  name = "${local.identifier_prefix}-datahub"
+}
+
+resource "aws_ecr_lifecycle_policy" "repo-policy" {
+  repository = aws_ecr_repository.datahub.name
+
+  policy = <<EOF
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Keep image deployed with tag latest",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["latest"],
+        "countType": "imageCountMoreThan",
+        "countNumber": 1
+      },
+      "action": {
+        "type": "expire"
+      }
+    },
+    {
+      "rulePriority": 2,
+      "description": "Keep last 2 any images",
+      "selection": {
+        "tagStatus": "any",
+        "countType": "imageCountMoreThan",
+        "countNumber": 2
+      },
+      "action": {
+        "type": "expire"
+      }
+    }
+  ]
+}
+EOF
 }

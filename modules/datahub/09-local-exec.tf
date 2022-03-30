@@ -1,6 +1,6 @@
 resource "null_resource" "deploy" {
   provisioner "local-exec" {
-    command     = "${coalesce("push.sh", "${path.module}/../../docker/datahub/deploy.sh")} ${var.vpc_id} ${} ${}"
+    command     = "${path.cwd}/../modules/datahub/deployment-files/deploy.sh ${path.cwd}/../docker/datahub/frontend-react ${var.ecr_repository_url}"
     interpreter = ["bash", "-c"]
   }
 }

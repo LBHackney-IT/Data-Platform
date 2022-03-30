@@ -13,7 +13,7 @@ variable "short_identifier_prefix" {
   type        = string
 }
 
-variable "vpc_subnet_ids" {
+variable "aws_subnet_ids" {
   description = "A list of VPC Subnet IDs the server could be deployed in"
   type        = list(string)
 }
@@ -53,5 +53,15 @@ variable "alb_id" {
 
 variable "alb_target_group_arn" {
   description = "ARN of the ALB target group"
+  type        = string
+}
+
+variable "alb_security_group_id" {
+  description = "Id of the ALB security group"
+  type        = string
+}
+
+variable "ecr_repository_url" {
+  description = "ECR Repo url"
   type        = string
 }
