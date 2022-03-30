@@ -148,3 +148,28 @@ resource "aws_iam_role_policy_attachment" "attach_glue_access_to_s3_iam_and_secr
   role       = aws_iam_role.glue_role.name
   policy_arn = aws_iam_policy.glue_access_to_s3_iam_and_secrets.arn
 }
+
+
+data "aws_iam_policy_document" "can_assume_all_roles" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "can_assume_all_roles" {
+  tags = module.tags.values
+
+  name   = "${local.short_identifier_prefix}can-assume-all-roles"
+  policy = data.aws_iam_policy_document.can_assume_all_roles.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_can_assume_all_roles_to_glue_role" {
+  role       = aws_iam_role.glue_role.name
+  policy_arn = aws_iam_policy.can_assume_all_roles.arn
+}

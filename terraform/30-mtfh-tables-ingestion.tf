@@ -64,4 +64,15 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
     "--s3_prefix"                 = "housing/"
     "--glue_database_name_target" = module.department_housing.raw_zone_catalog_database_name
   }
+
+  crawler_details = {
+    database_name      = module.department_housing.raw_zone_catalog_database_name
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/housing/"
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+        TableLevelConfiguration = 3
+      }
+    })
+  }
 }
