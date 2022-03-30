@@ -12,8 +12,9 @@ resource "aws_ecs_service" "datahub-service" {
   }
 
   load_balancer {
+    count            = var.container_properties.load_balancer_required ? 1 : 0
     target_group_arn = var.alb_target_group_arn
-    container_name   = var.operation_name
+    container_name   = var.container_properties.container_name
     container_port   = var.container_properties.port
   }
 
