@@ -85,7 +85,7 @@ variable "pre_production_liberator_data_storage_kms_key_arn" {
 }
 
 variable "sync_production_to_pre_production_task_role" {
-  description = "Role arn for the prod to pre-prod raw zone sync task. Only used in pre-production environment."
+  description = "Role arn for the prod to pre-prod raw, refined & trusted zones sync task. Only used in pre-production environment."
   type        = string
   default     = null
 }
