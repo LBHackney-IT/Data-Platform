@@ -1,5 +1,5 @@
 locals {
-  broker_properties = {
+  broker = {
     container_name         = "broker"
     image_name             = "confluentinc/cp-kafka:5.4.0"
     port                   = 9092
@@ -15,6 +15,10 @@ locals {
       { name : "KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", value : "0" },
       { name : "KAFKA_HEAP_OPTS", value : "-Xms256m -Xmx256m" }
     ]
+    mount_points = [
+      { sourceVolume : "broker", containerPath : "/var/lib/kafka/data/", readOnly : false }
+    ]
+    volumes = ["broker"]
   }
   datahub_actions = {
     container_name         = "datahub-actions"
@@ -34,8 +38,10 @@ locals {
       { name : "DATAHUB_SYSTEM_CLIENT_SECRET", value : random_password.password.result },
       { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "PLAINTEXT" }
     ]
+    mount_points = []
+    volumes      = []
   }
-  datahub_frontend_react_properties = {
+  datahub_frontend_react = {
     container_name         = "datahub-frontend-react"
     image_name             = "linkedin/datahub-frontend-react:head"
     port                   = 9002
@@ -55,6 +61,8 @@ locals {
       { name : "ELASTIC_CLIENT_HOST", value : "elasticsearch" },
       { name : "ELASTIC_CLIENT_PORT", value : "9200" }
     ]
+    mount_points = []
+    volumes      = []
   }
   datahub_gms = {
     container_name         = "datahub-gms"
@@ -86,6 +94,8 @@ locals {
       { name : "UI_INGESTION_ENABLED", value : "true" },
       { name : "UI_INGESTION_DEFAULT_CLI_VERSION", value : "0.8.26.6" }
     ]
+    mount_points = []
+    volumes      = []
   }
   zookeeper = {
     container_name         = "zookeeper"
@@ -98,6 +108,10 @@ locals {
       { name : "ZOOKEEPER_CLIENT_PORT", value : "2181" },
       { name : "ZOOKEEPER_TICK_TIME", value : "2000" },
     ]
+    mount_points = [
+      { sourceVolume : "zkdata", containerPath : "/var/opt/zookeeper", readOnly : false }
+    ]
+    volumes = ["zkdata"]
   }
 }
 

@@ -53,8 +53,8 @@ variable "alb_security_group_id" {
   type        = string
 }
 
-variable "ecr_repository_url" {
-  description = "ECR Repo url"
+variable "cloudwatch_log_group_name" {
+  description = "Name of the log group to export docker logs to"
   type        = string
 }
 
@@ -67,9 +67,15 @@ variable "container_properties" {
     cpu                    = number
     memory                 = number
     load_balancer_required = bool
-    environment_variables  = list(object({
+    environment_variables = list(object({
       name  = string
       value = string
     }))
+    mount_points = list(object({
+      sourceVolume  = string
+      containerPath = string
+      readOnly      = bool
+    }))
+    volumes = list(string)
   })
 }
