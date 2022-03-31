@@ -23,7 +23,7 @@ module "datahub" {
     kafka_zookeeper_connect = ""
     kafka_bootstrap_server  = ""
   }
-  schema_registry = {
+  schema_registry_properties = {
     host_name                 = ""
     kafkastore_connection_url = ""
   }

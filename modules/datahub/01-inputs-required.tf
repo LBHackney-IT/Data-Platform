@@ -61,7 +61,7 @@ variable "kafka_properties" {
   })
 }
 
-variable "schema_registry" {
+variable "schema_registry_properties" {
   description = "Properties of the schema registry data source DataHub will connect to"
   type = object({
     host_name                 = string

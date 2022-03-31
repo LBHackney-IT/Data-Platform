@@ -168,8 +168,8 @@ locals {
     memory                 = 2048
     load_balancer_required = false
     environment_variables = [
-      { name : "SCHEMA_REGISTRY_HOST_NAME", value : var.schema_registry.host_name },
-      { name : "SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL", value : var.schema_registry.kafkastore_connection_url },
+      { name : "SCHEMA_REGISTRY_HOST_NAME", value : var.schema_registry_properties.host_name },
+      { name : "SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL", value : var.schema_registry_properties.kafkastore_connection_url },
     ]
     mount_points = []
     volumes      = []
