@@ -8,7 +8,6 @@ resource "aws_ecs_task_definition" "task_definition" {
   memory                   = var.container_properties.memory
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.task_role.arn
-  task_role_arn            = aws_iam_role.task_role.arn
 
   dynamic "volume" {
     for_each = var.container_properties.volumes
@@ -61,9 +60,11 @@ resource "aws_security_group" "ecs_tasks" {
   }
 
   egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
+    description      = "Allow all outbound traffic"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 }

@@ -13,11 +13,6 @@ variable "short_identifier_prefix" {
   type        = string
 }
 
-variable "aws_subnet_ids" {
-  description = "A list of VPC Subnet IDs the server could be deployed in"
-  type        = list(string)
-}
-
 variable "environment" {
   description = "Environment e.g. dev, stg, prod, mgmt."
   type        = string

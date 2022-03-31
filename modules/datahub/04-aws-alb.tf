@@ -1,11 +1,10 @@
-//data "aws_acm_certificate" "datahub" {
-//  domain = var.datahub_ssl_certificate_domain
-//  statuses = ["ISSUED"]
-//}
+data "aws_subnet_ids" "subnet_ids" {
+  vpc_id = var.vpc_id
+}
 
 data "aws_subnet" "subnets" {
-  count = length(var.aws_subnet_ids)
-  id    = tolist(var.aws_subnet_ids)[count.index]
+  count = length(data.aws_subnet_ids.subnet_ids.ids)
+  id    = tolist(data.aws_subnet_ids.subnet_ids.ids)[count.index]
 }
 
 resource "aws_security_group" "datahub_alb" {
@@ -25,17 +24,8 @@ resource "aws_security_group" "datahub_alb" {
 
   ingress {
     description      = "Allow inbound HTTP traffic"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "Allow inbound HTTPS traffic"
-    from_port        = 443
-    to_port          = 443
+    from_port        = local.datahub_frontend_react.port
+    to_port          = local.datahub_frontend_react.port
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
@@ -48,8 +38,8 @@ resource "aws_security_group" "datahub_alb" {
 
 resource "aws_alb_target_group" "datahub" {
   name        = "${var.short_identifier_prefix}datahub"
-  port        = 443
-  protocol    = "HTTPS"
+  port        = local.datahub_frontend_react.port
+  protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
 }
@@ -62,25 +52,9 @@ resource "aws_alb" "datahub" {
   subnets            = data.aws_subnet.subnets.*.id
 }
 
-//resource "aws_alb_listener" "datahub_http" {
-//  load_balancer_arn = aws_alb.datahub.arn
-//  port              = "80"
-//  protocol          = "HTTP"
-//
-//  default_action {
-//    type = "redirect"
-//
-//    redirect {
-//      port        = "443"
-//      protocol    = "HTTPS"
-//      status_code = "HTTP_301"
-//    }
-//  }
-//}
-
 resource "aws_alb_listener" "datahub_http" {
   load_balancer_arn = aws_alb.datahub.arn
-  port              = "80"
+  port              = local.datahub_frontend_react.port
   protocol          = "HTTP"
 
   default_action {
@@ -88,16 +62,3 @@ resource "aws_alb_listener" "datahub_http" {
     target_group_arn = aws_alb_target_group.datahub.arn
   }
 }
-
-//resource "aws_alb_listener" "datahub_https" {
-//  load_balancer_arn = aws_alb.datahub.arn
-//  port              = "443"
-//  protocol          = "HTTPS"
-//  ssl_policy        = "ELBSecurityPolicy-2016-08"
-//  certificate_arn   = data.aws_acm_certificate.datahub.arn
-//
-//  default_action {
-//    type             = "forward"
-//    target_group_arn = aws_alb_target_group.datahub.arn
-//  }
-//}

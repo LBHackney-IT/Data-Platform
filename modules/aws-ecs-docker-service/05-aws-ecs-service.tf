@@ -12,9 +12,16 @@ resource "aws_ecs_service" "datahub_frontend_react_service" {
     assign_public_ip = false
   }
 
-  load_balancer {
-    target_group_arn = var.alb_target_group_arn
-    container_name   = var.container_properties.container_name
-    container_port   = var.container_properties.port
+  dynamic "load_balancer" {
+    for_each = var.container_properties.load_balancer_required == true ? [1] : []
+    content {
+      target_group_arn = var.alb_target_group_arn
+      container_name   = var.container_properties.container_name
+      container_port   = var.container_properties.port
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [desired_count]
   }
 }
