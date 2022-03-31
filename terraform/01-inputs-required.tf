@@ -60,12 +60,3 @@ variable "emails_to_notify_with_budget_alerts" {
   type        = list(string)
 }
 
-variable "datahub_instance_type" {
-  description = "The instance type to use for the DataHub server"
-  type        = string
-}
-
-variable "datahub_ssl_certificate_domain" {
-  description = "The domain name associated with an existing AWS Certificate Manager certificate"
-  type        = string
-}

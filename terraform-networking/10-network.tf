@@ -114,14 +114,3 @@ resource "aws_route" "hub_tgw_routes" {
   route_table_id         = module.core_vpc.private_route_table_ids[count.index]
   transit_gateway_id     = data.aws_ec2_transit_gateway.hub_tgw.id
 }
-
-resource "aws_acm_certificate" "datahub" {
-  domain_name       = var.datahub_ssl_certificate_domain
-  validation_method = "DNS"
-
-  tags = module.tags.values
-
-  lifecycle {
-    create_before_destroy = true #It's recommended to specify create_before_destroy = true in a lifecycle block to replace a certificate which is currently in use (eg, by aws_lb_listener).
-  }
-}

@@ -64,8 +64,3 @@ variable "aws_data_platform_account_id" {
   description = "Data Platform account ID"
   type        = string
 }
-
-variable "datahub_ssl_certificate_domain" {
-  description = "The domain name associated with an existing AWS Certificate Manager certificate"
-  type        = string
-}
