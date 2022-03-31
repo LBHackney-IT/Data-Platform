@@ -7,4 +7,24 @@ module "datahub" {
   short_identifier_prefix = local.short_identifier_prefix
   aws_subnet_ids          = local.subnet_ids_list
   vpc_id                  = var.aws_dp_vpc_id
+  rds_properties = {
+    host     = ""
+    port     = 1
+    username = ""
+    password = ""
+    db_name  = ""
+  }
+  elasticsearch_properties = {
+    host     = ""
+    port     = 1
+    protocol = "http"
+  }
+  kafka_properties = {
+    kafka_zookeeper_connect = ""
+    kafka_bootstrap_server  = ""
+  }
+  schema_registry = {
+    host_name                 = ""
+    kafkastore_connection_url = ""
+  }
 }

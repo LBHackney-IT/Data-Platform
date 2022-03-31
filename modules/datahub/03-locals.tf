@@ -113,6 +113,67 @@ locals {
     ]
     volumes = ["zkdata"]
   }
+  mysql_setup = {
+    container_name         = "mysql-setup"
+    image_name             = "acryldata/datahub-mysql-setup:head"
+    port                   = 3306
+    cpu                    = 256
+    memory                 = 2048
+    load_balancer_required = false
+    environment_variables = [
+      { name : "MYSQL_HOST", value : var.rds_properties.host },
+      { name : "MYSQL_PORT", value : var.rds_properties.port },
+      { name : "MYSQL_USERNAME", value : var.rds_properties.username },
+      { name : "MYSQL_PASSWORD", value : var.rds_properties.password },
+      { name : "DATAHUB_DB_NAME", value : var.rds_properties.db_name },
+    ]
+    mount_points = []
+    volumes      = []
+  }
+  elasticsearch_setup = {
+    container_name         = "elasticsearch-setup"
+    image_name             = "linkedin/datahub-elasticsearch-setup:head"
+    port                   = var.elasticsearch_properties.port
+    cpu                    = 256
+    memory                 = 2048
+    load_balancer_required = false
+    environment_variables = [
+      { name : "ELASTICSEARCH_HOST", value : var.elasticsearch_properties.host },
+      { name : "ELASTICSEARCH_PORT", value : var.elasticsearch_properties.port },
+      { name : "ELASTICSEARCH_PROTOCOL", value : var.elasticsearch_properties.protocol },
+      { name : "USE_AWS_ELASTICSEARCH", value : "true" }
+    ]
+    mount_points = []
+    volumes      = []
+  }
+  kafka_setup = {
+    container_name         = "kafka-setup"
+    image_name             = "linkedin/datahub-kafka-setup:head"
+    port                   = var.elasticsearch_properties.port
+    cpu                    = 256
+    memory                 = 2048
+    load_balancer_required = false
+    environment_variables = [
+      { name : "KAFKA_ZOOKEEPER_CONNECT", value : var.kafka_properties.kafka_zookeeper_connect },
+      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
+    ]
+    mount_points = []
+    volumes      = []
+  }
+  schema_registry = {
+    container_name         = "schema-registry"
+    image_name             = "confluentinc/cp-schema-registry:5.4.0"
+    port                   = 8081
+    cpu                    = 256
+    memory                 = 2048
+    load_balancer_required = false
+    environment_variables = [
+      { name : "SCHEMA_REGISTRY_HOST_NAME", value : var.schema_registry.host_name },
+      { name : "SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL", value : var.schema_registry.kafkastore_connection_url },
+    ]
+    mount_points = []
+    volumes      = []
+  }
 }
 
 resource "random_password" "password" {
