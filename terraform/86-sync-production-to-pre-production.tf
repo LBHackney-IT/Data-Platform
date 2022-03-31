@@ -33,8 +33,11 @@ data "aws_iam_policy_document" "task_role" {
     effect = "Allow"
     actions = [
       "kms:Decrypt",
-      "kms:GenerateDataKey",
-      "kms:DescribeKey"
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
     ]
     resources = [
       module.raw_zone.kms_key_arn,
@@ -60,8 +63,11 @@ data "aws_iam_policy_document" "task_role" {
     effect = "Allow"
     actions = [
       "kms:Encrypt",
-      "kms:GenerateDataKey",
-      "kms:DescribeKey"
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
     ]
     resources = [
       "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0",
