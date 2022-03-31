@@ -109,7 +109,7 @@ resource "aws_glue_trigger" "academy_revenues_and_benefits_housing_needs_landing
 
   name     = "${local.short_identifier_prefix}academy-revenues-benefits-housing-needs-database-ingestion-crawler-trigger"
   type     = "SCHEDULED"
-  schedule = "cron(0 5,6 ? * MON,TUE,WED,THU,FRI *)"
+  schedule = "cron(0 7,8 ? * MON,TUE,WED,THU,FRI *)"
   enabled  = local.is_live_environment
 
   actions {
