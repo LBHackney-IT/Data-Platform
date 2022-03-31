@@ -5,7 +5,7 @@ module "datahub" {
   environment             = var.environment
   identifier_prefix       = local.identifier_prefix
   short_identifier_prefix = local.short_identifier_prefix
-  vpc_id                  = var.aws_dp_vpc_id
+  vpc_id                  = data.aws_vpc.network.id
   rds_properties = {
     host     = ""
     port     = 1

@@ -24,7 +24,7 @@ variable "operation_name" {
 }
 
 variable "vpc_id" {
-  description = "The ID of the VPC to set the server up in"
+  description = "VPC ID to deploy the datahub containers into"
   type        = string
 }
 

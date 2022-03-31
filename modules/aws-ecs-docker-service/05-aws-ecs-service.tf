@@ -8,7 +8,7 @@ resource "aws_ecs_service" "datahub_frontend_react_service" {
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_tasks.id]
-    subnets          = var.aws_subnet_ids
+    subnets          = data.aws_subnet.subnets.*.id
     assign_public_ip = false
   }
 
@@ -24,4 +24,13 @@ resource "aws_ecs_service" "datahub_frontend_react_service" {
   lifecycle {
     ignore_changes = [desired_count]
   }
+}
+
+data "aws_subnet_ids" "subnet_ids" {
+  vpc_id = var.vpc_id
+}
+
+data "aws_subnet" "subnets" {
+  count = length(data.aws_subnet_ids.subnet_ids.ids)
+  id    = tolist(data.aws_subnet_ids.subnet_ids.ids)[count.index]
 }
