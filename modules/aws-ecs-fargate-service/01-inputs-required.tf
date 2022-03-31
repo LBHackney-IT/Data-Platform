@@ -62,9 +62,14 @@ variable "container_properties" {
   description = "Properties of the container to be deployed to ECS"
   type = object({
     container_name         = string
+    image_name             = string
     port                   = number
     cpu                    = number
     memory                 = number
     load_balancer_required = bool
+    environment_variables  = list(object({
+      name  = string
+      value = string
+    }))
   })
 }

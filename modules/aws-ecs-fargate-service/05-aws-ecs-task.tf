@@ -1,0 +1,61 @@
+data "template_file" "task_definition_template" {
+  template = jsonencode([
+    {
+      name: var.container_properties.container_name,
+      image: var.container_properties.image_name,
+      essential: true,
+      memory: var.container_properties.memory,
+      cpu: var.container_properties.cpu,
+      logConfiguration: {
+        logDriver: "awslogs",
+        options: {
+          awslogs-group: aws_cloudwatch_log_group.datahub.name,
+          awslogs-region: "eu-west-2",
+          awslogs-stream-prefix: "${var.operation_name}${var.container_properties.container_name}"
+        }
+      },
+      portMappings: [
+        {
+          containerPort: var.container_properties.port,
+          hostPort: var.container_properties.port,
+          protocol: "tcp"
+        }
+      ],
+      environment: var.container_properties.environment_variables
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "task_definition" {
+  tags = var.tags
+
+  family                   = "${var.operation_name}${var.container_properties.container_name}"
+  container_definitions    = data.template_file.task_definition_template.rendered
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.container_properties.cpu
+  memory                   = var.container_properties.memory
+  network_mode             = "awsvpc"
+  execution_role_arn       = aws_iam_role.task_role.arn
+  task_role_arn            = aws_iam_role.task_role.arn
+}
+
+resource "aws_security_group" "ecs_tasks" {
+  name        = "${var.short_identifier_prefix}datahub-ecs"
+  description = "Allow inbound access to the ECS service from the ALB only"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    protocol        = "tcp"
+    from_port       = var.container_properties.port
+    to_port         = var.container_properties.port
+    cidr_blocks     = ["0.0.0.0/0"]
+    security_groups = [var.alb_security_group_id]
+  }
+
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

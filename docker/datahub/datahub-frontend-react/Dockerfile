@@ -1,1 +1,0 @@
-FROM linkedin/datahub-frontend-react:${DATAHUB_VERSION:-head}
