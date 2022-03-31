@@ -32,36 +32,3 @@ variable "vpc_id" {
   description = "The ID of the VPC to set the server up in"
   type        = string
 }
-
-variable "ecs_cluster_arn" {
-  type        = string
-  description = "The ECS cluster ARN in which to run the task"
-}
-
-variable "environment_variables" {
-  type = list(object({
-    name  = string
-    value = string
-  }))
-  description = "A list of objects containing environment variables as key value pairs for the task's task definition."
-}
-
-variable "alb_id" {
-  description = "ID of ALB in use"
-  type        = string
-}
-
-variable "alb_target_group_arn" {
-  description = "ARN of the ALB target group"
-  type        = string
-}
-
-variable "alb_security_group_id" {
-  description = "Id of the ALB security group"
-  type        = string
-}
-
-variable "ecr_repository_url" {
-  description = "ECR Repo url"
-  type        = string
-}
