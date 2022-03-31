@@ -127,7 +127,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   tags  = module.tags.values
 
   source = "../modules/aws-glue-job"
-    
+
   job_name                        = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
   script_s3_object_key            = aws_s3_bucket_object.copy_tables_landing_to_raw.key
   environment                     = var.environment
@@ -169,7 +169,7 @@ module "copy_academy_revenues_to_raw_zone" {
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
   glue_job_timeout                = 220
   max_concurrent_runs_of_glue_job = 2
   triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
