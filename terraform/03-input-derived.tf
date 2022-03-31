@@ -16,6 +16,7 @@ module "tags" {
 
 locals {
   is_live_environment             = terraform.workspace == "default" ? true : false
+  is_production_environment       = var.environment == "prod"
   team_snake                      = lower(replace(var.team, " ", "-"))
   environment                     = lower(replace(local.is_live_environment ? var.environment : terraform.workspace, " ", "-"))
   application_snake               = lower(replace(var.application, " ", "-"))
@@ -37,4 +38,8 @@ locals {
     "*.zip",
     "*.xlsx"
   ]
+}
+
+data "aws_ssm_parameter" "aws_vpc_id" {
+  name = "/${local.application_snake}-${local.is_live_environment ? var.environment : "dev"}/vpc/vpc_id"
 }

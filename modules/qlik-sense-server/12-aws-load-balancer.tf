@@ -52,8 +52,25 @@ resource "aws_security_group" "qlik_sense_alb" {
 resource "aws_alb_target_group" "qlik-sense" {
   name     = "${var.short_identifier_prefix}qlik-sense"
   port     = 443
-  protocol = "HTTP"
+  protocol = "HTTPS"
   vpc_id   = var.vpc_id
+
+  health_check {
+    protocol = "HTTPS"
+    path     = "/saml/hub/"
+    matcher  = "302"
+  }
+
+  stickiness {
+    type = "lb_cookie"
+  }
+}
+
+resource "aws_lb_target_group_attachment" "qlik-sense-tg-attachment" {
+  count            = data.aws_instance.qlik-sense-aws-instance.instance_state == "running" ? 1 : 0
+  target_group_arn = aws_alb_target_group.qlik-sense.arn
+  target_id        = data.aws_instance.qlik-sense-aws-instance.id
+  port             = 443
 }
 
 resource "aws_alb" "qlik_sense" {
@@ -62,6 +79,11 @@ resource "aws_alb" "qlik_sense" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.qlik_sense_alb.id]
   subnets            = data.aws_subnet.subnets.*.id
+  idle_timeout       = 4000
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_alb_listener" "qlik_sense_http" {

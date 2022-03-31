@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+# They probably are but check if terraform and git are installed otherwise skip pre-commit hook
+if ! command -v terraform &> /dev/null
+then
+  echo "Terraform not installed"
+  exit 0;
+fi
+
+if ! command -v git &> /dev/null
+then
+  echo "Git not installed"
+  exit 0;
+fi
+
+#Find all the directories with terraform files in them
+terraform_directories=$(find "$(pwd)" -type f -name '*.tfvars' -or -name '*.tf' | sed -r 's|/[^/]+$||' | sort | uniq )
+
+#Format the files in the terraform directories and add
+for directory in $terraform_directories; do
+  if [[ "$directory" != *".terraform"* ]]; then
+    for formatted_file in $(terraform fmt "$directory"); do
+      git add "$(pwd)"/"$formatted_file"
+    done
+  fi
+done

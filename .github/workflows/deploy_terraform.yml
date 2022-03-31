@@ -1,12 +1,6 @@
-name: Deploy Data-Platform
+name: Deploy Data-Platform Terraform
 env:
   aws_deploy_region: "eu-west-2"
-
-  network_state_prefix: "data-platform-network"
-  network_build_path: "./terraform-networking"
-
-  main_state_prefix: "data-platform"
-  main_build_path: "./terraform"
 
 on:
   workflow_call:
@@ -21,16 +15,6 @@ on:
         required: false
         default: ""
         type: string
-      terraform_network_import:
-        description: "Terraform import statements"
-        required: false
-        default: ""
-        type: string
-      terraform_network_remove:
-        description: "Terraform state rm statements"
-        required: false
-        default: ""
-        type: string
       environment:
         description: "Environment to deploy to"
         required: true
@@ -39,6 +23,12 @@ on:
         description: "Link to where the build pipeline is defined"
         type: string
         required: true
+      build_path:
+        required: true
+        type: string
+      terraform_state_s3_key_prefix:
+        required: true
+        type: string
     secrets:
       GOOGLE_PROJECT_ID:
         required: true
@@ -75,7 +65,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Data Platform
+    name: Deploy Data Platform in ${{ inputs.build_path }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
@@ -131,51 +121,14 @@ jobs:
         working-directory: "./scripts"
         run: make all
 
-
-      - name: Deploy Data Platform Network
+      - name: Deploy Data Platform in ${{ inputs.build_path }}
         uses: ./.github/actions/terraform-deploy
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_deploy_region: ${{ env.aws_deploy_region }}
-          terraform_state_s3_key_prefix: ${{ env.network_state_prefix }}
-          build_path: ${{ env.network_build_path }}
-          automation_build_url: ${{ inputs.automation_build_url }}
-          environment: ${{ inputs.environment }}
-          google_project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
-          aws_deploy_account_id: ${{ secrets.AWS_DEPLOY_ACCOUNT_ID }}
-          aws_api_account_id: ${{ secrets.AWS_API_ACCOUNT_PROD }}
-          aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
-          aws_data_platform_account_id: ${{ secrets.AWS_DATA_PLATFORM_ACCOUNT_ID }}
-          aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
-          aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
-          aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
-          aws_dp_vpc_id: ${{ secrets.AWS_DP_VPC_ID }}
-          aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
-          aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          branch: "main"
-          terraform_import: ${{ inputs.terraform_network_import }}
-          terraform_remove: ${{ inputs.terraform_netowrk_remove }}
-          # DANGER ZONE
-          # In order to allow you to run a Terraform destroy (that will delete all AWS resources managed by Terraform,
-          # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
-          # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
-          terraform_destroy: false
-
-      - name: Assign Network Properties
-        working-directory: "./terraform-networking"
-        run: |
-          VPC_ID=$(terraform output vpc_id)
-          echo "aws_vpc_id=$VPC_ID" >> ../config/terraform/${{ inputs.environment }}.tfvars
-
-      - name: Deploy Data Platform Infastructure
-        uses: ./.github/actions/terraform-deploy
-        with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_deploy_region: ${{ env.aws_deploy_region }}
-          terraform_state_s3_key_prefix: ${{ env.main_state_prefix }}
-          build_path: ${{ env.main_build_path }}
+          terraform_state_s3_key_prefix: ${{ inputs.terraform_state_s3_key_prefix }}
+          build_path: ${{ inputs.build_path }}
           automation_build_url: ${{ inputs.automation_build_url }}
           environment: ${{ inputs.environment }}
           google_project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
@@ -213,9 +166,22 @@ jobs:
           source .venv/bin/activate
           AWS_PROFILE=deploy_role python ./configure_redshift.py "$terraform_outputs"
 
+      # - name: Configure kafka connect
+      #   working-directory: "./terraform"
+      #   run: |
+      #     terraform_outputs=$(terraform output -json)
+      #     cd ../modules/kafka-event-streaming/scripts
+      #     make .venv/.install.stamp
+      #     source .venv/bin/activate
+      #     AWS_PROFILE=deploy_role python ./install_kafka_connectors.py --input "$terraform_outputs"
+
       - name: Build and Deploy SQL to Parquet Image to ECR
         run: |
           AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
+
+      - name: Build and Deploy Production to Pre-Production sync Image to ECR
+        run: |
+          ENVIRONMENT=${{ inputs.environment }} AWS_PROFILE=deploy_role ./docker/production-to-pre-production/deploy.sh
 
       - name: Generate Self Signed certificate
         run: |
