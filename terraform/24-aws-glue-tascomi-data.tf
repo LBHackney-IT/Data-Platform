@@ -248,10 +248,11 @@ module "tascomi_create_daily_snapshot" {
 module "tascomi_applications_to_trusted" {
   source = "../modules/aws-glue-job"
 
-  department        = module.department_planning
-  job_name          = "${local.short_identifier_prefix}tascomi_applications_trusted"
-  helper_module_key = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  department                 = module.department_planning
+  job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/applications_reporting"

@@ -566,6 +566,7 @@ module "sandbox_stevefarr_covid_vaccinations" {
   google_sheets_worksheet_name    = "vaccinations"
   department                      = module.department_sandbox
   dataset_name                    = "stevefarr_covid_vaccinations"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_stevefarr_covid_locations" {
@@ -585,4 +586,5 @@ module "sandbox_stevefarr_covid_locations" {
   google_sheets_worksheet_name    = "locations"
   department                      = module.department_sandbox
   dataset_name                    = "stevefarr_covid_locations"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
