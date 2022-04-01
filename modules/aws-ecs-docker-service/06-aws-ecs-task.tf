@@ -35,13 +35,7 @@ data "template_file" "task_definition_template" {
           awslogs-stream-prefix : "${var.operation_name}${var.container_properties.container_name}"
         }
       },
-      portMappings : [
-        {
-          containerPort : var.container_properties.port,
-          hostPort : var.container_properties.port,
-          protocol : "tcp"
-        }
-      ],
+      portMappings : var.container_properties.port_mappings
       environment : var.container_properties.environment_variables
       mountPoints : var.container_properties.mount_points
     }

@@ -1,26 +1,4 @@
 locals {
-  broker = {
-    container_name         = "broker"
-    image_name             = "confluentinc/cp-kafka"
-    image_tag              = "5.4.0"
-    port                   = 9092
-    cpu                    = 256
-    memory                 = 2048
-    load_balancer_required = false
-    environment_variables = [
-      { name : "KAFKA_BROKER_ID", value : "1" },
-      { name : "KAFKA_ZOOKEEPER_CONNECT", value : var.kafka_properties.kafka_zookeeper_connect },
-      { name : "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", value : "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT" },
-      { name : "KAFKA_ADVERTISED_LISTENERS", value : "PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092" },
-      { name : "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", value : "1" },
-      { name : "KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", value : "0" },
-      { name : "KAFKA_HEAP_OPTS", value : "-Xms256m -Xmx256m" }
-    ]
-    mount_points = [
-      { sourceVolume : "broker", containerPath : "/var/lib/kafka/data/", readOnly : false }
-    ]
-    volumes = ["broker"]
-  }
   datahub_actions = {
     container_name         = "datahub-actions"
     image_name             = "acryldata/acryl-datahub-actions"
@@ -93,30 +71,13 @@ locals {
       { name : "JAVA_OPTS", value : "-Xms1g -Xmx1g" },
       { name : "GRAPH_SERVICE_IMPL", value : "neo4j" },
       { name : "ENTITY_REGISTRY_CONFIG_PATH", value : "/datahub/datahub-gms/resources/entity-registry.yml" },
-      { name : "MAE_CONSUMER_ENABLED", value : "true" },
-      { name : "MCE_CONSUMER_ENABLED", value : "true" },
+      { name : "MAE_CONSUMER_ENABLED", value : "false" },
+      { name : "MCE_CONSUMER_ENABLED", value : "false" },
       { name : "UI_INGESTION_ENABLED", value : "true" },
       { name : "UI_INGESTION_DEFAULT_CLI_VERSION", value : "0.8.26.6" }
     ]
     mount_points = []
     volumes      = []
-  }
-  zookeeper = {
-    container_name         = "zookeeper"
-    image_name             = "confluentinc/cp-zookeeper"
-    image_tag              = "5.4.0"
-    port                   = 2181
-    cpu                    = 256
-    memory                 = 2048
-    load_balancer_required = false
-    environment_variables = [
-      { name : "ZOOKEEPER_CLIENT_PORT", value : "2181" },
-      { name : "ZOOKEEPER_TICK_TIME", value : "2000" },
-    ]
-    mount_points = [
-      { sourceVolume : "zkdata", containerPath : "/var/opt/zookeeper", readOnly : false }
-    ]
-    volumes = ["zkdata"]
   }
   mysql_setup = {
     container_name         = "mysql-setup"
@@ -168,20 +129,27 @@ locals {
     mount_points = []
     volumes      = []
   }
-  schema_registry = {
-    container_name         = "schema-registry"
-    image_name             = "confluentinc/cp-schema-registry"
-    image_tag              = "5.4.0"
-    port                   = 8081
+  neo4j = {
+    container_name         = "neo4j"
+    image_name             = "neo4j"
+    image_tag              = "4.0.6"
+    port                   = 7474
     cpu                    = 256
     memory                 = 2048
     load_balancer_required = false
-    environment_variables = [
-      { name : "SCHEMA_REGISTRY_HOST_NAME", value : var.schema_registry_properties.host_name },
-      { name : "SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL", value : var.schema_registry_properties.kafkastore_connection_url },
+    port_mappings = [
+      { containerPort : 7474, hostPort : 7474 },
+      { containerPort : 7687, hostPort : 7687 }
     ]
-    mount_points = []
-    volumes      = []
+    environment_variables = [
+      { name : "NEO4J_AUTH", value : "neo4j/datahub" },
+      { name : "NEO4J_dbms_default__database", value : "graph.db" },
+      { name : "NEO4J_dbms_allow__upgrade", value : "true" },
+    ]
+    mount_points = [
+      { sourceVolume : "neo4jdata", containerPath : "/data", readOnly : false }
+    ]
+    volumes = ["neo4jdata"]
   }
 }
 

@@ -63,6 +63,10 @@ variable "container_properties" {
     cpu                    = number
     memory                 = number
     load_balancer_required = bool
+    port_mappings = list(object({
+      containerPort = number
+      hostPort      = number
+    }))
     environment_variables = list(object({
       name  = string
       value = string
