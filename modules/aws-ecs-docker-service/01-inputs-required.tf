@@ -75,8 +75,3 @@ variable "container_properties" {
     volumes = list(string)
   })
 }
-
-variable "ecr_repository_url" {
-  description = "ECR Repository url used to push docker images to"
-  type        = string
-}

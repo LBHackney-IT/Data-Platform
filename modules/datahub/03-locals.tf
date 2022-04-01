@@ -1,7 +1,7 @@
 locals {
   broker = {
     container_name         = "broker"
-    image_name             = "confluentinc/cp-kafka:5.4.0"
+    image_name             = "confluentinc/cp-kafka"
     image_tag              = "5.4.0"
     port                   = 9092
     cpu                    = 256
@@ -24,7 +24,7 @@ locals {
   datahub_actions = {
     container_name         = "datahub-actions"
     image_name             = "acryldata/acryl-datahub-actions"
-    image_tag              = "latest"
+    image_tag              = "head"
     port                   = 80
     cpu                    = 256
     memory                 = 2048
@@ -58,7 +58,7 @@ locals {
       { name : "DATAHUB_SECRET", value : random_password.password.result },
       { name : "DATAHUB_APP_VERSION", value : "1.0" },
       { name : "DATAHUB_PLAY_MEM_BUFFER_SIZE", value : "10MB" },
-      { name : "JAVA_OPTS", value : "-Xms512m -Xmx512m -Dhttp.port=9002 -Dconfig.file=datahub-frontend/conf/application.conf -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null" },
+      { name : "JAVA_OPTS", value : "-Xms2048m -Xmx2048m -Dhttp.port=9002 -Dconfig.file=datahub-frontend/conf/application.conf -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "DATAHUB_TRACKING_TOPIC", value : "DataHubUsageEvent_v1" },
       { name : "ELASTIC_CLIENT_HOST", value : "elasticsearch" },
@@ -170,7 +170,7 @@ locals {
   }
   schema_registry = {
     container_name         = "schema-registry"
-    image_name             = "confluentinc/cp-schema-registry:5.4.0"
+    image_name             = "confluentinc/cp-schema-registry"
     image_tag              = "5.4.0"
     port                   = 8081
     cpu                    = 256
