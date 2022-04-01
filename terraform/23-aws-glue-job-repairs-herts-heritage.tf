@@ -25,4 +25,5 @@ module "housing_repairs_herts_heritage" {
   dataset_name                = "repairs-herts-heritage"
   address_cleaning_script_key = aws_s3_bucket_object.address_cleaning.key
   match_to_property_shell     = "forbid"
+  spark_ui_output_storage_id  = module.spark_ui_output_storage.bucket_id
 }

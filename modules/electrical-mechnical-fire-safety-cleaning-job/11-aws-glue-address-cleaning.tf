@@ -12,9 +12,10 @@ module "housing_repairs_elec_mech_fire_address_cleaning" {
     "--source_address_column_header"       = "property_address"
     "--source_postcode_column_header"      = "None"
   }
-  workflow_name        = var.worksheet_resource.workflow_name
-  script_s3_object_key = var.address_cleaning_script_key
-  triggered_by_crawler = module.housing_repairs_elec_mech_fire_cleaning.crawler_name
+  workflow_name              = var.worksheet_resource.workflow_name
+  script_s3_object_key       = var.address_cleaning_script_key
+  spark_ui_output_storage_id = var.spark_ui_output_storage_id
+  triggered_by_crawler       = module.housing_repairs_elec_mech_fire_cleaning.crawler_name
   crawler_details = {
     database_name      = local.refined_zone_catalog_database_name
     s3_target_location = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/with-cleaned-addresses/"

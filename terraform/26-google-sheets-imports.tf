@@ -18,6 +18,7 @@ module "repairs_dlo" {
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-dlo"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "repairs_herts_heritage" {
@@ -40,6 +41,7 @@ module "repairs_herts_heritage" {
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-herts-heritage"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "repairs_avonline" {
@@ -62,6 +64,7 @@ module "repairs_avonline" {
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-avonline"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "repairs_alpha_track" {
@@ -84,6 +87,7 @@ module "repairs_alpha_track" {
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-alpha-track"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "repairs_stannah" {
@@ -106,6 +110,7 @@ module "repairs_stannah" {
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-stannah"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "repairs_purdy" {
@@ -128,6 +133,7 @@ module "repairs_purdy" {
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-purdy"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "repairs_axis" {
@@ -150,6 +156,7 @@ module "repairs_axis" {
   department                      = module.department_housing_repairs
   dataset_name                    = "repairs-axis"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "parking_spreadsheet_estate_permit_limits" {
@@ -170,6 +177,7 @@ module "parking_spreadsheet_estate_permit_limits" {
   department                      = module.department_parking
   dataset_name                    = "estate_permit_limits"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "parking_spreadsheet_parkmap_restrictions_report" {
@@ -190,6 +198,7 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
   department                      = module.department_parking
   dataset_name                    = "parkmap_restrictions_report"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_daro_covid_locations" {
@@ -210,6 +219,7 @@ module "sandbox_daro_covid_locations" {
   department                      = module.department_sandbox
   dataset_name                    = "daro_covid_locations"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_daro_covid_vaccinations" {
@@ -230,6 +240,7 @@ module "sandbox_daro_covid_vaccinations" {
   department                      = module.department_sandbox
   dataset_name                    = "daro_covid_vaccinations"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 module "covid_locations_lisa" {
   count = local.is_live_environment ? 1 : 0
@@ -250,6 +261,7 @@ module "covid_locations_lisa" {
   department                      = module.department_sandbox
   dataset_name                    = "covid-locations-lisa"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 
@@ -272,6 +284,7 @@ module "covid_vaccine_demo__locations_tim" {
   department                      = module.department_sandbox
   dataset_name                    = "tim_covid_vaccination_locations"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "covid_vaccine_demo__vaccinatons_tim" {
@@ -293,6 +306,7 @@ module "covid_vaccine_demo__vaccinatons_tim" {
   department                      = module.department_sandbox
   dataset_name                    = "tim_covid_vaccination_vaccinations"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "covid_vaccinations_lisa" {
@@ -314,6 +328,7 @@ module "covid_vaccinations_lisa" {
   department                      = module.department_sandbox
   dataset_name                    = "covid-vaccinations-lisa"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "huu_do_covid_vaccinations_locations" {
@@ -335,6 +350,7 @@ module "huu_do_covid_vaccinations_locations" {
   department                      = module.department_sandbox
   dataset_name                    = "huu_do_sandbox_covid_locations"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "huu_do_covid_vaccinations_vaccinations" {
@@ -356,6 +372,7 @@ module "huu_do_covid_vaccinations_vaccinations" {
   department                      = module.department_sandbox
   dataset_name                    = "huu_do_sandbox_covid_vaccinations"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_covid_locations_ben" {
@@ -376,6 +393,7 @@ module "sandbox_covid_locations_ben" {
   department                      = module.department_sandbox
   dataset_name                    = "covid_locations_ben"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_covid_vaccinations_ben" {
@@ -396,6 +414,7 @@ module "sandbox_covid_vaccinations_ben" {
   department                      = module.department_sandbox
   dataset_name                    = "covid_vaccinations_ben"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_covid_locations_marta" {
@@ -417,6 +436,7 @@ module "sandbox_covid_locations_marta" {
   department                      = module.department_sandbox
   dataset_name                    = "sandbox_covid_locations_marta"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_covid_vaccinations_marta" {
@@ -438,6 +458,7 @@ module "sandbox_covid_vaccinations_marta" {
   department                      = module.department_sandbox
   dataset_name                    = "sandbox_covid_vaccinations_marta"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_covid_vaccinations_adam" {
@@ -459,6 +480,7 @@ module "sandbox_covid_vaccinations_adam" {
   department                      = module.department_sandbox
   dataset_name                    = "covid_vaccinations_adam"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_covid_locations_adam" {
@@ -480,6 +502,7 @@ module "sandbox_covid_locations_adam" {
   department                      = module.department_sandbox
   dataset_name                    = "covid_locations_adam"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_estates_round_crew_data" {
@@ -501,6 +524,7 @@ module "sandbox_estates_round_crew_data" {
   department                      = module.department_sandbox
   dataset_name                    = "estate_round_crew_data"
   enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "env_enforcement_asb_warnings" {
@@ -522,6 +546,7 @@ module "env_enforcement_asb_warnings" {
   department                      = module.department_env_enforcement
   dataset_name                    = "asb_warnings"
   enable_glue_trigger             = true
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_stevefarr_covid_vaccinations" {
@@ -541,6 +566,7 @@ module "sandbox_stevefarr_covid_vaccinations" {
   google_sheets_worksheet_name    = "vaccinations"
   department                      = module.department_sandbox
   dataset_name                    = "stevefarr_covid_vaccinations"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
 module "sandbox_stevefarr_covid_locations" {
@@ -560,4 +586,5 @@ module "sandbox_stevefarr_covid_locations" {
   google_sheets_worksheet_name    = "locations"
   department                      = module.department_sandbox
   dataset_name                    = "stevefarr_covid_locations"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }

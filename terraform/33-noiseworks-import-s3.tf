@@ -145,10 +145,11 @@ resource "aws_iam_role_policy_attachment" "env_enforcement_role_can_get_noisewor
 module "noiseworks_to_raw_zone" {
   source = "../modules/aws-glue-job"
 
-  department        = module.department_env_enforcement
-  job_name          = "${local.short_identifier_prefix}noiseworks_to_raw_zone"
-  helper_module_key = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  department                 = module.department_env_enforcement
+  job_name                   = "${local.short_identifier_prefix}noiseworks_to_raw_zone"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--job-bookmark-option"    = "job-bookmark-enable"
     "--s3_bucket_source"       = "s3://${module.noiseworks_data_storage.bucket_id}/"

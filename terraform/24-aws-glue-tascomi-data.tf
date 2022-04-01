@@ -80,7 +80,8 @@ module "ingest_tascomi_data" {
     "--number_of_workers"       = local.number_of_workers
     "--target_database_name"    = aws_glue_catalog_database.raw_zone_tascomi.name
   }
-  script_name = "tascomi_api_ingestion"
+  script_name                = "tascomi_api_ingestion"
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
 }
 
 
@@ -154,10 +155,11 @@ resource "aws_glue_trigger" "tascomi_api_response_crawler_trigger" {
 module "tascomi_parse_tables_increments" {
   source = "../modules/aws-glue-job"
 
-  department        = module.department_planning
-  job_name          = "${local.short_identifier_prefix}tascomi_parse_tables_increments_planning"
-  helper_module_key = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  department                 = module.department_planning
+  job_name                   = "${local.short_identifier_prefix}tascomi_parse_tables_increments_planning"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.raw_zone.bucket_id}/planning/tascomi/parsed/"
@@ -184,10 +186,11 @@ module "tascomi_parse_tables_increments" {
 module "tascomi_recast_tables_increments" {
   source = "../modules/aws-glue-job"
 
-  department        = module.department_planning
-  job_name          = "${local.short_identifier_prefix}tascomi_recast_tables_increments_planning"
-  helper_module_key = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  department                 = module.department_planning
+  job_name                   = "${local.short_identifier_prefix}tascomi_recast_tables_increments_planning"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--column_dict_path"        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.tascomi_column_type_dictionary.key}"
@@ -215,10 +218,11 @@ module "tascomi_recast_tables_increments" {
 module "tascomi_create_daily_snapshot" {
   source = "../modules/aws-glue-job"
 
-  department        = module.department_planning
-  job_name          = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
-  helper_module_key = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  department                 = module.department_planning
+  job_name                   = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/planning/tascomi/snapshot/"
@@ -244,10 +248,11 @@ module "tascomi_create_daily_snapshot" {
 module "tascomi_applications_to_trusted" {
   source = "../modules/aws-glue-job"
 
-  department        = module.department_planning
-  job_name          = "${local.short_identifier_prefix}tascomi_applications_trusted"
-  helper_module_key = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = aws_s3_bucket_object.pydeequ.key
+  department                 = module.department_planning
+  job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/applications_reporting"
