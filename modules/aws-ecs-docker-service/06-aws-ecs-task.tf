@@ -45,26 +45,3 @@ data "template_file" "task_definition_template" {
     }
   ])
 }
-
-resource "aws_security_group" "ecs_tasks" {
-  name        = "${var.operation_name}${var.container_properties.container_name}"
-  description = "Allow inbound access to the ECS service from the ALB only"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    protocol        = "tcp"
-    from_port       = var.container_properties.port
-    to_port         = var.container_properties.port
-    cidr_blocks     = ["0.0.0.0/0"]
-    security_groups = [var.alb_security_group_id]
-  }
-
-  egress {
-    description      = "Allow all outbound traffic"
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-}
