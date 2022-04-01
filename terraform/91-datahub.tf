@@ -19,8 +19,8 @@ module "datahub" {
     protocol = "http"
   }
   kafka_properties = {
-    kafka_zookeeper_connect = ""
-    kafka_bootstrap_server  = ""
+    kafka_zookeeper_connect = module.kafka_event_streaming.cluster_config.zookeeper_connect_string
+    kafka_bootstrap_server  = module.kafka_event_streaming.cluster_config.bootstrap_brokers_tls
   }
   schema_registry_properties = {
     host_name                 = ""

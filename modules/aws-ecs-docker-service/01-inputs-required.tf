@@ -58,6 +58,7 @@ variable "container_properties" {
   type = object({
     container_name         = string
     image_name             = string
+    image_tag              = string
     port                   = number
     cpu                    = number
     memory                 = number
@@ -73,4 +74,9 @@ variable "container_properties" {
     }))
     volumes = list(string)
   })
+}
+
+variable "ecr_repository_url" {
+  description = "ECR Repository url used to push docker images to"
+  type        = string
 }

@@ -2,13 +2,14 @@ locals {
   broker = {
     container_name         = "broker"
     image_name             = "confluentinc/cp-kafka:5.4.0"
+    image_tag              = "5.4.0"
     port                   = 9092
     cpu                    = 256
     memory                 = 2048
     load_balancer_required = false
     environment_variables = [
       { name : "KAFKA_BROKER_ID", value : "1" },
-      { name : "KAFKA_ZOOKEEPER_CONNECT", value : "zookeeper:2181" },
+      { name : "KAFKA_ZOOKEEPER_CONNECT", value : var.kafka_properties.kafka_zookeeper_connect },
       { name : "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", value : "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT" },
       { name : "KAFKA_ADVERTISED_LISTENERS", value : "PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092" },
       { name : "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", value : "1" },
@@ -22,7 +23,8 @@ locals {
   }
   datahub_actions = {
     container_name         = "datahub-actions"
-    image_name             = "acryldata/acryl-datahub-actions:head"
+    image_name             = "acryldata/acryl-datahub-actions"
+    image_tag              = "latest"
     port                   = 80
     cpu                    = 256
     memory                 = 2048
@@ -30,7 +32,7 @@ locals {
     environment_variables = [
       { name : "GMS_HOST", value : "datahub-gms" },
       { name : "GMS_PORT", value : "8080" },
-      { name : "KAFKA_BOOTSTRAP_SERVER", value : "broker:29092" },
+      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "SCHEMA_REGISTRY_URL", value : "http://schema-registry:8081" },
       { name : "METADATA_AUDIT_EVENT_NAME", value : "MetadataAuditEvent_v4" },
       { name : "METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME", value : "MetadataChangeLog_Versioned_v1" },
@@ -44,19 +46,20 @@ locals {
   datahub_frontend_react = {
     container_name         = "datahub-frontend-react"
     image_name             = "linkedin/datahub-frontend-react"
+    image_tag              = "latest"
     port                   = 9002
     cpu                    = 256
     memory                 = 2048
     load_balancer_required = true
     environment_variables = [
       { name : "PORT", value : "80" },
-      { name : "DATAHUB_GMS_HOST", value : "80" },
-      { name : "DATAHUB_GMS_PORT", value : "datahub-gms" },
+      { name : "DATAHUB_GMS_HOST", value : "datahub-gms" },
+      { name : "DATAHUB_GMS_PORT", value : "80" },
       { name : "DATAHUB_SECRET", value : random_password.password.result },
       { name : "DATAHUB_APP_VERSION", value : "1.0" },
       { name : "DATAHUB_PLAY_MEM_BUFFER_SIZE", value : "10MB" },
       { name : "JAVA_OPTS", value : "-Xms512m -Xmx512m -Dhttp.port=9002 -Dconfig.file=datahub-frontend/conf/application.conf -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null" },
-      { name : "KAFKA_BOOTSTRAP_SERVER", value : "broker:29092" },
+      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "DATAHUB_TRACKING_TOPIC", value : "DataHubUsageEvent_v1" },
       { name : "ELASTIC_CLIENT_HOST", value : "elasticsearch" },
       { name : "ELASTIC_CLIENT_PORT", value : "9200" }
@@ -67,6 +70,7 @@ locals {
   datahub_gms = {
     container_name         = "datahub-gms"
     image_name             = "linkedin/datahub-gms"
+    image_tag              = "latest"
     port                   = 8080
     cpu                    = 256
     memory                 = 2048
@@ -78,7 +82,7 @@ locals {
       { name : "EBEAN_DATASOURCE_HOST", value : "mysql:3306" },
       { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://mysql:3306/datahub?verifyServerCertificate", value : "false&useSSL", value : "true&useUnicode", value : "yes&characterEncoding", value : "UTF-8&enabledTLSProtocols", value : "TLSv1.2" },
       { name : "EBEAN_DATASOURCE_DRIVER", value : "com.mysql.jdbc.Driver" },
-      { name : "KAFKA_BOOTSTRAP_SERVER", value : "broker:29092" },
+      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : "http://schema-registry:8081" },
       { name : "ELASTICSEARCH_HOST", value : "elasticsearch" },
       { name : "ELASTICSEARCH_PORT", value : "9200" },
@@ -99,7 +103,8 @@ locals {
   }
   zookeeper = {
     container_name         = "zookeeper"
-    image_name             = "confluentinc/cp-zookeeper:5.4.0"
+    image_name             = "confluentinc/cp-zookeeper"
+    image_tag              = "5.4.0"
     port                   = 2181
     cpu                    = 256
     memory                 = 2048
@@ -116,6 +121,7 @@ locals {
   mysql_setup = {
     container_name         = "mysql-setup"
     image_name             = "acryldata/datahub-mysql-setup"
+    image_tag              = "latest"
     port                   = 3306
     cpu                    = 256
     memory                 = 2048
@@ -133,6 +139,7 @@ locals {
   elasticsearch_setup = {
     container_name         = "elasticsearch-setup"
     image_name             = "linkedin/datahub-elasticsearch-setup"
+    image_tag              = "latest"
     port                   = var.elasticsearch_properties.port
     cpu                    = 256
     memory                 = 2048
@@ -149,6 +156,7 @@ locals {
   kafka_setup = {
     container_name         = "kafka-setup"
     image_name             = "linkedin/datahub-kafka-setup"
+    image_tag              = "latest"
     port                   = var.elasticsearch_properties.port
     cpu                    = 256
     memory                 = 2048
@@ -163,6 +171,7 @@ locals {
   schema_registry = {
     container_name         = "schema-registry"
     image_name             = "confluentinc/cp-schema-registry:5.4.0"
+    image_tag              = "5.4.0"
     port                   = 8081
     cpu                    = 256
     memory                 = 2048

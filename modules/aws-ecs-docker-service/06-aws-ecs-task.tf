@@ -15,13 +15,15 @@ resource "aws_ecs_task_definition" "task_definition" {
       name = volume.value
     }
   }
+
+  depends_on = [null_resource.docker_pull_push]
 }
 
 data "template_file" "task_definition_template" {
   template = jsonencode([
     {
       name : var.container_properties.container_name,
-      image : var.container_properties.image_name,
+      image : "${var.ecr_repository_url}/${var.container_properties.image_name}",
       essential : true,
       memory : var.container_properties.memory,
       cpu : var.container_properties.cpu,

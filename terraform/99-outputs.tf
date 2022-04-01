@@ -53,14 +53,14 @@ output "sync_production_to_pre_production_task_role_arn" {
   value = try(module.sync_production_to_pre_production[0].task_role, null)
 }
 
-//output "default_s3_plugin_configuration" {
-//  value = module.kafka_event_streaming.default_s3_plugin_configuration
-//}
-//
-//output "cluster_config" {
-//  value = module.kafka_event_streaming.cluster_config
-//}
-//
-//output "tenure_connector_name" {
-//  value = module.kafka_event_streaming.tenure_connector_name
-//}
+output "default_s3_plugin_configuration" {
+  value = module.kafka_event_streaming.default_s3_plugin_configuration
+}
+
+output "cluster_config" {
+  value = module.kafka_event_streaming.cluster_config
+}
+
+output "tenure_connector_name" {
+  value = module.kafka_event_streaming.tenure_connector_name
+}
