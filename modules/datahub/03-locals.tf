@@ -43,7 +43,7 @@ locals {
   }
   datahub_frontend_react = {
     container_name         = "datahub-frontend-react"
-    image_name             = "linkedin/datahub-frontend-react:head"
+    image_name             = "linkedin/datahub-frontend-react"
     port                   = 9002
     cpu                    = 256
     memory                 = 2048
@@ -66,7 +66,7 @@ locals {
   }
   datahub_gms = {
     container_name         = "datahub-gms"
-    image_name             = "linkedin/datahub-gms:head"
+    image_name             = "linkedin/datahub-gms"
     port                   = 8080
     cpu                    = 256
     memory                 = 2048
@@ -115,7 +115,7 @@ locals {
   }
   mysql_setup = {
     container_name         = "mysql-setup"
-    image_name             = "acryldata/datahub-mysql-setup:head"
+    image_name             = "acryldata/datahub-mysql-setup"
     port                   = 3306
     cpu                    = 256
     memory                 = 2048
@@ -132,7 +132,7 @@ locals {
   }
   elasticsearch_setup = {
     container_name         = "elasticsearch-setup"
-    image_name             = "linkedin/datahub-elasticsearch-setup:head"
+    image_name             = "linkedin/datahub-elasticsearch-setup"
     port                   = var.elasticsearch_properties.port
     cpu                    = 256
     memory                 = 2048
@@ -148,7 +148,7 @@ locals {
   }
   kafka_setup = {
     container_name         = "kafka-setup"
-    image_name             = "linkedin/datahub-kafka-setup:head"
+    image_name             = "linkedin/datahub-kafka-setup"
     port                   = var.elasticsearch_properties.port
     cpu                    = 256
     memory                 = 2048
