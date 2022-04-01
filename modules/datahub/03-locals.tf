@@ -18,8 +18,9 @@ locals {
       { name : "DATAHUB_SYSTEM_CLIENT_SECRET", value : random_password.password.result },
       { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "PLAINTEXT" }
     ]
-    mount_points = []
-    volumes      = []
+    port_mappings = []
+    mount_points  = []
+    volumes       = []
   }
   datahub_frontend_react = {
     container_name         = "datahub-frontend-react"
@@ -42,8 +43,9 @@ locals {
       { name : "ELASTIC_CLIENT_HOST", value : "elasticsearch" },
       { name : "ELASTIC_CLIENT_PORT", value : "9200" }
     ]
-    mount_points = []
-    volumes      = []
+    port_mappings = []
+    mount_points  = []
+    volumes       = []
   }
   datahub_gms = {
     container_name         = "datahub-gms"
@@ -76,8 +78,9 @@ locals {
       { name : "UI_INGESTION_ENABLED", value : "true" },
       { name : "UI_INGESTION_DEFAULT_CLI_VERSION", value : "0.8.26.6" }
     ]
-    mount_points = []
-    volumes      = []
+    port_mappings = []
+    mount_points  = []
+    volumes       = []
   }
   mysql_setup = {
     container_name         = "mysql-setup"
@@ -94,8 +97,9 @@ locals {
       { name : "MYSQL_PASSWORD", value : var.rds_properties.password },
       { name : "DATAHUB_DB_NAME", value : var.rds_properties.db_name },
     ]
-    mount_points = []
-    volumes      = []
+    port_mappings = []
+    mount_points  = []
+    volumes       = []
   }
   elasticsearch_setup = {
     container_name         = "elasticsearch-setup"
@@ -111,8 +115,9 @@ locals {
       { name : "ELASTICSEARCH_PROTOCOL", value : var.elasticsearch_properties.protocol },
       { name : "USE_AWS_ELASTICSEARCH", value : "true" }
     ]
-    mount_points = []
-    volumes      = []
+    port_mappings = []
+    mount_points  = []
+    volumes       = []
   }
   kafka_setup = {
     container_name         = "kafka-setup"
@@ -126,8 +131,9 @@ locals {
       { name : "KAFKA_ZOOKEEPER_CONNECT", value : var.kafka_properties.kafka_zookeeper_connect },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
     ]
-    mount_points = []
-    volumes      = []
+    port_mappings = []
+    mount_points  = []
+    volumes       = []
   }
   neo4j = {
     container_name         = "neo4j"
