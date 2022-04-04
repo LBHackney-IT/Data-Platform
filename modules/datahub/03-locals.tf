@@ -43,9 +43,11 @@ locals {
       { name : "ELASTIC_CLIENT_HOST", value : "elasticsearch" },
       { name : "ELASTIC_CLIENT_PORT", value : "9200" }
     ]
-    port_mappings = []
-    mount_points  = []
-    volumes       = []
+    port_mappings = [
+      { containerPort : 9002, hostPort : 9002 }
+    ]
+    mount_points = []
+    volumes      = []
   }
   datahub_gms = {
     container_name         = "datahub-gms"
@@ -78,9 +80,11 @@ locals {
       { name : "UI_INGESTION_ENABLED", value : "true" },
       { name : "UI_INGESTION_DEFAULT_CLI_VERSION", value : "0.8.26.6" }
     ]
-    port_mappings = []
-    mount_points  = []
-    volumes       = []
+    port_mappings = [
+      { containerPort : 8080, hostPort : 8080 }
+    ]
+    mount_points = []
+    volumes      = []
   }
   mysql_setup = {
     container_name         = "mysql-setup"
@@ -143,10 +147,6 @@ locals {
     cpu                    = 256
     memory                 = 2048
     load_balancer_required = false
-    port_mappings = [
-      { containerPort : 7474, hostPort : 7474 },
-      { containerPort : 7687, hostPort : 7687 }
-    ]
     environment_variables = [
       { name : "NEO4J_AUTH", value : "neo4j/datahub" },
       { name : "NEO4J_dbms_default__database", value : "graph.db" },
@@ -154,6 +154,10 @@ locals {
     ]
     mount_points = [
       { sourceVolume : "neo4jdata", containerPath : "/data", readOnly : false }
+    ]
+    port_mappings = [
+      { containerPort : 7474, hostPort : 7474 },
+      { containerPort : 7687, hostPort : 7687 }
     ]
     volumes = ["neo4jdata"]
   }
