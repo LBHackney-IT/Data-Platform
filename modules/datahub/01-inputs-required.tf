@@ -18,11 +18,6 @@ variable "environment" {
   type        = string
 }
 
-variable "operation_name" {
-  type        = string
-  description = "A unique name for your task definition, ecs cluster and repository."
-}
-
 variable "vpc_id" {
   description = "VPC ID to deploy the datahub containers into"
   type        = string

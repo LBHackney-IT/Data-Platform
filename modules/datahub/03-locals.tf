@@ -16,7 +16,7 @@ locals {
       { name : "METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME", value : "MetadataChangeLog_Versioned_v1" },
       { name : "DATAHUB_SYSTEM_CLIENT_ID", value : "__datahub_system" },
       { name : "DATAHUB_SYSTEM_CLIENT_SECRET", value : random_password.datahub_secret.result },
-      { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "PLAINTEXT" }
+      { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" }
     ]
     port_mappings = []
     mount_points  = []

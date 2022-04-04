@@ -1,4 +1,4 @@
 resource "aws_cloudwatch_log_group" "datahub" {
-  name = "${var.operation_name}datahub"
+  name = "${var.short_identifier_prefix}datahub"
   tags = var.tags
 }
