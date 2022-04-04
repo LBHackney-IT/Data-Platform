@@ -15,7 +15,7 @@ locals {
       { name : "METADATA_AUDIT_EVENT_NAME", value : "MetadataAuditEvent_v4" },
       { name : "METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME", value : "MetadataChangeLog_Versioned_v1" },
       { name : "DATAHUB_SYSTEM_CLIENT_ID", value : "__datahub_system" },
-      { name : "DATAHUB_SYSTEM_CLIENT_SECRET", value : random_password.password.result },
+      { name : "DATAHUB_SYSTEM_CLIENT_SECRET", value : random_password.datahub_secret.result },
       { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "PLAINTEXT" }
     ]
     port_mappings = []
@@ -34,7 +34,7 @@ locals {
       { name : "PORT", value : "80" },
       { name : "DATAHUB_GMS_HOST", value : "datahub-gms" },
       { name : "DATAHUB_GMS_PORT", value : "80" },
-      { name : "DATAHUB_SECRET", value : random_password.password.result },
+      { name : "DATAHUB_SECRET", value : random_password.datahub_secret.result },
       { name : "DATAHUB_APP_VERSION", value : "1.0" },
       { name : "DATAHUB_PLAY_MEM_BUFFER_SIZE", value : "10MB" },
       { name : "JAVA_OPTS", value : "-Xms2048m -Xmx2048m -Dhttp.port=9002 -Dconfig.file=datahub-frontend/conf/application.conf -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null" },
@@ -60,7 +60,7 @@ locals {
     environment_variables = [
       { name : "DATASET_ENABLE_SCSI", value : "false" },
       { name : "EBEAN_DATASOURCE_USERNAME", value : "datahub" },
-      { name : "EBEAN_DATASOURCE_PASSWORD", value : "datahub" },
+      { name : "EBEAN_DATASOURCE_PASSWORD", value : random_password.datahub_secret.result },
       { name : "EBEAN_DATASOURCE_HOST", value : "mysql:3306" },
       { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://mysql:3306/datahub?verifyServerCertificate", value : "false&useSSL", value : "true&useUnicode", value : "yes&characterEncoding", value : "UTF-8&enabledTLSProtocols", value : "TLSv1.2" },
       { name : "EBEAN_DATASOURCE_DRIVER", value : "com.mysql.jdbc.Driver" },
@@ -71,7 +71,7 @@ locals {
       { name : "NEO4J_HOST", value : "http://neo4j:7474" },
       { name : "NEO4J_URI", value : "bolt://neo4j" },
       { name : "NEO4J_USERNAME", value : "neo4j" },
-      { name : "NEO4J_PASSWORD", value : "datahub" },
+      { name : "NEO4J_PASSWORD", value : random_password.datahub_secret.result },
       { name : "JAVA_OPTS", value : "-Xms1g -Xmx1g" },
       { name : "GRAPH_SERVICE_IMPL", value : "neo4j" },
       { name : "ENTITY_REGISTRY_CONFIG_PATH", value : "/datahub/datahub-gms/resources/entity-registry.yml" },
@@ -163,7 +163,7 @@ locals {
   }
 }
 
-resource "random_password" "password" {
+resource "random_password" "datahub_secret" {
   length           = 16
   special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
