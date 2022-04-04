@@ -1,15 +1,6 @@
-data "aws_subnet_ids" "subnet_ids" {
-  vpc_id = var.vpc_id
-}
-
-data "aws_subnet" "subnets" {
-  count = length(data.aws_subnet_ids.subnet_ids.ids)
-  id    = tolist(data.aws_subnet_ids.subnet_ids.ids)[count.index]
-}
-
-resource "aws_security_group" "datahub_alb" {
-  name                   = "${var.short_identifier_prefix}datahub-alb"
-  description            = "Restricts access to the DataHub Application Load Balancer"
+resource "aws_security_group" "datahub" {
+  name                   = "${var.short_identifier_prefix}datahub"
+  description            = "Restricts access to the DataHub Frontend React Application Load Balancer"
   vpc_id                 = var.vpc_id
   revoke_rules_on_delete = true
 
@@ -32,7 +23,7 @@ resource "aws_security_group" "datahub_alb" {
   }
 
   tags = merge(var.tags, {
-    "Name" : "DataHub Load Balancer"
+    "Name" : "DataHub Frontend React Load Balancer"
   })
 }
 
@@ -45,14 +36,14 @@ resource "aws_alb_target_group" "datahub" {
 }
 
 resource "aws_alb" "datahub" {
-  name               = "${var.short_identifier_prefix}datahub-alb"
+  name               = "${var.short_identifier_prefix}datahub"
   internal           = true
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.datahub_alb.id]
+  security_groups    = [aws_security_group.datahub.id]
   subnets            = data.aws_subnet.subnets.*.id
 }
 
-resource "aws_alb_listener" "datahub_http" {
+resource "aws_alb_listener" "datahub" {
   load_balancer_arn = aws_alb.datahub.arn
   port              = local.datahub_frontend_react.port
   protocol          = "HTTP"

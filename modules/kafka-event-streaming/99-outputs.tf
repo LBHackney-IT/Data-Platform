@@ -61,3 +61,7 @@ output "cluster_config" {
 output "tenure_connector_name" {
   value = "tenure-changes"
 }
+
+output "schema_registry_url" {
+  value = "http://${module.schema_registry.load_balancer_dns_name}:8081"
+}

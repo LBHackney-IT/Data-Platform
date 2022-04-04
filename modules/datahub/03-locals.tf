@@ -8,10 +8,10 @@ locals {
     memory                 = 2048
     load_balancer_required = false
     environment_variables = [
-      { name : "GMS_HOST", value : "datahub-gms" },
+      { name : "GMS_HOST", value : "${local.datahub_gms.container_name}.${aws_service_discovery_private_dns_namespace.datahub.name}" },
       { name : "GMS_PORT", value : "8080" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
-      { name : "SCHEMA_REGISTRY_URL", value : "http://schema-registry:8081" },
+      { name : "SCHEMA_REGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
       { name : "METADATA_AUDIT_EVENT_NAME", value : "MetadataAuditEvent_v4" },
       { name : "METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME", value : "MetadataChangeLog_Versioned_v1" },
       { name : "DATAHUB_SYSTEM_CLIENT_ID", value : "__datahub_system" },
@@ -31,9 +31,9 @@ locals {
     memory                 = 2048
     load_balancer_required = true
     environment_variables = [
-      { name : "PORT", value : "80" },
-      { name : "DATAHUB_GMS_HOST", value : "datahub-gms" },
-      { name : "DATAHUB_GMS_PORT", value : "80" },
+      { name : "PORT", value : "9002" },
+      { name : "DATAHUB_GMS_HOST", value : "${local.datahub_gms.container_name}.${aws_service_discovery_private_dns_namespace.datahub.name}" },
+      { name : "DATAHUB_GMS_PORT", value : "8080" },
       { name : "DATAHUB_SECRET", value : random_password.datahub_secret.result },
       { name : "DATAHUB_APP_VERSION", value : "1.0" },
       { name : "DATAHUB_PLAY_MEM_BUFFER_SIZE", value : "10MB" },
@@ -59,17 +59,17 @@ locals {
     load_balancer_required = false
     environment_variables = [
       { name : "DATASET_ENABLE_SCSI", value : "false" },
-      { name : "EBEAN_DATASOURCE_USERNAME", value : "datahub" },
-      { name : "EBEAN_DATASOURCE_PASSWORD", value : random_password.datahub_secret.result },
-      { name : "EBEAN_DATASOURCE_HOST", value : "mysql:3306" },
-      { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://mysql:3306/datahub?verifyServerCertificate", value : "false&useSSL", value : "true&useUnicode", value : "yes&characterEncoding", value : "UTF-8&enabledTLSProtocols", value : "TLSv1.2" },
+      { name : "EBEAN_DATASOURCE_USERNAME", value : aws_db_instance.datahub.username },
+      { name : "EBEAN_DATASOURCE_PASSWORD", value : aws_db_instance.datahub.password },
+      { name : "EBEAN_DATASOURCE_HOST", value : aws_db_instance.datahub.endpoint },
+      { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://${aws_db_instance.datahub.endpoint}/${aws_db_instance.datahub.name}?verifyServerCertificate", value : "false&useSSL", value : "true&useUnicode", value : "yes&characterEncoding", value : "UTF-8&enabledTLSProtocols", value : "TLSv1.2" },
       { name : "EBEAN_DATASOURCE_DRIVER", value : "com.mysql.jdbc.Driver" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
-      { name : "KAFKA_SCHEMAREGISTRY_URL", value : "http://schema-registry:8081" },
+      { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
       { name : "ELASTICSEARCH_HOST", value : "elasticsearch" },
       { name : "ELASTICSEARCH_PORT", value : "9200" },
-      { name : "NEO4J_HOST", value : "http://neo4j:7474" },
-      { name : "NEO4J_URI", value : "bolt://neo4j" },
+      { name : "NEO4J_HOST", value : "http://${local.neo4j.container_name}.${aws_service_discovery_private_dns_namespace.datahub.name}:7474" },
+      { name : "NEO4J_URI", value : "bolt://${local.neo4j.container_name}.${aws_service_discovery_private_dns_namespace.datahub.name}" },
       { name : "NEO4J_USERNAME", value : "neo4j" },
       { name : "NEO4J_PASSWORD", value : random_password.datahub_secret.result },
       { name : "JAVA_OPTS", value : "-Xms1g -Xmx1g" },
@@ -95,11 +95,11 @@ locals {
     memory                 = 2048
     load_balancer_required = false
     environment_variables = [
-      { name : "MYSQL_HOST", value : var.rds_properties.host },
-      { name : "MYSQL_PORT", value : var.rds_properties.port },
-      { name : "MYSQL_USERNAME", value : var.rds_properties.username },
-      { name : "MYSQL_PASSWORD", value : var.rds_properties.password },
-      { name : "DATAHUB_DB_NAME", value : var.rds_properties.db_name },
+      { name : "MYSQL_HOST", value : aws_db_instance.datahub.address },
+      { name : "MYSQL_PORT", value : aws_db_instance.datahub.port },
+      { name : "MYSQL_USERNAME", value : aws_db_instance.datahub.username },
+      { name : "MYSQL_PASSWORD", value : aws_db_instance.datahub.password },
+      { name : "DATAHUB_DB_NAME", value : aws_db_instance.datahub.name },
     ]
     port_mappings = []
     mount_points  = []

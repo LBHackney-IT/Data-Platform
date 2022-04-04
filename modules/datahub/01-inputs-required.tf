@@ -28,17 +28,6 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "rds_properties" {
-  description = "Properties of the RDS data source DataHub will connect to"
-  type = object({
-    host     = string
-    port     = number
-    username = string
-    password = string
-    db_name  = string
-  })
-}
-
 variable "elasticsearch_properties" {
   description = "Properties of the elastic search data source DataHub will connect to"
   type = object({
@@ -59,7 +48,6 @@ variable "kafka_properties" {
 variable "schema_registry_properties" {
   description = "Properties of the schema registry data source DataHub will connect to"
   type = object({
-    host_name                 = string
-    kafkastore_connection_url = string
+    schema_registry_url = string
   })
 }

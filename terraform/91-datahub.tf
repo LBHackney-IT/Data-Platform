@@ -6,13 +6,6 @@ module "datahub" {
   identifier_prefix       = local.identifier_prefix
   short_identifier_prefix = local.short_identifier_prefix
   vpc_id                  = data.aws_vpc.network.id
-  rds_properties = {
-    host     = ""
-    port     = 1
-    username = ""
-    password = ""
-    db_name  = ""
-  }
   elasticsearch_properties = {
     host     = ""
     port     = 1
@@ -23,7 +16,6 @@ module "datahub" {
     kafka_bootstrap_server  = module.kafka_event_streaming.cluster_config.bootstrap_brokers_tls
   }
   schema_registry_properties = {
-    host_name                 = ""
-    kafkastore_connection_url = ""
+    schema_registry_url = module.kafka_event_streaming.schema_registry_url
   }
 }
