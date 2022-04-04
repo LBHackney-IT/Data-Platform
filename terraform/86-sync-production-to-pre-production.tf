@@ -90,6 +90,8 @@ module "sync_production_to_pre_production" {
   tasks = [
     {
       task_prefix = "raw-zone-"
+      task_cpu                            = 2048
+      task_memory                         = 15259
       environment_variables = [
         { "name" = "NUMBER_OF_DAYS_TO_RETAIN", "value" = "90" },
         { "name" = "S3_SYNC_SOURCE", "value" = module.raw_zone.bucket_id },
@@ -99,6 +101,8 @@ module "sync_production_to_pre_production" {
     },
     {
       task_prefix = "refined-zone-"
+      task_cpu                            = 256
+      task_memory                         = 512
       environment_variables = [
         { "name" = "NUMBER_OF_DAYS_TO_RETAIN", "value" = "90" },
         { "name" = "S3_SYNC_SOURCE", "value" = module.refined_zone.bucket_id },
@@ -108,6 +112,8 @@ module "sync_production_to_pre_production" {
     },
     {
       task_prefix = "trusted-zone-"
+      task_cpu                            = 256
+      task_memory                         = 512
       environment_variables = [
         { "name" = "NUMBER_OF_DAYS_TO_RETAIN", "value" = "90" },
         { "name" = "S3_SYNC_SOURCE", "value" = module.trusted_zone.bucket_id },

@@ -3,9 +3,9 @@ data "template_file" "task_definition_template" {
   template = <<TEMPLATE
   [{
     "essential": true,
-    "memory": 512,
+    "memory": $${MEMORY},
     "name": "$${OPERATION_NAME}",
-    "cpu": 256,
+    "cpu": $${CPU},
     "image": "$${REPOSITORY_URL}:latest",
     "environment": $${ENVIRONMENT_VARIABLES},
     "LogConfiguration": {
@@ -24,6 +24,8 @@ data "template_file" "task_definition_template" {
     REPOSITORY_URL        = aws_ecr_repository.worker.repository_url
     LOG_GROUP             = aws_cloudwatch_log_group.ecs_task_logs.name
     ENVIRONMENT_VARIABLES = jsonencode(each.value.environment_variables)
+    CPU                   = each.value.task_cpu
+    MEMORY                = each.value.task_memory
   }
 }
 
@@ -34,8 +36,8 @@ resource "aws_ecs_task_definition" "task_definition" {
   family                   = "${each.value.task_id}${var.operation_name}"
   container_definitions    = data.template_file.task_definition_template[each.key].rendered
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = each.value.task_cpu
+  memory                   = each.value.task_memory
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.fargate.arn
   task_role_arn            = aws_iam_role.task_role.arn
