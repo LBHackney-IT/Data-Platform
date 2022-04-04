@@ -50,7 +50,8 @@ data "aws_iam_policy_document" "task_role" {
     effect = "Allow"
     actions = [
       "s3:ListBucket",
-      "s3:PutObject*"
+      "s3:PutObject*",
+      "s3:DeleteObject*"
     ]
     resources = [
       "arn:aws:s3:::dataplatform-stg-raw-zone-prod-copy*",
