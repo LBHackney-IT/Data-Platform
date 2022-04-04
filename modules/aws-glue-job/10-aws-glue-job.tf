@@ -6,7 +6,7 @@ locals {
   environment       = local.is_department_job ? var.department.environment : var.environment
   glue_role_arn     = var.glue_role_arn == null ? var.department.glue_role_arn : var.glue_role_arn
   extra_jars        = join(",", concat(var.extra_jars, ["s3://${local.scripts_bucket_id}/jars/deequ-1.0.3.jar"]))
-  spark_ui_storage  = local.is_department_job ? "s3://${var.spark_ui_output_storage_id}/${var.department.identifier}/${var.job_name}" : "s3://${var.spark_ui_output_storage_id}/${var.job_name}"
+  spark_ui_storage  = local.is_department_job ? "s3://${var.spark_ui_output_storage_id}/${var.department.identifier}/${local.job_name_identifier}" : "s3://${var.spark_ui_output_storage_id}/${local.job_name_identifier}"
 
   script = var.script_s3_object_key == null ? {
     key    = local.is_department_job ? "scripts/${var.department.identifier}/${var.script_name}.py" : "scripts/${var.script_name}.py"
