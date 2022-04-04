@@ -29,6 +29,8 @@ variable "tasks" {
     task_prefix                         = optional(string)
     cloudwatch_rule_schedule_expression = optional(string)
     cloudwatch_rule_event_pattern       = optional(string)
+    task_cpu                            = optional(number)
+    task_memory                         = optional(number)
     environment_variables = list(object({
       name  = string
       value = string

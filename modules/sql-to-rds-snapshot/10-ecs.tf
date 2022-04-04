@@ -63,6 +63,8 @@ module "sql_to_parquet" {
   tasks = [
     {
       cloudwatch_rule_event_pattern = local.event_pattern
+      task_cpu                      = 256
+      task_memory                   = 512
       environment_variables = [
         { "name" : "MYSQL_HOST", "value" : aws_db_instance.ingestion_db.address },
         { "name" : "MYSQL_USER", "value" : aws_db_instance.ingestion_db.username },
