@@ -6,3 +6,7 @@ data "aws_subnet" "subnets" {
   count = length(data.aws_subnet_ids.subnet_ids.ids)
   id    = tolist(data.aws_subnet_ids.subnet_ids.ids)[count.index]
 }
+
+data "aws_region" "current" {}
+
+data "aws_caller_identity" "current" {}

@@ -23,15 +23,6 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "elasticsearch_properties" {
-  description = "Properties of the elastic search data source DataHub will connect to"
-  type = object({
-    host     = string
-    port     = number
-    protocol = string
-  })
-}
-
 variable "kafka_properties" {
   description = "Properties of the kafka data source DataHub will connect to"
   type = object({

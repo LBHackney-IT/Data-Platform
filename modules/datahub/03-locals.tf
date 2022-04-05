@@ -40,8 +40,8 @@ locals {
       { name : "JAVA_OPTS", value : "-Xms2048m -Xmx2048m -Dhttp.port=9002 -Dconfig.file=datahub-frontend/conf/application.conf -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "DATAHUB_TRACKING_TOPIC", value : "DataHubUsageEvent_v1" },
-      { name : "ELASTIC_CLIENT_HOST", value : "elasticsearch" },
-      { name : "ELASTIC_CLIENT_PORT", value : "9200" }
+      { name : "ELASTIC_CLIENT_HOST", value : aws_elasticsearch_domain.es.domain_name },
+      { name : "ELASTIC_CLIENT_PORT", value : "443" }
     ]
     port_mappings = [
       { containerPort : 9002, hostPort : 9002 }
@@ -66,8 +66,8 @@ locals {
       { name : "EBEAN_DATASOURCE_DRIVER", value : "com.mysql.jdbc.Driver" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
-      { name : "ELASTICSEARCH_HOST", value : "elasticsearch" },
-      { name : "ELASTICSEARCH_PORT", value : "9200" },
+      { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.domain_name },
+      { name : "ELASTICSEARCH_PORT", value : "443" },
       { name : "NEO4J_HOST", value : "http://${aws_alb.datahub_neo4j.dns_name}:7474" },
       { name : "NEO4J_URI", value : "bolt://${aws_alb.datahub_neo4j.dns_name}" },
       { name : "NEO4J_USERNAME", value : "neo4j" },
@@ -109,14 +109,14 @@ locals {
     container_name         = "elasticsearch-setup"
     image_name             = "linkedin/datahub-elasticsearch-setup"
     image_tag              = "latest"
-    port                   = var.elasticsearch_properties.port
+    port                   = 443
     cpu                    = 256
     memory                 = 2048
     load_balancer_required = false
     environment_variables = [
-      { name : "ELASTICSEARCH_HOST", value : var.elasticsearch_properties.host },
-      { name : "ELASTICSEARCH_PORT", value : var.elasticsearch_properties.port },
-      { name : "ELASTICSEARCH_PROTOCOL", value : var.elasticsearch_properties.protocol },
+      { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.domain_name },
+      { name : "ELASTICSEARCH_PORT", value : "443" },
+      { name : "ELASTICSEARCH_PROTOCOL", value : "http" },
       { name : "USE_AWS_ELASTICSEARCH", value : "true" }
     ]
     port_mappings = []
@@ -127,7 +127,7 @@ locals {
     container_name         = "kafka-setup"
     image_name             = "linkedin/datahub-kafka-setup"
     image_tag              = "latest"
-    port                   = var.elasticsearch_properties.port
+    port                   = 443
     cpu                    = 256
     memory                 = 2048
     load_balancer_required = false

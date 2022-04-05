@@ -5,11 +5,6 @@ module "datahub" {
   identifier_prefix       = local.identifier_prefix
   short_identifier_prefix = local.short_identifier_prefix
   vpc_id                  = data.aws_vpc.network.id
-  elasticsearch_properties = {
-    host     = ""
-    port     = 1
-    protocol = "http"
-  }
   kafka_properties = {
     kafka_zookeeper_connect = module.kafka_event_streaming.cluster_config.zookeeper_connect_string
     kafka_bootstrap_server  = module.kafka_event_streaming.cluster_config.bootstrap_brokers_tls
