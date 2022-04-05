@@ -13,7 +13,15 @@ resource "aws_elasticsearch_domain" "es" {
   cluster_config {
     instance_type          = "m4.large.elasticsearch"
     zone_awareness_enabled = true
-    dedicated_master_count = 2
+    instance_count = 3
+    zone_awareness_config {
+      availability_zone_count = 3
+    }
+  }
+
+  ebs_options {
+    ebs_enabled = true
+    volume_size = 10
   }
 
   vpc_options {
