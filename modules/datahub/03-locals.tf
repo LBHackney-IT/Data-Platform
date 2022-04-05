@@ -116,7 +116,7 @@ locals {
     environment_variables = [
       { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.domain_name },
       { name : "ELASTICSEARCH_PORT", value : "443" },
-      { name : "ELASTICSEARCH_PROTOCOL", value : "http" },
+      { name : "ELASTICSEARCH_PROTOCOL", value : "https" },
       { name : "USE_AWS_ELASTICSEARCH", value : "true" }
     ]
     port_mappings = []
