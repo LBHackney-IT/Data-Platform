@@ -32,17 +32,33 @@ data "aws_iam_policy_document" "task_role" {
   statement {
     effect = "Allow"
     actions = [
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey",
-      "kms:CreateGrant",
-      "kms:RetireGrant"
+      "kms:*"
     ]
     resources = [
       module.raw_zone.kms_key_arn,
       module.refined_zone.kms_key_arn,
-      module.trusted_zone.kms_key_arn
+      module.trusted_zone.kms_key_arn,
+      "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0",
+      "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21",
+      "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"
+    ]
+  }
+
+  statement {
+    effect = "Deny"
+    actions = [
+      "kms:DeleteCustomKeyStore",
+      "kms:ScheduleKeyDeletion",
+      "kms:DeleteImportedKeyMaterial",
+      "kms:DisableKey"
+    ]
+    resources = [
+      module.raw_zone.kms_key_arn,
+      module.refined_zone.kms_key_arn,
+      module.trusted_zone.kms_key_arn,
+      "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0",
+      "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21",
+      "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"
     ]
   }
 
@@ -71,9 +87,6 @@ data "aws_iam_policy_document" "task_role" {
       "kms:RetireGrant"
     ]
     resources = [
-      "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0",
-      "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21",
-      "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"
     ]
   }
 }
