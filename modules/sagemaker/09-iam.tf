@@ -3,7 +3,7 @@ data "aws_iam_policy_document" "notebook" {
     sid = "NotebookCanReadS3"
     actions = [
       "s3:ListBucket",
-      "s3:GetObject"
+      "s3:GetObject*"
     ]
     effect = "Allow"
     resources = [
@@ -15,6 +15,7 @@ data "aws_iam_policy_document" "notebook" {
     sid = "NotebookCanDecryptKms"
     actions = [
       "kms:Decrypt",
+      "kms:*"
     ]
     effect = "Allow"
     resources = [
@@ -55,8 +56,8 @@ data "aws_iam_policy_document" "notebook" {
     ]
     effect = "Allow"
     resources = [
-    #   "${aws_sagemaker_notebook_instance.nb.arn}*"
-        "*"
+      #   "${aws_sagemaker_notebook_instance.nb.arn}*"
+      "*"
     ]
   }
 }
