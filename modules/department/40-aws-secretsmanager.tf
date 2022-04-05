@@ -32,17 +32,3 @@ resource "aws_secretsmanager_secret_version" "redshift_creds" {
   secret_id     = aws_secretsmanager_secret.redshift_cluster_credentials.id
   secret_string = jsonencode(local.redshift_creds)
 }
-
-resource "aws_secretsmanager_secret_policy" "redshift_cluster_permissions" {
-  secret_arn = aws_secretsmanager_secret.redshift_cluster_credentials.arn
-  policy     = data.aws_iam_policy_document.secretsmanager_policy.json
-}
-
-data "aws_iam_policy_document" "secretsmanager_policy" {
-  statement {
-    sid       = "EnableAccountToReadSecret"
-    effect    = "Allow"
-    actions   = ["secretsmanager:GetSecretValue"]
-    resources = ["*"]
-  }
-}
