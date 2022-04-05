@@ -1,7 +1,3 @@
-resource "aws_iam_service_linked_role" "es" {
-  aws_service_name = "es.amazonaws.com"
-}
-
 data "aws_vpc" "vpc" {
   id = var.vpc_id
 }
@@ -48,7 +44,6 @@ resource "aws_elasticsearch_domain" "es" {
 CONFIG
 
   tags       = var.tags
-  depends_on = [aws_iam_service_linked_role.es]
 }
 
 resource "aws_security_group" "es" {
