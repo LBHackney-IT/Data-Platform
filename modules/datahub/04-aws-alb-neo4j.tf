@@ -1,5 +1,5 @@
 resource "aws_security_group" "datahub_neo4j" {
-  name                   = "${var.short_identifier_prefix}datahub-neo4j"
+  name                   = "${var.short_identifier_prefix}datahub-neo4j-alb"
   description            = "Restricts access to the DataHub Neo4j Application Load Balancer"
   vpc_id                 = var.vpc_id
   revoke_rules_on_delete = true

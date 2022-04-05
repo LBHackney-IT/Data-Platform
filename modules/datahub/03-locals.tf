@@ -8,7 +8,7 @@ locals {
     memory                 = 2048
     load_balancer_required = false
     environment_variables = [
-      { name : "GMS_HOST", value : "${local.datahub_gms.container_name}.${aws_service_discovery_private_dns_namespace.datahub.name}" },
+      { name : "GMS_HOST", value : aws_alb.datahub_gms.dns_name },
       { name : "GMS_PORT", value : "8080" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "SCHEMA_REGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
@@ -32,7 +32,7 @@ locals {
     load_balancer_required = true
     environment_variables = [
       { name : "PORT", value : "9002" },
-      { name : "DATAHUB_GMS_HOST", value : "${local.datahub_gms.container_name}.${aws_service_discovery_private_dns_namespace.datahub.name}" },
+      { name : "DATAHUB_GMS_HOST", value : aws_alb.datahub_gms.dns_name },
       { name : "DATAHUB_GMS_PORT", value : "8080" },
       { name : "DATAHUB_SECRET", value : random_password.datahub_secret.result },
       { name : "DATAHUB_APP_VERSION", value : "1.0" },
@@ -56,7 +56,7 @@ locals {
     port                   = 8080
     cpu                    = 256
     memory                 = 2048
-    load_balancer_required = false
+    load_balancer_required = true
     environment_variables = [
       { name : "DATASET_ENABLE_SCSI", value : "false" },
       { name : "EBEAN_DATASOURCE_USERNAME", value : aws_db_instance.datahub.username },
@@ -68,8 +68,8 @@ locals {
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
       { name : "ELASTICSEARCH_HOST", value : "elasticsearch" },
       { name : "ELASTICSEARCH_PORT", value : "9200" },
-      { name : "NEO4J_HOST", value : "http://${local.neo4j.container_name}.${aws_service_discovery_private_dns_namespace.datahub.name}:7474" },
-      { name : "NEO4J_URI", value : "bolt://${local.neo4j.container_name}.${aws_service_discovery_private_dns_namespace.datahub.name}" },
+      { name : "NEO4J_HOST", value : "http://${aws_alb.datahub_neo4j.dns_name}:7474" },
+      { name : "NEO4J_URI", value : "bolt://${aws_alb.datahub_neo4j.dns_name}" },
       { name : "NEO4J_USERNAME", value : "neo4j" },
       { name : "NEO4J_PASSWORD", value : random_password.datahub_secret.result },
       { name : "JAVA_OPTS", value : "-Xms1g -Xmx1g" },
@@ -146,7 +146,7 @@ locals {
     port                   = 7474
     cpu                    = 256
     memory                 = 2048
-    load_balancer_required = false
+    load_balancer_required = true
     environment_variables = [
       { name : "NEO4J_AUTH", value : "neo4j/datahub" },
       { name : "NEO4J_dbms_default__database", value : "graph.db" },

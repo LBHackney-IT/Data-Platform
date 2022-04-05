@@ -79,8 +79,3 @@ variable "container_properties" {
     volumes = list(string)
   })
 }
-
-variable "datahub_private_dns_namespace_id" {
-  description = "ID of the datahub service discovery DNS namespace"
-  type        = string
-}

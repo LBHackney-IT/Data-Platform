@@ -21,10 +21,6 @@ resource "aws_ecs_service" "datahub_service" {
     }
   }
 
-  service_registries {
-    registry_arn = aws_service_discovery_service.datahub.arn
-  }
-
   lifecycle {
     ignore_changes = [desired_count]
   }
