@@ -5,7 +5,6 @@
     "url": "http://localhost:8998",
     "auth": "None"
   },
-
   "kernel_scala_credentials" : {
     "username": "",
     "password": "",
@@ -22,7 +21,6 @@
       "spark.dynamicAllocation.maxExecutors":"3"
     }
   },
-
   "logging_config": {
     "version": 1,
     "formatters": {

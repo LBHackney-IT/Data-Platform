@@ -17,7 +17,6 @@ ASSETS=s3://aws-glue-jes-prod-eu-west-2-assets/sagemaker/assets/
 
 aws s3 cp $ASSETS . --recursive \
     --include "*autossh-1.4e.tgz" \
-    --include "*config.json" \
     --include "*lifecycle-config-v2-dev-endpoint-daemon.sh" \
     --include "*lifecycle-config-reconnect-dev-endpoint-daemon.sh" \
     --include "*dev_endpoint_connection_checker.py"
@@ -35,8 +34,10 @@ sudo make install
 sudo cp /home/ec2-user/glue/autossh.conf /etc/init/
 
 mkdir -p /home/ec2-user/.sparkmagic
-cp /home/ec2-user/glue/config.json /home/ec2-user/.sparkmagic/config.json
 
+cat > /home/ec2-user/.sparkmagic/config.json << 'EOF'
+${sparkmagicconfig}
+EOF
 
 # ensure SageMaker notebook has permission for the dev endpoint
 aws glue get-dev-endpoint --endpoint-name ${glueendpoint} --endpoint https://glue.eu-west-2.amazonaws.com
@@ -55,8 +56,6 @@ if [ -f "$CONNECTION_CHECKER_FILE" ]; then
 fi
 
 conda install pip
-# /home/ec2-user/glue/miniconda/bin/pip install sparkmagic
-# /home/ec2-user/glue/miniconda/bin/pip install sparksql-magic
 
 rm -rf "/home/ec2-user/glue/Miniconda3-latest-Linux-x86_64.sh"
 

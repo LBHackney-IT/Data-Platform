@@ -3,14 +3,14 @@ resource "aws_sagemaker_notebook_instance_lifecycle_configuration" "sagemaker_li
   on_create = base64encode(templatefile("${path.module}/scripts/notebook-start-up.sh",
     {
       "glueendpoint" : aws_glue_dev_endpoint.glue_endpoint.name,
-      "sparkmagicconfig" : templatefile("${path.module}/scripts/spark-magic-config.json")
+      "sparkmagicconfig" : file("${path.module}/spark-magic-config.json")
     }
   ))
 
   on_start = base64encode(templatefile("${path.module}/scripts/notebook-start-up.sh",
     {
       "glueendpoint" : aws_glue_dev_endpoint.glue_endpoint.name,
-      "sparkmagicconfig" : templatefile("${path.module}/scripts/spark-magic-config.json")
+      "sparkmagicconfig" : file("${path.module}/spark-magic-config.json")
     }
   ))
 }
