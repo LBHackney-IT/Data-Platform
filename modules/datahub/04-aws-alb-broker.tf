@@ -22,6 +22,15 @@ resource "aws_security_group" "broker" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  ingress {
+    description      = "Allow inbound HTTP traffic"
+    from_port        = 9092
+    to_port          = 9092
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
   tags = merge(var.tags, {
     "Name" : "Broker Load Balancer"
   })
