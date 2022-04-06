@@ -26,11 +26,6 @@ resource "aws_elasticsearch_domain" "es" {
     security_group_ids = [aws_security_group.es.id]
   }
 
-  ebs_options {
-    ebs_enabled = true
-    volume_size = 10
-  }
-
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
   }
