@@ -382,6 +382,12 @@ data "aws_iam_policy_document" "secrets_manager_read_only" {
   }
 
   statement {
+    effect    = "Allow"
+    actions   = ["secretsmanager:ListSecrets"]
+    resources = ["*"]
+  }
+
+  statement {
     effect = "Allow"
     actions = [
       "kms:Decrypt",
