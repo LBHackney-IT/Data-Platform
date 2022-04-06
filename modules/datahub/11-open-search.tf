@@ -9,7 +9,8 @@ resource "aws_elasticsearch_domain" "es" {
   cluster_config {
     instance_type          = "m4.large.elasticsearch"
     zone_awareness_enabled = true
-    instance_count = 3
+    instance_count         = 3
+
     zone_awareness_config {
       availability_zone_count = 3
     }
@@ -23,6 +24,11 @@ resource "aws_elasticsearch_domain" "es" {
   vpc_options {
     subnet_ids         = data.aws_subnet_ids.subnet_ids.ids
     security_group_ids = [aws_security_group.es.id]
+  }
+
+  ebs_options {
+    ebs_enabled = true
+    volume_size = 10
   }
 
   advanced_options = {
@@ -43,7 +49,7 @@ resource "aws_elasticsearch_domain" "es" {
 }
 CONFIG
 
-  tags       = var.tags
+  tags = var.tags
 }
 
 resource "aws_security_group" "es" {
@@ -51,8 +57,8 @@ resource "aws_security_group" "es" {
   vpc_id = var.vpc_id
 
   ingress {
-    from_port = 443
-    to_port   = 443
+    from_port = 80
+    to_port   = 80
     protocol  = "tcp"
     cidr_blocks = [
       data.aws_vpc.vpc.cidr_block,
