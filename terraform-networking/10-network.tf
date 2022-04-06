@@ -117,5 +117,6 @@ resource "aws_route" "hub_tgw_routes" {
 
 # ElasticSearch service linked role
 resource "aws_iam_service_linked_role" "elastic_search" {
+  tags = module.tags.values
   aws_service_name = "es.amazonaws.com"
 }
