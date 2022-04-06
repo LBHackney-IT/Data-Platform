@@ -7,24 +7,21 @@ data "aws_iam_policy_document" "notebook" {
     ]
     effect = "Allow"
     resources = [
-      # TODO: refine this 
       "*"
     ]
   }
   statement {
     sid = "NotebookCanDecryptKms"
     actions = [
-      "kms:Decrypt",
-      "kms:*"
+      "kms:Decrypt"
     ]
     effect = "Allow"
     resources = [
-      # TODO: refine this 
       "*"
     ]
   }
   statement {
-    sid = "NotbookCanWriteToLogs"
+    sid = "NotebookCanWriteToLogs"
     actions = [
       "logs:CreateLogStream",
       "logs:DescribeLogStreams",
@@ -56,7 +53,6 @@ data "aws_iam_policy_document" "notebook" {
     ]
     effect = "Allow"
     resources = [
-      #   "${aws_sagemaker_notebook_instance.nb.arn}*"
       "*"
     ]
   }
