@@ -1,7 +1,7 @@
 resource "aws_db_instance" "datahub" {
   allocated_storage      = 15
   engine                 = "mysql"
-  engine_version         = "8.0"
+  engine_version         = "5.7"
   instance_class         = "db.t3.micro"
   username               = "datahub"
   identifier             = "${var.short_identifier_prefix}datahub"
@@ -9,6 +9,7 @@ resource "aws_db_instance" "datahub" {
   db_subnet_group_name   = aws_db_subnet_group.default.name
   vpc_security_group_ids = [aws_security_group.datahub.id]
   skip_final_snapshot    = true
+  character_set_name     = "utf8mb4"
 }
 
 resource "aws_db_subnet_group" "default" {
