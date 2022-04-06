@@ -4,15 +4,14 @@ resource "aws_db_instance" "datahub" {
   engine_version         = "5.7"
   instance_class         = "db.t3.micro"
   username               = "datahub"
-  identifier             = "${var.short_identifier_prefix}datahub"
+  identifier             = replace("${var.short_identifier_prefix}datahub", "-", "")
   password               = random_password.datahub_secret.result
-  db_subnet_group_name   = aws_db_subnet_group.default.name
+  db_subnet_group_name   = aws_db_subnet_group.datahub.name
   vpc_security_group_ids = [aws_security_group.datahub.id]
   skip_final_snapshot    = true
-  character_set_name     = "utf8mb4"
 }
 
-resource "aws_db_subnet_group" "default" {
+resource "aws_db_subnet_group" "datahub" {
   tags       = var.tags
   name       = "${var.short_identifier_prefix}datahub"
   subnet_ids = data.aws_subnet_ids.subnet_ids.ids

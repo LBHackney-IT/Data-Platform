@@ -62,7 +62,7 @@ locals {
       { name : "EBEAN_DATASOURCE_USERNAME", value : aws_db_instance.datahub.username },
       { name : "EBEAN_DATASOURCE_PASSWORD", value : aws_db_instance.datahub.password },
       { name : "EBEAN_DATASOURCE_HOST", value : aws_db_instance.datahub.endpoint },
-      { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://${aws_db_instance.datahub.endpoint}/${aws_db_instance.datahub.name}?verifyServerCertificate", value : "false&useSSL", value : "true&useUnicode", value : "yes&characterEncoding", value : "UTF-8&enabledTLSProtocols", value : "TLSv1.2" },
+      { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://${aws_db_instance.datahub.endpoint}/${aws_db_instance.datahub.identifier}?verifyServerCertificate", value : "false&useSSL", value : "true&useUnicode", value : "yes&characterEncoding", value : "UTF-8&enabledTLSProtocols", value : "TLSv1.2" },
       { name : "EBEAN_DATASOURCE_DRIVER", value : "com.mysql.jdbc.Driver" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
@@ -89,7 +89,7 @@ locals {
   mysql_setup = {
     container_name         = "mysql-setup"
     image_name             = "acryldata/datahub-mysql-setup"
-    image_tag              = "latest"
+    image_tag              = "head"
     port                   = 3306
     cpu                    = 256
     memory                 = 2048
@@ -99,7 +99,7 @@ locals {
       { name : "MYSQL_PORT", value : aws_db_instance.datahub.port },
       { name : "MYSQL_USERNAME", value : aws_db_instance.datahub.username },
       { name : "MYSQL_PASSWORD", value : aws_db_instance.datahub.password },
-      { name : "DATAHUB_DB_NAME", value : aws_db_instance.datahub.name },
+      { name : "DATAHUB_DB_NAME", value : aws_db_instance.datahub.identifier },
     ]
     port_mappings = []
     mount_points  = []
