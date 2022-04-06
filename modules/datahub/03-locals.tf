@@ -1,4 +1,30 @@
 locals {
+  broker = {
+    container_name         = "broker"
+    image_name             = "confluentinc/cp-kafka"
+    image_tag              = "5.4.0"
+    port                   = 29092
+    cpu                    = 256
+    memory                 = 2048
+    load_balancer_required = true
+    environment_variables = [
+      { name : "KAFKA_BROKER_ID", value : "1" },
+      { name : "KAFKA_ZOOKEEPER_CONNECT", value : var.kafka_properties.kafka_zookeeper_connect },
+      { name : "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", value : "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT" },
+      { name : "KAFKA_ADVERTISED_LISTENERS", value : var.kafka_properties.kafka_bootstrap_server },
+      { name : "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", value : "1" },
+      { name : "KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", value : "0" },
+      { name : "KAFKA_HEAP_OPTS", value : "-Xms256m -Xmx256m" },
+    ]
+    port_mappings = [
+      { containerPort : 29092, hostPort : 29092 },
+      { containerPort : 9092, hostPort : 9092 }
+    ]
+    mount_points = [
+      { sourceVolume : "broker", containerPath : "/var/lib/kafka/data/", readOnly : false }
+    ]
+    volumes = ["broker"]
+  }
   datahub_actions = {
     container_name         = "datahub-actions"
     image_name             = "acryldata/acryl-datahub-actions"
@@ -10,7 +36,7 @@ locals {
     environment_variables = [
       { name : "GMS_HOST", value : aws_alb.datahub_gms.dns_name },
       { name : "GMS_PORT", value : "8080" },
-      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
+      { name : "KAFKA_BOOTSTRAP_SERVER", value : "${aws_alb.broker.dns_name}:${local.broker.port}" },
       { name : "SCHEMA_REGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
       { name : "METADATA_AUDIT_EVENT_NAME", value : "MetadataAuditEvent_v4" },
       { name : "METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME", value : "MetadataChangeLog_Versioned_v1" },
@@ -38,7 +64,7 @@ locals {
       { name : "DATAHUB_APP_VERSION", value : "1.0" },
       { name : "DATAHUB_PLAY_MEM_BUFFER_SIZE", value : "10MB" },
       { name : "JAVA_OPTS", value : "-Xms2048m -Xmx2048m -Dhttp.port=9002 -Dconfig.file=datahub-frontend/conf/application.conf -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null" },
-      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
+      { name : "KAFKA_BOOTSTRAP_SERVER", value : "${aws_alb.broker.dns_name}:${local.broker.port}" },
       { name : "DATAHUB_TRACKING_TOPIC", value : "DataHubUsageEvent_v1" },
       { name : "ELASTIC_CLIENT_HOST", value : aws_elasticsearch_domain.es.endpoint },
       { name : "ELASTIC_CLIENT_PORT", value : "80" }
@@ -64,7 +90,7 @@ locals {
       { name : "EBEAN_DATASOURCE_HOST", value : aws_db_instance.datahub.endpoint },
       { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://${aws_db_instance.datahub.endpoint}/${aws_db_instance.datahub.identifier}?verifyServerCertificate=false&useSSL=true&useUnicode=yes&characterEncoding=UTF-8&enabledTLSProtocols=TLSv1.2" },
       { name : "EBEAN_DATASOURCE_DRIVER", value : "com.mysql.jdbc.Driver" },
-      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
+      { name : "KAFKA_BOOTSTRAP_SERVER", value : "${aws_alb.broker.dns_name}:${local.broker.port}" },
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
       { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
       { name : "ELASTICSEARCH_PORT", value : "80" },
@@ -126,14 +152,14 @@ locals {
   kafka_setup = {
     container_name         = "kafka-setup"
     image_name             = "linkedin/datahub-kafka-setup"
-    image_tag              = "latest"
+    image_tag              = "head"
     port                   = 443
     cpu                    = 256
     memory                 = 2048
     load_balancer_required = false
     environment_variables = [
       { name : "KAFKA_ZOOKEEPER_CONNECT", value : var.kafka_properties.kafka_zookeeper_connect },
-      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
+      { name : "KAFKA_BOOTSTRAP_SERVER", value : "${aws_alb.broker.dns_name}:${local.broker.port}" },
     ]
     port_mappings = []
     mount_points  = []
