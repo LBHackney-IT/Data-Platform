@@ -4,7 +4,7 @@ data "aws_vpc" "vpc" {
 
 resource "aws_elasticsearch_domain" "es" {
   domain_name           = "${var.short_identifier_prefix}elasticsearch"
-  elasticsearch_version = "OS_1.2"
+  elasticsearch_version = "OpenSearch_1.2"
 
   cluster_config {
     instance_type          = "m4.large.elasticsearch"

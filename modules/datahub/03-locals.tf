@@ -40,7 +40,7 @@ locals {
       { name : "JAVA_OPTS", value : "-Xms2048m -Xmx2048m -Dhttp.port=9002 -Dconfig.file=datahub-frontend/conf/application.conf -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "DATAHUB_TRACKING_TOPIC", value : "DataHubUsageEvent_v1" },
-      { name : "ELASTIC_CLIENT_HOST", value : aws_elasticsearch_domain.es.domain_name },
+      { name : "ELASTIC_CLIENT_HOST", value : aws_elasticsearch_domain.es.endpoint },
       { name : "ELASTIC_CLIENT_PORT", value : "80" }
     ]
     port_mappings = [
@@ -66,7 +66,7 @@ locals {
       { name : "EBEAN_DATASOURCE_DRIVER", value : "com.mysql.jdbc.Driver" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
-      { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.domain_name },
+      { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
       { name : "ELASTICSEARCH_PORT", value : "80" },
       { name : "NEO4J_HOST", value : "http://${aws_alb.datahub_neo4j.dns_name}:7474" },
       { name : "NEO4J_URI", value : "bolt://${aws_alb.datahub_neo4j.dns_name}" },
@@ -114,7 +114,7 @@ locals {
     memory                 = 2048
     load_balancer_required = false
     environment_variables = [
-      { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.domain_name },
+      { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
       { name : "ELASTICSEARCH_PORT", value : "80" },
       { name : "ELASTICSEARCH_PROTOCOL", value : "http" },
       { name : "USE_AWS_ELASTICSEARCH", value : "true" }
