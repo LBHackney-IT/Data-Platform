@@ -139,6 +139,7 @@ locals {
       # To get around this we set this to lower case, the defaults are then not overridden and the container can connect to kafka using SSL correctly
       # Kafka-setup container problem code: https://github.com/datahub-project/datahub/blob/master/docker/kafka-setup/kafka-setup.sh#L14-L21
       { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "ssl" },
+      { name : "PLATFORM_EVENT_TOPIC_NAME", value : "PlatformEvent_v1" }
     ]
     port_mappings = []
     mount_points  = []
