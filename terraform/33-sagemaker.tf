@@ -5,4 +5,5 @@ module "sagemaker" {
   identifier_prefix             = local.short_identifier_prefix
   python_libs                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.pydeequ.key}"
   extra_jars                    = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.jars.key}"
+  instance_name                 = "admin"
 }
