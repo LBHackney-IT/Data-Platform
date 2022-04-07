@@ -135,12 +135,7 @@ locals {
     environment_variables = [
       { name : "KAFKA_ZOOKEEPER_CONNECT", value : var.kafka_properties.kafka_zookeeper_connect },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
-      { name : "METADATA_AUDIT_EVENT_NAME", value : "MetadataAuditEvent_v4" },
-      { name : "METADATA_CHANGE_EVENT_NAME", value : "MetadataChangeEvent_v4" },
-      { name : "FAILED_METADATA_CHANGE_EVENT_NAME", value : "FailedMetadataChangeEvent_v4" },
-      { name : "PLATFORM_EVENT_TOPIC_NAME", value : "PlatformEvent_v1" },
-      { name : "DATAHUB_USAGE_EVENT_NAME", value : "DataHubUsageEvent_v1" },
-      # This must be "ssl" and in lower case. The kafka-setup container overrides the default SSL properties when "SSL" is provided.
+      # This must be "ssl" in lower case. The kafka-setup container overrides the default SSL properties when "SSL" is provided.
       # To get around this we set this to lower case, the defaults are then not overridden and the container can connect to kafka using SSL correctly
       # Kafka-setup container problem code: https://github.com/datahub-project/datahub/blob/master/docker/kafka-setup/kafka-setup.sh#L14-L21
       { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "ssl" },
