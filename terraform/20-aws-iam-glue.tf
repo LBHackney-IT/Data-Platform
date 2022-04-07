@@ -172,6 +172,7 @@ data "aws_iam_policy_document" "access_to_s3_iam_and_secrets" {
       module.refined_zone.kms_key_arn,
       module.trusted_zone.kms_key_arn,
       module.noiseworks_data_storage.kms_key_arn,
+      module.spark_ui_output_storage.kms_key_arn,
       aws_kms_key.secrets_manager_key.arn
     ]
   }

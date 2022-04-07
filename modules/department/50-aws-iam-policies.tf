@@ -27,7 +27,8 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       var.refined_zone_bucket.kms_key_arn,
       var.trusted_zone_bucket.kms_key_arn,
       var.athena_storage_bucket.kms_key_arn,
-      var.glue_scripts_bucket.kms_key_arn
+      var.glue_scripts_bucket.kms_key_arn,
+      var.spark_ui_output_storage_bucket.kms_key_arn
     ]
   }
 
@@ -68,6 +69,9 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
       "${var.trusted_zone_bucket.bucket_arn}/unrestricted/*",
+
+      var.spark_ui_output_storage_bucket.bucket_arn,
+      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 
@@ -168,7 +172,8 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.refined_zone_bucket.kms_key_arn,
       var.trusted_zone_bucket.kms_key_arn,
       var.athena_storage_bucket.kms_key_arn,
-      var.glue_scripts_bucket.kms_key_arn
+      var.glue_scripts_bucket.kms_key_arn,
+      var.spark_ui_output_storage_bucket.kms_key_arn
     ]
   }
 
@@ -208,6 +213,9 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.athena_storage_bucket.bucket_arn,
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
       var.glue_temp_storage_bucket.bucket_arn,
+
+      var.spark_ui_output_storage_bucket.bucket_arn,
+      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 
@@ -256,6 +264,7 @@ data "aws_iam_policy_document" "s3_department_access" {
     resources = [
       "${var.glue_scripts_bucket.bucket_arn}/custom/*",
       "${var.glue_temp_storage_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 }
