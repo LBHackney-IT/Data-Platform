@@ -1,5 +1,5 @@
 variable "python_libs" {
-  description = "Comma seprated list of python libraries"
+  description = "Comma separated list of python libraries"
   type        = string
   default     = ""
 }
