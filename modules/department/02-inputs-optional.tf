@@ -20,3 +20,13 @@ variable "google_group_admin_display_name" {
   type        = string
   default     = null
 }
+
+variable "notebook_instance" {
+  description = "Include this block if you wish to setup a notebook instance for this department"
+  type = object({
+    github_repository = string
+    extra_python_libs = string
+    extra_jars        = string
+  })
+  default = null
+}
