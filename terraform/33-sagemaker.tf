@@ -1,5 +1,6 @@
 resource "aws_sagemaker_code_repository" "data_platform" {
   code_repository_name = "data-platform-notebooks"
+  tags                 = module.tags.values
 
   git_config {
     repository_url = "https://github.com/LBHackney-IT/Data-Platform-Notebooks.git"
@@ -24,12 +25,12 @@ resource "aws_cloudwatch_event_rule" "shutdown_notebooks" {
 
   name                = "${local.short_identifier_prefix}schedule-shutting-down-notebooks"
   description         = "Runs task to shut down all notebooks instances and glue development endpoints"
-  schedule_expression = "cron(30 18 ? * MON-FRI *)"
+  schedule_expression = "cron(30 18,19 ? * MON-FRI *)"
 }
 
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_shutdown_notebooks_lambda" {
-  count         = true ? 1 : 0
+  count         = local.is_live_environment ? 1 : 0
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.shutdown_notebooks[0].function_name
@@ -38,22 +39,22 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_shutdown_notebooks_la
 }
 
 resource "aws_cloudwatch_event_target" "run_shutdown_notebooks_lambda" {
-  count     = true ? 1 : 0
+  count     = local.is_live_environment ? 1 : 0
   target_id = "shutdown-notebooks-lambda"
   arn       = aws_lambda_function.shutdown_notebooks[0].arn
 
-  rule = aws_cloudwatch_event_rule.shutdown_notebooks.arn
+  rule = aws_cloudwatch_event_rule.shutdown_notebooks.name
 }
 
 resource "aws_iam_role" "shutdown_notebooks" {
-  count              = true ? 1 : 0
+  count              = local.is_live_environment ? 1 : 0
   tags               = module.tags.values
   name               = "${local.short_identifier_prefix}shutdown-notebooks-lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
 data "aws_iam_policy_document" "shutdown_notebooks" {
-  count = true ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
 
   statement {
     actions = [
@@ -71,7 +72,8 @@ data "aws_iam_policy_document" "shutdown_notebooks" {
     sid = "CanListAndDeleteDevEndpoints"
     actions = [
       "glue:GetDevEndpoint*",
-      "glue:DeleteDevEndpoint*"
+      "glue:DeleteDevEndpoint*",
+      "glue:ListDevEndpoints"
     ]
     effect = "Allow"
     resources = [
@@ -85,11 +87,14 @@ data "aws_iam_policy_document" "shutdown_notebooks" {
       "sagemaker:ListNotebookInstances",
       "sagemaker:StopNotebookInstance"
     ]
+    resources = [
+      "*"
+    ]
   }
 }
 
 resource "aws_iam_policy" "shutdown_notebooks" {
-  count = true ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
   name   = "${local.short_identifier_prefix}shutdown-notebooks"
@@ -97,7 +102,7 @@ resource "aws_iam_policy" "shutdown_notebooks" {
 }
 
 resource "aws_iam_role_policy_attachment" "shutdown_notebooks" {
-  count      = true ? 1 : 0
+  count      = local.is_live_environment ? 1 : 0
   role       = aws_iam_role.shutdown_notebooks[0].name
   policy_arn = aws_iam_policy.shutdown_notebooks[0].arn
 }
@@ -118,14 +123,14 @@ resource "aws_s3_bucket_object" "shutdown_notebooks" {
 }
 
 resource "aws_lambda_function_event_invoke_config" "shutdown_notebooks" {
-  count                  = true ? 1 : 0
+  count                  = local.is_live_environment ? 1 : 0
   function_name          = aws_lambda_function.shutdown_notebooks[0].function_name
   maximum_retry_attempts = 0
   qualifier              = "$LATEST"
 }
 
 resource "aws_lambda_function" "shutdown_notebooks" {
-  count = true ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
   role             = aws_iam_role.shutdown_notebooks[0].arn
