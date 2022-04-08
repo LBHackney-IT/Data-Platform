@@ -32,6 +32,40 @@ module "datahub_gms" {
   container_properties      = local.datahub_gms
 }
 
+module "datahub_mae_consumer" {
+  source = "../aws-ecs-docker-service"
+
+  tags                      = var.tags
+  operation_name            = var.short_identifier_prefix
+  ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
+  environment               = var.environment
+  identifier_prefix         = var.identifier_prefix
+  short_identifier_prefix   = var.short_identifier_prefix
+  alb_id                    = null
+  alb_target_group_arn      = null
+  alb_security_group_id     = null
+  vpc_id                    = var.vpc_id
+  cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
+  container_properties      = local.datahub_mae_consumer
+}
+
+module "datahub_mce_consumer" {
+  source = "../aws-ecs-docker-service"
+
+  tags                      = var.tags
+  operation_name            = var.short_identifier_prefix
+  ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
+  environment               = var.environment
+  identifier_prefix         = var.identifier_prefix
+  short_identifier_prefix   = var.short_identifier_prefix
+  alb_id                    = null
+  alb_target_group_arn      = null
+  alb_security_group_id     = null
+  vpc_id                    = var.vpc_id
+  cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
+  container_properties      = local.datahub_mce_consumer
+}
+
 module "mysql_setup" {
   source = "../aws-ecs-docker-service"
 
