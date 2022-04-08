@@ -1,35 +1,13 @@
 locals {
-  datahub_actions = {
-    container_name         = "datahub-actions"
-    image_name             = "acryldata/acryl-datahub-actions"
-    image_tag              = "head"
-    port                   = 80
-    cpu                    = 256
-    memory                 = 2048
-    load_balancer_required = false
-    environment_variables = [
-      { name : "GMS_HOST", value : aws_alb.datahub_gms.dns_name },
-      { name : "GMS_PORT", value : "8080" },
-      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
-      { name : "SCHEMA_REGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
-      { name : "METADATA_AUDIT_EVENT_NAME", value : "MetadataAuditEvent_v4" },
-      { name : "METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME", value : "MetadataChangeLog_Versioned_v1" },
-      { name : "DATAHUB_SYSTEM_CLIENT_ID", value : "__datahub_system" },
-      { name : "DATAHUB_SYSTEM_CLIENT_SECRET", value : random_password.datahub_secret.result },
-      { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" }
-    ]
-    port_mappings = []
-    mount_points  = []
-    volumes       = []
-  }
   datahub_frontend_react = {
-    container_name         = "datahub-frontend-react"
-    image_name             = "linkedin/datahub-frontend-react"
-    image_tag              = "latest"
-    port                   = 9002
-    cpu                    = 256
-    memory                 = 2048
-    load_balancer_required = true
+    container_name          = "datahub-frontend-react"
+    image_name              = "linkedin/datahub-frontend-react"
+    image_tag               = "latest"
+    port                    = 9002
+    cpu                     = 256
+    memory                  = 2048
+    load_balancer_required  = true
+    standalone_onetime_task = false
     environment_variables = [
       { name : "PORT", value : "9002" },
       { name : "DATAHUB_GMS_HOST", value : aws_alb.datahub_gms.dns_name },
@@ -50,13 +28,14 @@ locals {
     volumes      = []
   }
   datahub_gms = {
-    container_name         = "datahub-gms"
-    image_name             = "linkedin/datahub-gms"
-    image_tag              = "latest"
-    port                   = 8080
-    cpu                    = 256
-    memory                 = 2048
-    load_balancer_required = true
+    container_name          = "datahub-gms"
+    image_name              = "linkedin/datahub-gms"
+    image_tag               = "latest"
+    port                    = 8080
+    cpu                     = 256
+    memory                  = 2048
+    load_balancer_required  = true
+    standalone_onetime_task = false
     environment_variables = [
       { name : "DATASET_ENABLE_SCSI", value : "false" },
       { name : "EBEAN_DATASOURCE_USERNAME", value : aws_db_instance.datahub.username },
@@ -69,7 +48,7 @@ locals {
       { name : "SPRING_KAFKA_SECURITY_PROTOCOL", value : "SSL" },
       { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
       { name : "ELASTICSEARCH_PORT", value : "80" },
-      { name : "NEO4J_HOST", value : "http://${aws_alb.datahub_neo4j.dns_name}:7474" },
+      { name : "NEO4J_HOST", value : "http://${aws_alb.datahub_neo4j.dns_name}:${local.neo4j.port}" },
       { name : "NEO4J_URI", value : "bolt://${aws_alb.datahub_neo4j.dns_name}" },
       { name : "NEO4J_USERNAME", value : "neo4j" },
       { name : "NEO4J_PASSWORD", value : random_password.datahub_secret.result },
@@ -78,7 +57,7 @@ locals {
       { name : "ENTITY_REGISTRY_CONFIG_PATH", value : "/datahub/datahub-gms/resources/entity-registry.yml" },
       { name : "MAE_CONSUMER_ENABLED", value : "false" },
       { name : "MCE_CONSUMER_ENABLED", value : "false" },
-      { name : "UI_INGESTION_ENABLED", value : "true" },
+      { name : "UI_INGESTION_ENABLED", value : "false" },
       { name : "UI_INGESTION_DEFAULT_CLI_VERSION", value : "0.8.26.6" }
     ]
     port_mappings = [
@@ -88,13 +67,14 @@ locals {
     volumes      = []
   }
   mysql_setup = {
-    container_name         = "mysql-setup"
-    image_name             = "acryldata/datahub-mysql-setup"
-    image_tag              = "head"
-    port                   = 3306
-    cpu                    = 256
-    memory                 = 2048
-    load_balancer_required = false
+    container_name          = "mysql-setup"
+    image_name              = "acryldata/datahub-mysql-setup"
+    image_tag               = "head"
+    port                    = 3306
+    cpu                     = 256
+    memory                  = 2048
+    load_balancer_required  = false
+    standalone_onetime_task = true
     environment_variables = [
       { name : "MYSQL_HOST", value : aws_db_instance.datahub.address },
       { name : "MYSQL_PORT", value : aws_db_instance.datahub.port },
@@ -107,13 +87,14 @@ locals {
     volumes       = []
   }
   elasticsearch_setup = {
-    container_name         = "elasticsearch-setup"
-    image_name             = "linkedin/datahub-elasticsearch-setup"
-    image_tag              = "latest"
-    port                   = 443
-    cpu                    = 256
-    memory                 = 2048
-    load_balancer_required = false
+    container_name          = "elasticsearch-setup"
+    image_name              = "linkedin/datahub-elasticsearch-setup"
+    image_tag               = "latest"
+    port                    = 443
+    cpu                     = 256
+    memory                  = 2048
+    load_balancer_required  = false
+    standalone_onetime_task = true
     environment_variables = [
       { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
       { name : "ELASTICSEARCH_PORT", value : "80" },
@@ -125,13 +106,14 @@ locals {
     volumes       = []
   }
   kafka_setup = {
-    container_name         = "kafka-setup"
-    image_name             = "linkedin/datahub-kafka-setup"
-    image_tag              = "head"
-    port                   = 443
-    cpu                    = 256
-    memory                 = 2048
-    load_balancer_required = false
+    container_name          = "kafka-setup"
+    image_name              = "linkedin/datahub-kafka-setup"
+    image_tag               = "head"
+    port                    = 443
+    cpu                     = 256
+    memory                  = 2048
+    load_balancer_required  = false
+    standalone_onetime_task = true
     environment_variables = [
       { name : "KAFKA_ZOOKEEPER_CONNECT", value : var.kafka_properties.kafka_zookeeper_connect },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
@@ -146,13 +128,14 @@ locals {
     volumes       = []
   }
   neo4j = {
-    container_name         = "neo4j"
-    image_name             = "neo4j"
-    image_tag              = "4.0.6"
-    port                   = 7474
-    cpu                    = 256
-    memory                 = 2048
-    load_balancer_required = true
+    container_name          = "neo4j"
+    image_name              = "neo4j"
+    image_tag               = "4.0.6"
+    port                    = 7474
+    cpu                     = 256
+    memory                  = 2048
+    load_balancer_required  = true
+    standalone_onetime_task = false
     environment_variables = [
       { name : "NEO4J_AUTH", value : "neo4j/datahub" },
       { name : "NEO4J_dbms_default__database", value : "graph.db" },

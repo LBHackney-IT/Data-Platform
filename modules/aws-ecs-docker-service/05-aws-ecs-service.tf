@@ -1,4 +1,5 @@
 resource "aws_ecs_service" "datahub_service" {
+  count           = var.container_properties.standalone_onetime_task ? 0 : 1
   name            = "${var.operation_name}${var.container_properties.container_name}"
   cluster         = var.ecs_cluster_arn
   task_definition = aws_ecs_task_definition.task_definition.arn
@@ -7,9 +8,8 @@ resource "aws_ecs_service" "datahub_service" {
   tags            = var.tags
 
   network_configuration {
-    security_groups  = [aws_security_group.ecs_tasks.id]
-    subnets          = data.aws_subnet.subnets.*.id
-    assign_public_ip = false
+    security_groups = [aws_security_group.ecs_tasks[0].id]
+    subnets         = data.aws_subnet.subnets.*.id
   }
 
   dynamic "load_balancer" {
@@ -27,6 +27,7 @@ resource "aws_ecs_service" "datahub_service" {
 }
 
 resource "aws_security_group" "ecs_tasks" {
+  count                  = var.container_properties.standalone_onetime_task ? 0 : 1
   name                   = "${var.operation_name}${var.container_properties.container_name}"
   description            = "Allow inbound access to the ECS service from the ALB only"
   vpc_id                 = var.vpc_id

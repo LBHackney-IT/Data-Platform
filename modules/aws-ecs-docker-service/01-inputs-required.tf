@@ -56,13 +56,14 @@ variable "cloudwatch_log_group_name" {
 variable "container_properties" {
   description = "Properties of the container to be deployed to ECS"
   type = object({
-    container_name         = string
-    image_name             = string
-    image_tag              = string
-    port                   = number
-    cpu                    = number
-    memory                 = number
-    load_balancer_required = bool
+    container_name          = string
+    image_name              = string
+    image_tag               = string
+    port                    = number
+    cpu                     = number
+    memory                  = number
+    load_balancer_required  = bool
+    standalone_onetime_task = bool
     port_mappings = list(object({
       containerPort = number
       hostPort      = number
