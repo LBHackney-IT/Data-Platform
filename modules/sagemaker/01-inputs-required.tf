@@ -17,3 +17,8 @@ variable "instance_name" {
   description = "Name of the notebook instance, typically set to the department name"
   type        = string
 }
+
+variable "github_repository" {
+  description = "Name of the sagemaker code repository to use as the default repository"
+  type        = string
+}

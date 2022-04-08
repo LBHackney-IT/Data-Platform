@@ -1,25 +1,16 @@
 data "aws_iam_policy_document" "notebook" {
   statement {
-    sid = "NotebookCanReadS3"
+    sid = "NotebookCanReadGlueAssetS3Bucket"
     actions = [
       "s3:ListBucket",
       "s3:GetObject*"
     ]
     effect = "Allow"
     resources = [
-      "*"
+      "arn:aws:s3:::aws-glue-jes-prod-eu-west-2-assets*"
     ]
   }
-  statement {
-    sid = "NotebookCanDecryptKms"
-    actions = [
-      "kms:Decrypt"
-    ]
-    effect = "Allow"
-    resources = [
-      "*"
-    ]
-  }
+
   statement {
     sid = "NotebookCanWriteToLogs"
     actions = [
@@ -35,17 +26,30 @@ data "aws_iam_policy_document" "notebook" {
     ]
   }
   statement {
-    sid = "NotebookCanUseDevEndpoint"
+    sid = "NotebookCanUseAndCreateDevEndpoint"
     actions = [
       "glue:UpdateDevEndpoint",
       "glue:GetDevEndpoint",
-      "glue:GetDevEndpoints"
+      "glue:GetDevEndpoints",
+      "glue:CreateDevEndpoint"
     ]
     effect = "Allow"
     resources = [
-      "${aws_glue_dev_endpoint.glue_endpoint.arn}*"
+      "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:devEndpoint/${local.glue_dev_endpoint_config.endpoint_name}"
     ]
   }
+
+  statement {
+    sid = "NotebookCanPassDevEndpointRole"
+    actions = [
+      "iam:PassRole"
+    ]
+    effect = "Allow"
+    resources = [
+      var.development_endpoint_role_arn
+    ]
+  }
+
   statement {
     sid = "NotebookCanListTags"
     actions = [
@@ -73,7 +77,7 @@ data "aws_iam_policy_document" "notebook_assume_role" {
 resource "aws_iam_policy" "notebook" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}notebook")
+  name   = "${var.identifier_prefix}notebook-${var.instance_name}"
   policy = data.aws_iam_policy_document.notebook.json
 }
 
@@ -85,6 +89,6 @@ resource "aws_iam_role_policy_attachment" "notebook" {
 
 resource "aws_iam_role" "notebook" {
   tags               = var.tags
-  name               = "AWSGlueServiceSageMakerNotebookRole-${var.identifier_prefix}notebook"
+  name               = "AWSGlueServiceSageMakerNotebookRole-${var.identifier_prefix}notebook-${var.instance_name}"
   assume_role_policy = data.aws_iam_policy_document.notebook_assume_role.json
 }

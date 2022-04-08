@@ -1,6 +1,5 @@
 #!/bin/bash
 set -ex
-[ -e /home/ec2-user/glue_ready ] && exit 0
 
 mkdir -p /home/ec2-user/glue
 cd /home/ec2-user/glue
@@ -31,16 +30,45 @@ cd autossh-1.4e
 ./configure
 make
 sudo make install
-sudo cp /home/ec2-user/glue/autossh.conf /etc/init/
+sudo cp -u /home/ec2-user/glue/autossh.conf /etc/init/
 
+# Saving sparkmagic config file to server
 mkdir -p /home/ec2-user/.sparkmagic
 
 cat > /home/ec2-user/.sparkmagic/config.json << 'EOF'
 ${sparkmagicconfig}
 EOF
 
-# ensure SageMaker notebook has permission for the dev endpoint
-aws glue get-dev-endpoint --endpoint-name ${glueendpoint} --endpoint https://glue.eu-west-2.amazonaws.com
+
+# Preparing glue development endpoint configuration
+cat > /home/ec2-user/endpoint_config.json << 'EOF'
+${glueendpointconfig}
+EOF
+
+endpoint_config=/home/ec2-user/endpoint_config.json
+
+endpoint_name=$(jq -r .endpoint_name $endpoint_config)
+extra_python_libs_s3_path=$(jq -r .extra_python_libs_s3_path $endpoint_config)
+extra_jars_s3_path=$(jq -r .extra_jars_s3_path $endpoint_config)
+worker_type=$(jq -r .worker_type $endpoint_config)
+number_of_workers=$(jq -r .number_of_workers $endpoint_config)
+role_arn=$(jq -r .role_arn $endpoint_config)
+public_keys=$(jq -r .public_key $endpoint_config)
+
+# check if Sagemaker can find the development endpoint, create the dev endpoint if not
+{
+    aws glue get-dev-endpoint --endpoint-name $endpoint_name --endpoint https://glue.eu-west-2.amazonaws.com 
+} || {
+    aws glue create-dev-endpoint --endpoint-name $endpoint_name \
+    --role-arn $role_arn \
+    --public-keys $public_key \
+    --number-of-workers $number_of_workers \
+    --extra-python-libs-s3-path $extra_python_libs_s3_path \
+    --extra-jars-s3-path $extra_jars_s3_path \
+    --worker-type $worker_type \
+    --glue-version "1.0" \
+    --arguments '{"--enable-glue-datacatalog": "true","GLUE_PYTHON_VERSION": "3"}'
+}
 
 # Run daemons as cron jobs and use flock make sure that daemons are started only iff stopped
 (crontab -l; echo "* * * * * /usr/bin/flock -n /tmp/lifecycle-config-v2-dev-endpoint-daemon.lock /usr/bin/sudo /bin/sh /home/ec2-user/glue/lifecycle-config-v2-dev-endpoint-daemon.sh 2>&1 | tee -a /var/log/sagemaker-lifecycle-config-v2-dev-endpoint-daemon.log") | crontab -
@@ -55,8 +83,4 @@ if [ -f "$CONNECTION_CHECKER_FILE" ]; then
     python3 $CONNECTION_CHECKER_FILE
 fi
 
-conda install pip
-
 rm -rf "/home/ec2-user/glue/Miniconda3-latest-Linux-x86_64.sh"
-
-sudo touch /home/ec2-user/glue_ready
