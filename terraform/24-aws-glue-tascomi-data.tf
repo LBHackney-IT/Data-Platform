@@ -262,7 +262,7 @@ module "tascomi_applications_to_trusted" {
     "--source_catalog_table2"   = "application_types"
     "--source_catalog_table3"   = "ps_development_codes"
   }
-  script_name = "tascomi_applications_trusted"
+  script_name          = "tascomi_applications_trusted"
   triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
 
   crawler_details = {
