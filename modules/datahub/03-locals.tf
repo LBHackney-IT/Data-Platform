@@ -42,7 +42,7 @@ locals {
       { name : "EBEAN_DATASOURCE_USERNAME", value : aws_db_instance.datahub.username },
       { name : "EBEAN_DATASOURCE_PASSWORD", value : aws_db_instance.datahub.password },
       { name : "EBEAN_DATASOURCE_HOST", value : aws_db_instance.datahub.endpoint },
-      { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://${aws_db_instance.datahub.endpoint}/${aws_db_instance.datahub.identifier}?verifyServerCertificate=false&useSSL=true&useUnicode=yes&characterEncoding=UTF-8&enabledTLSProtocols=TLSv1.2" },
+      { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://${aws_db_instance.datahub.endpoint}/${aws_db_instance.datahub.identifier}" },
       { name : "EBEAN_DATASOURCE_DRIVER", value : "com.mysql.jdbc.Driver" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
@@ -150,11 +150,11 @@ locals {
     cpu                     = 256
     memory                  = 2048
     load_balancer_required  = false
-    standalone_onetime_task = true
+    standalone_onetime_task = false
     environment_variables = [
       { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
       { name : "ELASTICSEARCH_PORT", value : "80" },
-      { name : "ELASTICSEARCH_PROTOCOL", value : "http" },
+      { name : "ELASTICSEARCH_USE_SSL", value : "false" },
       { name : "USE_AWS_ELASTICSEARCH", value : "true" }
     ]
     port_mappings = []
