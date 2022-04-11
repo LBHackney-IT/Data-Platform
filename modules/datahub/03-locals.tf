@@ -153,8 +153,8 @@ locals {
     standalone_onetime_task = false
     environment_variables = [
       { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
-      { name : "ELASTICSEARCH_PORT", value : "80" },
-      { name : "ELASTICSEARCH_USE_SSL", value : "false" },
+      { name : "ELASTICSEARCH_PORT", value : "443" },
+      { name : "ELASTICSEARCH_USE_SSL", value : "true" },
       { name : "USE_AWS_ELASTICSEARCH", value : "true" }
     ]
     port_mappings = []
