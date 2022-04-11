@@ -42,7 +42,7 @@ def update_aqs(alloy_query, last_import_date_time):
 
 def get_task_id(response):
     if response.status_code != 200:
-        print(f"Request unsuccessful while getting task id with status code: {response.status_code}")
+        logger.info(f"Request unsuccessful while getting task id with status code: {response.status_code}")
         return 
     
     json_output = json.loads(response.text)
@@ -51,7 +51,7 @@ def get_task_id(response):
 
 def get_task_status(response):
     if response.status_code != 200:
-        print(f"Request unsuccessful while getting task status with status code: {response.status_code}")
+        logger.info(f"Request unsuccessful while getting task status with status code: {response.status_code}")
         return
 
     json_output = json.loads(response.text)
@@ -60,7 +60,7 @@ def get_task_status(response):
 
 def get_file_item_id(response):
     if response.status_code != 200:
-        print(f"Request unsuccessful while getting file item id with status code: {response.status_code}")
+        logger.info(f"Request unsuccessful while getting file item id with status code: {response.status_code}")
         return
 
     json_output = json.loads(response.text)
@@ -91,6 +91,7 @@ if __name__ == "__main__":
   
   if resource == '':
     raise Exception("--resource value must be defined in the job aruguments")
+  
   logger.info(f"Getting resource {resource}")
   
   headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
