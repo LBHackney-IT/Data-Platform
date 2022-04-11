@@ -35,28 +35,37 @@ def format_time(date_time):
     return t[:-3]+"Z"
   
 def update_aqs(alloy_query, last_import_date_time):
-  child_value = [
-    {
-      "type": "GreaterThan",
-      "children": [
-        {
-          "type": "ItemProperty",
-          "properties": {
-            "itemPropertyName": "lastEditDate"
-          }
-        },
-        {
-          "type": "DateTime",
-          "properties": {
-            "value": []
-          }
-         }
-      ]
-    }
-  ]
+  child_value = [{"type": "GreaterThan", "children": [{"type": "ItemProperty", "properties": {"itemPropertyName": "lastEditDate"}}, {"type": "DateTime", "properties": {"value": []}}]}]
   child_value[0]['children'][1]['properties']['value'] = [last_import_date_time]
   alloy_query['aqs']['children'] = child_value
   return alloy_query 
+
+def get_task_id(response):
+    if response.status_code != 200:
+        print(f"Request unsuccessful with status code: {response.status_code}")
+        return 
+    
+    json_output = json.loads(response.text)
+    task_id = json_output["backgroundTaskId"]
+    return task_id
+
+def get_task_status(response):
+    if response.status_code != 200:
+        print(f"Request unsuccessful with status code: {response.status_code}")
+        return
+
+    json_output = json.loads(response.text)
+    task_status = json_output["task"]["status"]
+    return task_status
+
+def get_file_item_id(response):
+    if response.status_code != 200:
+        print(f"Request unsuccessful with status code: {response.status_code}")
+        return
+
+    json_output = json.loads(response.text)
+    file_id = json_output["fileItemId"]
+    return file_id
 
 if __name__ == "__main__":
   args = getResolvedOptions(sys.argv, ['JOB_NAME'])
@@ -89,75 +98,41 @@ if __name__ == "__main__":
   post_url = f'https://api.{region}.alloyapp.io/api/export/?token={api_key}'
   aqs = update_aqs(aqs, last_import_date_time)
   response = requests.post(post_url, data=json.dumps(aqs), headers=headers)
+  
+  task_id = get_task_id(response)
+  url = f'https://api.{region}.alloyapp.io/api/task/{task_id}?token={api_key}'
+  task_status = ''
+  file_id = ''
+  # check task status every minute
+  while task_status != 'Complete':
+      time.sleep(60)
+      response = requests.get(url)
+      task_status = get_task_status(response)
 
-  if response.status_code == 200:
-      # If success - check the task status
-      logger.info(f'json load')
-      json_output = json.loads(response.text)
-      logger.info(f'json load complete')
-      task_id = json_output["backgroundTaskId"]
-      logger.info(str(json_output))
-      task_status = ''
-      file_id = ''
-      # check task status every minute
-      while task_status != 'Complete':
-          time.sleep(60)
-          url = f'https://api.{region}.alloyapp.io/api/task/{task_id}?token={api_key}'
-          response = requests.get(url)
-          if response.status_code == 200:
-              json_output = json.loads(response.text)
-              json_output_str = str(json_output)
-              logger.info(f'reponse = 200: {json_output_str}')
-              task_status = json_output["task"]["status"]
-          else:
-              pass
-      if task_status == 'Complete':
-          # get fileItemId once file prep complete
-          url = f'https://api.{region}.alloyapp.io/api/export/{task_id}/file?token={api_key}'
-          response = requests.get(url)
-          if response.status_code == 200:
-              json_output = json.loads(response.text)
-              json_output_str = str(json_output)
-              logger.info(f'reponse = 200: {json_output_str}')
-              file_id = json_output["fileItemId"]
-              # download file
-              pandasDataFrame = download_file_to_df(file_id, api_key, filename)
-              #print("File download and extraction complete")
-              #df.to_csv(out_path, index=False)
-              #print('File uploaded to Google Drive')
-              # Convert all columns to strings
-              all_columns = list(pandasDataFrame)
-              pandasDataFrame[all_columns] = pandasDataFrame[all_columns].astype(str)
-
-              # Replace missing column names with valid names
-              pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() for i, a in
-                                         enumerate(pandasDataFrame.columns)]
-              pandasDataFrame.columns = map(normalize_column_name, pandasDataFrame.columns)
-
-              sparkDynamicDataFrame = convert_pandas_df_to_spark_dynamic_df(sqlContext, pandasDataFrame)
-              sparkDynamicDataFrame = sparkDynamicDataFrame.replace('nan', None).replace('NaT', None)
-              sparkDynamicDataFrame = sparkDynamicDataFrame.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
-              sparkDynamicDataFrame = add_import_time_columns(sparkDynamicDataFrame)
-
-              dataframe = DynamicFrame.fromDF(sparkDynamicDataFrame, glueContext, "alloyDWeducation")
-
-              ## @type: DataSink
-              ## @args: [connection_type = "s3", connection_options = {"path":s3BucketTarget}, format = "parquet"]
-              ## @return: parquetData
-              ## @inputs: [frame = dataframe]
-              parquetData = glueContext.write_dynamic_frame.from_options(
-                  frame=dataframe,
-                  connection_type="s3",
-                  connection_options={"path": bucket_target, "partitionKeys": PARTITION_KEYS},
-                  format="parquet",
-              )
-          else:
-              pass
-      else:
-          pass
   else:
-      pass
+    file_id = get_file_item_id(response)
+    url = f'https://api.{region}.alloyapp.io/api/export/{task_id}/file?token={api_key}'
+    response = requests.get(url) 
+
+    pandasDataFrame = download_file_to_df(file_id, api_key, filename)
+
+    all_columns = list(pandasDataFrame)
+    pandasDataFrame[all_columns] = pandasDataFrame[all_columns].astype(str)
+    # Replace missing column names with valid names
+    pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() for i, a in
+                               enumerate(pandasDataFrame.columns)]
+    pandasDataFrame.columns = map(normalize_column_name, pandasDataFrame.columns)
+    sparkDynamicDataFrame = convert_pandas_df_to_spark_dynamic_df(sqlContext, pandasDataFrame)
+    sparkDynamicDataFrame = sparkDynamicDataFrame.replace('nan', None).replace('NaT', None)
+    sparkDynamicDataFrame = sparkDynamicDataFrame.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
+    sparkDynamicDataFrame = add_import_time_columns(sparkDynamicDataFrame)
+    dataframe = DynamicFrame.fromDF(sparkDynamicDataFrame, glueContext, "alloyDWeducation")
+    parquetData = glueContext.write_dynamic_frame.from_options(
+        frame=dataframe,
+        connection_type="s3",
+        connection_options={"path": bucket_target, "partitionKeys": PARTITION_KEYS},
+        format="parquet",
+    )
 
   job.commit()
-
-
+  
