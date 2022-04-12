@@ -48,7 +48,9 @@ locals {
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
       { name : "SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" },
       { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
-      { name : "ELASTICSEARCH_PORT", value : "80" },
+      { name : "ELASTICSEARCH_PORT", value : "443" },
+      { name : "ELASTICSEARCH_USE_SSL", value : "true" },
+      { name : "ELASTICSEARCH_SSL_PROTOCOL", value : "TLSv1.2" },
       { name : "NEO4J_HOST", value : "http://${aws_alb.datahub_neo4j.dns_name}:${local.neo4j.port}" },
       { name : "NEO4J_URI", value : "bolt://${aws_alb.datahub_neo4j.dns_name}" },
       { name : "NEO4J_USERNAME", value : "neo4j" },
@@ -83,7 +85,9 @@ locals {
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
       { name : "SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" },
       { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
-      { name : "ELASTICSEARCH_PORT", value : "80" },
+      { name : "ELASTICSEARCH_PORT", value : "443" },
+      { name : "ELASTICSEARCH_USE_SSL", value : "true" },
+      { name : "ELASTICSEARCH_SSL_PROTOCOL", value : "TLSv1.2" },
       { name : "NEO4J_HOST", value : "http://${aws_alb.datahub_neo4j.dns_name}:${local.neo4j.port}" },
       { name : "NEO4J_URI", value : "bolt://${aws_alb.datahub_neo4j.dns_name}" },
       { name : "NEO4J_USERNAME", value : "neo4j" },
@@ -155,7 +159,8 @@ locals {
       { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
       { name : "ELASTICSEARCH_PORT", value : "443" },
       { name : "ELASTICSEARCH_USE_SSL", value : "true" },
-      { name : "USE_AWS_ELASTICSEARCH", value : "true" }
+      { name : "ELASTICSEARCH_SSL_PROTOCOL", value : "TLSv1.2" },
+      { name : "USE_AWS_ELASTICSEARCH", value : "true" },
     ]
     port_mappings = []
     mount_points  = []
