@@ -17,10 +17,10 @@ locals {
       { name : "DATAHUB_PLAY_MEM_BUFFER_SIZE", value : "10MB" },
       { name : "JAVA_OPTS", value : "-Xms2048m -Xmx2048m -Dhttp.port=9002 -Dconfig.file=datahub-frontend/conf/application.conf -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
-      { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" },
+      { name : "SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" },
       { name : "DATAHUB_TRACKING_TOPIC", value : "DataHubUsageEvent_v1" },
       { name : "ELASTIC_CLIENT_HOST", value : aws_elasticsearch_domain.es.endpoint },
-      { name : "ELASTIC_CLIENT_PORT", value : "80" }
+      { name : "ELASTIC_CLIENT_PORT", value : "443" }
     ]
     port_mappings = [
       { containerPort : 9002, hostPort : 9002 }
