@@ -13,11 +13,11 @@ resource "aws_ecs_service" "datahub_service" {
   }
 
   dynamic "load_balancer" {
-    for_each = var.container_properties.load_balancer_required == true ? [1] : []
+    for_each = var.alb_target_group_arns
     content {
-      target_group_arn = var.alb_target_group_arn
+      target_group_arn = load_balancer.value.arn
       container_name   = var.container_properties.container_name
-      container_port   = var.container_properties.port
+      container_port   = load_balancer.value.port
     }
   }
 
@@ -38,7 +38,7 @@ resource "aws_security_group" "ecs_tasks" {
     from_port       = var.container_properties.port
     to_port         = var.container_properties.port
     cidr_blocks     = ["0.0.0.0/0"]
-    security_groups = var.container_properties.load_balancer_required ? [var.alb_security_group_id] : []
+    security_groups = var.container_properties.load_balancer_required ? var.alb_security_group_ids : []
   }
 
   egress {

@@ -37,8 +37,9 @@ resource "aws_security_group" "datahub_neo4j" {
 }
 
 resource "aws_alb_target_group" "datahub_neo4j" {
-  name        = "${var.short_identifier_prefix}datahub-neo4j"
-  port        = local.neo4j.port
+  for_each    = { for port in local.neo4j.port_mappings : port.containerPort => port }
+  name        = "${var.short_identifier_prefix}datahub-neo4j-${each.value.containerPort}"
+  port        = each.value.containerPort
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
@@ -53,12 +54,13 @@ resource "aws_alb" "datahub_neo4j" {
 }
 
 resource "aws_alb_listener" "datahub_neo4j" {
+  for_each          = { for port in local.neo4j.port_mappings : port.containerPort => port }
   load_balancer_arn = aws_alb.datahub_neo4j.arn
-  port              = local.neo4j.port
+  port              = each.value.containerPort
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_alb_target_group.datahub_neo4j.arn
+    target_group_arn = aws_alb_target_group.datahub_neo4j[each.key].arn
   }
 }

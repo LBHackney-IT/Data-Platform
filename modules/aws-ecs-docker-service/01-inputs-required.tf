@@ -38,14 +38,17 @@ variable "alb_id" {
   type        = string
 }
 
-variable "alb_target_group_arn" {
+variable "alb_target_group_arns" {
   description = "ARN of the ALB target group"
-  type        = string
+  type = list(object({
+    arn  = string
+    port = string
+  }))
 }
 
-variable "alb_security_group_id" {
+variable "alb_security_group_ids" {
   description = "Id of the ALB security group"
-  type        = string
+  type        = list(string)
 }
 
 variable "cloudwatch_log_group_name" {
