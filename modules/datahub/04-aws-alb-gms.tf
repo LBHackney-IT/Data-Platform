@@ -38,6 +38,7 @@ resource "aws_alb_target_group" "datahub_gms" {
     protocol = "HTTP"
     path     = "/health"
     port     = local.datahub_gms.port
+    interval = 60
   }
 }
 
