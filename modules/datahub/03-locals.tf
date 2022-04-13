@@ -2,7 +2,7 @@ locals {
   datahub_frontend_react = {
     container_name          = "datahub-frontend-react"
     image_name              = "linkedin/datahub-frontend-react"
-    image_tag               = "latest"
+    image_tag               = "v0.8.32"
     port                    = 9002
     cpu                     = 256
     memory                  = 2048
@@ -31,7 +31,7 @@ locals {
   datahub_gms = {
     container_name          = "datahub-gms"
     image_name              = "linkedin/datahub-gms"
-    image_tag               = "latest"
+    image_tag               = "v0.8.32"
     port                    = 8080
     cpu                     = 512
     memory                  = 4096
@@ -72,7 +72,7 @@ locals {
   datahub_mae_consumer = {
     container_name          = "datahub-mae-consumer"
     image_name              = "linkedin/datahub-mae-consumer"
-    image_tag               = "latest"
+    image_tag               = "v0.8.32"
     port                    = 9090
     cpu                     = 512
     memory                  = 4096
@@ -106,7 +106,7 @@ locals {
   datahub_mce_consumer = {
     container_name          = "datahub-mce-consumer"
     image_name              = "linkedin/datahub-mce-consumer"
-    image_tag               = "latest"
+    image_tag               = "v0.8.32"
     port                    = 9090
     cpu                     = 512
     memory                  = 4096
@@ -129,7 +129,7 @@ locals {
   mysql_setup = {
     container_name          = "mysql-setup"
     image_name              = "acryldata/datahub-mysql-setup"
-    image_tag               = "head"
+    image_tag               = "v0.8.32"
     port                    = 3306
     cpu                     = 256
     memory                  = 2048
@@ -149,7 +149,7 @@ locals {
   elasticsearch_setup = {
     container_name          = "elasticsearch-setup"
     image_name              = "linkedin/datahub-elasticsearch-setup"
-    image_tag               = "latest"
+    image_tag               = "v0.8.32"
     port                    = 443
     cpu                     = 256
     memory                  = 2048
@@ -169,7 +169,7 @@ locals {
   kafka_setup = {
     container_name          = "kafka-setup"
     image_name              = "linkedin/datahub-kafka-setup"
-    image_tag               = "head"
+    image_tag               = "v0.8.32"
     port                    = 443
     cpu                     = 256
     memory                  = 2048
