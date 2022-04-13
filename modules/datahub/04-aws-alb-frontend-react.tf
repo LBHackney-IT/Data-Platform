@@ -37,6 +37,7 @@ resource "aws_alb_target_group" "datahub_frontend_react" {
     protocol = "HTTP"
     path     = "/admin"
     port     = local.datahub_frontend_react.port
+    interval = 60
   }
 }
 
