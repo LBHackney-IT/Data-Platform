@@ -212,6 +212,30 @@ locals {
     ]
     volumes = ["neo4jdata"]
   }
+  datahub_actions = {
+    container_name         = "datahub-actions"
+    image_name             = "acryldata/acryl-datahub-actions"
+    image_tag              = "head"
+    port                   = 80
+    cpu                    = 256
+    memory                 = 2048
+    standalone_onetime_task = false
+    load_balancer_required = false
+    environment_variables = [
+      { name : "GMS_HOST", value : aws_alb.datahub_gms.dns_name },
+      { name : "GMS_PORT", value : "8080" },
+      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
+      { name : "SCHEMA_REGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
+      { name : "METADATA_AUDIT_EVENT_NAME", value : "MetadataAuditEvent_v4" },
+      { name : "METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME", value : "MetadataChangeLog_Versioned_v1" },
+      { name : "DATAHUB_SYSTEM_CLIENT_ID", value : "__datahub_system" },
+      { name : "DATAHUB_SYSTEM_CLIENT_SECRET", value : random_password.datahub_secret.result },
+      { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" }
+    ]
+    port_mappings = []
+    mount_points  = []
+    volumes       = []
+    }
 }
 
 resource "random_password" "datahub_secret" {
