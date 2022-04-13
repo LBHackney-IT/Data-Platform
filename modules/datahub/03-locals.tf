@@ -61,7 +61,7 @@ locals {
       { name : "ENTITY_REGISTRY_CONFIG_PATH", value : "/datahub/datahub-gms/resources/entity-registry.yml" },
       { name : "MAE_CONSUMER_ENABLED", value : "true" },
       { name : "MCE_CONSUMER_ENABLED", value : "true" },
-      { name : "UI_INGESTION_ENABLED", value : "false" },
+      { name : "UI_INGESTION_ENABLED", value : "true" },
       { name : "UI_INGESTION_DEFAULT_CLI_VERSION", value : "0.8.26.6" }
     ]
     port_mappings = [
