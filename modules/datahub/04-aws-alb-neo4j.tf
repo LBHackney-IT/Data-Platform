@@ -43,6 +43,12 @@ resource "aws_alb_target_group" "datahub_neo4j" {
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
+  health_check {
+    protocol = "HTTP"
+    path     = "/"
+    port     = 7474
+    interval = 60
+  }
 }
 
 resource "aws_alb" "datahub_neo4j" {
