@@ -46,9 +46,9 @@ variable "alb_target_group_arns" {
   }))
 }
 
-variable "alb_security_group_ids" {
+variable "alb_security_group_id" {
   description = "Id of the ALB security group"
-  type        = list(string)
+  type        = string
 }
 
 variable "cloudwatch_log_group_name" {

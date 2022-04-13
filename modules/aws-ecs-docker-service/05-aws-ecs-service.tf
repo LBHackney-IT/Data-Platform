@@ -38,7 +38,7 @@ resource "aws_security_group" "ecs_tasks" {
     from_port       = var.container_properties.port
     to_port         = var.container_properties.port
     cidr_blocks     = ["0.0.0.0/0"]
-    security_groups = var.container_properties.load_balancer_required ? var.alb_security_group_ids : []
+    security_groups = var.container_properties.load_balancer_required ? [var.alb_security_group_id] : []
   }
 
   egress {
