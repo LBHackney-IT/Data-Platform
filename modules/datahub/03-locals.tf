@@ -59,7 +59,10 @@ locals {
       { name : "MAE_CONSUMER_ENABLED", value : "true" },
       { name : "MCE_CONSUMER_ENABLED", value : "true" },
       { name : "UI_INGESTION_ENABLED", value : "true" },
-      { name : "UI_INGESTION_DEFAULT_CLI_VERSION", value : "0.8.26.6" }
+      { name : "UI_INGESTION_DEFAULT_CLI_VERSION", value : "0.8.26.6" },
+      { name : "AWS_ACCESS_KEY_ID", value : aws_iam_access_key.datahub_access_key.id },
+      { name : "AWS_SECRET_ACCESS_KEY", value : aws_iam_access_key.datahub_access_key.secret },
+      { name : "AWS_SESSION_TOKEN", value : "${var.short_identifier_prefix}datahub" },
     ]
     port_mappings = [
       { containerPort : 8080, hostPort : 8080 }
