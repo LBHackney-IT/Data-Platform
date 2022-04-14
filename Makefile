@@ -33,7 +33,7 @@ validate:
 	cd scripts && make all
 	cd external-lib && make all
 	$(MAKE) -C terraform validate
-	$(MAKE) -C terraform-networking validatenasd
+	$(MAKE) -C terraform-networking validate
 	$(MAKE) -C terraform-backend-setup validate
 
 start-qlik-ssm-session:
