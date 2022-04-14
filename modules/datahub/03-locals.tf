@@ -60,9 +60,6 @@ locals {
       { name : "MCE_CONSUMER_ENABLED", value : "true" },
       { name : "UI_INGESTION_ENABLED", value : "true" },
       { name : "UI_INGESTION_DEFAULT_CLI_VERSION", value : "0.8.26.6" },
-      { name : "AWS_ACCESS_KEY_ID", value : aws_iam_access_key.datahub_access_key.id },
-      { name : "AWS_SECRET_ACCESS_KEY", value : aws_iam_access_key.datahub_access_key.secret },
-      { name : "AWS_SESSION_TOKEN", value : "${var.short_identifier_prefix}datahub" },
     ]
     port_mappings = [
       { containerPort : 8080, hostPort : 8080 }
@@ -141,7 +138,12 @@ locals {
       { name : "METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME", value : "MetadataChangeLog_Versioned_v1" },
       { name : "DATAHUB_SYSTEM_CLIENT_ID", value : "__datahub_system" },
       { name : "DATAHUB_SYSTEM_CLIENT_SECRET", value : random_password.datahub_secret.result },
-      { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" }
+      { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" },
+      { name : "AWS_DEFAULT_REGION", value : data.aws_region.current.name },
+      { name : "AWS_ACCESS_KEY_ID", value : aws_iam_access_key.datahub_access_key.id },
+      { name : "AWS_SECRET_ACCESS_KEY", value : aws_iam_access_key.datahub_access_key.secret },
+      { name : "AWS_SESSION_TOKEN", value : "${var.short_identifier_prefix}datahub" },
+      { name : "GMS_URL", value : "http://${aws_alb.datahub_gms.dns_name}:8080" }
     ]
     port_mappings = []
     mount_points  = []

@@ -1,0 +1,8 @@
+source:
+  type: glue
+  config:
+    aws_region: '${AWS_DEFAULT_REGION}'
+sink:
+  type: datahub-rest
+  config:
+    server: '${GMS_URL}'

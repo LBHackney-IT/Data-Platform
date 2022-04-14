@@ -27,12 +27,12 @@ resource "aws_security_group" "datahub_gms" {
   //    from_port        = local.datahub_gms.port
   //    to_port          = local.datahub_gms.port
   //    protocol         = "tcp"
-  //    security_groups = [
-  //      module.datahub_frontend_react.security_group_id,
-  //      module.datahub_mae_consumer.security_group_id,
-  //      module.datahub_mce_consumer.security_group_id,
-  //      module.datahub_actions.security_group_id
-  //    ]
+  //    security_groups = flatten([
+  //      module.datahub_frontend_react.security_group_ids,
+  //      module.datahub_mae_consumer.security_group_ids,
+  //      module.datahub_mce_consumer.security_group_ids,
+  //      module.datahub_actions.security_group_ids
+  //    ])
   //  }
 
   tags = merge(var.tags, {
