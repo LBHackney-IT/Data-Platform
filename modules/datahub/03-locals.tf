@@ -5,8 +5,8 @@ locals {
     image_name              = "linkedin/datahub-frontend-react"
     image_tag               = local.datahub_version
     port                    = 9002
-    cpu                     = 256
-    memory                  = 2048
+    cpu                     = 512
+    memory                  = 4096
     load_balancer_required  = true
     standalone_onetime_task = false
     environment_variables = [
@@ -127,6 +127,53 @@ locals {
     mount_points = []
     volumes      = []
   }
+  datahub_actions = {
+    container_name          = "datahub-actions"
+    image_name              = "acryldata/acryl-datahub-actions"
+    image_tag               = "head"
+    port                    = 80
+    cpu                     = 512
+    memory                  = 4096
+    standalone_onetime_task = false
+    load_balancer_required  = false
+    environment_variables = [
+      { name : "GMS_HOST", value : aws_alb.datahub_gms.dns_name },
+      { name : "GMS_PORT", value : "8080" },
+      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
+      { name : "SCHEMA_REGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
+      { name : "METADATA_AUDIT_EVENT_NAME", value : "MetadataAuditEvent_v4" },
+      { name : "METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME", value : "MetadataChangeLog_Versioned_v1" },
+      { name : "DATAHUB_SYSTEM_CLIENT_ID", value : "__datahub_system" },
+      { name : "DATAHUB_SYSTEM_CLIENT_SECRET", value : random_password.datahub_secret.result },
+      { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" }
+    ]
+    port_mappings = []
+    mount_points  = []
+    volumes       = []
+  }
+  neo4j = {
+    container_name          = "neo4j"
+    image_name              = "neo4j"
+    image_tag               = "4.0.6"
+    port                    = 7474
+    cpu                     = 512
+    memory                  = 4096
+    load_balancer_required  = true
+    standalone_onetime_task = false
+    environment_variables = [
+      { name : "NEO4J_AUTH", value : "neo4j/datahub" },
+      { name : "NEO4J_dbms_default__database", value : "graph.db" },
+      { name : "NEO4J_dbms_allow__upgrade", value : "true" },
+    ]
+    mount_points = [
+      { sourceVolume : "neo4jdata", containerPath : "/data", readOnly : false }
+    ]
+    port_mappings = [
+      { containerPort : 7474, hostPort : 7474 },
+      { containerPort : 7687, hostPort : 7687 }
+    ]
+    volumes = ["neo4jdata"]
+  }
   mysql_setup = {
     container_name          = "mysql-setup"
     image_name              = "acryldata/datahub-mysql-setup"
@@ -184,53 +231,6 @@ locals {
       # Kafka-setup container problem code: https://github.com/datahub-project/datahub/blob/master/docker/kafka-setup/kafka-setup.sh#L14-L21
       { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "ssl" },
       { name : "PLATFORM_EVENT_TOPIC_NAME", value : "PlatformEvent_v1" }
-    ]
-    port_mappings = []
-    mount_points  = []
-    volumes       = []
-  }
-  neo4j = {
-    container_name          = "neo4j"
-    image_name              = "neo4j"
-    image_tag               = "4.0.6"
-    port                    = 7474
-    cpu                     = 256
-    memory                  = 2048
-    load_balancer_required  = true
-    standalone_onetime_task = false
-    environment_variables = [
-      { name : "NEO4J_AUTH", value : "neo4j/datahub" },
-      { name : "NEO4J_dbms_default__database", value : "graph.db" },
-      { name : "NEO4J_dbms_allow__upgrade", value : "true" },
-    ]
-    mount_points = [
-      { sourceVolume : "neo4jdata", containerPath : "/data", readOnly : false }
-    ]
-    port_mappings = [
-      { containerPort : 7474, hostPort : 7474 },
-      { containerPort : 7687, hostPort : 7687 }
-    ]
-    volumes = ["neo4jdata"]
-  }
-  datahub_actions = {
-    container_name          = "datahub-actions"
-    image_name              = "acryldata/acryl-datahub-actions"
-    image_tag               = "head"
-    port                    = 80
-    cpu                     = 256
-    memory                  = 2048
-    standalone_onetime_task = false
-    load_balancer_required  = false
-    environment_variables = [
-      { name : "GMS_HOST", value : aws_alb.datahub_gms.dns_name },
-      { name : "GMS_PORT", value : "8080" },
-      { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
-      { name : "SCHEMA_REGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
-      { name : "METADATA_AUDIT_EVENT_NAME", value : "MetadataAuditEvent_v4" },
-      { name : "METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME", value : "MetadataChangeLog_Versioned_v1" },
-      { name : "DATAHUB_SYSTEM_CLIENT_ID", value : "__datahub_system" },
-      { name : "DATAHUB_SYSTEM_CLIENT_SECRET", value : random_password.datahub_secret.result },
-      { name : "KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" }
     ]
     port_mappings = []
     mount_points  = []
