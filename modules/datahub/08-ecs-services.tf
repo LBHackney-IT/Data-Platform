@@ -117,23 +117,6 @@ module "kafka_setup" {
   container_properties      = local.kafka_setup
 }
 
-module "neo4j" {
-  source = "../aws-ecs-docker-service"
-
-  tags                      = var.tags
-  operation_name            = var.short_identifier_prefix
-  ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  environment               = var.environment
-  identifier_prefix         = var.identifier_prefix
-  short_identifier_prefix   = var.short_identifier_prefix
-  alb_id                    = aws_alb.datahub_neo4j.id
-  alb_target_group_arns     = [for tg in aws_alb_target_group.datahub_neo4j : { arn = tg.arn, port = tg.port }]
-  alb_security_group_id     = aws_security_group.datahub_neo4j.id
-  vpc_id                    = var.vpc_id
-  cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
-  container_properties      = local.neo4j
-}
-
 module "datahub_actions" {
   source = "../aws-ecs-docker-service"
 

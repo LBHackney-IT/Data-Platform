@@ -43,7 +43,7 @@ locals {
       { name : "EBEAN_DATASOURCE_USERNAME", value : aws_db_instance.datahub.username },
       { name : "EBEAN_DATASOURCE_PASSWORD", value : aws_db_instance.datahub.password },
       { name : "EBEAN_DATASOURCE_HOST", value : aws_db_instance.datahub.endpoint },
-      { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://${aws_db_instance.datahub.endpoint}/${aws_db_instance.datahub.identifier}?verifyServerCertificate=false&useSSL=true&useUnicode=yes&characterEncoding=UTF-8&enabledTLSProtocols=TLSv1.2" },
+      { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://${aws_db_instance.datahub.endpoint}/${aws_db_instance.datahub.identifier}?verifyServerCertificate=false&useSSL=true&useUnicode=yes&characterEncoding=UTF-8" },
       { name : "EBEAN_DATASOURCE_DRIVER", value : "com.mysql.jdbc.Driver" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
@@ -52,12 +52,9 @@ locals {
       { name : "ELASTICSEARCH_PORT", value : "443" },
       { name : "ELASTICSEARCH_USE_SSL", value : "true" },
       { name : "ELASTICSEARCH_SSL_PROTOCOL", value : "TLSv1.2" },
-      { name : "NEO4J_HOST", value : "http://${aws_alb.datahub_neo4j.dns_name}:${local.neo4j.port}" },
-      { name : "NEO4J_URI", value : "bolt://${aws_alb.datahub_neo4j.dns_name}" },
-      { name : "NEO4J_USERNAME", value : "neo4j" },
-      { name : "NEO4J_PASSWORD", value : random_password.datahub_secret.result },
+      { name : "GRAPH_SERVICE_IMPL", value : "elasticsearch" },
+      { name : "PE_CONSUMER_ENABLED", value : "true" },
       { name : "JAVA_OPTS", value : "-Xms1g -Xmx1g" },
-      { name : "GRAPH_SERVICE_IMPL", value : "neo4j" },
       { name : "ENTITY_REGISTRY_CONFIG_PATH", value : "/datahub/datahub-gms/resources/entity-registry.yml" },
       { name : "MAE_CONSUMER_ENABLED", value : "true" },
       { name : "MCE_CONSUMER_ENABLED", value : "true" },
@@ -89,13 +86,9 @@ locals {
       { name : "ELASTICSEARCH_PORT", value : "443" },
       { name : "ELASTICSEARCH_USE_SSL", value : "true" },
       { name : "ELASTICSEARCH_SSL_PROTOCOL", value : "TLSv1.2" },
-      { name : "NEO4J_HOST", value : "http://${aws_alb.datahub_neo4j.dns_name}:${local.neo4j.port}" },
-      { name : "NEO4J_URI", value : "bolt://${aws_alb.datahub_neo4j.dns_name}" },
-      { name : "NEO4J_USERNAME", value : "neo4j" },
-      { name : "NEO4J_PASSWORD", value : random_password.datahub_secret.result },
       { name : "GMS_HOST", value : aws_alb.datahub_gms.dns_name },
       { name : "GMS_PORT", value : "8080" },
-      { name : "GRAPH_SERVICE_IMPL", value : "neo4j" },
+      { name : "GRAPH_SERVICE_IMPL", value : "elasticsearch" },
       { name : "ENTITY_REGISTRY_CONFIG_PATH", value : "/datahub/datahub-mae-consumer/resources/entity-registry.yml" },
     ]
     port_mappings = [
@@ -150,29 +143,6 @@ locals {
     port_mappings = []
     mount_points  = []
     volumes       = []
-  }
-  neo4j = {
-    container_name          = "neo4j"
-    image_name              = "neo4j"
-    image_tag               = "4.0.6"
-    port                    = 7474
-    cpu                     = 1024
-    memory                  = 8192
-    load_balancer_required  = true
-    standalone_onetime_task = false
-    environment_variables = [
-      { name : "NEO4J_AUTH", value : "neo4j/datahub" },
-      { name : "NEO4J_dbms_default__database", value : "graph.db" },
-      { name : "NEO4J_dbms_allow__upgrade", value : "true" },
-    ]
-    mount_points = [
-      { sourceVolume : "neo4jdata", containerPath : "/data", readOnly : false }
-    ]
-    port_mappings = [
-      { containerPort : 7474, hostPort : 7474 },
-      { containerPort : 7687, hostPort : 7687 }
-    ]
-    volumes = ["neo4jdata"]
   }
   mysql_setup = {
     container_name          = "mysql-setup"
