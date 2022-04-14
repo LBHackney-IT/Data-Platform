@@ -142,7 +142,8 @@ locals {
       { name : "AWS_DEFAULT_REGION", value : data.aws_region.current.name },
       { name : "AWS_ACCESS_KEY_ID", value : aws_iam_access_key.datahub_access_key.id },
       { name : "AWS_SECRET_ACCESS_KEY", value : aws_iam_access_key.datahub_access_key.secret },
-      { name : "AWS_SESSION_TOKEN", value : "${var.short_identifier_prefix}datahub" },
+      { name : "AWS_ROLE", value : aws_iam_role.datahub_role.arn },
+      { name : "GLUE_EXTRACT_TRANSFORMS", value : "false" },
       { name : "GMS_URL", value : "http://${aws_alb.datahub_gms.dns_name}:8080" }
     ]
     port_mappings = []
