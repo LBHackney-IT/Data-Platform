@@ -22,6 +22,19 @@ resource "aws_security_group" "datahub_gms" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  //  ingress {
+  //    description      = "Allow inbound HTTP traffic from Datahub containers"
+  //    from_port        = local.datahub_gms.port
+  //    to_port          = local.datahub_gms.port
+  //    protocol         = "tcp"
+  //    security_groups = [
+  //      module.datahub_frontend_react.security_group_id,
+  //      module.datahub_mae_consumer.security_group_id,
+  //      module.datahub_mce_consumer.security_group_id,
+  //      module.datahub_actions.security_group_id
+  //    ]
+  //  }
+
   tags = merge(var.tags, {
     "Name" : "DataHub GMS Load Balancer"
   })

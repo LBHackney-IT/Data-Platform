@@ -14,12 +14,15 @@ resource "aws_security_group" "datahub_frontend_react" {
   }
 
   ingress {
-    description      = "Allow inbound HTTP traffic"
+    description      = "Allow inbound HTTP traffic on Datahub Frontend port"
     from_port        = local.datahub_frontend_react.port
     to_port          = local.datahub_frontend_react.port
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
+    //    cidr_blocks = [
+    //      data.aws_vpc.vpc.cidr_block,
+    //    ]
   }
 
   tags = merge(var.tags, {
