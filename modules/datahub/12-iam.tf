@@ -13,32 +13,29 @@ resource "aws_iam_user_policy" "datahub_user_policy" {
   policy = data.aws_iam_policy_document.datahub_can_assume_role.json
 }
 
-resource "aws_iam_role" "datahub_role" {
-  tags               = var.tags
-  name               = "${var.short_identifier_prefix}datahub-role"
-  assume_role_policy = data.aws_iam_policy_document.datahub_can_access_glue.json
-}
-
 data "aws_iam_policy_document" "datahub_can_assume_role" {
   statement {
     effect = "Allow"
     actions = [
       "sts:AssumeRole"
     ]
-    principals {
-      type        = "AWS"
-      identifiers = [aws_iam_role.datahub_role.arn]
-    }
+    resources = [aws_iam_role.datahub_role.arn]
   }
+}
+
+resource "aws_iam_role" "datahub_role" {
+  tags               = var.tags
+  name               = "${var.short_identifier_prefix}datahub-role"
+  assume_role_policy = data.aws_iam_policy_document.datahub_can_access_glue.json
 }
 
 data "aws_iam_policy_document" "datahub_can_access_glue" {
   statement {
-    effect = "Allow"
-    actions = [
-      "glue:GetDatabases",
-      "glue:GetTables"
-    ]
-    resources = ["*"]
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      identifiers = ["glue.amazonaws.com"]
+      type        = "Service"
+    }
   }
 }
