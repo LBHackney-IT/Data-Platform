@@ -5,8 +5,8 @@ locals {
     image_name              = "linkedin/datahub-frontend-react"
     image_tag               = local.datahub_version
     port                    = 9002
-    cpu                     = 512
-    memory                  = 4096
+    cpu                     = 1024
+    memory                  = 8192
     load_balancer_required  = true
     standalone_onetime_task = false
     environment_variables = [
@@ -34,8 +34,8 @@ locals {
     image_name              = "linkedin/datahub-gms"
     image_tag               = local.datahub_version
     port                    = 8080
-    cpu                     = 512
-    memory                  = 4096
+    cpu                     = 1024
+    memory                  = 8192
     load_balancer_required  = true
     standalone_onetime_task = false
     environment_variables = [
@@ -75,8 +75,8 @@ locals {
     image_name              = "linkedin/datahub-mae-consumer"
     image_tag               = local.datahub_version
     port                    = 9090
-    cpu                     = 512
-    memory                  = 4096
+    cpu                     = 1024
+    memory                  = 8192
     load_balancer_required  = false
     standalone_onetime_task = false
     environment_variables = [
@@ -109,8 +109,8 @@ locals {
     image_name              = "linkedin/datahub-mce-consumer"
     image_tag               = local.datahub_version
     port                    = 9090
-    cpu                     = 512
-    memory                  = 4096
+    cpu                     = 1024
+    memory                  = 8192
     load_balancer_required  = false
     standalone_onetime_task = false
     environment_variables = [
@@ -132,8 +132,8 @@ locals {
     image_name              = "acryldata/acryl-datahub-actions"
     image_tag               = "head"
     port                    = 80
-    cpu                     = 512
-    memory                  = 4096
+    cpu                     = 1024
+    memory                  = 8192
     standalone_onetime_task = false
     load_balancer_required  = false
     environment_variables = [
@@ -156,8 +156,8 @@ locals {
     image_name              = "neo4j"
     image_tag               = "4.0.6"
     port                    = 7474
-    cpu                     = 512
-    memory                  = 4096
+    cpu                     = 1024
+    memory                  = 8192
     load_balancer_required  = true
     standalone_onetime_task = false
     environment_variables = [
