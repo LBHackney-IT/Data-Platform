@@ -59,5 +59,5 @@ output "cluster_config" {
 # Topic specific connector config
 
 output "tenure_connector_name" {
-  value = "tenure-changes"
+  value = "tenure_api"
 }
