@@ -41,6 +41,16 @@ resource "aws_security_group" "ecs_tasks" {
     security_groups = var.container_properties.load_balancer_required ? [var.alb_security_group_id] : []
   }
 
+  //  dynamic "ingress" {
+  //    for_each = var.container_properties.load_balancer_required ? [var.alb_security_group_id] : []
+  //    content {
+  //      protocol = "tcp"
+  //      from_port = var.container_properties.port
+  //      to_port = var.container_properties.port
+  //      security_groups = [var.alb_security_group_id]
+  //    }
+  //  }
+
   egress {
     description      = "Allow all outbound traffic"
     from_port        = 0
