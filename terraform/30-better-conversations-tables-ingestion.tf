@@ -1,5 +1,5 @@
 data "aws_ssm_parameter" "role_arn_to_access_better_conversations_tables" {
-  name = "/better-conversations/prod/role-arn-to-access-dynamodb-table"
+  name = "/better-conversations/prod/role-arn-to-access-dynamodb-tables"
 }
 
 module "ingest_better_conversations_tables" {
