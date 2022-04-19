@@ -23,7 +23,7 @@ module "ingest_better_conversations_tables" {
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   job_parameters = {
     "--table_names"       = "cf-snapshot-production-conversations,cf-snapshot-production-referrals"
-    "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_better_conversations_tables
+    "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_better_conversations_tables.value
     "--s3_target"         = "s3://${module.landing_zone.bucket_id}/better-conversations/"
     "--number_of_workers" = local.number_of_workers_for_better_conversations_ingestion
   }
