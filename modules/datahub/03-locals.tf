@@ -158,7 +158,7 @@ locals {
     cpu                     = 256
     memory                  = 2048
     load_balancer_required  = false
-    standalone_onetime_task = true
+    standalone_onetime_task = false
     environment_variables = [
       { name : "MYSQL_HOST", value : aws_db_instance.datahub.address },
       { name : "MYSQL_PORT", value : aws_db_instance.datahub.port },
@@ -178,7 +178,7 @@ locals {
     cpu                     = 256
     memory                  = 2048
     load_balancer_required  = false
-    standalone_onetime_task = true
+    standalone_onetime_task = false
     environment_variables = [
       { name : "ELASTICSEARCH_HOST", value : aws_elasticsearch_domain.es.endpoint },
       { name : "ELASTICSEARCH_PORT", value : "443" },
@@ -198,7 +198,7 @@ locals {
     cpu                     = 256
     memory                  = 2048
     load_balancer_required  = false
-    standalone_onetime_task = true
+    standalone_onetime_task = false
     environment_variables = [
       { name : "KAFKA_ZOOKEEPER_CONNECT", value : var.kafka_properties.kafka_zookeeper_connect },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
