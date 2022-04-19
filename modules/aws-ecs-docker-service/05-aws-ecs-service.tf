@@ -1,4 +1,4 @@
-resource "aws_ecs_service" "datahub_service" {
+resource "aws_ecs_service" "ecs_service" {
   count           = var.container_properties.standalone_onetime_task ? 0 : 1
   name            = "${var.operation_name}${var.container_properties.container_name}"
   cluster         = var.ecs_cluster_arn

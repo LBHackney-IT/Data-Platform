@@ -23,7 +23,7 @@ data "template_file" "task_definition_template" {
   template = jsonencode([
     {
       name : var.container_properties.container_name,
-      image : "${aws_ecr_repository.datahub.repository_url}:${var.container_properties.image_tag}",
+      image : "${aws_ecr_repository.ecr.repository_url}:${var.container_properties.image_tag}",
       essential : true,
       memory : var.container_properties.memory,
       cpu : var.container_properties.cpu,
