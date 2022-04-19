@@ -3,31 +3,33 @@ resource "aws_security_group" "datahub_frontend_react" {
   description            = "Restricts access to the DataHub Frontend React Application Load Balancer"
   vpc_id                 = var.vpc_id
   revoke_rules_on_delete = true
-
-  egress {
-    description      = "Allow all outbound traffic"
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "Allow inbound HTTP traffic on Datahub Frontend port"
-    from_port        = local.datahub_frontend_react.port
-    to_port          = local.datahub_frontend_react.port
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-    //    cidr_blocks = [
-    //      data.aws_vpc.vpc.cidr_block,
-    //    ]
-  }
-
   tags = merge(var.tags, {
     "Name" : "DataHub Frontend React Load Balancer"
   })
+}
+
+resource "aws_security_group_rule" "datahub_frontend_react_egress" {
+  type              = "egress"
+  security_group_id = aws_security_group.datahub_frontend_react.id
+  description       = "Allow all outbound traff"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  ipv6_cidr_blocks  = ["::/0"]
+}
+
+resource "aws_security_group_rule" "datahub_frontend_react_ingress" {
+
+  type        = "ingress"
+  description = "Allow inbound HTTP traffic on Datahub Frontend port"
+  from_port   = local.datahub_frontend_react.port
+  to_port     = local.datahub_frontend_react.port
+  protocol    = "tcp"
+  cidr_blocks = [
+    data.aws_vpc.vpc.cidr_block,
+  ]
+  security_group_id = aws_security_group.datahub_frontend_react.id
 }
 
 resource "aws_alb_target_group" "datahub_frontend_react" {

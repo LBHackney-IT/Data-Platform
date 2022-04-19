@@ -4,40 +4,41 @@ resource "aws_security_group" "datahub_gms" {
   vpc_id                 = var.vpc_id
   revoke_rules_on_delete = true
 
-  egress {
-    description      = "Allow all outbound traffic"
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "Allow inbound HTTP traffic"
-    from_port        = local.datahub_gms.port
-    to_port          = local.datahub_gms.port
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  //  ingress {
-  //    description      = "Allow inbound HTTP traffic from Datahub containers"
-  //    from_port        = local.datahub_gms.port
-  //    to_port          = local.datahub_gms.port
-  //    protocol         = "tcp"
-  //    security_groups = flatten([
-  //      module.datahub_frontend_react.security_group_ids,
-  //      module.datahub_mae_consumer.security_group_ids,
-  //      module.datahub_mce_consumer.security_group_ids,
-  //      module.datahub_actions.security_group_ids
-  //    ])
-  //  }
-
   tags = merge(var.tags, {
     "Name" : "DataHub GMS Load Balancer"
   })
+}
+
+resource "aws_security_group_rule" "datahub_gms_egress" {
+  type              = "egress"
+  description       = "Allow all outbound traffic"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  ipv6_cidr_blocks  = ["::/0"]
+  security_group_id = aws_security_group.datahub_gms.id
+}
+
+locals {
+  security_groups = flatten([
+    module.datahub_frontend_react.security_group_ids,
+    module.datahub_mae_consumer.security_group_ids,
+    module.datahub_mce_consumer.security_group_ids,
+    module.datahub_actions.security_group_ids
+  ])
+}
+
+resource "aws_security_group_rule" "datahub_gms_ingress" {
+  for_each = toset(local.security_groups)
+
+  type                     = "ingress"
+  description              = "Allow inbound HTTP traffic from Datahub containers"
+  from_port                = local.datahub_gms.port
+  to_port                  = local.datahub_gms.port
+  protocol                 = "tcp"
+  source_security_group_id = each.value
+  security_group_id        = aws_security_group.datahub_gms.id
 }
 
 resource "aws_alb_target_group" "datahub_gms" {
