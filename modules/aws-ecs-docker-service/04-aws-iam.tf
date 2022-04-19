@@ -26,7 +26,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
 resource "aws_iam_role" "cloudwatch_run_ecs_events" {
   tags = var.tags
 
-  name               = "${var.operation_name}-run-ecs-task"
+  name               = "${var.operation_name}${var.container_properties.container_name}run-ecs-task"
   assume_role_policy = data.aws_iam_policy_document.cloudwatch_assume_role.json
 }
 
