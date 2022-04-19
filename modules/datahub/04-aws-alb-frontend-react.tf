@@ -11,7 +11,7 @@ resource "aws_security_group" "datahub_frontend_react" {
 resource "aws_security_group_rule" "datahub_frontend_react_egress" {
   type              = "egress"
   security_group_id = aws_security_group.datahub_frontend_react.id
-  description       = "Allow all outbound traff"
+  description       = "Allow all outbound traffic"
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
