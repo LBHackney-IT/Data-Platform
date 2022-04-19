@@ -13,6 +13,7 @@ module "ingest_better_conversations_tables" {
   script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   number_of_workers_for_glue_job = 5
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
