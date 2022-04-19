@@ -1,7 +1,3 @@
-data "aws_vpc" "vpc" {
-  id = var.vpc_id
-}
-
 resource "aws_elasticsearch_domain" "es" {
   domain_name           = "${var.short_identifier_prefix}elasticsearch"
   elasticsearch_version = "7.9"
