@@ -24,4 +24,10 @@ resource "aws_cloudwatch_event_rule" "ecs_task" {
   description         = "Runs ${var.operation_name}${var.container_properties.container_name} Task"
   schedule_expression = "cron(${formatdate("m h D M YYYY", timeadd(timestamp(), "1m"))})"
   tags                = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      schedule_expression
+    ]
+  }
 }
