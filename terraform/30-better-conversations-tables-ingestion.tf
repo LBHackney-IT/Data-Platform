@@ -1,3 +1,7 @@
+locals {
+  number_of_workers_for_better_conversations_ingestion = 8
+}
+
 data "aws_ssm_parameter" "role_arn_to_access_better_conversations_tables" {
   name = "/better-conversations/prod/role-arn-to-access-dynamodb-tables"
 }
@@ -14,14 +18,14 @@ module "ingest_better_conversations_tables" {
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
-  number_of_workers_for_glue_job = 5
+  number_of_workers_for_glue_job = local.number_of_workers_for_better_conversations_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   job_parameters = {
     "--table_names"       = "cf-snapshot-production-conversations,cf-snapshot-production-referrals",
     "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_better_conversations_tables
     "--s3_target"         = "s3://${module.landing_zone.bucket_id}/better-conversations/"
-    "--number_of_workers" = 5
+    "--number_of_workers" = local.number_of_workers_for_better_conversations_ingestion
   }
 
   crawler_details = {
