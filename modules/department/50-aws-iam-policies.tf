@@ -558,7 +558,7 @@ data "aws_iam_policy_document" "notebook_access" {
   }
 
   statement {
-    sid     = "Can pass role to notebook"
+    sid     = "CanPassRoleToNotebook"
     effect  = "Allow"
     actions = ["iam:PassRole"]
     resources = [
