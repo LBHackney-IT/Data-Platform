@@ -77,6 +77,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
   max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
   glue_job_timeout                = 300
   job_parameters = {
@@ -131,6 +132,8 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
+  glue_job_worker_type            = "G.2X"
   glue_job_timeout                = 220
   max_concurrent_runs_of_glue_job = 2
   triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
@@ -142,6 +145,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
     "--glue_database_name_target" = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
     "--enable-glue-datacatalog"   = "true"
     "--job-bookmark-option"       = "job-bookmark-enable"
+    "--write-shuffle-files-to-s3" = "true"
   }
 }
 
@@ -159,6 +163,7 @@ module "copy_academy_revenues_to_raw_zone" {
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
   glue_job_timeout                = 220
   max_concurrent_runs_of_glue_job = 2
   triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name

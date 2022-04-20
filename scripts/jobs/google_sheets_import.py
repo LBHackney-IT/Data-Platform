@@ -71,6 +71,8 @@ pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() f
                            enumerate(pandasDataFrame.columns)]
 pandasDataFrame.columns = map(normalize_column_name, pandasDataFrame.columns)
 
+logger.info("Using Columns: " + str(pandasDataFrame.columns))
+
 sparkDynamicDataFrame = convert_pandas_df_to_spark_dynamic_df(sqlContext, pandasDataFrame)
 sparkDynamicDataFrame = sparkDynamicDataFrame.replace('nan', None).replace('NaT', None)
 sparkDynamicDataFrame = sparkDynamicDataFrame.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns

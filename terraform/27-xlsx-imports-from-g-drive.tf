@@ -6,6 +6,7 @@ module "repairs_fire_alarm_aov" {
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -81,6 +82,7 @@ module "env_enforcement_estate_cleaning" {
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_env_enforcement.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -124,6 +126,7 @@ module "env_enforcement_fix_my_street_noise" {
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_env_enforcement.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -155,6 +158,7 @@ module "env_enforcement_cc_tv" {
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_env_enforcement.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key

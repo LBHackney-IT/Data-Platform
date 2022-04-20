@@ -30,6 +30,7 @@ module "department_housing_repairs" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -59,6 +60,7 @@ module "department_parking" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -66,6 +68,11 @@ module "department_parking" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-parking@hackney.gov.uk"
+  notebook_instance = {
+    github_repository = aws_sagemaker_code_repository.data_platform.code_repository_name
+    extra_python_libs = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.pydeequ.key}"
+    extra_jars        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.jars.key}"
+  }
 }
 
 module "department_finance" {
@@ -89,6 +96,7 @@ module "department_finance" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -118,6 +126,7 @@ module "department_data_and_insight" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -148,6 +157,7 @@ module "department_env_enforcement" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -177,6 +187,7 @@ module "department_planning" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -207,6 +218,7 @@ module "department_unrestricted" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -236,6 +248,7 @@ module "department_sandbox" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -266,6 +279,7 @@ module "department_benefits_and_housing_needs" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -296,6 +310,7 @@ module "department_revenues" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -326,6 +341,7 @@ module "department_environmental_services" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port
@@ -356,6 +372,7 @@ module "department_housing" {
   athena_storage_bucket           = module.athena_storage
   glue_scripts_bucket             = module.glue_scripts
   glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
   secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
   redshift_ip_addresses           = var.redshift_public_ips
   redshift_port                   = var.redshift_port

@@ -22,4 +22,5 @@ module "lift_breakdown_el" {
   addresses_api_data_catalog   = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
   trusted_zone_bucket_id       = module.trusted_zone.bucket_id
   match_to_property_shell      = "force"
+  spark_ui_output_storage_id   = module.spark_ui_output_storage.bucket_id
 }

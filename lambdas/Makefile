@@ -8,4 +8,4 @@
 	touch .venv/.install.stamp
 
 test: .venv/.install.stamp
-	.venv/bin/python -m unittest liberator_prod_to_pre_prod/test.py
+	.venv/bin/python -m unittest */test.py

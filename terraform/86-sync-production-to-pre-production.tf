@@ -32,14 +32,33 @@ data "aws_iam_policy_document" "task_role" {
   statement {
     effect = "Allow"
     actions = [
-      "kms:Decrypt",
-      "kms:GenerateDataKey",
-      "kms:DescribeKey"
+      "kms:*"
     ]
     resources = [
       module.raw_zone.kms_key_arn,
       module.refined_zone.kms_key_arn,
-      module.trusted_zone.kms_key_arn
+      module.trusted_zone.kms_key_arn,
+      "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0",
+      "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21",
+      "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"
+    ]
+  }
+
+  statement {
+    effect = "Deny"
+    actions = [
+      "kms:DeleteCustomKeyStore",
+      "kms:ScheduleKeyDeletion",
+      "kms:DeleteImportedKeyMaterial",
+      "kms:DisableKey"
+    ]
+    resources = [
+      module.raw_zone.kms_key_arn,
+      module.refined_zone.kms_key_arn,
+      module.trusted_zone.kms_key_arn,
+      "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0",
+      "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21",
+      "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"
     ]
   }
 
@@ -47,7 +66,8 @@ data "aws_iam_policy_document" "task_role" {
     effect = "Allow"
     actions = [
       "s3:ListBucket",
-      "s3:PutObject*"
+      "s3:PutObject*",
+      "s3:DeleteObject*"
     ]
     resources = [
       "arn:aws:s3:::dataplatform-stg-raw-zone-prod-copy*",
@@ -60,13 +80,13 @@ data "aws_iam_policy_document" "task_role" {
     effect = "Allow"
     actions = [
       "kms:Encrypt",
-      "kms:GenerateDataKey",
-      "kms:DescribeKey"
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
     ]
     resources = [
-      "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0",
-      "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21",
-      "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"
     ]
   }
 }
@@ -83,6 +103,8 @@ module "sync_production_to_pre_production" {
   tasks = [
     {
       task_prefix = "raw-zone-"
+      task_cpu    = 2048
+      task_memory = 4096
       environment_variables = [
         { "name" = "NUMBER_OF_DAYS_TO_RETAIN", "value" = "90" },
         { "name" = "S3_SYNC_SOURCE", "value" = module.raw_zone.bucket_id },
@@ -92,6 +114,8 @@ module "sync_production_to_pre_production" {
     },
     {
       task_prefix = "refined-zone-"
+      task_cpu    = 256
+      task_memory = 512
       environment_variables = [
         { "name" = "NUMBER_OF_DAYS_TO_RETAIN", "value" = "90" },
         { "name" = "S3_SYNC_SOURCE", "value" = module.refined_zone.bucket_id },
@@ -101,6 +125,8 @@ module "sync_production_to_pre_production" {
     },
     {
       task_prefix = "trusted-zone-"
+      task_cpu    = 256
+      task_memory = 512
       environment_variables = [
         { "name" = "NUMBER_OF_DAYS_TO_RETAIN", "value" = "90" },
         { "name" = "S3_SYNC_SOURCE", "value" = module.trusted_zone.bucket_id },
