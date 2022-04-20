@@ -69,69 +69,70 @@ def get_file_item_id(response):
     return file_id
 
 if __name__ == "__main__":
-  args = getResolvedOptions(sys.argv, ['JOB_NAME'])
-  sc = SparkContext.getOrCreate()
-  glue_context = GlueContext(sc)
-  logger = glue_context.get_logger()
-  job = Job(glue_context)
-  job.init(args['JOB_NAME'], args)
-  sparkContext = SparkContext.getOrCreate()
-  glueContext = GlueContext(sparkContext)
-  sqlContext = SQLContext(sparkContext)
-  
-  resource = get_glue_env_var('resource', '')
-  bucket_target = get_glue_env_var('s3_bucket_target', '')
-  api_key = get_secret(get_glue_env_var('secret_name', ''), "eu-west-2")
-  database = get_glue_env_var('database','')
-  prefix = get_glue_env_var('s3_prefix', '')
-  aqs = get_glue_env_var('aqs', '')
-  filename = get_glue_env_var('filename', '')
-  last_import_date_time = format_time(get_last_import_date_time(glue_context, database, resource))
+    args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+    sc = SparkContext.getOrCreate()
+    glue_context = GlueContext(sc)
+    logger = glue_context.get_logger()
+    job = Job(glue_context)
+    job.init(args['JOB_NAME'], args)
+    sparkContext = SparkContext.getOrCreate()
+    glueContext = GlueContext(sparkContext)
+    sqlContext = SQLContext(sparkContext)
+    
+    resource = get_glue_env_var('resource', '')
+    bucket_target = get_glue_env_var('s3_bucket_target', '')
+    api_key = get_secret(get_glue_env_var('secret_name', ''), "eu-west-2")
+    database = get_glue_env_var('database','')
+    prefix = get_glue_env_var('s3_prefix', '')
+    aqs = get_glue_env_var('aqs', '')
+    filename = get_glue_env_var('filename', '')
+    last_import_date_time = format_time(get_last_import_date_time(glue_context, database, resource))
 
-  s3_target_url = "s3://" + bucket_target + "/" +  prefix + resource + "/"
+    s3_target_url = "s3://" + bucket_target + "/" +  prefix + resource + "/"
   
-  if resource == '':
-    raise Exception("--resource value must be defined in the job aruguments")
-  
-  logger.info(f"Getting resource {resource}")
-  
-  headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-  region = 'uk'
-  post_url = f'https://api.{region}.alloyapp.io/api/export/?token={api_key}'
-  aqs = update_aqs(aqs, last_import_date_time)
-  response = requests.post(post_url, data=json.dumps(aqs), headers=headers)
-  
-  task_id = get_task_id(response)
-  url = f'https://api.{region}.alloyapp.io/api/task/{task_id}?token={api_key}'
-  task_status = ''
-  file_id = ''
-  
-  while task_status != 'Complete':
-      time.sleep(60)
-      response = requests.get(url)
-      task_status = get_task_status(response)
+    if resource == '':
+        raise Exception("--resource value must be defined in the job aruguments")
+    
+    logger.info(f"Getting resource {resource}")
+    
+    headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    region = 'uk'
+    post_url = f'https://api.{region}.alloyapp.io/api/export/?token={api_key}'
+    aqs = update_aqs(aqs, last_import_date_time)
+    response = requests.post(post_url, data=json.dumps(aqs), headers=headers)
+    
+    task_id = get_task_id(response)
+    url = f'https://api.{region}.alloyapp.io/api/task/{task_id}?token={api_key}'
+    task_status = ''
+    file_id = ''
+    
+    while task_status != 'Complete':
+        time.sleep(60)
+        response = requests.get(url)
+        task_status = get_task_status(response)
 
-  else:
-    url = f'https://api.{region}.alloyapp.io/api/export/{task_id}/file?token={api_key}'
-    response = requests.get(url)
-    file_id = get_file_item_id(response)
+    else:
+        url = f'https://api.{region}.alloyapp.io/api/export/{task_id}/file?token={api_key}'
+        response = requests.get(url)
+        file_id = get_file_item_id(response)
 
-    pandasDataFrame = download_file_to_df(file_id, api_key, filename)
+        pandasDataFrame = download_file_to_df(file_id, api_key, filename)
 
-    all_columns = list(pandasDataFrame)
-    pandasDataFrame[all_columns] = pandasDataFrame[all_columns].astype(str)
-    pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() for i, a in enumerate(pandasDataFrame.columns)]
-    pandasDataFrame.columns = map(normalize_column_name, pandasDataFrame.columns)
-    sparkDynamicDataFrame = convert_pandas_df_to_spark_dynamic_df(sqlContext, pandasDataFrame)
-    sparkDynamicDataFrame = sparkDynamicDataFrame.replace('nan', None).replace('NaT', None)
-    sparkDynamicDataFrame = sparkDynamicDataFrame.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
-    sparkDynamicDataFrame = add_import_time_columns(sparkDynamicDataFrame)
-    dataframe = DynamicFrame.fromDF(sparkDynamicDataFrame, glueContext, "alloyDWeducation")
-    parquetData = glueContext.write_dynamic_frame.from_options(
-        frame=dataframe,
-        connection_type="s3",
-        connection_options={"path": bucket_target, "partitionKeys": PARTITION_KEYS},
-        format="parquet",
-    )
+        all_columns = list(pandasDataFrame)
+        pandasDataFrame[all_columns] = pandasDataFrame[all_columns].astype(str)
+        pandasDataFrame.columns = ["column" + str(i) if a.strip() == "" else a.strip() for i, a in enumerate(pandasDataFrame.columns)]
+        pandasDataFrame.columns = map(normalize_column_name, pandasDataFrame.columns)
+        sparkDynamicDataFrame = convert_pandas_df_to_spark_dynamic_df(sqlContext, pandasDataFrame)
+        sparkDynamicDataFrame = sparkDynamicDataFrame.replace('nan', None).replace('NaT', None)
+        sparkDynamicDataFrame = sparkDynamicDataFrame.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
+        sparkDynamicDataFrame = add_import_time_columns(sparkDynamicDataFrame)
+        dataframe = DynamicFrame.fromDF(sparkDynamicDataFrame, glueContext, f"alloy_{resource}")
+        parquetData = glueContext.write_dynamic_frame.from_options(
+            frame=dataframe,
+            connection_type="s3",
+            connection_options={"path": bucket_target, "partitionKeys": PARTITION_KEYS},
+            format="parquet",
+            transformation_ctx=f"alloy_{resource}_sink"
+        )
 
-  job.commit()
+    job.commit()
