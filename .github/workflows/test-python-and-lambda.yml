@@ -18,3 +18,7 @@ jobs:
         run: |
           cd lambdas
           make test
+      - name: Test kafka connector deployment script
+        run: |
+          cd modules/kafka-event-streaming/scripts
+          make test
