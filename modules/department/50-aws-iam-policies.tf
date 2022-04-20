@@ -548,25 +548,27 @@ resource "aws_iam_policy" "crawler_can_access_jdbc_connection" {
 }
 
 data "aws_iam_policy_document" "notebook_access" {
+  count = var.notebook_instance == null ? 0 : 1
+
   statement {
     sid       = "CanListAllNotebooks"
-    effect    = var.notebook_instance == null ? "Deny" : "Allow"
+    effect    = "Allow"
     actions   = ["sagemaker:ListNotebookInstances"]
     resources = ["*"]
   }
 
   statement {
     sid     = "Can pass role to notebook"
-    effect  = var.notebook_instance == null ? "Deny" : "Allow"
+    effect  = "Allow"
     actions = ["iam:PassRole"]
     resources = [
-      try(module.sagemaker[0].notebook_role_arn, "*")
+      module.sagemaker[0].notebook_role_arn,
     ]
   }
 
   statement {
     sid    = "CanStartAndOpenDepartmentalNotebook"
-    effect = var.notebook_instance == null ? "Deny" : "Allow"
+    effect = "Allow"
     actions = [
       "sagemaker:StartNotebookInstance",
       "sagemaker:CreatePresignedNotebookInstanceUrl",
@@ -574,7 +576,7 @@ data "aws_iam_policy_document" "notebook_access" {
       "sagemaker:CreatePresignedDomainUrl"
     ]
     resources = [
-      try(module.sagemaker[0].notebook_arn, "*")
+      module.sagemaker[0].notebook_arn,
     ]
   }
 }
