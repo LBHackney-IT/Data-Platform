@@ -546,3 +546,35 @@ resource "aws_iam_policy" "crawler_can_access_jdbc_connection" {
   name   = lower("${var.identifier_prefix}-${local.department_identifier}-crawler-can-access-jdbc-connection")
   policy = data.aws_iam_policy_document.crawler_can_access_jdbc_connection.json
 }
+
+data "aws_iam_policy_document" "notebook_access" {
+  statement {
+    sid       = "CanListAllNotebooks"
+    effect    = var.notebook_instance == null ? "Deny" : "Allow"
+    actions   = ["sagemaker:ListNotebookInstances"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid     = "Can pass role to notebook"
+    effect  = var.notebook_instance == null ? "Deny" : "Allow"
+    actions = ["iam:PassRole"]
+    resources = [
+      try(module.sagemaker[0].notebook_role_arn, "*")
+    ]
+  }
+
+  statement {
+    sid    = "CanStartAndOpenDepartmentalNotebook"
+    effect = var.notebook_instance == null ? "Deny" : "Allow"
+    actions = [
+      "sagemaker:StartNotebookInstance",
+      "sagemaker:CreatePresignedNotebookInstanceUrl",
+      "sagemaker:DescribeNotebookInstance",
+      "sagemaker:CreatePresignedDomainUrl"
+    ]
+    resources = [
+      try(module.sagemaker[0].notebook_arn, "*")
+    ]
+  }
+}
