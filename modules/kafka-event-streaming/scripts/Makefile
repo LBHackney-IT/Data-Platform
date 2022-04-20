@@ -1,4 +1,4 @@
-.PHONY: test test-watch history-server shell
+.PHONY: test test-watch
 
 .venv/bin/python:
 	python3 -m venv .venv
@@ -9,3 +9,6 @@
 
 test: .venv/.install.stamp
 	.venv/bin/python -m unittest test_install_kafka_connectors.py
+
+test-watch: .venv/.install.stamp
+	.venv/bin/pytest-watch .

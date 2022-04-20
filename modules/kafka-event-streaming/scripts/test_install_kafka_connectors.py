@@ -77,12 +77,12 @@ example_plugin = install_kafka_connectors.PluginDetails(
 
 class InstallKafkaConnectorTest(TestCase):
     def setUp(self) -> None:
-        self.s3 = install_kafka_connectors.get_s3_client()
-        self.s3Stub = Stubber(self.s3)
+        self.kafka = install_kafka_connectors.get_kafka_client()
+        self.kafkaStub = Stubber(self.kafka)
         return super().setUp()
 
     def test_get_plugin_if_exists(self):
-        self.s3Stub.add_response('list_custom_plugins',
+        self.kafkaStub.add_response('list_custom_plugins',
                                  {
                                      "customPlugins": [
                                          {
@@ -113,14 +113,13 @@ class InstallKafkaConnectorTest(TestCase):
         self.assertEqual(result.revision, example_plugin.revision)
 
     def get_plugin_if_exists(self, *args):
-        self.s3Stub.activate()
-        return install_kafka_connectors.get_plugin_if_exists(self.s3, *args)
+        self.kafkaStub.activate()
+        return install_kafka_connectors.get_plugin_if_exists(self.kafka, *args)
 
     def test_connector_config_from_input_config(self):
         result = install_kafka_connectors.connector_config_from_input_config(configurationInput, example_plugin)
         self.assertEqual(result.name, "tenure-api")
         self.assertEqual(result.description, "Kafka connector to write tenure API changes to S3")
-        # self.assertEqual(result.configuration, "")
         self.assertEqual(result.cluster_config.bootstrap_servers,
                          "b-1.joates-event-streaming.j2065l.c4.kafka.eu-west-2.amazonaws.com:9094,b-2.joates-event-streaming.j2065l.c4.kafka.eu-west-2.amazonaws.com:9094,b-3.joates-event-streaming.j2065l.c4.kafka.eu-west-2.amazonaws.com:9094")
         self.assertEqual(result.cluster_config.vpc_security_groups, ["sg-00dbd0a9b77dc5aa6"])
@@ -140,7 +139,7 @@ class InstallKafkaConnectorTest(TestCase):
         self.assertEqual(result.worker_configuration, None)
 
     def setup_unsuccessful_get_connector(self):
-        self.s3Stub.add_response('list_connectors',
+        self.kafkaStub.add_response('list_connectors',
                                  {
                                      "connectors": []
                                  },
@@ -165,7 +164,7 @@ class InstallKafkaConnectorTest(TestCase):
         if capacity_auto_scaling is None:
             capacity_auto_scaling = configurationInput['default_s3_plugin_configuration']['value']['capacity'][
                 'auto_scaling']
-        self.s3Stub.add_response('list_connectors',
+        self.kafkaStub.add_response('list_connectors',
                                  {
                                      "connectors": [
                                          {
@@ -179,7 +178,7 @@ class InstallKafkaConnectorTest(TestCase):
                                      "maxResults": 100,
                                  })
 
-        self.s3Stub.add_response('describe_connector',
+        self.kafkaStub.add_response('describe_connector',
                                  {
                                      "connectorName": connector_name,
                                      "connectorArn": connector_arn,
@@ -207,8 +206,8 @@ class InstallKafkaConnectorTest(TestCase):
                          "arn:aws:kafkaconnect:eu-west-2:484466746276:connector/tenure-api/0d5b9cd7-6e4a-4195-8558-de9e0ff98e7f-4")
 
     def get_connector(self, *args):
-        self.s3Stub.activate()
-        return install_kafka_connectors.get_connector(self.s3, *args)
+        self.kafkaStub.activate()
+        return install_kafka_connectors.get_connector(self.kafka, *args)
 
     def test_check_connector_exists_with_config(self):
         config = install_kafka_connectors.connector_config_from_input_config(configurationInput, example_plugin)
@@ -259,12 +258,12 @@ class InstallKafkaConnectorTest(TestCase):
         self.assertEqual(result["version"], "4")
 
     def check_connector_exists_with_config(self, *args):
-        self.s3Stub.activate()
-        return install_kafka_connectors.check_connector_exists_with_config(self.s3, *args)
+        self.kafkaStub.activate()
+        return install_kafka_connectors.check_connector_exists_with_config(self.kafka, *args)
 
     def test_create_connector(self):
         config = install_kafka_connectors.connector_config_from_input_config(configurationInput, example_plugin)
-        self.s3Stub.add_response('create_connector',
+        self.kafkaStub.add_response('create_connector',
                                  {
                                      "connectorArn": "arn:aws:kafkaconnect:eu-west-2:484466746276:connector/tenure-api/dcec484e-8cf2-4118-9432-df85ebe0e165-4",
                                      "connectorName": "tenure-api",
@@ -291,8 +290,8 @@ class InstallKafkaConnectorTest(TestCase):
         self.assertEqual(result.state, "CREATING")
 
     def create_connector(self, *args):
-        self.s3Stub.activate()
-        return install_kafka_connectors.create_connector(self.s3, *args)
+        self.kafkaStub.activate()
+        return install_kafka_connectors.create_connector(self.kafka, *args)
 
     def test_get_capacity_request(self):
         config = install_kafka_connectors.connector_config_from_input_config(configurationInput, example_plugin)
@@ -314,7 +313,7 @@ class InstallKafkaConnectorTest(TestCase):
         config.capacity.auto_scaling['maxWorkerCount'] = 5
         connector_arn = "arn:aws:kafkaconnect:eu-west-2:484466746276:connector/tenure-api/6004d2e0-ff6d-4d0a-8c88-a94b86435167-4"
         connector_version = "C3JWKAKR8XB7XF"
-        self.s3Stub.add_response('update_connector',
+        self.kafkaStub.add_response('update_connector',
                                  {
                                      'connectorArn': 'arn:aws:kafkaconnect:eu-west-2:484466746276:connector/tenure-api/6004d2e0-ff6d-4d0a-8c88-a94b86435167-4',
                                      'connectorState': 'UPDATING'
@@ -335,13 +334,13 @@ class InstallKafkaConnectorTest(TestCase):
         self.assertEqual(result['connectorState'], 'UPDATING')
 
     def update_connector(self, *args):
-        self.s3Stub.activate()
-        return install_kafka_connectors.update_connector(self.s3, *args)
+        self.kafkaStub.activate()
+        return install_kafka_connectors.update_connector(self.kafka, *args)
 
     def test_delete_connector(self):
         connector_arn = "arn:aws:kafkaconnect:eu-west-2:484466746276:connector/tenure-api/6004d2e0-ff6d-4d0a-8c88-a94b86435167-4"
         connector_version = "C3DWYIK6Y9EEQB"
-        self.s3Stub.add_response('delete_connector',
+        self.kafkaStub.add_response('delete_connector',
                                  {
                                      'connectorArn': connector_arn,
                                      'connectorState': 'DELETING'
@@ -350,14 +349,14 @@ class InstallKafkaConnectorTest(TestCase):
                                      "connectorArn": connector_arn,
                                      "currentVersion": connector_version
                                  })
-        self.s3Stub.add_response('describe_connector',
+        self.kafkaStub.add_response('describe_connector',
                                  {
                                      "connectorState": "DELETING",
                                  },
                                  {
                                      "connectorArn": connector_arn,
                                  })
-        self.s3Stub.add_response('describe_connector',
+        self.kafkaStub.add_response('describe_connector',
                                  {
                                      "connectorState": "DELETED",
                                  },
@@ -367,8 +366,8 @@ class InstallKafkaConnectorTest(TestCase):
         self.delete_connector(connector_arn, connector_version)
 
     def delete_connector(self, *args):
-        self.s3Stub.activate()
-        return install_kafka_connectors.delete_connector(self.s3, *args)
+        self.kafkaStub.activate()
+        return install_kafka_connectors.delete_connector(self.kafka, *args)
 
     # def test_end_to_end(self):
     #     install_kafka_connectors.entry_point(configurationInput)

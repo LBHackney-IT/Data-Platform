@@ -169,7 +169,6 @@ def check_connector_exists_with_config(client: BaseClient, connector_configurati
     if False == description:
         return {"action": "CREATE"}
 
-    # these checks don't work
     if description["connectorDescription"] != connector_configuration.description \
             or description["kafkaConnectVersion"] != connector_configuration.kafka_connect_version \
             or description["connectorConfiguration"] != connector_configuration.configuration:
@@ -265,7 +264,7 @@ def get_capacity_request(connector_configuration: ConnectorConfiguration):
 
 
 def entry_point(raw_config):
-    s3_client = get_s3_client()
+    s3_client = get_kafka_client()
     raw_plugin_config = raw_config["default_s3_plugin_configuration"]["value"]["connector_s3_plugin"]
     plugin_config = PluginConfig(
         bucket_arn=raw_plugin_config["bucket_arn"],
@@ -276,7 +275,7 @@ def entry_point(raw_config):
     plugin_details = get_plugin_if_exists(s3_client, plugin_config.name)
 
     if not plugin_details:
-        logger.info("Cannot Find Plugin")
+        logger.error("Cannot Find Plugin")
         return
 
     logger.info(f"custom_plugin_response {plugin_details}")
