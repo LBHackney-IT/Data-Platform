@@ -4,9 +4,6 @@ module "datahub_frontend_react" {
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  environment               = var.environment
-  identifier_prefix         = var.identifier_prefix
-  short_identifier_prefix   = var.short_identifier_prefix
   alb_id                    = aws_alb.datahub_frontend_react.id
   alb_target_group_arns     = [{ arn = aws_alb_target_group.datahub_frontend_react.arn, port = aws_alb_target_group.datahub_frontend_react.port }]
   alb_security_group_id     = aws_security_group.datahub_frontend_react.id
@@ -21,9 +18,6 @@ module "datahub_gms" {
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  environment               = var.environment
-  identifier_prefix         = var.identifier_prefix
-  short_identifier_prefix   = var.short_identifier_prefix
   alb_id                    = aws_alb.datahub_gms.id
   alb_target_group_arns     = [{ arn = aws_alb_target_group.datahub_gms.arn, port = aws_alb_target_group.datahub_gms.port }]
   alb_security_group_id     = aws_security_group.datahub_gms.id
@@ -38,9 +32,6 @@ module "datahub_mae_consumer" {
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  environment               = var.environment
-  identifier_prefix         = var.identifier_prefix
-  short_identifier_prefix   = var.short_identifier_prefix
   alb_id                    = null
   alb_target_group_arns     = []
   alb_security_group_id     = null
@@ -55,9 +46,6 @@ module "datahub_mce_consumer" {
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  environment               = var.environment
-  identifier_prefix         = var.identifier_prefix
-  short_identifier_prefix   = var.short_identifier_prefix
   alb_id                    = null
   alb_target_group_arns     = []
   alb_security_group_id     = null
@@ -72,9 +60,6 @@ module "mysql_setup" {
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  environment               = var.environment
-  identifier_prefix         = var.identifier_prefix
-  short_identifier_prefix   = var.short_identifier_prefix
   alb_id                    = null
   alb_target_group_arns     = []
   alb_security_group_id     = null
@@ -89,9 +74,6 @@ module "elasticsearch_setup" {
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  environment               = var.environment
-  identifier_prefix         = var.identifier_prefix
-  short_identifier_prefix   = var.short_identifier_prefix
   alb_id                    = null
   alb_target_group_arns     = []
   alb_security_group_id     = null
@@ -106,9 +88,6 @@ module "kafka_setup" {
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  environment               = var.environment
-  identifier_prefix         = var.identifier_prefix
-  short_identifier_prefix   = var.short_identifier_prefix
   alb_id                    = null
   alb_target_group_arns     = []
   alb_security_group_id     = null
@@ -123,9 +102,6 @@ module "datahub_actions" {
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  environment               = var.environment
-  identifier_prefix         = var.identifier_prefix
-  short_identifier_prefix   = var.short_identifier_prefix
   alb_id                    = null
   alb_target_group_arns     = []
   alb_security_group_id     = null

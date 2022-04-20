@@ -3,18 +3,8 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "identifier_prefix" {
-  description = "Project wide resource identifier prefix"
-  type        = string
-}
-
 variable "short_identifier_prefix" {
   description = "Project wide resource short identifier prefix"
-  type        = string
-}
-
-variable "environment" {
-  description = "Environment e.g. dev, stg, prod, mgmt."
   type        = string
 }
 

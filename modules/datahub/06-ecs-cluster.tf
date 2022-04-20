@@ -1,4 +1,4 @@
 resource "aws_ecs_cluster" "datahub" {
   tags = var.tags
-  name = "${var.identifier_prefix}-datahub"
+  name = "${var.short_identifier_prefix}-datahub"
 }
