@@ -6,3 +6,6 @@
 .venv/.install.stamp: .venv/bin/python requirements.txt
 	.venv/bin/python -m pip install -r requirements.txt
 	touch .venv/.install.stamp
+
+test: .venv/.install.stamp
+	.venv/bin/python -m unittest test_install_kafka_connectors.py
