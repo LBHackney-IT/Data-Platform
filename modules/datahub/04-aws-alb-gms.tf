@@ -22,16 +22,16 @@ resource "aws_security_group_rule" "datahub_gms_egress" {
 
 
 locals {
-  security_groups = [
-    module.datahub_frontend_react.security_group_id,
-    module.datahub_mae_consumer.security_group_id,
-    module.datahub_mce_consumer.security_group_id,
-    module.datahub_actions.security_group_id
-  ]
+  security_groups = {
+    id = module.datahub_frontend_react.security_group_id
+    id1 = module.datahub_mae_consumer.security_group_id
+    id2 = module.datahub_mce_consumer.security_group_id
+    id3 = module.datahub_actions.security_group_id
+  }
 }
 
 resource "aws_security_group_rule" "datahub_gms_ingress" {
-  for_each = toset([ for id in local.security_groups : id ])
+  for_each = local.security_groups
 
   type                     = "ingress"
   description              = "Allow inbound HTTP traffic from Datahub containers"
