@@ -6,6 +6,7 @@ import requests
 import time
 import zipfile
 import html
+import datetime
 import boto3
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
@@ -26,7 +27,7 @@ def download_file_to_df(file_id, api_key, filename):
 def get_last_import_date_time(glue_context, database, resource):
     if not table_exists_in_catalog(glue_context, resource, database):
         logger.info(f"Couldn't find table {resource} in database {database}.")
-        return None
+        return datetime.datetime(1970,1,1)
     logger.info(f"found table for {resource} in {database}")
     return glue_context.sql(f"SELECT max(import_datetime) as max_import_date_time FROM `{database}`.{resource}").take(1)[0].max_import_date_time
 
@@ -111,9 +112,9 @@ if __name__ == "__main__":
       task_status = get_task_status(response)
 
   else:
-    file_id = get_file_item_id(response)
     url = f'https://api.{region}.alloyapp.io/api/export/{task_id}/file?token={api_key}'
-    response = requests.get(url) 
+    response = requests.get(url)
+    file_id = get_file_item_id(response)
 
     pandasDataFrame = download_file_to_df(file_id, api_key, filename)
 
