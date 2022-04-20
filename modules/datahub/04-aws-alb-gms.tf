@@ -20,17 +20,13 @@ resource "aws_security_group_rule" "datahub_gms_egress" {
   security_group_id = aws_security_group.datahub_gms.id
 }
 
-locals {
-  security_groups = flatten([
+resource "aws_security_group_rule" "datahub_gms_ingress" {
+  for_each = flatten([
     module.datahub_frontend_react.security_group_ids,
     module.datahub_mae_consumer.security_group_ids,
     module.datahub_mce_consumer.security_group_ids,
     module.datahub_actions.security_group_ids
   ])
-}
-
-resource "aws_security_group_rule" "datahub_gms_ingress" {
-  for_each = toset(local.security_groups)
 
   type                     = "ingress"
   description              = "Allow inbound HTTP traffic from Datahub containers"
