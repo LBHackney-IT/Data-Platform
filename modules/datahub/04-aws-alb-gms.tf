@@ -31,7 +31,7 @@ locals {
 }
 
 resource "aws_security_group_rule" "datahub_gms_ingress" {
-  for_each = toset(local.security_groups)
+  for_each = toset([ for id in local.security_groups : id ])
 
   type                     = "ingress"
   description              = "Allow inbound HTTP traffic from Datahub containers"
