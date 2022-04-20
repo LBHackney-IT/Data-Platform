@@ -92,7 +92,7 @@ class ConnectorConfiguration:
 
 
 def get_s3_client() -> BaseClient:
-    return boto3.client("kafkaconnect")
+    return boto3.client("kafkaconnect", region_name='eu-west-2')
 
 
 # TODO: Add pagination encase there are more than 100 connectors
