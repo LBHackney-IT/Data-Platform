@@ -23,10 +23,10 @@ resource "aws_security_group_rule" "datahub_gms_egress" {
 
 locals {
   security_groups = {
-    id = module.datahub_frontend_react.security_group_id
-    id1 = module.datahub_mae_consumer.security_group_id
-    id2 = module.datahub_mce_consumer.security_group_id
-    id3 = module.datahub_actions.security_group_id
+    frontend_react_security_group_id = module.datahub_frontend_react.security_group_id
+    mae_consumer_security_group_id = module.datahub_mae_consumer.security_group_id
+    mce_consumer_security_group_id = module.datahub_mce_consumer.security_group_id
+    actions_security_group_id = module.datahub_actions.security_group_id
   }
 }
 
