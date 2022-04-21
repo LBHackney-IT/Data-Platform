@@ -276,6 +276,34 @@ resource "aws_iam_policy" "s3_access" {
   policy = data.aws_iam_policy_document.s3_department_access.json
 }
 
+// Prod departmental S3 access policy to write to athena storage
+data "aws_iam_policy_document" "athena_can_write_to_s3" {
+  statement {
+    sid    = "KmsKeyAthenaStorageAccess"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:GenerateDataKey",
+    ]
+    resources = [
+      var.athena_storage_bucket.kms_key_arn,
+    ]
+  }
+
+  statement {
+    sid = "AthenaStorageS3Write"
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+    ]
+    resources = [
+      var.athena_storage_bucket.bucket_arn,
+      "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*"
+    ]
+  }
+}
+
 // Departmental Glue access policy
 data "aws_iam_policy_document" "glue_access" {
   statement {
