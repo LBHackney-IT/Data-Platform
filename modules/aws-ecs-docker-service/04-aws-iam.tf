@@ -45,7 +45,7 @@ data "aws_iam_policy_document" "cloudwatch_assume_role" {
 }
 
 resource "aws_iam_role_policy" "ecs_events_run_task" {
-  name   = "${var.short_identifier_prefix}-ecs-events-run-task"
+  name   = "${var.short_identifier_prefix}ecs-events-run-task"
   role   = aws_iam_role.cloudwatch_run_ecs_events.id
   policy = data.aws_iam_policy_document.event_run_policy.json
 }
