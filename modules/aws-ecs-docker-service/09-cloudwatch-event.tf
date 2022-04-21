@@ -22,7 +22,7 @@ resource "aws_cloudwatch_event_rule" "ecs_task" {
   count               = var.container_properties.standalone_onetime_task ? 1 : 0
   name                = "${var.short_identifier_prefix}${var.container_properties.container_name}-event"
   description         = "Runs ${var.short_identifier_prefix}${var.container_properties.container_name} Task"
-  schedule_expression = "cron(${upper(formatdate("m h D M ? YYYY", timeadd(timestamp(), "2m")))})"
+  schedule_expression = "cron(${upper(formatdate("m h D M ? YYYY", timeadd(timestamp(), "5m")))})"
   tags                = var.tags
 
   lifecycle {
