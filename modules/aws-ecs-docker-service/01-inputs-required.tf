@@ -13,6 +13,11 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "vpc_subnet_ids" {
+  description = "A list of VPC Subnet IDs the server could be deployed in"
+  type        = list(string)
+}
+
 variable "ecs_cluster_arn" {
   type        = string
   description = "The ECS cluster ARN in which to run the task"

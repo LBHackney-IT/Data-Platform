@@ -1,9 +1,10 @@
 module "datahub_frontend_react" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  short_identifier_prefix            = var.short_identifier_prefix
+  short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
+  vpc_subnet_ids            = var.vpc_subnet_ids
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.datahub_frontend_react
   load_balancer_properties = {
@@ -15,9 +16,10 @@ module "datahub_frontend_react" {
 module "datahub_gms" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  short_identifier_prefix            = var.short_identifier_prefix
+  short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
+  vpc_subnet_ids            = var.vpc_subnet_ids
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.datahub_gms
   load_balancer_properties = {
@@ -29,9 +31,10 @@ module "datahub_gms" {
 module "datahub_mae_consumer" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  short_identifier_prefix            = var.short_identifier_prefix
+  short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
+  vpc_subnet_ids            = var.vpc_subnet_ids
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.datahub_mae_consumer
   load_balancer_properties = {
@@ -43,53 +46,12 @@ module "datahub_mae_consumer" {
 module "datahub_mce_consumer" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  short_identifier_prefix            = var.short_identifier_prefix
+  short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
+  vpc_subnet_ids            = var.vpc_subnet_ids
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.datahub_mce_consumer
-  load_balancer_properties = {
-    target_group_properties = []
-    security_group_id       = null
-  }
-}
-
-module "mysql_setup" {
-  source                    = "../aws-ecs-docker-service"
-  tags                      = var.tags
-  short_identifier_prefix            = var.short_identifier_prefix
-  ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  vpc_id                    = var.vpc_id
-  cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
-  container_properties      = local.mysql_setup
-  load_balancer_properties = {
-    target_group_properties = []
-    security_group_id       = null
-  }
-}
-
-module "elasticsearch_setup" {
-  source                    = "../aws-ecs-docker-service"
-  tags                      = var.tags
-  short_identifier_prefix            = var.short_identifier_prefix
-  ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  vpc_id                    = var.vpc_id
-  cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
-  container_properties      = local.elasticsearch_setup
-  load_balancer_properties = {
-    target_group_properties = []
-    security_group_id       = null
-  }
-}
-
-module "kafka_setup" {
-  source                    = "../aws-ecs-docker-service"
-  tags                      = var.tags
-  short_identifier_prefix            = var.short_identifier_prefix
-  ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  vpc_id                    = var.vpc_id
-  cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
-  container_properties      = local.kafka_setup
   load_balancer_properties = {
     target_group_properties = []
     security_group_id       = null
@@ -99,13 +61,68 @@ module "kafka_setup" {
 module "datahub_actions" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  short_identifier_prefix            = var.short_identifier_prefix
+  short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
+  vpc_subnet_ids            = var.vpc_subnet_ids
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.datahub_actions
   load_balancer_properties = {
     target_group_properties = []
     security_group_id       = null
   }
+}
+
+module "mysql_setup" {
+  source                    = "../aws-ecs-docker-service"
+  tags                      = var.tags
+  short_identifier_prefix   = var.short_identifier_prefix
+  ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
+  vpc_id                    = var.vpc_id
+  vpc_subnet_ids            = var.vpc_subnet_ids
+  cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
+  container_properties      = local.mysql_setup
+  load_balancer_properties = {
+    target_group_properties = []
+    security_group_id       = null
+  }
+  depends_on = [
+    aws_db_instance.datahub
+  ]
+}
+
+module "elasticsearch_setup" {
+  source                    = "../aws-ecs-docker-service"
+  tags                      = var.tags
+  short_identifier_prefix   = var.short_identifier_prefix
+  ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
+  vpc_id                    = var.vpc_id
+  vpc_subnet_ids            = var.vpc_subnet_ids
+  cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
+  container_properties      = local.elasticsearch_setup
+  load_balancer_properties = {
+    target_group_properties = []
+    security_group_id       = null
+  }
+  depends_on = [
+    aws_elasticsearch_domain.es
+  ]
+}
+
+module "kafka_setup" {
+  source                    = "../aws-ecs-docker-service"
+  tags                      = var.tags
+  short_identifier_prefix   = var.short_identifier_prefix
+  ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
+  vpc_id                    = var.vpc_id
+  vpc_subnet_ids            = var.vpc_subnet_ids
+  cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
+  container_properties      = local.kafka_setup
+  load_balancer_properties = {
+    target_group_properties = []
+    security_group_id       = null
+  }
+  depends_on = [
+    data.aws_msk_cluster.kafka_cluster
+  ]
 }

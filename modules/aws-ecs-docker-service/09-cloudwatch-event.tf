@@ -13,7 +13,7 @@ resource "aws_cloudwatch_event_target" "cloudwatch_event" {
     platform_version    = "1.4.0"
 
     network_configuration {
-      subnets = data.aws_subnet.subnets.*.id
+      subnets = var.vpc_subnet_ids
     }
   }
 }

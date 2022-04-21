@@ -51,7 +51,7 @@ resource "aws_alb" "datahub_frontend_react" {
   internal           = true
   load_balancer_type = "application"
   security_groups    = [aws_security_group.datahub_frontend_react.id]
-  subnets            = data.aws_subnet.subnets.*.id
+  subnets            = var.vpc_subnet_ids
 }
 
 resource "aws_alb_listener" "datahub_frontend_react" {

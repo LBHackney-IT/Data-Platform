@@ -13,6 +13,11 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "vpc_subnet_ids" {
+  description = "A list of VPC Subnet IDs the server could be deployed in"
+  type        = list(string)
+}
+
 variable "kafka_properties" {
   description = "Properties of the kafka data source DataHub will connect to"
   type = object({

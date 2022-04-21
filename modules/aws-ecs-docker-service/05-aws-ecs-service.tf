@@ -9,7 +9,7 @@ resource "aws_ecs_service" "ecs_service" {
 
   network_configuration {
     security_groups = [aws_security_group.ecs_tasks[0].id]
-    subnets         = data.aws_subnet.subnets.*.id
+    subnets         = var.vpc_subnet_ids
   }
 
   dynamic "load_balancer" {
@@ -51,13 +51,4 @@ resource "aws_security_group" "ecs_tasks" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
-}
-
-data "aws_subnet_ids" "subnet_ids" {
-  vpc_id = var.vpc_id
-}
-
-data "aws_subnet" "subnets" {
-  count = length(data.aws_subnet_ids.subnet_ids.ids)
-  id    = tolist(data.aws_subnet_ids.subnet_ids.ids)[count.index]
 }

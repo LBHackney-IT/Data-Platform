@@ -14,7 +14,7 @@ resource "aws_db_instance" "datahub" {
 resource "aws_db_subnet_group" "datahub" {
   tags       = var.tags
   name       = "${var.short_identifier_prefix}datahub"
-  subnet_ids = data.aws_subnet_ids.subnet_ids.ids
+  subnet_ids = var.vpc_subnet_ids
 }
 
 resource "aws_security_group" "datahub" {
