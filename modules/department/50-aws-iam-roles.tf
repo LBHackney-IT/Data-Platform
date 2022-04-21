@@ -17,7 +17,8 @@ data "aws_iam_policy_document" "sso_production_user_policy" {
   override_policy_documents = [
     data.aws_iam_policy_document.read_only_s3_department_access.json,
     data.aws_iam_policy_document.read_only_glue_access.json,
-    data.aws_iam_policy_document.secrets_manager_read_only.json
+    data.aws_iam_policy_document.secrets_manager_read_only.json,
+    data.aws_iam_policy_document.athena_can_write_to_s3.json
   ]
 }
 
