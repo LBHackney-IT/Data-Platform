@@ -13,7 +13,7 @@ resource "aws_ecs_service" "ecs_service" {
   }
 
   dynamic "load_balancer" {
-    for_each = var.alb_target_group_arns
+    for_each = var.load_balancer_properties.target_group_properties
     content {
       target_group_arn = load_balancer.value.arn
       container_name   = var.container_properties.container_name
@@ -34,12 +34,12 @@ resource "aws_security_group" "ecs_tasks" {
   revoke_rules_on_delete = true
 
   dynamic "ingress" {
-    for_each = var.container_properties.load_balancer_required ? [var.alb_security_group_id] : []
+    for_each = var.container_properties.load_balancer_required ? [var.load_balancer_properties.security_group_id] : []
     content {
       protocol        = "tcp"
       from_port       = var.container_properties.port
       to_port         = var.container_properties.port
-      security_groups = [var.alb_security_group_id]
+      security_groups = [var.load_balancer_properties.security_group_id]
     }
   }
 

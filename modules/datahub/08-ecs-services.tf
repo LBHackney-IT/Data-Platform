@@ -1,111 +1,111 @@
 module "datahub_frontend_react" {
-  source = "../aws-ecs-docker-service"
-
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  alb_id                    = aws_alb.datahub_frontend_react.id
-  alb_target_group_arns     = [{ arn = aws_alb_target_group.datahub_frontend_react.arn, port = aws_alb_target_group.datahub_frontend_react.port }]
-  alb_security_group_id     = aws_security_group.datahub_frontend_react.id
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.datahub_frontend_react
+  load_balancer_properties = {
+    target_group_properties = [{ arn = aws_alb_target_group.datahub_frontend_react.arn, port = aws_alb_target_group.datahub_frontend_react.port }]
+    security_group_id       = aws_security_group.datahub_frontend_react.id
+  }
 }
 
 module "datahub_gms" {
-  source = "../aws-ecs-docker-service"
-
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  alb_id                    = aws_alb.datahub_gms.id
-  alb_target_group_arns     = [{ arn = aws_alb_target_group.datahub_gms.arn, port = aws_alb_target_group.datahub_gms.port }]
-  alb_security_group_id     = aws_security_group.datahub_gms.id
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.datahub_gms
+  load_balancer_properties = {
+    target_group_properties = [{ arn = aws_alb_target_group.datahub_gms.arn, port = aws_alb_target_group.datahub_gms.port }]
+    security_group_id       = aws_security_group.datahub_gms.id
+  }
 }
 
 module "datahub_mae_consumer" {
-  source = "../aws-ecs-docker-service"
-
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  alb_id                    = null
-  alb_target_group_arns     = []
-  alb_security_group_id     = null
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.datahub_mae_consumer
+  load_balancer_properties = {
+    target_group_properties = []
+    security_group_id       = null
+  }
 }
 
 module "datahub_mce_consumer" {
-  source = "../aws-ecs-docker-service"
-
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  alb_id                    = null
-  alb_target_group_arns     = []
-  alb_security_group_id     = null
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.datahub_mce_consumer
+  load_balancer_properties = {
+    target_group_properties = []
+    security_group_id       = null
+  }
 }
 
 module "mysql_setup" {
-  source = "../aws-ecs-docker-service"
-
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  alb_id                    = null
-  alb_target_group_arns     = []
-  alb_security_group_id     = null
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.mysql_setup
+  load_balancer_properties = {
+    target_group_properties = []
+    security_group_id       = null
+  }
 }
 
 module "elasticsearch_setup" {
-  source = "../aws-ecs-docker-service"
-
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  alb_id                    = null
-  alb_target_group_arns     = []
-  alb_security_group_id     = null
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.elasticsearch_setup
+  load_balancer_properties = {
+    target_group_properties = []
+    security_group_id       = null
+  }
 }
 
 module "kafka_setup" {
-  source = "../aws-ecs-docker-service"
-
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  alb_id                    = null
-  alb_target_group_arns     = []
-  alb_security_group_id     = null
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.kafka_setup
+  load_balancer_properties = {
+    target_group_properties = []
+    security_group_id       = null
+  }
 }
 
 module "datahub_actions" {
-  source = "../aws-ecs-docker-service"
-
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   operation_name            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  alb_id                    = null
-  alb_target_group_arns     = []
-  alb_security_group_id     = null
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
   container_properties      = local.datahub_actions
+  load_balancer_properties = {
+    target_group_properties = []
+    security_group_id       = null
+  }
 }

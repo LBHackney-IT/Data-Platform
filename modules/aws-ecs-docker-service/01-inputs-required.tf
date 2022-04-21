@@ -18,24 +18,6 @@ variable "ecs_cluster_arn" {
   description = "The ECS cluster ARN in which to run the task"
 }
 
-variable "alb_id" {
-  description = "ID of ALB in use"
-  type        = string
-}
-
-variable "alb_target_group_arns" {
-  description = "ARN of the ALB target group"
-  type = list(object({
-    arn  = string
-    port = string
-  }))
-}
-
-variable "alb_security_group_id" {
-  description = "Id of the ALB security group"
-  type        = string
-}
-
 variable "cloudwatch_log_group_name" {
   description = "Name of the log group to export docker logs to"
   type        = string
@@ -66,5 +48,16 @@ variable "container_properties" {
       readOnly      = bool
     }))
     volumes = list(string)
+  })
+}
+
+variable "load_balancer_properties" {
+  description = "Properties of the load balancer to be attached to the ECS container"
+  type = object({
+    target_group_properties = list(object({
+      arn  = string
+      port = string
+    }))
+    security_group_id = string
   })
 }
