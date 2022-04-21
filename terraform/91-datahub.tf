@@ -1,4 +1,6 @@
 module "datahub" {
+  count = local.is_live_environment ? 1 : 0
+
   source                  = "../modules/datahub"
   tags                    = module.tags.values
   short_identifier_prefix = local.short_identifier_prefix
