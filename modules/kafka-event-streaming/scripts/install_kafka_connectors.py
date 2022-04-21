@@ -66,16 +66,20 @@ class ClusterConfig:
 
 @dataclass
 class ConnectorCapacity:
-    auto_scaling: Dict[str, Union[int, str]]
-    provisioned_capacity: Dict[str, Union[int, str]]
+    auto_scaling: Dict[str, Union[int, str]]=None
+    provisioned_capacity: Dict[str, Union[int, str]]=None
 
 
 @dataclass
-class ConnectorResponse:
-    name: str
+class CreateConnectorResponse:
     arn: str
     state: str
+    name: str
 
+@dataclass
+class UpdateConnectorResponse:
+    arn: str
+    state: str
 
 @dataclass
 class ConnectorConfiguration:
@@ -90,8 +94,13 @@ class ConnectorConfiguration:
     capacity: ConnectorCapacity
     worker_configuration: WorkerConfiguration or None
 
+@dataclass
+class Response:
+    success: bool
+    failure_reason: str=None
+    connector_response: CreateConnectorResponse or UpdateConnectorResponse=None
 
-def get_s3_client() -> BaseClient:
+def get_kafka_client() -> BaseClient:
     return boto3.client("kafkaconnect", region_name='eu-west-2')
 
 
@@ -130,10 +139,11 @@ def connector_config_from_input_config(input_config, plugin: PluginDetails) -> C
         auto_scaling=connector_capacity_tf.get("auto_scaling"),
         provisioned_capacity=connector_capacity_tf.get("provisioned_capacity")
     )
+    name = input_config["tenure_connector_name"]["value"]
 
     return ConnectorConfiguration(
-        name=input_config["tenure_connector_name"]["value"],
-        description="Kafka connector to write tenure API changes to S3",
+        name=name,
+        description=f"Kafka connector to write {name} changes to S3",
         configuration=default_s3_plugin_config["connector_configuration"],
         cluster_config=cluster_config,
         kafka_connect_version=default_s3_plugin_config["connect_version"],
@@ -152,7 +162,7 @@ def get_connector(client: BaseClient, connector_name: str):
     )
     connectors = response['connectors']
     if len(connectors) == 0:
-        print("Connector Not Found By Name")
+        print(f"Connector Not Found for name {connector_name}")
         return False
 
     connector_arn = connectors[0]['connectorArn']
@@ -167,9 +177,9 @@ def check_connector_exists_with_config(client: BaseClient, connector_configurati
     description = get_connector(client, connector_configuration.name)
 
     if False == description:
+        print("Connection Needs Creating")
         return {"action": "CREATE"}
 
-    # these checks don't work
     if description["connectorDescription"] != connector_configuration.description \
             or description["kafkaConnectVersion"] != connector_configuration.kafka_connect_version \
             or description["connectorConfiguration"] != connector_configuration.configuration:
@@ -179,12 +189,13 @@ def check_connector_exists_with_config(client: BaseClient, connector_configurati
         print("Needs Updating")
         return {"action": "UPDATE", "arn": description["connectorArn"], "version": description["currentVersion"]}
 
+    print("No action needed, connector config hasn't changed")
     return {"action": "NONE"}
 
 
 def create_connector(client: BaseClient, connector_configuration: ConnectorConfiguration):
     response = client.create_connector(
-        capacity=get_capacity_request(connector_configuration),
+        capacity=get_capacity_request(connector_configuration.capacity),
         connectorConfiguration=connector_configuration.configuration,
         connectorName=connector_configuration.name,
         connectorDescription=connector_configuration.description,
@@ -222,22 +233,22 @@ def create_connector(client: BaseClient, connector_configuration: ConnectorConfi
         ],
         serviceExecutionRoleArn=connector_configuration.service_execution_role_arn
     )
-    return ConnectorResponse(
+    return CreateConnectorResponse(
         name=response["connectorName"],
         arn=response["connectorArn"],
         state=response["connectorState"]
     )
 
 
-def update_connector(client: BaseClient, connector_arn: str, current_version: str,
-                     capacity_config: ConnectorConfiguration):
+def update_connector_capacity(client: BaseClient, connector_arn: str, current_version: str,
+                     capacity_config: ConnectorCapacity):
     response = client.update_connector(
         capacity=get_capacity_request(capacity_config),
         connectorArn=connector_arn,
         currentVersion=current_version
     )
     logger.info(f"update_connector response {response}")
-    return response
+    return UpdateConnectorResponse(arn=response["connectorArn"], state=response["connectorState"])
 
 
 def delete_connector(client: BaseClient, connector_arn: str, current_version: str):
@@ -255,17 +266,16 @@ def delete_connector(client: BaseClient, connector_arn: str, current_version: st
         state = state_details["connectorState"]
 
 
-def get_capacity_request(connector_configuration: ConnectorConfiguration):
-    capacity = {}
-    if connector_configuration.capacity.auto_scaling:
-        capacity['autoScaling'] = connector_configuration.capacity.auto_scaling
-    if connector_configuration.capacity.provisioned_capacity:
-        capacity['provisionedCapacity'] = connector_configuration.capacity.provisioned_capacity
-    return capacity
+def get_capacity_request(capacity_configuration: ConnectorCapacity=None):
+    capacity_request = {}
+    if capacity_configuration.auto_scaling:
+        capacity_request['autoScaling'] = capacity_configuration.auto_scaling
+    if capacity_configuration.provisioned_capacity:
+        capacity_request['provisionedCapacity'] = capacity_configuration.provisioned_capacity
+    return capacity_request
 
 
-def entry_point(raw_config):
-    s3_client = get_s3_client()
+def entry_point(raw_config, kafka_client):
     raw_plugin_config = raw_config["default_s3_plugin_configuration"]["value"]["connector_s3_plugin"]
     plugin_config = PluginConfig(
         bucket_arn=raw_plugin_config["bucket_arn"],
@@ -273,34 +283,37 @@ def entry_point(raw_config):
         name=raw_plugin_config["name"]
     )
 
-    plugin_details = get_plugin_if_exists(s3_client, plugin_config.name)
-
+    plugin_details = get_plugin_if_exists(kafka_client, plugin_config.name)
+    print(plugin_details)
     if not plugin_details:
-        logger.info("Cannot Find Plugin")
-        return
+        logger.error(f"Cannot Find Plugin with name {plugin_config.name}")
+        return Response(success=False,failure_reason=f"Cannot find plugin with name {plugin_config.name}")
 
     logger.info(f"custom_plugin_response {plugin_details}")
 
     connector_config = connector_config_from_input_config(raw_config, plugin_details)
-    connector_action = check_connector_exists_with_config(s3_client, connector_config)
+    connector_action = check_connector_exists_with_config(kafka_client, connector_config)
 
     if connector_action["action"] == "CREATE":
-        connector_response = create_connector(s3_client, connector_config)
+        connector_response = create_connector(kafka_client, connector_config)
         logger.info(f"connector_response {connector_response}")
+        return Response(success=True, connector_response=connector_response)
     elif connector_action["action"] == "UPDATE":
-        connector_response = update_connector(s3_client, connector_action["arn"], connector_action["version"], connector_config)
+        connector_response = update_connector_capacity(kafka_client, connector_action["arn"], connector_action["version"], connector_config.capacity)
         logger.info(f"connector_response {connector_response}")
+        return Response(success=True, connector_response=connector_response)
     elif connector_action["action"] == "RECREATE":
-        delete_connector(s3_client, connector_action["arn"], connector_action["version"])
-        connector_response = create_connector(s3_client, connector_config)
+        delete_connector(kafka_client, connector_action["arn"], connector_action["version"])
+        connector_response = create_connector(kafka_client, connector_config)
         logger.info(f"connector_response {connector_response}")
+        return Response(success=True, connector_response=connector_response)
     else:
         logger.info(f"connector {connector_config.name} already exists")
-
 
 if __name__ == "__main__":
     parser = generate_arg_parser()
     args = vars(parser.parse_args())
     config = json.loads(args["input"])
     logger.debug(f"given config {config}")
-    entry_point(config)
+    kafka_client = get_kafka_client()
+    entry_point(config, kafka_client)
