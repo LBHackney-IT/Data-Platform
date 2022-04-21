@@ -76,6 +76,15 @@ variable "glue_temp_storage_bucket" {
   })
 }
 
+variable "spark_ui_output_storage_bucket" {
+  description = "Spark UI Output Storage"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+}
+
 variable "short_identifier_prefix" {
   description = "Project wide short resource identifier prefix"
   type        = string

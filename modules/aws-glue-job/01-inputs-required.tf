@@ -1,20 +1,3 @@
-variable "department" {
-  description = "The department with all its properties"
-  type = object({
-    identifier            = string
-    glue_role_arn         = string
-    identifier_snake_case = string
-    tags                  = map(string)
-    environment           = string
-    glue_temp_bucket = object({
-      bucket_id = string
-    })
-    glue_scripts_bucket = object({
-      bucket_id = string
-    })
-  })
-}
-
 variable "job_name" {
   description = "Name of the AWS glue job"
   type        = string
@@ -32,5 +15,10 @@ variable "helper_module_key" {
 
 variable "pydeequ_zip_key" {
   description = "Pydeequ module to be used in Glue scripts"
+  type        = string
+}
+
+variable "spark_ui_output_storage_id" {
+  description = "Id of S3 bucket containing Spark UI output logs"
   type        = string
 }

@@ -1,0 +1,24 @@
+name: Test and Validate
+
+on:
+  workflow_call:
+
+jobs:
+  tests:
+    name: Test Python Jobs & Lambda Functions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Test Python Jobs
+        run: |
+          cd scripts
+          make test
+      - name: Test Lambda Functions
+        run: |
+          cd lambdas
+          make test
+      - name: Test kafka connector deployment script
+        run: |
+          cd modules/kafka-event-streaming/scripts
+          make test

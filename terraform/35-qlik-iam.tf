@@ -17,8 +17,11 @@ resource "aws_secretsmanager_secret" "qlik_access_key" {
 }
 
 resource "aws_secretsmanager_secret_version" "qlik_user_access_key_version" {
-  secret_id     = aws_secretsmanager_secret.qlik_access_key.id
-  secret_string = aws_iam_access_key.qlik_access_key.secret
+  secret_id = aws_secretsmanager_secret.qlik_access_key.id
+  secret_string = jsonencode({
+    "Access Key ID"     = aws_iam_access_key.qlik_access_key.id
+    "Secret Access key" = aws_iam_access_key.qlik_access_key.secret
+  })
 }
 
 resource "aws_iam_user_policy" "qlik_user_policy" {

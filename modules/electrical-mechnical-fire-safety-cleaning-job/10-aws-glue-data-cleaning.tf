@@ -4,11 +4,11 @@ locals {
 }
 
 resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_data_cleaning_script" {
-  bucket = var.glue_scripts_bucket_id
-  key    = "scripts/${local.object_key}"
-  acl    = "private"
-  source = "../scripts/jobs/${local.object_key}"
-  etag   = filemd5("../scripts/jobs/${local.object_key}")
+  bucket      = var.glue_scripts_bucket_id
+  key         = "scripts/${local.object_key}"
+  acl         = "private"
+  source      = "../scripts/jobs/${local.object_key}"
+  source_hash = filemd5("../scripts/jobs/${local.object_key}")
 }
 
 module "housing_repairs_elec_mech_fire_cleaning" {
@@ -25,9 +25,10 @@ module "housing_repairs_elec_mech_fire_cleaning" {
     "--deequ_metrics_location"           = "s3://${var.refined_zone_bucket_id}/quality-metrics/department=${var.department.identifier}/dataset=${var.dataset_name}-cleaned/deequ-metrics.json"
     "--extra-jars"                       = var.deequ_jar_file_path
   }
-  workflow_name        = var.worksheet_resource.workflow_name
-  script_s3_object_key = aws_s3_bucket_object.housing_repairs_elec_mech_fire_data_cleaning_script.key
-  triggered_by_crawler = var.worksheet_resource.crawler_name
+  workflow_name              = var.worksheet_resource.workflow_name
+  script_s3_object_key       = aws_s3_bucket_object.housing_repairs_elec_mech_fire_data_cleaning_script.key
+  triggered_by_crawler       = var.worksheet_resource.crawler_name
+  spark_ui_output_storage_id = var.spark_ui_output_storage_id
   crawler_details = {
     database_name      = local.refined_zone_catalog_database_name
     s3_target_location = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/cleaned/"

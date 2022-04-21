@@ -60,8 +60,8 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
 resource "aws_iam_policy" "g_drive_to_s3_copier_lambda" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-g-drive-to-s3-copier-lambda")
-  policy = data.aws_iam_policy_document.g_drive_to_s3_copier_lambda.json
+  name_prefix = lower("${var.identifier_prefix}-g-drive-to-s3-copier-lambda")
+  policy      = data.aws_iam_policy_document.g_drive_to_s3_copier_lambda.json
 }
 
 resource "aws_iam_role_policy_attachment" "g_drive_to_s3_copier_lambda" {
@@ -77,11 +77,11 @@ data "archive_file" "g_drive_to_s3_copier_lambda" {
 }
 
 resource "aws_s3_bucket_object" "g_drive_to_s3_copier_lambda" {
-  bucket = var.lambda_artefact_storage_bucket
-  key    = "g_drive_to_s3.zip"
-  source = data.archive_file.g_drive_to_s3_copier_lambda.output_path
-  acl    = "private"
-  etag   = data.archive_file.g_drive_to_s3_copier_lambda.output_md5
+  bucket      = var.lambda_artefact_storage_bucket
+  key         = "g_drive_to_s3.zip"
+  source      = data.archive_file.g_drive_to_s3_copier_lambda.output_path
+  acl         = "private"
+  source_hash = data.archive_file.g_drive_to_s3_copier_lambda.output_md5
   depends_on = [
     data.archive_file.g_drive_to_s3_copier_lambda
   ]

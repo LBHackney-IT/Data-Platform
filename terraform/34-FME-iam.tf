@@ -21,16 +21,26 @@ resource "aws_secretsmanager_secret_version" "fme_user_access_key_version" {
   secret_string = aws_iam_access_key.fme_access_key.secret
 }
 
-resource "aws_iam_user_policy" "fme_user_s3_access_policy" {
-  name   = "${local.short_identifier_prefix}fme-user-policy"
-  user   = aws_iam_user.fme_user.name
+resource "aws_iam_policy" "fme_user_s3_access_policy" {
+  name   = "${local.short_identifier_prefix}fme-user-s3-access-policy"
   policy = data.aws_iam_policy_document.fme_access_to_s3.json
+  tags   = module.tags.values
 }
 
-resource "aws_iam_user_policy" "fme_user_glue_athena_access_policy" {
-  name   = "${local.short_identifier_prefix}fme-user-policy"
-  user   = aws_iam_user.fme_user.name
+resource "aws_iam_user_policy_attachment" "fme_user_s3_access_policy" {
+  user       = aws_iam_user.fme_user.name
+  policy_arn = aws_iam_policy.fme_user_s3_access_policy.arn
+}
+
+resource "aws_iam_policy" "fme_user_glue_athena_access_policy" {
+  name   = "${local.short_identifier_prefix}fme-user-glue-athena-access-policy"
   policy = data.aws_iam_policy_document.fme_access_to_athena_and_glue.json
+  tags   = module.tags.values
+}
+
+resource "aws_iam_user_policy_attachment" "fme_user_glue_athena_access_policy" {
+  user       = aws_iam_user.fme_user.name
+  policy_arn = aws_iam_policy.fme_user_glue_athena_access_policy.arn
 }
 
 data "aws_iam_policy_document" "fme_access_to_athena_and_glue" {

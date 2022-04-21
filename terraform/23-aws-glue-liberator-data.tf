@@ -72,7 +72,7 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_liberator_landing_to_raw.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_tables_landing_to_raw.key}"
   }
 
   glue_version = "2.0"
@@ -86,6 +86,8 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
     "--glue_database_name_target" = aws_glue_catalog_database.raw_zone_liberator.name
     "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog"   = "true"
+    "--enable-spark-ui"           = "true"
+    "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage.bucket_id}/parking/liberator"
   }
 }
 
@@ -98,7 +100,7 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw" {
   role_arn          = aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_liberator_landing_to_raw.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_tables_landing_to_raw.key}"
   }
 
   glue_version = "2.0"
@@ -112,6 +114,8 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw" {
     "--glue_database_name_target" = module.department_env_enforcement.raw_zone_catalog_database_name
     "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog"   = "true"
+    "--enable-spark-ui"           = "true"
+    "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage.bucket_id}/env-enforcement/liberator"
   }
 }
 

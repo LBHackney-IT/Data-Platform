@@ -1,9 +1,14 @@
 // User Role for staging account - This role is a combination of policies ready to be applied to SSO 
 data "aws_iam_policy_document" "sso_staging_user_policy" {
-  override_policy_documents = [
+  override_policy_documents = var.notebook_instance == null ? [
     data.aws_iam_policy_document.s3_department_access.json,
     data.aws_iam_policy_document.glue_access.json,
     data.aws_iam_policy_document.secrets_manager_read_only.json
+    ] : [
+    data.aws_iam_policy_document.s3_department_access.json,
+    data.aws_iam_policy_document.glue_access.json,
+    data.aws_iam_policy_document.secrets_manager_read_only.json,
+    data.aws_iam_policy_document.notebook_access[0].json
   ]
 }
 
@@ -58,4 +63,9 @@ resource "aws_iam_role_policy_attachment" "glue_agent_glue_can_write_to_cloudwat
 resource "aws_iam_role_policy_attachment" "glue_agent_glue_full_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.full_glue_access.arn
+}
+
+resource "aws_iam_role_policy_attachment" "crawler_can_access_jdbc_connection" {
+  role       = aws_iam_role.glue_agent.name
+  policy_arn = aws_iam_policy.crawler_can_access_jdbc_connection.arn
 }

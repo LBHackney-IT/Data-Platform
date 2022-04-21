@@ -27,7 +27,8 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       var.refined_zone_bucket.kms_key_arn,
       var.trusted_zone_bucket.kms_key_arn,
       var.athena_storage_bucket.kms_key_arn,
-      var.glue_scripts_bucket.kms_key_arn
+      var.glue_scripts_bucket.kms_key_arn,
+      var.spark_ui_output_storage_bucket.kms_key_arn
     ]
   }
 
@@ -68,6 +69,9 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
       "${var.trusted_zone_bucket.bucket_arn}/unrestricted/*",
+
+      var.spark_ui_output_storage_bucket.bucket_arn,
+      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 
@@ -168,7 +172,8 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.refined_zone_bucket.kms_key_arn,
       var.trusted_zone_bucket.kms_key_arn,
       var.athena_storage_bucket.kms_key_arn,
-      var.glue_scripts_bucket.kms_key_arn
+      var.glue_scripts_bucket.kms_key_arn,
+      var.spark_ui_output_storage_bucket.kms_key_arn
     ]
   }
 
@@ -208,6 +213,9 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.athena_storage_bucket.bucket_arn,
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
       var.glue_temp_storage_bucket.bucket_arn,
+
+      var.spark_ui_output_storage_bucket.bucket_arn,
+      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 
@@ -256,6 +264,7 @@ data "aws_iam_policy_document" "s3_department_access" {
     resources = [
       "${var.glue_scripts_bucket.bucket_arn}/custom/*",
       "${var.glue_temp_storage_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 }
@@ -382,6 +391,12 @@ data "aws_iam_policy_document" "secrets_manager_read_only" {
   }
 
   statement {
+    effect    = "Allow"
+    actions   = ["secretsmanager:ListSecrets"]
+    resources = ["*"]
+  }
+
+  statement {
     effect = "Allow"
     actions = [
       "kms:Decrypt",
@@ -484,4 +499,84 @@ resource "aws_iam_policy" "full_glue_access" {
 
   name   = lower("${var.identifier_prefix}-${local.department_identifier}-full-glue-access")
   policy = data.aws_iam_policy_document.full_glue_access.json
+}
+
+// Crawler can access JDBC Glue connection
+data "aws_iam_policy_document" "crawler_can_access_jdbc_connection" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeSubnets",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeVPCs",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:DescribeVpcEndpoints",
+      "ec2:DescribeRouteTables",
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeNetworkInterfaces"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateTags",
+      "ec2:DeleteTags",
+    ]
+    condition {
+      test     = "ForAllValues:StringEquals"
+      variable = "aws:TagKeys"
+      values   = ["aws-glue-service-resource"]
+    }
+    resources = [
+      "arn:aws:ec2:*:*:network-interface/*",
+      "arn:aws:ec2:*:*:security-group/*",
+      "arn:aws:ec2:*:*:instance/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "crawler_can_access_jdbc_connection" {
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-crawler-can-access-jdbc-connection")
+  policy = data.aws_iam_policy_document.crawler_can_access_jdbc_connection.json
+}
+
+data "aws_iam_policy_document" "notebook_access" {
+  count = var.notebook_instance == null ? 0 : 1
+
+  statement {
+    sid       = "CanListAllNotebooks"
+    effect    = "Allow"
+    actions   = ["sagemaker:ListNotebookInstances"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid     = "CanPassRoleToNotebook"
+    effect  = "Allow"
+    actions = ["iam:PassRole"]
+    resources = [
+      module.sagemaker[0].notebook_role_arn,
+    ]
+  }
+
+  statement {
+    sid    = "CanStartAndOpenDepartmentalNotebook"
+    effect = "Allow"
+    actions = [
+      "sagemaker:StartNotebookInstance",
+      "sagemaker:CreatePresignedNotebookInstanceUrl",
+      "sagemaker:DescribeNotebookInstance",
+      "sagemaker:CreatePresignedDomainUrl"
+    ]
+    resources = [
+      module.sagemaker[0].notebook_arn,
+    ]
+  }
 }

@@ -30,11 +30,6 @@ variable "aws_hackit_account_id" {
   type        = string
 }
 
-variable "aws_vpc_id" {
-  description = "The ID of the AWS VPC"
-  type        = string
-}
-
 variable "google_project_id" {
   description = "The ID of the google project used as the target for resource deployment"
   type        = string
@@ -42,6 +37,11 @@ variable "google_project_id" {
 
 variable "qlik_server_instance_type" {
   description = "The instance type to use for the Qlik server"
+  type        = string
+}
+
+variable "qlik_ssl_certificate_domain" {
+  description = "The domain name associated with an existing AWS Certificate Manager certificate"
   type        = string
 }
 
@@ -53,4 +53,9 @@ variable "redshift_public_ips" {
 variable "redshift_port" {
   description = "Port that the redshift cluster is running on"
   type        = number
+}
+
+variable "emails_to_notify_with_budget_alerts" {
+  description = "Array of emails or email groups who will be notified by the budget reporting"
+  type        = list(string)
 }

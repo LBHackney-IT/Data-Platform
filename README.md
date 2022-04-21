@@ -17,6 +17,18 @@ We use Architecture Decision Records (ADRs) to document architecture decisions t
 
 The Terraform will be deployed, using GitHub Actions, on push to main / when a Pull Request is merged into main
 
+#### /terraform
+
+The terraform directory contains the majority of the infrastructure and at the time of writing has one Github action to deploy to staging and one to deploy to production.
+
+#### /terraform-networking
+
+The terraform-networking directory contains the networking aspect of the data platform (see [`Networking`](#Networking)) and at the time of writing has one Github action to deploy to staging and one to deploy to production.
+
+#### /terraform-backend-setup
+
+The terraform-backend-setup directory is just for Dev’s bucket deployment, so it does not need a Github action. The terraform state for this area is maintained in the repo and we run it locally.
+
 ## Terraform Development
 
 ### Local deployment
@@ -104,7 +116,13 @@ $ make init
 Initialise your Workspace (note capitalisation)
 
 ```
-$ WORKSPACE={developer} make new
+$ WORKSPACE={developer} make workspace-new
+```
+
+Select your Workspace (note capitalisation)
+
+```
+$ WORKSPACE={developer} make workspace-select
 ```
 
 4. Set up Google credentials

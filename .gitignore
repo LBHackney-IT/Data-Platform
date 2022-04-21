@@ -17,3 +17,6 @@ google_service_account_creds*.json
 */.env
 notebook/aws-config/credentials
 .gitmessage
+**/.venv
+**/__pycache__
+/venv/

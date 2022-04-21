@@ -113,3 +113,8 @@ variable "department" {
     })
   })
 }
+
+variable "spark_ui_output_storage_id" {
+  description = "Id of S3 bucket containing Spark UI output logs"
+  type        = string
+}

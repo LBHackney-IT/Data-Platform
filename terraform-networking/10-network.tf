@@ -62,6 +62,15 @@ module "core_vpc" {
   tags = module.tags.values
 }
 
+resource "aws_ssm_parameter" "vpc_id" {
+  name  = "/${local.identifier_prefix}/vpc/vpc_id"
+  type  = "String"
+  value = module.core_vpc.vpc_id
+  tags = merge(module.tags.values, {
+    "Name" : "VPC ID"
+  })
+}
+
 resource "aws_security_group" "service_endpoint" {
   name                   = "${local.identifier_prefix}-service-endpoint"
   description            = "Group Description"
