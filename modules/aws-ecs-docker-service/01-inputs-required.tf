@@ -3,9 +3,9 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "operation_name" {
+variable "short_identifier_prefix" {
   type        = string
-  description = "A unique name for your task definition, ecs cluster and repository."
+  description = "Project wide resource short identifier prefix"
 }
 
 variable "vpc_id" {

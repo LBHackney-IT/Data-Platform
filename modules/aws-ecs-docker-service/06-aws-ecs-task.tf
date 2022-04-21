@@ -1,7 +1,7 @@
 resource "aws_ecs_task_definition" "task_definition" {
   tags = var.tags
 
-  family                   = "${var.operation_name}${var.container_properties.container_name}"
+  family                   = "${var.short_identifier_prefix}${var.container_properties.container_name}"
   container_definitions    = data.template_file.task_definition_template.rendered
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.container_properties.cpu
@@ -32,7 +32,7 @@ data "template_file" "task_definition_template" {
         options : {
           awslogs-group : var.cloudwatch_log_group_name,
           awslogs-region : "eu-west-2",
-          awslogs-stream-prefix : "${var.operation_name}${var.container_properties.container_name}"
+          awslogs-stream-prefix : "${var.short_identifier_prefix}${var.container_properties.container_name}"
         }
       },
       portMappings : var.container_properties.port_mappings

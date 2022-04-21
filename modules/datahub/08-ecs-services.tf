@@ -1,7 +1,7 @@
 module "datahub_frontend_react" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  operation_name            = var.short_identifier_prefix
+  short_identifier_prefix            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
@@ -15,7 +15,7 @@ module "datahub_frontend_react" {
 module "datahub_gms" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  operation_name            = var.short_identifier_prefix
+  short_identifier_prefix            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
@@ -29,7 +29,7 @@ module "datahub_gms" {
 module "datahub_mae_consumer" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  operation_name            = var.short_identifier_prefix
+  short_identifier_prefix            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
@@ -43,7 +43,7 @@ module "datahub_mae_consumer" {
 module "datahub_mce_consumer" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  operation_name            = var.short_identifier_prefix
+  short_identifier_prefix            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
@@ -57,7 +57,7 @@ module "datahub_mce_consumer" {
 module "mysql_setup" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  operation_name            = var.short_identifier_prefix
+  short_identifier_prefix            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
@@ -71,7 +71,7 @@ module "mysql_setup" {
 module "elasticsearch_setup" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  operation_name            = var.short_identifier_prefix
+  short_identifier_prefix            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
@@ -85,7 +85,7 @@ module "elasticsearch_setup" {
 module "kafka_setup" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  operation_name            = var.short_identifier_prefix
+  short_identifier_prefix            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
@@ -99,7 +99,7 @@ module "kafka_setup" {
 module "datahub_actions" {
   source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
-  operation_name            = var.short_identifier_prefix
+  short_identifier_prefix            = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
   vpc_id                    = var.vpc_id
   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name

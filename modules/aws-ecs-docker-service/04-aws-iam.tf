@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "fargate_assume_role" {
 
 resource "aws_iam_role" "task_role" {
   tags               = var.tags
-  name               = "${var.operation_name}${var.container_properties.container_name}"
+  name               = "${var.short_identifier_prefix}${var.container_properties.container_name}"
   assume_role_policy = data.aws_iam_policy_document.fargate_assume_role.json
 }
 
@@ -26,7 +26,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
 resource "aws_iam_role" "cloudwatch_run_ecs_events" {
   tags = var.tags
 
-  name               = "${var.operation_name}${var.container_properties.container_name}run-ecs-task"
+  name               = "${var.short_identifier_prefix}${var.container_properties.container_name}run-ecs-task"
   assume_role_policy = data.aws_iam_policy_document.cloudwatch_assume_role.json
 }
 
@@ -45,7 +45,7 @@ data "aws_iam_policy_document" "cloudwatch_assume_role" {
 }
 
 resource "aws_iam_role_policy" "ecs_events_run_task" {
-  name   = "${var.operation_name}ecs-events-run-task"
+  name   = "${var.short_identifier_prefix}-ecs-events-run-task"
   role   = aws_iam_role.cloudwatch_run_ecs_events.id
   policy = data.aws_iam_policy_document.event_run_policy.json
 }
