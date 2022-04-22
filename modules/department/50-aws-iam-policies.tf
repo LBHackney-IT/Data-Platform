@@ -529,6 +529,27 @@ resource "aws_iam_policy" "full_glue_access" {
   policy = data.aws_iam_policy_document.full_glue_access.json
 }
 
+//Glue agent policy needed for dev endpoint
+data "aws_iam_policy_document" "full_s3_access_to_glue_resources" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:*"
+    ]
+    resources = [
+      "arn:aws:s3:::crawler-public*",
+      "arn:aws:s3:::aws-glue*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "full_s3_access_to_glue_resources" {
+  tags = var.tags
+
+  name   = "${var.identifier_prefix}-${local.department_identifier}-full-s3-access-to-glue-resources"
+  policy = data.aws_iam_policy_document.full_s3_access_to_glue_resources.json
+}
+
 // Crawler can access JDBC Glue connection
 data "aws_iam_policy_document" "crawler_can_access_jdbc_connection" {
   statement {
