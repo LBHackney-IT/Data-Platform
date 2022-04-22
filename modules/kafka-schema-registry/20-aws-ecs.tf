@@ -72,7 +72,7 @@ resource "aws_ecs_task_definition" "schema_registry" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          "awslogs-group"         = "/ecs/kafka-schema-registry",
+          "awslogs-group"         = aws_cloudwatch_log_group.kafka_schema_registry.name,
           "awslogs-region"        = "eu-west-2",
           "awslogs-stream-prefix" = "ecs"
         }
