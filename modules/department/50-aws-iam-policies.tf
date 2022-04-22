@@ -292,7 +292,7 @@ data "aws_iam_policy_document" "athena_can_write_to_s3" {
   }
 
   statement {
-    sid = "AthenaStorageS3Write"
+    sid    = "AthenaStorageS3Write"
     effect = "Allow"
     actions = [
       "s3:PutObject",
