@@ -4,6 +4,7 @@ module "datahub" {
   source                  = "../modules/datahub"
   tags                    = module.tags.values
   short_identifier_prefix = local.short_identifier_prefix
+  identifier_prefix       = local.identifier_prefix
   vpc_id                  = data.aws_vpc.network.id
   vpc_subnet_ids          = local.subnet_ids_list
   kafka_properties = {
