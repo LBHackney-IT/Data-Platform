@@ -123,6 +123,7 @@ jobs:
 
       - name: Setup deployment user profile
         run: |
+          aws configure set default.region eu-west-2 > /dev/null 2>&1
           echo "[profile deploy_role]" >> ~/.aws/config
           echo "role_arn=arn:aws:iam::${{ secrets.aws_deploy_account_id }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}" >> ~/.aws/config
           echo "source_profile=default" >> ~/.aws/config
