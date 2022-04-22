@@ -18,7 +18,8 @@
   },
   "session_configs": {
     "conf": {
-      "spark.dynamicAllocation.maxExecutors":"3"
+      "spark.dynamicAllocation.maxExecutors":"3",
+      "spark.pyspark.python": "python3"
     }
   },
   "logging_config": {

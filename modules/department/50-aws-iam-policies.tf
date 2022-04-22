@@ -637,7 +637,7 @@ data "aws_iam_policy_document" "notebook_access" {
       "logs:GetLogRecord"
     ]
     resources = [
-      "arn:aws:logs:eu-west-2:484466746276:log-group:/aws/sagemaker/NotebookInstances:${module.sagemaker[0].notebook_name}*"
+      "arn:aws:logs:eu-west-2:484466746276:log-group:/aws/sagemaker/NotebookInstances:log-stream:${module.sagemaker[0].notebook_name}*"
     ]
   }
 }
