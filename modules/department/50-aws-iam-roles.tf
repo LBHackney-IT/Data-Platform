@@ -5,9 +5,7 @@ data "aws_iam_policy_document" "sso_staging_user_policy" {
     data.aws_iam_policy_document.glue_access.json,
     data.aws_iam_policy_document.secrets_manager_read_only.json
     ] : [
-    data.aws_iam_policy_document.s3_department_access.json,
     data.aws_iam_policy_document.glue_access.json,
-    data.aws_iam_policy_document.secrets_manager_read_only.json,
     data.aws_iam_policy_document.notebook_access[0].json
   ]
 }
@@ -20,6 +18,39 @@ data "aws_iam_policy_document" "sso_production_user_policy" {
     data.aws_iam_policy_document.secrets_manager_read_only.json,
     data.aws_iam_policy_document.athena_can_write_to_s3.json
   ]
+}
+
+resource "aws_iam_role" "department_pre_prod" {
+  tags = var.tags
+
+  name               = "${var.short_identifier_prefix}testing-department-access-${local.department_identifier}"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      identifiers = ["arn:aws:iam::484466746276:root"]
+      type        = "AWS"
+    }
+  }
+}
+
+resource "aws_iam_policy" "department_pre_prod" {
+  count = var.is_live_environment ? 1 : 0
+  tags  = var.tags
+
+  name   = "${var.short_identifier_prefix}testing-department-access-${local.department_identifier}"
+  policy = data.aws_iam_policy_document.sso_staging_user_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "department_pre_prod" {
+  count = var.is_live_environment ? 1 : 0
+
+  role       = aws_iam_role.department_pre_prod.name
+  policy_arn = aws_iam_policy.department_pre_prod[0].arn
 }
 
 // Glue role + attachments

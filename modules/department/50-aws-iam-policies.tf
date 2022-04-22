@@ -579,9 +579,16 @@ data "aws_iam_policy_document" "notebook_access" {
   count = var.notebook_instance == null ? 0 : 1
 
   statement {
-    sid       = "CanListAllNotebooks"
-    effect    = "Allow"
-    actions   = ["sagemaker:ListNotebookInstances"]
+    sid    = "CanListAllNotebooksAndRelatedResources"
+    effect = "Allow"
+    actions = [
+      "sagemaker:ListNotebookInstances",
+      "sagemaker:ListCodeRepositories",
+      "sagemaker:ListTags",
+      "sagemaker:DescribeCodeRepository",
+      "sagemaker:ListNotebookInstanceLifecycleConfigs"
+
+    ]
     resources = ["*"]
   }
 
@@ -599,12 +606,38 @@ data "aws_iam_policy_document" "notebook_access" {
     effect = "Allow"
     actions = [
       "sagemaker:StartNotebookInstance",
+      "sagemaker:StopNotebookInstance",
       "sagemaker:CreatePresignedNotebookInstanceUrl",
       "sagemaker:DescribeNotebookInstance",
-      "sagemaker:CreatePresignedDomainUrl"
+      "sagemaker:CreatePresignedDomainUrl",
+      "sagemaker:DescribeNotebookInstanceLifecycleConfig"
     ]
     resources = [
       module.sagemaker[0].notebook_arn,
+      module.sagemaker[0].lifecycle_configuration_arn
+    ]
+  }
+
+  statement {
+    sid    = "CanListNotebookLogStreams"
+    effect = "Allow"
+    actions = [
+      "logs:DescribeLogStreams"
+    ]
+    resources = [
+      "arn:aws:logs:eu-west-2:484466746276:log-group:/aws/sagemaker/NotebookInstances:*"
+    ]
+  }
+
+  statement {
+    sid    = "CanReadNotebookLogs"
+    effect = "Allow"
+    actions = [
+      "logs:GetLogEvents",
+      "logs:GetLogRecord"
+    ]
+    resources = [
+      "arn:aws:logs:eu-west-2:484466746276:log-group:/aws/sagemaker/NotebookInstances:${module.sagemaker[0].notebook_name}*"
     ]
   }
 }
