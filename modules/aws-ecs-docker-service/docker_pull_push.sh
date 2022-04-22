@@ -5,9 +5,14 @@ set -ex
 image_name=$1
 image_tag=$2
 ecr_url=$3
+is_live_environment=$4
 
 #Pull image from docker hub
 docker pull "$image_name":"$image_tag"
+
+if $is_live_environment; then
+  export AWS_PROFILE=deploy_role
+fi
 
 #Login to ECR
 # shellcheck disable=SC2091

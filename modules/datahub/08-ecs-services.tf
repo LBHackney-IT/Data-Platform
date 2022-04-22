@@ -11,6 +11,7 @@ module "datahub_frontend_react" {
     target_group_properties = [{ arn = aws_alb_target_group.datahub_frontend_react.arn, port = aws_alb_target_group.datahub_frontend_react.port }]
     security_group_id       = aws_security_group.datahub_frontend_react.id
   }
+  is_live_environment = var.is_live_environment
 }
 
 module "datahub_gms" {
@@ -26,6 +27,7 @@ module "datahub_gms" {
     target_group_properties = [{ arn = aws_alb_target_group.datahub_gms.arn, port = aws_alb_target_group.datahub_gms.port }]
     security_group_id       = aws_security_group.datahub_gms.id
   }
+  is_live_environment = var.is_live_environment
 }
 
 module "datahub_mae_consumer" {
@@ -41,6 +43,7 @@ module "datahub_mae_consumer" {
     target_group_properties = []
     security_group_id       = null
   }
+  is_live_environment = var.is_live_environment
 }
 
 module "datahub_mce_consumer" {
@@ -56,6 +59,7 @@ module "datahub_mce_consumer" {
     target_group_properties = []
     security_group_id       = null
   }
+  is_live_environment = var.is_live_environment
 }
 
 module "datahub_actions" {
@@ -71,6 +75,7 @@ module "datahub_actions" {
     target_group_properties = []
     security_group_id       = null
   }
+  is_live_environment = var.is_live_environment
 }
 
 module "mysql_setup" {
@@ -86,6 +91,7 @@ module "mysql_setup" {
     target_group_properties = []
     security_group_id       = null
   }
+  is_live_environment = var.is_live_environment
   depends_on = [
     aws_db_instance.datahub
   ]
@@ -104,6 +110,7 @@ module "elasticsearch_setup" {
     target_group_properties = []
     security_group_id       = null
   }
+  is_live_environment = var.is_live_environment
   depends_on = [
     aws_elasticsearch_domain.es
   ]
@@ -122,6 +129,7 @@ module "kafka_setup" {
     target_group_properties = []
     security_group_id       = null
   }
+  is_live_environment = var.is_live_environment
   depends_on = [
     data.aws_msk_cluster.kafka_cluster
   ]
