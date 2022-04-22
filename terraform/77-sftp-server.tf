@@ -25,11 +25,6 @@ data "aws_iam_policy_document" "ringo_can_write_to_landing_zone" {
     effect = "Allow"
     actions = [
       "s3:PutObject",
-      "s3:GetObject",
-      "s3:DeleteObject",
-      "s3:DeleteObjectVersion",
-      "s3:GetObjectVersion",
-      "s3:GetObjectACL",
       "s3:PutObjectACL"
     ]
     resources = [
@@ -50,7 +45,11 @@ data "aws_iam_policy_document" "ringo_can_write_to_landing_zone" {
   statement {
     effect = "Allow"
     actions = [
-      "kms:*"
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
     ]
     resources = [
       module.landing_zone.kms_key_arn
@@ -104,7 +103,7 @@ data "aws_iam_policy_document" "file_transfer_can_write_logs" {
       "logs:*"
     ]
     resources = [
-      "*"
+      aws_transfer_server.sftp.arn
     ]
   }
 }
