@@ -1,5 +1,5 @@
 resource "aws_sagemaker_code_repository" "data_platform" {
-  code_repository_name = "data-platform-notebooks"
+  code_repository_name = "${local.identifier_prefix}-notebooks"
   tags                 = module.tags.values
 
   git_config {
