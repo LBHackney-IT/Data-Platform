@@ -24,11 +24,11 @@ data "aws_iam_policy_document" "ringo_can_write_to_landing_zone" {
   statement {
     effect = "Allow"
     actions = [
-      "s3:PutObject",
-      "s3:PutObjectACL"
+      "s3:Put*",
+      "s3:Get*"
     ]
     resources = [
-      "${module.landing_zone.bucket_arn}/*"
+      "${module.landing_zone.bucket_arn}/ringo/*"
     ]
   }
 
@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "ringo_can_write_to_landing_zone" {
       "s3:ListBucket"
     ]
     resources = [
-      "${module.landing_zone.bucket_arn}"
+      module.landing_zone.bucket_arn
     ]
   }
 
@@ -100,10 +100,13 @@ data "aws_iam_policy_document" "file_transfer_can_write_logs" {
   statement {
     effect = "Allow"
     actions = [
-      "logs:*"
+      "logs:CreateLogStream",
+      "logs:DescribeLogStreams",
+      "logs:CreateLogGroup",
+      "logs:PutLogEvents"
     ]
     resources = [
-      aws_transfer_server.sftp.arn
+      "*"
     ]
   }
 }
