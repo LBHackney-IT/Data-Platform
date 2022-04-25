@@ -15,4 +15,7 @@ module "datahub" {
     schema_registry_url = module.kafka_event_streaming[0].schema_registry_url
   }
   is_live_environment = local.is_live_environment
+  depends_on = [
+    module.kafka_event_streaming
+  ]
 }
