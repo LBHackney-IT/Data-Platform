@@ -597,7 +597,7 @@ resource "aws_iam_policy" "crawler_can_access_jdbc_connection" {
 }
 
 data "aws_iam_policy_document" "notebook_access" {
-  count = var.notebook_instance == null ? 0 : 1
+  count = local.create_notebook ? 1 : 0
 
   statement {
     sid    = "CanListAllNotebooksAndRelatedResources"
@@ -646,7 +646,7 @@ data "aws_iam_policy_document" "notebook_access" {
       "logs:DescribeLogStreams"
     ]
     resources = [
-      "arn:aws:logs:eu-west-2:484466746276:log-group:/aws/sagemaker/NotebookInstances:*"
+      "arn:aws:logs:eu-west-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/sagemaker/NotebookInstances:*"
     ]
   }
 
@@ -658,7 +658,7 @@ data "aws_iam_policy_document" "notebook_access" {
       "logs:GetLogRecord"
     ]
     resources = [
-      "arn:aws:logs:eu-west-2:484466746276:log-group:/aws/sagemaker/NotebookInstances:log-stream:${module.sagemaker[0].notebook_name}*"
+      "arn:aws:logs:eu-west-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/sagemaker/NotebookInstances:log-stream:${module.sagemaker[0].notebook_name}*"
     ]
   }
 }
