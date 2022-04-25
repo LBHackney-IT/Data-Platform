@@ -4,6 +4,7 @@ resource "aws_sagemaker_code_repository" "data_platform" {
 
   git_config {
     repository_url = "https://github.com/LBHackney-IT/Data-Platform-Notebooks.git"
+    branch         = "main"
   }
 }
 

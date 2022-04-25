@@ -1,5 +1,9 @@
+locals {
+  create_notebook = var.notebook_instance != null && var.is_live_environment
+}
+
 module "sagemaker" {
-  count                         = var.notebook_instance == null ? 0 : 1
+  count                         = local.create_notebook ? 1 : 0
   source                        = "../sagemaker"
   development_endpoint_role_arn = aws_iam_role.glue_agent.arn
   tags                          = var.tags
