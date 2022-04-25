@@ -130,7 +130,4 @@ module "kafka_setup" {
     security_group_id       = null
   }
   is_live_environment = var.is_live_environment
-  depends_on = [
-    data.aws_msk_cluster.kafka_cluster
-  ]
 }
