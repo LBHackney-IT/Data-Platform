@@ -48,3 +48,20 @@ data "aws_iam_policy_document" "datahub_can_access_glue" {
     resources = ["*"]
   }
 }
+
+resource "aws_iam_role" "datahub_ecs_autoscale" {
+  tags               = var.tags
+  name               = "${var.short_identifier_prefix}datahub-ecs_autoscale-role"
+  assume_role_policy = data.aws_iam_policy_document.datahub_ecs_autoscale_assume_role.json
+}
+
+data "aws_iam_policy_document" "datahub_ecs_autoscale_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      identifiers = ["application-autoscaling.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
