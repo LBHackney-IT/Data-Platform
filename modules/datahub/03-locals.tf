@@ -15,7 +15,7 @@ locals {
       { name : "DATAHUB_GMS_PORT", value : "8080" },
       { name : "DATAHUB_SECRET", value : random_password.datahub_secret.result },
       { name : "DATAHUB_APP_VERSION", value : "1.0" },
-      { name : "DATAHUB_PLAY_MEM_BUFFER_SIZE", value : "1024MB" },
+      { name : "DATAHUB_PLAY_MEM_BUFFER_SIZE", value : "10MB" },
       { name : "JAVA_OPTS", value : "-Xms8g -Xmx8g -Dhttp.port=9002 -Dconfig.file=datahub-frontend/conf/application.conf -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" },
