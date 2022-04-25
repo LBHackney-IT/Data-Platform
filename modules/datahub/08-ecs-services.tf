@@ -116,21 +116,21 @@ module "elasticsearch_setup" {
   ]
 }
 
-module "kafka_setup" {
-  source                    = "../aws-ecs-docker-service"
-  tags                      = var.tags
-  short_identifier_prefix   = var.short_identifier_prefix
-  ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
-  vpc_id                    = var.vpc_id
-  vpc_subnet_ids            = var.vpc_subnet_ids
-  cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
-  container_properties      = local.kafka_setup
-  load_balancer_properties = {
-    target_group_properties = []
-    security_group_id       = null
-  }
-  is_live_environment = var.is_live_environment
-  depends_on = [
-    data.aws_msk_cluster.kafka_cluster
-  ]
-}
+# module "kafka_setup" {
+#   source                    = "../aws-ecs-docker-service"
+#   tags                      = var.tags
+#   short_identifier_prefix   = var.short_identifier_prefix
+#   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
+#   vpc_id                    = var.vpc_id
+#   vpc_subnet_ids            = var.vpc_subnet_ids
+#   cloudwatch_log_group_name = aws_cloudwatch_log_group.datahub.name
+#   container_properties      = local.kafka_setup
+#   load_balancer_properties = {
+#     target_group_properties = []
+#     security_group_id       = null
+#   }
+#   is_live_environment = var.is_live_environment
+#   depends_on = [
+#     data.aws_msk_cluster.kafka_cluster
+#   ]
+# }
