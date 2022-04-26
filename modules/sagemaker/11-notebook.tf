@@ -26,6 +26,7 @@ resource "aws_sagemaker_notebook_instance" "nb" {
   instance_type           = "ml.t3.medium"
   lifecycle_config_name   = aws_sagemaker_notebook_instance_lifecycle_configuration.sagemaker_lifecycle.name
   default_code_repository = var.github_repository
+  platform_identifier     = "notebook-al1-v1"
 
   tags = merge({
     Name                  = "vehicle"

@@ -114,3 +114,9 @@ resource "aws_route" "hub_tgw_routes" {
   route_table_id         = module.core_vpc.private_route_table_ids[count.index]
   transit_gateway_id     = data.aws_ec2_transit_gateway.hub_tgw.id
 }
+
+# ElasticSearch service linked role
+resource "aws_iam_service_linked_role" "elastic_search" {
+  tags             = module.tags.values
+  aws_service_name = "es.amazonaws.com"
+}

@@ -1,14 +1,17 @@
 resource "aws_sagemaker_code_repository" "data_platform" {
-  code_repository_name = "data-platform-notebooks"
+  code_repository_name = "${local.identifier_prefix}-notebooks"
   tags                 = module.tags.values
 
   git_config {
     repository_url = "https://github.com/LBHackney-IT/Data-Platform-Notebooks.git"
+    branch         = "main"
   }
 }
 
 module "sagemaker" {
-  source                        = "../modules/sagemaker/"
+  source = "../modules/sagemaker/"
+  count  = local.is_live_environment ? 1 : 0
+
   development_endpoint_role_arn = aws_iam_role.glue_role.arn
   tags                          = module.tags.values
   identifier_prefix             = local.short_identifier_prefix

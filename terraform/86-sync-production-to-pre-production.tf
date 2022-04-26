@@ -75,20 +75,6 @@ data "aws_iam_policy_document" "task_role" {
       "arn:aws:s3:::dataplatform-stg-trusted-zone-prod-copy*"
     ]
   }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "kms:Encrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey",
-      "kms:CreateGrant",
-      "kms:RetireGrant"
-    ]
-    resources = [
-    ]
-  }
 }
 
 module "sync_production_to_pre_production" {

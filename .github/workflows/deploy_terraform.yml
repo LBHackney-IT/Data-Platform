@@ -121,6 +121,15 @@ jobs:
         working-directory: "./scripts"
         run: make all
 
+      - name: Setup deployment user profile
+        run: |
+          aws configure set default.region eu-west-2 > /dev/null 2>&1
+          echo "[profile deploy_role]" >> ~/.aws/config
+          echo "role_arn=arn:aws:iam::${{ secrets.aws_deploy_account_id }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}" >> ~/.aws/config
+          echo "source_profile=default" >> ~/.aws/config
+          echo "role_session_name=deploy" >> ~/.aws/config
+          echo "region=eu-west-2" >> ~/.aws/config
+
       - name: Deploy Data Platform in ${{ inputs.build_path }}
         uses: ./.github/actions/terraform-deploy
         with:
@@ -150,13 +159,6 @@ jobs:
           # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
           # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
           terraform_destroy: false
-      - name: Setup deployment user profile
-        run: |
-          echo "[profile deploy_role]" >> ~/.aws/config
-          echo "role_arn=arn:aws:iam::${{ secrets.aws_deploy_account_id }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}" >> ~/.aws/config
-          echo "source_profile=default" >> ~/.aws/config
-          echo "role_session_name=deploy" >> ~/.aws/config
-          echo "region=eu-west-2" >> ~/.aws/config
 
       - name: Configure Redshift users, external schemas and user permissions for external schema
         working-directory: "./terraform"

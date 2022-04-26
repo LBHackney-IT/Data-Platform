@@ -15,10 +15,7 @@ echo "https://glue.eu-west-2.amazonaws.com" >> $glue_endpoint_file
 ASSETS=s3://aws-glue-jes-prod-eu-west-2-assets/sagemaker/assets/
 
 aws s3 cp $ASSETS . --recursive \
-    --include "*autossh-1.4e.tgz" \
-    --include "*lifecycle-config-v2-dev-endpoint-daemon.sh" \
-    --include "*lifecycle-config-reconnect-dev-endpoint-daemon.sh" \
-    --include "*dev_endpoint_connection_checker.py"
+    --exclude "*Miniconda2-4.5.12-Linux-x86_64.sh"
 
 wget "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O /home/ec2-user/glue/Miniconda3-latest-Linux-x86_64.sh
 bash "/home/ec2-user/glue/Miniconda3-latest-Linux-x86_64.sh" -b -u -p "/home/ec2-user/glue/miniconda"
@@ -38,7 +35,6 @@ mkdir -p /home/ec2-user/.sparkmagic
 cat > /home/ec2-user/.sparkmagic/config.json << 'EOF'
 ${sparkmagicconfig}
 EOF
-
 
 # Preparing glue development endpoint configuration
 cat > /home/ec2-user/endpoint_config.json << 'EOF'
@@ -75,7 +71,6 @@ public_keys=$(jq -r .public_key $endpoint_config)
 
 (crontab -l; echo "* * * * * /usr/bin/flock -n /tmp/lifecycle-config-reconnect-dev-endpoint-daemon.lock /usr/bin/sudo /bin/sh /home/ec2-user/glue/lifecycle-config-reconnect-dev-endpoint-daemon.sh 2>&1 | tee -a /var/log/sagemaker-lifecycle-config-reconnect-dev-endpoint-daemon.log") | crontab -
 
-
 CONNECTION_CHECKER_FILE=/home/ec2-user/glue/dev_endpoint_connection_checker.py
 if [ -f "$CONNECTION_CHECKER_FILE" ]; then
     # wait for async dev endpoint connection to come up
@@ -83,4 +78,4 @@ if [ -f "$CONNECTION_CHECKER_FILE" ]; then
     python3 $CONNECTION_CHECKER_FILE
 fi
 
-rm -rf "/home/ec2-user/glue/Miniconda3-latest-Linux-x86_64.sh"
+rm "/home/ec2-user/glue/Miniconda3-latest-Linux-x86_64.sh"

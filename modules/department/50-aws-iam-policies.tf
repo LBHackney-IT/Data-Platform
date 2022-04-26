@@ -276,6 +276,34 @@ resource "aws_iam_policy" "s3_access" {
   policy = data.aws_iam_policy_document.s3_department_access.json
 }
 
+// Prod departmental S3 access policy to write to athena storage
+data "aws_iam_policy_document" "athena_can_write_to_s3" {
+  statement {
+    sid    = "KmsKeyAthenaStorageAccess"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:GenerateDataKey",
+    ]
+    resources = [
+      var.athena_storage_bucket.kms_key_arn,
+    ]
+  }
+
+  statement {
+    sid    = "AthenaStorageS3Write"
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+    ]
+    resources = [
+      var.athena_storage_bucket.bucket_arn,
+      "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*"
+    ]
+  }
+}
+
 // Departmental Glue access policy
 data "aws_iam_policy_document" "glue_access" {
   statement {
@@ -501,6 +529,27 @@ resource "aws_iam_policy" "full_glue_access" {
   policy = data.aws_iam_policy_document.full_glue_access.json
 }
 
+//Glue agent policy needed for dev endpoint
+data "aws_iam_policy_document" "full_s3_access_to_glue_resources" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:*"
+    ]
+    resources = [
+      "arn:aws:s3:::crawler-public*",
+      "arn:aws:s3:::aws-glue*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "full_s3_access_to_glue_resources" {
+  tags = var.tags
+
+  name   = "${var.identifier_prefix}-${local.department_identifier}-full-s3-access-to-glue-resources"
+  policy = data.aws_iam_policy_document.full_s3_access_to_glue_resources.json
+}
+
 // Crawler can access JDBC Glue connection
 data "aws_iam_policy_document" "crawler_can_access_jdbc_connection" {
   statement {
@@ -548,12 +597,19 @@ resource "aws_iam_policy" "crawler_can_access_jdbc_connection" {
 }
 
 data "aws_iam_policy_document" "notebook_access" {
-  count = var.notebook_instance == null ? 0 : 1
+  count = local.create_notebook ? 1 : 0
 
   statement {
-    sid       = "CanListAllNotebooks"
-    effect    = "Allow"
-    actions   = ["sagemaker:ListNotebookInstances"]
+    sid    = "CanListAllNotebooksAndRelatedResources"
+    effect = "Allow"
+    actions = [
+      "sagemaker:ListNotebookInstances",
+      "sagemaker:ListCodeRepositories",
+      "sagemaker:ListTags",
+      "sagemaker:DescribeCodeRepository",
+      "sagemaker:ListNotebookInstanceLifecycleConfigs"
+
+    ]
     resources = ["*"]
   }
 
@@ -571,12 +627,38 @@ data "aws_iam_policy_document" "notebook_access" {
     effect = "Allow"
     actions = [
       "sagemaker:StartNotebookInstance",
+      "sagemaker:StopNotebookInstance",
       "sagemaker:CreatePresignedNotebookInstanceUrl",
       "sagemaker:DescribeNotebookInstance",
-      "sagemaker:CreatePresignedDomainUrl"
+      "sagemaker:CreatePresignedDomainUrl",
+      "sagemaker:DescribeNotebookInstanceLifecycleConfig"
     ]
     resources = [
       module.sagemaker[0].notebook_arn,
+      module.sagemaker[0].lifecycle_configuration_arn
+    ]
+  }
+
+  statement {
+    sid    = "CanListNotebookLogStreams"
+    effect = "Allow"
+    actions = [
+      "logs:DescribeLogStreams"
+    ]
+    resources = [
+      "arn:aws:logs:eu-west-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/sagemaker/NotebookInstances:*"
+    ]
+  }
+
+  statement {
+    sid    = "CanReadNotebookLogs"
+    effect = "Allow"
+    actions = [
+      "logs:GetLogEvents",
+      "logs:GetLogRecord"
+    ]
+    resources = [
+      "arn:aws:logs:eu-west-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/sagemaker/NotebookInstances:log-stream:${module.sagemaker[0].notebook_name}*"
     ]
   }
 }
