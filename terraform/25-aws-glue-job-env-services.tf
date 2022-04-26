@@ -7,7 +7,7 @@ module "alloy_api_ingestion_raw_env_services" {
     pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
     spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
     script_name                = "alloy_api_ingestion"
-    schedule                   = "cron(0 0 23 ? * MON,TUE,WED,THU,FRI *)"
+    schedule                   = "cron(0 23 ? * MON-FRI *)"
     job_parameters             = {
       "--job-bookmark-option"     = "job-bookmark-enable"
       "--enable-glue-datacatalog" = "true"
