@@ -7,8 +7,15 @@
 	.venv/bin/python -m pip install -r requirements.txt
 	touch .venv/.install.stamp
 
-test: .venv/.install.stamp
-	.venv/bin/python -m unittest test_install_kafka_connectors.py
+.venv-test/bin/python:
+	python3 -m venv .venv-test
 
-test-watch: .venv/.install.stamp
-	.venv/bin/pytest-watch .
+.venv-test/.install.stamp: .venv-test/bin/python requirements.test.txt
+	.venv-test/bin/python -m pip install -r requirements.test.txt
+	touch .venv-test/.install.stamp
+
+test: .venv-test/.install.stamp
+	.venv-test/bin/python -m unittest test_install_kafka_connectors.py
+
+test-watch: .venv-test/.install.stamp
+	.venv-test/bin/pytest-watch .

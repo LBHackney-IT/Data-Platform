@@ -276,7 +276,9 @@ def get_capacity_request(capacity_configuration: ConnectorCapacity=None):
 
 
 def entry_point(raw_config, kafka_client):
+    print(raw_config)
     raw_plugin_config = raw_config["default_s3_plugin_configuration"]["value"]["connector_s3_plugin"]
+    print(raw_plugin_config)
     plugin_config = PluginConfig(
         bucket_arn=raw_plugin_config["bucket_arn"],
         file_key=raw_plugin_config["file_key"],
@@ -292,6 +294,7 @@ def entry_point(raw_config, kafka_client):
     logger.info(f"custom_plugin_response {plugin_details}")
 
     connector_config = connector_config_from_input_config(raw_config, plugin_details)
+    print(connector_config)
     connector_action = check_connector_exists_with_config(kafka_client, connector_config)
 
     if connector_action["action"] == "CREATE":
