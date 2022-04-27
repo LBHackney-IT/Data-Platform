@@ -27,7 +27,7 @@ output "default_s3_plugin_configuration" {
     connector_configuration = {
       "connector.class"                     = "io.confluent.connect.s3.S3SinkConnector"
       "flush.size"                          = "1"
-      "tasks.max"                           = 2
+      "tasks.max"                           = "2"
       "topics"                              = "tenure_api"
       "s3.bucket.name"                      = var.s3_bucket_to_write_to.bucket_id
       "s3.sse.kms.key.id"                   = var.s3_bucket_to_write_to.kms_key_id
