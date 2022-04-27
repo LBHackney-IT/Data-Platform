@@ -59,7 +59,7 @@ output "cluster_config" {
 # Topic specific connector config
 
 output "tenure_connector_name" {
-  value = "tenure_api"
+  value = "tenure-api"
 }
 
 output "schema_registry_url" {
