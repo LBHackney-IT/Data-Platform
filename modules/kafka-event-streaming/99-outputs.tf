@@ -26,22 +26,22 @@ output "default_s3_plugin_configuration" {
     }
     connector_configuration = {
       "connector.class"                     = "io.confluent.connect.s3.S3SinkConnector"
-      "flush.size"                          = 1
+      "flush.size"                          = "1"
       "tasks.max"                           = 2
       "topics"                              = "tenure_api"
       "s3.bucket.name"                      = var.s3_bucket_to_write_to.bucket_id
       "s3.sse.kms.key.id"                   = var.s3_bucket_to_write_to.kms_key_id
       "s3.region"                           = "eu-west-2"
       "key.converter"                       = "org.apache.kafka.connect.storage.StringConverter"
-      "key.converter.schemas.enable"        = false
+      "key.converter.schemas.enable"        = "False"
       "value.converter"                     = "io.confluent.connect.avro.AvroConverter"
       "value.converter.schema.registry.url" = "http://${module.schema_registry.load_balancer_dns_name}:8081"
-      "value.converter.schemas.enable"      = true
+      "value.converter.schemas.enable"      = "True"
       "storage.class"                       = "io.confluent.connect.s3.storage.S3Storage"
       "format.class"                        = "io.confluent.connect.s3.format.parquet.ParquetFormat"
       "partitioner.class"                   = "io.confluent.connect.storage.partitioner.DefaultPartitioner"
       "schema.compatibility"                = "BACKWARD"
-      "errors.log.enable"                   = true
+      "errors.log.enable"                   = "True"
     }
   }
 }

@@ -276,7 +276,6 @@ def get_capacity_request(capacity_configuration: ConnectorCapacity=None):
 
 
 def entry_point(raw_config, kafka_client):
-    print(raw_config)
     raw_plugin_config = raw_config["default_s3_plugin_configuration"]["value"]["connector_s3_plugin"]
     print(raw_plugin_config)
     plugin_config = PluginConfig(
