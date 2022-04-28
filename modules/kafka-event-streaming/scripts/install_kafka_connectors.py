@@ -180,7 +180,7 @@ def check_connector_exists_with_config(client: BaseClient, connector_configurati
         print("Connection Needs Creating")
         return {"action": "CREATE"}
 
-    if description["connectorDescription"] != connector_configuration.description \
+    if description.get("connectorDescription") != connector_configuration.description \
             or description["kafkaConnectVersion"] != connector_configuration.kafka_connect_version \
             or description["connectorConfiguration"] != connector_configuration.configuration:
         print("Connection Needs Recreating")

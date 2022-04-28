@@ -237,19 +237,19 @@ class InstallKafkaConnectorTest(TestCase):
                                      "connectorNamePrefix": connector_name,
                                      "maxResults": 100,
                                  })
-
-        self.kafkaStub.add_response('describe_connector',
-                                 {
-                                     "connectorName": connector_name,
-                                     "connectorArn": connector_arn,
-                                     "connectorDescription": connector_description,
-                                     "currentVersion": "4",
-                                     "kafkaConnectVersion": kafka_connect_version,
-                                     "connectorConfiguration": connector_configuration,
-                                     "capacity": {
-                                         "autoScaling": capacity_auto_scaling,
-                                     }
-                                 },
+        describe_response = {
+            "connectorName": connector_name,
+            "connectorArn": connector_arn,
+            "currentVersion": "4",
+            "kafkaConnectVersion": kafka_connect_version,
+            "connectorConfiguration": connector_configuration,
+            "capacity": {
+                "autoScaling": capacity_auto_scaling,
+            }
+        }
+        if connector_description:
+            describe_response["connectorDescription"] = connector_description
+        self.kafkaStub.add_response('describe_connector', describe_response,
                                  {
                                      "connectorArn": connector_arn,
                                  })
@@ -282,6 +282,16 @@ class InstallKafkaConnectorTest(TestCase):
 
         self.setup_successful_get_connector(
             connector_description="Something Else"
+        )
+        result = self.check_connector_exists_with_config(config)
+        self.assertEqual(result["action"], "RECREATE")
+        self.assertEqual(result["arn"],
+                         "arn:aws:kafkaconnect:eu-west-2:484466746276:connector/tenure-api/0d5b9cd7-6e4a-4195-8558-de9e0ff98e7f-4")
+        self.assertEqual(result["version"], "4")
+
+
+        self.setup_successful_get_connector(
+            connector_description=None
         )
         result = self.check_connector_exists_with_config(config)
         self.assertEqual(result["action"], "RECREATE")
