@@ -21,8 +21,17 @@ data "aws_iam_policy_document" "kafka_connector_write_to_s3" {
   statement {
     effect = "Allow"
     actions = [
-      "s3:ListBucket",
-      "s3:GetBucketLocation"
+      "s3:ListAllMyBuckets",
+    ]
+    resources = [
+      "*"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:List*",
+      "s3:Get*"
     ]
     resources = [
       var.s3_bucket_to_write_to.bucket_arn
@@ -32,14 +41,14 @@ data "aws_iam_policy_document" "kafka_connector_write_to_s3" {
   statement {
     effect = "Allow"
     actions = [
+      "s3:Put*",
       "s3:Get*",
-      "s3:ListObjectsV2",
-      "s3:PutObject",
-      "s3:PutObjectAcl",
-      "s3:*" # to remove
+      "s3:AbortMultipartUpload",
+      "s3:ListMultipartUploadParts",
+      "s3:ListBucketMultipartUploads"
     ]
     resources = [
-      var.s3_bucket_to_write_to.bucket_arn
+      "${var.s3_bucket_to_write_to.bucket_arn}/*"
     ]
   }
 
