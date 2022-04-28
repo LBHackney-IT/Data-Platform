@@ -5,6 +5,7 @@
     # - the job parameters (replace the template values coming from the Terraform with real values)
 
 import sys
+import boto3
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -26,6 +27,20 @@ def drop_null_columns(df):
     df = df.drop(*to_drop)
     
     return df
+
+def get_latest_snapshot(df):
+   df = df.where(F.col('snapshot_date') == df.select(max('snapshot_date')).first()[0])
+   return df 
+
+# Creates a function that clears the target folder in S3
+def clear_target_folder(s3_bucket_target):
+    s3 = boto3.resource('s3')
+    folderString = s3_bucket_target.replace('s3://', '')
+    bucketName = folderString.split('/')[0]
+    prefix = folderString.replace(bucketName+'/', '')+'/'
+    bucket = s3.Bucket(bucketName)
+    bucket.objects.filter(Prefix=prefix).delete()
+    return
 
 # The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":
@@ -53,16 +68,18 @@ if __name__ == "__main__":
         name_space = source_catalog_database,
         table_name = source_catalog_table
         # if the source data IS partitionned by import_date and there is a lot of historic data there that you don't need, consider using a pushdown predicate to only load a few days worth of data and speed up the job   
-        # pushdown_predicate = create_pushdown_predicate('import_date', 2)
+        push_down_predicate = create_pushdown_predicate('snapshot_date', 3)
     )
     data_source2 = glueContext.create_dynamic_frame.from_catalog(
         name_space=source_catalog_database,
-        table_name=source_catalog_table2
+        table_name=source_catalog_table2,
+        push_down_predicate = create_pushdown_predicate('snapshot_date', 3)
     )
     
     data_source3 = glueContext.create_dynamic_frame.from_catalog(
         name_space=source_catalog_database,
-        table_name=source_catalog_table3
+        table_name=source_catalog_table3,
+        push_down_predicate = create_pushdown_predicate('snapshot_date', 3)
     )
 
     # If the source data is NOT partitioned by import_date, create the necessary import_ columns now and populate them with today's date so the result data gets partitioned as per the DP standards. 
@@ -135,10 +152,10 @@ if __name__ == "__main__":
     df = data_source.toDF()
     
     # If the source data IS partitionned by import_date, you have loaded several days but only need the latest version, use the get_latest_partitions() helper
-    # df = get_latest_partitions(df)    
+    df = get_latest_snapshot(df)    
     
     # Drop Null Columns  - Remove if it takes too long for glue to run
-    # df = drop_null_columns(df)
+    df = drop_null_columns(df)
     # Rename id column
     df = df.withColumnRenamed("id","application_id")
     
@@ -190,7 +207,7 @@ if __name__ == "__main__":
     
     df2 = df2.select("id","application_type","application_type_code")
     
- ## Load PS Codes   
+    ## Load PS Codes   
     
     df3 = data_source3.toDF()
     
@@ -211,7 +228,7 @@ if __name__ == "__main__":
     # Transform data using the fuctions defined outside the main block
    
 
-## Left Join Application Types and PS Development Codes onto Applications Table
+    ## Left Join Application Types and PS Development Codes onto Applications Table
 
     # Join
 
@@ -240,14 +257,14 @@ if __name__ == "__main__":
     
     df = df.drop("ps_id","id", )
     
-## Data Processing Ends    
-    
-
-    
-    
+    ## Data Processing Ends    
     
     # Convert data frame to dynamic frame 
     dynamic_frame = DynamicFrame.fromDF(df, glueContext, "target_data_to_write")
+
+    # wipe out the target folder in the trusted zone
+    logger.info(f'clearing target bucket')
+    clear_target_folder(s3_bucket_target)
 
     # Write the data to S3
     parquet_data = glueContext.write_dynamic_frame.from_options(
