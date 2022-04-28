@@ -19,4 +19,4 @@ redshift_port                                    = 5440
 copy_liberator_to_pre_prod_lambda_execution_role = "arn:aws:iam::365719730767:role/liberator-prod-to-pre-prod-lambda"
 emails_to_notify_with_budget_alerts              = ["saml-aws-data-platform-admins@hackney.gov.uk"]
 sync_production_to_pre_production_task_role      = "arn:aws:iam::365719730767:role/sync-production-to-pre-production-task-role"
-datahub_url                                      = "https://datahub-pre-prod.hackney.gov.uk/"
+datahub_url                                      = "https://datahub-pre-prod.hackney.gov.uk"
