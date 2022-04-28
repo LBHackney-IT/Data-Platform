@@ -43,5 +43,5 @@ resource "aws_security_group_rule" "allow_outbound_traffic_to_schema_registry" {
   from_port                = 8081
   to_port                  = 8081
   type                     = "egress"
-  source_security_group_id = module.schema_registry.lb_security_group_id
+  source_security_group_id = module.schema_registry.load_balancer_security_group_id
 }
