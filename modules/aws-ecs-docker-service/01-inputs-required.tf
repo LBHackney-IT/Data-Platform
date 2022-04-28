@@ -44,8 +44,8 @@ variable "container_properties" {
       hostPort      = number
     }))
     environment_variables = list(object({
-      name  = string
-      value = string
+      name      = string
+      valueFrom = string
     }))
     secrets = list(object({
       name  = string
