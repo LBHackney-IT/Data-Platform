@@ -44,12 +44,12 @@ variable "container_properties" {
       hostPort      = number
     }))
     environment_variables = list(object({
-      name      = string
-      valueFrom = string
-    }))
-    secrets = list(object({
       name  = string
       value = string
+    }))
+    secrets = list(object({
+      name      = string
+      valueFrom = string
     }))
     mount_points = list(object({
       sourceVolume  = string
