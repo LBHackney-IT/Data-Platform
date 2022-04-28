@@ -21,15 +21,12 @@ resource "aws_security_group_rule" "datahub_frontend_react_egress" {
 
 resource "aws_security_group_rule" "datahub_frontend_react_ingress" {
 
-  type        = "ingress"
-  description = "Allow inbound HTTP traffic on Datahub Frontend port"
-  from_port   = local.datahub_frontend_react.port
-  to_port     = local.datahub_frontend_react.port
-  protocol    = "tcp"
-  cidr_blocks = flatten([
-    data.aws_vpc.vpc.cidr_block,
-    var.hub_firewall_ips
-  ])
+  type              = "ingress"
+  description       = "Allow inbound HTTP traffic on Datahub Frontend port"
+  from_port         = local.datahub_frontend_react.port
+  to_port           = local.datahub_frontend_react.port
+  protocol          = "tcp"
+  cidr_blocks       = var.hub_firewall_ips
   security_group_id = aws_security_group.datahub_frontend_react.id
 }
 

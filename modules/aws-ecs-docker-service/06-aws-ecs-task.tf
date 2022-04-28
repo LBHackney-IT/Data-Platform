@@ -37,6 +37,7 @@ data "template_file" "task_definition_template" {
       },
       portMappings : var.container_properties.port_mappings
       environment : var.container_properties.environment_variables
+      secrets : var.container_properties.secrets
       mountPoints : var.container_properties.mount_points
     }
   ])

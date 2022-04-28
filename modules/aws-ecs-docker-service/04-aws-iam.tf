@@ -10,6 +10,16 @@ data "aws_iam_policy_document" "fargate_assume_role" {
       type = "Service"
     }
   }
+  statement {
+    effect = "Allow"
+    actions = [
+      "ssm:GetParameters"
+    ]
+    resources = [
+
+    ]
+  }
+
 }
 
 resource "aws_iam_role" "task_role" {

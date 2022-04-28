@@ -1,5 +1,5 @@
 module "datahub" {
-  count = local.is_live_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 1
 
   source                  = "../modules/datahub"
   tags                    = module.tags.values
