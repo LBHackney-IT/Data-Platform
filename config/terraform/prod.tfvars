@@ -18,3 +18,4 @@ redshift_public_ips                               = ["18.168.126.173"]
 redshift_port                                     = 5439
 pre_production_liberator_data_storage_kms_key_arn = "arn:aws:kms:eu-west-2:120038763019:key/dcef6adb-0ddf-45da-97f3-3226f278222f"
 emails_to_notify_with_budget_alerts               = ["saml-aws-data-platform-admins@hackney.gov.uk"]
+datahub_url                                       = "https://datahub.hackney.gov.uk/"

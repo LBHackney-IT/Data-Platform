@@ -42,3 +42,8 @@ variable "is_live_environment" {
   description = "A flag indicting if we are running in a live environment for setting up automation"
   type        = bool
 }
+
+variable "datahub_url" {
+  description = "Datahub URL"
+  type        = string
+}

@@ -6,3 +6,11 @@ resource "aws_ssm_parameter" "datahub_password" {
     "Name" : "Datahub Password"
   })
 }
+
+data "aws_ssm_parameter" "datahub_google_client_id" {
+  name = "/dataplatform/datahub/datahub_google_client_id"
+}
+
+data "aws_ssm_parameter" "datahub_google_client_secret" {
+  name = "/dataplatform/datahub/datahub_google_client_secret"
+}
