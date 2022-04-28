@@ -47,6 +47,10 @@ variable "container_properties" {
       name  = string
       value = string
     }))
+    secrets = list(object({
+      name      = string
+      valueFrom = string
+    }))
     mount_points = list(object({
       sourceVolume  = string
       containerPath = string

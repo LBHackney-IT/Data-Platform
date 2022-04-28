@@ -23,6 +23,29 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_policy_attachment" "datahub_role_policy_ssm" {
+  name       = "${var.short_identifier_prefix}${var.container_properties.container_name}role-policy-ssm"
+  policy_arn = aws_iam_policy.datahub_role_policy_ssm.arn
+  roles      = [aws_iam_role.task_role.name]
+}
+
+resource "aws_iam_policy" "datahub_role_policy_ssm" {
+  name   = "${var.short_identifier_prefix}${var.container_properties.container_name}policy-ssm"
+  policy = data.aws_iam_policy_document.datahub_can_access_ssm.json
+}
+
+data "aws_iam_policy_document" "datahub_can_access_ssm" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ssm:GetParameters"
+    ]
+    resources = [
+      "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/*"
+    ]
+  }
+}
+
 resource "aws_iam_role" "cloudwatch_run_ecs_events" {
   tags = var.tags
 
