@@ -1,4 +1,0 @@
-setuptools
-wheel
-boto3
-pytest-watch
