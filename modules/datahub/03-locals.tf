@@ -29,9 +29,9 @@ locals {
       { name : "AUTH_OIDC_USER_NAME_CLAIM_REGEX", value : "([^@]+)" },
     ]
     secrets = [
-      { name : "DATAHUB_SECRET", valueFrom : aws_ssm_parameter.datahub_password.name },
-      { name : "AUTH_OIDC_CLIENT_ID", valueFrom : data.aws_ssm_parameter.datahub_google_client_id.name },
-      { name : "AUTH_OIDC_CLIENT_SECRET", valueFrom : data.aws_ssm_parameter.datahub_google_client_secret.name },
+      { name : "DATAHUB_SECRET", valueFrom : aws_ssm_parameter.datahub_password.arn },
+      { name : "AUTH_OIDC_CLIENT_ID", valueFrom : data.aws_ssm_parameter.datahub_google_client_id.arn },
+      { name : "AUTH_OIDC_CLIENT_SECRET", valueFrom : data.aws_ssm_parameter.datahub_google_client_secret.arn },
     ]
     port_mappings = [
       { containerPort : 9002, hostPort : 9002 }
@@ -71,7 +71,7 @@ locals {
       { name : "UI_INGESTION_DEFAULT_CLI_VERSION", value : "0.8.26.6" },
     ]
     secrets = [
-      { name : "EBEAN_DATASOURCE_PASSWORD", value : aws_ssm_parameter.datahub_rds_password.name },
+      { name : "EBEAN_DATASOURCE_PASSWORD", valueFrom : aws_ssm_parameter.datahub_rds_password.arn },
     ]
     port_mappings = [
       { containerPort : 8080, hostPort : 8080 }
@@ -158,9 +158,9 @@ locals {
       { name : "GMS_URL", value : "http://${aws_alb.datahub_gms.dns_name}:8080" }
     ]
     secrets = [
-      { name : "DATAHUB_SYSTEM_CLIENT_SECRET", valueFrom : aws_ssm_parameter.datahub_password.name },
-      { name : "AWS_ACCESS_KEY_ID", valueFrom : aws_ssm_parameter.datahub_aws_access_key_id.name },
-      { name : "AWS_SECRET_ACCESS_KEY", valueFrom : aws_ssm_parameter.datahub_aws_secret_access_key.name },
+      { name : "DATAHUB_SYSTEM_CLIENT_SECRET", valueFrom : aws_ssm_parameter.datahub_password.arn },
+      { name : "AWS_ACCESS_KEY_ID", valueFrom : aws_ssm_parameter.datahub_aws_access_key_id.arn },
+      { name : "AWS_SECRET_ACCESS_KEY", valueFrom : aws_ssm_parameter.datahub_aws_secret_access_key.arn },
     ]
     port_mappings = []
     mount_points  = []
@@ -182,7 +182,7 @@ locals {
       { name : "DATAHUB_DB_NAME", value : aws_db_instance.datahub.identifier },
     ]
     secrets = [
-      { name : "MYSQL_PASSWORD", valueFrom : aws_ssm_parameter.datahub_rds_password.name },
+      { name : "MYSQL_PASSWORD", valueFrom : aws_ssm_parameter.datahub_rds_password.arn },
     ]
     port_mappings = []
     mount_points  = []

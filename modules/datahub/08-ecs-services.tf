@@ -12,6 +12,11 @@ module "datahub_frontend_react" {
     security_group_id       = aws_security_group.datahub_frontend_react.id
   }
   is_live_environment = var.is_live_environment
+  ssm_parameter_arns = [
+    data.aws_ssm_parameter.datahub_google_client_id.arn,
+    data.aws_ssm_parameter.datahub_google_client_secret.arn,
+    aws_ssm_parameter.datahub_password.arn,
+  ]
 }
 
 module "datahub_gms" {
@@ -28,6 +33,9 @@ module "datahub_gms" {
     security_group_id       = aws_security_group.datahub_gms.id
   }
   is_live_environment = var.is_live_environment
+  ssm_parameter_arns = [
+    aws_ssm_parameter.datahub_rds_password.arn,
+  ]
 }
 
 module "datahub_mae_consumer" {
@@ -76,6 +84,11 @@ module "datahub_actions" {
     security_group_id       = null
   }
   is_live_environment = var.is_live_environment
+  ssm_parameter_arns = [
+    aws_ssm_parameter.datahub_password.arn,
+    aws_ssm_parameter.datahub_aws_access_key_id.arn,
+    aws_ssm_parameter.datahub_aws_secret_access_key.arn
+  ]
 }
 
 module "mysql_setup" {
@@ -92,6 +105,9 @@ module "mysql_setup" {
     security_group_id       = null
   }
   is_live_environment = var.is_live_environment
+  ssm_parameter_arns = [
+    aws_ssm_parameter.datahub_rds_password.arn
+  ]
   depends_on = [
     aws_db_instance.datahub
   ]

@@ -31,7 +31,7 @@ data "template_file" "task_definition_template" {
         logDriver : "awslogs",
         options : {
           awslogs-group : var.cloudwatch_log_group_name,
-          awslogs-region : "eu-west-2",
+          awslogs-region : data.aws_region.current.name,
           awslogs-stream-prefix : "${var.short_identifier_prefix}${var.container_properties.container_name}"
         }
       },
