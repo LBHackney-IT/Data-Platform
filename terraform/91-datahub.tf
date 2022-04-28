@@ -7,6 +7,8 @@ module "datahub" {
   identifier_prefix       = local.identifier_prefix
   vpc_id                  = data.aws_vpc.network.id
   vpc_subnet_ids          = local.subnet_ids_list
+  is_live_environment     = local.is_live_environment
+  datahub_url             = var.datahub_url
   kafka_properties = {
     kafka_zookeeper_connect = module.kafka_event_streaming[0].cluster_config.zookeeper_connect_string
     kafka_bootstrap_server  = module.kafka_event_streaming[0].cluster_config.bootstrap_brokers_tls
@@ -14,7 +16,6 @@ module "datahub" {
   schema_registry_properties = {
     schema_registry_url = module.kafka_event_streaming[0].schema_registry_url
   }
-  is_live_environment = local.is_live_environment
   depends_on = [
     module.kafka_event_streaming
   ]

@@ -26,9 +26,10 @@ resource "aws_security_group_rule" "datahub_frontend_react_ingress" {
   from_port   = local.datahub_frontend_react.port
   to_port     = local.datahub_frontend_react.port
   protocol    = "tcp"
-  cidr_blocks = [
+  cidr_blocks = flatten([
     data.aws_vpc.vpc.cidr_block,
-  ]
+    var.hub_firewall_ips
+  ])
   security_group_id = aws_security_group.datahub_frontend_react.id
 }
 
@@ -59,18 +60,8 @@ resource "aws_alb_listener" "datahub_frontend_react" {
   port              = local.datahub_frontend_react.port
   protocol          = "HTTP"
 
-  //  default_action {
-  //    type             = "forward"
-  //    target_group_arn = aws_alb_target_group.datahub_frontend_react.arn
-  //  }
-
   default_action {
-    type = "fixed-response"
-
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "You've reached the DataHub Load Balancer, currently disabled pending Google Auth setup"
-      status_code  = "503"
-    }
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.datahub_frontend_react.arn
   }
 }

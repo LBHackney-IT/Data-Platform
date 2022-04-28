@@ -21,7 +21,15 @@ locals {
       { name : "SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL", value : "SSL" },
       { name : "DATAHUB_TRACKING_TOPIC", value : "DataHubUsageEvent_v1" },
       { name : "ELASTIC_CLIENT_HOST", value : aws_elasticsearch_domain.es.endpoint },
-      { name : "ELASTIC_CLIENT_PORT", value : "443" }
+      { name : "ELASTIC_CLIENT_PORT", value : "443" },
+      { name : "AUTH_OIDC_ENABLED", value : var.is_live_environment },
+      { name : "AUTH_OIDC_CLIENT_ID", value : data.aws_ssm_parameter.datahub_google_client_id.value },
+      { name : "AUTH_OIDC_CLIENT_SECRET", value : data.aws_ssm_parameter.datahub_google_client_secret.value },
+      { name : "AUTH_OIDC_DISCOVERY_URI", value : "https://accounts.google.com/.well-known/openid-configuration" },
+      { name : "AUTH_OIDC_BASE_URL", value : var.datahub_url },
+      { name : "AUTH_OIDC_SCOPE", value : "openid profile email" },
+      { name : "AUTH_OIDC_USER_NAME_CLAIM", value : "email" },
+      { name : "AUTH_OIDC_USER_NAME_CLAIM_REGEX", value : "([^@]+)" },
     ]
     port_mappings = [
       { containerPort : 9002, hostPort : 9002 }
