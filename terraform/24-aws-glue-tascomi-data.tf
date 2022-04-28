@@ -253,7 +253,7 @@ module "tascomi_applications_to_trusted" {
 
   department                 = module.department_planning
   job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
-  worker_type                = "G.1X"
+  glue_job_worker_type       = "G.1X"
   helper_module_key          = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
