@@ -28,7 +28,7 @@ resource "aws_cloudwatch_event_rule" "shutdown_notebooks" {
 
   name                = "${local.short_identifier_prefix}schedule-shutting-down-notebooks"
   description         = "Runs task to shut down all notebooks instances and glue development endpoints"
-  schedule_expression = "cron(30 18,19 ? * MON-FRI *)"
+  schedule_expression = "cron(30 18,19,23 ? * MON-FRI *)"
 }
 
 
