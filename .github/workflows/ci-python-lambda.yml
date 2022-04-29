@@ -6,7 +6,6 @@ on:
     paths:
       - 'scripts/**'
       - 'lambdas/**'
-      - 'modules/kafka-event-streaming/scripts/**'
 
 jobs:
   CI:
