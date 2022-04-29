@@ -43,7 +43,7 @@ if __name__ == "__main__":
         name_space = source_catalog_database,
         table_name = source_catalog_table
         # if the source data IS partitionned by import_date and there is a lot of historic data there that you don't need, consider using a pushdown predicate to only load a few days worth of data and speed up the job   
-        # pushdown_predicate = create_pushdown_predicate('import_date', 2)
+        # push_down_predicate = create_pushdown_predicate('import_date', 2)
     )
 
     # convert dynamic frame to data frame
