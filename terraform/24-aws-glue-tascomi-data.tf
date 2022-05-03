@@ -51,6 +51,9 @@ resource "aws_glue_catalog_database" "raw_zone_tascomi" {
 resource "aws_glue_catalog_database" "refined_zone_tascomi" {
   name = "${local.identifier_prefix}-tascomi-refined-zone"
 }
+resource "aws_glue_catalog_database" "trusted_zone_tascomi" {
+  name = "${local.identifier_prefix}-tascomi-trusted-zone"
+}
 
 # Columns type dictionary resources
 resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
@@ -250,6 +253,7 @@ module "tascomi_applications_to_trusted" {
 
   department                 = module.department_planning
   job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
+  glue_job_worker_type       = "G.1X"
   helper_module_key          = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
@@ -266,7 +270,7 @@ module "tascomi_applications_to_trusted" {
   triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
 
   crawler_details = {
-    database_name      = module.department_planning.trusted_zone_catalog_database_name
+    database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
     s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/applications_reporting"
   }
 
