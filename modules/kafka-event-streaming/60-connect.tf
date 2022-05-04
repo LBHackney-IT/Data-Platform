@@ -55,7 +55,7 @@ resource "aws_mskconnect_connector" "topics" {
     "schema.compatibility"                = "BACKWARD"
     "errors.log.enable"                   = "True"
     "partitioner.class"                   = "io.confluent.connect.storage.partitioner.TimeBasedPartitioner"
-    "path.format"                         = "'import_year'=YYYY/'import_month'=MM/'import_day'=dd"
+    "path.format"                         = "'import_year'=YYYY/'import_month'=MM/'import_day'=dd/'import_date'=YYYYMMdd"
     "locale"                              = "en-GB"
     "timezone"                            = "UTC"
     "partition.duration.ms"               = "86400000"
