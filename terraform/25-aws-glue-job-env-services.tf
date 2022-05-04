@@ -24,17 +24,17 @@ module "alloy_api_ingestion_raw_env_services" {
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "alloy_api_ingestion"
   schedule                   = "cron(0 23 ? * MON-FRI *)"
-  for_each                   = toset(data.aws_s3_object.aqs_query_bodies.body)
+  for_each                   = toset(data.aws_s3_object.aqs_query_bodies)
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
     "--s3_bucket_target"        = module.raw_zone.bucket_id
     "--s3_prefix"               = "env-services/alloy/api-responses/"
     "--secret_name"             = "${local.identifier_prefix}/env-services/alloy-api-key"
-    "--aqs"                     = each.key
+    "--aqs"                     = each.body
     "--database"                = module.department_environmental_services.raw_zone_catalog_database_name
-    "--filename"                = "DW Education&Compliance Inspection/DW Education&Compliance Inspection.csv"
-    "--resource"                = "dw_education_and_compliance_inspection"
+    "--filename"                = "${each.key}/${each.key}.csv"
+    "--resource"                = "${each.key}"
   }
   crawler_details = {
     database_name      = module.department_environmental_services.raw_zone_catalog_database_name
