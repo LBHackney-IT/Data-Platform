@@ -11,12 +11,15 @@ resource "aws_mskconnect_custom_plugin" "avro_converter_s3_sink" {
 }
 
 locals {
-  topics = "tenure_api"
+  topics = [
+    "tenure_api"
+  ]
 }
 
 resource "aws_mskconnect_connector" "topics" {
-  name        = "topics"
-  description = "Kafka connector to write events to S3"
+  for_each    = toset(local.topics)
+  name        = replace(lower(each.value), "/[^a-zA-Z0-9]+/", "-")
+  description = "Kafka connector to write ${each.value} events to S3"
 
   kafkaconnect_version = "2.7.1"
 
@@ -40,7 +43,7 @@ resource "aws_mskconnect_connector" "topics" {
     "connector.class"                     = "io.confluent.connect.s3.S3SinkConnector"
     "flush.size"                          = "1"
     "tasks.max"                           = "2"
-    "topics"                              = local.topics
+    "topics"                              = each.value
     "topics.dir"                          = "event-streaming"
     "s3.bucket.name"                      = var.s3_bucket_to_write_to.bucket_id
     "s3.sse.kms.key.id"                   = var.s3_bucket_to_write_to.kms_key_id
