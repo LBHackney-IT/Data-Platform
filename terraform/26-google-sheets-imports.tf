@@ -592,8 +592,7 @@ module "sandbox_stevefarr_covid_locations" {
   enable_glue_trigger             = false
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
-
-
+   
 module "sandbox_sanch_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -607,7 +606,7 @@ module "sandbox_sanch_covid_vaccinations" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  google_sheets_document_id       = "1iyooBu5xEGRFyej4oqkUIUCt36RbDUlkXkv_wX7Pz1w"
+  google_sheets_document_id       = "1vhChFVYjn78XmCb1ZwodCwWy3YXq7hIyToENsfEgRbc"
   google_sheets_worksheet_name    = "vaccinations"
   department                      = module.department_sandbox
   dataset_name                    = "sanch_covid_vaccinations"
@@ -628,7 +627,7 @@ module "sandbox_sanch_covid_locations" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  google_sheets_document_id       = "1iyooBu5xEGRFyej4oqkUIUCt36RbDUlkXkv_wX7Pz1w"
+  google_sheets_document_id       = "1vhChFVYjn78XmCb1ZwodCwWy3YXq7hIyToENsfEgRbc"
   google_sheets_worksheet_name    = "locations"
   department                      = module.department_sandbox
   dataset_name                    = "sanch_covid_locations"
