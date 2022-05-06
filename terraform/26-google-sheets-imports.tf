@@ -673,7 +673,7 @@ module "sandbox_jlayton_covid_locations" {
   google_sheets_document_id       = "1BacwEndkvxOsmst5t9m6kGABkLKTLCzRDUML9TtJAaM"
   google_sheets_worksheet_name    = "vaccinations"
   department                      = module.department_sandbox
-  dataset_name                    = "jlayton_covid_locations"
+  dataset_name                    = "jlayton_covid_vaccinations"
   enable_glue_trigger             = false
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
