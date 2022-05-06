@@ -1,0 +1,28 @@
+module "liberator_fpns_to_refined" {
+  source = "../modules/aws-glue-job"
+
+  department                 = module.department_env_enforcement
+  job_name                   = "${local.short_identifier_prefix}liberator_fpns_refined"
+  glue_job_worker_type       = "G.1X"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  job_parameters = {
+    "--job-bookmark-option"     = "job-bookmark-enable"
+    "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/fpn_tickets"
+    "--enable-glue-datacatalog" = "true"
+    "--source_catalog_database" = aws_glue_catalog_database.raw_zone_env_enforcement.name
+    "--source_catalog_table"    = "liberator_fpn_tickets"
+    "--source_catalog_table2"   = "liberator_fpn_payments"
+  
+  }
+  script_name          = "liberator_fpns_refined"
+  triggered_by_crawler = module.env_enforcement_create_daily_snapshot.crawler_name
+
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.refined_zone_env_enforcement.name
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/env-enforcement/fpn_tickets"
+  }
+
+
+}
