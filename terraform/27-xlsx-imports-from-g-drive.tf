@@ -93,27 +93,27 @@ module "env_enforcement_estate_cleaning" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  google_sheets_document_id      = "1brqikq1CaMGqujqWTKa4S71NYoOpDP2p"
+  google_sheets_document_id      = "1swC26l9OdqCKMmox8h5nG2iEBtAUP-DA"
   glue_job_name                  = "Estate Cleaning"
   output_folder_name             = "estate-cleaning"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
-  input_file_name                = "c_r_cleaner_report__areas_1_-4_from_january_2022.xlsx"
+  input_file_name                = "c_r_cleaner_report_areas_1-4_from_january_2022.xlsx"
   worksheets = {
     sheet1 : {
       header_row_number = 1
-      worksheet_name    = "Estate cleaning Area 1"
+      worksheet_name    = "Area 1"
     }
     sheet2 : {
       header_row_number = 1
-      worksheet_name    = "Estate cleaning Area 2"
+      worksheet_name    = "Area 2"
     }
     sheet3 : {
       header_row_number = 1
-      worksheet_name    = "Estate cleaning Area 3"
+      worksheet_name    = "Area 3"
     }
     sheet4 : {
       header_row_number = 1
-      worksheet_name    = "Estate cleaning Area 4"
+      worksheet_name    = "Area 4"
     }
   }
 }
