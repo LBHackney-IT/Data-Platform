@@ -1,4 +1,5 @@
 import sys
+import os
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -8,6 +9,29 @@ from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql import SQLContext
 
 from helpers.helpers import get_glue_env_var, add_import_time_columns, clean_column_names, PARTITION_KEYS
+
+
+def infer_file_type(file_path):
+    file_extension = os.path.splitext(file_path)[1]
+    return file_extension.lower()
+
+
+def read_file_to_dataframe(file_extension):
+    if file_extension == "xlsx":
+        dataframe = sqlContext.read.format("com.crealytics.spark.excel") \
+            .option("header", "true") \
+            .option("inferSchema", "true") \
+            .option("dataAddress", f'\'{worksheet_name}\'!A{int(header_row_number)}') \
+            .load(s3_bucket_source)
+    elif file_extension == "csv":
+        dataframe = sqlContext.read.format("csv").option("header", "true").load(s3_bucket_source)
+
+    dataframe = clean_column_names(dataframe)
+    # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
+    dataframe = dataframe.na.drop('all')
+    dataframe = add_import_time_columns(dataframe)
+    return dataframe
+
 
 s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
@@ -24,16 +48,8 @@ job.init(args['JOB_NAME'], args)
 
 sqlContext = SQLContext(sc)
 
-df = sqlContext.read.format("com.crealytics.spark.excel") \
-    .option("header", "true") \
-    .option("inferSchema", "true") \
-    .option("dataAddress", f'\'{worksheet_name}\'!A{int(header_row_number)}') \
-    .load(s3_bucket_source)
-
-df = clean_column_names(df)
-
-df = df.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
-df = add_import_time_columns(df)
+file_type = infer_file_type(s3_bucket_source)
+df = read_file_to_dataframe(file_type)
 
 frame = DynamicFrame.fromDF(df, glueContext, "DataFrame")
 
