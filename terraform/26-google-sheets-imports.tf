@@ -692,7 +692,6 @@ module "sandbox_jlayton_covid_locations" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   google_sheets_document_id       = "1-jBGmD0ZQiGiHHZOUxiiz2_PnGw-CEEmN5O4VvMAaco"
   google_sheets_worksheet_name    = "locations"
   department                      = module.department_sandbox
@@ -715,7 +714,6 @@ module "sandbox_jlayton_covid_locations" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = aws_secretsmanager_secret.sheets_credentials_housing.name
   google_sheets_document_id       = "1-jBGmD0ZQiGiHHZOUxiiz2_PnGw-CEEmN5O4VvMAaco"
   google_sheets_worksheet_name    = "vaccinations"
   department                      = module.department_sandbox
