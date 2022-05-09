@@ -677,7 +677,7 @@ module "sandbox_jlayton_covid_vaccinations" {
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
 
-      module "sandbox_everlander_covid_locations" {
+module "sandbox_everlander_covid_locations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
@@ -697,9 +697,9 @@ module "sandbox_jlayton_covid_vaccinations" {
   enable_glue_trigger             = false
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
-    
 
-      module "sandbox_everlander_covid_vaccinations" {
+
+module "sandbox_everlander_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
