@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     df = data_source.toDF()
 
-    if (df.count() > 0) :
+    if not (df.rdd.isEmpty()) :
 
     ## Data processing Starts
         
