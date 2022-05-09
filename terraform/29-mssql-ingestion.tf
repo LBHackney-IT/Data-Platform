@@ -7,12 +7,10 @@ module "academy_mssql_database_ingestion" {
   name                        = "academy-benefits-housing-needs-and-revenues"
   jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHALiveRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHALiveRBViews database"
-  jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]
-  database_availability_zone  = "eu-west-2a"
+  jdbc_connection_subnet      = data.aws_subnet.network[local.instance_subnet_id]
   database_secret_name        = "database-credentials/lbhaliverbviews-benefits-housing-needs-revenues"
   identifier_prefix           = local.short_identifier_prefix
   create_workflow             = false
-  vpc_id                      = data.aws_vpc.network.id
 }
 
 resource "aws_glue_catalog_database" "landing_zone_academy" {
