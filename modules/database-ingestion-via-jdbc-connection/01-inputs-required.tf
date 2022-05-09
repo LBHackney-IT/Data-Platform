@@ -12,11 +12,6 @@ variable "jdbc_connection_description" {
   type        = string
 }
 
-variable "database_availability_zone" {
-  description = "Availability zone of the database to be used in the Glue connection"
-  type        = string
-}
-
 variable "database_secret_name" {
   description = "Name of secret for database credentials"
   type        = string
@@ -27,18 +22,16 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "jdbc_connection_subnet_id" {
+variable "jdbc_connection_subnet" {
   description = "Subnet used for the JDBC connection"
-  type        = string
+  type = object({
+    id                = string
+    availability_zone = string
+    vpc_id            = string
+  })
 }
 
 variable "identifier_prefix" {
   description = "Project wide short resource identifier prefix"
   type        = string
 }
-
-variable "vpc_id" {
-  description = "Id of Data Platform VPC"
-  type        = string
-}
-
