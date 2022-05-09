@@ -11,7 +11,7 @@ module "ryan_test_csv" {
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   jars_key                       = aws_s3_bucket_object.jars.key
-  spreadsheet_import_script_key  = aws_s3_bucket_object.xlsx_import_script.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
   identifier_prefix              = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   landing_zone_bucket_id         = module.landing_zone.bucket_id
