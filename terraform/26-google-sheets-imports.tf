@@ -592,7 +592,7 @@ module "sandbox_stevefarr_covid_locations" {
   enable_glue_trigger             = false
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
-   
+
 module "sandbox_sanch_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -655,8 +655,8 @@ module "sandbox_jlayton_covid_locations" {
   enable_glue_trigger             = false
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
-    
-  module "sandbox_jlayton_covid_vaccinations" {
+
+module "sandbox_jlayton_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
