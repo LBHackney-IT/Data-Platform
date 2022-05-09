@@ -1,9 +1,9 @@
 output "job_name" {
-  value = module.xlsx_import.job_name
+  value = module.spreadsheet_import.job_name
 }
 
 output "job_arn" {
-  value = module.xlsx_import.job_arn
+  value = module.spreadsheet_import.job_arn
 }
 
 output "catalog_table" {
@@ -23,5 +23,5 @@ output "workflow_arn" {
 }
 
 output "crawler_name" {
-  value = module.xlsx_import.crawler_name
+  value = module.spreadsheet_import.crawler_name
 }

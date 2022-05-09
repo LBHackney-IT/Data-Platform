@@ -10,14 +10,14 @@ module "import_file_from_g_drive" {
   service_area                   = var.department.identifier
   file_id                        = var.google_sheets_document_id
   file_name                      = var.input_file_name
-  workflow_names                 = [for job in module.import_data_from_xlsx_sheet_job : job.workflow_name]
-  workflow_arns                  = [for job in module.import_data_from_xlsx_sheet_job : job.workflow_arn]
+  workflow_names                 = [for job in module.import_data_from_spreadsheet_job : job.workflow_name]
+  workflow_arns                  = [for job in module.import_data_from_spreadsheet_job : job.workflow_arn]
 }
 
-module "import_data_from_xlsx_sheet_job" {
+module "import_data_from_spreadsheet_job" {
   for_each = var.worksheets
 
-  source                         = "../import-data-from-xlsx-sheet-job"
+  source                         = "../import-data-from-spreadsheet-job"
   department                     = var.department
   glue_scripts_bucket_id         = var.glue_scripts_bucket_id
   glue_temp_storage_bucket_id    = var.glue_temp_storage_bucket_id
@@ -26,7 +26,7 @@ module "import_data_from_xlsx_sheet_job" {
   helper_module_key              = var.helper_module_key
   pydeequ_zip_key                = var.pydeequ_zip_key
   jars_key                       = var.jars_key
-  xlsx_import_script_key         = var.xlsx_import_script_key
+  spreadsheet_import_script_key  = var.spreadsheet_import_script_key
   lambda_artefact_storage_bucket = var.lambda_artefact_storage_bucket
   landing_zone_bucket_id         = var.landing_zone_bucket_id
   glue_job_name                  = "${var.glue_job_name} - ${each.value.worksheet_name}"
