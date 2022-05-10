@@ -10,6 +10,7 @@ module "liberator_fpns_to_refined" {
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/fpn_tickets"
+    "--s3_bucket_target2"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/fpn_tickets_to_geocode"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.raw_zone_env_enforcement.name
     "--source_catalog_table"    = "liberator_fpn_tickets"
