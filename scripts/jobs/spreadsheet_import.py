@@ -11,18 +11,18 @@ from pyspark.sql import SQLContext
 from helpers.helpers import get_glue_env_var, add_import_time_columns, clean_column_names, PARTITION_KEYS
 
 
-def create_dataframe_from_xlsx():
+def create_dataframe_from_xlsx(sql_context, worksheet_name, header_row_number, file_path):
     dataframe = sql_context.read.format("com.crealytics.spark.excel") \
         .option("header", "true") \
         .option("inferSchema", "true") \
         .option("dataAddress", f'\'{worksheet_name}\'!A{int(header_row_number)}') \
-        .load(s3_bucket_source)
+        .load(file_path)
     dataframe = clean_and_enhance_dataframe(dataframe)
     return dataframe
 
 
-def create_dataframe_from_csv():
-    dataframe = sql_context.read.format("csv").option("header", "true").load(s3_bucket_source)
+def create_dataframe_from_csv(sql_context, file_path):
+    dataframe = sql_context.read.format("csv").option("header", "true").load(file_path)
     dataframe = clean_and_enhance_dataframe(dataframe)
     return dataframe
 
@@ -40,20 +40,18 @@ def infer_file_type(file_path):
     return file_extension.lower().lstrip(".")
 
 
-def load_file(file_extension):
+def load_file(file_extension, sql_context, worksheet_name, header_row_number, file_path):
     if file_extension == "xlsx":
-        dataframe = create_dataframe_from_xlsx()
+        dataframe = create_dataframe_from_xlsx(sql_context, worksheet_name, header_row_number, file_path)
     elif file_extension == "csv":
-        dataframe = create_dataframe_from_csv()
+        dataframe = create_dataframe_from_csv(sql_context, file_path)
 
     return dataframe
 
 
 if __name__ == "__main__":
-    s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
     s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
-    header_row_number = get_glue_env_var('header_row_number', 0)
-    worksheet_name = get_glue_env_var('worksheet_name', '')
+    s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 
     ## @params: [JOB_NAME]
     args = getResolvedOptions(sys.argv, ['JOB_NAME'])
@@ -62,10 +60,9 @@ if __name__ == "__main__":
     spark = glueContext.spark_session
     job = Job(glueContext)
     job.init(args['JOB_NAME'], args)
-    sql_context = SQLContext(sc)
 
     file_type = infer_file_type(s3_bucket_source)
-    df = load_file(file_type)
+    df = load_file(file_type, SQLContext(sc), get_glue_env_var('worksheet_name', ''), get_glue_env_var('header_row_number', 0), s3_bucket_source)
 
     frame = DynamicFrame.fromDF(df, glueContext, "DataFrame")
 
