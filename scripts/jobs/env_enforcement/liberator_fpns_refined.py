@@ -50,6 +50,7 @@ if __name__ == "__main__":
     source_catalog_table2 = get_glue_env_var('source_catalog_table2','')
     source_catalog_database = get_glue_env_var('source_catalog_database', '')
     s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
+    s3_bucket_target2 = get_glue_env_var('s3_bucket_target2', '')
  
     # start the Spark session and the logger
     glueContext = GlueContext(SparkContext.getOrCreate()) 
@@ -100,6 +101,11 @@ if __name__ == "__main__":
         
     #cols to drop
     output = output.drop("ticket_ref_payment" )
+    
+    # create output to gecode
+    
+    geo = output.select("ticket_ref","latitude","longitude","import_year", "import_month", "import_day", "import_date") 
+    geo=geo.filter(geo.latitude != "")
 
 
     # If the source data is NOT partitioned by import_date, create the necessary import_ columns now and populate them with today's date so the result data gets partitioned as per the DP standards. 
@@ -113,18 +119,25 @@ if __name__ == "__main__":
     clear_target_folder(s3_bucket_target)
 
     # Write the data to S3
-    '''parquet_data = glueContext.write_dynamic_frame.from_options(
-        frame=dynamic_frame,
-        connection_type="s3",
-        format="parquet",
-        connection_options={"path": s3_bucket_target, "partitionKeys": PARTITION_KEYS},
-        transformation_ctx="target_data_to_write")
-    '''
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
         format="parquet",
         connection_options={"path": s3_bucket_target, "partitionKeys": ['import_year', 'import_month', 'import_day', 'import_date']},
+        transformation_ctx="target_data_to_write")
+    
+        #dataframe for geo output
+    dynamic_frame = DynamicFrame.fromDF(geo.repartition(1), glueContext, "target_data_to_write")
+    
+    clear_target_folder(s3_bucket_target2)
+
+    # Write the data to S3 for geocode
+
+    parquet_data = glueContext.write_dynamic_frame.from_options(
+        frame=dynamic_frame,
+        connection_type="s3",
+        format="parquet",
+        connection_options={"path": s3_bucket_target2, "partitionKeys": ['import_year', 'import_month', 'import_day', 'import_date']},
         transformation_ctx="target_data_to_write")
 
 job.commit()
