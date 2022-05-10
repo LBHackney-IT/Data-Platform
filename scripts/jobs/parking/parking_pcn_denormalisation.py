@@ -119,21 +119,29 @@ WHERE import_date = (Select MAX(import_date) from calendar)),
 
 /*** Identify those PCNs with Disputed Corresp ***/ 
 Corresp as (
-SELECT DISTINCT ticketserialnumber, import_date
-FROM liberator_pcn_ic 
-where import_Date = (Select MAX(import_date) from liberator_pcn_ic)
-AND date_received != '' AND response_generated_at != ''
-AND char_length(ticketserialnumber) = 10
-AND Serviceable IN ('Challenges','Key worker','Removals','TOL','Charge certificate','Representations')),
+   SELECT DISTINCT 
+      ticketserialnumber, import_date
+   FROM liberator_pcn_ic 
+   where import_Date = (Select MAX(import_date) from liberator_pcn_ic)
+   AND date_received != '' AND response_generated_at != ''
+   AND char_length(ticketserialnumber) = 10
+   AND Serviceable IN ('Challenges','Key worker','Removals','TOL','Charge certificate','Representations')),
 
 /*** Identify those PCNs with Keyworker Disputed Corresp ***/ 
 KeyWorker_Dispute as (
-SELECT DISTINCT ticketserialnumber, import_date
-FROM liberator_pcn_ic 
-where import_Date = (Select MAX(import_date) from liberator_pcn_ic)
-AND date_received != '' AND response_generated_at != ''
-AND char_length(ticketserialnumber) = 10
-AND Serviceable IN ('Key worker'))
+   SELECT DISTINCT 
+      ticketserialnumber, import_date
+   FROM liberator_pcn_ic 
+   where import_Date = (Select MAX(import_date) from liberator_pcn_ic)
+   AND date_received != '' AND response_generated_at != ''
+   AND char_length(ticketserialnumber) = 10
+   AND Serviceable IN ('Key worker')),
+
+pcn_warrant_redistribution as (
+   SELECT *, ROW_NUMBER() OVER ( PARTITION BY PCN
+                     ORDER BY PCN, processedon DESC) row_num 
+   FROM liberator_pcn_warrant_redistribution
+   WHERE import_date = (Select MAX(import_date) from liberator_pcn_warrant_redistribution))
 
 /*** Output the data ***/
 SELECT A.ticketserialnumber       AS PCN,
@@ -252,19 +260,22 @@ SELECT A.ticketserialnumber       AS PCN,
         
         -- Event Log
         F.*,
-        current_date() as import_date,
-       
-        current_timestamp() as ImportDatTime,
-       
-        A.import_year, A.import_month, A.import_day, A.import_date
+        
+        current_timestamp() as ImportDateTime,   
+        
+        replace(cast(current_date() as string),'-','') as import_date,
+
+        cast(A.import_year as string)  as import_year, 
+        cast(A.import_month as string) as import_month, 
+        cast(A.import_day as string)   as import_day
        
 FROM liberator_pcn_tickets as A
 
 LEFT JOIN liberator_pcn_payments               as B ON A.ticketserialnumber = B.ticket_ref AND
 (A.import_date = B.import_date)
 
-LEFT JOIN liberator_pcn_warrant_redistribution as C ON A.ticketserialnumber = C.pcn AND
-(A.import_date = C.import_date)
+LEFT JOIN pcn_warrant_redistribution as C ON A.ticketserialnumber = C.pcn AND
+(A.import_date = C.import_date) AND C.row_num = 1
 
 LEFT JOIN Bailiff as D ON A.ticketserialnumber = D.ticketreference AND
 (A.import_date = D.import_date) AND D.row_num = 1
