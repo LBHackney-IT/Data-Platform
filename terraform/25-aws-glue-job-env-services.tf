@@ -15,12 +15,12 @@ resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
   schedule = "cron(0 23 ? * MON-FRI *)"
   enabled  = local.is_live_environment
 
-  actions {
+  dynamic "actions" {
     job_name = module.alloy_api_ingestion_raw_env_services.job_name
     arguments = {
-      "--aqs"      = file(each.value)
-      "--filename" = "trimsuffix(${each.value},\".json\")/trimsuffix(${each.value}, \".json\").csv"
-      "--resource" = "trimsuffix(${each.value},\".json\")"
+      "--aqs"      = file(actions.value)
+      "--filename" = "trimsuffix(${actions.value},\".json\")/trimsuffix(${actions.value}, \".json\").csv"
+      "--resource" = "trimsuffix(${actions.value},\".json\")"
     }
   }
 }
