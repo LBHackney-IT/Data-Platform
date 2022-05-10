@@ -9,18 +9,20 @@ resource "aws_s3_bucket_object" "aqs" {
 
 resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
   tags     = module.tags.values
-  for_each = fileset(path.module, "../jobs/env_services/aqs/*.json")
-  name     = "${local.short_identifier_prefix}Alloy ${title(replace(each.value, "_", " "))} Ingestion Trigger"
+  name     = "${local.short_identifier_prefix}Alloy Ingestion Trigger"
   type     = "SCHEDULED"
   schedule = "cron(0 23 ? * MON-FRI *)"
   enabled  = local.is_live_environment
 
   dynamic "actions" {
-    job_name = module.alloy_api_ingestion_raw_env_services.job_name
-    arguments = {
-      "--aqs"      = file(actions.value)
-      "--filename" = "trimsuffix(${actions.value},\".json\")/trimsuffix(${actions.value}, \".json\").csv"
-      "--resource" = "trimsuffix(${actions.value},\".json\")"
+    for_each = fileset(path.module, "../jobs/env_services/aqs/*.json")
+    content {
+      job_name = module.alloy_api_ingestion_raw_env_services.job_name
+      arguments = {
+        "--aqs"      = file(actions.value)
+        "--filename" = "trimsuffix(${actions.value},\".json\")/trimsuffix(${actions.value}, \".json\").csv"
+        "--resource" = "trimsuffix(${actions.value},\".json\")"
+      }
     }
   }
 }
@@ -48,18 +50,3 @@ module "alloy_api_ingestion_raw_env_services" {
     table_prefix       = "alloy_"
   }
 }
-
-/*
-previous approach to read json from s3 bucket:
-data "aws_s3_objects" "alloy_aqs_objects" {
-  bucket = ""
-}
-
-data "aws_s3_object" "aqs_query_bodies" {
-  count  = length(data.aws_s3_objects.alloy_aqs_objects.keys)
-  key    = element(data.aws_s3_objects.alloy_aqs_objects.keys, count.index)
-  body   = element(data.aws_s3_objects.alloy_aqs_objects.body, count.index)
-  bucket = data.aws_s3_objects.alloy_aqs_objects.bucket
-}
-*/
-
