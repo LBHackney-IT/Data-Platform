@@ -21,18 +21,18 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
 
-# Script generated for node parking_ceo_on_street
-parking_ceo_on_street_node1 = glueContext.create_dynamic_frame.from_catalog(
+# Script generated for node Amazon S3
+AmazonS3_node1628173244776 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-stg-liberator-refined-zone",
     table_name="parking_ceo_on_street",
-    transformation_ctx="parking_ceo_on_street_node1",
+    transformation_ctx="AmazonS3_node1628173244776",
 )
 
-# Script generated for node parking_ceo_summary
-parking_ceo_summary_node1637745853936 = glueContext.create_dynamic_frame.from_catalog(
+# Script generated for node Amazon S3
+AmazonS3_node1632912445458 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-stg-liberator-refined-zone",
     table_name="parking_ceo_summary",
-    transformation_ctx="parking_ceo_summary_node1637745853936",
+    transformation_ctx="AmazonS3_node1632912445458",
 )
 
 # Script generated for node ApplyMapping
@@ -43,18 +43,23 @@ Parking_CEO_Average_On_Street
 This SQL creates the average CEO figures for time on street, breaks, etc
 
 15/11/2021 - create SQL
-*****************************************************************************************************************************/
-/** Obtain the Time On Street Average***/
-WITH CEO_TimeOnStreet_Summary as (
+
+******************************************************************************************************************************/
+
+/******************************************************************************************************************************
+Obtain the Time On Street Average
+******************************************************************************************************************************/
+with CEO_TimeOnStreet_Summary as (
    SELECT
       CEO, patrol_date,
       CAST(substr(cast(patrol_date as string), 1, 8)||'01' as date) as MonthYear,
       SUM(timeonstreet_secs) as CEODailyBeatTime_secs
+
    FROM parking_ceo_on_street
    WHERE import_Date = (Select MAX(import_date) from parking_ceo_on_street) and timeonstreet_secs > 0
    GROUP BY CEO, patrol_date
    order by CEO, patrol_date),
-/*** Obtain the monthly average ***/
+
 Monthly_AVG as (
    SELECT
       MonthYear, avg(CEODailyBeatTime_secs) as AVG_Month,
@@ -63,6 +68,7 @@ Monthly_AVG as (
    FROM CEO_TimeOnStreet_Summary
    GROUP BY MonthYear
    ORDER BY MonthYear),
+   
 /******************************************************************************************************************************
 Get the time to the first Beat Street
 ******************************************************************************************************************************/   Start_Time as ( 
@@ -111,7 +117,7 @@ CEO_Break_Full as (
       
    FROM parking_ceo_summary
    WHERE import_Date = (Select MAX(import_date) from parking_ceo_summary)),
-/*** Average the figures ***/
+
 Monthly_Break_AVG as (
    SELECT
       MonthYear, 
@@ -135,7 +141,7 @@ SELECT
 
    current_timestamp() as ImportDateTime,
    
-   replace(cast(current_date() as string),'-','') as import_date,
+   current_date as import_date,
     
     -- Add the Import date
     Year(current_date) as import_year, month(current_date) as import_month, day(current_date) as import_day    
@@ -143,13 +149,14 @@ SELECT
 FROM Monthly_Break_AVG as A
 LEFT JOIN Monthly_AVG      as B ON A.MonthYear = B.MonthYear
 LEFT JOIN AVG_Time_to_Beat as C ON A.MonthYear = C.MonthYear
+
 """
 ApplyMapping_node2 = sparkSqlQuery(
     glueContext,
     query=SqlQuery0,
     mapping={
-        "parking_ceo_on_street": parking_ceo_on_street_node1,
-        "parking_ceo_summary": parking_ceo_summary_node1637745853936,
+        "parking_ceo_on_street": AmazonS3_node1628173244776,
+        "parking_ceo_summary": AmazonS3_node1632912445458,
     },
     transformation_ctx="ApplyMapping_node2",
 )
@@ -159,7 +166,7 @@ S3bucket_node3 = glueContext.getSink(
     path="s3://dataplatform-stg-refined-zone/parking/liberator/Parking_CEO_Average_On_Street/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
+    partitionKeys=["import_year", "import_month", "import_day"],
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )
