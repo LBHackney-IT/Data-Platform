@@ -105,9 +105,10 @@ if __name__ == "__main__":
     # create output to gecode
     
     geo = output.select("ticket_ref","latitude","longitude","import_year", "import_month", "import_day", "import_date") 
-    geo=geo.filter(geo.latitude != "")
-
-
+    geo = geo.filter(geo.latitude.isNotNull())
+    geo = geo.withColumnRenamed("ticket_ref","id")
+    geo = geo.withColumn("liberator", lit('noiseworks'))
+ 
     # If the source data is NOT partitioned by import_date, create the necessary import_ columns now and populate them with today's date so the result data gets partitioned as per the DP standards. 
     # Clarification: You normally won't use this if you have used pushdown_predicate and/or get_latest_partition earlier (unless you have dropped or renamed the import_ columns of the source data and want fresh dates to partition the result by processing date)
     # df = add_import_time_columns(df)
