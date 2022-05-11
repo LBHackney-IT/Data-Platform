@@ -77,7 +77,8 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
   max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
-  glue_job_timeout                = 300
+  glue_job_timeout                = 420
+  glue_job_worker_type            = "G.1X"
   job_parameters = {
     "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
