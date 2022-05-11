@@ -15,7 +15,7 @@ resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
   enabled  = local.is_live_environment
 
   dynamic "actions" {
-    for_each = fileset(path.module, "../jobs/env_services/aqs/*.json")
+    for_each = fileset(path.module, "../scripts/jobs/env_services/aqs/*json")
     content {
       job_name = module.alloy_api_ingestion_raw_env_services.job_name
       arguments = {
