@@ -25,8 +25,8 @@ variable "glue_scripts_bucket_id" {
   type        = string
 }
 
-variable "xlsx_import_script_key" {
-  description = "XLSX sheets import script key"
+variable "spreadsheet_import_script_key" {
+  description = "Spreadsheet import script key"
   type        = string
 }
 
@@ -80,12 +80,12 @@ variable "data_set_name" {
 }
 
 variable "input_file_name" {
-  description = "XLSX input file name"
+  description = "Spreadsheet input file name"
   type        = string
 }
 
 variable "worksheet_name" {
-  description = "Name of xlsx worksheet in google drive"
+  description = "Name of spreadsheet worksheet in google drive"
   type        = string
 }
 

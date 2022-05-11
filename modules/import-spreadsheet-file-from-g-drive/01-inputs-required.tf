@@ -25,8 +25,8 @@ variable "glue_scripts_bucket_id" {
   type        = string
 }
 
-variable "xlsx_import_script_key" {
-  description = "XLSX sheets import script key"
+variable "spreadsheet_import_script_key" {
+  description = "Spreadsheet import script key"
   type        = string
 }
 

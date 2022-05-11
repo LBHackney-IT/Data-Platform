@@ -1,2 +1,3 @@
 pytest-watch
 freezegun
+pytest-mock
