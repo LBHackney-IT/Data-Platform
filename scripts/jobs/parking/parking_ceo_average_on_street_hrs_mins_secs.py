@@ -6,6 +6,9 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
+from helpers.helpers import get_glue_env_var
+environment = get_glue_env_var("environment")
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -23,47 +26,54 @@ job.init(args["JOB_NAME"], args)
 
 # Script generated for node Amazon S3
 AmazonS3_node1628173244776 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-refined-zone",
+    database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="parking_ceo_on_street",
     transformation_ctx="AmazonS3_node1628173244776",
 )
 
 # Script generated for node Amazon S3
-AmazonS3_node1632912445458 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-refined-zone",
+AmazonS3_node1638273151502 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="parking_ceo_summary",
-    transformation_ctx="AmazonS3_node1632912445458",
+    transformation_ctx="AmazonS3_node1638273151502",
 )
 
 # Script generated for node ApplyMapping
 SqlQuery0 = """
 /******************************************************************************************************************************
-Parking_CEO_Average_On_Street
+Parking_CEO_Average_On_Street_hrs_mins_secs
 
 This SQL creates the average CEO figures for time on street, breaks, etc
 
 15/11/2021 - create SQL
 
 ******************************************************************************************************************************/
+/*** Collect the parking_ceo_on_street data ***/
+With On_Street as (
+   SELECT
+      ceo, patrol_date, officer_patrolling_date, street, cpzname, 
+      status_flag, beat, beatname, timeonstreet_secs
+   FROM parking_ceo_on_street
+   WHERE import_Date = (Select MAX(import_date) from parking_ceo_on_street)),
 
-/******************************************************************************************************************************
-Obtain the Time On Street Average
-******************************************************************************************************************************/
-with CEO_TimeOnStreet_Summary as (
+/*** Obtain the Time On Street Average ***/
+CEO_TimeOnStreet_Summary as (
    SELECT
       CEO, patrol_date,
       CAST(substr(cast(patrol_date as string), 1, 8)||'01' as date) as MonthYear,
       SUM(timeonstreet_secs) as CEODailyBeatTime_secs
 
-   FROM parking_ceo_on_street
-   WHERE import_Date = (Select MAX(import_date) from parking_ceo_on_street) and timeonstreet_secs > 0
+   FROM On_Street
+   WHERE timeonstreet_secs > 0
    GROUP BY CEO, patrol_date
    order by CEO, patrol_date),
 
+/*** Calculate the monthly BEAT average ***/
 Monthly_AVG as (
    SELECT
       MonthYear, avg(CEODailyBeatTime_secs) as AVG_Month,
-      CAST(from_unixtime(avg(CEODailyBeatTime_secs),'hh:mm:ss a') as string) as Format_Avg
+      /*CAST(time '00:00:00' + avg(CEODailyBeatTime_secs) * interval '1' second as varchar) as Format_Avg*/
+     CAST(from_unixtime(avg(CEODailyBeatTime_secs),'hh:mm:ss') as string) as Format_Avg      
   
    FROM CEO_TimeOnStreet_Summary
    GROUP BY MonthYear
@@ -71,37 +81,46 @@ Monthly_AVG as (
    
 /******************************************************************************************************************************
 Get the time to the first Beat Street
-******************************************************************************************************************************/   Start_Time as ( 
+******************************************************************************************************************************/ 
+/*** Get the first CEO record ***/
+Start_Time as ( 
    SELECT
       CEO, patrol_date, officer_patrolling_date StartTime
 
-   FROM parking_ceo_on_street
-   WHERE import_Date = (Select MAX(import_date) from parking_ceo_on_street) AND beatname != ''
+   FROM On_Street
+   WHERE beatname != ''
    AND Status_flag IN ('SSS')),
-
+   
+/*** Get the first beat street start record ***/
 First_Street_Time as ( 
- SELECT
+   SELECT
       CEO, patrol_date, MIN(officer_patrolling_date) FirstBeatStreet
-   FROM parking_ceo_on_street
-   WHERE import_Date = (Select MAX(import_date) from parking_ceo_on_street) AND beatname != ''
+   FROM On_Street
+   WHERE beatname != ''
    AND Status_flag IN ('SS')
    GROUP BY CEO, patrol_date),
-  
+   
+/*** Calculate the time difference ***/ 
 Time_To_Beat_Street as (    
    SELECT 
       A.CEO, A.patrol_date, CAST(substr(cast(A.patrol_date as string), 1, 8)||'01' as date) as MonthYear,
       StartTime, FirstBeatStreet,
-      SUBSTRING(cast(unix_timestamp(FirstBeatStreet)-unix_timestamp(StartTime) as timestamp), 11) as Secs_to_First_Beat_Street      
-      
+      unix_timestamp(FirstBeatStreet)-unix_timestamp(StartTime) as Secs_to_First_Beat_Street
+
       /*date_diff('second',StartTime, FirstBeatStreet) as Secs_to_First_Beat_Street*/
-   
    FROM Start_Time as A
    LEFT JOIN First_Street_Time as B ON A.CEO = B.CEO AND A.patrol_date = B.patrol_date),
 
 AVG_Time_to_Beat as (
    SELECT 
-      MonthYear, 
-      CAST(from_unixtime(avg(Secs_to_First_Beat_Street),'hh:mm:ss a') as string) as Format_Total_Avg  
+      MonthYear,
+      CASE
+         When avg(Secs_to_First_Beat_Street) >= 43200 Then 
+            CAST(from_unixtime(avg(Secs_to_First_Beat_Street),'hh:mm:ss') as string) 
+         Else CAST(from_unixtime(avg(Secs_to_First_Beat_Street),'mm:ss') as string) 
+      END as Format_Total_Avg
+      
+    /*CAST(time '00:00:00' + avg(Secs_to_First_Beat_Street) * interval '1' second as varchar) as Format_Total_Avg*/  
 
    FROM Time_To_Beat_Street 
    GROUP BY MonthYear),
@@ -120,11 +139,23 @@ CEO_Break_Full as (
 
 Monthly_Break_AVG as (
    SELECT
-      MonthYear, 
+      MonthYear,
       avg(total_break) as AVG_Break_Month,
-      CAST(from_unixtime(avg(total_break),'hh:mm:ss a') as string) as Format_Break_Avg,
+      
+      CASE
+         When avg(total_break) >= 43200 Then 
+            CAST(from_unixtime(avg(total_break),'hh:mm:ss') as string) 
+         ELSE CAST(from_unixtime(avg(total_break),'mm:ss') as string)      
+      END   as Format_Break_Avg,
+      
       avg(timeonstreet_secs) as AVG_Total_Month,
-      CAST(from_unixtime(avg(timeonstreet_secs),'hh:mm:ss a') as string) as Format_Total_Avg
+      CAST(from_unixtime(avg(timeonstreet_secs),'hh:mm:ss') as string) as Format_Total_Avg  
+   
+      /*MonthYear, 
+      avg(total_break) as AVG_Break_Month,
+      CAST(time '00:00:00' + avg(total_break) * interval '1' second as varchar) as Format_Break_Avg,
+      avg(timeonstreet_secs) as AVG_Total_Month,
+      CAST(time '00:00:00' + avg(timeonstreet_secs) * interval '1' second as varchar) as Format_Total_Avg*/
     
    FROM CEO_Break_Full
    GROUP BY MonthYear
@@ -137,33 +168,34 @@ SELECT
    CAST(A.Format_Total_Avg as string) as Avg_Time_out,
    CAST(Format_Avg as string)         as Avg_Time_on_Beat,
    CAST(Format_Break_Avg as string)   as Avg_Break,
-   CAST(C.Format_Total_Avg as string) as Avg_Time_to_Beat,
-
-   current_timestamp() as ImportDateTime,
+   CAST(C.Format_Total_Avg as string) as Avg_Time_to_Beat
    
-   current_date as import_date,
+   ,current_timestamp as ImportDateTime,
+   
+    replace(cast(current_date() as string),'-','') as import_date,
     
     -- Add the Import date
-    Year(current_date) as import_year, month(current_date) as import_month, day(current_date) as import_day    
-   
+    cast(Year(current_date) as string)  as import_year, 
+    cast(month(current_date) as string) as import_month, 
+    cast(day(current_date) as string)   as import_day   
+
 FROM Monthly_Break_AVG as A
 LEFT JOIN Monthly_AVG      as B ON A.MonthYear = B.MonthYear
 LEFT JOIN AVG_Time_to_Beat as C ON A.MonthYear = C.MonthYear
-
 """
 ApplyMapping_node2 = sparkSqlQuery(
     glueContext,
     query=SqlQuery0,
     mapping={
+        "parking_ceo_summary": AmazonS3_node1638273151502,
         "parking_ceo_on_street": AmazonS3_node1628173244776,
-        "parking_ceo_summary": AmazonS3_node1632912445458,
     },
     transformation_ctx="ApplyMapping_node2",
 )
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-stg-refined-zone/parking/liberator/Parking_CEO_Average_On_Street/",
+    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_CEO_Average_On_Street_hrs_mins_secs/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day"],
@@ -171,8 +203,8 @@ S3bucket_node3 = glueContext.getSink(
     transformation_ctx="S3bucket_node3",
 )
 S3bucket_node3.setCatalogInfo(
-    catalogDatabase="dataplatform-stg-liberator-refined-zone",
-    catalogTableName="Parking_CEO_Average_On_Street",
+    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
+    catalogTableName="Parking_CEO_Average_On_Street_hrs_mins_secs",
 )
 S3bucket_node3.setFormat("glueparquet")
 S3bucket_node3.writeFrame(ApplyMapping_node2)
