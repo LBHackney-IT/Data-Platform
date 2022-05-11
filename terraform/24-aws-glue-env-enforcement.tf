@@ -18,7 +18,7 @@ module "liberator_fpns_to_refined" {
   
   }
   script_name          = "liberator_fpns_refined"
-  triggered_by_crawler = module.env_enforcement_create_daily_snapshot.crawler_name
+  triggered_by_job = aws_glue_job.copy_env_enforcement_liberator_landing_to_raw.name
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.refined_zone_env_enforcement.name
