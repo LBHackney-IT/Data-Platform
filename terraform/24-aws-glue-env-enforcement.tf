@@ -1,3 +1,16 @@
+# Database resources
+resource "aws_glue_catalog_database" "raw_zone_env_enforcement" {
+  name = "${local.identifier_prefix}-env-enforcement-raw-zone"
+}
+resource "aws_glue_catalog_database" "refined_zone_env_enforcement" {
+  name = "${local.identifier_prefix}-env-enforcement-refined-zone"
+}
+resource "aws_glue_catalog_database" "trusted_zone_env_enforcement" {
+  name = "${local.identifier_prefix}-env-enforcement-trusted-zone"
+}
+
+
+
 module "liberator_fpns_to_refined" {
   source = "../modules/aws-glue-job"
 
