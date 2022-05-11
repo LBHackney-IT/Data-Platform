@@ -6,6 +6,9 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
+from helpers.helpers import get_glue_env_var
+environment = get_glue_env_var("environment")
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -23,28 +26,28 @@ job.init(args["JOB_NAME"], args)
 
 # Script generated for node Amazon S3
 AmazonS3_node1648207907397 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_voucher",
     transformation_ctx="AmazonS3_node1648207907397",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1648208237020 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_fta",
     transformation_ctx="AmazonS3_node1648208237020",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1648208633220 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_printing",
     transformation_ctx="AmazonS3_node1648208633220",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1649411092913 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_evouchersession",
     transformation_ctx="AmazonS3_node1649411092913",
 )
@@ -121,7 +124,7 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-stg-refined-zone/parking/liberator/Parking_Voucher_De_Normalised/",
+    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Voucher_De_Normalised/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],
@@ -129,7 +132,7 @@ S3bucket_node3 = glueContext.getSink(
     transformation_ctx="S3bucket_node3",
 )
 S3bucket_node3.setCatalogInfo(
-    catalogDatabase="dataplatform-stg-liberator-refined-zone",
+    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
     catalogTableName="Parking_Voucher_De_Normalised",
 )
 S3bucket_node3.setFormat("glueparquet")

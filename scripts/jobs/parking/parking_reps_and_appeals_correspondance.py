@@ -6,6 +6,9 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 
+from helpers.helpers import get_glue_env_var
+environment = get_glue_env_var("environment")
+
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
         frame.toDF().createOrReplaceTempView(alias)
@@ -97,21 +100,21 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 ## @type: DataSource
-## @args: [database = "dataplatform-stg-liberator-raw-zone", table_name = "liberator_pcn_ic", transformation_ctx = "DataSource0"]
+## @args: [database = "dataplatform-" + environment + "-liberator-raw-zone", table_name = "liberator_pcn_ic", transformation_ctx = "DataSource0"]
 ## @return: DataSource0
 ## @inputs: []
-DataSource0 = glueContext.create_dynamic_frame.from_catalog(database = "dataplatform-stg-liberator-raw-zone", table_name = "liberator_pcn_ic", transformation_ctx = "DataSource0")
+DataSource0 = glueContext.create_dynamic_frame.from_catalog(database = "dataplatform-" + environment + "-liberator-raw-zone", table_name = "liberator_pcn_ic", transformation_ctx = "DataSource0")
 ## @type: SqlCode
 ## @args: [sqlAliases = {"liberator_pcn_ic": DataSource0}, sqlName = SqlQuery0, transformation_ctx = "Transform0"]
 ## @return: Transform0
 ## @inputs: [dfc = DataSource0]
 Transform0 = sparkSqlQuery(glueContext, query = SqlQuery0, mapping = {"liberator_pcn_ic": DataSource0}, transformation_ctx = "Transform0")
 ## @type: DataSink
-## @args: [connection_type = "s3", catalog_database_name = "dataplatform-stg-liberator-refined-zone", format = "glueparquet", connection_options = {"path": "s3://dataplatform-stg-refined-zone/parking/liberator/Rep_and_Appeals_Corresp/", "partitionKeys": ["import_year" ,"import_month" ,"import_day" ,"import_date"], "enableUpdateCatalog":true, "updateBehavior":"UPDATE_IN_DATABASE"}, catalog_table_name = "Parking_Reps_and_Appeals_Correspondance_KPI", transformation_ctx = "DataSink0"]
+## @args: [connection_type = "s3", catalog_database_name = "dataplatform-" + environment + "-liberator-refined-zone", format = "glueparquet", connection_options = {"path": "s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Rep_and_Appeals_Corresp/", "partitionKeys": ["import_year" ,"import_month" ,"import_day" ,"import_date"], "enableUpdateCatalog":true, "updateBehavior":"UPDATE_IN_DATABASE"}, catalog_table_name = "Parking_Reps_and_Appeals_Correspondance_KPI", transformation_ctx = "DataSink0"]
 ## @return: DataSink0
 ## @inputs: [frame = Transform0]
-DataSink0 = glueContext.getSink(path = "s3://dataplatform-stg-refined-zone/parking/liberator/Rep_and_Appeals_Corresp/", connection_type = "s3", updateBehavior = "UPDATE_IN_DATABASE", partitionKeys = ["import_year","import_month","import_day","import_date"], enableUpdateCatalog = True, transformation_ctx = "DataSink0")
-DataSink0.setCatalogInfo(catalogDatabase = "dataplatform-stg-liberator-refined-zone",catalogTableName = "Parking_Reps_and_Appeals_Correspondance_KPI")
+DataSink0 = glueContext.getSink(path = "s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Rep_and_Appeals_Corresp/", connection_type = "s3", updateBehavior = "UPDATE_IN_DATABASE", partitionKeys = ["import_year","import_month","import_day","import_date"], enableUpdateCatalog = True, transformation_ctx = "DataSink0")
+DataSink0.setCatalogInfo(catalogDatabase = "dataplatform-" + environment + "-liberator-refined-zone",catalogTableName = "Parking_Reps_and_Appeals_Correspondance_KPI")
 DataSink0.setFormat("glueparquet")
 DataSink0.writeFrame(Transform0)
 

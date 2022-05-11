@@ -6,6 +6,9 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
+from helpers.helpers import get_glue_env_var
+environment = get_glue_env_var("environment")
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -23,14 +26,14 @@ job.init(args["JOB_NAME"], args)
 
 # Script generated for node S3 bucket - liberator_permit_llpg
 S3bucketliberator_permit_llpg_node1 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_llpg",
     transformation_ctx="S3bucketliberator_permit_llpg_node1",
 )
 
 # Script generated for node Amazon S3 - unrestricted_address_api_dbo_hackney_address
 AmazonS3unrestricted_address_api_dbo_hackney_address_node1639576017946 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-raw-zone-unrestricted-address-api",
+    database="dataplatform-" + environment + "-raw-zone-unrestricted-address-api",
     table_name="unrestricted_address_api_dbo_hackney_address",
     transformation_ctx="AmazonS3unrestricted_address_api_dbo_hackney_address_node1639576017946",
 )
@@ -38,7 +41,7 @@ AmazonS3unrestricted_address_api_dbo_hackney_address_node1639576017946 = glueCon
 # Script generated for node Amazon S3 - parking_permit_denormalised_data
 AmazonS3parking_permit_denormalised_data_node1639576051598 = (
     glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-stg-liberator-refined-zone",
+        database="dataplatform-" + environment + "-liberator-refined-zone",
         table_name="parking_permit_denormalised_data",
         transformation_ctx="AmazonS3parking_permit_denormalised_data_node1639576051598",
     )
@@ -230,7 +233,7 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket - parking_permit_denormalised_gds_street_llpg
 S3bucketparking_permit_denormalised_gds_street_llpg_node3 = glueContext.getSink(
-    path="s3://dataplatform-stg-refined-zone/parking/liberator/parking_permit_denormalised_gds_street_llpg/",
+    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_permit_denormalised_gds_street_llpg/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],
@@ -238,7 +241,7 @@ S3bucketparking_permit_denormalised_gds_street_llpg_node3 = glueContext.getSink(
     transformation_ctx="S3bucketparking_permit_denormalised_gds_street_llpg_node3",
 )
 S3bucketparking_permit_denormalised_gds_street_llpg_node3.setCatalogInfo(
-    catalogDatabase="dataplatform-stg-liberator-refined-zone",
+    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
     catalogTableName="parking_permit_denormalised_gds_street_llpg",
 )
 S3bucketparking_permit_denormalised_gds_street_llpg_node3.setFormat("glueparquet")

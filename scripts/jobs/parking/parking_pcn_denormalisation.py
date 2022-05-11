@@ -6,6 +6,9 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
+from helpers.helpers import get_glue_env_var
+environment = get_glue_env_var("environment")
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -24,7 +27,7 @@ job.init(args["JOB_NAME"], args)
 # Script generated for node liberator_pcn_payments
 liberator_pcn_payments_node1624544303612 = (
     glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-stg-liberator-raw-zone",
+        database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_pcn_payments",
         transformation_ctx="liberator_pcn_payments_node1624544303612",
     )
@@ -39,28 +42,28 @@ AmazonS3_node1632737645295 = glueContext.create_dynamic_frame.from_catalog(
 
 # Script generated for node liberator_pcn_bailiff
 liberator_pcn_bailiff_node1624546972989 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_pcn_bailiff",
     transformation_ctx="liberator_pcn_bailiff_node1624546972989",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1632316748934 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_pcn_ic",
     transformation_ctx="AmazonS3_node1632316748934",
 )
 
 # Script generated for node liberator_pcn_tickets
 liberator_pcn_tickets_node1624456646816 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_pcn_tickets",
     transformation_ctx="liberator_pcn_tickets_node1624456646816",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1625039493203 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-refined-zone",
+    database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="pcnfoidetails_pcn_event_log",
     transformation_ctx="AmazonS3_node1625039493203",
 )
@@ -68,7 +71,7 @@ AmazonS3_node1625039493203 = glueContext.create_dynamic_frame.from_catalog(
 # Script generated for node liberator_pcn_warrant_redistribution
 liberator_pcn_warrant_redistribution_node1624611344521 = (
     glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-stg-liberator-raw-zone",
+        database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_pcn_warrant_redistribution",
         transformation_ctx="liberator_pcn_warrant_redistribution_node1624611344521",
     )
@@ -76,7 +79,7 @@ liberator_pcn_warrant_redistribution_node1624611344521 = (
 
 # Script generated for node liberator_pcn_appeals
 liberator_pcn_appeals_node1624617107363 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_pcn_appeals",
     transformation_ctx="liberator_pcn_appeals_node1624617107363",
 )
@@ -316,7 +319,7 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node PCN_DeNormalisation
 PCN_DeNormalisation_node3 = glueContext.getSink(
-    path="s3://dataplatform-stg-refined-zone/parking/liberator/PCNFOIDetails_PCN_FOI_FULL/",
+    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/PCNFOIDetails_PCN_FOI_FULL/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],
@@ -324,7 +327,7 @@ PCN_DeNormalisation_node3 = glueContext.getSink(
     transformation_ctx="PCN_DeNormalisation_node3",
 )
 PCN_DeNormalisation_node3.setCatalogInfo(
-    catalogDatabase="dataplatform-stg-liberator-refined-zone",
+    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
     catalogTableName="PCNFOIDetails_PCN_FOI_FULL",
 )
 PCN_DeNormalisation_node3.setFormat("glueparquet")

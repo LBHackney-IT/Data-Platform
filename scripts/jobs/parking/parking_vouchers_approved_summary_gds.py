@@ -6,6 +6,9 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
+from helpers.helpers import get_glue_env_var
+environment = get_glue_env_var("environment")
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -23,7 +26,7 @@ job.init(args["JOB_NAME"], args)
 
 # Script generated for node S3 bucket - Raw - liberator_permit_fta
 S3bucketRawliberator_permit_fta_node1 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_fta",
     transformation_ctx="S3bucketRawliberator_permit_fta_node1",
 )
@@ -31,7 +34,7 @@ S3bucketRawliberator_permit_fta_node1 = glueContext.create_dynamic_frame.from_ca
 # Script generated for node Amazon S3 - raw - liberator_permit_renewals
 AmazonS3rawliberator_permit_renewals_node1643219669907 = (
     glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-stg-liberator-raw-zone",
+        database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_permit_renewals",
         transformation_ctx="AmazonS3rawliberator_permit_renewals_node1643219669907",
     )
@@ -39,7 +42,7 @@ AmazonS3rawliberator_permit_renewals_node1643219669907 = (
 
 # Script generated for node Amazon S3 - refined - dc_liberator_latest_permit_status
 AmazonS3refineddc_liberator_latest_permit_status_node1643219673143 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-refined-zone",
+    database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="dc_liberator_latest_permit_status",
     transformation_ctx="AmazonS3refineddc_liberator_latest_permit_status_node1643219673143",
 )
@@ -533,7 +536,7 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket - parking_vouchers_approved_summary_gds
 S3bucketparking_vouchers_approved_summary_gds_node3 = glueContext.getSink(
-    path="s3://dataplatform-stg-refined-zone/parking/liberator/parking_vouchers_approved_summary_gds/",
+    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_vouchers_approved_summary_gds/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],
@@ -541,7 +544,7 @@ S3bucketparking_vouchers_approved_summary_gds_node3 = glueContext.getSink(
     transformation_ctx="S3bucketparking_vouchers_approved_summary_gds_node3",
 )
 S3bucketparking_vouchers_approved_summary_gds_node3.setCatalogInfo(
-    catalogDatabase="dataplatform-stg-liberator-refined-zone",
+    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
     catalogTableName="parking_vouchers_approved_summary_gds",
 )
 S3bucketparking_vouchers_approved_summary_gds_node3.setFormat("glueparquet")

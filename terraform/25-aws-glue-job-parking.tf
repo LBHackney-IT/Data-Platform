@@ -59,6 +59,7 @@ module "parking_pcn_denormalisation" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -76,6 +77,7 @@ module "parking_persistent_evaders" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -92,6 +94,7 @@ module "parking_school_street_vrms" {
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -109,6 +112,7 @@ module "parking_estate_waiting_list_live_permits_type_gds" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -126,6 +130,7 @@ module "parking_gds_permit_change_comparison" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -143,6 +148,7 @@ module "parking_kpi_gds_summary" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -160,6 +166,7 @@ module "parking_foi_pcn_gds_summary" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -177,6 +184,7 @@ module "parking_permit_denormalised_gds_street_llpg" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -194,6 +202,7 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -211,6 +220,7 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary_qtr" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -228,6 +238,7 @@ module "parking_vouchers_approved_summary_gds" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -245,6 +256,7 @@ module "parking_bailiff_allocation" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -262,6 +274,7 @@ module "parking_bailiff_ea_warrant_total" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -279,6 +292,7 @@ module "parking_bailiff_return" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -296,6 +310,7 @@ module "parking_pcn_create_event_log" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -313,6 +328,7 @@ module "parking_pcn_report_summary" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -330,6 +346,7 @@ module "parking_pcn_ltn_report_summary" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -347,6 +364,7 @@ module "parking_suspension_de-normalised_data" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -364,6 +382,7 @@ module "parking_cycle_hangars_denormalisation" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -381,6 +400,7 @@ module "parking_reps_and_appeals_correspondance" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -398,6 +418,7 @@ module "parking_permit_de_normalisation" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -415,6 +436,7 @@ module "parking_cedar_payments" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -432,6 +454,7 @@ module "parking_cedar_fulling_total_summary" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -449,6 +472,7 @@ module "parking_ceo_on_street" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -466,6 +490,7 @@ module "parking_ceo_summary" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -483,6 +508,7 @@ module "parking_deployment_target_details" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -495,11 +521,12 @@ module "parking_ceo_average_on_street" {
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "parking_ceo_average_on_street"
   triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
-  job_description            = ""
+  job_description            = "This job creates the Permit de-normalised data"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -517,6 +544,7 @@ module "parking_percent_street_coverage" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -534,6 +562,7 @@ module "parking_bailiff_warrant_figures" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -551,6 +580,7 @@ module "parking_markets_denormalisation" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -567,6 +597,7 @@ module "parking_ceo_average_on_street_hrs_mins_secs" {
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -583,6 +614,7 @@ module "parking_market_licence_totals" {
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -599,6 +631,7 @@ module "parking_cedar_backing_data_summary" {
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -615,6 +648,7 @@ module "parking_percent_street_coverage_cpz" {
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -631,6 +665,7 @@ module "parking_foreign_vrm_pcns" {
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
 
@@ -647,5 +682,6 @@ module "parking_voucher_de_normalised" {
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
   }
 }
