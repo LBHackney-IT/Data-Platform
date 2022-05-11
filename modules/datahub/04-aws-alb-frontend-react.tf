@@ -50,6 +50,9 @@ resource "aws_alb" "datahub_frontend_react" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.datahub_frontend_react.id]
   subnets            = var.vpc_subnet_ids
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_alb_listener" "datahub_frontend_react" {
