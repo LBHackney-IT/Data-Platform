@@ -2,7 +2,7 @@ resource "aws_db_instance" "datahub" {
   allocated_storage      = 15
   engine                 = "mysql"
   engine_version         = "5.7"
-  instance_class         = "db.t3.medium"
+  instance_class         = "db.t3.micro"
   username               = "datahub"
   identifier             = replace("${var.short_identifier_prefix}datahub", "-", "")
   password               = random_password.datahub_secret.result
