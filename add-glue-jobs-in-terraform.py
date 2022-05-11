@@ -89,7 +89,6 @@ def get_glue_job_script():
   jobs_failed_to_copy = []
   jobs_copied = []
 
-  # failed = Parking_Shop_Front_Licence_Count, Parking_Current_School_Street_Permit_VRMs
   jobs_to_copy = get_list_of_glue_jobs()
   print(f"Jobs to copy: {jobs_to_copy}")
   print(f"Number of jobs to copy: {len(jobs_to_copy)}")
