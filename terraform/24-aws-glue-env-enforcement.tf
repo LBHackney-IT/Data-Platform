@@ -35,8 +35,36 @@ module "liberator_fpns_to_refined" {
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.refined_zone_env_enforcement.name
-    s3_target_location = "s3://${module.refined_zone.bucket_id}/env-enforcement/fpn_tickets"
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/env-enforcement"
   }
 
+}
+
+module "noisework_complaints_to_refined" {
+  source = "../modules/aws-glue-job"
+
+  department                 = module.department_env_enforcement
+  job_name                   = "${local.short_identifier_prefix}liberator_fpns_refined"
+  glue_job_worker_type       = "G.1X"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  job_parameters = {
+    "--job-bookmark-option"     = "job-bookmark-enable"
+    "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/noisework_complaints"
+    "--s3_bucket_target2"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/noisework_complaints_to_geocode"
+    "--enable-glue-datacatalog" = "true"
+    "--source_catalog_database" = aws_glue_catalog_database.raw_zone_env_enforcement.name
+    "--source_catalog_table"    = "noiseworks_case"
+    "--source_catalog_table2"   = "noiseworks_complaint"
+  
+  }
+  script_name          = "noisework_complaints_refined"
+  schedule    = "cron(0 3 * * ? *)"
+
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.refined_zone_env_enforcement.name
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/env-enforcement"
+  }
 
 }
