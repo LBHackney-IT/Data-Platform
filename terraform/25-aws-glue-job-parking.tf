@@ -76,6 +76,7 @@ module "parking_school_street_vrms" {
   triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
   job_description            = "Permit changes comparison - compare changes in permits from the parking_permit_denormalised_gds_street_llpg table to be used in google data studio  Compares latest import to previous import in table"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
+  trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
@@ -579,6 +580,7 @@ module "parking_ceo_average_on_street_hrs_mins_secs" {
   triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
   job_description            = "This job creates the Permit de-normalised data"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
+  trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
@@ -596,6 +598,7 @@ module "parking_market_licence_totals" {
   triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
   job_description            = "This job creates the Permit de-normalised data"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
+  trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
@@ -613,6 +616,7 @@ module "parking_cedar_backing_data_summary" {
   triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
   job_description            = "This job creates the % return figures for the Bailiff data"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
+  trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
@@ -630,6 +634,7 @@ module "parking_percent_street_coverage_cpz" {
   triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
   job_description            = "This job creates the Permit de-normalised data"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
+  trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
@@ -647,6 +652,7 @@ module "parking_foreign_vrm_pcns" {
   triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
   job_description            = "This job creates the LTN PCN count and Total paid"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
+  trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
@@ -664,6 +670,7 @@ module "parking_voucher_de_normalised" {
   triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
   job_description            = "Permit changes comparison - compare changes in permits from the parking_permit_denormalised_gds_street_llpg table to be used in google data studio  Compares latest import to previous import in table"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
+  trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
