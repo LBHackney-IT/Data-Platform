@@ -37,7 +37,7 @@ module "alloy_api_ingestion_raw_env_services" {
   }
   crawler_details = {
     database_name      = module.department_environmental_services.raw_zone_catalog_database_name
-    s3_target_location = "s3://${module.raw_zone.bucket_id}/env-services/alloy/api_response"
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/env-services/alloy/api-responses/"
     table_prefix       = "alloy_"
   }
 }
