@@ -1,12 +1,3 @@
-resource "aws_s3_bucket_object" "aqs" {
-  for_each    = fileset(path.module, "../jobs/env_services/aqs/*.json")
-  bucket      = module.glue_scripts.bucket_id
-  key         = "../jobs/env_services/aqs/${each.value}"
-  acl         = "private"
-  source      = "../jobs/env_services/aqs/${each.value}"
-  source_hash = filemd5("../jobs/env_services/aqs/${each.value}")
-}
-
 resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
   tags     = module.tags.values
   name     = "${local.short_identifier_prefix}Alloy Ingestion Trigger"
