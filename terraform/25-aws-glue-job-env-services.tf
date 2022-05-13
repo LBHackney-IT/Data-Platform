@@ -1,6 +1,6 @@
 locals {
-  alloy_queries                     = fileset(path.module, "../scripts/jobs/env_services/aqs/*json")
-  alloy_queries_max_concurrent_runs = length(local.alloy_queries)
+  alloy_queries                     = local.is_live_environment ? fileset(path.module, "../scripts/jobs/env_services/aqs/*json") : []
+  alloy_queries_max_concurrent_runs = local.is_live_environment ? length(local.alloy_queries) : 1
 }
 
 resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
@@ -47,13 +47,14 @@ module "alloy_api_ingestion_raw_env_services" {
 }
 
 resource "aws_glue_trigger" "alloy_daily_table_ingestion_crawler_trigger" {
+  count   = local.is_live_environment ? 1 : 0
   tags    = module.tags.values
   name    = "${local.short_identifier_prefix}Alloy Ingestion Crawler"
   type    = "CONDITIONAL"
   enabled = local.is_live_environment
 
   actions {
-    crawler_name = aws_glue_crawler.alloy_daily_table_ingestion.name
+    crawler_name = aws_glue_crawler.alloy_daily_table_ingestion[0].name
   }
 
   predicate {
@@ -65,7 +66,8 @@ resource "aws_glue_trigger" "alloy_daily_table_ingestion_crawler_trigger" {
 }
 
 resource "aws_glue_crawler" "alloy_daily_table_ingestion" {
-  tags = module.tags.values
+  count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
 
   database_name = module.department_environmental_services.raw_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}Alloy Ingestion"
