@@ -119,8 +119,7 @@ if __name__ == "__main__":
             max('snapshot_date')).first()[0]
         increment_df = set_increment_df(
             glueContext, source_catalog_database, table_name, increment_table_name, last_snapshot_date)
-
-    snapshot_df = apply_increments(snapshot_df, increment_df)
+        snapshot_df = apply_increments(snapshot_df, increment_df)
 
     PARTITION_KEYS = ["snapshot_year", "snapshot_month",
                       "snapshot_day", "snapshot_date"]
