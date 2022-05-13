@@ -264,7 +264,8 @@ data "aws_iam_policy_document" "s3_department_access" {
     resources = [
       "${var.glue_scripts_bucket.bucket_arn}/custom/*",
       "${var.glue_temp_storage_bucket.bucket_arn}/${local.department_identifier}/*",
-      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
+      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*",
+      "${var.glue_scripts_bucket.bucket_arn}/scripts/${local.department_identifier}/*",
     ]
   }
 }
