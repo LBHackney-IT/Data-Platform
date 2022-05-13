@@ -37,7 +37,7 @@ module "parking_pcn_denormalisation" {
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "parking_pcn_denormalisation"
-  triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  triggered_by_job           = module.parking_pcn_create_event_log.job_name
   job_description            = "This job creates a single de-normalised PCN record with the latest details against it (Events, finance, ETA, etc.). This can then be queried (WITHOUT joins)."
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   trigger_enabled            = false
@@ -55,7 +55,7 @@ module "parking_persistent_evaders" {
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "parking_persistent_evaders"
-  triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  triggered_by_job           = module.parking_pcn_denormalisation.job_name
   job_description            = "Job to identify VRM's according to the criteria of Persistent Evaders, and return details of all tickets issued to those VRM's."
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   trigger_enabled            = false
@@ -73,7 +73,7 @@ module "parking_school_street_vrms" {
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "parking_school_street_vrms"
-  triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  triggered_by_job           = module.parking_permit_denormalised_gds_street_llpg.job_name
   job_description            = "Permit changes comparison - compare changes in permits from the parking_permit_denormalised_gds_street_llpg table to be used in google data studio  Compares latest import to previous import in table"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   job_parameters = {
@@ -90,7 +90,7 @@ module "parking_estate_waiting_list_live_permits_type_gds" {
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "parking_estate_waiting_list_live_permits_type_gds"
-  triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  triggered_by_job           = module.parking_permit_denormalised_gds_street_llpg.job_name
   job_description            = "Filters for distinct record id's and adds number of Live permits by type.  This is for use by Parking Permits team."
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   trigger_enabled            = false
@@ -108,7 +108,7 @@ module "parking_gds_permit_change_comparison" {
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "parking_gds_permit_change_comparison"
-  triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  triggered_by_job           = module.parking_permit_denormalised_gds_street_llpg.job_name
   job_description            = "Permit changes comparison - compare changes in permits from the parking_permit_denormalised_gds_street_llpg table to be used in google data studio  Compares latest import to previous import in table"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   trigger_enabled            = false
@@ -126,7 +126,7 @@ module "parking_kpi_gds_summary" {
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "parking_kpi_gds_summary"
-  triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  triggered_by_job           = module.parking_pcn_denormalisation.job_name
   job_description            = "Summarising data from the FOI Summary table to be used in Google Data Studio as need to be under 100,000"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   trigger_enabled            = false
@@ -144,7 +144,7 @@ module "parking_foi_pcn_gds_summary" {
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "parking_foi_pcn_gds_summary"
-  triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  triggered_by_job           = module.parking_pcn_denormalisation.job_name
   job_description            = "Summarising data from the FOI Google Data Studio dashboard as need to be under 100,000 -"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   trigger_enabled            = false
@@ -162,7 +162,7 @@ module "parking_permit_denormalised_gds_street_llpg" {
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "parking_permit_denormalised_gds_street_llpg"
-  triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
+  triggered_by_job           = module.parking_pcn_denormalisation.job_name
   job_description            = "parking_permit_denormalised_data and bolts on fields from llpg (usrn, Street record street name, street_description, ward code, ward name, property_shell, blpu_class, usage_primary, usage_description, planning_use_class, longitude & latitude) to be used in gds(Google Data Studio)"
   workflow_name              = aws_glue_workflow.parking_liberator_data.name
   trigger_enabled            = false
