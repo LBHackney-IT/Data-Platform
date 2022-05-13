@@ -7,7 +7,7 @@ resource "google_project_service" "sheets_api" {
 }
 
 resource "google_project_service" "drive_api" {
-  count = local.is_live_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 1
 
   project                    = var.google_project_id
   service                    = "drive.googleapis.com"

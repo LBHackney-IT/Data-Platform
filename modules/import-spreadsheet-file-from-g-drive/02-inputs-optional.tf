@@ -10,6 +10,20 @@ variable "enable_glue_trigger" {
   default     = false
 }
 
+variable "worksheets" {
+  type = map(
+    object({
+      header_row_number = number
+      worksheet_name    = string
+    })
+  )
+  default = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "1"
+    }
+  }
+}
 
 variable "header_row_number" {
   description = "Header row number (0-indexed)"
