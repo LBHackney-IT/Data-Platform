@@ -205,6 +205,11 @@ module "parking_permits_consultation_survey" {
   output_folder_name             = "permits-consultation-survey"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2022-05-06-13-31-09 UTF-8.csv"
+  worksheets = {
+    sheet1 : {
+      worksheet_name = "2022-05-06-13-31-09"
+    }
+  }
 }
 
 module "puzzel_total_overview_10_05_2021_to_25_05_2021_UTF8" {
@@ -230,6 +235,11 @@ module "puzzel_total_overview_10_05_2021_to_25_05_2021_UTF8" {
   output_folder_name             = "puzzel"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "20210526 - Total Overview 10 05 2021 - 25 05 2021 - TotOview UTF8.csv"
+  worksheets = {
+    sheet1 : {
+      worksheet_name = "20210526"
+    }
+  }
 }
 
 module "eta_decision_records_gds_or_qlik_data_load_records_20220209" {
@@ -255,6 +265,11 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220209" {
   output_folder_name             = "eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "20220209 - ETA_Decisions - GDS or Qlik data Load - records.csv"
+  worksheets = {
+    sheet1 : {
+      worksheet_name = "20220209"
+    }
+  }
 }
 
 module "eta_decision_records_gds_or_qlik_data_load_records_20220317" {
@@ -280,6 +295,11 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220317" {
   output_folder_name             = "eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "20220317 - ETA_Decisions - GDS or Qlik data Load - records.csv"
+  worksheets = {
+    sheet1 : {
+      worksheet_name = "20220317"
+    }
+  }
 }
 
 module "eta_decision_records_gds_or_qlik_data_load_records_20220401" {
@@ -305,6 +325,11 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220401" {
   output_folder_name             = "eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "20220401 - ETA_Decisions - GDS or Qlik data Load - records UTF8.csv"
+  worksheets = {
+    sheet1 : {
+      worksheet_name = "20220401"
+    }
+  }
 }
 
 module "eta_decision_records_gds_or_qlik_data_load_records_20220506" {
@@ -330,6 +355,11 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220506" {
   output_folder_name             = "eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "20220506 - ETA_Decisions - GDS or Qlik data Load UTF-8.csv"
+  worksheets = {
+    sheet1 : {
+      worksheet_name = "20220506"
+    }
+  }
 }
 
 module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220427" {
@@ -355,6 +385,11 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220427" {
   output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "20220427 - PCNs VRM match to Permits VRM and NLPG by Registered and Current addresses Post Code - 13 months - final in glue via athena no comma fields removed dups UTF8.csv"
+  worksheets = {
+    sheet1 : {
+      worksheet_name = "20220427"
+    }
+  }
 }
 
 module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220511" {
@@ -380,6 +415,11 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220511" {
   output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "20220511 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
+  worksheets = {
+    sheet1 : {
+      worksheet_name = "20220511"
+    }
+  }
 }
 
 module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220512" {
@@ -405,4 +445,9 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220512" {
   output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "20220512 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
+  worksheets = {
+    sheet1 : {
+      worksheet_name = "20220512"
+    }
+  }
 }
