@@ -6,7 +6,7 @@ locals {
 resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
   tags     = module.tags.values
   enabled  = local.is_live_environment
-  for_each = toset(local.alloy_queries)
+  for_each = local.alloy_queries
 
   name     = "${local.short_identifier_prefix}${each.value} Alloy Ingestion Trigger"
   type     = "SCHEDULED"
