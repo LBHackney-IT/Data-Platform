@@ -8,7 +8,7 @@ resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
   enabled  = local.is_live_environment
   for_each = local.alloy_queries
 
-  name     = "${local.short_identifier_prefix}${each.value} Alloy Ingestion Trigger"
+  name     = "${local.short_identifier_prefix}${each.value} Alloy Ingestion Job"
   type     = "SCHEDULED"
   schedule = "cron(0 23 ? * MON-FRI *)"
 
@@ -46,7 +46,7 @@ module "alloy_api_ingestion_raw_env_services" {
   }
 }
 
-resource "aws_glue_trigger" "alloy_daily_table_ingestion_crawler_trigger" {
+resource "aws_glue_trigger" "alloy_daily_table_ingestion_crawler" {
   count   = local.is_live_environment ? 1 : 0
   tags    = module.tags.values
   name    = "${local.short_identifier_prefix}Alloy Ingestion Crawler"
