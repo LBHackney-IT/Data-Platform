@@ -200,7 +200,7 @@ module "parking_permits_consultation_survey" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  google_sheets_document_id      = ""
+  google_sheets_document_id      = "1iLScmA-tIvyoqOj3smbzkvzRhnfkDxOS"
   glue_job_name                  = "${title(module.department_parking.name)} Permits Consultation Survey"
   output_folder_name             = "permits-consultation-survey"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
@@ -231,7 +231,7 @@ module "puzzel_total_overview_10_05_2021_to_25_05_2021_UTF8" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  google_sheets_document_id      = ""
+  google_sheets_document_id      = "1xZmbsPENv01chzZcP661pv1d2Kmg7y6r"
   glue_job_name                  = "${title(module.department_parking.name)} Puzzel 20210526 - Total Overview"
   output_folder_name             = "puzzel"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
@@ -262,7 +262,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220209" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  google_sheets_document_id      = ""
+  google_sheets_document_id      = "1oWAo5-hmTnBH5lEUzjNkBf7-GxxfVXMG"
   glue_job_name                  = "${title(module.department_parking.name)} 20220209 - ETA_Decisions"
   output_folder_name             = "eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
@@ -293,7 +293,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220317" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  google_sheets_document_id      = ""
+  google_sheets_document_id      = "1BgC7fEHRpOHO1NwPc8_HuIa9hJvDFqbH"
   glue_job_name                  = "${title(module.department_parking.name)} 20220317 - ETA_Decisions"
   output_folder_name             = "eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
@@ -324,7 +324,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220401" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  google_sheets_document_id      = ""
+  google_sheets_document_id      = "1XqnMJR7-rjLl2MbVKChqRWu-DVWIACyr"
   glue_job_name                  = "${title(module.department_parking.name)} 20220401 - ETA_Decisions"
   output_folder_name             = "eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
@@ -355,7 +355,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220506" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  google_sheets_document_id      = ""
+  google_sheets_document_id      = "1J_VdrUDgziXjYC6uy716jtFcEcZqjQP1"
   glue_job_name                  = "${title(module.department_parking.name)} 20220506 - ETA_Decisions"
   output_folder_name             = "eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
@@ -386,7 +386,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220427" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  google_sheets_document_id      = ""
+  google_sheets_document_id      = "1thn-BsMfvyUP0dzcEHM2eWSen9dASC-O"
   glue_job_name                  = "${title(module.department_parking.name)} PCN Permits VRM NLPG LLPG - 20220427"
   output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
@@ -417,7 +417,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220511" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  google_sheets_document_id      = ""
+  google_sheets_document_id      = "1AEgRZdxPnALuXn4nqcqQtEBkvJPWXUh5"
   glue_job_name                  = "${title(module.department_parking.name)} PCN Permits VRM NLPG LLPG - 20220511"
   output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
@@ -448,7 +448,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220512" {
   landing_zone_bucket_id         = module.landing_zone.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
-  google_sheets_document_id      = ""
+  google_sheets_document_id      = "1sKnfS2xruU1ZKvnd1Cwcys2PAyC4zHOD"
   glue_job_name                  = "${title(module.department_parking.name)} PCN Permits VRM NLPG LLPG - 20220512"
   output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
