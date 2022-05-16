@@ -187,7 +187,7 @@ module "parking_permits_consultation_survey" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
@@ -218,7 +218,7 @@ module "puzzel_total_overview_10_05_2021_to_25_05_2021_UTF8" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
@@ -249,7 +249,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220209" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
@@ -280,7 +280,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220317" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
@@ -311,7 +311,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220401" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
@@ -342,7 +342,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220506" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
@@ -373,7 +373,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220420" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
@@ -404,7 +404,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220427" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
@@ -435,7 +435,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220511" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
@@ -466,7 +466,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220512" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
@@ -497,7 +497,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220513" {
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
+  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_role_arn                  = aws_iam_role.glue_role.arn
