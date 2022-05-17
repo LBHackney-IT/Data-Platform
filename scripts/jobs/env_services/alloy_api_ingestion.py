@@ -115,7 +115,7 @@ if __name__ == "__main__":
                'Content-Type': 'application/json'}
     region = 'uk'
     post_url = f'https://api.{region}.alloyapp.io/api/export/?token={api_key}'
-    aqs = json.load(aqs)
+    aqs = json.loads(aqs)
     aqs = update_aqs(aqs, last_import_date_time)
     response = requests.post(post_url, data=json.dumps(aqs), headers=headers)
 
