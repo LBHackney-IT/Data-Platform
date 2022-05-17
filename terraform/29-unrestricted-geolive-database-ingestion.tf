@@ -27,7 +27,7 @@ module "boundaries_geolive_ingestion_job" {
   triggered_by_crawler       = module.boundaries_geolive_database_ingestion[0].crawler_name
   workflow_name              = module.boundaries_geolive_database_ingestion[0].workflow_name
   job_parameters = {
-    "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/unrestricted/geolive/boundaries"
+    "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/unrestricted/geolive/boundaries/"
     "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/unrestricted/geolive/boundaries/ingestion-details/"
     "--source_data_database"        = module.boundaries_geolive_database_ingestion[0].ingestion_database_name
   }
