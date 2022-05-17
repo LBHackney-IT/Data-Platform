@@ -125,7 +125,7 @@ resource "aws_lambda_function_event_invoke_config" "g_drive_to_s3_copier_lambda"
 }
 
 resource "aws_cloudwatch_event_rule" "every_day_at_6" {
-  name                = "g-drive-to-s3-copier-every-day-at-6"
+  name_prefix         = "g-drive-to-s3-copier-every-day-at-6-"
   description         = "Fires every dat at "
   schedule_expression = "cron(0 6 * * ? *)"
 }
