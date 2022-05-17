@@ -33,7 +33,7 @@ module "boundaries_geolive_ingestion_job" {
   }
   crawler_details = {
     database_name      = module.department_unrestricted.raw_zone_catalog_database_name
-    s3_target_location = "s3://${module.raw_zone.bucket_id}/unrestricted/geolive/boundaries"
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/unrestricted/geolive/boundaries/"
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
