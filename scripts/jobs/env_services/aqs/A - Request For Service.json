@@ -36,5 +36,6 @@
     },
     "parameterValues": [],
     "fileName": "A - Request For Service.csv",
-    "exportHeaderType": "Name"
+    "exportHeaderType": "Name",
+    "discriminator": "CsvExportWebRequestModel"
 }
