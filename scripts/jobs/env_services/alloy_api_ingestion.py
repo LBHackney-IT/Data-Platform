@@ -179,7 +179,7 @@ if __name__ == "__main__":
         parquetData = glueContext.write_dynamic_frame.from_options(
             frame=dataframe,
             connection_type="s3",
-            connection_options={"path": bucket_target,
+            connection_options={"path": s3_target_url,
                                 "partitionKeys": PARTITION_KEYS},
             format="parquet",
             transformation_ctx=f"alloy_{resource}_sink"
