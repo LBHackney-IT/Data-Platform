@@ -103,7 +103,7 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
     variables = {
       FILE_ID        = var.file_id
       BUCKET_ID      = var.zone_bucket_id
-      FILE_NAME      = "${var.service_area}/${var.file_name}"
+      FILE_NAME      = "${var.service_area}/${var.output_folder_name}/${var.file_name}"
       WORKFLOW_NAMES = join("/", var.workflow_names)
     }
   }
