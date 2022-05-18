@@ -19,6 +19,9 @@ from helpers.helpers import get_glue_env_var, get_secret, table_exists_in_catalo
 
 
 def download_file_to_df(file_id, api_key, filename):
+    """
+    download export from api, extract csv from zip, read csv as pandas df
+    """
     url_download = f'https://api.uk.alloyapp.io/api/file/{file_id}?token={api_key}'
     r = requests.get(url_download, headers=headers)
     z = zipfile.ZipFile(io.BytesIO(r.content))
@@ -28,6 +31,9 @@ def download_file_to_df(file_id, api_key, filename):
 
 
 def get_last_import_date_time(glue_context, database, resource):
+    """
+    get last import date from aws table
+    """
     if not table_exists_in_catalog(glue_context, resource, database):
         logger.info(f"Couldn't find table {resource} in database {database}.")
         return datetime.datetime(1970, 1, 1)
@@ -36,11 +42,17 @@ def get_last_import_date_time(glue_context, database, resource):
 
 
 def format_time(date_time):
+    """
+    change date time to format expected in api payload
+    """
     t = date_time.strftime('%Y-%m-%dT%H:%M:%S.%f')
     return t[:-3]+"Z"
 
 
 def update_aqs(alloy_query, last_import_date_time):
+    """
+    update the aqs query with parameters so that only updated items are returned
+    """
     child_value = [{"type": "GreaterThan", "children": [{"type": "ItemProperty", "properties": {
         "itemPropertyName": "lastEditDate"}}, {"type": "DateTime", "properties": {"value": []}}]}]
     child_value[0]['children'][1]['properties']['value'] = [
@@ -50,6 +62,9 @@ def update_aqs(alloy_query, last_import_date_time):
 
 
 def get_task_id(response):
+    """
+    get the task id from the api response
+    """
     if response.status_code != 200:
         logger.info(
             f"Request unsuccessful while getting task id with status code: {response.status_code}")
@@ -61,6 +76,9 @@ def get_task_id(response):
 
 
 def get_task_status(response):
+    """
+    get the task status from the api response
+    """
     if response.status_code != 200:
         logger.info(
             f"Request unsuccessful while getting task status with status code: {response.status_code}")
@@ -72,6 +90,9 @@ def get_task_status(response):
 
 
 def get_file_item_id(response):
+    """
+    get the file item id from the api response
+    """
     if response.status_code != 200:
         logger.info(
             f"Request unsuccessful while getting file item id with status code: {response.status_code}")
