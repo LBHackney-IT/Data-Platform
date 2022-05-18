@@ -10,11 +10,11 @@ import requests
 import boto3
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
-from pyspark.context import SparkContext
 from awsglue.context import GlueContext
-from pyspark.sql import SQLContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
+from pyspark.context import SparkContext
+from pyspark.sql import SQLContext
 from helpers.helpers import get_glue_env_var, get_secret, table_exists_in_catalog, normalize_column_name,  convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
 
 
