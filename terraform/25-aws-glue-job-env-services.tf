@@ -41,6 +41,7 @@ module "alloy_api_ingestion_raw_env_services" {
     "--enable-glue-datacatalog" = "true"
     "--s3_bucket_target"        = module.raw_zone.bucket_id
     "--s3_prefix"               = "env-services/alloy/api-responses/"
+    "--table_prefix"            = "alloy_api_response_"
     "--secret_name"             = "${local.identifier_prefix}/env-services/alloy-api-key"
     "--database"                = module.department_environmental_services.raw_zone_catalog_database_name
   }
