@@ -150,6 +150,10 @@ if __name__ == "__main__":
         response = requests.get(url)
         task_status = get_task_status(response)
 
+        if response.status_code != 200:
+            logger.info(f'breaking with api status: {response.status_code}')
+            break
+
     else:
         url = f'https://api.{region}.alloyapp.io/api/export/{task_id}/file?token={api_key}'
         response = requests.get(url)
