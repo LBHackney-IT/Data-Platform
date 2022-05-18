@@ -76,7 +76,7 @@ resource "aws_glue_crawler" "alloy_daily_table_ingestion" {
   s3_target {
     path = "s3://${module.raw_zone.bucket_id}/env-services/alloy/api-responses/"
   }
-  table_prefix = "alloy_"
+  table_prefix = "alloy_api_response_"
 
   configuration = jsonencode({
     Version = 1.0
