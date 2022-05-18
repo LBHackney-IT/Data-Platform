@@ -1,12 +1,12 @@
 import sys
 import json
 import io
-import pandas as pd
-import requests
 import time
 import zipfile
 import html
 import datetime
+import pandas as pd
+import requests
 import boto3
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
