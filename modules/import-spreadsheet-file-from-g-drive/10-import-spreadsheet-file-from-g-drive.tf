@@ -10,6 +10,7 @@ module "import_file_from_g_drive" {
   service_area                   = var.department.identifier
   file_id                        = var.google_sheets_document_id
   file_name                      = var.input_file_name
+  output_folder_name             = var.output_folder_name
   workflow_names                 = [for job in module.import_data_from_spreadsheet_job : job.workflow_name]
   workflow_arns                  = [for job in module.import_data_from_spreadsheet_job : job.workflow_arn]
 }

@@ -33,6 +33,10 @@ variable "file_name" {
   type = string
 }
 
+variable "output_folder_name" {
+  type = string
+}
+
 variable "lambda_name" {
   type = string
 

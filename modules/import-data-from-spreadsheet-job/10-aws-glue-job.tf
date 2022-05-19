@@ -8,7 +8,7 @@ module "spreadsheet_import" {
   pydeequ_zip_key   = var.pydeequ_zip_key
   glue_role_arn     = var.glue_role_arn
   job_parameters = {
-    "--s3_bucket_source"  = "s3://${var.landing_zone_bucket_id}/${var.department.identifier}/${var.input_file_name}"
+    "--s3_bucket_source"  = "s3://${var.landing_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}/${var.input_file_name}"
     "--s3_bucket_target"  = local.s3_output_path
     "--header_row_number" = var.header_row_number
     "--worksheet_name"    = var.worksheet_name
