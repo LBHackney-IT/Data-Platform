@@ -55,3 +55,8 @@ variable "google_service_account_credentials_secret" {
   description = "ARN of the Google Service Account credentials secret"
   type        = string
 }
+
+variable "department_identifier" {
+  description = "Department identifier"
+  type        = string
+}

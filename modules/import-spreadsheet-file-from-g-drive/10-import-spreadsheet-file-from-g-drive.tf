@@ -2,6 +2,7 @@ module "import_file_from_g_drive" {
   source                                    = "../g-drive-to-s3"
   tags                                      = var.tags
   identifier_prefix                         = var.identifier_prefix
+  department_identifier                     = var.department.identifier
   lambda_artefact_storage_bucket            = var.lambda_artefact_storage_bucket
   zone_kms_key_arn                          = var.landing_zone_kms_key_arn
   zone_bucket_arn                           = var.landing_zone_bucket_arn
