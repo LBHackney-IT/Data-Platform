@@ -13,7 +13,9 @@ variable "department" {
       bucket_id = string
     })
     google_service_account = object({
-      credentials_secret = string
+      credentials_secret = object({
+        arn = string
+      })
     })
   })
 }

@@ -11,7 +11,7 @@ module "import_file_from_g_drive" {
   file_id                                   = var.google_sheets_document_id
   file_name                                 = var.input_file_name
   output_folder_name                        = var.output_folder_name
-  google_service_account_credentials_secret = var.department.google_service_account.credentials_secret
+  google_service_account_credentials_secret = var.department.google_service_account.credentials_secret.arn
   workflow_names                            = [for job in module.import_data_from_spreadsheet_job : job.workflow_name]
   workflow_arns                             = [for job in module.import_data_from_spreadsheet_job : job.workflow_arn]
 }
