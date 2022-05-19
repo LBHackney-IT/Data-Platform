@@ -12,6 +12,11 @@ variable "department" {
     glue_scripts_bucket = object({
       bucket_id = string
     })
+    google_service_account = object({
+      credentials_secret = object({
+        arn = string
+      })
+    })
   })
 }
 

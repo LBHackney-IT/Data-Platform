@@ -50,3 +50,8 @@ variable "service_area" {
   description = "Name of service area where data is to be sent, e.g. 'housing'"
   type        = string
 }
+
+variable "google_service_account_credentials_secret" {
+  description = "ARN of the Google Service Account credentials secret"
+  type        = string
+}

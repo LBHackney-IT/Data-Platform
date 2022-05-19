@@ -101,10 +101,11 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
 
   environment {
     variables = {
-      FILE_ID        = var.file_id
-      BUCKET_ID      = var.zone_bucket_id
-      FILE_NAME      = "${var.service_area}/${var.output_folder_name}/${var.file_name}"
-      WORKFLOW_NAMES = join("/", var.workflow_names)
+      FILE_ID                                       = var.file_id
+      BUCKET_ID                                     = var.zone_bucket_id
+      FILE_NAME                                     = "${var.service_area}/${var.output_folder_name}/${var.file_name}"
+      WORKFLOW_NAMES                                = join("/", var.workflow_names)
+      GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_SECRET_ARN = var.google_service_account_credentials_secret
     }
   }
 
