@@ -3,8 +3,7 @@ sys.path.append('./lib/')
 
 import io
 import boto3
-from os import path
-from os import getenv
+from os import path, getenv, makedirs
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from oauth2client.service_account import ServiceAccountCredentials
@@ -45,10 +44,11 @@ def lambda_handler(event, lambda_context):
 
     secret_value = service_account_secret['SecretString']
 
-    with open('key_file.json', "w") as f:
+    makedirs("/tmp")
+    with open('/tmp/key_file.json', "w") as f:
       f.writelines(secret_value)
 
-    key_file_location = path.relpath('./key_file.json')
+    key_file_location = path.relpath('./tmp/key_file.json')
 
     scopes = [
         'https://www.googleapis.com/auth/drive.file',
