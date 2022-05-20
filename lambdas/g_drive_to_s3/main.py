@@ -3,7 +3,8 @@ sys.path.append('./lib/')
 
 import io
 import boto3
-from os import path, getenv, makedirs
+import json
+from os import path, getenv, mkdir, listdir, rmdir, remove
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from oauth2client.service_account import ServiceAccountCredentials
@@ -29,6 +30,9 @@ def download_file(service, file_id):
         print("Download %d%%." % int(status.progress() * 100))
     return file.getvalue()
 
+def directory_exists(directory_path):
+    return path.isdir(directory_path)
+
 def lambda_handler(event, lambda_context):
     load_dotenv()
 
@@ -42,13 +46,24 @@ def lambda_handler(event, lambda_context):
       SecretId=google_service_account_credentials_secret_arn
     )
 
-    secret_value = service_account_secret['SecretString']
+    secret = service_account_secret['SecretBinary']
+    secret_string = secret.decode('utf8').replace("'", '"')
+    secret_dict = json.loads(secret_string)
 
-    makedirs("/tmp")
-    with open('/tmp/key_file.json', "w") as f:
-      f.writelines(secret_value)
+    tmp_directory = "/tmp/lambda"
 
-    key_file_location = path.relpath('./tmp/key_file.json')
+    if directory_exists(tmp_directory):
+      for file in listdir(tmp_directory):
+        remove(path.join(tmp_directory, file))
+      rmdir(tmp_directory)
+
+    mkdir(tmp_directory)
+
+    json_file = open(f"{tmp_directory}/key_file.json", "w")
+    json.dump(secret_dict, json_file, indent="")
+    json_file.close()
+
+    key_file_location = path.relpath(f"{tmp_directory}/key_file.json")
 
     scopes = [
         'https://www.googleapis.com/auth/drive.file',
