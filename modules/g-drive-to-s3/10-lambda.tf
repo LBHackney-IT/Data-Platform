@@ -43,6 +43,23 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
   }
 
   statement {
+    effect    = "Allow"
+    actions   = ["secretsmanager:ListSecrets"]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = [
+      var.secrets_manager_kms_key.arn
+    ]
+  }
+
+  statement {
     actions = [
       "kms:*",
       "s3:*"
