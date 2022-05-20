@@ -12,6 +12,11 @@ variable "department" {
     glue_scripts_bucket = object({
       bucket_id = string
     })
+    google_service_account = object({
+      credentials_secret = object({
+        arn = string
+      })
+    })
   })
 }
 
@@ -25,8 +30,8 @@ variable "glue_scripts_bucket_id" {
   type        = string
 }
 
-variable "xlsx_import_script_key" {
-  description = "XLSX sheets import script key"
+variable "spreadsheet_import_script_key" {
+  description = "Spreadsheet import script key"
   type        = string
 }
 
@@ -89,15 +94,6 @@ variable "output_folder_name" {
 variable "input_file_name" {
   description = "XLSX input file name"
   type        = string
-}
-
-variable "worksheets" {
-  type = map(
-    object({
-      header_row_number = number
-      worksheet_name    = string
-    })
-  )
 }
 
 variable "pydeequ_zip_key" {

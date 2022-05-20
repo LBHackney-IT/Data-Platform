@@ -78,12 +78,12 @@ resource "aws_s3_bucket_object" "pydeequ" {
   source_hash = filemd5("../external-lib/target/pydeequ-1.0.1.zip")
 }
 
-resource "aws_s3_bucket_object" "xlsx_import_script" {
+resource "aws_s3_bucket_object" "spreadsheet_import_script" {
   bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/xlsx_import.py"
+  key         = "scripts/spreadsheet_import.py"
   acl         = "private"
-  source      = "../scripts/jobs/xlsx_import.py"
-  source_hash = filemd5("../scripts/jobs/xlsx_import.py")
+  source      = "../scripts/jobs/spreadsheet_import.py"
+  source_hash = filemd5("../scripts/jobs/spreadsheet_import.py")
 }
 
 resource "aws_s3_bucket_object" "get_uprn_from_uhref" {

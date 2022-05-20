@@ -101,10 +101,11 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
 
   environment {
     variables = {
-      FILE_ID        = var.file_id
-      BUCKET_ID      = var.zone_bucket_id
-      FILE_NAME      = "${var.service_area}/${var.file_name}"
-      WORKFLOW_NAMES = join("/", var.workflow_names)
+      FILE_ID                                       = var.file_id
+      BUCKET_ID                                     = var.zone_bucket_id
+      FILE_NAME                                     = "${var.service_area}/${var.output_folder_name}/${var.file_name}"
+      WORKFLOW_NAMES                                = join("/", var.workflow_names)
+      GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_SECRET_ARN = var.google_service_account_credentials_secret
     }
   }
 
@@ -125,10 +126,9 @@ resource "aws_lambda_function_event_invoke_config" "g_drive_to_s3_copier_lambda"
 }
 
 resource "aws_cloudwatch_event_rule" "every_day_at_6" {
-  name                = "g-drive-to-s3-copier-every-day-at-6"
+  name_prefix         = "g-drive-to-s3-copier-every-day-at-6-"
   description         = "Fires every dat at "
   schedule_expression = "cron(0 6 * * ? *)"
-  is_enabled          = false
 }
 
 resource "aws_cloudwatch_event_target" "run_lambda_every_day_at_6" {

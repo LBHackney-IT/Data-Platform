@@ -7,12 +7,10 @@ module "academy_mssql_database_ingestion" {
   name                        = "academy-benefits-housing-needs-and-revenues"
   jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHALiveRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHALiveRBViews database"
-  jdbc_connection_subnet_id   = local.subnet_ids_list[local.subnet_ids_random_index]
-  database_availability_zone  = "eu-west-2a"
+  jdbc_connection_subnet      = data.aws_subnet.network[local.instance_subnet_id]
   database_secret_name        = "database-credentials/lbhaliverbviews-benefits-housing-needs-revenues"
   identifier_prefix           = local.short_identifier_prefix
   create_workflow             = false
-  vpc_id                      = data.aws_vpc.network.id
 }
 
 resource "aws_glue_catalog_database" "landing_zone_academy" {
@@ -79,7 +77,8 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
   max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
-  glue_job_timeout                = 300
+  glue_job_timeout                = 420
+  glue_job_worker_type            = "G.1X"
   job_parameters = {
     "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
@@ -110,7 +109,7 @@ resource "aws_glue_trigger" "academy_revenues_and_benefits_housing_needs_landing
 
   name     = "${local.short_identifier_prefix}academy-revenues-benefits-housing-needs-database-ingestion-crawler-trigger"
   type     = "SCHEDULED"
-  schedule = "cron(0 7,8 ? * MON,TUE,WED,THU,FRI *)"
+  schedule = "cron(15 8,12 ? * MON,TUE,WED,THU,FRI *)"
   enabled  = local.is_live_environment
 
   actions {
@@ -124,19 +123,18 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
 
   source = "../modules/aws-glue-job"
 
-  job_name                        = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
-  script_s3_object_key            = aws_s3_bucket_object.copy_tables_landing_to_raw.key
-  environment                     = var.environment
-  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
-  helper_module_key               = aws_s3_bucket_object.helpers.key
-  glue_role_arn                   = aws_iam_role.glue_role.arn
-  glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
-  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
-  glue_job_worker_type            = "G.2X"
-  glue_job_timeout                = 220
-  max_concurrent_runs_of_glue_job = 2
-  triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
+  job_name                   = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
+  script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  environment                = var.environment
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  glue_role_arn              = aws_iam_role.glue_role.arn
+  glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
+  glue_scripts_bucket_id     = module.glue_scripts.bucket_id
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  glue_job_worker_type       = "G.2X"
+  glue_job_timeout           = 220
+  triggered_by_crawler       = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"          = module.raw_zone.bucket_id
     "--s3_prefix"                 = "benefits-housing-needs/"
@@ -155,18 +153,17 @@ module "copy_academy_revenues_to_raw_zone" {
 
   source = "../modules/aws-glue-job"
 
-  job_name                        = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
-  script_s3_object_key            = aws_s3_bucket_object.copy_tables_landing_to_raw.key
-  environment                     = var.environment
-  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
-  helper_module_key               = aws_s3_bucket_object.helpers.key
-  glue_role_arn                   = aws_iam_role.glue_role.arn
-  glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
-  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
-  glue_job_timeout                = 220
-  max_concurrent_runs_of_glue_job = 2
-  triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
+  job_name                   = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
+  script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  environment                = var.environment
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  glue_role_arn              = aws_iam_role.glue_role.arn
+  glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
+  glue_scripts_bucket_id     = module.glue_scripts.bucket_id
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  glue_job_timeout           = 220
+  triggered_by_crawler       = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "revenues/"

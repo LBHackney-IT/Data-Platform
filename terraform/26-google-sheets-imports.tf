@@ -592,7 +592,7 @@ module "sandbox_stevefarr_covid_locations" {
   enable_glue_trigger             = false
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
-   
+
 module "sandbox_sanch_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -655,8 +655,8 @@ module "sandbox_jlayton_covid_locations" {
   enable_glue_trigger             = false
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }
-    
-  module "sandbox_jlayton_covid_vaccinations" {
+
+module "sandbox_jlayton_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
@@ -673,6 +673,90 @@ module "sandbox_jlayton_covid_locations" {
   google_sheets_worksheet_name    = "vaccinations"
   department                      = module.department_sandbox
   dataset_name                    = "jlayton_covid_vaccinations"
+  enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
+}
+  
+ module "vaccination_loc_arda" {
+  count = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_sandbox.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone.bucket_id       
+  google_sheets_document_id       = "1-jBGmD0ZQiGiHHZOUxiiz2_PnGw-CEEmN5O4VvMAaco"
+  google_sheets_worksheet_name    = "locations"
+  department                      = module.department_sandbox
+  dataset_name                    = "arda_covid_vaccination_loc"
+  enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
+}
+
+module "sandbox_everlander_covid_locations" {
+  count                           = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_sandbox.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone.bucket_id
+  google_sheets_document_id       = "1FsCa905Xe9aumGtpFdwPVrSbWhEMtasbRT_rKuytAfg"
+  google_sheets_worksheet_name    = "locations"
+  department                      = module.department_sandbox
+  dataset_name                    = "everlander_covid_locations"
+  enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
+}
+    
+ module "vaccination_vac_arda" {
+  count = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_sandbox.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone.bucket_id      
+  google_sheets_document_id       = "1-jBGmD0ZQiGiHHZOUxiiz2_PnGw-CEEmN5O4VvMAaco"
+  google_sheets_worksheet_name    = "vaccinations"
+  department                      = module.department_sandbox
+  dataset_name                    = "arda_covid_vaccination_vac"
+  enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
+}
+
+module "sandbox_everlander_covid_vaccinations" {
+  count                           = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
+  helper_module_key               = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_sandbox.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone.bucket_id
+  google_sheets_document_id       = "1FsCa905Xe9aumGtpFdwPVrSbWhEMtasbRT_rKuytAfg"
+  google_sheets_worksheet_name    = "vaccinations"
+  department                      = module.department_sandbox
+  dataset_name                    = "everlander_covid_vaccinations"
   enable_glue_trigger             = false
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
 }

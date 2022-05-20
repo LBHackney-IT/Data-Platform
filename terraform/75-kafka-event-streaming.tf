@@ -5,6 +5,8 @@ module "kafka_event_streaming" {
   environment = var.environment
   project     = var.project
 
+  glue_iam_role                          = aws_iam_role.glue_role.name
+  glue_database_name                     = aws_glue_catalog_database.landing_zone_catalog_database.name
   is_live_environment                    = local.is_live_environment
   identifier_prefix                      = local.identifier_prefix
   short_identifier_prefix                = local.short_identifier_prefix

@@ -16,7 +16,7 @@ locals {
 resource "aws_glue_connection" "jdbc_database_ingestion" {
   tags = var.tags
 
-  name        = "${var.identifier_prefix}${var.name}-${var.database_availability_zone}"
+  name        = "${var.identifier_prefix}${var.name}-${var.jdbc_connection_subnet.availability_zone}"
   description = var.jdbc_connection_description
   connection_properties = {
     JDBC_CONNECTION_URL = var.jdbc_connection_url
@@ -25,9 +25,9 @@ resource "aws_glue_connection" "jdbc_database_ingestion" {
   }
 
   physical_connection_requirements {
-    availability_zone      = var.database_availability_zone
+    availability_zone      = var.jdbc_connection_subnet.availability_zone
     security_group_id_list = [aws_security_group.ingestion_database_connection.id]
-    subnet_id              = var.jdbc_connection_subnet_id
+    subnet_id              = var.jdbc_connection_subnet.id
   }
 }
 
@@ -37,7 +37,7 @@ resource "aws_security_group" "ingestion_database_connection" {
   })
 
   name   = "${var.identifier_prefix}${var.name}-glue-connection"
-  vpc_id = var.vpc_id
+  vpc_id = var.jdbc_connection_subnet.vpc_id
 }
 
 resource "aws_security_group_rule" "ingestion_database_connection_allow_tcp_ingress" {

@@ -20,7 +20,7 @@ def upload_file_to_s3(client, body_data, bucket_name, file_name):
         Key=file_name)
 
 def download_file(service, file_id):
-    request = service.files().get_media(fileId=file_id)
+    request = service.files().get_media(fileId=file_id, supportsAllDrives=True)
 
     file = io.BytesIO()
     downloader = MediaIoBaseDownload(file, request)
@@ -33,9 +33,29 @@ def download_file(service, file_id):
 def lambda_handler(event, lambda_context):
     load_dotenv()
 
-    scopes = ['https://www.googleapis.com/auth/drive']
+    google_service_account_credentials_secret_arn = getenv("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_SECRET_ARN")
+
+    print(f"secrets arn: {google_service_account_credentials_secret_arn}")
+
+    secrets_manager_client = boto3.client('secretsmanager')
+
+    service_account_secret = secrets_manager_client.get_secret_value(
+      SecretId=google_service_account_credentials_secret_arn
+    )
+
+    secret_value = service_account_secret['SecretString']
+
+    with open('key_file.json', "w") as f:
+      f.writelines(secret_value)
 
     key_file_location = path.relpath('./key_file.json')
+
+    scopes = [
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive.metadata'
+    ]
 
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
         key_file_location,
@@ -46,7 +66,6 @@ def lambda_handler(event, lambda_context):
         'v3',
         credentials=credentials,
         cache_discovery=False)
-
 
     file_id = getenv("FILE_ID")
 
