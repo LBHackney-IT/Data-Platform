@@ -50,7 +50,7 @@ module "noisework_complaints_to_refined" {
   
   }
   script_name          = "noisework_complaints_refined"
-  schedule    = "cron(0 3 * * ? *)"
+  triggered_by_crawler = module.noiseworks_to_raw_zone.crawler_name
 
   crawler_details = {
     database_name      = module.department_env_enforcement.refined_zone_catalog_database_name
