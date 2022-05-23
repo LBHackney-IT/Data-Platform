@@ -1,13 +1,3 @@
-# Database resources
-resource "aws_glue_catalog_database" "raw_zone_env_enforcement" {
-  name = "${local.identifier_prefix}-env-enforcement-raw-zone"
-}
-resource "aws_glue_catalog_database" "refined_zone_env_enforcement" {
-  name = "${local.identifier_prefix}-env-enforcement-refined-zone"
-}
-resource "aws_glue_catalog_database" "trusted_zone_env_enforcement" {
-  name = "${local.identifier_prefix}-env-enforcement-trusted-zone"
-}
 
 
 
@@ -25,7 +15,7 @@ module "liberator_fpns_to_refined" {
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/fpn_tickets"
     "--s3_bucket_target2"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/fpn_tickets_to_geocode"
     "--enable-glue-datacatalog" = "true"
-    "--source_catalog_database" = aws_glue_catalog_database.raw_zone_env_enforcement.name
+    "--source_catalog_database" = module.department_env_enforcement.raw_zone_catalog_database_name
     "--source_catalog_table"    = "liberator_fpn_tickets"
     "--source_catalog_table2"   = "liberator_fpn_payments"
   
@@ -34,7 +24,7 @@ module "liberator_fpns_to_refined" {
   triggered_by_job = aws_glue_job.copy_env_enforcement_liberator_landing_to_raw.name
 
   crawler_details = {
-    database_name      = aws_glue_catalog_database.refined_zone_env_enforcement.name
+    database_name      = module.department_env_enforcement.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone.bucket_id}/env-enforcement"
   }
 
@@ -54,7 +44,7 @@ module "noisework_complaints_to_refined" {
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/noisework_complaints"
     "--s3_bucket_target2"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/noisework_complaints_to_geocode"
     "--enable-glue-datacatalog" = "true"
-    "--source_catalog_database" = aws_glue_catalog_database.raw_zone_env_enforcement.name
+    "--source_catalog_database" = module.department_env_enforcement.raw_zone_catalog_database_name
     "--source_catalog_table"    = "noiseworks_case"
     "--source_catalog_table2"   = "noiseworks_complaint"
   
@@ -63,7 +53,7 @@ module "noisework_complaints_to_refined" {
   schedule    = "cron(0 3 * * ? *)"
 
   crawler_details = {
-    database_name      = aws_glue_catalog_database.refined_zone_env_enforcement.name
+    database_name      = module.department_env_enforcement.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone.bucket_id}/env-enforcement"
   }
 
