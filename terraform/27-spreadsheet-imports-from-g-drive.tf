@@ -7,6 +7,7 @@ module "repairs_fire_alarm_aov" {
   glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -83,6 +84,7 @@ module "env_enforcement_estate_cleaning" {
   glue_catalog_database_name     = module.department_env_enforcement.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -127,6 +129,7 @@ module "env_enforcement_fix_my_street_noise" {
   glue_catalog_database_name     = module.department_env_enforcement.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -159,6 +162,7 @@ module "env_enforcement_cc_tv" {
   glue_catalog_database_name     = module.department_env_enforcement.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -190,6 +194,7 @@ module "parking_permits_consultation_survey" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -221,6 +226,7 @@ module "puzzel_total_overview_10_05_2021_to_25_05_2021_UTF8" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -252,6 +258,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220209" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -283,6 +290,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220317" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -314,6 +322,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220401" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -345,6 +354,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220506" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -376,6 +386,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220420" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -407,6 +418,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220427" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -438,6 +450,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220511" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -469,6 +482,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220512" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -500,6 +514,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220513" {
   glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
   glue_temp_storage_bucket_id    = module.glue_temp_storage.bucket_url
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key

@@ -33,6 +33,34 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
 
   statement {
     actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:sheets-credential-${var.department_identifier}*"
+    ]
+  }
+
+  statement {
+    effect    = "Allow"
+    actions   = ["secretsmanager:ListSecrets"]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = [
+      var.secrets_manager_kms_key.arn
+    ]
+  }
+
+  statement {
+    actions = [
       "kms:*",
       "s3:*"
     ]
