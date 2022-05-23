@@ -25,6 +25,7 @@ module "alloy_api_ingestion_raw_env_services" {
   job_description                 = "This job queries the Alloy API for data and converts the exported csv to Parquet saved to S3"
   department                      = module.department_environmental_services
   job_name                        = "${local.short_identifier_prefix}_${local.alloy_query_names[count.index]}_alloy_api_ingestion_env_services"
+
   helper_module_key               = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
@@ -132,6 +133,34 @@ module "alloy_daily_snapshot_env_services" {
     "--snapshot_date_col"          = "snapshot_date"
     "s3_bucket_target"             = "s3://dataplatform-stg-refined-zone/env-services/alloy/snapshots/"
   }
+
+  predicate {
+    conditions {
+      job_name = module.alloy_api_ingestion_raw_env_services[0].job_name
+      state    = "SUCCEEDED"
+    }
+  }
+}
+
+resource "aws_glue_crawler" "alloy_daily_table_ingestion" {
+  count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
+
+  database_name = module.department_environmental_services.raw_zone_catalog_database_name
+  name          = "${local.short_identifier_prefix}Alloy Ingestion"
+  role          = module.department_environmental_services.glue_role_arn
+
+  s3_target {
+    path = "s3://${module.raw_zone.bucket_id}/env-services/alloy/api-responses/"
+  }
+  table_prefix = "alloy_"
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 5
+    }
+  })
 }
 
 resource "aws_glue_trigger" "alloy_snapshot_crawler" {

@@ -8,8 +8,8 @@ module "spreadsheet_import" {
   pydeequ_zip_key   = var.pydeequ_zip_key
   glue_role_arn     = var.glue_role_arn
   job_parameters = {
-    "--s3_bucket_source"  = "s3://${var.landing_zone_bucket_id}/${var.department.identifier}/${var.input_file_name}"
-    "--s3_bucket_target"  = local.s3_output_path
+    "--s3_bucket_source"  = "s3://${var.landing_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}/${var.input_file_name}"
+    "--s3_bucket_target"  = "s3://${var.raw_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}/${var.data_set_name}"
     "--header_row_number" = var.header_row_number
     "--worksheet_name"    = var.worksheet_name
   }
@@ -20,7 +20,13 @@ module "spreadsheet_import" {
   crawler_details = {
     table_prefix       = "${var.department.identifier_snake_case}_"
     database_name      = var.glue_catalog_database_name
-    s3_target_location = local.s3_output_path
+    s3_target_location = "s3://${var.raw_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}"
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+        TableLevelConfiguration = 3
+      }
+    })
   }
   trigger_enabled = false
 }

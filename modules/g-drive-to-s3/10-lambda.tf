@@ -33,6 +33,34 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
 
   statement {
     actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:sheets-credential-${var.department_identifier}*"
+    ]
+  }
+
+  statement {
+    effect    = "Allow"
+    actions   = ["secretsmanager:ListSecrets"]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = [
+      var.secrets_manager_kms_key.arn
+    ]
+  }
+
+  statement {
+    actions = [
       "kms:*",
       "s3:*"
     ]
@@ -101,10 +129,11 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
 
   environment {
     variables = {
-      FILE_ID        = var.file_id
-      BUCKET_ID      = var.zone_bucket_id
-      FILE_NAME      = "${var.service_area}/${var.file_name}"
-      WORKFLOW_NAMES = join("/", var.workflow_names)
+      FILE_ID                                       = var.file_id
+      BUCKET_ID                                     = var.zone_bucket_id
+      FILE_NAME                                     = "${var.service_area}/${var.output_folder_name}/${var.file_name}"
+      WORKFLOW_NAMES                                = join("/", var.workflow_names)
+      GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_SECRET_ARN = var.google_service_account_credentials_secret
     }
   }
 
@@ -125,10 +154,9 @@ resource "aws_lambda_function_event_invoke_config" "g_drive_to_s3_copier_lambda"
 }
 
 resource "aws_cloudwatch_event_rule" "every_day_at_6" {
-  name                = "g-drive-to-s3-copier-every-day-at-6"
+  name_prefix         = "g-drive-to-s3-copier-every-day-at-6-"
   description         = "Fires every dat at "
   schedule_expression = "cron(0 6 * * ? *)"
-  is_enabled          = false
 }
 
 resource "aws_cloudwatch_event_target" "run_lambda_every_day_at_6" {

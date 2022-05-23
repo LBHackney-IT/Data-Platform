@@ -62,3 +62,13 @@ variable "is_live_environment" {
   description = "A flag indicting if we are running in a live environment for setting up automation"
   type        = bool
 }
+
+variable "glue_iam_role" {
+  description = "Name of the role that can be used to crawl the resulting data"
+  type        = string
+}
+
+variable "glue_database_name" {
+  description = "Name of the database to crawl the streamed data to"
+  type        = string
+}

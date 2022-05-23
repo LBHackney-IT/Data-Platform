@@ -53,5 +53,6 @@
     },
     "parameterValues": [],
     "fileName": "Highways Licences.csv",
-    "exportHeaderType": "Name"
+    "exportHeaderType": "Name",
+    "discriminator": "CsvExportWebRequestModel"
 }

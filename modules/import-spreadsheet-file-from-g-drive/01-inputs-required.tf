@@ -12,6 +12,11 @@ variable "department" {
     glue_scripts_bucket = object({
       bucket_id = string
     })
+    google_service_account = object({
+      credentials_secret = object({
+        arn = string
+      })
+    })
   })
 }
 
@@ -91,15 +96,6 @@ variable "input_file_name" {
   type        = string
 }
 
-variable "worksheets" {
-  type = map(
-    object({
-      header_row_number = number
-      worksheet_name    = string
-    })
-  )
-}
-
 variable "pydeequ_zip_key" {
   description = "Pydeequ module to be used in Glue scripts"
   type        = string
@@ -108,4 +104,12 @@ variable "pydeequ_zip_key" {
 variable "spark_ui_output_storage_id" {
   description = "Id of S3 bucket containing Spark UI output logs"
   type        = string
+}
+
+variable "secrets_manager_kms_key" {
+  description = "The KMS Key Id to be used to encrypt the secret which stores the json credentials"
+  type = object({
+    key_id = string
+    arn    = string
+  })
 }
