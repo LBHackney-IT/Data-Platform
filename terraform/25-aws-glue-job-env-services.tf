@@ -146,3 +146,46 @@ module "alloy_daily_snapshot_env_services" {
 
   }
 }
+
+resource "aws_glue_trigger" "alloy_snapshot_crawler" {
+
+  count = length(local.alloy_queries)
+  //count = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
+  tags    = module.tags.values
+  name    = "${local.short_identifier_prefix} ${local.alloy_query_names[count.index]} Alloy Snapshot Crawler"
+  type    = "CONDITIONAL"
+  enabled = local.is_live_environment
+
+  actions {
+    crawler_name = aws_glue_crawler.alloy_snapshot[count.index].name
+  }
+
+  predicate {
+    conditions {
+      job_name = module.alloy_daily_snapshot_env_services[count.index].job_name
+      state    = "SUCCEEDED"
+    }
+  }
+}
+
+resource "aws_glue_crawler" "alloy_snapshot" {
+  count = length(local.alloy_queries)
+  //count = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
+  tags = module.tags.values
+
+  database_name = module.department_environmental_services.refined_zone_catalog_database_name
+  name          = "${local.short_identifier_prefix}Alloy Snapshot ${local.alloy_query_names[count.index]}"
+  role          = module.department_environmental_services.glue_role_arn
+
+  s3_target {
+    path = "s3://${module.refined_zone.bucket_id}/env-services/alloy/api-responses/"
+  }
+  table_prefix = "alloy_snapshot_"
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 5
+    }
+  })
+}
