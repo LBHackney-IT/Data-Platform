@@ -11,7 +11,6 @@ transit_gateway_availability_zones                = ["eu-west-2a", "eu-west-2b",
 transit_gateway_cidr                              = "10.120.32.0/24"
 transit_gateway_private_subnets                   = ["10.120.32.0/26", "10.120.32.64/26", "10.120.32.128/26"]
 rds_instance_ids                                  = ["addresses-api-db-production-emergency-temp", "geolive-db"]
-deployment_user_arn                               = "arn:aws:iam::338027813792:user/automation_deployer"
 qlik_server_instance_type                         = "m5.2xlarge"
 qlik_ssl_certificate_domain                       = "qliksense.hackney.gov.uk"
 redshift_public_ips                               = ["18.168.126.173"]

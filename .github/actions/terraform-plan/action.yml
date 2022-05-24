@@ -56,9 +56,6 @@ inputs:
   aws_deploy_iam_role_name:
     description: "AWS IAM role name to assume for deployment"
     required: true
-  TF_VAR_deployment_user_arn:
-    description: "AWS arn for deployment user account"
-    required: true
 
 runs:
   using: "composite"

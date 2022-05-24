@@ -36,4 +36,3 @@ jobs:
       AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
       AWS_DP_VPC_ID: ${{ secrets.AWS_DP_DEV_VPC_ID }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
-      TF_VAR_DEPLOYMENT_USER_ARN: ${{ secrets.TF_VAR_DEPLOYMENT_USER_ARN }}
