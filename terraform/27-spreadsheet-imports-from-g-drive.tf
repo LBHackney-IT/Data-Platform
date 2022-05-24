@@ -589,7 +589,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220524" {
   landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
   google_sheets_document_id      = "1Nsly2YWLufSWpq6fRd-VWr2Tdkma7bQV"
-  glue_job_name                  = "${title(module.department_parking.name)} - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8 DP"
+  glue_job_name                  = "${title(module.department_parking.name)} - PCN Permits VRM NLPG LLPG matching"
   output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "20220524 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8 DP.csv"
