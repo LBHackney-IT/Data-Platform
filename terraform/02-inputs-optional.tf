@@ -73,7 +73,7 @@ variable "email_to_notify" {
 }
 
 variable "copy_liberator_to_pre_prod_lambda_execution_role" {
-  description = ""
+  description = "AWS IAM role name to assume for triggering the lambda to copy liberator data to pre-prod"
   type        = string
   default     = null
 }
