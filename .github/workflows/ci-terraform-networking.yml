@@ -12,6 +12,7 @@ on:
       - 'external-lib/**'
       - 'docker/**'
 
+
 jobs:
   CI:
     uses: ./.github/workflows/plan-and-lint-terraform.yml
