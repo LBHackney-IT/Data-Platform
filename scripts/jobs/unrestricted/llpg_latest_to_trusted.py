@@ -72,56 +72,59 @@ if __name__ == "__main__":
         table_name=source_catalog_table,
         push_down_predicate = "import_date=date_format(current_date, 'yyyyMMdd')"
     )
-    
-    
-        
-    mapWard = {
+     
+    map_ward = {
                 "Hoxton East and Shoreditch": "Hoxton East & Shoreditch"
                 }
                 
-    
     df2 = data_source.toDF()
     # Duplicate ward column to apply mapping
     df2 = df2.withColumn('llpg_ward_map', col('ward').cast('string')) 
 
     # Apply Mapping
-    df2 = df2.replace(to_replace=mapWard, subset=['llpg_ward_map'])
+    df2 = df2.replace(to_replace=map_ward, subset=['llpg_ward_map'])
 
-    # get historical and approved addresses
-    df_all = df2.filter(col("lpi_logical_status").isin('Approved Preferred','Historic'))
+    # Join the ones with an approved preferred status
+    app = df2.filter(df2.lpi_logical_status =="Approved Preferred") 
 
-# seperate the lpi key as int
-    joinh = df_all.withColumn("lpi_key2", df_all.lpi_key.substr(-9,9))
+    #create historic set of data not in the approved
+    hist = df2.filter(df2.lpi_logical_status =="Historic") 
 
-    joinh = joinh.withColumn("key_int", joinh.lpi_key2.cast('int')) # cast the value as an int
+    delta = hist.join(app,hist.uprn == app.uprn,'leftanti') #remove the uprns in the other dataset
 
-#create the composite key
-    joinh = joinh.withColumn('comp_id', concat(joinh.uprn,joinh.key_int))
+    delta = delta.withColumnRenamed("uprn","uprn_hist") 
 
-#get the latest address by lpi key
+    # seperate the lpi key as int
+    delta = delta.withColumn("lpi_key2", delta.lpi_key.substr(-9,9))
 
-    latest = joinh.select("uprn","lpi_key")
-    latest = latest.withColumnRenamed("uprn","uprn_latest")
-    latest = latest.withColumn("lpi_key2", latest.lpi_key.substr(-9,9))
+    delta = delta.withColumn("key_int", delta.lpi_key2.cast('int')) # cast the value as an int
 
-    latest = latest.withColumn("key_int", latest.lpi_key2.cast('int')) # cast the value as an int
-    latest2 = latest.groupBy("uprn_latest").max("key_int")
-    latest2 = latest2.withColumnRenamed("max(key_int)","key_link")
+    #create the composite key
+    delta = delta.withColumn('comp_id', concat(delta.uprn_hist,delta.key_int))
 
-#create the composite key
-    latest3 = latest2.withColumn('comp_id', concat(latest2.uprn_latest,latest2.key_link))
+    #get the latest address for historic cases, create the base df with comp_id to join
+    hist = delta.select("uprn_hist","lpi_key")
+    hist = hist.withColumn("lpi_key2", hist.lpi_key.substr(-9,9))
+    hist = hist.withColumn("key_int", hist.lpi_key2.cast('int')) # cast the value as an int
 
-# join the comp ids to get the latest
-    joinh2 =  latest3.join(joinh,latest3.comp_id ==  joinh.comp_id,"left")
+    # get the max lpi with comp_id to join
+    hist_max = hist.groupBy("uprn_hist").max("key_int")
+    hist_max = hist_max.withColumnRenamed("max(key_int)","key_link")
+    hist_max = hist_max.withColumn('comp_id', concat(hist_max.uprn_hist,hist_max.key_link))
+    hist_max = hist_max.drop('uprn_hist')
 
-#drop unwanted columns
-    joinh2 = joinh2.drop('key_link','comp_id','max_id','uprn_latest','lpi_key2','key_int','ward')
+    # join the comp ids to get the latest, drop fields and rename
+    hist_final = hist_max.join(delta,hist_max.comp_id ==  delta.comp_id,"left")
+    hist_final = hist_final.drop('key_link','comp_id','max_id','lpi_key2','key_int')
+    hist_final = hist_final.withColumnRenamed("uprn_hist","uprn") 
+
+#union the approved and the historic data
+    unionDF2 = app.union(hist_final)
 
 #create the output
-    output = joinh2.withColumnRenamed("llpg_ward_map","ward")
+    output = unionDF2.withColumnRenamed("llpg_ward_map","ward")
     
     # Convert data frame to dynamic frame 
-    #dynamic_frame = DynamicFrame.fromDF(output.repartition(1), glueContext, "target_data_to_write")
     dynamic_frame = DynamicFrame.fromDF(output, glueContext, "target_data_to_write")
 
 
