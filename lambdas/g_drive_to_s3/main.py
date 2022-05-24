@@ -46,7 +46,7 @@ def lambda_handler(event, lambda_context):
       SecretId=google_service_account_credentials_secret_arn
     )
 
-    secret = service_account_secret['SecretString']
+    secret = service_account_secret['SecretBinary']
     secret_dict = json.loads(secret)
 
     tmp_directory = "/tmp/lambda"
