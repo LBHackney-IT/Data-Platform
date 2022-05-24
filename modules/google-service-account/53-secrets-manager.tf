@@ -14,5 +14,5 @@ resource "aws_secretsmanager_secret_version" "json_credentials" {
   count = var.is_live_environment ? 1 : 0
 
   secret_id     = aws_secretsmanager_secret.sheets_credentials.id
-  secret_binary = google_service_account_key.json_credentials[0].private_key
+  secret_string = google_service_account_key.json_credentials[0].private_key
 }
