@@ -51,6 +51,8 @@ on:
         required: true
       GOOGLE_CREDENTIALS:
         required: true
+      TF_VAR_DEPLOYMENT_USER_ARN:
+        required: true
 
 jobs:
   plan:
@@ -108,6 +110,7 @@ jobs:
           aws_dp_vpc_id: ${{ secrets.AWS_DP_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          TF_VAR_deployment_user_arn: ${{ secrets.TF_VAR_DEPLOYMENT_USER_ARN }}
 
   lint:
     name: Lint Terraform in ${{ inputs.build_path }}

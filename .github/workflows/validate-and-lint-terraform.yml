@@ -51,6 +51,8 @@ on:
         required: true
       GOOGLE_CREDENTIALS:
         required: true
+      TF_VAR_DEPLOYMENT_USER_ARN:
+        required: true
 
 jobs:
   validate:
