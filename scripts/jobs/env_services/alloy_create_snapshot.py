@@ -105,8 +105,6 @@ if __name__ == "__main__":
     snapshot_date_col = get_glue_env_var('snapshot_date_col', '')
     s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
 
-    table_name = table.replace(' ', '_').lower()
-
     increment_table_name = f'{increment_table_prefix}{table_name}'
     snapshot_table_name = f'{snapshot_table_prefix}{table_name}'
 
