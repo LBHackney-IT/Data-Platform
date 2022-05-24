@@ -26,12 +26,11 @@ module "alloy_api_ingestion_raw_env_services" {
   department      = module.department_environmental_services
   job_name        = "${local.short_identifier_prefix}_${local.alloy_query_names[count.index]}_alloy_api_ingestion_env_services"
 
-  helper_module_key               = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
-  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
-  trigger_enabled                 = false
-  max_concurrent_runs_of_glue_job = local.alloy_queries_max_concurrent_runs
-  script_name                     = "alloy_api_ingestion"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  trigger_enabled            = false
+  script_name                = "alloy_api_ingestion"
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
@@ -95,12 +94,11 @@ module "alloy_daily_snapshot_env_services" {
   department      = module.department_environmental_services
   job_name        = "${local.short_identifier_prefix}_${local.alloy_query_names[count.index]}_alloy_snapshot_env_services"
 
-  helper_module_key               = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
-  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
-  triggered_by_crawler            = module.alloy_daily_table_ingestion[count.index].crawler_name
-  max_concurrent_runs_of_glue_job = local.alloy_queries_max_concurrent_runs
-  script_name                     = "alloy_create_snapshot"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  triggered_by_crawler       = aws_glue_crawler.alloy_daily_table_ingestion[count.index].name
+  script_name                = "alloy_create_snapshot"
   job_parameters = {
     "--job-bookmark-option"        = "job-bookmark-enable"
     "--enable-glue-datacatalog"    = "true"
