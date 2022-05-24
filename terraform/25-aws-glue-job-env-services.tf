@@ -87,37 +87,18 @@ resource "aws_glue_crawler" "alloy_daily_table_ingestion" {
   })
 }
 
-resource "aws_glue_trigger" "alloy_daily_snapshot" {
-  count   = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
-  tags    = module.tags.values
-  enabled = local.is_live_environment
-
-  name = "${local.short_identifier_prefix} ${local.alloy_query_names[count.index]} Alloy Snapshot Job"
-  type = "CONDITIONAL"
-
-  actions {
-    job_name = module.alloy_daily_snapshot_env_services[count.index].job_name
-  }
-
-  predicate {
-    conditions {
-      crawler_name = aws_glue_crawler.alloy_daily_table_ingestion[count.index].name
-      crawl_state  = "SUCCEEDED"
-    }
-  }
-}
-
 module "alloy_daily_snapshot_env_services" {
   source = "../modules/aws-glue-job"
   count  = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
 
-  job_description                 = "This job combines previous updates from the API to create a daily snapshot"
-  department                      = module.department_environmental_services
-  job_name                        = "${local.short_identifier_prefix}_${local.alloy_query_names[count.index]}_alloy_snapshot_env_services"
+  job_description = "This job combines previous updates from the API to create a daily snapshot"
+  department      = module.department_environmental_services
+  job_name        = "${local.short_identifier_prefix}_${local.alloy_query_names[count.index]}_alloy_snapshot_env_services"
+
   helper_module_key               = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
-  trigger_enabled                 = false
+  triggered_by_crawler            = module.alloy_daily_table_ingestion[count.index].crawler_name
   max_concurrent_runs_of_glue_job = local.alloy_queries_max_concurrent_runs
   script_name                     = "alloy_create_snapshot"
   job_parameters = {
@@ -132,13 +113,6 @@ module "alloy_daily_snapshot_env_services" {
     "--increment_date_col "        = "import_datetime"
     "--snapshot_date_col"          = "snapshot_date"
     "s3_bucket_target"             = "s3://dataplatform-stg-refined-zone/env-services/alloy/snapshots/"
-  }
-
-  predicate {
-    conditions {
-      job_name = module.alloy_api_ingestion_raw_env_services[0].job_name
-      state    = "SUCCEEDED"
-    }
   }
 }
 
