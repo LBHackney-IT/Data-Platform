@@ -20,6 +20,6 @@ resource "google_service_account_key" "json_credentials" {
     # Arbitrary map of values that, when changed, will trigger a new key to be generated
     # The key will only output the first time this resources is created, afterward it will have a null value
     secret_id     = aws_secretsmanager_secret.sheets_credentials.id
-    rotation_time = time_rotating.key_rotation.rotation_rfc3339
+    rotation_time = time_rotating.key_rotation.rotation_days
   }
 }
