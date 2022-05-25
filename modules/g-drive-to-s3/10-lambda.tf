@@ -126,6 +126,7 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   s3_key           = aws_s3_bucket_object.g_drive_to_s3_copier_lambda.key
   source_code_hash = data.archive_file.g_drive_to_s3_copier_lambda.output_base64sha256
   timeout          = local.lambda_timeout
+  memory_size      = local.lambda_memory_size
 
   environment {
     variables = {
