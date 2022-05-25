@@ -7,7 +7,7 @@ resource "google_service_account" "service_account" {
 }
 
 resource "time_rotating" "key_rotation" {
-  rotation_days = 1
+  rotation_days = 30
 }
 
 resource "google_service_account_key" "json_credentials" {
