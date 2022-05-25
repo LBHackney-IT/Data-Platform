@@ -70,14 +70,15 @@ if __name__ == "__main__":
     data_source = glueContext.create_dynamic_frame.from_catalog(
         name_space=source_catalog_database,
         table_name=source_catalog_table,
-        push_down_predicate = "import_date=date_format(current_date, 'yyyyMMdd')"
+        push_down_predicate = "import_date=date_format(current_date, 'yyyyMMdd')-2"
     )
-     
+    
     map_ward = {
                 "Hoxton East and Shoreditch": "Hoxton East & Shoreditch"
                 }
                 
     df2 = data_source.toDF()
+    df2 = get_latest_import(df2)
     # Duplicate ward column to apply mapping
     df2 = df2.withColumn('llpg_ward_map', col('ward').cast('string')) 
 
@@ -87,7 +88,7 @@ if __name__ == "__main__":
     # Join the ones with an approved preferred status
     app = df2.filter(df2.lpi_logical_status =="Approved Preferred") 
 
-    #create historic set of data not in the approved
+#create historic set of data not in the approved
     hist = df2.filter(df2.lpi_logical_status =="Historic") 
 
     delta = hist.join(app,hist.uprn == app.uprn,'leftanti') #remove the uprns in the other dataset
@@ -120,9 +121,42 @@ if __name__ == "__main__":
 
 #union the approved and the historic data
     unionDF2 = app.union(hist_final)
+    
+#add the provisional ones
+    prov = df2.filter(df2.lpi_logical_status =="Provisional") 
+    delta = prov.join(unionDF2,prov.uprn == unionDF2.uprn,'leftanti') #remove the uprns in the other dataset
+    delta = delta.withColumnRenamed("uprn","uprn_prov") 
+
+    # seperate the lpi key as int
+    delta = delta.withColumn("lpi_key2", delta.lpi_key.substr(-9,9))
+    delta = delta.withColumn("key_int", delta.lpi_key2.cast('int')) # cast the value as an int
+
+    #create the composite key
+    delta = delta.withColumn('comp_id', concat(delta.uprn_prov,delta.key_int))
+
+    #get the latest address
+
+    prov1 = delta.select("uprn_prov","lpi_key")
+    prov1 = prov1.withColumn("lpi_key2", prov1.lpi_key.substr(-9,9))
+    prov1 = prov1.withColumn("key_int", prov1.lpi_key2.cast('int')) # cast the value as an int
+
+    prov_max = prov1.groupBy("uprn_prov").max("key_int")
+    prov_max = prov_max.withColumnRenamed("max(key_int)","key_link")
+
+    prov_latest = prov_max.withColumn('comp_id', concat(prov_max.uprn_prov,prov_max.key_link))
+    prov_latest = prov_latest.drop('uprn_prov')
+
+    # join the comp ids to get the latest
+    joinh2 =  prov_latest.join(delta,prov_latest.comp_id ==  delta.comp_id,"left")
+    joinh2 = joinh2.drop('key_link','comp_id','max_id','lpi_key2','key_int')
+    joinh2 = joinh2.withColumnRenamed("uprn_prov","uprn") 
+
+    #Union with the previous dataset
+    unionDF3 = unionDF2.union(joinh2)
 
 #create the output
-    output = unionDF2.withColumnRenamed("llpg_ward_map","ward")
+    output = unionDF3.drop('ward')
+    output = unionDF3.withColumnRenamed("llpg_ward_map","ward")
     
     # Convert data frame to dynamic frame 
     dynamic_frame = DynamicFrame.fromDF(output, glueContext, "target_data_to_write")
