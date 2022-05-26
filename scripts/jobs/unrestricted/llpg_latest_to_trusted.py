@@ -31,7 +31,6 @@ def clear_target_folder(s3_bucket_target):
     bucket.objects.filter(Prefix=prefix).delete()
     return
 
-# The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":
     
     # read job parameters
