@@ -1,4 +1,3 @@
- # This is a template for prototyping jobs. It loads the latest data from S3 using the Glue catalogue, performs an empty transformation, and writes the result to a target location in S3.
  # Before running your job, go to the Job Details tab and customise:
     # - the role Glue should use to run the job (it should match the department where the data is stored - if not, you will get permissions errors)
     # - the temporary storage path (same as above)
