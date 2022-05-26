@@ -29,3 +29,7 @@ variable "academy_production_database_password" {
 variable "copy_liberator_to_pre_prod_lambda_execution_role" {
   default = false
 }
+
+variable "sync_production_to_pre_production_task_role" {
+  default = false
+}
