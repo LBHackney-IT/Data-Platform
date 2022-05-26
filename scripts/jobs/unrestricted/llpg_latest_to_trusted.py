@@ -1,5 +1,4 @@
  # Before running your job, go to the Job Details tab and customise:
-    # - the role Glue should use to run the job (it should match the department where the data is stored - if not, you will get permissions errors)
     # - the temporary storage path (same as above)
     # - the job parameters (replace the template values coming from the Terraform with real values)
 
