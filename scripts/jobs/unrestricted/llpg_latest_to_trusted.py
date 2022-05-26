@@ -106,7 +106,8 @@ if __name__ == "__main__":
     
 #add the provisional ones
     prov = df2.filter(df2.lpi_logical_status =="Provisional") 
-    delta = prov.join(unionDF2,prov.uprn == unionDF2.uprn,'leftanti') #remove the uprns in the other dataset
+    #remove the uprns in the other dataset
+    delta = prov.join(unionDF2,prov.uprn == unionDF2.uprn,'leftanti') 
     delta = delta.withColumnRenamed("uprn","uprn_prov") 
 
     # seperate the lpi key as int
