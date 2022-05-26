@@ -5,6 +5,7 @@ module "academy_mssql_database_ingestion" {
   source = "../modules/database-ingestion-via-jdbc-connection"
 
   name                        = "academy-benefits-housing-needs-and-revenues-${each.key}"
+  table_filter                = each.key
   jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHALiveRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHALiveRBViews database"
   jdbc_connection_subnet      = data.aws_subnet.network[local.instance_subnet_id]
@@ -19,19 +20,19 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
 
 locals {
   table_filter_expressions = local.is_live_environment ? {
-    core-hbrent-s-all                = "^lbhaliverbviews_core_hbrent[s].*",
-    core-hbc-all                     = "^lbhaliverbviews_core_hbc.*",
-    core-hbrentclaim                 = "^lbhaliverbviews_core_hbrentclaim",
-    core-hbrenttrans                 = "^lbhaliverbviews_core_hbrenttrans",
-    core-hbrent-tsc-all              = "^lbhaliverbviews_core_hbrent[^tsc].*",
-    core-hbmember-s-all              = "^lbhaliverbviews_core_hbmember",
-    core-hbincome-s-all              = "^lbhaliverbviews_core_hbincome",
-    core-hb-abdefghjklnopsw-only     = "^lbhaliverbviews_core_hb[abdefghjklnopsw]",
-    core-ct-dt-all                   = "^lbhaliverbviews_core_ct[dt].*",
-    current-ctax-all                 = "^lbhaliverbviews_current_ctax.*",
-    current-hbn-all                  = "^lbhaliverbviews_current_[hbn].*",
-    core-ct-abcefghijklmnopqrsvw-all = "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*",
-    core-mix                         = "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
+    core-hbrent-s-all   = "^lbhaliverbviews_core_hbrent[s].*",
+    core-hbc-all        = "^lbhaliverbviews_core_hbc.*",
+    core-hbrentclaim    = "^lbhaliverbviews_core_hbrentclaim",
+    core-hbrenttrans    = "^lbhaliverbviews_core_hbrenttrans",
+    core-hbrent-tsc-all = "^lbhaliverbviews_core_hbrent[^tsc].*",
+    core-hbmember-s-all = "^lbhaliverbviews_core_hbmember",
+    core-hbincome-s-all = "^lbhaliverbviews_core_hbincome",
+    core-hb-a-to-w-only = "^lbhaliverbviews_core_hb[abdefghjklnopsw]",
+    core-ct-dt-all      = "^lbhaliverbviews_core_ct[dt].*",
+    current-ctax-all    = "^lbhaliverbviews_current_ctax.*",
+    current-hbn-all     = "^lbhaliverbviews_current_[hbn].*",
+    core-ct-a-to-w-all  = "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*",
+    core-mix            = "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
   } : {}
 }
 
