@@ -101,7 +101,7 @@ if __name__ == "__main__":
     hist_final = hist_final.drop('key_link','comp_id','max_id','lpi_key2','key_int')
     hist_final = hist_final.withColumnRenamed("uprn_hist","uprn") 
 
-#union the approved and the historic data
+    #union the approved and the historic data
     unionDF2 = app.union(hist_final)
     
 #add the provisional ones
