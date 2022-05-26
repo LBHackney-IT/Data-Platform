@@ -145,7 +145,7 @@ if __name__ == "__main__":
     dynamic_frame = DynamicFrame.fromDF(output, glueContext, "target_data_to_write")
 
 
-# wipe out the target folder in the trusted zone
+# delete the target folder in the trusted zone
     clear_target_folder(s3_bucket_target)
 
 # Write the data to S3
