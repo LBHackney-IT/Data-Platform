@@ -16,7 +16,6 @@ from pyspark.sql.functions import *
 import pyspark.sql.functions as F
 from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS
 
-# Define the functions that will be used in your job (optional). For Production jobs, these functions should be tested via unit testing.
 def get_latest_import(df):
     
    df = df.where(col('import_date') == df.select(max('import_date')).first()[0])
