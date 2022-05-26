@@ -1,10 +1,10 @@
 module "academy_mssql_database_ingestion" {
-  count = local.is_live_environment ? 1 : 0
-  tags  = module.tags.values
+  for_each = local.table_filter_expressions
+  tags     = module.tags.values
 
   source = "../modules/database-ingestion-via-jdbc-connection"
 
-  name                        = "academy-benefits-housing-needs-and-revenues"
+  name                        = "academy-benefits-housing-needs-and-revenues-${each.key}"
   jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHALiveRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHALiveRBViews database"
   jdbc_connection_subnet      = data.aws_subnet.network[local.instance_subnet_id]
@@ -18,35 +18,31 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
 }
 
 locals {
-  table_filter_expressions = local.is_live_environment ? [
-    "^lbhaliverbviews_core_hbrent[s].*",
-    "^lbhaliverbviews_core_hbc.*",
-    "^lbhaliverbviews_core_hbrentclaim",
-    "^lbhaliverbviews_core_hbrenttrans",
-    "^lbhaliverbviews_core_hbrent[^tsc].*",
-    "^lbhaliverbviews_core_hbmember",
-    "^lbhaliverbviews_core_hbincome",
-    "^lbhaliverbviews_core_hb[abdefghjklnopsw]",
-    "^lbhaliverbviews_core_ct[dt].*",
-    "^lbhaliverbviews_current_ctax.*",
-    "^lbhaliverbviews_current_[hbn].*",
-    "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*",
-    "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
-  ] : []
-  academy_ingestion_max_concurrent_runs = local.is_live_environment ? length(local.table_filter_expressions) : 1
+  table_filter_expressions = local.is_live_environment ? {
+    core-hbrent-s-all                = "^lbhaliverbviews_core_hbrent[s].*",
+    core-hbc-all                     = "^lbhaliverbviews_core_hbc.*",
+    core-hbrentclaim                 = "^lbhaliverbviews_core_hbrentclaim",
+    core-hbrenttrans                 = "^lbhaliverbviews_core_hbrenttrans",
+    core-hbrent-tsc-all              = "^lbhaliverbviews_core_hbrent[^tsc].*",
+    core-hbmember-s-all              = "^lbhaliverbviews_core_hbmember",
+    core-hbincome-s-all              = "^lbhaliverbviews_core_hbincome",
+    core-hb-abdefghjklnopsw-only     = "^lbhaliverbviews_core_hb[abdefghjklnopsw]",
+    core-ct-dt-all                   = "^lbhaliverbviews_core_ct[dt].*",
+    current-ctax-all                 = "^lbhaliverbviews_current_ctax.*",
+    current-hbn-all                  = "^lbhaliverbviews_current_[hbn].*",
+    core-ct-abcefghijklmnopqrsvw-all = "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*",
+    core-mix                         = "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
+  } : {}
 }
 
-
-
 resource "aws_glue_trigger" "filter_ingestion_tables" {
-  tags = module.tags.values
-
-  for_each = toset(local.table_filter_expressions)
-  name     = "${local.short_identifier_prefix}filter-${each.value}"
+  tags     = module.tags.values
+  for_each = local.table_filter_expressions
+  name     = "${local.short_identifier_prefix}filter-${each.key}"
   type     = "CONDITIONAL"
 
   actions {
-    job_name = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].job_name
+    job_name = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[each.key].job_name
     arguments = {
       "--table_filter_expression" = each.value
     }
@@ -54,33 +50,35 @@ resource "aws_glue_trigger" "filter_ingestion_tables" {
 
   predicate {
     conditions {
-      crawler_name = module.academy_mssql_database_ingestion[0].crawler_name
+      crawler_name = module.academy_mssql_database_ingestion[each.key].crawler_name
       crawl_state  = "SUCCEEDED"
     }
   }
 }
 
+
+
 module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
-  count = local.is_live_environment ? 1 : 0
-  tags  = module.tags.values
+  for_each = local.table_filter_expressions
+  tags     = module.tags.values
 
   source = "../modules/aws-glue-job"
 
-  job_name                        = "${local.short_identifier_prefix}Academy Revenues & Benefits Housing Needs Database Ingestion"
+  job_name                        = "${local.short_identifier_prefix}Academy Revenues & Benefits Housing Needs Database Ingestion-${each.key}"
   script_s3_object_key            = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
   environment                     = var.environment
   pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
   helper_module_key               = aws_s3_bucket_object.helpers.key
-  jdbc_connections                = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
+  jdbc_connections                = [module.academy_mssql_database_ingestion[each.key].jdbc_connection_name]
   glue_role_arn                   = aws_iam_role.glue_role.arn
   glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
   spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
-  max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
+  max_concurrent_runs_of_glue_job = 1
   glue_job_timeout                = 420
   glue_job_worker_type            = "G.1X"
   job_parameters = {
-    "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
+    "--source_data_database"        = module.academy_mssql_database_ingestion[each.key].ingestion_database_name
     "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
     "--s3_ingestion_details_target" = "s3://${module.landing_zone.bucket_id}/academy/ingestion-details/"
   }
