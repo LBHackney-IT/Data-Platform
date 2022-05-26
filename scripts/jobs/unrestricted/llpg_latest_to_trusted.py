@@ -88,7 +88,8 @@ if __name__ == "__main__":
     #get the latest address for historic cases, create the base df with comp_id to join
     hist = delta.select("uprn_hist","lpi_key")
     hist = hist.withColumn("lpi_key2", hist.lpi_key.substr(-9,9))
-    hist = hist.withColumn("key_int", hist.lpi_key2.cast('int')) # cast the value as an int
+    # cast the value as an int
+    hist = hist.withColumn("key_int", hist.lpi_key2.cast('int')) 
 
     # get the max lpi with comp_id to join
     hist_max = hist.groupBy("uprn_hist").max("key_int")
