@@ -61,7 +61,12 @@ on:
         required: true
       GOOGLE_CREDENTIALS:
         required: true
-
+      COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE:
+        required: true
+      SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE:
+        required: true
+      PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN:
+        required: true
 
 jobs:
   deploy:
