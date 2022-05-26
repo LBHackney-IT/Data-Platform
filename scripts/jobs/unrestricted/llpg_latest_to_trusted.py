@@ -78,7 +78,9 @@ if __name__ == "__main__":
     # seperate the lpi key as int
     delta = delta.withColumn("lpi_key2", delta.lpi_key.substr(-9,9))
 
-    delta = delta.withColumn("key_int", delta.lpi_key2.cast('int')) # cast the value as an int
+    # cast the value as an int
+    delta = delta.withColumn("key_int", delta.lpi_key2.cast('int')) 
+
 
     #create the composite key
     delta = delta.withColumn('comp_id', concat(delta.uprn_hist,delta.key_int))
