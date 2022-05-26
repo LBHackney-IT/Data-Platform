@@ -119,7 +119,6 @@ if __name__ == "__main__":
     delta = delta.withColumn('comp_id', concat(delta.uprn_prov,delta.key_int))
 
     #get the latest address
-
     prov1 = delta.select("uprn_prov","lpi_key")
     prov1 = prov1.withColumn("lpi_key2", prov1.lpi_key.substr(-9,9))
     prov1 = prov1.withColumn("key_int", prov1.lpi_key2.cast('int')) # cast the value as an int
