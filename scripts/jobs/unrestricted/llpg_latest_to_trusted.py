@@ -21,7 +21,6 @@ def get_latest_import(df):
    df = df.where(col('import_date') == df.select(max('import_date')).first()[0])
    return df
 
-
 def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource('s3')
     folderString = s3_bucket_target.replace('s3://', '')
