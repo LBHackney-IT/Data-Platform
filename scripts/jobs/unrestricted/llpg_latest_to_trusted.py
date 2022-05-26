@@ -50,10 +50,6 @@ if __name__ == "__main__":
     # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
     logger.info(f'The job is starting. The source table is {source_catalog_database}.{source_catalog_table}')
 
-    
-    # Convert data frame to dynamic frame 
-    glueContext = GlueContext(SparkContext.getOrCreate()) 
-
     data_source = glueContext.create_dynamic_frame.from_catalog(
         name_space=source_catalog_database,
         table_name=source_catalog_table,
