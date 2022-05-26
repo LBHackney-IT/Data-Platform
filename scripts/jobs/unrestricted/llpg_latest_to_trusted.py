@@ -45,7 +45,6 @@ if __name__ == "__main__":
     job = Job(glueContext)
     job.init(args['JOB_NAME'], args)
 
-    # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
     logger.info(f'The job is starting. The source table is {source_catalog_database}.{source_catalog_table}')
 
     data_source = glueContext.create_dynamic_frame.from_catalog(
