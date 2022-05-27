@@ -56,7 +56,7 @@ inputs:
   aws_deploy_iam_role_name:
     description: "AWS IAM role name to assume for deployment"
     required: true
-    copy_liberator_to_pre_prod_lambda_execution_role:
+  copy_liberator_to_pre_prod_lambda_execution_role:
     description: "AWS IAM role name to assume for triggering the lambda to copy liberator data to pre-prod"
     required: true
   sync_production_to_pre_production_task_role:
