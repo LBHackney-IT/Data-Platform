@@ -99,13 +99,6 @@ if __name__ == "__main__":
     # Return only latest snapshot
     
     df = get_latest_snapshot(df)
-    
-    # Drop Columns containing Only Nulls 
-    # df = drop_null_columns(df)
-    
-    
-    # Create Calculated Fields for Reporting
-    
     df = df.withColumn('counter_officer', lit(1))
     df = df.withColumn('officer_name',  concat(trim(col('officer_forename')), lit(" "), trim(col('officer_surname'))))
     
