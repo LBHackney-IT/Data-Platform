@@ -137,7 +137,7 @@ if __name__ == "__main__":
     # Create Calculated Fields for Reporting
     
     df = df.withColumn('counter_officer', lit(1))
-    df = df.withColumn('officer_name',concat(trim(col('officer_forename')),lit(" "),trim(col('officer_surname'))))
+    df = df.withColumn('officer_name',  concat(trim(col('officer_forename')), lit(" "), trim(col('officer_surname'))))
     
     # df.printSchema()
 
