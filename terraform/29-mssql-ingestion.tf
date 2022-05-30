@@ -5,7 +5,6 @@ module "academy_mssql_database_ingestion" {
   source = "../modules/database-ingestion-via-jdbc-connection"
 
   name                        = "academy-benefits-housing-needs-and-revenues-${each.key}"
-  table_filter                = each.key
   jdbc_connection_url         = "jdbc:sqlserver://10.120.23.22:1433;databaseName=LBHALiveRBViews"
   jdbc_connection_description = "JDBC connection to Academy Production Insights LBHALiveRBViews database"
   jdbc_connection_subnet      = data.aws_subnet.network[local.instance_subnet_id]

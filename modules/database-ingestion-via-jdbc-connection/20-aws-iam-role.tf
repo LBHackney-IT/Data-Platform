@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "jdbc_connection_crawler_role" {
 resource "aws_iam_role" "jdbc_connection_crawler_role" {
   tags = var.tags
 
-  name               = "${var.identifier_prefix}${local.iam_role_name}-crawler-can-access-jdbc-connection"
+  name               = "${var.identifier_prefix}${local.database_and_schema_name_lowercase}-crawler-can-access-jdbc-connection"
   assume_role_policy = data.aws_iam_policy_document.jdbc_connection_crawler_role.json
 }
 

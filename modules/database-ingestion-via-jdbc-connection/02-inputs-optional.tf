@@ -9,9 +9,3 @@ variable "create_workflow" {
   type        = bool
   default     = true
 }
-
-variable "table_filter" {
-  description = "Used to create unique resources we recreating JDBC connection for multiple tables based on list of filters"
-  type        = string
-  default     = null
-}
