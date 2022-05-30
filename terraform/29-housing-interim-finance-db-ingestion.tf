@@ -14,7 +14,7 @@ module "housing_interim_finance_database_ingestion" {
 }
 
 locals {
-  tables = local.is_live_environment ? {
+  table_filter_expressions_housing_interim_finance = local.is_live_environment ? {
     tenancy-agreement          = "MATenancyAgreement",
     uh-account-recovery-action = "UH_Araction"
   } : {}
@@ -22,7 +22,7 @@ locals {
 
 resource "aws_glue_trigger" "housing_interim_finance_filter_ingestion_tables" {
   tags     = module.tags.values
-  for_each = local.tables
+  for_each = local.table_filter_expressions_housing_interim_finance
   name     = "${local.short_identifier_prefix}housing-interim-finance-table-${each.key}"
   type     = "CONDITIONAL"
 
@@ -42,7 +42,7 @@ resource "aws_glue_trigger" "housing_interim_finance_filter_ingestion_tables" {
 }
 
 module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
-  for_each = local.tables
+  for_each = local.table_filter_expressions_housing_interim_finance
   tags     = module.tags.values
 
   source = "../modules/aws-glue-job"

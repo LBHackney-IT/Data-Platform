@@ -14,7 +14,7 @@ module "housing_income_collection_database_ingestion" {
 }
 
 locals {
-  tables = local.is_live_environment ? {
+  table_filter_expressions_housing_income_collection = local.is_live_environment ? {
     case-priorities = "case_priorities",
     agreements      = "agreements"
   } : {}
@@ -22,7 +22,7 @@ locals {
 
 resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" {
   tags     = module.tags.values
-  for_each = local.tables
+  for_each = local.table_filter_expressions_housing_income_collection
   name     = "${local.short_identifier_prefix}housing-income-collection-table-${each.key}"
   type     = "CONDITIONAL"
 
@@ -42,7 +42,7 @@ resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" 
 }
 
 module "ingest_housing_income_collection_database_to_housing_raw_zone" {
-  for_each = local.tables
+  for_each = local.table_filter_expressions_housing_income_collection
   tags     = module.tags.values
 
   source = "../modules/aws-glue-job"
