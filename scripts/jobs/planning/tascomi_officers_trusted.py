@@ -13,9 +13,6 @@ from helpers.helpers import get_glue_env_var, get_latest_partitions, create_push
 def get_latest_snapshot(df):
    df = df.where(col('snapshot_date') == df.select(max('snapshot_date')).first()[0])
    return df
-
-
-
 # Creates a function that removes any columns that are entirely null values - useful for large tables
 
 
