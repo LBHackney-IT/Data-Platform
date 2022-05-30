@@ -12,10 +12,6 @@ from pyspark.sql.functions import *
 import pyspark.sql.functions as F
 from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS
 
-# Define the functions that will be used in your job (optional). For Production jobs, these functions should be tested via unit testing.
-
-
-
 # Function to ensure we only return the lates snapshot
 def get_latest_snapshot(df):
     
