@@ -2,10 +2,6 @@
 # because the environment config files contain variables for multiple terraform modules.
 # Blocks are defined for the unused (and therefore redundant) variables a provide defaults so that if they aren't
 # provided at any point the module won't throw errors.
-variable "deployment_user_arn" {
-  default = false
-}
-
 variable "transit_gateway_private_subnets" {
   default = false
 }

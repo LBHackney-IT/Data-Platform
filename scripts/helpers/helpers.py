@@ -151,23 +151,42 @@ def table_exists_in_catalog(glue_context, table, database):
 
 
 def create_pushdown_predicate(partitionDateColumn, daysBuffer):
-    '''
-    This method creates a pushdown predicate to pass when reading data and creating a DDF. 
-    The partition date column will in most cases be 'import_date'. 
+    """
+    This method creates a pushdown predicate to pass when reading data and creating a DDF.
+    The partition date column will in most cases be 'import_date'.
     The daysBuffer is the number of days we want to load before the current day.
     If passing daysBuffer=0, we create no pushdown predicate and the whole dataset will be loaded.
-    '''
+    """
     if daysBuffer > 0:
-        pushDownPredicate = f"{partitionDateColumn}>=date_format(date_sub(current_date, {daysBuffer}), 'yyyyMMdd')"
+        push_down_predicate = f"{partitionDateColumn}>=date_format(date_sub(current_date, {daysBuffer}), 'yyyyMMdd')"
     else:
-        pushDownPredicate = ''
-    return pushDownPredicate
+        push_down_predicate = ''
+    return push_down_predicate
 
 
 def check_if_dataframe_empty(df):
-    '''
+    """
     This method returns an exception if the dataframe is empty.
-    '''
+    """
     if df.rdd.isEmpty():
         raise Exception('Dataframe is empty')
+
+
+def get_latest_snapshot(df):
+    """
+    Filters dataframe to keep rows with the latest snapshot_date
+    """
+    df = df.where(col('snapshot_date') == df.select(max('snapshot_date')).first()[0])
+    return df
+
+
+def drop_null_columns(df):
+    """
+    Drops columns that contain nulls only
+    """
+    df_length = df.count()
+    null_counts = df.select([f.count(f.when(f.col(c).isNull(), c)).alias(c) for c in df.columns]).collect()[0].asDict()
+    to_drop = [k for k, v in null_counts.items() if v >= df_length]
+    df = df.drop(*to_drop)
+    return df
 
