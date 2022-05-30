@@ -22,7 +22,7 @@ module "ingest_mtfh_tables" {
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   job_parameters = {
-    "--table_names"       = "TenureInformation,MATenancyAgreement,MAProperty,Person,ContactDetails,Assets", # This is a comma delimited list of Dynamo DB table names to be imported
+    "--table_names"       = "TenureInformation,Person,ContactDetails,Assets", # This is a comma delimited list of Dynamo DB table names to be imported
     "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
     "--s3_target"         = "s3://${module.landing_zone.bucket_id}/mtfh/"
     "--number_of_workers" = local.number_of_workers_for_mtfh_ingestion
