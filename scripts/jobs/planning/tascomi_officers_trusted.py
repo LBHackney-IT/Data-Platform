@@ -214,5 +214,3 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target, "partitionKeys": ['snapshot_year','snapshot_month','snapshot_day','snapshot_date']}, 
         transformation_ctx="target_data_to_write")
     job.commit()
-
-   
