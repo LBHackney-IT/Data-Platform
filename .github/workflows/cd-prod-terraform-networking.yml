@@ -15,7 +15,7 @@ on:
 
 jobs:
   validate:
-    
+    uses: ./.github/workflows/validate-and-lint-terraform.yml
     with:
       environment: "prod"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
