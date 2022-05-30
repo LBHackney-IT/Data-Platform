@@ -103,9 +103,9 @@ if __name__ == "__main__":
     df = data_source.toDF()
     
     # Rename columns
-    df = df.withColumnRenamed("id","officer_id") \
-           .withColumnRenamed("forename","officer_forename") \
-           .withColumnRenamed("surname","officer_surname")
+    df = df.withColumnRenamed("id", "officer_id") \
+           .withColumnRenamed("forename", "officer_forename") \
+           .withColumnRenamed("surname", "officer_surname")
            
     # Specify Columns to Keep
     
