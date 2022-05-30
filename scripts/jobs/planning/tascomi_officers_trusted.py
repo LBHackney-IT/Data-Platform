@@ -53,7 +53,6 @@ if __name__ == "__main__":
 
     logger.info(f'The job is starting. The source table is {source_catalog_database}.{source_catalog_table}')
 
-
     # Load data from glue catalog
     data_source = glueContext.create_dynamic_frame.from_catalog(
         name_space = source_catalog_database,
