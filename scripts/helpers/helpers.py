@@ -190,8 +190,3 @@ def drop_null_columns(df):
     df = df.drop(*to_drop)
     return df
 
-
-def get_latest_import(df):
-    """Filters dataframe to keep rows with the latest import_date"""
-    df = df.where(col('import_date') == df.select(max('import_date')).first()[0])
-    return df
