@@ -189,9 +189,9 @@ if __name__ == "__main__":
 
     # Join
     
-    df2 = df2.join(df3,df2.user_team_id ==  df3.team_id,"left")
-    df = df.join(df2,df.officer_id ==  df2.user_id,"left")
-    df = df.drop("team_id","user_id")
+    df2 = df2.join(df3, df2.user_team_id == df3.team_id, "left")
+    df = df.join(df2, df.officer_id == df2.user_id, "left")
+    df = df.drop("team_id", "user_id")
     
     
 ## Data Processing Ends    
