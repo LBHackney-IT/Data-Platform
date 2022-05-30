@@ -194,3 +194,9 @@ variable "jdbc_connections" {
   type        = list(string)
   default     = null
 }
+
+variable "glue_version" {
+  description = "Version of glue to use, defaulted to 2.0"
+  type        = string
+  default     = "2.0"
+}
