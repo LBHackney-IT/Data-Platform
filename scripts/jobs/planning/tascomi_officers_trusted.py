@@ -119,10 +119,6 @@ if __name__ == "__main__":
     # Keep Only Relevant Columns
     df2 = df2.select("user_id",
                      "user_team_id")
-
-
-
-## Load User Teams Table
     
 
     # convert to a data frame
