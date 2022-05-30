@@ -135,16 +135,8 @@ if __name__ == "__main__":
     
     # Keep Only Relevant Columns
     df3 = df3.select("team_id","team_name",'team_description','location')
-
-
-
-
-
-    # Transform data using the fuctions defined outside the main block
-   
-
+    # Transform data using the functions defined outside the main block
     # Join
-    
     df2 = df2.join(df3, df2.user_team_id == df3.team_id, "left")
     df = df.join(df2, df.officer_id == df2.user_id, "left")
     df = df.drop("team_id", "user_id")
