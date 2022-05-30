@@ -79,7 +79,6 @@ if __name__ == "__main__":
            .withColumnRenamed("surname", "officer_surname")
            
     # Specify Columns to Keep
-    
     df = df.select('officer_id',
                    "officer_forename",
                    "officer_surname",
