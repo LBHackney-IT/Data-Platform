@@ -400,7 +400,7 @@ module "department_qlik" {
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
-  name                            = "Qlik"
+  name                            = "Qlik Data Insight"
   landing_zone_bucket             = module.landing_zone
   raw_zone_bucket                 = module.raw_zone
   refined_zone_bucket             = module.refined_zone
