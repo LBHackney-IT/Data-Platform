@@ -1,5 +1,3 @@
-    # - the job parameters (replace the template values coming from the Terraform with real values)
-
 import sys
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
