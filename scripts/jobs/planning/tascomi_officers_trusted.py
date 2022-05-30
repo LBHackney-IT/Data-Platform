@@ -25,7 +25,6 @@ def drop_null_columns(df):
     return df
     
 #function to clear target    
-    
 def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource('s3')
     folderString = s3_bucket_target.replace('s3://', '')
