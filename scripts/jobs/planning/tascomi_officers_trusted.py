@@ -11,7 +11,6 @@ from helpers.helpers import get_glue_env_var, get_latest_partitions, create_push
 
 # Function to ensure we only return the lates snapshot
 def get_latest_snapshot(df):
-    
    df = df.where(col('snapshot_date') == df.select(max('snapshot_date')).first()[0])
    return df
 
