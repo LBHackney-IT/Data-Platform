@@ -1,4 +1,3 @@
- # Before running your job, go to the Job Details tab and customise:
     # - the job parameters (replace the template values coming from the Terraform with real values)
 
 import sys
