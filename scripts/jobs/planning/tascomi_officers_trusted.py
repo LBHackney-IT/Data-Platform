@@ -15,7 +15,6 @@ def get_latest_snapshot(df):
    return df
 # Creates a function that removes any columns that are entirely null values - useful for large tables
 
-
 def drop_null_columns(df):
   
     _df_length = df.count()
