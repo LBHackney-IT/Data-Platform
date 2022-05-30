@@ -201,6 +201,6 @@ variable "glue_version" {
   default     = "2.0"
   validation {
     condition     = contains(["1.0", "2.0", "3.0"], var.glue_version)
-    error_message = "Glue version supplied is not valid, must be 1.0, 2.0 or 3.0"
+    error_message = "Glue version supplied is not valid, must be 1.0, 2.0 or 3.0."
   }
 }
