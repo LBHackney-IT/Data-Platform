@@ -101,10 +101,6 @@ if __name__ == "__main__":
     df = get_latest_snapshot(df)
     df = df.withColumn('counter_officer', lit(1))
     df = df.withColumn('officer_name',  concat(trim(col('officer_forename')), lit(" "), trim(col('officer_surname'))))
-    
-    # df.printSchema()
-
-
 # Load User Teams Map Table
     # convert to a data frame
     df2 = data_source2.toDF()
