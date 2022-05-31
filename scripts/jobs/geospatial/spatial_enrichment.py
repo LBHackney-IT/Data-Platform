@@ -90,8 +90,8 @@ def deal_with_nan_colums(df,boundary_tables_dict):
     """
     columns_with_potential_nan_values = []
     for boundary_table_key in boundary_tables_dict:
-        for column_key in boundary_tables_dict[boundary_table_key]["columns_to_append"]:
-            columns_with_potential_nan_values.append(boundary_tables_dict[boundary_table_key]["columns_to_append"][column_key])
+        for column_key in boundary_tables_dict.get(boundary_table_key,{}).get("columns_to_append",{}):
+            columns_with_potential_nan_values.append(boundary_tables_dict.get(boundary_table_key,{}).get("columns_to_append",{}).get(column_key,{}))
     for column_name in columns_with_potential_nan_values:
         df[column_name] = df[column_name].fillna('')
     return df
@@ -146,20 +146,19 @@ if __name__ == "__main__":
     for boundary_table_key in boundary_tables_dict:
         #load the table from S3
         boundary_data_source = glueContext.create_dynamic_frame.from_catalog(
-            name_space = boundary_tables_dict[boundary_table_key]["database_name"],
-            table_name = boundary_tables_dict[boundary_table_key]["table_name"]
+            name_space = boundary_tables_dict.get(boundary_table_key, {}).get("database_name"),
+            table_name = boundary_tables_dict.get(boundary_table_key, {}).get("table_name")
         )
         boundary_df = boundary_data_source.toDF()
         boundary_df = get_latest_partitions(boundary_df)
         logger.info(f'list of columns to keep in addition to geom: {boundary_tables_dict[boundary_table_key]["columns_to_append"].keys()}')
         #select these columns + geom
-        columns_to_keep = boundary_tables_dict[boundary_table_key]["columns_to_append"].keys()
+        columns_to_keep = boundary_tables_dict.get(boundary_table_key, {}).get("columns_to_append", {}).keys()
         boundary_df = boundary_df.select('geom',*columns_to_keep)
 
-        for column_key in boundary_tables_dict[boundary_table_key]["columns_to_append"]:
-            logger.info(f'{column_key} -> {boundary_tables_dict[boundary_table_key]["columns_to_append"][column_key]}')
+        for column_key in boundary_tables_dict.get(boundary_table_key, {}).get("columns_to_append", {}):
             # rename these columns
-            boundary_df = boundary_df.withColumnRenamed(column_key, boundary_tables_dict[boundary_table_key]["columns_to_append"][column_key])
+            boundary_df = boundary_df.withColumnRenamed(column_key, boundary_tables_dict.get(boundary_table_key, {}).get("columns_to_append", {}).get(column_key))
         boundary_df = boundary_df.toPandas()
         boundary_geometry = boundary_df['geom'].apply(shapely.wkb.loads, args=(True,)) 
         boundary_df = boundary_df.drop(columns=['geom'])
