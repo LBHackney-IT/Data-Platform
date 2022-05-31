@@ -172,21 +172,12 @@ def check_if_dataframe_empty(df):
         raise Exception('Dataframe is empty')
 
 
-def get_latest_snapshot(df):
+def get_latest_rows_by_date(df, column):
     """
-    Filters dataframe to keep rows with the latest snapshot_date
+    Filters dataframe to keep rows byt specifying a date column. E.g. to get the
+    latest snapshot_date, column='snapshot_date'
     """
-    df = df.where(col('snapshot_date') == df.select(max('snapshot_date')).first()[0])
-    return df
-
-
-def drop_null_columns(df):
-    """
-    Drops columns that contain nulls only
-    """
-    df_length = df.count()
-    null_counts = df.select([f.count(f.when(f.col(c).isNull(), c)).alias(c) for c in df.columns]).collect()[0].asDict()
-    to_drop = [k for k, v in null_counts.items() if v >= df_length]
-    df = df.drop(*to_drop)
+    date_filter = df.select(max(column)).first()[0]
+    df = df.where(f.col(column) == date_filter)
     return df
 
