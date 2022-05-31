@@ -18,7 +18,7 @@ inputs:
     description: "Build path that contains the source"
     required: true
   environment:
-    description: "Name of the environemnt e.g. dev, stg, prod, mgmt"
+    description: "Name of the environment e.g. dev, stg, prod, mgmt"
     required: true
   google_project_id:
     description: "Id of google project to which service accounts will be deployed to"

@@ -80,7 +80,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 }
 
 resource "aws_iam_role" "liberator_prod_to_pre_prod_lambda" {
-  count              = local.is_production_environment ? 1 : 0
+  count              = local.is_live_environment ? 1 : 0
   tags               = module.tags.values
   name               = "${local.short_identifier_prefix}liberator-prod-to-pre-prod-lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
