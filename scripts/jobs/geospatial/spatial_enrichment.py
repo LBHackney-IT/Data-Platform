@@ -56,7 +56,6 @@ def create_geom_and_extra_coords(pandas_df, target_crs, logger):
         elif (target_crs == '4326'):
             geopandas_df = geopandas.GeoDataFrame(point_df, crs="epsg:4326", geometry=geopandas.points_from_xy(pandas_df.longitude, pandas_df.latitude))
             logger.info('geodataframe created in 4326')
-        logger.info('returning (1)')
         return geopandas_df
     # otherwise, if we only have lat lon, create geom and generate eastings/northings
     if set(['latitude','longitude']).issubset(pandas_df.columns):
@@ -66,11 +65,9 @@ def create_geom_and_extra_coords(pandas_df, target_crs, logger):
         geopandas_df['northings'] = geopandas_df['geometry'].y
         logger.info('BNG columns generated from lat lon')
         if (target_crs == '27700'):
-            logger.info('returning (2)')
             return geopandas_df
         elif (target_crs == '4326'):
             geopandas_df = geopandas_df.to_crs("epsg:4326")
-            logger.info('returning (3)')
             return geopandas_df
     # otherwise, if we only have eastings northings, create geom and generate lat/lon
     if set(['eastings','northings']).issubset(pandas_df.columns):
@@ -80,13 +77,11 @@ def create_geom_and_extra_coords(pandas_df, target_crs, logger):
         geopandas_df['latitude'] = geopandas_df['geometry'].y
         logger.info('lat lon columns generated from BNG')
         if (target_crs == '4326'):
-            logger.info('returning (4)')
             return geopandas_df
         elif (target_crs == '27700'):
             geopandas_df = geopandas_df.to_crs("epsg:27700")
-            logger.info('returning (5)')
             return geopandas_df
-    logger.info('returned NOTHING!!!')
+    logger.info('No geodataframe returned')
 
 
 def deal_with_nan_colums(df,boundary_tables_dict):
@@ -110,6 +105,7 @@ def convert_coordinate_columns_to_double(spark_point_df):
     spark_point_df = spark_point_df.withColumn("longitude",spark_point_df.longitude.cast(DoubleType()))
     spark_point_df = spark_point_df.withColumn("eastings",spark_point_df.eastings.cast(DoubleType()))
     spark_point_df = spark_point_df.withColumn("northings",spark_point_df.northings.cast(DoubleType()))
+
 
 # Dictionary of the geography tables we're using for the enrichment     
 #  format: {
