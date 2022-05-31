@@ -105,6 +105,7 @@ def convert_coordinate_columns_to_double(spark_point_df):
     spark_point_df = spark_point_df.withColumn("longitude",spark_point_df.longitude.cast(DoubleType()))
     spark_point_df = spark_point_df.withColumn("eastings",spark_point_df.eastings.cast(DoubleType()))
     spark_point_df = spark_point_df.withColumn("northings",spark_point_df.northings.cast(DoubleType()))
+    return spark_point_df
 
 
 # Dictionary of the geography tables we're using for the enrichment     
@@ -225,4 +226,3 @@ if __name__ == "__main__":
             transformation_ctx=f'target_data_to_write_{table}')
     
     job.commit()
-    
