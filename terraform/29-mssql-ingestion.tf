@@ -80,7 +80,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_job_timeout                = 420
   glue_job_worker_type            = "G.2X"
   glue_version                    = "3.0"
-  number_of_workers_for_glue_job  = 10
+  number_of_workers_for_glue_job  = 5
   job_parameters = {
     "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
