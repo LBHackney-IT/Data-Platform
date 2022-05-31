@@ -1,20 +1,20 @@
+import sys
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
-from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
+from pyspark.context import SparkContext
 import pyspark.sql.functions as F
 from pyspark.sql.types import DoubleType
-from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, table_exists_in_catalog, PARTITION_KEYS
 import boto3
-import sys
-
 # Import spatial python packages - for this to work you need an extra job parameter --additional-python-modules=rtree,geopandas
 import shapely
 import pandas
 import geopandas
 from shapely.geometry import Point,Polygon
+# Import local helpers
+from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, table_exists_in_catalog, PARTITION_KEYS
 
 # Creates a function that clears the target folder in S3
 def clear_target_folder(s3_bucket_target):
