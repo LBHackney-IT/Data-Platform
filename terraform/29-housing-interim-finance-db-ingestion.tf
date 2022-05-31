@@ -15,8 +15,9 @@ module "housing_interim_finance_database_ingestion" {
 
 locals {
   table_filter_expressions_housing_interim_finance = local.is_live_environment ? {
-    tenancy-agreement          = "MATenancyAgreement",
-    uh-account-recovery-action = "UH_Araction"
+    ma-tenancy-agreement       = "MATenancyAgreement",
+    uh-account-recovery-action = "UH_Araction",
+    ma-property                = "MAProperty"
   } : {}
 }
 
