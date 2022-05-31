@@ -225,3 +225,4 @@ if __name__ == "__main__":
             transformation_ctx=f'target_data_to_write_{table}')
     
     job.commit()
+    
