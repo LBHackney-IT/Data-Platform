@@ -1,4 +1,5 @@
 import sys
+import boto3
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from awsglue.context import GlueContext
@@ -7,7 +8,6 @@ from awsglue.dynamicframe import DynamicFrame
 from pyspark.context import SparkContext
 import pyspark.sql.functions as F
 from pyspark.sql.types import DoubleType
-import boto3
 # Import spatial python packages - for this to work you need an extra job parameter --additional-python-modules=rtree,geopandas
 import shapely
 import pandas
@@ -16,8 +16,11 @@ from shapely.geometry import Point,Polygon
 # Import local helpers
 from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, table_exists_in_catalog, PARTITION_KEYS
 
-# Creates a function that clears the target folder in S3
+
 def clear_target_folder(s3_bucket_target):
+    """
+    clears the target folder in S3
+    """
     s3 = boto3.resource('s3')
     folderString = s3_bucket_target.replace('s3://', '')
     bucketName = folderString.split('/')[0]
@@ -26,19 +29,11 @@ def clear_target_folder(s3_bucket_target):
     bucket.objects.filter(Prefix=prefix).delete()
     return
 
-# Dictionary of the geography tables we're using for the enrichment     
-#  format: {
-    # "glue_database_1"."glue_table_1":{"column_1_to_append_to_enriched_table":"alias_for_column_1_in_enriched_table","column_2_to_append_to_enriched_table":"alias_for_column_2_in_enriched_table"},
-    # "glue_database_2"."glue_table_2":{"column_1_to_append_to_enriched_table":"alias_for_column_1_in_enriched_table","column_2_to_append_to_enriched_table":"alias_for_column_2_in_enriched_table"}
-    # }                
-boundary_tables_dict = {
-    "unrestricted-raw-zone.geolive_boundaries_hackney_ward": {"name":"ward_name", "census_code":"ward_ons_code"},
-    "unrestricted-raw-zone.geolive_boundaries_hackney_lsoa_2011": {"code":"lsoa_ons_code", "lsoa_name":"lsoa_name"},
-    "unrestricted-raw-zone.geolive_boundaries_hackney_msoa_2011": {"msoa11cd":"msoa_ons_code", "msoa11nm":"msoa_name"}
-}
 
-# Creates a function that turns a dataframe containing points into a geopandas dataframe. It also generate other coords columns so we always have latitude/longitude and eastings/northings
 def create_geom_and_extra_coords(pandas_df, target_crs, logger):
+    """
+    Function that turns a dataframe containing points into a geopandas dataframe. It also generates other coords columns so the resulting table contains both latitude/longitude and eastings/northings.
+    """
     logger.info('starting inside method')
     # Check target CRS is supported
     if not (target_crs in ['4326','27700']):
@@ -93,7 +88,11 @@ def create_geom_and_extra_coords(pandas_df, target_crs, logger):
             return geopandas_df
     logger.info('returned NOTHING!!!')
 
+
 def deal_with_nan_colums(df,boundary_tables_dict):
+    """
+    This function replaces nan value with an empty string for specific columns passed in a dictionary
+    """
     columns_with_potential_nan_values = []
     for key in boundary_tables_dict:
         for colKey in boundary_tables_dict[key]:
@@ -103,6 +102,16 @@ def deal_with_nan_colums(df,boundary_tables_dict):
     return df
         
 
+# Dictionary of the geography tables we're using for the enrichment     
+#  format: {
+    # "glue_database_1"."glue_table_1":{"column_1_to_append_to_enriched_table":"alias_for_column_1_in_enriched_table","column_2_to_append_to_enriched_table":"alias_for_column_2_in_enriched_table"},
+    # "glue_database_2"."glue_table_2":{"column_1_to_append_to_enriched_table":"alias_for_column_1_in_enriched_table","column_2_to_append_to_enriched_table":"alias_for_column_2_in_enriched_table"}
+    # }                
+boundary_tables_dict = {
+    "unrestricted-raw-zone.geolive_boundaries_hackney_ward": {"name":"ward_name", "census_code":"ward_ons_code"},
+    "unrestricted-raw-zone.geolive_boundaries_hackney_lsoa_2011": {"code":"lsoa_ons_code", "lsoa_name":"lsoa_name"},
+    "unrestricted-raw-zone.geolive_boundaries_hackney_msoa_2011": {"msoa11cd":"msoa_ons_code", "msoa11nm":"msoa_name"}
+}
 
 if __name__ == "__main__":
 
