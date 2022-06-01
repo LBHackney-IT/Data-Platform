@@ -33,3 +33,7 @@ variable "copy_liberator_to_pre_prod_lambda_execution_role" {
 variable "sync_production_to_pre_production_task_role" {
   default = false
 }
+
+variable "pre_production_liberator_data_storage_kms_key_arn" {
+  default = false
+}
