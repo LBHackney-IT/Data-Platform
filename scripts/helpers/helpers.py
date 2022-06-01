@@ -8,7 +8,10 @@ from pyspark.sql import functions as f
 from pyspark.sql.functions import col, from_json
 from pyspark.sql.types import StringType, StructType 
 
+
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
+PARTITION_KEYS_SNAPSHOT = ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']
+
 
 def format_name(col_name):
     non_alpha_num_chars_stripped = re.sub('[^a-zA-Z0-9]+', "_", col_name)
@@ -21,6 +24,7 @@ def clean_column_names(df):
         df = df.withColumnRenamed(col_name, format_name(col_name))
     return df
 
+
 def normalize_column_name(column: str) -> str:
     """
     Normalize column name by replacing all non alphanumeric characters with underscores
@@ -31,6 +35,7 @@ def normalize_column_name(column: str) -> str:
     """
     formatted_name = format_name(column)
     return unicodedata.normalize('NFKD', formatted_name).encode('ASCII', 'ignore').decode()
+
 
 def get_glue_env_var(key, default=None):
     if f'--{key}' in sys.argv:
@@ -55,6 +60,7 @@ def get_secret(secret_name, region_name):
         return get_secret_value_response['SecretString']
     else:
         return get_secret_value_response['SecretBinary'].decode('ascii')
+
 
 def add_timestamp_column(data_frame):
     now = datetime.datetime.now()
@@ -180,4 +186,3 @@ def get_latest_rows_by_date(df, column):
     date_filter = df.select(max(column)).first()[0]
     df = df.where(f.col(column) == date_filter)
     return df
-
