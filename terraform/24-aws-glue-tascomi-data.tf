@@ -304,30 +304,30 @@ module "tascomi_officers_teams_to_trusted" {
 
 }
 
-module "tascomi_locations_to_trusted" {
-  source = "../modules/aws-glue-job"
-
-  department                 = module.department_planning
-  job_name                   = "${local.short_identifier_prefix}tascomi_locations_trusted"
-  glue_job_worker_type       = "G.1X"
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
-  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
-  job_parameters = {
-    "--job-bookmark-option"      = "job-bookmark-enable"
-    "--s3_bucket_target"         = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/locations_reporting"
-    "--enable-glue-datacatalog"  = "true"
-    "--source_catalog_database"  = aws_glue_catalog_database.refined_zone_tascomi.name
-    "--source_catalog_database2" = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
-    "--source_catalog_table"     = "dtf_locations"
-    "--source_catalog_table2"    = "unrestricted_address_api_dbo_hackney_address"
-  }
-  script_name          = "tascomi_locations_trusted"
-  triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
-
-  crawler_details = {
-    database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
-    s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/locations_reporting"
-  }
-
-}
+//module "tascomi_locations_to_trusted" {
+//  source = "../modules/aws-glue-job"
+//
+//  department                 = module.department_planning
+//  job_name                   = "${local.short_identifier_prefix}tascomi_locations_trusted"
+//  glue_job_worker_type       = "G.1X"
+//  helper_module_key          = aws_s3_bucket_object.helpers.key
+//  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+//  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+//  job_parameters = {
+//    "--job-bookmark-option"      = "job-bookmark-enable"
+//    "--s3_bucket_target"         = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/locations_reporting"
+//    "--enable-glue-datacatalog"  = "true"
+//    "--source_catalog_database"  = aws_glue_catalog_database.refined_zone_tascomi.name
+//    "--source_catalog_database2" = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
+//    "--source_catalog_table"     = "dtf_locations"
+//    "--source_catalog_table2"    = "unrestricted_address_api_dbo_hackney_address"
+//  }
+//  script_name          = "tascomi_locations_trusted"
+//  triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
+//
+//  crawler_details = {
+//    database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
+//    s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/locations_reporting"
+//  }
+//
+//}
