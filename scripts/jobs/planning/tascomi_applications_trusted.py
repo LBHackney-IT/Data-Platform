@@ -14,23 +14,14 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.functions import *
 import pyspark.sql.functions as F
-from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns
+from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS_SNAPSHOT
 
 # Define the functions that will be used in your job (optional). For Production jobs, these functions should be tested via unit testing.
-
-# Creates a function that removes any columns that are entirely null values - useful for large tables
-def drop_null_columns(df):
-  
-    _df_length = df.count()
-    null_counts = df.select([F.count(F.when(F.col(c).isNull(), c)).alias(c) for c in df.columns]).collect()[0].asDict()
-    to_drop = [k for k, v in null_counts.items() if v >= _df_length]
-    df = df.drop(*to_drop)
-    
-    return df
 
 def get_latest_snapshot(df):
    df = df.where(F.col('snapshot_date') == df.select(max('snapshot_date')).first()[0])
    return df 
+
 
 # Creates a function that clears the target folder in S3
 def clear_target_folder(s3_bucket_target):
@@ -41,6 +32,7 @@ def clear_target_folder(s3_bucket_target):
     bucket = s3.Bucket(bucketName)
     bucket.objects.filter(Prefix=prefix).delete()
     return
+
 
 # The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":
@@ -79,8 +71,6 @@ if __name__ == "__main__":
         # If the source data IS partitionned by import_date, you have loaded several days but only need the latest version, use the get_latest_partitions() helper
         df = get_latest_snapshot(df)    
         
-        # Drop Null Columns  - Remove if it takes too long for glue to run
-        df = drop_null_columns(df)
         # Rename id column
         df = df.withColumnRenamed("id","application_id")
         
@@ -260,7 +250,7 @@ if __name__ == "__main__":
             frame=dynamic_frame,
             connection_type="s3",
             format="parquet",
-            connection_options={"path": s3_bucket_target, "partitionKeys": ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']},
+            connection_options={"path": s3_bucket_target, "partitionKeys":PARTITION_KEYS_SNAPSHOT},
             transformation_ctx="target_data_to_write")
 
     job.commit()
