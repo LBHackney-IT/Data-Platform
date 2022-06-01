@@ -19,19 +19,19 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
 
 locals {
   table_filter_expressions = local.is_live_environment ? {
-    core_hbrent_s_all                = "^lbhaliverbviews_core_hbrent[s].*",
-    core_hbrent_hbc_all              = "^lbhaliverbviews_core_hbc.*",
-    core_hbrentclaim                 = "^lbhaliverbviews_core_hbrentclaim",
-    core_hbrenttrans                 = "^lbhaliverbviews_core_hbrenttrans",
-    core_hbrent_tsc_all              = "^lbhaliverbviews_core_hbrent[^tsc].*",
-    core_hbmember                    = "^lbhaliverbviews_core_hbmember",
-    core_hbincome                    = "^lbhaliverbviews_core_hbincome",
-    core_hb_abdefghjklnopsw          = "^lbhaliverbviews_core_hb[abdefghjklnopsw]",
-    core_ct_dt_all                   = "^lbhaliverbviews_core_ct[dt].*",
-    current_ctax_all                 = "^lbhaliverbviews_current_ctax.*",
-    current_hbn_all                  = "^lbhaliverbviews_current_[hbn].*",
-    core_ct_abcefghijklmnopqrsvw_all = "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*",
-    mix                              = "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
+    core_hbrent_s    = "^lbhaliverbviews_core_hbrent[s].*",
+    core_hbrent_hbc  = "^lbhaliverbviews_core_hbc.*",
+    core_hbrentclaim = "^lbhaliverbviews_core_hbrentclaim",
+    core_hbrenttrans = "^lbhaliverbviews_core_hbrenttrans",
+    core_hbrent_tsc  = "^lbhaliverbviews_core_hbrent[^tsc].*",
+    core_hbmember    = "^lbhaliverbviews_core_hbmember",
+    core_hbincome    = "^lbhaliverbviews_core_hbincome",
+    core_hb          = "^lbhaliverbviews_core_hb[abdefghjklnopsw]",
+    core_ct_dt       = "^lbhaliverbviews_core_ct[dt].*",
+    current_ctax     = "^lbhaliverbviews_current_ctax.*",
+    current_hbn      = "^lbhaliverbviews_current_[hbn].*",
+    core_ct          = "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*",
+    mix              = "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
   } : {}
   academy_ingestion_max_concurrent_runs = local.is_live_environment ? length(local.table_filter_expressions) : 1
 }
