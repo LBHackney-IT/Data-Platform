@@ -1,24 +1,27 @@
 import sys
 import json
 import io
-import pandas as pd
-import requests
 import time
 import zipfile
 import html
 import datetime
+import pandas as pd
+import requests
 import boto3
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
-from pyspark.context import SparkContext
 from awsglue.context import GlueContext
-from pyspark.sql import SQLContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
+from pyspark.context import SparkContext
+from pyspark.sql import SQLContext
 from helpers.helpers import get_glue_env_var, get_secret, table_exists_in_catalog, normalize_column_name,  convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
 
 
 def download_file_to_df(file_id, api_key, filename):
+    """
+    download export from api, extract csv from zip, read csv as pandas df
+    """
     url_download = f'https://api.uk.alloyapp.io/api/file/{file_id}?token={api_key}'
     r = requests.get(url_download, headers=headers)
     z = zipfile.ZipFile(io.BytesIO(r.content))
@@ -27,20 +30,29 @@ def download_file_to_df(file_id, api_key, filename):
     return df
 
 
-def get_last_import_date_time(glue_context, database, resource):
-    if not table_exists_in_catalog(glue_context, resource, database):
-        logger.info(f"Couldn't find table {resource} in database {database}.")
+def get_last_import_date_time(glue_context, database, glue_catalogue_table_name):
+    """
+    get last import date from aws table
+    """
+    if not table_exists_in_catalog(glue_context, glue_catalogue_table_name, database):
+        logger.info(f"Couldn't find table {glue_catalogue_table_name} in database {database}.")
         return datetime.datetime(1970, 1, 1)
-    logger.info(f"found table for {resource} in {database}")
-    return glue_context.sql(f"SELECT max(import_datetime) as max_import_date_time FROM `{database}`.{resource}").take(1)[0].max_import_date_time
+    logger.info(f"found table for {glue_catalogue_table_name} in {database}")
+    return glue_context.sql(f"SELECT max(import_datetime) as max_import_date_time FROM `{database}`.{glue_catalogue_table_name}").take(1)[0].max_import_date_time
 
 
 def format_time(date_time):
+    """
+    change date time to format expected in api payload
+    """
     t = date_time.strftime('%Y-%m-%dT%H:%M:%S.%f')
     return t[:-3]+"Z"
 
 
 def update_aqs(alloy_query, last_import_date_time):
+    """
+    update the aqs query with parameters so that only updated items are returned
+    """
     child_value = [{"type": "GreaterThan", "children": [{"type": "ItemProperty", "properties": {
         "itemPropertyName": "lastEditDate"}}, {"type": "DateTime", "properties": {"value": []}}]}]
     child_value[0]['children'][1]['properties']['value'] = [
@@ -50,6 +62,9 @@ def update_aqs(alloy_query, last_import_date_time):
 
 
 def get_task_id(response):
+    """
+    get the task id from the api response
+    """
     if response.status_code != 200:
         logger.info(
             f"Request unsuccessful while getting task id with status code: {response.status_code}")
@@ -61,6 +76,9 @@ def get_task_id(response):
 
 
 def get_task_status(response):
+    """
+    get the task status from the api response
+    """
     if response.status_code != 200:
         logger.info(
             f"Request unsuccessful while getting task status with status code: {response.status_code}")
@@ -72,6 +90,9 @@ def get_task_status(response):
 
 
 def get_file_item_id(response):
+    """
+    get the file item id from the api response
+    """
     if response.status_code != 200:
         logger.info(
             f"Request unsuccessful while getting file item id with status code: {response.status_code}")
@@ -97,13 +118,16 @@ if __name__ == "__main__":
     bucket_target = get_glue_env_var('s3_bucket_target', '')
     api_key = get_secret(get_glue_env_var('secret_name', ''), "eu-west-2")
     database = get_glue_env_var('database', '')
-    prefix = get_glue_env_var('s3_prefix', '')
+    s3_prefix = get_glue_env_var('s3_prefix', '')
+    table_prefix = get_glue_env_var('table_prefix', '')
     aqs = get_glue_env_var('aqs', '')
     filename = get_glue_env_var('filename', '')
+    
+    s3_target_url = "s3://" + bucket_target + "/" + s3_prefix + resource + "/"
+    glue_catalogue_table_name = table_prefix + resource
+    
     last_import_date_time = format_time(
-        get_last_import_date_time(glue_context, database, resource))
-
-    s3_target_url = "s3://" + bucket_target + "/" + prefix + resource + "/"
+        get_last_import_date_time(glue_context, database, glue_catalogue_table_name))
 
     if resource == '':
         raise Exception(
@@ -128,6 +152,10 @@ if __name__ == "__main__":
         time.sleep(60)
         response = requests.get(url)
         task_status = get_task_status(response)
+
+        if response.status_code != 200:
+            logger.info(f'breaking with api status: {response.status_code}')
+            break
 
     else:
         url = f'https://api.{region}.alloyapp.io/api/export/{task_id}/file?token={api_key}'
@@ -154,7 +182,7 @@ if __name__ == "__main__":
         parquetData = glueContext.write_dynamic_frame.from_options(
             frame=dataframe,
             connection_type="s3",
-            connection_options={"path": bucket_target,
+            connection_options={"path": s3_target_url,
                                 "partitionKeys": PARTITION_KEYS},
             format="parquet",
             transformation_ctx=f"alloy_{resource}_sink"

@@ -8,7 +8,10 @@ from pyspark.sql import functions as f
 from pyspark.sql.functions import col, from_json
 from pyspark.sql.types import StringType, StructType 
 
+
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
+PARTITION_KEYS_SNAPSHOT = ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']
+
 
 def format_name(col_name):
     non_alpha_num_chars_stripped = re.sub('[^a-zA-Z0-9]+', "_", col_name)
@@ -21,6 +24,7 @@ def clean_column_names(df):
         df = df.withColumnRenamed(col_name, format_name(col_name))
     return df
 
+
 def normalize_column_name(column: str) -> str:
     """
     Normalize column name by replacing all non alphanumeric characters with underscores
@@ -31,6 +35,7 @@ def normalize_column_name(column: str) -> str:
     """
     formatted_name = format_name(column)
     return unicodedata.normalize('NFKD', formatted_name).encode('ASCII', 'ignore').decode()
+
 
 def get_glue_env_var(key, default=None):
     if f'--{key}' in sys.argv:
@@ -55,6 +60,7 @@ def get_secret(secret_name, region_name):
         return get_secret_value_response['SecretString']
     else:
         return get_secret_value_response['SecretBinary'].decode('ascii')
+
 
 def add_timestamp_column(data_frame):
     now = datetime.datetime.now()
@@ -151,23 +157,32 @@ def table_exists_in_catalog(glue_context, table, database):
 
 
 def create_pushdown_predicate(partitionDateColumn, daysBuffer):
-    '''
-    This method creates a pushdown predicate to pass when reading data and creating a DDF. 
-    The partition date column will in most cases be 'import_date'. 
+    """
+    This method creates a pushdown predicate to pass when reading data and creating a DDF.
+    The partition date column will in most cases be 'import_date'.
     The daysBuffer is the number of days we want to load before the current day.
     If passing daysBuffer=0, we create no pushdown predicate and the whole dataset will be loaded.
-    '''
+    """
     if daysBuffer > 0:
-        pushDownPredicate = f"{partitionDateColumn}>=date_format(date_sub(current_date, {daysBuffer}), 'yyyyMMdd')"
+        push_down_predicate = f"{partitionDateColumn}>=date_format(date_sub(current_date, {daysBuffer}), 'yyyyMMdd')"
     else:
-        pushDownPredicate = ''
-    return pushDownPredicate
+        push_down_predicate = ''
+    return push_down_predicate
 
 
 def check_if_dataframe_empty(df):
-    '''
+    """
     This method returns an exception if the dataframe is empty.
-    '''
+    """
     if df.rdd.isEmpty():
         raise Exception('Dataframe is empty')
 
+
+def get_latest_rows_by_date(df, column):
+    """
+    Filters dataframe to keep rows byt specifying a date column. E.g. to get the
+    latest snapshot_date, column='snapshot_date'
+    """
+    date_filter = df.select(max(column)).first()[0]
+    df = df.where(col(column) == date_filter)
+    return df

@@ -47,7 +47,7 @@ resource "aws_glue_job" "job" {
     max_concurrent_runs = var.max_concurrent_runs_of_glue_job
   }
 
-  glue_version = "2.0"
+  glue_version = var.glue_version
 
   default_arguments = merge(var.job_parameters,
     {

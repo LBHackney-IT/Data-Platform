@@ -1,17 +1,21 @@
 module "import_file_from_g_drive" {
-  source                         = "../g-drive-to-s3"
-  tags                           = var.tags
-  identifier_prefix              = var.identifier_prefix
-  lambda_artefact_storage_bucket = var.lambda_artefact_storage_bucket
-  zone_kms_key_arn               = var.landing_zone_kms_key_arn
-  zone_bucket_arn                = var.landing_zone_bucket_arn
-  zone_bucket_id                 = var.landing_zone_bucket_id
-  lambda_name                    = lower(replace(var.glue_job_name, " ", "-"))
-  service_area                   = var.department.identifier
-  file_id                        = var.google_sheets_document_id
-  file_name                      = var.input_file_name
-  workflow_names                 = [for job in module.import_data_from_spreadsheet_job : job.workflow_name]
-  workflow_arns                  = [for job in module.import_data_from_spreadsheet_job : job.workflow_arn]
+  source                                    = "../g-drive-to-s3"
+  tags                                      = var.tags
+  identifier_prefix                         = var.identifier_prefix
+  department_identifier                     = var.department.identifier
+  lambda_artefact_storage_bucket            = var.lambda_artefact_storage_bucket
+  zone_kms_key_arn                          = var.landing_zone_kms_key_arn
+  zone_bucket_arn                           = var.landing_zone_bucket_arn
+  zone_bucket_id                            = var.landing_zone_bucket_id
+  lambda_name                               = lower(replace(var.glue_job_name, " ", "-"))
+  service_area                              = var.department.identifier
+  file_id                                   = var.google_sheets_document_id
+  file_name                                 = var.input_file_name
+  output_folder_name                        = var.output_folder_name
+  google_service_account_credentials_secret = var.department.google_service_account.credentials_secret.arn
+  secrets_manager_kms_key                   = var.secrets_manager_kms_key
+  workflow_names                            = [for job in module.import_data_from_spreadsheet_job : job.workflow_name]
+  workflow_arns                             = [for job in module.import_data_from_spreadsheet_job : job.workflow_arn]
 }
 
 module "import_data_from_spreadsheet_job" {
