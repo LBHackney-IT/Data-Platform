@@ -90,7 +90,7 @@ if __name__ == "__main__":
         frame=dynamic_frame,
         connection_type="s3",
         format="parquet",
-        connection_options={"path": s3_bucket_target, "partitionKeys": ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']},
+        connection_options={"path": s3_bucket_target, "partitionKeys": PARTITION_KEYS_SNAPSHOT},
         transformation_ctx="target_data_to_write")
 
     job.commit()
