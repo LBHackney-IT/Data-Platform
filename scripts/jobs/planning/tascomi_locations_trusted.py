@@ -49,8 +49,8 @@ if __name__ == "__main__":
     
     df = data_source.toDF()
     df = df.withColumn('counter_location', lit(1))
-    df2 = data_source2.toDF()
 
+    df2 = data_source2.toDF()
     # Keep Only Relevant Columns
     df2 = df2.select("uprn",
                          "blpu_class",
