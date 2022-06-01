@@ -259,7 +259,7 @@ module "tascomi_applications_to_trusted" {
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
-    "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/applications_reporting"
+    "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/applications"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
     "--source_catalog_table"    = "applications"
@@ -271,7 +271,7 @@ module "tascomi_applications_to_trusted" {
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
-    s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/applications_reporting"
+    s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/applications"
   }
     
 }
