@@ -184,5 +184,5 @@ def get_latest_rows_by_date(df, column):
     latest snapshot_date, column='snapshot_date'
     """
     date_filter = df.select(max(column)).first()[0]
-    df = df.where(f.col(column) == date_filter)
+    df = df.where(col(column) == date_filter)
     return df
