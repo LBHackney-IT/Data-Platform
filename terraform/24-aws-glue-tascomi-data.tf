@@ -318,7 +318,7 @@ module "tascomi_locations_to_trusted" {
     "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/locations_reporting"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
-    "--source_catalog_unrestricted" = aws_glue_catalog_database.trusted_zone_unrestricted.name  
+    "--source_catalog_unrestricted" = aws_glue_catalog_database.unrestricted_trusted_zone.name  
     "--source_catalog_table"    = "dtf_locations"
     "--source_catalog_table2"   = "llpg_latest"
   }
