@@ -60,20 +60,9 @@ if __name__ == "__main__":
                          "line1",
                          "line2",
                          "line3",
-                         "line4")
-    
-    #create combined address field
-    df2 = df2.withColumn('llpg_address',concat(trim(col('line1')),
-                                                 lit(", "),
-                                                 trim(col('line2')),
-                                                 lit(", "),
-                                                 trim(col('line3')),
-                                                 lit(", "),
-                                                 trim(col('line4')),
-                                                 lit(", "),
-                                                 trim(col('postcode')),
-                                                ))
-    
+                         "line4",
+                         "address_full")
+      
     # Rename Relevant Columns
     df2 = df2.withColumnRenamed("lpi_key","llpg_lpi_key") \
                  .withColumnRenamed("blpu_class","llpg_blpu_class") \
@@ -85,6 +74,7 @@ if __name__ == "__main__":
                  .withColumnRenamed("line2","llpg_line2") \
                  .withColumnRenamed("line3","llpg_line3") \
                  .withColumnRenamed("line4","llpg_line4") \
+                 .withColumnRenamed("address_full","llpg_address") \
     
     join = df.join(df2,df.uprn ==  df2.llpg_uprn,"left")
     
