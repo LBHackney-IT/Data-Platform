@@ -13,14 +13,14 @@ module "liberator_fpns_to_refined" {
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/fpn_tickets"
-    "--s3_bucket_target2"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/fpn_tickets_to_geocode"
+    "--s3_bucket_target2"       = "s3://${module.refined_zone.bucket_id}/env-enforcement/fpn_tickets_to_geocode"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = module.department_env_enforcement.raw_zone_catalog_database_name
     "--source_catalog_table"    = "liberator_fpn_tickets"
     "--source_catalog_table2"   = "liberator_fpn_payments"
-  
+
   }
-  script_name          = "liberator_fpns_refined"
+  script_name      = "liberator_fpns_refined"
   triggered_by_job = aws_glue_job.copy_env_enforcement_liberator_landing_to_raw.name
 
   crawler_details = {
@@ -42,12 +42,12 @@ module "noisework_complaints_to_refined" {
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/noisework_complaints"
-    "--s3_bucket_target2"        = "s3://${module.refined_zone.bucket_id}/env-enforcement/noisework_complaints_to_geocode"
+    "--s3_bucket_target2"       = "s3://${module.refined_zone.bucket_id}/env-enforcement/noisework_complaints_to_geocode"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = module.department_env_enforcement.raw_zone_catalog_database_name
     "--source_catalog_table"    = "noiseworks_case"
     "--source_catalog_table2"   = "noiseworks_complaint"
-  
+
   }
   script_name          = "noisework_complaints_refined"
   triggered_by_crawler = module.noiseworks_to_raw_zone.crawler_name
