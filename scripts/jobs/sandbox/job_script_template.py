@@ -12,7 +12,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from pyspark.sql.functions import col, max, lit
 from awsglue.dynamicframe import DynamicFrame
-from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS
+from helpers.helpers import get_glue_env_vars, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS
 
 # Define the functions that will be used in your job (optional). For Production jobs, these functions should be tested via unit testing.
 def someDataProcessing(df):
@@ -24,9 +24,11 @@ if __name__ == "__main__":
     
     # read job parameters
     args = getResolvedOptions(sys.argv, ['JOB_NAME'])
-    source_catalog_table = get_glue_env_var('source_catalog_table','')
-    source_catalog_database = get_glue_env_var('source_catalog_database', '')
-    s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
+    (
+        source_catalog_table,
+        source_catalog_database,
+        s3_bucket_target
+    ) = get_glue_env_vars('source_catalog_table', 'source_catalog_database', 's3_bucket_target')
  
     # start the Spark session and the logger
     glueContext = GlueContext(SparkContext.getOrCreate()) 

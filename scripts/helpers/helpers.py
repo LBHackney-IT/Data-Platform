@@ -38,11 +38,30 @@ def normalize_column_name(column: str) -> str:
 
 
 def get_glue_env_var(key, default=None):
+    """
+    Looks for a single variable passed in as a job parameters.
+    The key given will match to any parameter that the key is a sub string of.
+    So if you have two parameter keys where one is a substring of another it could return the wrong value.
+    :param key: The key of the parameter to retrieve
+    :param default: A value to return if the given key doesn't exist. Optional.
+    :return: The value of the parameter
+    Example of applying: source_catalog_database = get_glue_env_var("source_catalog_database", "")
+    """
     if f'--{key}' in sys.argv:
         return getResolvedOptions(sys.argv, [key])[key]
     else:
         return default
 
+def get_glue_env_vars(*keys):
+    """
+    Retrieves values for the given keys passed in as job parameters.
+    This will error if a given key can't be found in the job parameters.
+    :param keys: The keys of the parameters to retrieve passed as separate arguments
+    :return: A tuple containing the values for the parameters
+    Example of applying: (source_catalog_database, source_catalog_table) = get_glue_env_vars("source_catalog_database", "source_catalog_table")
+    """
+    vars = getResolvedOptions(sys.argv, [*keys])
+    return (vars[key] for key in keys)
 
 def get_secret(secret_name, region_name):
     session = boto3.session.Session()
