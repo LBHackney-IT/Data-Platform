@@ -39,7 +39,7 @@ locals {
 resource "aws_glue_trigger" "filter_ingestion_tables" {
   for_each = local.table_filter_expressions
   tags     = module.tags.values
-  name     = "${local.short_identifier_prefix}academy_revs_and_bens_ingestion_trigger"
+  name     = "${local.short_identifier_prefix}academy_revs_and_bens_ingestion_trigger-${each.key}"
   type     = "CONDITIONAL"
 
   actions {
