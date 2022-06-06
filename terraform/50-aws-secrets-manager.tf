@@ -46,19 +46,3 @@ resource "aws_secretsmanager_secret" "tascomi_api_private_key" {
 
   kms_key_id = aws_kms_key.secrets_manager_key.id
 }
-
-// Qlik Service Account
-resource "aws_secretsmanager_secret" "sheets_credentials_qlik" {
-  tags = module.tags.values
-
-  name_prefix = "${local.identifier_prefix}/${module.department_data_and_insight.identifier}/qlik-service-account-credentials"
-
-  kms_key_id = aws_kms_key.secrets_manager_key.id
-}
-
-resource "aws_secretsmanager_secret_version" "qlik_json_credentials_secret_version" {
-  count = local.is_live_environment ? 1 : 0
-
-  secret_id     = aws_secretsmanager_secret.sheets_credentials_qlik.id
-  secret_string = google_service_account_key.qlik_json_credentials[0].private_key
-}
