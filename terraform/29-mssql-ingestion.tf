@@ -37,15 +37,13 @@ locals {
 }
 
 resource "aws_glue_trigger" "filter_ingestion_tables" {
-  tags = module.tags.values
-  name = "${local.short_identifier_prefix}academy_revs_and_bens_ingestion_trigger"
-  type = "CONDITIONAL"
+  for_each = local.table_filter_expressions
+  tags     = module.tags.values
+  name     = "${local.short_identifier_prefix}academy_revs_and_bens_ingestion_trigger"
+  type     = "CONDITIONAL"
 
-  dynamic "actions" {
-    for_each = local.table_filter_expressions
-    content {
-      job_name = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[actions.key].job_name
-    }
+  actions {
+    job_name = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[each.key].job_name
   }
 
   predicate {
