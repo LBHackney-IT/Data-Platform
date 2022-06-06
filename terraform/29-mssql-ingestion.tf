@@ -18,37 +18,33 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
 }
 
 locals {
-  table_filter_expressions = local.is_live_environment ? [
-    "^lbhaliverbviews_core_hbrent[s].*",
-    "^lbhaliverbviews_core_hbc.*",
-    "^lbhaliverbviews_core_hbrentclaim",
-    "^lbhaliverbviews_core_hbrenttrans",
-    "^lbhaliverbviews_core_hbrent[^tsc].*",
-    "^lbhaliverbviews_core_hbmember",
-    "^lbhaliverbviews_core_hbincome",
-    "^lbhaliverbviews_core_hb[abdefghjklnopsw]",
-    "^lbhaliverbviews_core_ct[dt].*",
-    "^lbhaliverbviews_current_ctax.*",
-    "^lbhaliverbviews_current_[hbn].*",
-    "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*",
-    "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
-  ] : []
+  table_filter_expressions = local.is_live_environment ? {
+    core_hbrent_s    = "^lbhaliverbviews_core_hbrent[s].*",
+    core_hbrent_hbc  = "^lbhaliverbviews_core_hbc.*",
+    core_hbrentclaim = "^lbhaliverbviews_core_hbrentclaim",
+    core_hbrenttrans = "^lbhaliverbviews_core_hbrenttrans",
+    core_hbrent_tsc  = "^lbhaliverbviews_core_hbrent[^tsc].*",
+    core_hbmember    = "^lbhaliverbviews_core_hbmember",
+    core_hbincome    = "^lbhaliverbviews_core_hbincome",
+    core_hb          = "^lbhaliverbviews_core_hb[abdefghjklnopsw]",
+    core_ct_dt       = "^lbhaliverbviews_core_ct[dt].*",
+    current_ctax     = "^lbhaliverbviews_current_ctax.*",
+    current_hbn      = "^lbhaliverbviews_current_[hbn].*",
+    core_ct          = "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*",
+    mix              = "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
+  } : {}
   academy_ingestion_max_concurrent_runs = local.is_live_environment ? length(local.table_filter_expressions) : 1
 }
 
-
-
 resource "aws_glue_trigger" "filter_ingestion_tables" {
   tags = module.tags.values
+  name = "${local.short_identifier_prefix}academy_revs_and_bens_ingestion_trigger"
+  type = "CONDITIONAL"
 
-  for_each = toset(local.table_filter_expressions)
-  name     = "${local.short_identifier_prefix}filter-${each.value}"
-  type     = "CONDITIONAL"
-
-  actions {
-    job_name = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[0].job_name
-    arguments = {
-      "--table_filter_expression" = each.value
+  dynamic "actions" {
+    for_each = local.table_filter_expressions
+    content {
+      job_name = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[actions.key].job_name
     }
   }
 
@@ -61,29 +57,29 @@ resource "aws_glue_trigger" "filter_ingestion_tables" {
 }
 
 module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
-  count = local.is_live_environment ? 1 : 0
-  tags  = module.tags.values
+  for_each = local.table_filter_expressions
+  tags     = module.tags.values
 
   source = "../modules/aws-glue-job"
 
-  job_name                        = "${local.short_identifier_prefix}Academy Revenues & Benefits Housing Needs Database Ingestion"
-  script_s3_object_key            = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
-  environment                     = var.environment
-  pydeequ_zip_key                 = aws_s3_bucket_object.pydeequ.key
-  helper_module_key               = aws_s3_bucket_object.helpers.key
-  jdbc_connections                = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
-  glue_role_arn                   = aws_iam_role.glue_role.arn
-  glue_temp_bucket_id             = module.glue_temp_storage.bucket_id
-  glue_scripts_bucket_id          = module.glue_scripts.bucket_id
-  spark_ui_output_storage_id      = module.spark_ui_output_storage.bucket_id
-  max_concurrent_runs_of_glue_job = local.academy_ingestion_max_concurrent_runs
-  glue_job_timeout                = 420
-  glue_job_worker_type            = "G.1X"
-  number_of_workers_for_glue_job  = 2
+  job_name                       = "${local.short_identifier_prefix}Academy Revs & Bens Housing Needs Database Ingestion-${each.key}"
+  script_s3_object_key           = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
+  environment                    = var.environment
+  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
+  helper_module_key              = aws_s3_bucket_object.helpers.key
+  jdbc_connections               = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
+  glue_role_arn                  = aws_iam_role.glue_role.arn
+  glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
+  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
+  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  glue_job_timeout               = 420
+  glue_job_worker_type           = "G.1X"
+  number_of_workers_for_glue_job = 2
   job_parameters = {
     "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
     "--s3_ingestion_details_target" = "s3://${module.landing_zone.bucket_id}/academy/ingestion-details/"
+    "--table_filter_expression"     = each.value
   }
 }
 
