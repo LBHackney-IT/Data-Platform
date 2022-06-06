@@ -321,7 +321,7 @@ module "tascomi_locations_to_trusted" {
     "--source_catalog_database"     = aws_glue_catalog_database.refined_zone_tascomi.name
     "--source_catalog_unrestricted" = module.department_unrestricted.trusted_zone_catalog_database_name
     "--source_catalog_table"        = "dtf_locations"
-    "--source_catalog_table2"       = "llpg_latest"
+    "--source_catalog_table2"       = "latest_llpg"
   }
   script_name          = "tascomi_locations_trusted"
   triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name

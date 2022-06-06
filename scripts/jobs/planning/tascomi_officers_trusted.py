@@ -1,4 +1,5 @@
 import sys
+import boto3
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -94,7 +95,7 @@ if __name__ == "__main__":
                    'snapshot_date',
                    'snapshot_year',
                    'snapshot_month',
-                   'snapshot_day)       
+                   'snapshot_day')       
 
     # Return only latest snapshot
     
