@@ -5,7 +5,7 @@ module "housing_income_collection_database_ingestion" {
   source = "../modules/database-ingestion-via-jdbc-connection"
 
   name                        = "housing-income-collection-database"
-  jdbc_connection_url         = "jdbc:mysql://<HOST_IP>:<PORT>;databaseName=housingfinancedbproduction"
+  jdbc_connection_url         = "jdbc:mysql://housing-finance-db-production-replica.cfem8ikpzzjl.eu-west-2.rds.amazonaws.com:3306/housingfinancedbproduction"
   jdbc_connection_description = "JDBC connection to Housing Income Collection database"
   jdbc_connection_subnet      = data.aws_subnet.network[local.instance_subnet_id]
   database_secret_name        = "database-credentials/housingfinancedbproduction-housing-income-collection"
