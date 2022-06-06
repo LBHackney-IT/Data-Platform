@@ -30,7 +30,7 @@ resource "google_service_account_key" "housing_json_credentials" {
 resource "google_service_account" "service_account_qlik" {
   count = local.is_live_environment ? 1 : 0
 
-  account_id   = lower("${local.identifier_prefix} qlik data and insight")
+  account_id   = lower("${local.identifier_prefix} qlik data insight")
   display_name = "${var.application} - Qlik-Data-and-Insight"
 
   project = var.google_project_id
