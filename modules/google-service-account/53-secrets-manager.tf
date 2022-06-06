@@ -4,7 +4,7 @@ resource "aws_secretsmanager_secret" "sheets_credentials" {
   // name_prefix is added here, in case you destroy the secret.
   // Secrets will linger for around 6-7 days in case recovery is required,
   // and you will be unable to create with the same name.
-  name_prefix = "${var.identifier_prefix}${var.department_name}-sheets-credential-"
+  name_prefix = "${var.identifier_prefix}/${var.department_name}/sheets-credential-"
   description = "Google Service User credentials used by AWS Glue jobs to access Google Sheets"
 
   kms_key_id = var.secrets_manager_kms_key_id
