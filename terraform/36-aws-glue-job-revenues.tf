@@ -1,0 +1,30 @@
+module "etl_ctax_live_properties" {
+  source                     = "../modules/aws-glue-job"
+  department                 = module.department_revenues
+  job_name                   = "${local.short_identifier_prefix}etl_ctax_live_properties"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  script_name                = "etl_ctax_live_properties"
+  triggered_by_job           = module.etl_ctax_live_properties.job_name
+  job_description            = "Created with AWS Glue Studio: Revenues ETL CTax_Live_Properties_Automation"
+  trigger_enabled            = false
+  schedule                   = "cron(0 55 9 ? * MON-FRI *)"
+  glue_job_worker_type       = "G.2X"
+  number_of_workers_for_glue_job  = 10
+  glue_job_timeout                = 1440
+}
+
+module "etl_zerobase_ctax_live_properties" {
+  source                     = "../modules/aws-glue-job"
+  department                 = module.department_revenues
+  job_name                   = "${local.short_identifier_prefix}etl_zerobase_ctax_live_properties"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  script_name                = "etl_zerobase_ctax_live_properties"
+  triggered_by_job           = module.etl_zerobase_ctax_live_properties.job_name
+  job_description            = "Created with AWS Glue Studio: Revenues ETL CTax_Live_Properties_Initialization"
+  trigger_enabled            = false
+  glue_job_worker_type       = "G.2X"
+  number_of_workers_for_glue_job  = 10
+  glue_job_timeout                = 1440
+}
