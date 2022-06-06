@@ -12,6 +12,11 @@ module "etl_ctax_live_properties" {
   glue_job_worker_type       = "G.2X"
   number_of_workers_for_glue_job  = 10
   glue_job_timeout                = 1440
+  spark_ui_output_storage_id  = module.spark_ui_output_storage.bucket_id
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
 }
 
 module "etl_zerobase_ctax_live_properties" {
@@ -27,4 +32,9 @@ module "etl_zerobase_ctax_live_properties" {
   glue_job_worker_type       = "G.2X"
   number_of_workers_for_glue_job  = 10
   glue_job_timeout                = 1440
+  spark_ui_output_storage_id  = module.spark_ui_output_storage.bucket_id
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
 }
