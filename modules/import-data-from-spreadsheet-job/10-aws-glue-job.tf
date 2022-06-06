@@ -3,7 +3,7 @@ module "spreadsheet_import" {
   source = "../aws-glue-job"
 
   department        = var.department
-  job_name          = "Spreadsheet Import Job - ${var.glue_job_name}"
+  job_name          = "Spreadsheet Import Job - ${var.department.identifier}-${var.glue_job_name}"
   helper_module_key = var.helper_module_key
   pydeequ_zip_key   = var.pydeequ_zip_key
   glue_role_arn     = var.glue_role_arn
