@@ -274,10 +274,10 @@ module "tascomi_applications_to_trusted" {
     s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/applications"
 
   }
-    
+
 }
-    
- module "tascomi_officers_teams_to_trusted" {
+
+module "tascomi_officers_teams_to_trusted" {
   source = "../modules/aws-glue-job"
 
   department                 = module.department_planning
@@ -304,7 +304,7 @@ module "tascomi_applications_to_trusted" {
   }
 
 }
-    
+
 module "tascomi_locations_to_trusted" {
   source = "../modules/aws-glue-job"
 
@@ -315,13 +315,13 @@ module "tascomi_locations_to_trusted" {
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
-    "--job-bookmark-option"     = "job-bookmark-enable"
-    "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/locations"
-    "--enable-glue-datacatalog" = "true"
-    "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
-    "--source_catalog_unrestricted" = module.department_unrestricted.trusted_zone_catalog_database_name 
-    "--source_catalog_table"    = "dtf_locations"
-    "--source_catalog_table2"   = "llpg_latest"
+    "--job-bookmark-option"         = "job-bookmark-enable"
+    "--s3_bucket_target"            = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/locations"
+    "--enable-glue-datacatalog"     = "true"
+    "--source_catalog_database"     = aws_glue_catalog_database.refined_zone_tascomi.name
+    "--source_catalog_unrestricted" = module.department_unrestricted.trusted_zone_catalog_database_name
+    "--source_catalog_table"        = "dtf_locations"
+    "--source_catalog_table2"       = "llpg_latest"
   }
   script_name          = "tascomi_locations_trusted"
   triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
@@ -332,7 +332,7 @@ module "tascomi_locations_to_trusted" {
   }
 
 }
-    
+
 module "tascomi_subsidiary_tables_to_trusted" {
   source = "../modules/aws-glue-job"
 
@@ -343,11 +343,11 @@ module "tascomi_subsidiary_tables_to_trusted" {
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
-    "--job-bookmark-option"     = "job-bookmark-enable"
-    "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/"
-    "--enable-glue-datacatalog" = "true"
-    "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
-    "--source_catalog_table_list"    = "decision_levels,decision_types,ps_development_codes,contacts"
+    "--job-bookmark-option"       = "job-bookmark-enable"
+    "--s3_bucket_target"          = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/"
+    "--enable-glue-datacatalog"   = "true"
+    "--source_catalog_database"   = aws_glue_catalog_database.refined_zone_tascomi.name
+    "--source_catalog_table_list" = "decision_levels,decision_types,ps_development_codes,contacts"
   }
   script_name          = "tascomi_subsidiary_tables_trusted"
   triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
