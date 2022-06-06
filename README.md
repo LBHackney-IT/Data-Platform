@@ -91,9 +91,14 @@ hackney-dataplatform-development
 
 Install AWS-Vault
 
+Mac
 ```
 $ brew install --cask aws-vault
 ```
+Windows
+
+- Install chocolatey using the following guide: [Link](https://chocolatey.org/install#individual)
+- Install aws-vault using chocolatey: ```choco install aws-vault```
 
 Generate Credentials for Vault
 
