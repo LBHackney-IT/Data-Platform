@@ -33,6 +33,10 @@ variable "file_name" {
   type = string
 }
 
+variable "output_folder_name" {
+  type = string
+}
+
 variable "lambda_name" {
   type = string
 
@@ -45,4 +49,22 @@ variable "lambda_name" {
 variable "service_area" {
   description = "Name of service area where data is to be sent, e.g. 'housing'"
   type        = string
+}
+
+variable "google_service_account_credentials_secret" {
+  description = "ARN of the Google Service Account credentials secret"
+  type        = string
+}
+
+variable "department_identifier" {
+  description = "Department identifier"
+  type        = string
+}
+
+variable "secrets_manager_kms_key" {
+  description = "The KMS Key Id to be used to encrypt the secret which stores the json credentials"
+  type = object({
+    key_id = string
+    arn    = string
+  })
 }
