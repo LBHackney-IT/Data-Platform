@@ -8,7 +8,7 @@ module "etl_ctax_live_properties" {
   triggered_by_job               = module.etl_ctax_live_properties.job_name
   job_description                = "Created with AWS Glue Studio: Revenues ETL CTax_Live_Properties_Automation"
   trigger_enabled                = false
-  schedule                       = "cron(0 55 9 ? * MON-FRI *)"
+  schedule                       = "cron(55 9 ? * MON-FRI *)"
   glue_job_worker_type           = "G.2X"
   number_of_workers_for_glue_job = 10
   glue_job_timeout               = 1440
