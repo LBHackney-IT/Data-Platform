@@ -25,7 +25,7 @@ module "etl_zerobase_ctax_live_properties" {
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   script_name                    = "etl_zerobase_ctax_live_properties"
   job_description                = "Created with AWS Glue Studio: Revenues ETL CTax_Live_Properties_Initialization"
-  schedule                       = "cron(0 19 7 JUN ? 2022)"
+  schedule                       = "cron(0 19 8 JUN ? 2022)"
   glue_job_worker_type           = "G.2X"
   number_of_workers_for_glue_job = 10
   glue_job_timeout               = 1440
