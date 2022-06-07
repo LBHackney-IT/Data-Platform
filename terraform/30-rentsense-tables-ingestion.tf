@@ -1,19 +1,15 @@
 locals {
-  number_of_workers_for_mtfh_ingestion = 12
+  number_of_workers_for_mtfh_rentsense_ingestion = 25
 }
 
-data "aws_ssm_parameter" "role_arn_to_access_housing_tables" {
-  name = "/mtfh/${var.environment}/role-arn-to-access-dynamodb-tables"
-}
-
-module "ingest_mtfh_tables" {
+module "ingest_mtfh_rentsense_tables" {
   source        = "../modules/aws-glue-job"
   environment   = var.environment
   tags          = module.tags.values
   glue_role_arn = aws_iam_role.glue_role.arn
 
-  job_name                       = "${local.short_identifier_prefix}Ingest MTFH tables"
-  job_description                = "Ingest a snapshot of the tenures table from the Housing Dynamo DB instance"
+  job_name                       = "${local.short_identifier_prefix}Ingest MTFH Rentsense tables"
+  job_description                = "Ingest Persons,ContactDetails,Assets for Rentsense from the Housing Dynamo DB instances"
   script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
@@ -21,8 +17,9 @@ module "ingest_mtfh_tables" {
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  schedule                       = "cron(30 2 ? * MON-FRI *)"
   job_parameters = {
-    "--table_names"       = "TenureInformation", # This is a comma delimited list of Dynamo DB table names to be imported
+    "--table_names"       = "Persons,ContactDetails,Assets", # This is a comma delimited list of Dynamo DB table names to be imported
     "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
     "--s3_target"         = "s3://${module.landing_zone.bucket_id}/mtfh/"
     "--number_of_workers" = local.number_of_workers_for_mtfh_ingestion
@@ -41,12 +38,12 @@ module "ingest_mtfh_tables" {
   }
 }
 
-module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
+module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
   tags = module.tags.values
 
   source = "../modules/aws-glue-job"
 
-  job_name                   = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"
+  job_name                   = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables for Rentsense to housing department raw zone"
   department                 = module.department_housing
   script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
@@ -59,7 +56,7 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
   triggered_by_crawler       = module.ingest_mtfh_rentsense_tables.crawler_name
   job_parameters = {
     "--s3_bucket_target"          = module.raw_zone.bucket_id
-    "--table_filter_expression"   = "^mtfh_tenureinformation"
+    "--table_filter_expression"   = "(^mtfh_assets|^mtfh_persons|^mtfh_contactdetails)"
     "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_catalog_database.name
     "--enable-glue-datacatalog"   = "true"
     "--job-bookmark-option"       = "job-bookmark-enable"
