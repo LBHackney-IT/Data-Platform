@@ -5,7 +5,6 @@ module "etl_ctax_live_properties" {
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   script_name                    = "etl_ctax_live_properties"
-  triggered_by_job               = module.etl_ctax_live_properties.job_name
   job_description                = "Created with AWS Glue Studio: Revenues ETL CTax_Live_Properties_Automation"
   trigger_enabled                = false
   schedule                       = "cron(55 9 ? * MON-FRI *)"
@@ -26,7 +25,6 @@ module "etl_zerobase_ctax_live_properties" {
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   script_name                    = "etl_zerobase_ctax_live_properties"
-  triggered_by_job               = module.etl_zerobase_ctax_live_properties.job_name
   job_description                = "Created with AWS Glue Studio: Revenues ETL CTax_Live_Properties_Initialization"
   trigger_enabled                = false
   glue_job_worker_type           = "G.2X"
