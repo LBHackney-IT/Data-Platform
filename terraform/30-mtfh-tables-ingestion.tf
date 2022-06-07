@@ -56,7 +56,7 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
   glue_role_arn              = aws_iam_role.glue_role.arn
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id
-  triggered_by_crawler       = module.ingest_mtfh_rentsense_tables.crawler_name
+  triggered_by_crawler       = module.ingest_mtfh_tables.crawler_name
   job_parameters = {
     "--s3_bucket_target"          = module.raw_zone.bucket_id
     "--table_filter_expression"   = "^mtfh_tenureinformation"
