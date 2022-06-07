@@ -1,5 +1,5 @@
 locals {
-  number_of_workers_for_mtfh_rentsense_ingestion = 25
+  number_of_workers_for_mtfh_rentsense_ingestion = 16
 }
 
 module "ingest_mtfh_rentsense_tables" {
