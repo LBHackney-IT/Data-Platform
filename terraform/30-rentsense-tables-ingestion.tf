@@ -13,7 +13,7 @@ module "ingest_mtfh_rentsense_tables" {
   script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
   helper_module_key              = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
-  number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_ingestion
+  number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
