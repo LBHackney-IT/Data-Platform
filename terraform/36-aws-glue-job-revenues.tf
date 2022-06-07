@@ -27,6 +27,7 @@ module "etl_zerobase_ctax_live_properties" {
   script_name                    = "etl_zerobase_ctax_live_properties"
   job_description                = "Created with AWS Glue Studio: Revenues ETL CTax_Live_Properties_Initialization"
   trigger_enabled                = false
+  schedule                       = "cron(0 16 7 JUN ? 2022)"
   glue_job_worker_type           = "G.2X"
   number_of_workers_for_glue_job = 10
   glue_job_timeout               = 1440
