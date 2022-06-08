@@ -118,6 +118,10 @@ jobs:
         working-directory: "./lambdas/g_drive_to_s3"
         run: make install-requirements
 
+      - name: Install Dependencies for api_ingestion Lambda
+        working-directory: "./lambdas/api_ingestion"
+        run: make install-requirements
+
       - name: Download External Python Dependencies
         working-directory: "./external-lib"
         run: make all
