@@ -141,7 +141,7 @@ module "stg_job_template_huu_do_sandbox" {
   }
 }
 
-      
+
 module "covid_vaccinations_arda_sandbox" {
   source = "../modules/aws-glue-job"
 
@@ -152,10 +152,10 @@ module "covid_vaccinations_arda_sandbox" {
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   helper_module_key          = aws_s3_bucket_object.helpers.key
   job_parameters = {
-    "--s3_bucket_target"         = "s3://${module.refined_zone.bucket_id}/sandbox/covid_locations_arda/"
-    "--source_catalog_database"  = module.department_sandbox.raw_zone_catalog_database_name
-    "--source_catalog_table"     = "sandbox_arda_covid_vaccination_loc"
-    "--source_catalog_table_vaccinations"    = "sandbox_arda_covid_vaccination_vac"
+    "--s3_bucket_target"                  = "s3://${module.refined_zone.bucket_id}/sandbox/covid_locations_arda/"
+    "--source_catalog_database"           = module.department_sandbox.raw_zone_catalog_database_name
+    "--source_catalog_table"              = "sandbox_arda_covid_vaccination_loc"
+    "--source_catalog_table_vaccinations" = "sandbox_arda_covid_vaccination_vac"
   }
   crawler_details = {
     database_name      = module.department_sandbox.refined_zone_catalog_database_name

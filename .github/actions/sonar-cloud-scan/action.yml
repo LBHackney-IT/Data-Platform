@@ -1,0 +1,19 @@
+name: Sonar Scan
+description: Runs Sonar Cloud Scan
+inputs:
+  sonar_token:
+    description: "Sonar token"
+    required: true
+  build_path:
+    description: "Build path that contains the source"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v1.6
+      with:
+        projectBaseDir: ${{ inputs.build_path }}
+      env:
+        SONAR_TOKEN: ${{ inputs.sonar_token }}

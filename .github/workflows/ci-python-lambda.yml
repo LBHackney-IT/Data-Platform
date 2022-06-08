@@ -6,7 +6,13 @@ on:
     paths:
       - 'scripts/**'
       - 'lambdas/**'
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        required: true
 
 jobs:
   CI:
     uses: ./.github/workflows/test-python-and-lambda.yml
+    secrets:
+      SONAR_TOKEN : ${{ secrets.SONAR_TOKEN }}
