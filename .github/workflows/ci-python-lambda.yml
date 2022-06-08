@@ -10,9 +10,12 @@ on:
     secrets:
       SONAR_TOKEN:
         required: true
+      GITHUB_TOKEN:
+        required: true
 
 jobs:
   CI:
     uses: ./.github/workflows/test-python-and-lambda.yml
     secrets:
       SONAR_TOKEN : ${{ secrets.SONAR_TOKEN }}
+      GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}

@@ -7,6 +7,9 @@ inputs:
   build_path:
     description: "Build path that contains the source"
     required: true
+  github_token:
+    description: "GitHub provides a token that you can use to authenticate on behalf of GitHub Actions"
+    required: true
 
 runs:
   using: "composite"
@@ -17,4 +20,4 @@ runs:
 #        projectBaseDir: ${{ inputs.build_path }}
       env:
         SONAR_TOKEN: ${{ inputs.sonar_token }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}

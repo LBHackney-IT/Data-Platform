@@ -30,10 +30,12 @@ jobs:
         uses: ./.github/actions/sonar-cloud-scan
         with:
           sonar_token: ${{ secrets.SONAR_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           build_path: "./lambdas"
 
       - name: Sonar Cloud Scan in ./scripts
         uses: ./.github/actions/sonar-cloud-scan
         with:
           sonar_token: ${{ secrets.SONAR_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           build_path: "./scripts"

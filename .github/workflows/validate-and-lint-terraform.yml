@@ -59,6 +59,8 @@ on:
         required: true
       SONAR_TOKEN:
         required: true
+      GITHUB_TOKEN:
+        required: true
 
 jobs:
   validate:
@@ -148,4 +150,5 @@ jobs:
         uses: ./.github/actions/sonar-cloud-scan
         with:
           sonar_token: ${{ secrets.SONAR_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           build_path: ${{ inputs.build_path }}
