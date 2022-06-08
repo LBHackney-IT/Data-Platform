@@ -1,5 +1,5 @@
 locals {
-  number_of_workers_for_mtfh_rentsense_ingestion = 25
+  number_of_workers_for_mtfh_rentsense_ingestion = 16
 }
 
 module "ingest_mtfh_rentsense_tables" {
@@ -17,7 +17,7 @@ module "ingest_mtfh_rentsense_tables" {
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
-  schedule                       = "cron(30 2 ? * MON-FRI *)"
+  schedule                       = "cron(30 5 ? * MON-FRI *)"
   job_parameters = {
     "--table_names"       = "Persons,ContactDetails,Assets", # This is a comma delimited list of Dynamo DB table names to be imported
     "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
