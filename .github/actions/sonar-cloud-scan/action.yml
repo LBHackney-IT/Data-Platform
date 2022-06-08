@@ -13,7 +13,7 @@ runs:
   steps:
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v1.6
-      with:
-        projectBaseDir: ${{ inputs.build_path }}
+#      with:
+#        projectBaseDir: ${{ inputs.build_path }}
       env:
         SONAR_TOKEN: ${{ inputs.sonar_token }}
