@@ -208,7 +208,7 @@ module "data_and_insight_hb_combined" {
   landing_zone_bucket_arn        = module.landing_zone.bucket_arn
   google_sheets_document_id      = "1tiMnVId0ERbCq47oPH0EOOyoDRCbhgr_"
   glue_job_name                  = "hb_combined snapshot for income max project"
-  output_folder_name             = "income_maximisation"
+  output_folder_name             = "hb_combined"
   raw_zone_bucket_id             = module.raw_zone.bucket_id
   input_file_name                = "HB_combined_timestamp.csv"
   worksheets = {
