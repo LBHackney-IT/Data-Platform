@@ -6,6 +6,8 @@ import re #regex
 import requests #
 import string
 import time
+import pandas as pd
+from dotenv import load_dotenv
 
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
@@ -75,14 +77,15 @@ def dump_dataframe (df,filename): # write to s3 in parquet
 #   print(f'XLSX Made at /content/drive/MyDrive/iCaseworks/{prefix}{filename}.XLSX')
 
 def lambda_handler(event, lambda_context):
+    load_dotenv()
     url = "https://hackney.icasework.com/token"
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cookie': 'CustomerId=; AWSALB=uAvMR5Y0HNV0hEPKhb8QOUxnG9iTI3vo/FchUCUyvAbHVDkXa7Ox7bI+FWdPjXPjSdKJVnxQUHAutipBKv54Wg4utvpP9co7YROu+XGQ6a/5+weILvIP0jgSu1EC; AWSALBCORS=uAvMR5Y0HNV0hEPKhb8QOUxnG9iTI3vo/FchUCUyvAbHVDkXa7Ox7bI+FWdPjXPjSdKJVnxQUHAutipBKv54Wg4utvpP9co7YROu+XGQ6a/5+weILvIP0jgSu1EC; CookiesSupported=Yes; JSESSIONID=6DC46F82193C97FA134B55B64C1962C3; db=hackney'
     }
-    api_key = "" # put into secrets manager
-    secret = '' # put into secrets
+    api_key = getenv("API_KEY")
+    secret = getenv("SECRET")
     header_object = {"alg":"HS256","typ":"JWT"}
 
     # Create Header
@@ -131,7 +134,6 @@ def lambda_handler(event, lambda_context):
     'Cookie': 'CustomerId=; AWSALB=oxoDAY2g+6Buo8FtD7gdod7cYW5YG3E2SMt3LNhjWA7Nm7JE8NnZ0H0FyTPypqdv4S+9+bJTYS4h4iKEm3tETmH7noCqE149gcLe5WPJQcrPlelYtcvAC8enzknO; AWSALBCORS=oxoDAY2g+6Buo8FtD7gdod7cYW5YG3E2SMt3LNhjWA7Nm7JE8NnZ0H0FyTPypqdv4S+9+bJTYS4h4iKEm3tETmH7noCqE149gcLe5WPJQcrPlelYtcvAC8enzknO; CookiesSupported=Yes; JSESSIONID=81275223678F5E4505A2071BF806F662; db=hackney'
     }
 
-    import pandas as pd
 
     list_of_datadictionaries = [
     # {"name":"Time Spent for Cases Received", "reportid":122641},

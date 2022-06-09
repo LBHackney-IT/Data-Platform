@@ -104,7 +104,8 @@ resource "aws_lambda_function" "api_ingestion_lambda" {
   }
   environment {
     variables = {
-      API_CREDENTIALS  = data.aws_secretsmanager_secret_version.api_credentials_for_lambda.secret_string
+      API_KEY          = local.api_key
+      SECRET           = local.secret
       TARGET_S3_BUCKET = var.s3_target_bucket_arn
       OUTPUT_FOLDER    = var.output_folder_name
       REPORT_ID        = var.report_id
