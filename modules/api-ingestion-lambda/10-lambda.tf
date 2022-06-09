@@ -99,6 +99,9 @@ resource "aws_lambda_function" "api_ingestion_lambda" {
   timeout          = local.lambda_timeout
   memory_size      = local.lambda_memory_size
 
+  ephemeral_storage {
+    size = var.ephemeral_storage
+  }
   environment {
     variables = {
       API_CREDENTIALS  = data.aws_secretsmanager_secret_version.api_credentials_for_lambda.secret_string

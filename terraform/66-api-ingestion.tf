@@ -11,4 +11,5 @@ module "icaseworks_api_ingestion" {
   report_id                      = ""
   s3_target_bucket_arn           = module.raw_zone.bucket_arn
   s3_target_bucket_kms_key_arn   = module.raw_zone.kms_key_arn
+  ephemeral_storage              = 6144
 }
