@@ -7,9 +7,9 @@ module "import_file_from_g_drive" {
   zone_kms_key_arn                          = var.landing_zone_kms_key_arn
   zone_bucket_arn                           = var.landing_zone_bucket_arn
   zone_bucket_id                            = var.landing_zone_bucket_id
-  lambda_name                               = lower(replace(var.glue_job_name, " ", "-"))
+  lambda_name                               = lower(replace(var.glue_job_name, "/[^a-zA-Z0-9]+/", "-"))
   service_area                              = var.department.identifier
-  file_id                                   = var.google_sheets_document_id
+  file_id                                   = var.google_drive_document_id
   file_name                                 = var.input_file_name
   output_folder_name                        = var.output_folder_name
   google_service_account_credentials_secret = var.department.google_service_account.credentials_secret.arn
@@ -33,7 +33,7 @@ module "import_data_from_spreadsheet_job" {
   spreadsheet_import_script_key  = var.spreadsheet_import_script_key
   lambda_artefact_storage_bucket = var.lambda_artefact_storage_bucket
   landing_zone_bucket_id         = var.landing_zone_bucket_id
-  glue_job_name                  = "${var.glue_job_name} - ${each.value.worksheet_name}"
+  glue_job_name                  = "${var.identifier_prefix}${var.glue_job_name} - ${each.value.worksheet_name}"
   output_folder_name             = var.output_folder_name
   data_set_name                  = lower(replace(replace(replace(trimspace(each.value.worksheet_name), ".", ""), "/[^a-zA-Z0-9]+/", "-"), "/-+/", "-"))
   raw_zone_bucket_id             = var.raw_zone_bucket_id
