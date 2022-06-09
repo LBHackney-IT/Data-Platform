@@ -239,7 +239,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1iLScmA-tIvyoqOj3smbzkvzRhnfkDxOS"
-//  glue_job_name                  = "${title(module.department_parking.name)} Permits Consultation Survey"
+//  glue_job_name                  = "Permits Consultation Survey"
 //  output_folder_name             = "permits-consultation-survey"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "Permits Consultation Survey - export-2022-05-06-13-31-09 UTF-8.csv"
@@ -273,7 +273,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1xZmbsPENv01chzZcP661pv1d2Kmg7y6r"
-//  glue_job_name                  = "${title(module.department_parking.name)} Puzzel 20210526 - Total Overview"
+//  glue_job_name                  = "Puzzel 20210526 - Total Overview"
 //  output_folder_name             = "puzzel"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20210526 - Total Overview 10 05 2021 - 25 05 2021 - TotOview UTF8.csv"
@@ -305,7 +305,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1oWAo5-hmTnBH5lEUzjNkBf7-GxxfVXMG"
-//  glue_job_name                  = "${title(module.department_parking.name)} 20220209 - ETA_Decisions"
+//  glue_job_name                  = "20220209 - ETA_Decisions"
 //  output_folder_name             = "eta_decision_records"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220209 - ETA_Decisions - GDS or Qlik data Load - records.csv"
@@ -337,7 +337,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1BgC7fEHRpOHO1NwPc8_HuIa9hJvDFqbH"
-//  glue_job_name                  = "${title(module.department_parking.name)} 20220317 - ETA_Decisions"
+//  glue_job_name                  = "20220317 - ETA_Decisions"
 //  output_folder_name             = "eta_decision_records"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220317 - ETA_Decisions - GDS or Qlik data Load - records.csv"
@@ -369,7 +369,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1XqnMJR7-rjLl2MbVKChqRWu-DVWIACyr"
-//  glue_job_name                  = "${title(module.department_parking.name)} 20220401 - ETA_Decisions"
+//  glue_job_name                  = "20220401 - ETA_Decisions"
 //  output_folder_name             = "eta_decision_records"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220401 - ETA_Decisions - GDS or Qlik data Load - records UTF8.csv"
@@ -401,7 +401,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1J_VdrUDgziXjYC6uy716jtFcEcZqjQP1"
-//  glue_job_name                  = "${title(module.department_parking.name)} 20220506 - ETA_Decisions"
+//  glue_job_name                  = "20220506 - ETA_Decisions"
 //  output_folder_name             = "eta_decision_records"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220506 - ETA_Decisions - GDS or Qlik data Load UTF-8.csv"
@@ -433,7 +433,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1FaBQhl-uoUMIIKppvcDsvctbqmiKzHen"
-//  glue_job_name                  = "${title(module.department_parking.name)} 20220420 - ETA_Decisions"
+//  glue_job_name                  = "20220420 - ETA_Decisions"
 //  output_folder_name             = "eta_decision_records"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220420 - ETA_Decisions - GDS or Qlik data Load - records.csv"
@@ -465,7 +465,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1thn-BsMfvyUP0dzcEHM2eWSen9dASC-O"
-//  glue_job_name                  = "${title(module.department_parking.name)} PCN Permits VRM NLPG LLPG - 20220427"
+//  glue_job_name                  = "PCN Permits VRM NLPG LLPG - 20220427"
 //  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220427 - PCNs VRM match to Permits VRM and NLPG by Registered and Current addresses Post Code - 13 months - final in glue via athena no comma fields removed dups UTF8.csv"
@@ -497,7 +497,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1AEgRZdxPnALuXn4nqcqQtEBkvJPWXUh5"
-//  glue_job_name                  = "${title(module.department_parking.name)} PCN Permits VRM NLPG LLPG - 20220511"
+//  glue_job_name                  = "PCN Permits VRM NLPG LLPG - 20220511"
 //  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220511 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
@@ -529,7 +529,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1sKnfS2xruU1ZKvnd1Cwcys2PAyC4zHOD"
-//  glue_job_name                  = "${title(module.department_parking.name)} PCN Permits VRM NLPG LLPG - 20220512"
+//  glue_job_name                  = "PCN Permits VRM NLPG LLPG - 20220512"
 //  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220512 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
@@ -561,7 +561,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1XWGudeZ3D5rbYXZL29sP_Q-n475yNP9e"
-//  glue_job_name                  = "${title(module.department_parking.name)} PCN Permits VRM NLPG LLPG - 20220513"
+//  glue_job_name                  = "PCN Permits VRM NLPG LLPG - 20220513"
 //  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220513 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF8.csv"
@@ -593,7 +593,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "16PbpKwBUMFxUWyB3mEMWRWZzxzZtDhoU"
-//  glue_job_name                  = "${title(module.department_parking.name)} PCN Permits VRM NLPG LLPG - 20220516"
+//  glue_job_name                  = "PCN Permits VRM NLPG LLPG - 20220516"
 //  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220516 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
@@ -624,7 +624,7 @@ module "data_and_insight_hb_combined" {
 //  landing_zone_kms_key_arn       = module.landing_zone.kms_key_arn
 //  landing_zone_bucket_arn        = module.landing_zone.bucket_arn
 //  google_drive_document_id       = "1Nsly2YWLufSWpq6fRd-VWr2Tdkma7bQV"
-//  glue_job_name                  = "${title(module.department_parking.name)} - PCN Permits VRM NLPG LLPG matching"
+//  glue_job_name                  = "PCN Permits VRM NLPG LLPG matching"
 //  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
 //  raw_zone_bucket_id             = module.raw_zone.bucket_id
 //  input_file_name                = "20220524 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8 DP.csv"
