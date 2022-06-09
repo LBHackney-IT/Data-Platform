@@ -20,7 +20,7 @@ jobs:
           make test
 
   sonar:
-    name: Sonar Scan in ${{ inputs.build_path }}
+    name: Sonar Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
