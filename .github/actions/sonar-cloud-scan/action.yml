@@ -4,9 +4,6 @@ inputs:
   sonar_token:
     description: "Sonar token"
     required: true
-  build_path:
-    description: "Build path that contains the source"
-    required: true
   github_token:
     description: "GitHub provides a token that you can use to authenticate on behalf of GitHub Actions"
     required: true

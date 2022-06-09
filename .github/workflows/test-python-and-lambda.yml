@@ -25,17 +25,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Sonar Cloud Scan in ./lambdas
         uses: ./.github/actions/sonar-cloud-scan
         with:
           sonar_token: ${{ secrets.SONAR_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          build_path: "./lambdas"
-
-      - name: Sonar Cloud Scan in ./scripts
-        uses: ./.github/actions/sonar-cloud-scan
-        with:
-          sonar_token: ${{ secrets.SONAR_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          build_path: "./scripts"
