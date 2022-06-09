@@ -8,6 +8,7 @@ import string
 import time
 import pandas as pd
 from dotenv import load_dotenv
+import boto3
 
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
@@ -49,13 +50,14 @@ def get_token(url, encoded_header, encoded_payload, signature, headers):
     response = requests.request("POST", url, headers=headers, data=data)
     return response
 
+
 def get_icaseworks_report_from (report_id,fromdate,auth_headers,auth_payload):
     report_url = "https://hackneyreports.icasework.com/getreport?"
-    request_url = f'{report_url}ReportId={report_id}&Format=xml&From={fromdate}'
+    request_url = f'{report_url}ReportId={report_id}&Format=json&From={fromdate}'
     print(f'Request url: {request_url}')
-    r = requests.request("GET", request_url, headers=auth_headers, data=auth_payload)
+    response = requests.request("GET", request_url, headers=auth_headers, data=auth_payload)
     print(f'Status Code: {r.status_code}')
-  return r
+    return response.get("content")
 
 # def get_icaseworks_report_day (report_id, auth_headers, date_to_call):
 #   report_url = "https://hackneyreports.icasework.com/getreport?"
@@ -65,24 +67,24 @@ def get_icaseworks_report_from (report_id,fromdate,auth_headers,auth_payload):
 #   print(f'Status Code: {r.status_code}')
 #   return r
 
-def dump_dataframe (df,filename): # write to s3 in parquet
+def write_dataframe_to_s3(data, s3_bucket, output_folder, filename):
+    s3_client = boto3.client('s3')
+    s3_client.put_object(
+        Bucket=s3_bucket,
+        Body=data
+        Key=f"${output_folder}/${filename}/"
+    )
+#         path=f"s3://${s3_bucket}/${output_folder}/${filename}.parquet"
 
-    prefix = "test_"
-  
-#   df.to_csv(f'/content/drive/MyDrive/iCaseworks/{prefix}{filename}.csv')
-#   print(f'CSV Made at /content/drive/MyDrive/iCaseworks/{prefix}{filename}.csv')
-#   df.to_json(f'/content/drive/MyDrive/iCaseworks/{prefix}{filename}.json')
-#   print(f'JSON Made at /content/drive/MyDrive/iCaseworks/{prefix}{filename}.JSON')
-#   df.to_excel(f'/content/drive/MyDrive/iCaseworks/{prefix}{filename}.xlsx')
-#   print(f'XLSX Made at /content/drive/MyDrive/iCaseworks/{prefix}{filename}.XLSX')
 
 def lambda_handler(event, lambda_context):
     load_dotenv()
+    s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
+    output_folder_name = getenv("OUTPUT_FOLDER")
     url = "https://hackney.icasework.com/token"
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Cookie': 'CustomerId=; AWSALB=uAvMR5Y0HNV0hEPKhb8QOUxnG9iTI3vo/FchUCUyvAbHVDkXa7Ox7bI+FWdPjXPjSdKJVnxQUHAutipBKv54Wg4utvpP9co7YROu+XGQ6a/5+weILvIP0jgSu1EC; AWSALBCORS=uAvMR5Y0HNV0hEPKhb8QOUxnG9iTI3vo/FchUCUyvAbHVDkXa7Ox7bI+FWdPjXPjSdKJVnxQUHAutipBKv54Wg4utvpP9co7YROu+XGQ6a/5+weILvIP0jgSu1EC; CookiesSupported=Yes; JSESSIONID=6DC46F82193C97FA134B55B64C1962C3; db=hackney'
     }
     api_key = getenv("API_KEY")
     secret = getenv("SECRET")
@@ -97,9 +99,9 @@ def lambda_handler(event, lambda_context):
     current_unix_time = int(time.time())
     str_time = str(current_unix_time)
     payload_object = {
-    "iss" : api_key,
-    "aud" : url,
-    "iat" : str_time
+        "iss" : api_key,
+        "aud" : url,
+        "iat" : str_time
     }
     payload_object = str(payload_object).replace("'", '"').replace(" ", "") # can we do a dict-to-string function for this and the header
 
@@ -130,34 +132,29 @@ def lambda_handler(event, lambda_context):
 
     # Note: I don't know how to generate the below cookie. That is extracted using postman. Not sure how to recreate this at all
     auth_headers = {
-    'Authorization': authorization,
-    'Cookie': 'CustomerId=; AWSALB=oxoDAY2g+6Buo8FtD7gdod7cYW5YG3E2SMt3LNhjWA7Nm7JE8NnZ0H0FyTPypqdv4S+9+bJTYS4h4iKEm3tETmH7noCqE149gcLe5WPJQcrPlelYtcvAC8enzknO; AWSALBCORS=oxoDAY2g+6Buo8FtD7gdod7cYW5YG3E2SMt3LNhjWA7Nm7JE8NnZ0H0FyTPypqdv4S+9+bJTYS4h4iKEm3tETmH7noCqE149gcLe5WPJQcrPlelYtcvAC8enzknO; CookiesSupported=Yes; JSESSIONID=81275223678F5E4505A2071BF806F662; db=hackney'
+        'Authorization': authorization,
     }
 
-
-    list_of_datadictionaries = [
-    # {"name":"Time Spent for Cases Received", "reportid":122641},
-    # {"name":"Tasks Created", "reportid":122543},
-    # {"name":"ServicesResponsible for Delay", "reportid":122541},
-    # {"name":"Correspondence Created", "reportid":122642},
-    # {"name":"Corrective Actions", "reportid":122443},
-    # {"name":"Compensation", "reportid":122442},
-    # {"name":"Case Contacts", "reportid":122542},
-    {"name":"Cases received", "reportid":122109}
+    report_tables = [
+    # {"name":"Time Spent for Cases Received", "id":122641},
+    # {"name":"Tasks Created", "id":122543},
+    # {"name":"ServicesResponsible for Delay", "id":122541},
+    # {"name":"Correspondence Created", "id":122642},
+    # {"name":"Corrective Actions", "id":122443},
+    # {"name":"Compensation", "id":122442},
+    # {"name":"Case Contacts", "id":122542},
+    {"name":"Cases received", "id":122109}
     ]
 
     date_to_track_from = "2019-01-01"
 
-    for dict_of_report in list_of_datadictionaries:
-    print(f'Pulling report for {dict_of_report["name"]}')
-    case_id_report_id = dict_of_report["reportid"]
-    case_id_list = get_icaseworks_report_from(case_id_report_id,date_to_track_from,auth_headers,auth_payload)
-    xml_response = pd.read_xml(case_id_list.content)
-    dict_of_report["DF"] = xml_response
-    print(xml_response.shape)
-    # write to s3
-    dump_dataframe(i["DF"],i["name"])
-    # xml_response.describe()
+    for report_details in report_tables:
+        print(f'Pulling report for {report_details["name"]}')
+        case_id_report_id = report_details["id"]
+        case_id_list = get_icaseworks_report_from(case_id_report_id,date_to_track_from,auth_headers,auth_payload)
+        report_details["data"] = case_id_list
+        # write to s3
+        write_dataframe_to_s3(report_details["data"], s3_bucket, output_folder_name, report_details["name"])
 
 if __name__ == '__main__':
     lambda_handler('event', 'lambda_context')

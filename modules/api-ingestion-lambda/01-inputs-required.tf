@@ -32,17 +32,17 @@ variable "api_credentials_secret_name" {
 }
 
 variable "s3_target_bucket_arn" {
-  description = "S3 location to write API data to"
+  description = "Target S3 bucket arn"
+  type        = string
+}
+
+variable "s3_target_bucket_name" {
+  description = "Target S3 bucket name"
   type        = string
 }
 
 variable "s3_target_bucket_kms_key_arn" {
   description = "KMS key arn of S3 target bucket"
-  type        = string
-}
-
-variable "report_id" {
-  description = "Report ID for api ingestion"
   type        = string
 }
 

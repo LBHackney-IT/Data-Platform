@@ -7,7 +7,7 @@ data "aws_secretsmanager_secret_version" "api_credentials_for_lambda" {
 }
 
 locals {
-  secret_string     = jsondecode(data.aws_secretsmanager_secret_version.api_credentials_for_lambda.secret_string)
-  api_key           = local.secret_string["api_key"]
-  secret            = local.secret_string["secret"]
+  secret_string = jsondecode(data.aws_secretsmanager_secret_version.api_credentials_for_lambda.secret_string)
+  api_key       = local.secret_string["api_key"]
+  secret        = local.secret_string["secret"]
 }
