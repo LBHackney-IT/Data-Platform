@@ -71,7 +71,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v1.3.2
         with:
-          terraform_version: 1.0.11
+          terraform_version: 1.2.0
 
       - name: Add a key to allow access to Infastructure
         run: |
@@ -109,7 +109,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v1.2.1
         with:
-          terraform_version: 1.0.11
+          terraform_version: 1.2.0
 
       - name: Add a key to allow access to Infastructure
         run: |
