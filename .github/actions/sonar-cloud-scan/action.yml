@@ -16,8 +16,6 @@ runs:
   steps:
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v1.6
-      with:
-        fetch-depth: 0
       env:
         SONAR_TOKEN: ${{ inputs.sonar_token }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
