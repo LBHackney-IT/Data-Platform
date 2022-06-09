@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:${var.identifier_prefix}sheets-credential-${var.department_identifier}*"
+      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:${var.identifier_prefix}sheets-credential*"
     ]
   }
 
