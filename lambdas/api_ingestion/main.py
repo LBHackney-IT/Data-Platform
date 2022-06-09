@@ -72,9 +72,8 @@ def write_dataframe_to_s3(data, s3_bucket, output_folder, filename):
     s3_client.put_object(
         Bucket=s3_bucket,
         Body=data
-        Key=f"${output_folder}/${filename}/"
+        Key=f"${output_folder}/${filename}"
     )
-#         path=f"s3://${s3_bucket}/${output_folder}/${filename}.parquet"
 
 
 def lambda_handler(event, lambda_context):
