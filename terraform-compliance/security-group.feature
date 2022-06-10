@@ -7,4 +7,4 @@ Feature: No security groups allowing public access
     Given I have aws_security_group defined
     When it has ingress
     Then it must have ingress
-    Then it must not have tcp protocol for 0.0.0.0/0
+    Then it must not have tcp protocol and port 1024-65535 for 0.0.0.0/0
