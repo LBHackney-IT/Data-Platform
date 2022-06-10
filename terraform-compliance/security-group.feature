@@ -1,7 +1,4 @@
-Feature: No security groups allowing public access
-  In order to improve security
-  As engineers
-  We'll ensure that no security groups allow public access to resources
+Feature: Security Groups
 
   Scenario: Ensure no publicly open ports
     Given I have aws_security_group defined
