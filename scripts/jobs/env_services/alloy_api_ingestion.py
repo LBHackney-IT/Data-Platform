@@ -1,21 +1,25 @@
-import sys
-import json
+import datetime
+import html
 import io
+import json
+import sys
 import time
 import zipfile
-import html
-import datetime
+
+import boto3
 import pandas as pd
 import requests
-import boto3
-from awsglue.transforms import *
-from awsglue.utils import getResolvedOptions
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from helpers.helpers import (PARTITION_KEYS, add_import_time_columns,
+                             convert_pandas_df_to_spark_dynamic_df,
+                             get_glue_env_var, get_secret,
+                             normalize_column_name, table_exists_in_catalog)
 from pyspark.context import SparkContext
 from pyspark.sql import SQLContext
-from helpers.helpers import get_glue_env_var, get_secret, table_exists_in_catalog, normalize_column_name,  convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
 
 
 def download_file_to_df(file_id, api_key, filename):
@@ -26,7 +30,7 @@ def download_file_to_df(file_id, api_key, filename):
     r = requests.get(url_download, headers=headers)
     z = zipfile.ZipFile(io.BytesIO(r.content))
     df = pd.read_csv(html.unescape(
-        z.extract(member=filename)), index_col=False)
+        z.extract(member=f"{filename[:-4]}/{filename}")), index_col=False)
     return df
 
 
@@ -35,7 +39,8 @@ def get_last_import_date_time(glue_context, database, glue_catalogue_table_name)
     get last import date from aws table
     """
     if not table_exists_in_catalog(glue_context, glue_catalogue_table_name, database):
-        logger.info(f"Couldn't find table {glue_catalogue_table_name} in database {database}.")
+        logger.info(
+            f"Couldn't find table {glue_catalogue_table_name} in database {database}.")
         return datetime.datetime(1970, 1, 1)
     logger.info(f"found table for {glue_catalogue_table_name} in {database}")
     return glue_context.sql(f"SELECT max(import_datetime) as max_import_date_time FROM `{database}`.{glue_catalogue_table_name}").take(1)[0].max_import_date_time
@@ -121,11 +126,10 @@ if __name__ == "__main__":
     s3_prefix = get_glue_env_var('s3_prefix', '')
     table_prefix = get_glue_env_var('table_prefix', '')
     aqs = get_glue_env_var('aqs', '')
-    filename = get_glue_env_var('filename', '')
-    
+
     s3_target_url = "s3://" + bucket_target + "/" + s3_prefix + resource + "/"
     glue_catalogue_table_name = table_prefix + resource
-    
+
     last_import_date_time = format_time(
         get_last_import_date_time(glue_context, database, glue_catalogue_table_name))
 
@@ -141,6 +145,8 @@ if __name__ == "__main__":
     post_url = f'https://api.{region}.alloyapp.io/api/export/?token={api_key}'
     aqs = json.loads(aqs)
     aqs = update_aqs(aqs, last_import_date_time)
+    filename = aqs["fileName"]
+
     response = requests.post(post_url, data=json.dumps(aqs), headers=headers)
 
     task_id = get_task_id(response)
