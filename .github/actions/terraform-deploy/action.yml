@@ -168,7 +168,7 @@ runs:
         sudo apt-get update
         sudo apt-get install pip
         pip install terraform-compliance
-        terraform-compliance -f ${{ github.action_path }}/../../terraform-compliance/ -p plan.out
+        terraform-compliance -f ${{ inputs.build_path }}/../terraform-compliance/ -p plan.out
 
     - name: Terraform Apply
       id: apply
