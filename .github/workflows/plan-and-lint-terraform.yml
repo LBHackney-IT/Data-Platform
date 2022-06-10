@@ -125,7 +125,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install pip
           pip install terraform-compliance
-          terraform-compliance -f ${{ inputs.build_path }}/../terraform-compliance/ -p plan.out
+          terraform-compliance -f ../terraform-compliance/ -p plan.out
 
   lint:
     name: Lint Terraform in ${{ inputs.build_path }}
