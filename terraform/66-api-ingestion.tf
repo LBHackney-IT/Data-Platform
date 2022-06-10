@@ -8,8 +8,8 @@ module "icaseworks_api_ingestion" {
   output_folder_name             = "icaseworks"
   secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   api_credentials_secret_name    = "icaseworks-key"
-  s3_target_bucket_arn           = module.raw_zone.bucket_arn
-  s3_target_bucket_name          = module.raw_zone.bucket_id
-  s3_target_bucket_kms_key_arn   = module.raw_zone.kms_key_arn
+  s3_target_bucket_arn           = module.landing_zone.bucket_arn
+  s3_target_bucket_name          = module.landing_zone.bucket_id
+  s3_target_bucket_kms_key_arn   = module.landing_zone.kms_key_arn
   ephemeral_storage              = 6144
 }

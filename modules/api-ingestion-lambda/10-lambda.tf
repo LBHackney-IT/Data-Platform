@@ -96,8 +96,8 @@ resource "aws_lambda_function" "api_ingestion_lambda" {
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_bucket_object.api_ingestion_lambda.key
   source_code_hash = data.archive_file.api_ingestion_lambda.output_base64sha256
-  timeout          = local.lambda_timeout
-  memory_size      = local.lambda_memory_size
+  timeout          = var.lambda_timeout
+  memory_size      = var.lambda_memory_size
 
   ephemeral_storage {
     size = var.ephemeral_storage
