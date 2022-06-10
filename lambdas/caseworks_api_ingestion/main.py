@@ -1,14 +1,16 @@
+import sys
+sys.path.append('./lib/')
+
 import pybase64
 import json
 import hashlib
 import hmac
 import re
 import requests
-import string
 import time
-import pandas as pd
-from dotenv import load_dotenv
 import boto3
+from dotenv import load_dotenv
+from os import getenv
 
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
@@ -32,7 +34,6 @@ def create_signature(header, payload, secret):
     """Encode JSON string"""
     # hashed header, hashed payload, string secret
     unsigned_token = header + '.' + payload
-    # secret_access_key = base64.b64decode(unsigned_token) #TODO is this used anywhere??
     key_bytes = bytes(secret, 'utf-8')
     string_to_sign_bytes = bytes(unsigned_token, 'utf-8')
     signature_hash = hmac.new(key_bytes, string_to_sign_bytes, digestmod=hashlib.sha256).digest()
@@ -48,7 +49,8 @@ def get_token(url, encoded_header, encoded_payload, signature, headers):
     data = f'assertion={assertion}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer'
     print(f'Data : {data}')
     response = requests.request("POST", url, headers=headers, data=data)
-    return response
+    token = response.json().get('access_token')
+    return token
 
 
 def get_icaseworks_report_from(report_id,fromdate,auth_headers,auth_payload):
@@ -56,23 +58,18 @@ def get_icaseworks_report_from(report_id,fromdate,auth_headers,auth_payload):
     request_url = f'{report_url}ReportId={report_id}&Format=json&From={fromdate}'
     print(f'Request url: {request_url}')
     response = requests.request("GET", request_url, headers=auth_headers, data=auth_payload)
-    print(f'Status Code: {r.status_code}')
-    return response.get("content")
+    print(f'Status Code: {response.status_code}')
+    return response.content
 
-# def get_icaseworks_report_day (report_id, auth_headers, date_to_call):
-#   report_url = "https://hackneyreports.icasework.com/getreport?"
-#   request_url = f'{report_url}ReportId={report_id}&Format=xml&From={date_to_call}&Until={date_to_call}'
-#   print(f'Request url: {request_url}')
-#   r = requests.request("GET", request_url, headers=auth_headers, data=auth_payload)
-#   print(f'Status Code: {r.status_code}')
-#   return r
 
 def write_dataframe_to_s3(data, s3_bucket, output_folder, filename):
+    # add partitioning when writing file to s3 year/month/day/date
+    filename = re.sub('[^a-zA-Z0-9]+', '-', filename).lower()
     s3_client = boto3.client('s3')
     s3_client.put_object(
         Bucket=s3_bucket,
-        Body=data
-        Key=f"${output_folder}/${filename}"
+        Body=data,
+        Key=f"{output_folder}/{filename}.json"
     )
 
 
@@ -105,47 +102,37 @@ def lambda_handler(event, lambda_context):
     payload_object = str(payload_object).replace("'", '"').replace(" ", "") # can we do a dict-to-string function for this and the header
 
     payload = encode_json(str(payload_object))
-    print(f'Created Payload: {payload}')
 
     # Create Signature
     signature = create_signature(header, payload, secret)
-    print(f'Created Signature: {signature}')
 
     # Get assertion
     assertion = header + "." + payload + "." + signature
-    print(f'assertion: {assertion}')
 
-    # Get response
-    response = get_token(url=url, encoded_header=header, encoded_payload=payload, signature=signature, headers=headers)
-    print(response)
-
-    # Get token
-    auth_token = response.json().get('access_token')
-    print(f'auth token: {auth_token}')
+    # Get token from response
+    auth_token = get_token(url=url, encoded_header=header, encoded_payload=payload, signature=signature, headers=headers)
 
     # Create auth header for API Calls and auth payload
     authorization = f'Bearer {auth_token}'
-    print(authorization)
 
     auth_payload = {}
 
-    # Note: I don't know how to generate the below cookie. That is extracted using postman. Not sure how to recreate this at all
     auth_headers = {
         'Authorization': authorization,
     }
 
     report_tables = [
-    # {"name":"Time Spent for Cases Received", "id":122641},
-    # {"name":"Tasks Created", "id":122543},
-    # {"name":"ServicesResponsible for Delay", "id":122541},
-    # {"name":"Correspondence Created", "id":122642},
-    # {"name":"Corrective Actions", "id":122443},
-    # {"name":"Compensation", "id":122442},
-    # {"name":"Case Contacts", "id":122542},
-    {"name":"Cases received", "id":122109}
+        # {"name":"Time Spent for Cases Received", "id":122641},
+        # {"name":"Tasks Created", "id":122543},
+        # {"name":"ServicesResponsible for Delay", "id":122541},
+        # {"name":"Correspondence Created", "id":122642},
+        # {"name":"Corrective Actions", "id":122443},
+        # {"name":"Compensation", "id":122442},
+        # {"name":"Case Contacts", "id":122542},
+        {"name":"Cases received", "id":122109}
     ]
 
-    date_to_track_from = "2019-01-01"
+    date_to_track_from = "2019-01-01" # today minus 1
 
     for report_details in report_tables:
         print(f'Pulling report for {report_details["name"]}')
