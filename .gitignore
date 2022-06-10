@@ -21,3 +21,5 @@ notebook/aws-config/credentials
 **/__pycache__
 /venv/
 .vscode/
+/terraform/plan.out
+/terraform/plan.out.json
