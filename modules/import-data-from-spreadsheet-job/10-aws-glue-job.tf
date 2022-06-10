@@ -3,7 +3,7 @@ module "spreadsheet_import" {
   source = "../aws-glue-job"
 
   department        = var.department
-  job_name          = "Spreadsheet Import Job - ${var.glue_job_name}"
+  job_name          = "Spreadsheet Import Job - ${var.department.identifier}-${var.glue_job_name}"
   helper_module_key = var.helper_module_key
   pydeequ_zip_key   = var.pydeequ_zip_key
   glue_role_arn     = var.glue_role_arn
@@ -18,7 +18,6 @@ module "spreadsheet_import" {
   extra_jars                 = ["s3://${var.department.glue_scripts_bucket.bucket_id}/${var.jars_key}"]
   workflow_name              = aws_glue_workflow.workflow.name
   crawler_details = {
-    table_prefix       = "${var.department.identifier_snake_case}_"
     database_name      = var.glue_catalog_database_name
     s3_target_location = "s3://${var.raw_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}"
     configuration = jsonencode({
@@ -34,6 +33,3 @@ module "spreadsheet_import" {
 resource "aws_glue_workflow" "workflow" {
   name = "${var.identifier_prefix}${local.import_name}-${var.output_folder_name}"
 }
-
-
-

@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda_assume_role" {
 
 resource "aws_iam_role" "g_drive_to_s3_copier_lambda" {
   tags               = var.tags
-  name               = lower("${var.identifier_prefix}-from-g-drive-${var.lambda_name}")
+  name               = lower("${var.identifier_prefix}from-g-drive-${var.lambda_name}")
   assume_role_policy = data.aws_iam_policy_document.g_drive_to_s3_copier_lambda_assume_role.json
 }
 
@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "g_drive_to_s3_copier_lambda" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:sheets-credential-${var.department_identifier}*"
+      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:${var.identifier_prefix}/${var.department_identifier}/sheets-credential*"
     ]
   }
 
@@ -93,7 +93,6 @@ resource "aws_iam_policy" "g_drive_to_s3_copier_lambda" {
 }
 
 resource "aws_iam_role_policy_attachment" "g_drive_to_s3_copier_lambda" {
-
   role       = aws_iam_role.g_drive_to_s3_copier_lambda.name
   policy_arn = aws_iam_policy.g_drive_to_s3_copier_lambda.arn
 }
@@ -121,11 +120,12 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   role             = aws_iam_role.g_drive_to_s3_copier_lambda.arn
   handler          = "main.lambda_handler"
   runtime          = "python3.8"
-  function_name    = lower("${var.identifier_prefix}from-g-drive-${var.lambda_name}")
+  function_name    = lower("${var.identifier_prefix}g-drive-${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_bucket_object.g_drive_to_s3_copier_lambda.key
   source_code_hash = data.archive_file.g_drive_to_s3_copier_lambda.output_base64sha256
   timeout          = local.lambda_timeout
+  memory_size      = local.lambda_memory_size
 
   environment {
     variables = {
