@@ -99,15 +99,3 @@ runs:
           echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}"
-
-    - name: Terraform Compliance
-      id: terraform-compliance
-      shell: bash
-      working-directory: "${{ inputs.build_path }}"
-      run: |
-        sudo apt-get update
-        sudo apt-get install python3 g++ gcc libxslt-dev python3-dev
-        python3 -m ensurepip
-        pip3 install --no-cache --upgrade pip setuptools
-        pip install terraform-compliance
-        terraform-compliance -f ${{ github.action_path }}/../../terraform-compliance/ -p plan.out
