@@ -5,7 +5,7 @@ module "parking_geolive_database_ingestion" {
   source = "../modules/database-ingestion-via-jdbc-connection"
 
   name                        = "geolive-parking-schema"
-  jdbc_connection_url         = "jdbc:postgresql://10.151.11.48:5432/geolive"
+  jdbc_connection_url         = "jdbc:postgresql://geolive-db-prod.cjgyygrtgrhl.eu-west-2.rds.amazonaws.com:5432/geolive"
   jdbc_connection_description = "JDBC connection to Geolive PostgreSQL database, to access the parking schema only"
   jdbc_connection_subnet      = data.aws_subnet.network[local.instance_subnet_id]
   schema_name                 = "parking"
