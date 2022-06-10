@@ -1,9 +1,9 @@
-import base64 #pybase64
+import pybase64
 import json
 import hashlib
 import hmac
-import re #regex
-import requests #
+import re
+import requests
 import string
 import time
 import pandas as pd
@@ -23,7 +23,7 @@ def remove_illegal_characters(string):
 def encode_json(json_string):
     """Encode JSON string"""
     json_string = json_string.encode()
-    json_string = base64.b64encode(json_string)
+    json_string = pybase64.b64encode(json_string)
     json_string = json_string.decode("utf-8")
     return json_string
 
@@ -36,7 +36,7 @@ def create_signature(header, payload, secret):
     key_bytes = bytes(secret, 'utf-8')
     string_to_sign_bytes = bytes(unsigned_token, 'utf-8')
     signature_hash = hmac.new(key_bytes, string_to_sign_bytes, digestmod=hashlib.sha256).digest()
-    encoded_signature = base64.b64encode(signature_hash)
+    encoded_signature = pybase64.b64encode(signature_hash)
     encoded_signature = encoded_signature.decode('utf-8')
     encoded_signature = remove_illegal_characters(encoded_signature)
     return encoded_signature
@@ -51,7 +51,7 @@ def get_token(url, encoded_header, encoded_payload, signature, headers):
     return response
 
 
-def get_icaseworks_report_from (report_id,fromdate,auth_headers,auth_payload):
+def get_icaseworks_report_from(report_id,fromdate,auth_headers,auth_payload):
     report_url = "https://hackneyreports.icasework.com/getreport?"
     request_url = f'{report_url}ReportId={report_id}&Format=json&From={fromdate}'
     print(f'Request url: {request_url}')
