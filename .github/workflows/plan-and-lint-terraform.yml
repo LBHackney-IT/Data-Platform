@@ -124,7 +124,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install pip
-          pip install terraform-compliance
+          pip install --upgrade orjson
+          pip install terraform-compliance[faster_parsing]
           terraform-compliance -f ../terraform-compliance/ -p plan.out
 
   lint:
