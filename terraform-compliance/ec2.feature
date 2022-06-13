@@ -16,7 +16,6 @@ Feature: EC2
     Then it must have encrypted
     And its value must be true
 
-
   Scenario: Ensure all data stored in the Launch configuration EBS is securely encrypted (launch_configuration)
     Given I have aws_launch_configuration defined
     When it has ebs_block_device
