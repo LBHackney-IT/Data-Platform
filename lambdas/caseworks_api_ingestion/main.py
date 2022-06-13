@@ -47,17 +47,17 @@ def get_token(url, encoded_header, encoded_payload, signature, headers):
     """Get token"""
     assertion = encoded_header + "." + encoded_payload + "." + signature
     data = f'assertion={assertion}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer'
-    print(f'Data : {data}')
-    response = requests.request("POST", url, headers=headers, data=data)
-    token = response.json().get('access_token')
-    return token
+    response = requests.post(url, headers=headers, data=data)
+    auth_response = json.loads(response)
+    auth_token = auth_response.get('access_token')
+    return auth_token
 
 
 def get_icaseworks_report_from(report_id,fromdate,auth_headers,auth_payload):
     report_url = "https://hackneyreports.icasework.com/getreport?"
     request_url = f'{report_url}ReportId={report_id}&Format=json&From={fromdate}'
     print(f'Request url: {request_url}')
-    response = requests.request("GET", request_url, headers=auth_headers, data=auth_payload)
+    response = requests.get(request_url, headers=auth_headers, data=auth_payload)
     print(f'Status Code: {response.status_code}')
     return response.content
 

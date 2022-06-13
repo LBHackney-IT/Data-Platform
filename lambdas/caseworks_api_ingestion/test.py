@@ -5,12 +5,12 @@ import json
 import requests
 import botocore.session
 from botocore.stub import Stubber
-from caseworks_api_ingestion.main import get_icaseworks_report_from
+from caseworks_api_ingestion.main import get_icaseworks_report_from, get_token
 
 BASE_URL = "https://hackneyreports.icasework.com/getreport?"
 
 class TestCaseWorksApiIngestion(TestCase):
-    @patch('caseworks_api_ingestion.main.requests.request')
+    @patch('caseworks_api_ingestion.main.requests.get')
     def test_get_icaseworks_report_from(self, get_requests_mock):
         report_id = "123"
         from_date = "2019-01-01"
