@@ -2,7 +2,6 @@ import logging
 import sys
 from typing import Final, List, Optional
 
-from awsglue import DynamicFrame
 from pyspark.sql import SparkSession, DataFrame
 from pyspark import SparkContext
 
@@ -125,37 +124,31 @@ class ExecutionContextProvider:
         if self.mode == DEFAULT_MODE_AWS:
             if not dynamic_frame_args:
                 raise ValueError("dynamic_frame_args cannot be empty")
-            return self.__glue_context.create_dynamic_frame.from_catalog(**dynamic_frame_args).toDF()
+            return self.__glue_context.create_data_frame_from_catalog(**dynamic_frame_args).toDF()
         else:
             if not local_path_parquet:
                 raise ValueError("local_path_parquet cannot be empty")
             return self.spark_session.read.parquet(local_path_parquet)
 
-    def save_dataframe(self, df: DataFrame, local_path_parquet: Optional[str] = None, **dynamic_frame_args) -> None:
+    @staticmethod
+    def save_dataframe(df: DataFrame, save_path: str, *partition_columns: str) -> None:
         """Save the DataFrame either to the S3 (in `aws` mode) or to the local storage (in `local` mode)
 
         Args:
             df: DataFrame to be saved
-            local_path_parquet: path on the local file system to save the data (to be used in local mode)
-            **dynamic_frame_args: kwargs for dynamic frame (to be used in aws mode)
+            save_path: path where data will be saved
+            partition_columns: partition columns
+
         Raises:
-            ValueError if dynamic_frame_args or local_path_parquet is empty depending on execution i.e. aws or local
+            ValueError if save_path is empty
         """
-        if self.mode == DEFAULT_MODE_AWS:
-            if not dynamic_frame_args:
-                raise ValueError("dynamic_frame_args cannot be empty")
-            dynamic_frame = DynamicFrame.fromDF(df, self.__glue_context, "result")
-            self.__glue_context.write_dynamic_frame.from_options(frame=dynamic_frame, **dynamic_frame_args)
+        if not save_path:
+            raise ValueError("save_path cannot be empty")
+
+        if partition_columns:
+            df.write.partitionBy(*partition_columns).parquet(save_path)
         else:
-            if not local_path_parquet:
-                raise ValueError("local_path_parquet cannot be empty")
-            con_opts = "connection_options"
-            partition_keys = "partitionKeys"
-            if con_opts in dynamic_frame_args and partition_keys in dynamic_frame_args[con_opts]:
-                partition_columns = dynamic_frame_args[con_opts][partition_keys]
-                df.write.partitionBy(partition_columns).parquet(local_path_parquet)
-            else:
-                df.write.parquet(local_path_parquet)
+            df.write.parquet(save_path)
 
     @staticmethod
     def __get_local_logger():

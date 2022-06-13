@@ -333,31 +333,34 @@ def main():
                         metavar=f"set --addresses_data_path=/path/to/directory/containing address data to run locally")
     parser.add_argument(f"--source_data_path", type=str, required=False,
                         metavar=f"set --source_data_path=/path/to/directory/containing source data to run locally")
-    parser.add_argument(f"--output_path", type=str, required=False,
-                        metavar=f"set --output_path=/path/to/output_folder")
+    parser.add_argument(f"--target_destination", type=str, required=False,
+                        metavar=f"set --target_destination=/path/to/output_folder")
     parser.add_argument(f"--match_to_property_shell", type=str, required=False,
                         metavar=f"set --match_to_property_shell=property to match")
 
     addresses_data_path_local_arg = "addresses_data_path"  # gazetteer (master) dataset path
     source_data_path_local_arg = "source_data_path"  # source (to be matched) dataset path
-    output_path_local_arg = "output_path"  # output location path
 
     addresses_api_data_database_glue_arg = "addresses_api_data_database"  # gazetteer (master) database name
     addresses_api_data_table_glue_arg = "addresses_api_data_table"  # gazetteer (master) table name
     source_catalog_database_glue_arg = "source_catalog_database"  # source (to be matched) table name
     source_catalog_table_glue_arg = "source_catalog_table"  # gazetteer (to be matched) table name
-    target_destination_glue_arg = "target_destination"  # output location (S3 path)
 
+    target_destination_arg = "target_destination"  # output location (S3 path or local)
     match_to_property_shell_arg = "match_to_property_shell"  # property to match location common to both local and glue
 
     glue_args = [addresses_api_data_database_glue_arg, addresses_api_data_table_glue_arg,
-                 source_catalog_database_glue_arg, source_catalog_table_glue_arg, target_destination_glue_arg,
+                 source_catalog_database_glue_arg, source_catalog_table_glue_arg, target_destination_arg,
                  match_to_property_shell_arg]
     local_args, _ = parser.parse_known_args()
     mode = local_args.mode
 
     with ExecutionContextProvider(mode, glue_args, local_args) as execution_context:
         logger = execution_context.logger
+        target_destination = execution_context.get_input_args(target_destination_arg)
+        if not target_destination:
+            logger.error("target_destination is empty")
+            raise ValueError("target_destination cannot be empty")
 
         # Prepare source data
         source_data_path_local = execution_context.get_input_args(source_data_path_local_arg)
@@ -393,13 +396,7 @@ def main():
 
         partitions_columns = PARTITION_KEYS + ["data_source"]
 
-        output_path_local = execution_context.get_input_args(output_path_local_arg)
-        target_destination = execution_context.get_input_args(target_destination_glue_arg)
-        execution_context.save_dataframe(df=matching_results, local_path_parquet=output_path_local,
-                                         connection_type="s3", format="parquet",
-                                         connection_options={"path": target_destination,
-                                                             "partitionKeys": partitions_columns},
-                                         transformation_ctx="parquetData")
+        execution_context.save_dataframe(matching_results, target_destination, *partitions_columns)
 
 
 if __name__ == '__main__':
