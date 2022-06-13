@@ -22,12 +22,12 @@ def remove_illegal_characters(string):
     return clean_string
 
 
-def encode_json(json_string):
+def encode_string(string):
     """Encode JSON string"""
-    json_string = json_string.encode()
-    json_string = pybase64.b64encode(json_string)
-    json_string = json_string.decode("utf-8")
-    return json_string
+    byte_string = string.encode()
+    base64_encoded_string = pybase64.b64encode(byte_string)
+    processed_string = base64_encoded_string.decode("utf-8")
+    return processed_string
 
 
 def create_signature(header, payload, secret):
@@ -91,7 +91,7 @@ def lambda_handler(event, lambda_context):
 
     # Create Header
     header_object = dictionary_to_string(header_object)
-    header = encode_json(header_object)
+    header = encode_string(header_object)
     print(f'Header: {header}')
 
     # Create payload
@@ -105,7 +105,7 @@ def lambda_handler(event, lambda_context):
 
     payload_object = dictionary_to_string(payload_object)
 
-    payload = encode_json(payload_object)
+    payload = encode_string(payload_object)
 
     # Create Signature
     signature = create_signature(header, payload, secret)
