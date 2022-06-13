@@ -27,10 +27,10 @@ class TestCaseWorksApiIngestion(TestCase):
 
         self.assertEqual(response, content)
         request_url = f"{BASE_URL}ReportId={report_id}&Format=json&From={from_date}"
-        get_requests_mock.assert_called_with("GET", request_url, headers=auth_headers, data=auth_payload)
+        get_requests_mock.assert_called_with(request_url, headers=auth_headers, data=auth_payload)
 
 
-    @patch('caseworks_api_ingestion.main.requests.request')
+    @patch('caseworks_api_ingestion.main.requests.post')
     def test_get_token(self, post_requests_mock):
         url = "https://example-url.com/token"
         header = '[{{"encoded": "header"}}]'
@@ -39,21 +39,18 @@ class TestCaseWorksApiIngestion(TestCase):
         headers = {
             'Content-Type': 'app/urlencoded',
         }
+        assertion = header + "." + payload + "." + signature
+        data = f'assertion={assertion}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer'
 
-        auth_token = "6dhfakkaT1O2K3E4N6d5ea"
+        auth_token = '{"access_token": "fake_token6dhfakkaT1O2K3E4N6d5ea", "token_type": "Bearer", "expires_in": 3600}'
+
         post_requests_mock.return_value = auth_token
 
         response = get_token(url=url, encoded_header=header, encoded_payload=payload, signature=signature, headers=headers)
-        self.assertEqual(response, content)
-        # assert it gets called with correct params like above test
+
+        self.assertEqual("fake_token6dhfakkaT1O2K3E4N6d5ea", response)
+        post_requests_mock.assert_called_with(url, headers=headers, data=data)
 
 
 
 
-
-
-# test get_token url
-# test encode_json
-# test remove_illegal_characters
-# skip create_signature but mock in full end to end test
-# test write_dataframe_to_s3 - see g drive for stub methods
