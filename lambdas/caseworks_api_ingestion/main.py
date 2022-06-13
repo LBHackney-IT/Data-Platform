@@ -48,8 +48,8 @@ def get_token(url, encoded_header, encoded_payload, signature, headers):
     assertion = encoded_header + "." + encoded_payload + "." + signature
     data = f'assertion={assertion}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer'
     response = requests.post(url, headers=headers, data=data)
-    auth_response = json.loads(response)
-    auth_token = auth_response.get('access_token')
+    response_json = response.json()
+    auth_token = response_json.get('access_token')
     return auth_token
 
 

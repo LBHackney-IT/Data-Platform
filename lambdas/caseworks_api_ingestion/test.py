@@ -5,7 +5,8 @@ import json
 import requests
 import botocore.session
 from botocore.stub import Stubber
-from caseworks_api_ingestion.main import get_icaseworks_report_from, get_token
+from caseworks_api_ingestion.main import get_icaseworks_report_from, get_token, dictionary_to_string
+from caseworks_api_ingestion.helpers import MockResponse
 
 BASE_URL = "https://hackneyreports.icasework.com/getreport?"
 
@@ -42,15 +43,14 @@ class TestCaseWorksApiIngestion(TestCase):
         assertion = header + "." + payload + "." + signature
         data = f'assertion={assertion}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer'
 
-        auth_token = '{"access_token": "fake_token6dhfakkaT1O2K3E4N6d5ea", "token_type": "Bearer", "expires_in": 3600}'
-
-        post_requests_mock.return_value = auth_token
+        auth_token = {"access_token": "fake_token6dhfakkaT1O2K3E4N6d5ea", "token_type": "Bearer", "expires_in": 3600}
+        response_object = MockResponse(auth_token, 200)
+        post_requests_mock.return_value = response_object
 
         response = get_token(url=url, encoded_header=header, encoded_payload=payload, signature=signature, headers=headers)
 
         self.assertEqual("fake_token6dhfakkaT1O2K3E4N6d5ea", response)
         post_requests_mock.assert_called_with(url, headers=headers, data=data)
-
 
 
 
