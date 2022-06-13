@@ -4,10 +4,9 @@ import boto3
 import datetime
 import unicodedata
 from awsglue.utils import getResolvedOptions
-from pyspark.sql import functions as f
-from pyspark.sql.functions import col, from_json
-from pyspark.sql.types import StringType, StructType 
-
+from pyspark.sql import functions as f, DataFrame
+from pyspark.sql.functions import col, from_json, concat, max, to_date, lit, year, month, dayofmonth, broadcast
+from pyspark.sql.types import StringType, StructType
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 PARTITION_KEYS_SNAPSHOT = ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']
@@ -52,6 +51,7 @@ def get_glue_env_var(key, default=None):
     else:
         return default
 
+
 def get_glue_env_vars(*keys):
     """
     Retrieves values for the given keys passed in as job parameters.
@@ -62,6 +62,7 @@ def get_glue_env_vars(*keys):
     """
     vars = getResolvedOptions(sys.argv, [*keys])
     return (vars[key] for key in keys)
+
 
 def get_secret(secret_name, region_name):
     session = boto3.session.Session()
@@ -140,6 +141,55 @@ def get_latest_partitions(dfa):
     dfa = dfa.where(f.col('import_day') == dfa.select(
         f.max('import_day')).first()[0])
     return dfa
+
+
+def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
+    """Filters the DataFrame based on the latest (most recent) partition.
+    Confirm if this can be changed to using import_date columns instead of import_year, import_month, import_day
+
+    Args:if
+        df: Input DataFrame
+
+    Raises:
+        ValueError: if column import_date is not present in the DataFrame
+
+    Returns:
+        DataFrame belonging to the most recent partition.
+
+    """
+    # latest_year, latest_month, latest_day = df \
+    #     .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
+    #                         format="yyyy-L-d")).alias("latest_partition_date")) \
+    #     .select(year(col("latest_partition_date")), month(col("latest_partition_date")),
+    #             dayofmonth(col("latest_partition_date"))).collect()[0]
+    # return df.filter(
+    #     (col("import_year") == latest_year) &
+    #     (col("import_month") == latest_month) &
+    #     (col("import_day") == latest_day))
+
+    # latest_partition = df \
+    #     .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
+    #                         format="yyyy-L-d")).alias("latest_partition_date")) \
+    #     .select(year(col("latest_partition_date")).alias("latest_year"),
+    #             month(col("latest_partition_date")).alias("latest_month"),
+    #             dayofmonth(col("latest_partition_date")).alias("latest_day"))
+    #
+    # result = df \
+    #     .join(broadcast(latest_partition),
+    #           (df.import_year == latest_partition.latest_year) &
+    #           (df.import_month == latest_partition.latest_month) &
+    #           (df.import_day == latest_partition.latest_day)) \
+    #     .drop("latest_year", "latest_month", "latest_day")
+
+    if "import_date" not in df.columns:
+        raise ValueError("Column import_date not found in the DataFrame")
+
+    latest_partition = df.select(max(col("import_date")).alias("latest_import_date"))
+    result = df \
+        .join(broadcast(latest_partition), (df["import_date"] == latest_partition["latest_import_date"])) \
+        .drop("latest_import_date")
+
+    return result
 
 
 def parse_json_into_dataframe(spark, column, dataframe):
