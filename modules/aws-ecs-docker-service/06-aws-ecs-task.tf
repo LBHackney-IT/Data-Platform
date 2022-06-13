@@ -39,6 +39,7 @@ data "template_file" "task_definition_template" {
       environment : var.container_properties.environment_variables
       secrets : var.container_properties.secrets
       mountPoints : var.container_properties.mount_points
+      volumesFrom : var.container_properties.volumes
     }
   ])
 }
