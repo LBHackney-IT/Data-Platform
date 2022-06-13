@@ -72,6 +72,9 @@ def write_dataframe_to_s3(data, s3_bucket, output_folder, filename):
         Key=f"{output_folder}/{filename}.json"
     )
 
+def dictionary_to_string(dict):
+    return str(dict).replace("'", '"').replace(" ", "")
+
 
 def lambda_handler(event, lambda_context):
     load_dotenv()
@@ -87,7 +90,7 @@ def lambda_handler(event, lambda_context):
     header_object = {"alg":"HS256","typ":"JWT"}
 
     # Create Header
-    header_object = str(header_object).replace("'", '"').replace(" ", "") # can we format this when we declare as a variable instead?
+    header_object = dictionary_to_string(header_object)
     header = encode_json(header_object)
     print(f'Header: {header}')
 
@@ -99,9 +102,10 @@ def lambda_handler(event, lambda_context):
         "aud" : url,
         "iat" : str_time
     }
-    payload_object = str(payload_object).replace("'", '"').replace(" ", "") # can we do a dict-to-string function for this and the header
 
-    payload = encode_json(str(payload_object))
+    payload_object = dictionary_to_string(payload_object)
+
+    payload = encode_json(payload_object)
 
     # Create Signature
     signature = create_signature(header, payload, secret)

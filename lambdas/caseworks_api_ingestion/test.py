@@ -5,7 +5,7 @@ import json
 import requests
 import botocore.session
 from botocore.stub import Stubber
-from caseworks_api_ingestion.main import get_icaseworks_report_from, get_token, dictionary_to_string
+from caseworks_api_ingestion.main import get_icaseworks_report_from, get_token, dictionary_to_string, encode_json
 from caseworks_api_ingestion.helpers import MockResponse
 
 BASE_URL = "https://hackneyreports.icasework.com/getreport?"
@@ -51,6 +51,24 @@ class TestCaseWorksApiIngestion(TestCase):
 
         self.assertEqual("fake_token6dhfakkaT1O2K3E4N6d5ea", response)
         post_requests_mock.assert_called_with(url, headers=headers, data=data)
+
+
+    def test_dictionary_to_string(self):
+        expected = '{"iss":"this","aud":"https://url.com","iat":"time"}'
+        dictionary = {"iss" : "this", "aud": "https://url.com", "iat": "time"}
+
+        actual = dictionary_to_string(dictionary)
+
+        self.assertEqual(expected, actual)
+
+
+    def test_encode_json(self):
+        string = "Hello world"
+
+        expected = "SGVsbG8gd29ybGQ="
+        actual = encode_json(string)
+
+        self.assertEqual(expected, actual)
 
 
 
