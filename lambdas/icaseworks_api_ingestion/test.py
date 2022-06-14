@@ -44,13 +44,13 @@ class TestCaseWorksApiIngestion(TestCase):
         assertion = header + "." + payload + "." + signature
         data = f'assertion={assertion}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer'
 
-        auth_token = {"access_token": "fake_token6dhfakkaT1O2K3E4N6d5ea", "token_type": "Bearer", "expires_in": 3600}
+        auth_token = {"access_token": "test123", "token_type": "Bearer", "expires_in": 3600}
         response_object = MockResponse(auth_token, 200)
         post_requests_mock.return_value = response_object
 
         response = get_token(url=url, encoded_header=header, encoded_payload=payload, signature=signature, headers=headers)
 
-        self.assertEqual("fake_token6dhfakkaT1O2K3E4N6d5ea", response)
+        self.assertEqual("test123", response)
         post_requests_mock.assert_called_with(url, headers=headers, data=data)
 
 
