@@ -1,7 +1,7 @@
 import argparse
 
 from pyspark.sql import DataFrame, Window
-from pyspark.sql.functions import col, concat_ws, length, levenshtein, lit, rank, substring, trim, when
+from pyspark.sql.functions import col, concat_ws, length, levenshtein, lit, min, rank, substring, trim, when
 
 from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
 from scripts.helpers.helpers import get_latest_partitions_optimized, create_pushdown_predicate, PARTITION_KEYS
@@ -314,13 +314,19 @@ def match_addresses_gb(source: DataFrame, addresses: DataFrame, logger) -> DataF
     matching_with_missing_postcode = data_with_missing_postcode \
         .withColumn("levenshtein_full", levenshtein(col("query_address"), col("target_address"))) \
         .filter(col("levenshtein_full") < 5) \
-        .withColumn("round", lit("last chance")) \
+        .withColumn("round", lit("round 7")) \
         .withColumn("match_type", lit("Best match after all constrained rounds. Postcode may differ.")) \
         .select(col("prinx"), col("query_address"), col("uprn").alias("matched_uprn"),
                 col("target_address").alias("matched_address"), col("blpu_class").alias("matched_blpu_class"),
                 col("match_type"), col("round"))
 
-    result = matching_with_same_postcode.union(matching_with_similar_postcode).union(matching_with_missing_postcode)
+    combined = matching_with_same_postcode.union(matching_with_similar_postcode).union(matching_with_missing_postcode)
+    # Select the best match if matched more than once, lower the round better the match
+    window = Window.partitionBy(col("prinx"))
+    result = combined\
+        .withColumn("best_match", min(col("round")).over(window))\
+        .filter(col("round") == col("best_match"))\
+        .drop(col("best_match"))
 
     return result
 

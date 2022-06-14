@@ -62,3 +62,36 @@ class AddressMatchingTests(unittest.TestCase):
         actual = match_addresses_gb(source, addresses, self.logger)
         actual.show(truncate=False)
         self.assertEqual(actual.count(), 2)
+
+    def test_small_data_perfect_matches(self):
+        source_address = self.spark.createDataFrame([
+            (14, "4 LEASIDE HOUSE E5 9HJ", "E5 9HJ"),
+            (15, "53 GRANVILLE COURT N1 5SP", "N1 5SP")], schema=["prinx", "query_address", "query_postcode"])
+
+        target_address = self.spark.createDataFrame([
+            ("4 LEASIDE HOUSE E5 9HJ", "4 LEASIDE HOUSE E5 9HJ", "4 LEASIDE HOUSE E5 9HJ", "E5 9HJ", "RD",
+             "100023006986"),
+            ("45 LEASIDE HOUSE E5 9HJ", "45 LEASIDE HOUSE E5 9HJ", "45 LEASIDE HOUSE E5 9HJ", "E5 9HJ", "RD",
+             "2222222222"),
+            ("4 LEASIDE HOUSE E5 9HZ", "4 LEASIDE HOUSE E5 9HZ", "4 LEASIDE HOUSE E5 9HZ", "E5 9HZ", "RD",
+             "3333333333"),
+            ("53 GRANVILLE COURT DE BEAUVOIR ESTATE N1 5SP", "53 GRANVILLE COURT N1 5SP",
+             "53 GRANVILLE COURT DE BEAUVOIR ESTATE N1 5SP", "N1 5SP", "RD", "10008223722"),
+            ("FLAT 53 GRANVILLE COURT DE BEAUVOIR ESTATE N1 5SP", "FLAT 53 N1 5SP", "FLAT 53 GRANVILLE COURT N1 5SP",
+             "N1 5SP", "RD", "10008223722"),
+            ("5 GRANVILLE COURT DE BEAUVOIR ESTATE N1 5SP", "5 GRANVILLE COURT N1 5SP",
+             "5 GRANVILLE COURT DE BEAUVOIR ESTATE N1 5SP", "N1 5SP", "RD", "3333333333")
+        ], schema=["target_address", "target_address_short", "target_address_medium", "target_postcode", "blpu_class",
+                   "uprn"])
+
+        actual_df = match_addresses_gb(source_address, target_address, self.logger)
+        actual = [row.asDict() for row in actual_df.collect()]  # Converts dataframe into list of dict
+        expected = [
+            {"prinx": 14, "query_address": "4 LEASIDE HOUSE E5 9HJ", "matched_uprn": "100023006986",
+             "matched_address": "4 LEASIDE HOUSE E5 9HJ", "matched_blpu_class": "RD", "match_type": "perfect",
+             "round": "round 0"},
+            {"prinx": 15, "query_address": "53 GRANVILLE COURT N1 5SP", "matched_uprn": "10008223722",
+             "matched_address": "53 GRANVILLE COURT DE BEAUVOIR ESTATE N1 5SP", "matched_blpu_class": "RD",
+             "match_type": "perfect on first line and postcode", "round": "round 0"},
+        ]
+        self.assertListEqual(actual, expected)
