@@ -71,6 +71,7 @@ def write_dataframe_to_s3(s3_client, data, s3_bucket, output_folder, filename):
         Key=f"{output_folder}/{filename}.json"
     )
 
+
 def dictionary_to_string(dict):
     return str(dict).replace("'", '"').replace(" ", "")
 

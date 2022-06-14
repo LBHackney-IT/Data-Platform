@@ -79,6 +79,7 @@ class TestCaseWorksApiIngestion(TestCase):
 
         self.assertEqual(expected, actual, f"expected: {expected} but got: {actual}")
 
+
     def setUp(self) -> None:
         self.boto_session = botocore.session.get_session()
         self.boto_session.set_credentials("", "")
@@ -112,6 +113,3 @@ class TestCaseWorksApiIngestion(TestCase):
         service_response = write_dataframe_to_s3(self.s3, data, bucket, output_folder, filename)
         print(f"service response: {service_response}")
         self.assertEqual(service_response, response)
-
-
-
