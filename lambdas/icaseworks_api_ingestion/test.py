@@ -57,7 +57,7 @@ class TestCaseWorksApiIngestion(TestCase):
     def test_retrieve_credentials_from_secrets_manager(self):
         self.secrets_boto_session = botocore.session.get_session()
         self.secrets_boto_session.set_credentials("", "")
-        self.secrets_manager = self.secrets_boto_session.create_client('secretsmanager')
+        self.secrets_manager = self.secrets_boto_session.create_client('secretsmanager', region_name='eu-west-2')
         self.stubber = Stubber(self.secrets_manager)
 
         secret_name = "random_secret_name"
@@ -111,10 +111,6 @@ class TestCaseWorksApiIngestion(TestCase):
         actual = remove_illegal_characters(illegal_char_string)
 
         self.assertEqual(expected, actual, f"expected: {expected} but got: {actual}")
-
-
-#     def setUp(self) -> None:
-#         return super().setUp()
 
 
     def test_write_dataframe_to_s3(self):
