@@ -11,6 +11,7 @@ import time
 import boto3
 from dotenv import load_dotenv
 from os import getenv
+from datetime import datetime
 
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
@@ -65,10 +66,15 @@ def get_icaseworks_report_from(report_id,fromdate,auth_headers,auth_payload):
 def write_dataframe_to_s3(s3_client, data, s3_bucket, output_folder, filename):
     # add partitioning when writing file to s3 year/month/day/date
     filename = re.sub('[^a-zA-Z0-9]+', '-', filename).lower()
+    current_date = datetime.now()
+    day = str(current_date.day) if current_date.day > 10 else '0' + str(current_date.day)
+    month = str(current_date.month) if current_date.month > 10 else '0' + str(current_date.month)
+    year = str(current_date.year)
+    date = year + month + day
     return s3_client.put_object(
         Bucket=s3_bucket,
         Body=data,
-        Key=f"{output_folder}/{filename}.json"
+        Key=f"{output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={date}/{filename}.json"
     )
 
 

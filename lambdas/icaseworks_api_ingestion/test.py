@@ -5,13 +5,14 @@ import json
 import requests
 import botocore.session
 from botocore.stub import Stubber
-from caseworks_api_ingestion.main import get_icaseworks_report_from, get_token, dictionary_to_string, encode_string, remove_illegal_characters, write_dataframe_to_s3
-from caseworks_api_ingestion.helpers import MockResponse
+from datetime import datetime
+from icaseworks_api_ingestion.main import get_icaseworks_report_from, get_token, dictionary_to_string, encode_string, remove_illegal_characters, write_dataframe_to_s3
+from icaseworks_api_ingestion.helpers import MockResponse
 
 BASE_URL = "https://hackneyreports.icasework.com/getreport?"
 
 class TestCaseWorksApiIngestion(TestCase):
-    @patch('caseworks_api_ingestion.main.requests.get')
+    @patch('icaseworks_api_ingestion.main.requests.get')
     def test_get_icaseworks_report_from(self, get_requests_mock):
         report_id = "123"
         from_date = "2019-01-01"
@@ -31,7 +32,7 @@ class TestCaseWorksApiIngestion(TestCase):
         get_requests_mock.assert_called_with(request_url, headers=auth_headers, data=auth_payload)
 
 
-    @patch('caseworks_api_ingestion.main.requests.post')
+    @patch('icaseworks_api_ingestion.main.requests.post')
     def test_get_token(self, post_requests_mock):
         url = "https://example-url.com/token"
         header = '[{{"encoded": "header"}}]'
@@ -92,7 +93,13 @@ class TestCaseWorksApiIngestion(TestCase):
         bucket = 'landing-zone'
         filename = "caseworks-file"
         output_folder = "caseworks"
-        key = f"{output_folder}/{filename}.json"
+        current_date = datetime.now()
+        day = str(current_date.day) if current_date.day > 10 else '0' + str(current_date.day)
+        month = str(current_date.month) if current_date.month > 10 else '0' + str(current_date.month)
+        year = str(current_date.year)
+        date = year + month + day
+
+        key = f"{output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={date}/{filename}.json"
         data = '[{"data": "test"}]'
 
         expected_params = {
