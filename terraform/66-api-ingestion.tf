@@ -1,5 +1,5 @@
 module "icaseworks_api_ingestion" {
-  source = "../modules/api-ingestion-lambda"
+  source = "../modules/icaseworks-api-ingestion-lambda"
   tags   = module.tags.values
 
   identifier_prefix              = local.short_identifier_prefix

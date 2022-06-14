@@ -71,13 +71,13 @@ resource "aws_iam_role_policy_attachment" "api_ingestion_lambda" {
 
 data "archive_file" "api_ingestion_lambda" {
   type        = "zip"
-  source_dir  = "../lambdas/api_ingestion"
-  output_path = "../lambdas/api_ingestion.zip"
+  source_dir  = "../lambdas/${local.lambda_name_underscore}_api_ingestion"
+  output_path = "../lambdas/${local.lambda_name_underscore}_api_ingestion.zip"
 }
 
 resource "aws_s3_bucket_object" "api_ingestion_lambda" {
   bucket      = var.lambda_artefact_storage_bucket
-  key         = "api_ingestion.zip"
+  key         = "${local.lambda_name_underscore}_api_ingestion.zip"
   source      = data.archive_file.api_ingestion_lambda.output_path
   acl         = "private"
   source_hash = data.archive_file.api_ingestion_lambda.output_md5
@@ -129,7 +129,7 @@ resource "aws_lambda_function_event_invoke_config" "api_ingestion_lambda" {
 
 resource "aws_cloudwatch_event_rule" "run_api_ingestion_lambda" {
   name_prefix         = "${var.lambda_name}-api-ingestion-lambda-"
-  description         = "Fires every dat at "
+  description         = "Fires every day at "
   schedule_expression = var.lambda_execution_cron_schedule
 }
 

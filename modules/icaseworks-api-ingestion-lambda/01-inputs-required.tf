@@ -53,3 +53,13 @@ variable "secrets_manager_kms_key" {
     arn    = string
   })
 }
+
+// not sure on passing multiple env vars as an object
+variable "lambda_environment_variables" {
+  description = "An object containing environment variables to be used in the Lambda"
+  type = object({
+    name  = string
+    value = string
+  })
+  default = null
+}
