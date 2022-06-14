@@ -141,3 +141,17 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_api_ingestion_lambda"
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.run_api_ingestion_lambda.arn
 }
+
+resource "null_resource" "run_make_install_requirements" {
+
+  triggers = {
+    dir_sha1 = sha1(join("", [for f in fileset("${path.module}/../lambdas/${local.lambda_name_underscore}_api_ingestion", "*"): filesha1(f)]))
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = "chmod +x ${path.module}/lambda-install-requirements.sh && ${path.module}/lambda-install-requirements.sh ${local.lambda_name_underscore}_api_ingestion"
+  }
+
+  depends_on = [aws_lambda_function.api_ingestion_lambda]
+}
