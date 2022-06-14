@@ -7,7 +7,7 @@ variable "lambda_execution_cron_schedule" {
 variable "ephemeral_storage" {
   description = "Amount of temporary storage in MBs"
   type        = number
-  default     = 6144
+  default     = 512
 }
 
 variable "lambda_timeout" {

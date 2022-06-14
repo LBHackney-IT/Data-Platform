@@ -103,12 +103,7 @@ resource "aws_lambda_function" "api_ingestion_lambda" {
     size = var.ephemeral_storage
   }
   environment {
-    variables = {
-      API_KEY               = local.api_key
-      SECRET                = local.secret
-      TARGET_S3_BUCKET_NAME = var.s3_target_bucket_name
-      OUTPUT_FOLDER         = var.output_folder_name
-    }
+    variables = var.lambda_environment_variables
   }
 
   depends_on = [

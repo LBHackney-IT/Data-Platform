@@ -12,11 +12,6 @@ variable "lambda_artefact_storage_bucket" {
   type = string
 }
 
-variable "output_folder_name" {
-  description = "Name of area where data is to be sent in the specified s3 target bucket, e.g. 'housing'"
-  type        = string
-}
-
 variable "lambda_name" {
   type = string
 
@@ -24,11 +19,6 @@ variable "lambda_name" {
     condition     = length(var.lambda_name) <= 51
     error_message = "The lambda_name must be less than 51 characters long."
   }
-}
-
-variable "api_credentials_secret_name" {
-  description = "Name of secret in secrets manager containing the API credentials to authenticate"
-  type        = string
 }
 
 variable "s3_target_bucket_arn" {
@@ -54,12 +44,7 @@ variable "secrets_manager_kms_key" {
   })
 }
 
-// not sure on passing multiple env vars as an object
 variable "lambda_environment_variables" {
   description = "An object containing environment variables to be used in the Lambda"
-  type = object({
-    name  = string
-    value = string
-  })
-  default = null
+  type        = map(string)
 }
