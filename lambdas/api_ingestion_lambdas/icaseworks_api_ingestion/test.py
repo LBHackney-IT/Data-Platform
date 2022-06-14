@@ -6,13 +6,13 @@ import requests
 import botocore.session
 from botocore.stub import Stubber
 from datetime import datetime
-from icaseworks_api_ingestion.main import get_icaseworks_report_from, get_token, encode_string, remove_illegal_characters, write_dataframe_to_s3, dictionary_to_string, retrieve_credentials_from_secrets_manager
-from icaseworks_api_ingestion.helpers import MockResponse
+from api_ingestion_lambdas.icaseworks_api_ingestion.main import get_icaseworks_report_from, get_token, encode_string, remove_illegal_characters, write_dataframe_to_s3, dictionary_to_string, retrieve_credentials_from_secrets_manager
+from api_ingestion_lambdas.icaseworks_api_ingestion.helpers import MockResponse
 
 BASE_URL = "https://hackneyreports.icasework.com/getreport?"
 
 class TestCaseWorksApiIngestion(TestCase):
-    @patch('icaseworks_api_ingestion.main.requests.get')
+    @patch('api_ingestion_lambdas.icaseworks_api_ingestion.main.requests.get')
     def test_get_icaseworks_report_from(self, get_requests_mock):
         report_id = "123"
         from_date = "2019-01-01"
@@ -32,7 +32,7 @@ class TestCaseWorksApiIngestion(TestCase):
         get_requests_mock.assert_called_with(request_url, headers=auth_headers, data=auth_payload)
 
 
-    @patch('icaseworks_api_ingestion.main.requests.post')
+    @patch('api_ingestion_lambdas.icaseworks_api_ingestion.main.requests.post')
     def test_get_token(self, post_requests_mock):
         url = "https://example-url.com/token"
         header = '[{{"encoded": "header"}}]'

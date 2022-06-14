@@ -81,8 +81,8 @@ resource "aws_iam_role_policy_attachment" "api_ingestion_lambda" {
 
 data "archive_file" "api_ingestion_lambda" {
   type        = "zip"
-  source_dir  = "../lambdas/${local.lambda_name_underscore}_api_ingestion"
-  output_path = "../lambdas/${local.lambda_name_underscore}_api_ingestion.zip"
+  source_dir  = "../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion"
+  output_path = "../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion.zip"
 }
 
 resource "aws_s3_bucket_object" "api_ingestion_lambda" {
@@ -155,7 +155,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_api_ingestion_lambda"
 resource "null_resource" "run_make_install_requirements" {
 
   triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset("${path.module}/../lambdas/${local.lambda_name_underscore}_api_ingestion", "*"): filesha1(f)]))
+    dir_sha1 = sha1(join("", [for f in fileset("${path.module}/../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion", "*"): filesha1(f)]))
   }
 
   provisioner "local-exec" {
