@@ -43,6 +43,16 @@ data "aws_iam_policy_document" "api_ingestion_lambda" {
   }
 
   statement {
+    effect = "Allow"
+    actions = [
+      "secretsmanager:GetSecretValue"
+    ]
+    resources = [
+      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:${var.api_credentials_secret_name}*"
+    ]
+  }
+
+  statement {
     actions = [
       "kms:*",
       "s3:*"

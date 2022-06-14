@@ -36,6 +36,11 @@ variable "s3_target_bucket_kms_key_arn" {
   type        = string
 }
 
+variable "api_credentials_secret_name" {
+  description = "Name of secret in secrets manager containing the API credentials to authenticate"
+  type        = string
+}
+
 variable "secrets_manager_kms_key" {
   description = "The KMS Key Id to be used to encrypt the secret which stores the json credentials"
   type = object({

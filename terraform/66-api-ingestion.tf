@@ -1,5 +1,6 @@
 locals {
   s3_target_bucket_name = module.landing_zone.bucket_id
+  secret_name           = "icaseworks-key"
 }
 
 module "icaseworks_api_ingestion" {
@@ -12,10 +13,11 @@ module "icaseworks_api_ingestion" {
   secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   s3_target_bucket_arn           = module.landing_zone.bucket_arn
   s3_target_bucket_name          = local.s3_target_bucket_name
+  api_credentials_secret_name    = local.secret_name
   s3_target_bucket_kms_key_arn   = module.landing_zone.kms_key_arn
   ephemeral_storage              = 6144
   lambda_environment_variables   = {
-    "SECRET_NAME" = "icaseworks-key"
+    "SECRET_NAME" = local.secret_name
     "TARGET_S3_BUCKET_NAME" = local.s3_target_bucket_name
     "OUTPUT_FOLDER" = "icaseworks"
   }
