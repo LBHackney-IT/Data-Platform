@@ -12,6 +12,7 @@ import boto3
 from dotenv import load_dotenv
 from os import getenv
 from datetime import datetime
+from helpers.helpers import dictionary_to_string
 
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
@@ -76,10 +77,6 @@ def write_dataframe_to_s3(s3_client, data, s3_bucket, output_folder, filename):
         Body=data,
         Key=f"{output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={date}/{filename}.json"
     )
-
-
-def dictionary_to_string(dict):
-    return str(dict).replace("'", '"').replace(" ", "")
 
 
 def lambda_handler(event, lambda_context):

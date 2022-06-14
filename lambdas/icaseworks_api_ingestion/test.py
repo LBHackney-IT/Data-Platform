@@ -6,7 +6,8 @@ import requests
 import botocore.session
 from botocore.stub import Stubber
 from datetime import datetime
-from icaseworks_api_ingestion.main import get_icaseworks_report_from, get_token, dictionary_to_string, encode_string, remove_illegal_characters, write_dataframe_to_s3
+from icaseworks_api_ingestion.main import get_icaseworks_report_from, get_token, encode_string, remove_illegal_characters, write_dataframe_to_s3
+from helpers.helpers import dictionary_to_string
 from icaseworks_api_ingestion.helpers import MockResponse
 
 BASE_URL = "https://hackneyreports.icasework.com/getreport?"
