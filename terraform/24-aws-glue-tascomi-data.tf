@@ -259,7 +259,7 @@ module "tascomi_applications_to_trusted" {
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
-    "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/applications_reporting"
+    "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/applications"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
     "--source_catalog_table"    = "applications"
@@ -271,8 +271,90 @@ module "tascomi_applications_to_trusted" {
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
-    s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi_tables/applications_reporting"
+    s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/applications"
+
   }
 
+}
+
+module "tascomi_officers_teams_to_trusted" {
+  source = "../modules/aws-glue-job"
+
+  department                 = module.department_planning
+  job_name                   = "${local.short_identifier_prefix}tascomi_officers_trusted"
+  glue_job_worker_type       = "G.1X"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  job_parameters = {
+    "--job-bookmark-option"     = "job-bookmark-enable"
+    "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/officers"
+    "--enable-glue-datacatalog" = "true"
+    "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
+    "--source_catalog_table"    = "users"
+    "--source_catalog_table2"   = "user_team_map"
+    "--source_catalog_table3"   = "user_teams"
+  }
+  script_name          = "tascomi_officers_trusted"
+  triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
+
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
+    s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/officers"
+  }
+
+}
+
+module "tascomi_locations_to_trusted" {
+  source = "../modules/aws-glue-job"
+
+  department                 = module.department_planning
+  job_name                   = "${local.short_identifier_prefix}tascomi_locations_trusted"
+  glue_job_worker_type       = "G.1X"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  job_parameters = {
+    "--job-bookmark-option"         = "job-bookmark-enable"
+    "--s3_bucket_target"            = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/locations"
+    "--enable-glue-datacatalog"     = "true"
+    "--source_catalog_database"     = aws_glue_catalog_database.refined_zone_tascomi.name
+    "--source_catalog_unrestricted" = module.department_unrestricted.trusted_zone_catalog_database_name
+    "--source_catalog_table"        = "dtf_locations"
+    "--source_catalog_table2"       = "latest_llpg"
+  }
+  script_name          = "tascomi_locations_trusted"
+  triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
+
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
+    s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/locations"
+  }
+
+}
+
+module "tascomi_subsidiary_tables_to_trusted" {
+  source = "../modules/aws-glue-job"
+
+  department                 = module.department_planning
+  job_name                   = "${local.short_identifier_prefix}tascomi_subsidiary_tables_trusted"
+  glue_job_worker_type       = "G.1X"
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  job_parameters = {
+    "--job-bookmark-option"       = "job-bookmark-enable"
+    "--s3_bucket_target"          = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/"
+    "--enable-glue-datacatalog"   = "true"
+    "--source_catalog_database"   = aws_glue_catalog_database.refined_zone_tascomi.name
+    "--source_catalog_table_list" = "decision_levels,decision_types,ps_development_codes,contacts"
+  }
+  script_name          = "tascomi_subsidiary_tables_trusted"
+  triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
+
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
+    s3_target_location = "s3://${module.trusted_zone.bucket_id}/planning/tascomi/"
+  }
 
 }

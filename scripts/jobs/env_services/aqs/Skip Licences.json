@@ -64,6 +64,6 @@
     },
     "parameterValues": [],
     "fileName": "Skip Licences.csv",
-    "exportHeaderType": "Name",
+    "exportHeaderType": "Code",
     "discriminator": "CsvExportWebRequestModel"
 }
