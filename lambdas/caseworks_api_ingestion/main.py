@@ -16,10 +16,10 @@ def remove_illegal_characters(string):
     """Removes illegal characters from string"""
     regex_list = [['=', ""], ['\/', "_"], ['+', "-"]]
     for r in regex_list:
-        clean_string = re.sub(string=string,
+        string = re.sub(string=string,
                        pattern="[{}]".format(r[0]),
                        repl=r[1])
-    return clean_string
+    return string
 
 
 def encode_string(string):
