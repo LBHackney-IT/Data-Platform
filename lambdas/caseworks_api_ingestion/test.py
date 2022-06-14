@@ -5,7 +5,7 @@ import json
 import requests
 import botocore.session
 from botocore.stub import Stubber
-from caseworks_api_ingestion.main import get_icaseworks_report_from, get_token, dictionary_to_string, encode_string
+from caseworks_api_ingestion.main import get_icaseworks_report_from, get_token, dictionary_to_string, encode_string, remove_illegal_characters, write_dataframe_to_s3
 from caseworks_api_ingestion.helpers import MockResponse
 
 BASE_URL = "https://hackneyreports.icasework.com/getreport?"
@@ -69,6 +69,49 @@ class TestCaseWorksApiIngestion(TestCase):
         actual = encode_string(string)
 
         self.assertEqual(expected, actual)
+
+
+    def test_remove_illegal_characters(self):
+        illegal_char_string = "_123=c/bc+"
+
+        expected = "_123c_bc-"
+        actual = remove_illegal_characters(illegal_char_string)
+
+        self.assertEqual(expected, actual, f"expected: {expected} but got: {actual}")
+
+    def setUp(self) -> None:
+        self.boto_session = botocore.session.get_session()
+        self.boto_session.set_credentials("", "")
+        self.s3 = self.boto_session.create_client('s3')
+        self.stubber = Stubber(self.s3)
+        return super().setUp()
+
+
+    def test_write_dataframe_to_s3(self):
+        bucket = 'landing-zone'
+        filename = "caseworks-file"
+        output_folder = "caseworks"
+        key = f"{output_folder}/{filename}.json"
+        data = '[{"data": "test"}]'
+
+        expected_params = {
+            'Bucket': bucket,
+            'Body': data,
+            'Key': key
+        }
+
+        response = {
+            'Expiration': 'random',
+            'ETag': '12345',
+            'VersionId': '1.0'
+        }
+
+        self.stubber.add_response('put_object', response, expected_params)
+        self.stubber.activate()
+
+        service_response = write_dataframe_to_s3(self.s3, data, bucket, output_folder, filename)
+        print(f"service response: {service_response}")
+        self.assertEqual(service_response, response)
 
 
 

@@ -62,11 +62,10 @@ def get_icaseworks_report_from(report_id,fromdate,auth_headers,auth_payload):
     return response.content
 
 
-def write_dataframe_to_s3(data, s3_bucket, output_folder, filename):
+def write_dataframe_to_s3(s3_client, data, s3_bucket, output_folder, filename):
     # add partitioning when writing file to s3 year/month/day/date
     filename = re.sub('[^a-zA-Z0-9]+', '-', filename).lower()
-    s3_client = boto3.client('s3')
-    s3_client.put_object(
+    return s3_client.put_object(
         Bucket=s3_bucket,
         Body=data,
         Key=f"{output_folder}/{filename}.json"
@@ -110,9 +109,6 @@ def lambda_handler(event, lambda_context):
     # Create Signature
     signature = create_signature(header, payload, secret)
 
-    # Get assertion
-    assertion = header + "." + payload + "." + signature
-
     # Get token from response
     auth_token = get_token(url=url, encoded_header=header, encoded_payload=payload, signature=signature, headers=headers)
 
@@ -137,6 +133,7 @@ def lambda_handler(event, lambda_context):
     ]
 
     date_to_track_from = "2019-01-01" # today minus 1
+    s3_client = boto3.client('s3')
 
     for report_details in report_tables:
         print(f'Pulling report for {report_details["name"]}')
@@ -144,7 +141,7 @@ def lambda_handler(event, lambda_context):
         case_id_list = get_icaseworks_report_from(case_id_report_id,date_to_track_from,auth_headers,auth_payload)
         report_details["data"] = case_id_list
         # write to s3
-        write_dataframe_to_s3(report_details["data"], s3_bucket, output_folder_name, report_details["name"])
+        write_dataframe_to_s3(s3_client, report_details["data"], s3_bucket, output_folder_name, report_details["name"])
 
 if __name__ == '__main__':
     lambda_handler('event', 'lambda_context')
