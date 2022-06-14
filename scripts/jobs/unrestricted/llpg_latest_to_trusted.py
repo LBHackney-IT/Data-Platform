@@ -69,7 +69,7 @@ if __name__ == "__main__":
                                                 ))
 
     # Filter the ones with an approved preferred status
-    app = df2.filter(df2.lpi_logical_status =="Approved Preferred") 
+    app = df2.filter(df2.lpi_logical_status == "Approved Preferred") 
 
 #create historic set of data not in the approved
     hist = df2.filter(df2.lpi_logical_status =="Historic") 
