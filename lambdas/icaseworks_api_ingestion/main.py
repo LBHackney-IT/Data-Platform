@@ -12,7 +12,6 @@ import boto3
 from dotenv import load_dotenv
 from os import getenv
 from datetime import datetime
-from helpers.helpers import dictionary_to_string
 
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
@@ -30,6 +29,10 @@ def encode_string(string):
     base64_encoded_string = pybase64.b64encode(byte_string)
     processed_string = base64_encoded_string.decode("utf-8")
     return processed_string
+
+
+def dictionary_to_string(dict):
+    return str(dict).replace("'", '"').replace(" ", "")
 
 
 def create_signature(header, payload, secret):
