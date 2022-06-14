@@ -82,6 +82,13 @@ def write_dataframe_to_s3(s3_client, data, s3_bucket, output_folder, filename):
     )
 
 
+def retrieve_credentials_from_secrets_manager(secrets_manager_client, secret_name):
+    response = secrets_manager_client.get_secret_value(
+        SecretId=secret_name,
+    )
+    return response
+
+
 def lambda_handler(event, lambda_context):
     load_dotenv()
     s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
@@ -91,8 +98,15 @@ def lambda_handler(event, lambda_context):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
     }
-    api_key = getenv("API_KEY")
-    secret = getenv("SECRET")
+
+    # Get api api credentials from secrets manager
+    secret_name = getenv("SECRET_NAME")
+    secrets_manager_client = boto3.client('secretsmanager')
+    api_credentials_response = retrieve_credentials_from_secrets_manager(secrets_manager_client, secret_name)
+    api_credentials = json.loads(api_credentials_response['SecretString'])
+    api_key = api_credentials.get("api_key")
+    secret = api_credentials.get("secret")
+
     header_object = {"alg":"HS256","typ":"JWT"}
 
     # Create Header

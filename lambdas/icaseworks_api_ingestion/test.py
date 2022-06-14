@@ -54,6 +54,38 @@ class TestCaseWorksApiIngestion(TestCase):
         post_requests_mock.assert_called_with(url, headers=headers, data=data)
 
 
+    def test_retrieve_credentials_from_secrets_manager(self):
+        self.secrets_boto_session = botocore.session.get_session()
+        self.secrets_boto_session.set_credentials("", "")
+        self.secrets_manager = self.secrets_boto_session.create_client('secretsmanager')
+        self.stubber = Stubber(self.secrets_manager)
+
+        secret_name = "random_secret_name"
+
+        expected_params = {
+            'SecretId': secret_name
+        }
+
+        response = {
+            'ARN': 'arn:aws:secretsmanager:eu-west-2:111111111:secret:secret-key',
+            'Name': 'string',
+            'VersionId': 'version_one_secret_name_11111111:version_one',
+            'SecretBinary': b'bytes',
+            'SecretString': 'string',
+            'VersionStages': [
+                'string',
+            ],
+            'CreatedDate': datetime(2015, 1, 1)
+        }
+
+        self.stubber.add_response('get_secret_value', response, expected_params)
+        self.stubber.activate()
+
+        service_response = retrieve_credentials_from_secrets_manager(self.secrets_manager, secret_name)
+        print(f"service response: {service_response}")
+        self.assertEqual(service_response, response)
+
+
     def test_dictionary_to_string(self):
         expected = '{"iss":"this","aud":"https://url.com","iat":"time"}'
         dictionary = {"iss" : "this", "aud": "https://url.com", "iat": "time"}
@@ -81,15 +113,16 @@ class TestCaseWorksApiIngestion(TestCase):
         self.assertEqual(expected, actual, f"expected: {expected} but got: {actual}")
 
 
-    def setUp(self) -> None:
+#     def setUp(self) -> None:
+#         return super().setUp()
+
+
+    def test_write_dataframe_to_s3(self):
         self.boto_session = botocore.session.get_session()
         self.boto_session.set_credentials("", "")
         self.s3 = self.boto_session.create_client('s3')
         self.stubber = Stubber(self.s3)
-        return super().setUp()
 
-
-    def test_write_dataframe_to_s3(self):
         bucket = 'landing-zone'
         filename = "caseworks-file"
         output_folder = "caseworks"
