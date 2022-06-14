@@ -16,7 +16,7 @@ module "llpg_raw_to_trusted" {
 
   }
   script_name      = "llpg_latest_to_trusted"
-  triggered_by_job = aws_glue_job.copy_env_enforcement_liberator_landing_to_raw.name
+  triggered_by_crawler = aws_glue_crawler.raw_zone_unrestricted_address_api_crawler.name
 
   crawler_details = {
     database_name      = module.department_unrestricted.trusted_zone_catalog_database_name
