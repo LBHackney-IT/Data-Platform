@@ -1,4 +1,4 @@
-.PHONY: install
+.PHONY: install-requirements
 
 install-requirements:
 	python3 -m venv venv
