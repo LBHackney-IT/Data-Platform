@@ -1,5 +1,5 @@
 module "rds_export_storage" {
-  source = "..\/s3-bucket"
+  source = "../s3-bucket"
 
   tags              = var.tags
   project           = var.project

@@ -1,5 +1,5 @@
 module "datahub_frontend_react" {
-  source                    = "..\/aws-ecs-docker-service"
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
@@ -15,7 +15,7 @@ module "datahub_frontend_react" {
 }
 
 module "datahub_gms" {
-  source                    = "..\/aws-ecs-docker-service"
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
@@ -31,7 +31,7 @@ module "datahub_gms" {
 }
 
 module "datahub_mae_consumer" {
-  source                    = "..\/aws-ecs-docker-service"
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
@@ -47,7 +47,7 @@ module "datahub_mae_consumer" {
 }
 
 module "datahub_mce_consumer" {
-  source                    = "..\/aws-ecs-docker-service"
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
@@ -63,7 +63,7 @@ module "datahub_mce_consumer" {
 }
 
 module "datahub_actions" {
-  source                    = "..\/aws-ecs-docker-service"
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
@@ -79,7 +79,7 @@ module "datahub_actions" {
 }
 
 module "mysql_setup" {
-  source                    = "..\/aws-ecs-docker-service"
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
@@ -98,7 +98,7 @@ module "mysql_setup" {
 }
 
 module "elasticsearch_setup" {
-  source                    = "..\/aws-ecs-docker-service"
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn
@@ -117,7 +117,7 @@ module "elasticsearch_setup" {
 }
 
 module "kafka_setup" {
-  source                    = "..\/aws-ecs-docker-service"
+  source                    = "../aws-ecs-docker-service"
   tags                      = var.tags
   short_identifier_prefix   = var.short_identifier_prefix
   ecs_cluster_arn           = aws_ecs_cluster.datahub.arn

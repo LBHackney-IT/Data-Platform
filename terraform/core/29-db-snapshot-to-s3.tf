@@ -1,5 +1,5 @@
 module "lambda_artefact_storage_for_api_account" {
-  source            = "..\/terraform\/modules/s3-bucket"
+  source            = "../terraform/modules/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -13,7 +13,7 @@ module "lambda_artefact_storage_for_api_account" {
 }
 
 module "db_snapshot_to_s3" {
-  source                         = "..\/terraform\/modules/db-snapshot-to-s3"
+  source                         = "../terraform/modules/db-snapshot-to-s3"
   tags                           = module.tags.values
   project                        = var.project
   environment                    = var.environment

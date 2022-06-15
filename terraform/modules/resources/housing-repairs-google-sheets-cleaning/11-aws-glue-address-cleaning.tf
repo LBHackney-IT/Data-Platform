@@ -1,5 +1,5 @@
 module "housing_repairs_google_sheets_address_cleaning" {
-  source = "..\/aws-glue-job"
+  source = "../aws-glue-job"
 
   department        = var.department
   job_name          = "${local.glue_job_name} Address Cleaning"

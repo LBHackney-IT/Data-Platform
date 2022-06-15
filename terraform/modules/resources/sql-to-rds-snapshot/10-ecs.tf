@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "task_role" {
 }
 
 module "sql_to_parquet" {
-  source = "..\/aws-ecs-fargate-task"
+  source = "../aws-ecs-fargate-task"
 
   tags                          = var.tags
   operation_name                = var.instance_name

@@ -1,5 +1,5 @@
 module "housing_repairs_elec_mech_fire_address_matching" {
-  source = "..\/aws-glue-job"
+  source = "../aws-glue-job"
 
   department        = var.department
   job_name          = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Address Matching"

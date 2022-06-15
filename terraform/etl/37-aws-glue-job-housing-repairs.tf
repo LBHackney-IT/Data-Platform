@@ -1,5 +1,5 @@
 module "address_matching_glue_job" {
-  source = "..\/..\/modules\/aws-glue-job"
+  source = "../../modules/aws-glue-job"
 
   count = local.is_live_environment ? 1 : 0
 
@@ -24,7 +24,7 @@ module "address_matching_glue_job" {
 }
 
 module "address_cleaning_glue_job" {
-  source = "..\/..\/modules\/aws-glue-job"
+  source = "../../modules/aws-glue-job"
 
   count = local.is_live_environment ? 1 : 0
 

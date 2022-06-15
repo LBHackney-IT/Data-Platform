@@ -4,15 +4,15 @@ module "department_housing_repairs" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Housing Repairs"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Housing Repairs"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_parking" {
@@ -21,15 +21,15 @@ module "department_parking" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Parking"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Parking"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_finance" {
@@ -38,15 +38,15 @@ module "department_finance" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Finance"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Finance"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_data_and_insight" {
@@ -55,15 +55,15 @@ module "department_data_and_insight" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Data and Insight"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Data and Insight"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_env_enforcement" {
@@ -72,15 +72,15 @@ module "department_env_enforcement" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Env Enforcement"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Env Enforcement"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_planning" {
@@ -89,15 +89,15 @@ module "department_planning" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Planning"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Planning"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_unrestricted" {
@@ -106,15 +106,15 @@ module "department_unrestricted" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Unrestricted"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Unrestricted"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_sandbox" {
@@ -123,15 +123,15 @@ module "department_sandbox" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Sandbox"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Sandbox"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_benefits_and_housing_needs" {
@@ -140,15 +140,15 @@ module "department_benefits_and_housing_needs" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Bens Housing Needs"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Bens Housing Needs"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_revenues" {
@@ -157,15 +157,15 @@ module "department_revenues" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Revenues"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Revenues"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_environmental_services" {
@@ -174,15 +174,15 @@ module "department_environmental_services" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Env Services"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Env Services"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }
 
 module "department_housing" {
@@ -191,13 +191,13 @@ module "department_housing" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "..\/..\/modules\/department-data-source"
-  tags                            = module.tags.values
-  is_live_environment             = local.is_live_environment
-  environment                     = var.environment
-  short_identifier_prefix         = local.short_identifier_prefix
-  identifier_prefix               = local.identifier_prefix
-  name                            = "Housing"
-  glue_scripts_bucket             = module.glue_scripts
-  glue_temp_storage_bucket        = module.glue_temp_storage
+  source                   = "../../modules/department-data-source"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Housing"
+  glue_scripts_bucket      = module.glue_scripts
+  glue_temp_storage_bucket = module.glue_temp_storage
 }

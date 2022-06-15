@@ -1,9 +1,9 @@
 module "google_sheet_import" {
-  source = "..\/aws-glue-job-data-source"
+  source = "../aws-glue-job-data-source"
 
-  department                 = var.department
-  job_name                   = "Google Sheets Import Job - ${local.import_name}"
-  script_s3_object_key       = var.google_sheets_import_script_key
+  department           = var.department
+  job_name             = "Google Sheets Import Job - ${local.import_name}"
+  script_s3_object_key = var.google_sheets_import_script_key
   crawler_details = {
     database_name      = var.glue_catalog_database_name
     s3_target_location = local.full_output_path

@@ -1,5 +1,5 @@
 module "schema_registry" {
-  source                                 = "..\/kafka-schema-registry"
+  source                                 = "../kafka-schema-registry"
   tags                                   = var.tags
   environment                            = var.environment
   identifier_prefix                      = var.short_identifier_prefix

@@ -1,7 +1,7 @@
 module "datahub" {
   count = local.is_live_environment ? 1 : 0
 
-  source                  = "..\/terraform\/modules/datahub"
+  source                  = "../terraform/modules/datahub"
   tags                    = module.tags.values
   short_identifier_prefix = local.short_identifier_prefix
   identifier_prefix       = local.identifier_prefix

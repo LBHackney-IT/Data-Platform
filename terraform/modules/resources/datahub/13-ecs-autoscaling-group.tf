@@ -1,5 +1,5 @@
 module "datahub_ecs_gms_autoscaling_group" {
-  source = "..\/aws-ecs-autoscaling-group"
+  source = "../aws-ecs-autoscaling-group"
 
   name                     = "${var.short_identifier_prefix}datahub-gms"
   ecs_autoscaling_role_arn = aws_iam_role.datahub_ecs_autoscale.arn
@@ -8,7 +8,7 @@ module "datahub_ecs_gms_autoscaling_group" {
 }
 
 module "datahub_ecs_frontend_autoscaling_group" {
-  source = "..\/aws-ecs-autoscaling-group"
+  source = "../aws-ecs-autoscaling-group"
 
   name                     = "${var.short_identifier_prefix}datahub-frontend"
   ecs_autoscaling_role_arn = aws_iam_role.datahub_ecs_autoscale.arn
