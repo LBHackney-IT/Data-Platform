@@ -62,6 +62,7 @@ module "ingest_housing_income_collection_database_to_housing_raw_zone" {
     "--source_data_database"        = module.housing_income_collection_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/housing/${each.key}"
     "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/housing/ingestion-details/"
+    "--table_filter_expression"     = each.value
   }
   crawler_details = {
     database_name      = module.department_housing.raw_zone_catalog_database_name
