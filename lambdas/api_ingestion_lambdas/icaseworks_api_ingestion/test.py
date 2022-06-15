@@ -82,7 +82,6 @@ class TestCaseWorksApiIngestion(TestCase):
         self.stubber.activate()
 
         service_response = retrieve_credentials_from_secrets_manager(self.secrets_manager, secret_name)
-        print(f"service response: {service_response}")
         self.assertEqual(service_response, response)
 
 
@@ -147,5 +146,4 @@ class TestCaseWorksApiIngestion(TestCase):
         self.stubber.activate()
 
         service_response = write_dataframe_to_s3(self.s3, data, bucket, output_folder, filename)
-        print(f"service response: {service_response}")
         self.assertEqual(service_response, response)

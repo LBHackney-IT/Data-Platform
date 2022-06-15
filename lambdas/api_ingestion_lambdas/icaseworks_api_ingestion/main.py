@@ -112,7 +112,6 @@ def lambda_handler(event, lambda_context):
     # Create Header
     header_object = dictionary_to_string(header_object)
     header = encode_string(header_object)
-    print(f'Header: {header}')
 
     # Create payload
     current_unix_time = int(time.time())
@@ -161,8 +160,8 @@ def lambda_handler(event, lambda_context):
         case_id_report_id = report_details["id"]
         case_id_list = get_icaseworks_report_from(case_id_report_id,date_to_track_from,auth_headers,auth_payload)
         report_details["data"] = case_id_list
-        # write to s3
         write_dataframe_to_s3(s3_client, report_details["data"], s3_bucket, output_folder_name, report_details["name"])
+        print(f'Finished writing report for {report_details["name"]} to S3')
 
 if __name__ == '__main__':
     lambda_handler('event', 'lambda_context')
