@@ -160,7 +160,8 @@ resource "null_resource" "run_make_install_requirements" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command     = "chmod +x ${path.module}/lambda-install-requirements.sh && ${path.module}/lambda-install-requirements.sh ${local.lambda_name_underscore}_api_ingestion"
+    command     = "make -f Makefile"
+    working_dir = "${path.module}/../../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion/"
   }
 
   depends_on = [aws_lambda_function.api_ingestion_lambda]
