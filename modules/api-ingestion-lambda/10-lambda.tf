@@ -167,6 +167,4 @@ resource "null_resource" "run_make_install_requirements" {
     command     = "make install-requirements"
     working_dir = "${path.module}/../../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion/"
   }
-
-  depends_on = [aws_lambda_function.api_ingestion_lambda]
 }
