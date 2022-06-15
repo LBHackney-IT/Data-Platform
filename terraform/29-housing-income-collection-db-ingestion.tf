@@ -15,8 +15,8 @@ module "housing_income_collection_database_ingestion" {
 
 locals {
   table_filter_expressions_housing_income_collection = local.is_live_environment ? {
-    case-priorities = "case_priorities",
-    agreements      = "agreements"
+    case-priorities = "^housingfinancedbproduction_case_priorities",
+    agreements      = "^housingfinancedbproduction_agreements"
   } : {}
 }
 
