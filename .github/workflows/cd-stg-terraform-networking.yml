@@ -6,8 +6,9 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'terraform/**'
-      - 'terraform-backend-setup/**'
+      - 'terraform/core/**'
+      - 'terraform/etl/**'
+      - 'terraform/backend-setup/**'
       - 'scripts/**'
       - 'lambdas/**'
       - 'notebook/**'

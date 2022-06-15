@@ -169,7 +169,7 @@ jobs:
           terraform_destroy: false
 
       - name: Configure Redshift users, external schemas and user permissions for external schema
-        working-directory: "./terraform"
+        working-directory: "./terraform/core"
         run: |
           terraform_outputs=$(terraform output -json)
           cd ../scripts

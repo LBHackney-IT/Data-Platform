@@ -4,8 +4,9 @@ on:
     branches-ignore:
       - "main"
     paths-ignore:
-      - 'terraform-networking/**'
-      - 'terraform/**'
+      - 'terraform/etl/**'
+      - 'terraform/networking/**'
+      - 'terraform/core/**'
       - 'scripts/**'
       - 'lambdas/**'
       - 'notebook/**'
@@ -18,7 +19,7 @@ jobs:
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
-      build_path: "./terraform-backend-setup"
+      build_path: "./terraform/backend-setup"
       terraform_state_s3_key_prefix: "data-platform-backend-setup"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
