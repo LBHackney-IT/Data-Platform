@@ -15,7 +15,7 @@ module "department_housing_repairs" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -45,7 +45,7 @@ module "department_parking" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -81,7 +81,7 @@ module "department_finance" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -111,7 +111,7 @@ module "department_data_and_insight" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -142,7 +142,7 @@ module "department_env_enforcement" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -172,7 +172,7 @@ module "department_planning" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -203,7 +203,7 @@ module "department_unrestricted" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -233,7 +233,7 @@ module "department_sandbox" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -269,7 +269,7 @@ module "department_benefits_and_housing_needs" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -300,7 +300,7 @@ module "department_revenues" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -331,7 +331,7 @@ module "department_environmental_services" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment
@@ -362,7 +362,7 @@ module "department_housing" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                          = "../terraform/modules/department"
+  source                          = "../terraform/modules/resources/department"
   tags                            = module.tags.values
   is_live_environment             = local.is_live_environment
   environment                     = var.environment

@@ -1,6 +1,6 @@
 
 module "liberator_data_storage" {
-  source                         = "../terraform/modules/s3-bucket"
+  source                         = "../terraform/modules/resources/s3-bucket"
   tags                           = module.tags.values
   project                        = var.project
   environment                    = var.environment
@@ -13,7 +13,7 @@ module "liberator_data_storage" {
 module "liberator_dump_to_rds_snapshot" {
   count = local.is_live_environment ? 1 : 0
 
-  source                     = "../terraform/modules/sql-to-rds-snapshot"
+  source                     = "../terraform/modules/resources/sql-to-rds-snapshot"
   tags                       = module.tags.values
   project                    = var.project
   environment                = var.environment
@@ -29,7 +29,7 @@ module "liberator_dump_to_rds_snapshot" {
 module "liberator_db_snapshot_to_s3" {
   count = local.is_live_environment ? 1 : 0
 
-  source                         = "../terraform/modules/db-snapshot-to-s3"
+  source                         = "../terraform/modules/resources/db-snapshot-to-s3"
   tags                           = module.tags.values
   project                        = var.project
   environment                    = var.environment

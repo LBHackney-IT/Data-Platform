@@ -17,17 +17,17 @@ We use Architecture Decision Records (ADRs) to document architecture decisions t
 
 The Terraform will be deployed, using GitHub Actions, on push to main / when a Pull Request is merged into main
 
-#### /terraform
+#### /terraform/core
 
-The terraform directory contains the majority of the infrastructure and at the time of writing has one Github action to deploy to staging and one to deploy to production.
+The terraform/core directory contains the majority of the infrastructure and at the time of writing has one Github action to deploy to staging and one to deploy to production.
 
-#### /terraform-networking
+#### /terraform/networking
 
 The terraform-networking directory contains the networking aspect of the data platform (see [`Networking`](#Networking)) and at the time of writing has one Github action to deploy to staging and one to deploy to production.
 
-#### /terraform-backend-setup
+#### /terraform/backend-setup
 
-The terraform-backend-setup directory is just for Dev’s bucket deployment, so it does not need a Github action. The terraform state for this area is maintained in the repo and we run it locally.
+The terraform/backend-setup directory is just for Dev’s bucket deployment, so it does not need a Github action. The terraform state for this area is maintained in the repo and we run it locally.
 
 ## Terraform Development
 
@@ -35,7 +35,7 @@ The terraform-backend-setup directory is just for Dev’s bucket deployment, so 
 
 #### Set up
 
-1. Create a env.tfvars file for local deployment, this can be done by running `cp config/terraform/env.tfvars.example config/terraform/env.tfvars` from the project root directory.
+1. Create a env.tfvars file for local deployment, this can be done by running `cp terraform/config/env.tfvars.example terraform/config/env.tfvars` from the project root directory.
 2. Update the following required variables in the newly created file:
 
 - `environment` - Environment you're working in (this is normally `dev`)
@@ -106,7 +106,7 @@ Generate Credentials for Vault
 $ aws-vault exec hackney-dataplatform-development -- aws sts get-caller-identity
 ```
 
-Ensure that GNU Make is installed on your computer. The full commands for the below instructions can be found in `/terraform/Makefile`
+Ensure that GNU Make is installed on your computer. The full commands for the below instructions can be found in `/terraform/core/Makefile`
 
 Initialise the Project
 
@@ -137,7 +137,7 @@ $ WORKSPACE={developer} make workspace-select
 - The full path of where the file is saved will be displayed, for example `/Users/*/.config/gcloud/application_default_credentials.json`
   - Copy this file to the root of the project by running the following command in the root of the project `cp /Users/*/.config/gcloud/application_default_credentials.json ./google_service_account_creds.json`
 
-5. Next run `make init` in the `/terraform` directory.
+5. Next run `make init` in the `/terraform/core` directory.
    This will initialize terraform using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
    - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
    - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform directory

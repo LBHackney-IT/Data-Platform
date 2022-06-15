@@ -7,7 +7,7 @@ data "aws_ssm_parameter" "role_arn_to_access_housing_tables" {
 }
 
 module "ingest_mtfh_tables" {
-  source        = "../terraform/modules/aws-glue-job"
+  source        = "../terraform/modules/resources/aws-glue-job"
   environment   = var.environment
   tags          = module.tags.values
   glue_role_arn = aws_iam_role.glue_role.arn
@@ -44,7 +44,7 @@ module "ingest_mtfh_tables" {
 module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
   tags = module.tags.values
 
-  source = "../terraform/modules/aws-glue-job"
+  source = "../terraform/modules/resources/aws-glue-job"
 
   job_name                   = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"
   department                 = module.department_housing

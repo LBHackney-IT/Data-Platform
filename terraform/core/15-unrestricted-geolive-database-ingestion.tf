@@ -2,7 +2,7 @@ module "boundaries_geolive_database_ingestion" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  source = "../terraform/modules/database-ingestion-via-jdbc-connection"
+  source = "../terraform/modules/resources/database-ingestion-via-jdbc-connection"
 
   name                        = "geolive-boundaries-schema"
   jdbc_connection_url         = "jdbc:postgresql://geolive-db-prod.cjgyygrtgrhl.eu-west-2.rds.amazonaws.com:5432/geolive"
@@ -15,7 +15,7 @@ module "boundaries_geolive_database_ingestion" {
 
 module "boundaries_geolive_ingestion_job" {
   count  = local.is_live_environment ? 1 : 0
-  source = "../terraform/modules/aws-glue-job"
+  source = "../terraform/modules/resources/aws-glue-job"
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries schema ingestion"

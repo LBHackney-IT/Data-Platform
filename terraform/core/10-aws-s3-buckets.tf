@@ -1,5 +1,5 @@
 module "landing_zone" {
-  source            = "../terraform/modules/s3-bucket"
+  source            = "../terraform/modules/resources/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -9,7 +9,7 @@ module "landing_zone" {
 }
 
 module "raw_zone" {
-  source            = "../terraform/modules/s3-bucket"
+  source            = "../terraform/modules/resources/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -23,7 +23,7 @@ module "raw_zone" {
 }
 
 module "refined_zone" {
-  source            = "../terraform/modules/s3-bucket"
+  source            = "../terraform/modules/resources/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -36,7 +36,7 @@ module "refined_zone" {
 }
 
 module "trusted_zone" {
-  source            = "../terraform/modules/s3-bucket"
+  source            = "../terraform/modules/resources/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -49,7 +49,7 @@ module "trusted_zone" {
 }
 
 module "glue_scripts" {
-  source            = "../terraform/modules/s3-bucket"
+  source            = "../terraform/modules/resources/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -59,7 +59,7 @@ module "glue_scripts" {
 }
 
 module "glue_temp_storage" {
-  source            = "../terraform/modules/s3-bucket"
+  source            = "../terraform/modules/resources/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -69,7 +69,7 @@ module "glue_temp_storage" {
 }
 
 module "athena_storage" {
-  source            = "../terraform/modules/s3-bucket"
+  source            = "../terraform/modules/resources/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -79,7 +79,7 @@ module "athena_storage" {
 }
 
 module "lambda_artefact_storage" {
-  source            = "../terraform/modules/s3-bucket"
+  source            = "../terraform/modules/resources/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -89,7 +89,7 @@ module "lambda_artefact_storage" {
 }
 
 module "spark_ui_output_storage" {
-  source            = "../terraform/modules/s3-bucket"
+  source            = "../terraform/modules/resources/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment

@@ -1,6 +1,6 @@
 module "kafka_event_streaming" {
   count       = local.is_live_environment ? 1 : 0
-  source      = "../terraform/modules/kafka-event-streaming"
+  source      = "../terraform/modules/resources/kafka-event-streaming"
   tags        = module.tags.values
   environment = var.environment
   project     = var.project

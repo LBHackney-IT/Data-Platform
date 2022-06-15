@@ -1,5 +1,5 @@
 module "noiseworks_data_storage" {
-  source            = "../terraform/modules/s3-bucket"
+  source            = "../terraform/modules/resources/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -143,7 +143,7 @@ resource "aws_iam_role_policy_attachment" "env_enforcement_role_can_get_noisewor
 }
 
 module "noiseworks_to_raw_zone" {
-  source = "../terraform/modules/aws-glue-job"
+  source = "../terraform/modules/resources/aws-glue-job"
 
   department                 = module.department_env_enforcement
   job_name                   = "${local.short_identifier_prefix}noiseworks_to_raw_zone"

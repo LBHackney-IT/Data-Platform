@@ -7,7 +7,7 @@ data "aws_ssm_parameter" "role_arn_to_access_better_conversations_tables" {
 }
 
 module "ingest_better_conversations_tables" {
-  source        = "../terraform/modules/aws-glue-job"
+  source        = "../terraform/modules/resources/aws-glue-job"
   environment   = var.environment
   tags          = module.tags.values
   glue_role_arn = aws_iam_role.glue_role.arn

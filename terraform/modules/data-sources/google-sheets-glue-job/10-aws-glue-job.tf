@@ -1,5 +1,5 @@
 module "google_sheet_import" {
-  source = "../aws-glue-job-data-source"
+  source = "../aws-glue-job"
 
   department           = var.department
   job_name             = "Google Sheets Import Job - ${local.import_name}"

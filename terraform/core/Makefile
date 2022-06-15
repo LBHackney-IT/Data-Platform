@@ -28,7 +28,7 @@ format:
 	terraform fmt .
 
 lint-init:
-	tflint --init --config="../.tflint.hcl"
+	tflint --init --config="../terraform/config/.tflint.hcl"
 
 lint:
-	aws-vault exec hackney-dataplatform-development -- tflint --var-file='../config/terraform/env.tfvars' --module --config="../.tflint.hcl" --loglevel=warn .
+	aws-vault exec hackney-dataplatform-development -- tflint --var-file='../config/terraform/env.tfvars' --module --config="../terraform/config/.tflint.hcl" --loglevel=warn .

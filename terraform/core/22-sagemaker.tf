@@ -9,7 +9,7 @@ resource "aws_sagemaker_code_repository" "data_platform" {
 }
 
 module "sagemaker" {
-  source = "../terraform/modules/sagemaker/"
+  source = "../terraform/modules/resources/sagemaker/"
   count  = local.is_live_environment ? 1 : 0
 
   development_endpoint_role_arn = aws_iam_role.glue_role.arn

@@ -1,7 +1,7 @@
 module "lightning_protection" {
   count = local.is_live_environment ? 1 : 0
 
-  source = "../../modules/electrical-mechnical-fire-safety-cleaning-job"
+  source = "../../modules/data-sources/electrical-mechnical-fire-safety-cleaning-job"
 
   short_identifier_prefix      = local.short_identifier_prefix
   identifier_prefix            = local.identifier_prefix

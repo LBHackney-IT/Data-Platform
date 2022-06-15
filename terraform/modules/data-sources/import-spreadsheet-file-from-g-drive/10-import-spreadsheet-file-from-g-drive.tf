@@ -1,5 +1,5 @@
 module "import_file_from_g_drive" {
-  source            = "../g-drive-to-s3-data-source"
+  source            = "../g-drive-to-s3"
   identifier_prefix = var.identifier_prefix
   lambda_name       = lower(replace(var.glue_job_name, "/[^a-zA-Z0-9]+/", "-"))
 }
@@ -7,7 +7,7 @@ module "import_file_from_g_drive" {
 module "import_data_from_spreadsheet_job" {
   for_each = var.worksheets
 
-  source                        = "../import-data-from-spreadsheet-job-data-source"
+  source                        = "../import-data-from-spreadsheet-job"
   department                    = var.department
   glue_catalog_database_name    = var.glue_catalog_database_name
   spreadsheet_import_script_key = var.spreadsheet_import_script_key

@@ -1,5 +1,5 @@
 module "set_budget_limit_amount" {
-  source                         = "../terraform/modules/set-budget-limit-amount"
+  source                         = "../terraform/modules/resources/set-budget-limit-amount"
   tags                           = module.tags.values
   environment                    = var.environment
   identifier_prefix              = local.short_identifier_prefix
