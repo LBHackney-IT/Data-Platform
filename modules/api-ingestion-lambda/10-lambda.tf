@@ -83,6 +83,10 @@ data "archive_file" "api_ingestion_lambda" {
   type        = "zip"
   source_dir  = "../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion"
   output_path = "../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion.zip"
+
+  depends_on = [
+    null_resource.run_make_install_requirements
+  ]
 }
 
 resource "aws_s3_bucket_object" "api_ingestion_lambda" {
