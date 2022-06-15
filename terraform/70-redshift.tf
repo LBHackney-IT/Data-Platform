@@ -68,9 +68,20 @@ locals {
       ], local.unrestricted_schemas)
     },
     {
-      user_name                  = module.department_data_and_insight.identifier_snake_case
-      secret_arn                 = module.department_data_and_insight.redshift_cluster_secret
-      schemas_to_grant_access_to = concat([], local.unrestricted_schemas)
+      user_name  = module.department_data_and_insight.identifier_snake_case
+      secret_arn = module.department_data_and_insight.redshift_cluster_secret
+      schemas_to_grant_access_to = concat([
+        "parking_refined_zone_liberator",
+        "parking_raw_zone_liberator",
+        "parking_raw_zone",
+        "parking_refined_zone",
+        "parking_trusted_zone",
+        "housing_repairs_raw_zone",
+        "housing_repairs_trusted_zone",
+        "housing_repairs_refined_zone",
+        "planning_refined_zone",
+        "dataplatform_stg_tascomi_refined_zone"
+      ], local.unrestricted_schemas)
     },
     {
       user_name  = module.department_housing_repairs.identifier_snake_case

@@ -16,9 +16,9 @@ module "icaseworks_api_ingestion" {
   api_credentials_secret_name    = local.secret_name
   s3_target_bucket_kms_key_arn   = module.landing_zone.kms_key_arn
   ephemeral_storage              = 6144
-  lambda_environment_variables   = {
-    "SECRET_NAME" = local.secret_name
+  lambda_environment_variables = {
+    "SECRET_NAME"           = local.secret_name
     "TARGET_S3_BUCKET_NAME" = local.s3_target_bucket_name
-    "OUTPUT_FOLDER" = "icaseworks"
+    "OUTPUT_FOLDER"         = "icaseworks"
   }
 }
