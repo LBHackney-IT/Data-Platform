@@ -160,7 +160,7 @@ resource "null_resource" "run_make_install_requirements" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command     = "make -f Makefile"
+    command     = "make install-requirements"
     working_dir = "${path.module}/../../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion/"
   }
 
