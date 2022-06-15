@@ -13,11 +13,6 @@ from pyspark.sql.functions import *
 import pyspark.sql.functions as F
 from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS
 
-def get_latest_import(df):
-    
-   df = df.where(col('import_date') == df.select(max('import_date')).first()[0])
-   return df
-
 def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource('s3')
     folderString = s3_bucket_target.replace('s3://', '')
@@ -46,7 +41,7 @@ if __name__ == "__main__":
     data_source = glueContext.create_dynamic_frame.from_catalog(
         name_space=source_catalog_database,
         table_name=source_catalog_table,
-        push_down_predicate = "import_date=date_format(current_date, 'yyyyMMdd')-2"
+        push_down_predicate = create_pushdown_predicate('import_date', 10)
     )
     
     map_ward = {
@@ -54,15 +49,27 @@ if __name__ == "__main__":
                 }
                 
     df2 = data_source.toDF()
-    df2 = get_latest_import(df2)
+    df2 = get_latest_partitions(df2)
     # Duplicate ward column to apply mapping
     df2 = df2.withColumn('llpg_ward_map', col('ward').cast('string')) 
 
     # Apply Mapping
     df2 = df2.replace(to_replace=map_ward, subset=['llpg_ward_map'])
+    
+    # Create a single line address
+    df2 = df2.withColumn('address_full',concat(trim(col('line1')),
+                                                 lit(", "),
+                                                 trim(col('line2')),
+                                                 lit(", "),
+                                                 trim(col('line3')),
+                                                 lit(", "),
+                                                 trim(col('line4')),
+                                                 lit(", "),
+                                                 trim(col('postcode')),
+                                                ))
 
-    # Join the ones with an approved preferred status
-    app = df2.filter(df2.lpi_logical_status =="Approved Preferred") 
+    # Filter the ones with an approved preferred status
+    app = df2.filter(df2.lpi_logical_status == "Approved Preferred") 
 
 #create historic set of data not in the approved
     hist = df2.filter(df2.lpi_logical_status =="Historic") 

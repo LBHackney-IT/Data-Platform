@@ -71,8 +71,8 @@ variable "landing_zone_bucket_arn" {
   type = string
 }
 
-variable "google_sheets_document_id" {
-  description = "Google sheets document id"
+variable "google_drive_document_id" {
+  description = "Google drive document id"
   type        = string
 }
 
