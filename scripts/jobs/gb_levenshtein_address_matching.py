@@ -1,3 +1,27 @@
+"""This job matches the addresses (source) against the master data (gazetteer or target). The job provides a score of
+matching in a column called round. The lower the round number the better match it is i.e. matches with value "round 0"
+is better than "round 4". This job uses `Levenshtein Distance <https://en.wikipedia.org/wiki/Levenshtein_distance/>`_
+to calculate similarity.
+
+The job can be run in local mode (i.e. on your local environment) and also on AWS (see Usage below).
+
+Usage:
+To run in local mode:
+set the mode to 'local' and provide the path od data set of your local machine
+--mode=local --addresses_data_path=</path/to/gazetteer_address> --source_data_path=</path/to/source_address> \
+--target_destination=</path/to/save/output> --match_to_property_shell=<property_name>
+e.g. use below to run on test data
+--mode=local --addresses_data_path=test_data/levenshtein_address_matching/addresses/ \
+--source_data_path=test_data/levenshtein_address_matching/source/ \
+--target_destination=/tmp --match_to_property_shell=forbid
+
+To run in AWS mode:
+No need to provide mode (or optionally set it to 'aws')
+--addresses_api_data_database=<gazetteer_db_name> --addresses_api_data_table=<gazetteer_table_name> \
+--source_catalog_database=<source_db_name> --source_catalog_table=<source_table_name> \
+--target_destination=</path/to/save/output> --match_to_property_shell=<property_name>
+"""
+
 import argparse
 
 from pyspark.sql import DataFrame, Window
@@ -323,16 +347,17 @@ def match_addresses_gb(source: DataFrame, addresses: DataFrame, logger) -> DataF
     combined = matching_with_same_postcode.union(matching_with_similar_postcode).union(matching_with_missing_postcode)
     # Select the best match if matched more than once, lower the round better the match
     window = Window.partitionBy(col("prinx"))
-    result = combined\
-        .withColumn("best_match", min(col("round")).over(window))\
-        .filter(col("round") == col("best_match"))\
+    result = combined \
+        .withColumn("best_match", min(col("round")).over(window)) \
+        .filter(col("round") == col("best_match")) \
         .drop(col("best_match"))
 
     return result
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Perform matching of addresses from source to gazetteer")
+    # parser = argparse.ArgumentParser(description="Perform matching of addresses from source to gazetteer")
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", default=DEFAULT_MODE_AWS, choices=[DEFAULT_MODE_AWS, LOCAL_MODE], type=str,
                         required=False, metavar="set --mode=local to run locally")
     parser.add_argument(f"--addresses_data_path", type=str, required=False,

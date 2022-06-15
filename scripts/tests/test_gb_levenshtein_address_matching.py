@@ -60,7 +60,6 @@ class AddressMatchingTests(unittest.TestCase):
             .read.option("header", "true").csv("test_data/levenshtein_address_matching/addresses/")
         addresses = prep_addresses_api_data(addresses_raw, match_to_property_shell="")
         actual = match_addresses_gb(source, addresses, self.logger)
-        actual.show(truncate=False)
         self.assertEqual(actual.count(), 2)
 
     def test_small_data_perfect_matches(self):
