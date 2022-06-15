@@ -25,7 +25,7 @@ handler.handler({
       "messageAttributes": {},
       "md5OfBody": "e4e68fb7bd0e697a0ae8f1bb342846b3",
       "eventSource": "aws:sqs",
-      "eventSourceARN": "arn:aws:sqs:eu-west-2:937934410339:dataplatform-joates-s3-to-s3-copier",
+      "eventSourceARN": "arn:aws:sqs:eu-west-2:937934410339:dataplatform-joates-copy-from-s3-to-s3",
       "awsRegion": "us-east-2"
     }
   ]
