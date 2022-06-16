@@ -83,6 +83,10 @@ data "archive_file" "api_ingestion_lambda" {
   type        = "zip"
   source_dir  = "../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion"
   output_path = "../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion.zip"
+
+  depends_on = [
+    null_resource.run_make_install_requirements
+  ]
 }
 
 resource "aws_s3_bucket_object" "api_ingestion_lambda" {
@@ -160,8 +164,7 @@ resource "null_resource" "run_make_install_requirements" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command     = "chmod +x ${path.module}/lambda-install-requirements.sh && ${path.module}/lambda-install-requirements.sh ${local.lambda_name_underscore}_api_ingestion"
+    command     = "make install-requirements"
+    working_dir = "${path.module}/../../lambdas/api_ingestion_lambdas/${local.lambda_name_underscore}_api_ingestion/"
   }
-
-  depends_on = [aws_lambda_function.api_ingestion_lambda]
 }
