@@ -95,9 +95,6 @@ resource "aws_s3_bucket_object" "api_ingestion_lambda" {
   source      = data.archive_file.api_ingestion_lambda.output_path
   acl         = "private"
   source_hash = data.archive_file.api_ingestion_lambda.output_md5
-  depends_on = [
-    data.archive_file.api_ingestion_lambda
-  ]
 }
 
 resource "aws_lambda_function" "api_ingestion_lambda" {
@@ -119,10 +116,6 @@ resource "aws_lambda_function" "api_ingestion_lambda" {
   environment {
     variables = var.lambda_environment_variables
   }
-
-  depends_on = [
-    aws_s3_bucket_object.api_ingestion_lambda,
-  ]
 }
 
 resource "aws_lambda_function_event_invoke_config" "api_ingestion_lambda" {
@@ -130,10 +123,6 @@ resource "aws_lambda_function_event_invoke_config" "api_ingestion_lambda" {
   function_name          = aws_lambda_function.api_ingestion_lambda.function_name
   maximum_retry_attempts = 0
   qualifier              = "$LATEST"
-
-  depends_on = [
-    aws_lambda_function.api_ingestion_lambda
-  ]
 }
 
 resource "aws_cloudwatch_event_rule" "run_api_ingestion_lambda" {
