@@ -1,5 +1,5 @@
 data "aws_secretsmanager_secret" "sheets_credentials_housing" {
-  name = "${local.identifier_prefix}/housing-repairs/sheets-credential-housing-"
+  arn = data.aws_ssm_parameter.sheets_credentials_housing_arn.value
 }
 
 data "aws_ssm_parameter" "sheets_credentials_housing_name" {
