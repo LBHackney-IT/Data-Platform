@@ -1,7 +1,7 @@
 module "repairs_fire_alarm_aov" {
   count = local.is_live_environment ? 1 : 0
 
-  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
   department                     = module.department_housing_repairs
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_housing_repairs.raw_zone_catalog_database_name
@@ -78,7 +78,7 @@ module "repairs_fire_alarm_aov" {
 module "env_enforcement_estate_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
-  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
   department                     = module.department_env_enforcement
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_env_enforcement.raw_zone_catalog_database_name
@@ -123,7 +123,7 @@ module "env_enforcement_estate_cleaning" {
 module "env_enforcement_fix_my_street_noise" {
   count = local.is_live_environment ? 1 : 0
 
-  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
   department                     = module.department_env_enforcement
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_env_enforcement.raw_zone_catalog_database_name
@@ -156,7 +156,7 @@ module "env_enforcement_fix_my_street_noise" {
 module "env_enforcement_cc_tv" {
   count = local.is_live_environment ? 1 : 0
 
-  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
   department                     = module.department_env_enforcement
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_env_enforcement.raw_zone_catalog_database_name
@@ -189,7 +189,7 @@ module "env_enforcement_cc_tv" {
 module "data_and_insight_hb_combined" {
   count = local.is_live_environment ? 1 : 0
 
-  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
   department                     = module.department_data_and_insight
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_catalog_database_name     = module.department_data_and_insight.raw_zone_catalog_database_name
@@ -221,7 +221,7 @@ module "data_and_insight_hb_combined" {
 
 //module "parking_permits_consultation_survey" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -255,7 +255,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "puzzel_total_overview_10_05_2021_to_25_05_2021_UTF8" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -287,7 +287,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "eta_decision_records_gds_or_qlik_data_load_records_20220209" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -319,7 +319,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "eta_decision_records_gds_or_qlik_data_load_records_20220317" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -351,7 +351,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "eta_decision_records_gds_or_qlik_data_load_records_20220401" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -383,7 +383,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "eta_decision_records_gds_or_qlik_data_load_records_20220506" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -415,7 +415,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "eta_decision_records_gds_or_qlik_data_load_records_20220420" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -447,7 +447,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220427" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -479,7 +479,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220511" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -511,7 +511,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220512" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -543,7 +543,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220513" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -575,7 +575,7 @@ module "data_and_insight_hb_combined" {
 //
 //module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220516" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
@@ -606,7 +606,7 @@ module "data_and_insight_hb_combined" {
 //}
 //module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220524" {
 //  count                          = local.is_live_environment ? 1 : 0
-//  source                         = "../modules/data-sources/import-spreadsheet-file-from-g-drive"
+//  source                         = "../modules/resources/import-spreadsheet-file-from-g-drive"
 //  department                     = module.department_parking
 //  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
 //  glue_catalog_database_name     = module.department_parking.raw_zone_catalog_database_name
