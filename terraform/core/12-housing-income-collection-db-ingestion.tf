@@ -2,7 +2,7 @@ module "housing_income_collection_database_ingestion" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  source = "../terraform/modules/resources/database-ingestion-via-jdbc-connection"
+  source = "../modules/resources/database-ingestion-via-jdbc-connection"
 
   name                        = "housing-income-collection-database"
   jdbc_connection_url         = "jdbc:mysql://housing-finance-db-production-replica.cfem8ikpzzjl.eu-west-2.rds.amazonaws.com:3306/housingfinancedbproduction"
@@ -45,7 +45,7 @@ module "ingest_housing_income_collection_database_to_housing_raw_zone" {
   for_each = local.table_filter_expressions_housing_income_collection
   tags     = module.tags.values
 
-  source = "../terraform/modules/resources/aws-glue-job"
+  source = "../modules/resources/aws-glue-job"
 
   department = module.department_housing
 

@@ -78,7 +78,7 @@ data "aws_iam_policy_document" "task_role" {
 }
 
 module "sync_production_to_pre_production" {
-  source = "../terraform/modules/resources/aws-ecs-fargate-task"
+  source = "../modules/resources/aws-ecs-fargate-task"
   count  = local.is_production_environment ? 1 : 0
 
   tags                          = module.tags.values

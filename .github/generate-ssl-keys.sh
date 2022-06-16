@@ -8,7 +8,7 @@ set -eu -o pipefail
 
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-terraform_dir="${script_dir}/../terraform"
+terraform_dir="${script_dir}/../terraform/core"
 
 ssl_connection_resources_bucket_id=$(AWS_PROFILE="" terraform -chdir=${terraform_dir} output -raw ssl_connection_resources_bucket_id)
 

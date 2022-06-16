@@ -2,7 +2,7 @@ module "parking_geolive_database_ingestion" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  source = "../terraform/modules/resources/database-ingestion-via-jdbc-connection"
+  source = "../modules/resources/database-ingestion-via-jdbc-connection"
 
   name                        = "geolive-parking-schema"
   jdbc_connection_url         = "jdbc:postgresql://geolive-db-prod.cjgyygrtgrhl.eu-west-2.rds.amazonaws.com:5432/geolive"
@@ -15,7 +15,7 @@ module "parking_geolive_database_ingestion" {
 
 module "parking_geolive_ingestion_job" {
   count  = local.is_live_environment ? 1 : 0
-  source = "../terraform/modules/resources/aws-glue-job"
+  source = "../modules/resources/aws-glue-job"
 
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}geolive parking schema ingestion"
