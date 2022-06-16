@@ -113,8 +113,8 @@ resource "aws_iam_role_policy_attachment" "shutdown_notebooks" {
 #  Lambda function 
 data "archive_file" "shutdown_notebooks" {
   type        = "zip"
-  source_dir  = "../lambdas/shutdown_notebooks"
-  output_path = "../lambdas/shutdown_notebooks.zip"
+  source_dir  = "../../lambdas/shutdown_notebooks"
+  output_path = "../../lambdas/shutdown_notebooks.zip"
 }
 
 resource "aws_s3_bucket_object" "shutdown_notebooks" {

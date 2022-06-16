@@ -99,8 +99,8 @@ resource "aws_iam_role_policy_attachment" "g_drive_to_s3_copier_lambda" {
 
 data "archive_file" "g_drive_to_s3_copier_lambda" {
   type        = "zip"
-  source_dir  = "../lambdas/g_drive_to_s3"
-  output_path = "../lambdas/g_drive_to_s3.zip"
+  source_dir  = "../../lambdas/g_drive_to_s3"
+  output_path = "../../lambdas/g_drive_to_s3.zip"
 }
 
 resource "aws_s3_bucket_object" "g_drive_to_s3_copier_lambda" {

@@ -49,8 +49,8 @@ resource "aws_iam_role_policy_attachment" "set_budget_limit_amount_lambda" {
 
 data "archive_file" "set_budget_limit_amount_lambda" {
   type        = "zip"
-  source_dir  = "../lambdas/set_budget_limit_amount"
-  output_path = "../lambdas/set_budget_limit_amount.zip"
+  source_dir  = "../../lambdas/set_budget_limit_amount"
+  output_path = "../../lambdas/set_budget_limit_amount.zip"
 }
 
 resource "aws_s3_bucket_object" "set_budget_limit_amount_lambda" {

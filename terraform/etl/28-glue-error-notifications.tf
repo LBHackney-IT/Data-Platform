@@ -4,8 +4,8 @@ locals {
 
 data "archive_file" "glue_job_failure_notification_lambda" {
   type        = "zip"
-  source_dir  = "../lambdas/glue-failure-notifications"
-  output_path = "../lambdas/glue-failure-notifications.zip"
+  source_dir  = "../../lambdas/glue-failure-notifications"
+  output_path = "../../lambdas/glue-failure-notifications.zip"
 }
 
 resource "aws_s3_bucket_object" "glue_job_failure_notification_lambda" {

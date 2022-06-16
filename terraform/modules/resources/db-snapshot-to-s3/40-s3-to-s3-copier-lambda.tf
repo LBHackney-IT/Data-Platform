@@ -118,8 +118,8 @@ resource "aws_iam_role_policy_attachment" "s3_to_s3_copier_lambda" {
 
 data "archive_file" "s3_to_s3_copier_lambda" {
   type        = "zip"
-  source_dir  = "../lambdas/s3-to-s3-export-copier"
-  output_path = "../lambdas/s3-to-s3-export-copier.zip"
+  source_dir  = "../../lambdas/s3-to-s3-export-copier"
+  output_path = "../../lambdas/s3-to-s3-export-copier.zip"
 }
 
 resource "aws_s3_bucket_object" "s3_to_s3_copier_lambda" {

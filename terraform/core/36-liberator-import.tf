@@ -155,8 +155,8 @@ resource "aws_iam_role_policy_attachment" "move_liberator_to_pre_prod" {
 #  Lambda function 
 data "archive_file" "liberator_prod_to_pre_prod" {
   type        = "zip"
-  source_dir  = "../lambdas/liberator_prod_to_pre_prod"
-  output_path = "../lambdas/liberator_prod_to_pre_prod.zip"
+  source_dir  = "../../lambdas/liberator_prod_to_pre_prod"
+  output_path = "../../lambdas/liberator_prod_to_pre_prod.zip"
 }
 
 resource "aws_s3_bucket_object" "liberator_prod_to_pre_prod" {
