@@ -12,7 +12,7 @@ module "repairs_dlo" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = data.aws_secretsmanager_secret.sheets_credentials_housing.name
+  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1i9q42Kkbugwi4f2S4zdyid2ZjoN1XLjuYvqYqfHyygs"
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
@@ -35,7 +35,7 @@ module "repairs_herts_heritage" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = data.aws_secretsmanager_secret.sheets_credentials_housing.name
+  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1Psw8i2qooASPLjaBfGKNX7upiX7BeQSiMeJ8dQngSJI"
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
@@ -58,7 +58,7 @@ module "repairs_avonline" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = data.aws_secretsmanager_secret.sheets_credentials_housing.name
+  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1nM99bPaOPvg5o_cz9_yJR6jlnMB0oSHdFhAMKQkPJi4"
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
@@ -81,7 +81,7 @@ module "repairs_alpha_track" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = data.aws_secretsmanager_secret.sheets_credentials_housing.name
+  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1cbeVvMuNNinVQDeVfsUWalRpY6zK9oZPa3ebLtLSiAc"
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
@@ -104,7 +104,7 @@ module "repairs_stannah" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = data.aws_secretsmanager_secret.sheets_credentials_housing.name
+  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1CpC_Dn4aM8MSFb5a6HJ_FEsVYcahRsis9YIATcfArhw"
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs
@@ -127,7 +127,7 @@ module "repairs_purdy" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = data.aws_secretsmanager_secret.sheets_credentials_housing.name
+  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1-PpKPnaPMA6AogsNXT5seqQk3VUB-naFnFJYhROkl2o"
   google_sheets_worksheet_name    = "FormresponsesPUR"
   department                      = module.department_housing_repairs
@@ -150,7 +150,7 @@ module "repairs_axis" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone.bucket_id
-  sheets_credentials_name         = data.aws_secretsmanager_secret.sheets_credentials_housing.name
+  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1aDWO9ZAVar377jiYTXkZzDCIckCqbhppOW23B85hFsA"
   google_sheets_worksheet_name    = "Form responses 1"
   department                      = module.department_housing_repairs

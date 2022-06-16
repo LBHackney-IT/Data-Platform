@@ -58,24 +58,24 @@ resource "aws_s3_bucket_object" "jars" {
   bucket      = module.glue_scripts.bucket_arn
   key         = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
   acl         = "private"
-  source      = "../external-lib/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
-  source_hash = filemd5("../external-lib/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar")
+  source      = "../../external-lib/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
+  source_hash = filemd5("../../external-lib/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar")
 }
 
 resource "aws_s3_bucket_object" "deeque_jar" {
   bucket      = module.glue_scripts.bucket_arn
   key         = "jars/deequ-1.0.3.jar"
   acl         = "private"
-  source      = "../external-lib/target/deequ-1.0.3.jar"
-  source_hash = filemd5("../external-lib/target/deequ-1.0.3.jar")
+  source      = "../../external-lib/target/deequ-1.0.3.jar"
+  source_hash = filemd5("../../external-lib/target/deequ-1.0.3.jar")
 }
 
 resource "aws_s3_bucket_object" "pydeequ" {
   bucket      = module.glue_scripts.bucket_arn
   key         = "python-modules/data-sources/pydeequ-1.0.1.zip"
   acl         = "private"
-  source      = "../external-lib/target/pydeequ-1.0.1.zip"
-  source_hash = filemd5("../external-lib/target/pydeequ-1.0.1.zip")
+  source      = "../../external-lib/target/pydeequ-1.0.1.zip"
+  source_hash = filemd5("../../external-lib/target/pydeequ-1.0.1.zip")
 }
 
 resource "aws_s3_bucket_object" "spreadsheet_import_script" {

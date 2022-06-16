@@ -78,8 +78,8 @@ module "ingest_tascomi_data" {
     "--s3_bucket_target"        = module.raw_zone.bucket_id
     "--s3_prefix"               = "planning/tascomi/api-responses/"
     "--enable-glue-datacatalog" = "true"
-    "--public_key_secret_id"    = data.aws_secretsmanager_secret.tascomi_api_public_key.id
-    "--private_key_secret_id"   = data.aws_secretsmanager_secret.tascomi_api_private_key.id
+    "--public_key_secret_id"    = aws_secretsmanager_secret.tascomi_api_public_key.id
+    "--private_key_secret_id"   = aws_secretsmanager_secret.tascomi_api_private_key.id
     "--number_of_workers"       = local.number_of_workers
     "--target_database_name"    = aws_glue_catalog_database.raw_zone_tascomi.name
   }

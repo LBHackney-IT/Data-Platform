@@ -23,26 +23,27 @@ resource "aws_secretsmanager_secret" "sheets_credentials_housing" {
   kms_key_id = aws_kms_key.secrets_manager_key.id
 }
 
+resource "aws_ssm_parameter" "sheets_credentials_housing_name" {
+  tags = module.tags.values
+
+  name        = "/${local.identifier_prefix}/secrets_manager/sheets_credentials_housing/name"
+  type        = "SecureString"
+  description = "The name of the housing sheets secret"
+  value       = aws_secretsmanager_secret.sheets_credentials_housing.name
+}
+
+resource "aws_ssm_parameter" "sheets_credentials_housing_arn" {
+  tags = module.tags.values
+
+  name        = "/${local.identifier_prefix}/secrets_manager/sheets_credentials_housing/arn"
+  type        = "SecureString"
+  description = "The arn of the housing sheets secret"
+  value       = aws_secretsmanager_secret.sheets_credentials_housing.arn
+}
+
 resource "aws_secretsmanager_secret_version" "housing_json_credentials_secret_version" {
   count = local.is_live_environment ? 1 : 0
 
   secret_id     = aws_secretsmanager_secret.sheets_credentials_housing.id
   secret_binary = google_service_account_key.housing_json_credentials[0].private_key
-}
-
-// Tascomi Key
-resource "aws_secretsmanager_secret" "tascomi_api_public_key" {
-  tags = module.tags.values
-
-  name_prefix = "${local.identifier_prefix}/${module.department_planning.identifier}/tascomi-api-public-key"
-
-  kms_key_id = aws_kms_key.secrets_manager_key.id
-}
-
-resource "aws_secretsmanager_secret" "tascomi_api_private_key" {
-  tags = module.tags.values
-
-  name_prefix = "${local.identifier_prefix}/${module.department_planning.identifier}/tascomi-api-private-key"
-
-  kms_key_id = aws_kms_key.secrets_manager_key.id
 }

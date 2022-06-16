@@ -6,6 +6,15 @@ resource "aws_secretsmanager_secret" "redshift_cluster_credentials" {
   kms_key_id  = var.secrets_manager_kms_key.key_id
 }
 
+resource "aws_ssm_parameter" "redshift_cluster_credentials_arn" {
+  tags = var.tags
+
+  name        = "/${var.identifier_prefix}/redshift/${local.department_identifier}/redshift_cluster_credentials_arn"
+  type        = "SecureString"
+  description = "ARN of the departments redshift cluster credential secret"
+  value       = aws_secretsmanager_secret.redshift_cluster_credentials.arn
+}
+
 resource "random_password" "redshift_password" {
   length      = 24
   special     = false

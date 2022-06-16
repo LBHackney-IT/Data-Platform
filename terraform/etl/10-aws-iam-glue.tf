@@ -182,9 +182,9 @@ data "aws_iam_policy_document" "access_to_s3_iam_and_secrets" {
       "secretsmanager:GetSecretValue"
     ]
     resources = [
-      data.aws_secretsmanager_secret.sheets_credentials_housing.arn,
-      data.aws_secretsmanager_secret.tascomi_api_public_key.id,
-      data.aws_secretsmanager_secret.tascomi_api_private_key.id
+      data.aws_ssm_parameter.sheets_credentials_housing_arn.value,
+      aws_secretsmanager_secret.tascomi_api_public_key.id,
+      aws_secretsmanager_secret.tascomi_api_private_key.id
     ]
   }
 }

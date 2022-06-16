@@ -25,17 +25,17 @@ output "identifier_snake_case" {
 
 output "raw_zone_catalog_database_name" {
   description = "Raw Zone Catalog Database Name"
-  value       = data.aws_glue_catalog_database.raw_zone_catalog_database.name
+  value       = data.aws_ssm_parameter.raw_zone_catalog_database_name.value
 }
 
 output "refined_zone_catalog_database_name" {
   description = "Refined Zone Catalog Database Name"
-  value       = data.aws_glue_catalog_database.refined_zone_catalog_database.name
+  value       = data.aws_ssm_parameter.refined_zone_catalog_database_name.value
 }
 
 output "trusted_zone_catalog_database_name" {
   description = "Trusted Zone Catalog Database Name"
-  value       = data.aws_glue_catalog_database.trusted_zone_catalog_database.name
+  value       = data.aws_ssm_parameter.trusted_zone_catalog_database_name.value
 }
 
 output "google_service_account" {
