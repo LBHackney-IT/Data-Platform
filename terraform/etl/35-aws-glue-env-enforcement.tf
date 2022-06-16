@@ -2,7 +2,7 @@
 
 
 module "liberator_fpns_to_refined" {
-  source = "../modules/data-sources/aws-glue-job"
+  source = "../modules/resources/aws-glue-job"
 
   department                 = module.department_env_enforcement
   job_name                   = "${local.short_identifier_prefix}liberator_fpns_refined"
@@ -31,7 +31,7 @@ module "liberator_fpns_to_refined" {
 }
 
 module "noisework_complaints_to_refined" {
-  source = "../modules/data-sources/aws-glue-job"
+  source = "../modules/resources/aws-glue-job"
 
   department                 = module.department_env_enforcement
   job_name                   = "${local.short_identifier_prefix}noisework_complaints_to_refined"
