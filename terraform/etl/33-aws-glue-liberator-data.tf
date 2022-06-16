@@ -6,6 +6,25 @@ resource "aws_glue_workflow" "parking_liberator_data" {
 }
 
 
+resource "aws_ssm_parameter" "parking_liberator_data_workflow_name" {
+  tags = module.tags.values
+
+  name        = "/${local.identifier_prefix}/glue/parking_liberator_data_workflow_name"
+  type        = "SecureString"
+  description = "Liberator Glue workflow name"
+  value       = aws_glue_workflow.parking_liberator_data.name
+}
+
+resource "aws_ssm_parameter" "parking_liberator_data_workflow_arn" {
+  tags = module.tags.values
+
+  name        = "/${local.identifier_prefix}/glue/parking_liberator_data_workflow_arn"
+  type        = "SecureString"
+  description = "Liberator Glue workflow arn"
+  value       = aws_glue_workflow.parking_liberator_data.arn
+}
+
+
 // LIBERATOR LANDING ZONE
 resource "aws_glue_catalog_database" "landing_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-landing-zone"

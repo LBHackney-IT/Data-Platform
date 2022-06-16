@@ -14,9 +14,9 @@ module "ingest_better_conversations_tables" {
 
   job_name                       = "${local.short_identifier_prefix}Ingest Better Conversations tables"
   job_description                = "Ingest a snapshot of 2 Better Conversations tables from the API Prod Dynamo DB instance"
-  script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
-  helper_module_key              = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
+  script_s3_object_key           = data.aws_s3_bucket_object.dynamodb_tables_ingest.key
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   number_of_workers_for_glue_job = local.number_of_workers_for_better_conversations_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
@@ -29,7 +29,7 @@ module "ingest_better_conversations_tables" {
   }
 
   crawler_details = {
-    database_name      = data.aws_glue_catalog_database.landing_zone_catalog_database.name
+    database_name      = aws_glue_catalog_database.landing_zone_catalog_database.name
     s3_target_location = "s3://${module.landing_zone.bucket_id}/better-conversations/"
     table_prefix       = "better_conversations_"
     configuration = jsonencode({

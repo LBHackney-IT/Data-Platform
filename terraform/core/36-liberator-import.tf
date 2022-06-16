@@ -40,8 +40,16 @@ module "liberator_db_snapshot_to_s3" {
   zone_bucket_id                 = module.landing_zone.bucket_id
   service_area                   = "parking"
   rds_instance_ids               = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_id]
-  workflow_name                  = aws_glue_workflow.parking_liberator_data.name
-  workflow_arn                   = aws_glue_workflow.parking_liberator_data.arn
+  workflow_name                  = data.aws_ssm_parameter.parking_liberator_data_workflow_name.value
+  workflow_arn                   = data.aws_ssm_parameter.parking_liberator_data_workflow_arn.value
+}
+
+data "aws_ssm_parameter" "parking_liberator_data_workflow_name" {
+  name = "/${local.identifier_prefix}/glue/parking_liberator_data_workflow_name"
+}
+
+data "aws_ssm_parameter" "parking_liberator_data_workflow_arn" {
+  name = "/${local.identifier_prefix}/glue/parking_liberator_data_workflow_arn"
 }
 
 # Move .zip in production to pre production

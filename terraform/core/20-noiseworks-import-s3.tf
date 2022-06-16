@@ -147,8 +147,8 @@ module "noiseworks_to_raw_zone" {
 
   department                 = module.department_env_enforcement
   job_name                   = "${local.short_identifier_prefix}noiseworks_to_raw_zone"
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--job-bookmark-option"    = "job-bookmark-enable"

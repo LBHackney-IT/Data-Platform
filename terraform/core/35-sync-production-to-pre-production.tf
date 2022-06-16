@@ -92,9 +92,9 @@ module "sync_production_to_pre_production" {
       task_cpu    = 2048
       task_memory = 4096
       environment_variables = [
-        { "name" = "NUMBER_OF_DAYS_TO_RETAIN", "value" = "90" },
-        { "name" = "S3_SYNC_SOURCE", "value" = module.raw_zone.bucket_id },
-        { "name" = "S3_SYNC_TARGET", "value" = "dataplatform-stg-raw-zone-prod-copy" }
+        { name = "NUMBER_OF_DAYS_TO_RETAIN", value = "90" },
+        { name = "S3_SYNC_SOURCE", value = module.raw_zone.bucket_id },
+        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-raw-zone-prod-copy" }
       ]
       cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
     },
@@ -103,9 +103,9 @@ module "sync_production_to_pre_production" {
       task_cpu    = 256
       task_memory = 512
       environment_variables = [
-        { "name" = "NUMBER_OF_DAYS_TO_RETAIN", "value" = "90" },
-        { "name" = "S3_SYNC_SOURCE", "value" = module.refined_zone.bucket_id },
-        { "name" = "S3_SYNC_TARGET", "value" = "dataplatform-stg-refined-zone-prod-copy" }
+        { name = "NUMBER_OF_DAYS_TO_RETAIN", value = "90" },
+        { name = "S3_SYNC_SOURCE", value = module.refined_zone.bucket_id },
+        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-refined-zone-prod-copy" }
       ]
       cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
     },
@@ -114,9 +114,9 @@ module "sync_production_to_pre_production" {
       task_cpu    = 256
       task_memory = 512
       environment_variables = [
-        { "name" = "NUMBER_OF_DAYS_TO_RETAIN", "value" = "90" },
-        { "name" = "S3_SYNC_SOURCE", "value" = module.trusted_zone.bucket_id },
-        { "name" = "S3_SYNC_TARGET", "value" = "dataplatform-stg-trusted-zone-prod-copy" }
+        { name = "NUMBER_OF_DAYS_TO_RETAIN", value = "90" },
+        { name = "S3_SYNC_SOURCE", value = module.trusted_zone.bucket_id },
+        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-trusted-zone-prod-copy" }
       ]
       cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
     }
