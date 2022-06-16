@@ -1,6 +1,6 @@
 # Any internal local variables should be declared here. We also import the tag module for convenience
 module "tags" {
-  source = "git@github.com:LBHackney-IT/infrastructure.git//modules/data-sources/aws-tags-lbh/module?ref=master"
+  source = "git@github.com:LBHackney-IT/infrastructure.git//modules/aws-tags-lbh/module?ref=master"
 
   application          = var.application
   automation_build_url = var.automation_build_url
