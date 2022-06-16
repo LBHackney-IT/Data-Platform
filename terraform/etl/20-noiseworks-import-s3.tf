@@ -74,7 +74,7 @@ resource "aws_secretsmanager_secret" "noiseworks_user_private_key" {
 
   name_prefix = "${local.short_identifier_prefix}noiseworks-user-private-key"
 
-  kms_key_id = aws_kms_key.secrets_manager_key.id
+  kms_key_id = data.aws_kms_key.secrets_manager_key.id
 }
 
 locals {
@@ -147,8 +147,8 @@ module "noiseworks_to_raw_zone" {
 
   department                 = module.department_env_enforcement
   job_name                   = "${local.short_identifier_prefix}noiseworks_to_raw_zone"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--job-bookmark-option"    = "job-bookmark-enable"
