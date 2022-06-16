@@ -21,6 +21,10 @@ The Terraform will be deployed, using GitHub Actions, on push to main / when a P
 
 The terraform/core directory contains the majority of the infrastructure and at the time of writing has one Github action to deploy to staging and one to deploy to production.
 
+#### /terraform/etl
+
+The terraform/etl directory contains the ETL and Glue related infrastructure and at the time of writing has one Github action to deploy to staging and one to deploy to production.
+
 #### /terraform/networking
 
 The terraform-networking directory contains the networking aspect of the data platform (see [`Networking`](#Networking)) and at the time of writing has one Github action to deploy to staging and one to deploy to production.
@@ -106,13 +110,13 @@ Generate Credentials for Vault
 $ aws-vault exec hackney-dataplatform-development -- aws sts get-caller-identity
 ```
 
-Ensure that GNU Make is installed on your computer. The full commands for the below instructions can be found in `/terraform/core/Makefile`
+Ensure that GNU Make is installed on your computer. The full commands for the below instructions can be found in `/terraform/core/Makefile` & `/terraform/etl/Makefile`
 
 Initialise the Project
 
 - Before you run, ensure:
   - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
-  - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform directory
+  - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform/core & terraform/etl directories
 
 ```
 $ make init
@@ -138,9 +142,14 @@ $ WORKSPACE={developer} make workspace-select
   - Copy this file to the root of the project by running the following command in the root of the project `cp /Users/*/.config/gcloud/application_default_credentials.json ./google_service_account_creds.json`
 
 5. Next run `make init` in the `/terraform/core` directory.
-   This will initialize terraform using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
+   This will initialize terraform/core using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
    - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
-   - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform directory
+   - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform/core directory
+
+6. Next run `make init` in the `/terraform/etl` directory.
+   This will initialize terraform/etl using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
+    - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
+    - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform/etl directory
 
 #### Terraform commands
 

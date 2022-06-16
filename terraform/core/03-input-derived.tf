@@ -49,32 +49,32 @@ data "aws_iam_role" "glue_role" {
 }
 
 data "aws_s3_bucket_object" "helpers" {
-  bucket = module.glue_scripts.bucket_arn
+  bucket = module.glue_scripts.bucket_id
   key    = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
 }
 
 data "aws_s3_bucket_object" "jars" {
-  bucket = module.glue_scripts.bucket_arn
+  bucket = module.glue_scripts.bucket_id
   key    = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
 }
 
 data "aws_s3_bucket_object" "pydeequ" {
-  bucket = module.glue_scripts.bucket_arn
+  bucket = module.glue_scripts.bucket_id
   key    = "python-modules/pydeequ-1.0.1.zip"
 }
 
 data "aws_s3_bucket_object" "ingest_database_tables_via_jdbc_connection" {
-  bucket = module.glue_scripts.bucket_arn
+  bucket = module.glue_scripts.bucket_id
   key    = "scripts/ingest_database_tables_via_jdbc_connection.py"
 }
 
 data "aws_s3_bucket_object" "copy_tables_landing_to_raw" {
-  bucket = module.glue_scripts.bucket_arn
+  bucket = module.glue_scripts.bucket_id
   key    = "scripts/copy_tables_landing_to_raw.py"
 }
 
 data "aws_s3_bucket_object" "dynamodb_tables_ingest" {
-  bucket = module.glue_scripts.bucket_arn
+  bucket = module.glue_scripts.bucket_id
   key    = "scripts/ingest_tables_from_dynamo_db.py"
 }
 
