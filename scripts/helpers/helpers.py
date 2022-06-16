@@ -133,17 +133,7 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
     return set(folders)
 
 
-def get_latest_partitions(dfa):
-    dfa = dfa.where(f.col('import_year') == dfa.select(
-        f.max('import_year')).first()[0])
-    dfa = dfa.where(f.col('import_month') == dfa.select(
-        f.max('import_month')).first()[0])
-    dfa = dfa.where(f.col('import_day') == dfa.select(
-        f.max('import_day')).first()[0])
-    return dfa
-
-
-def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
+def get_latest_partitions(df: DataFrame) -> DataFrame:
     """Filters the DataFrame based on the latest (most recent) partition.
     Confirm if this can be changed to using import_date columns instead of import_year, import_month, import_day
 
@@ -157,29 +147,6 @@ def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
         DataFrame belonging to the most recent partition.
 
     """
-    # latest_year, latest_month, latest_day = df \
-    #     .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
-    #                         format="yyyy-L-d")).alias("latest_partition_date")) \
-    #     .select(year(col("latest_partition_date")), month(col("latest_partition_date")),
-    #             dayofmonth(col("latest_partition_date"))).collect()[0]
-    # return df.filter(
-    #     (col("import_year") == latest_year) &
-    #     (col("import_month") == latest_month) &
-    #     (col("import_day") == latest_day))
-
-    # latest_partition = df \
-    #     .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
-    #                         format="yyyy-L-d")).alias("latest_partition_date")) \
-    #     .select(year(col("latest_partition_date")).alias("latest_year"),
-    #             month(col("latest_partition_date")).alias("latest_month"),
-    #             dayofmonth(col("latest_partition_date")).alias("latest_day"))
-    #
-    # result = df \
-    #     .join(broadcast(latest_partition),
-    #           (df.import_year == latest_partition.latest_year) &
-    #           (df.import_month == latest_partition.latest_month) &
-    #           (df.import_day == latest_partition.latest_day)) \
-    #     .drop("latest_year", "latest_month", "latest_day")
 
     if "import_date" not in df.columns:
         raise ValueError("Column import_date not found in the DataFrame")

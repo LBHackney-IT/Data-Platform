@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import Final, List, Optional
+from typing import List, Optional
 
 from pyspark.sql import SparkSession, DataFrame
 from pyspark import SparkContext
@@ -9,9 +9,9 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.utils import getResolvedOptions
 
-AWS_JOB_NAME: Final[str] = 'JOB_NAME'
-DEFAULT_MODE_AWS: Final[str] = 'aws'
-LOCAL_MODE: Final[str] = 'local'
+AWS_JOB_NAME: str = 'JOB_NAME'
+DEFAULT_MODE_AWS: str = 'aws'
+LOCAL_MODE: str = 'local'
 
 
 class ExecutionContextProvider:
@@ -35,7 +35,7 @@ class ExecutionContextProvider:
                                          connection_options={"path": "s3://path",
                                                              "partitionKeys": ["col1", "col2", "col3"]},
                                          transformation_ctx="parquetData")
-        See Also: for usage please see scripts/jobs/gb_levenshtein_address_matching.py
+        See Also: for usage please see: scripts/jobs/levenshtein_address_matching.py
 
     """
 
@@ -54,8 +54,8 @@ class ExecutionContextProvider:
             raise ValueError("mode should be 'aws' or 'local'")
         self.__mode = mode
         glue_args = glue_args or []
-        self.__args = getResolvedOptions(sys.argv, glue_args.append(
-            AWS_JOB_NAME)) if self.mode == DEFAULT_MODE_AWS else vars(local_args)
+        glue_args.append(AWS_JOB_NAME)
+        self.__args = getResolvedOptions(sys.argv, glue_args) if self.mode == DEFAULT_MODE_AWS else vars(local_args)
 
         self.__glue_context = GlueContext(SparkContext.getOrCreate()) if self.mode == DEFAULT_MODE_AWS else None
         self.__spark_session = self.__glue_context.spark_session if self.mode == DEFAULT_MODE_AWS else SparkSession \
@@ -124,31 +124,40 @@ class ExecutionContextProvider:
         if self.mode == DEFAULT_MODE_AWS:
             if not dynamic_frame_args:
                 raise ValueError("dynamic_frame_args cannot be empty")
-            return self.__glue_context.create_data_frame_from_catalog(**dynamic_frame_args).toDF()
+            return self.__glue_context.create_data_frame_from_catalog(**dynamic_frame_args)
         else:
             if not local_path_parquet:
                 raise ValueError("local_path_parquet cannot be empty")
             return self.spark_session.read.parquet(local_path_parquet)
 
     @staticmethod
-    def save_dataframe(df: DataFrame, save_path: str, *partition_columns: str) -> None:
+    def save_dataframe(df: DataFrame, save_path: str, *partition_columns: str,
+                       save_mode: Optional[str] = "append") -> None:
         """Save the DataFrame either to the S3 (in `aws` mode) or to the local storage (in `local` mode)
 
         Args:
             df: DataFrame to be saved
             save_path: path where data will be saved
             partition_columns: partition columns
+            save_mode: Can be one of the following: append or overwrite or error or ignore
+            * `append`: Append contents of this :class:`DataFrame` to existing data.
+            * `overwrite`: Overwrite existing data.
+            * `error` or `errorifexists`: Throw an exception if data already exists.
+            * `ignore`: Silently ignore this operation if data already exists.
 
         Raises:
             ValueError if save_path is empty
+
         """
         if not save_path:
             raise ValueError("save_path cannot be empty")
 
+        save_mode = save_mode or "append"
+
         if partition_columns:
-            df.write.partitionBy(*partition_columns).parquet(save_path)
+            df.write.mode(save_mode).partitionBy(*partition_columns).parquet(save_path)
         else:
-            df.write.parquet(save_path)
+            df.write.mode(save_mode).parquet(save_path)
 
     @staticmethod
     def __get_local_logger():

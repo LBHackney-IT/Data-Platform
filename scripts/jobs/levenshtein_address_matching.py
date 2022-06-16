@@ -1,422 +1,247 @@
-import sys
-from awsglue.utils import getResolvedOptions
-import pyspark.sql.functions as F
-from pyspark import SparkContext
-from pyspark.sql.window import Window
-from awsglue.context import GlueContext
-from awsglue.dynamicframe import DynamicFrame
-from awsglue.job import Job
-from pyspark.sql.functions import col, max
-from pyspark.sql.types import StringType
+"""This job matches the addresses (source) against the master data (gazetteer or target). The job provides a score of
+matching in a column called round. The lower the round number the better match it is i.e. matches with value "round 0"
+is better than "round 4". This job uses `Levenshtein Distance <https://en.wikipedia.org/wiki/Levenshtein_distance/>`_
+to calculate similarity.
 
-from helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS, create_pushdown_predicate
+The job can be run in local mode (i.e. on your local environment) and also on AWS (see Usage below).
+
+Usage:
+To run in local mode:
+set the mode to 'local' and provide the path od data set of your local machine
+--mode=local --addresses_data_path=</path/to/gazetteer_address> --source_data_path=</path/to/source_address> \
+--target_destination=</path/to/save/output> --match_to_property_shell=<property_name>
+e.g. use below to run on test data
+--mode=local --addresses_data_path=test_data/levenshtein_address_matching/addresses/ \
+--source_data_path=test_data/levenshtein_address_matching/source/ \
+--target_destination=/tmp --match_to_property_shell=forbid
+
+To run in AWS mode:
+No need to provide mode (or optionally set it to 'aws')
+--addresses_api_data_database=<gazetteer_db_name> --addresses_api_data_table=<gazetteer_table_name> \
+--source_catalog_database=<source_db_name> --source_catalog_table=<source_table_name> \
+--target_destination=</path/to/save/output> --match_to_property_shell=<property_name>
+"""
+
+import argparse
+
+from pyspark.sql import DataFrame, Window
+from pyspark.sql.functions import col, concat_ws, length, levenshtein, lit, min, substring, trim, when
+
+from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
+from scripts.helpers.helpers import get_latest_partitions, create_pushdown_predicate, PARTITION_KEYS
 
 
-def prep_source_data(query_addresses):
-    query_addresses_sample = query_addresses.filter(
-        "concatenated_string_to_match != ''")
-    query_addresses_sample = query_addresses_sample.filter("uprn is null")
+def prep_source_data(query_addresses: DataFrame) -> DataFrame:
+    result = query_addresses \
+        .filter((col("concatenated_string_to_match").isNotNull()) &
+                (length(trim(col("concatenated_string_to_match"))) > 0) &
+                (col("uprn").isNull())) \
+        .withColumn("query_address", concat_ws(" ", col("concatenated_string_to_match"), col("postcode"))) \
+        .select(col("prinx"), col("query_address"), col("postcode").alias("query_postcode"))
 
-    query_concat = query_addresses_sample.withColumn(
-        "query_address",
-        F.concat_ws(" ", "concatenated_string_to_match", "postcode")
-    )
+    return result
 
-    query_concat = query_concat.select(
-        "prinx", "query_address", "postcode").withColumnRenamed("postcode", "query_postcode")
-    
-    return query_concat
 
-def prep_addresses_api_data(target_addresses, match_to_property_shell):
-    
+def prep_addresses_api_data(target_addresses: DataFrame, match_to_property_shell: str) -> DataFrame:
+    target_columns = target_addresses.select("line1", "line2", "line3", "postcode", "uprn", "blpu_class")
     # set property shell preferences
-    if match_to_property_shell == 'force': 
-        target_addresses = target_addresses.where("blpu_class LIKE 'P%'")
+    if match_to_property_shell == 'force':
+        target_columns = target_columns.where("blpu_class LIKE 'P%'")
     elif match_to_property_shell == 'forbid':
-        target_addresses = target_addresses.where("blpu_class NOT LIKE 'P%'")   
-
-    # keep blpu class
-    target_concat = target_addresses.select("line1", "line2", "line3", "postcode", "uprn", "blpu_class")
-
-
-    target_concat = target_concat.withColumn(
-        "concat_lines",
-        F.concat_ws(" ", "line1", "line2", "line3")
-    )
-
-    target_concat = target_concat.withColumn(
-        "concat_lines", F.trim(F.col("concat_lines")))
-    target_concat = target_concat.withColumn(
-        "address_length", F.length(F.col("concat_lines")))
-    target_concat = target_concat.withColumn("concat_lines",
-                                            F.when(F.col("concat_lines").endswith(" HACKNEY"), F.expr(
-                                                "substring(concat_lines, 1, address_length -8)"))
-                                            .otherwise(F.col("concat_lines")))
-
-    target_concat = target_concat.withColumn(
-        "target_address",
-        F.concat_ws(" ", "concat_lines", "postcode")
-    )
-
-    target_concat = target_concat.withColumn(
-        "target_address_short",
-        F.concat_ws(" ", "line1", "postcode")
-    )
-
-    target_concat = target_concat.withColumn(
-        "target_address_medium",
-        F.concat_ws(" ", "line1", "line2", "postcode")
-    )
-
-    target_concat = target_concat.select("target_address", "target_address_short", "target_address_medium", 
-                                        "postcode", "uprn", "blpu_class").withColumnRenamed("postcode", "target_postcode")
-    return target_concat
-
-def match_addresses(query_concat, target_concat, logger):
-
-    # COMPARE QUERY AND TARGET
-
-    cross_with_same_postcode = query_concat.join(
-        target_concat, query_concat.query_postcode == target_concat.target_postcode, "fullouter")
-
-
-    cross_compare = cross_with_same_postcode.withColumn(
-        "levenshtein", F.levenshtein(F.col("query_address"), F.col("target_address")))
-    cross_compare = cross_compare.withColumn("levenshtein_short", F.levenshtein(
-        F.col("query_address"), F.col("target_address_short")))
-    cross_compare = cross_compare.withColumn("levenshtein_medium", F.levenshtein(
-        F.col("query_address"), F.col("target_address_medium")))
-    cross_compare = cross_compare.withColumn("levenshtein_10char", F.levenshtein(
-        F.substring(F.col("query_address"), 1, 10), F.substring(F.col("target_address"), 1, 10)))
-
-
-    # ROUND 0 - look for perfect
-    perfectFull = cross_compare.filter("levenshtein = 0").dropDuplicates(['prinx'])
-    perfectFull = perfectFull.withColumn("match_type", F.lit("perfect"))
-    perfectFull = perfectFull.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
-
-
-
-    perfectShort = cross_compare\
-        .join(perfectFull, "prinx", "left_anti")\
-        .filter("levenshtein_short = 0")\
-        .dropDuplicates(['prinx'])
-
-    perfectShort = perfectShort.withColumn("match_type", F.lit("perfect on first line and postcode"))
-    perfectShort = perfectShort.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
-
-
-
-    perfectMedium = cross_compare\
-        .join(perfectFull, "prinx", "left_anti")\
-        .join(perfectShort, "prinx", "left_anti")\
-        .filter("levenshtein_medium = 0")\
-        .dropDuplicates(['prinx'])
-
-    perfectMedium = perfectMedium.withColumn("match_type", F.lit("perfect on first 2 lines and postcode"))
-    perfectMedium = perfectMedium.select(F.col("prinx"), F.col("query_address"), 
-    F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
-
-
-    perfect10char = cross_compare\
-        .join(perfectFull, "prinx", "left_anti")\
-        .join(perfectShort, "prinx", "left_anti")\
-        .join(perfectMedium, "prinx", "left_anti")\
-        .filter("levenshtein_10char = 0").dropDuplicates(['prinx'])
-
-    perfect10char = perfect10char.withColumn("match_type", F.lit("perfect on first 10 characters and postcode"))
-    perfect10char = perfect10char.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
-
-
-    # put all 'perfect' together
-    perfectMatch = perfectFull.union(perfectShort).union(
-        perfectMedium).union(perfect10char)
-    perfectMatch = perfectMatch.withColumn("round", F.lit("round 0"))
-
-    logger.info("End of Round 0")
-
-    # ROUND 1 - now look at imperfect with same postcode
-
-    cross_compare = cross_compare\
-        .join(perfectMatch, "prinx", "left_anti")
-
-    window = Window.partitionBy('prinx').orderBy("levenshtein")
-
-    bestMatch_round1 = cross_compare.filter("levenshtein < 3").withColumn('rank', F.rank().over(window))\
-        .filter('rank = 1')\
-        .dropDuplicates(['prinx'])
-
-    bestMatch_round1 = bestMatch_round1.withColumn("match_type", F.lit("Levenshtein < 3 on full address, same postcode"))
-    bestMatch_round1 = bestMatch_round1.withColumn("round", F.lit("round 1"))
-
-    bestMatch_round1 = bestMatch_round1.select("prinx", "query_address", F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type", "round")
-
-    logger.info("End of Round 1")
-    
-    # ROUND 2
-
-    cross_compare = cross_compare.join(bestMatch_round1, "prinx", "left_anti")
-
-    window = Window.partitionBy('prinx').orderBy("levenshtein_short")
-
-    bestMatch_round2 = cross_compare.filter("levenshtein_short < 3").withColumn('rank', F.rank().over(window))\
-        .filter('rank = 1')\
-        .dropDuplicates(['prinx'])
-
-    bestMatch_round2 = bestMatch_round2.withColumn("match_type", F.lit("Levenshtein < 3 on first address line, same postcode"))
-    bestMatch_round2 = bestMatch_round2.withColumn("round", F.lit("round 2"))
-    bestMatch_round2 = bestMatch_round2.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
-
-    logger.info("End of Round 2")
-
-    # ROUND 3
-
-    # take all the unmatched, still keep same postcode, try match to line1 and line 2
-    cross_compare = cross_compare.join(bestMatch_round2, "prinx", "left_anti")
-
-    window = Window.partitionBy('prinx').orderBy("levenshtein_medium")
-
-    bestMatch_round3 = cross_compare.filter("levenshtein_medium < 3").withColumn('rank', F.rank().over(window))\
-        .filter('rank = 1')\
-        .dropDuplicates(['prinx'])
-
-    bestMatch_round3 = bestMatch_round3.withColumn("match_type", F.lit("Levenshtein < 3 on first 2 address lines, same postcode"))
-    bestMatch_round3 = bestMatch_round3.withColumn("round", F.lit("round 3"))
-    bestMatch_round3 = bestMatch_round3.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
-
-    logger.info("End of Round 3")
-
-    # Prepare rounds 4 to 7: take all the unmatched, allow mismatched postcodes
-    cross_compare = query_concat\
-        .join(perfectMatch, "prinx", "left_anti")\
-        .join(bestMatch_round1, "prinx", "left_anti")\
-        .join(bestMatch_round2, "prinx", "left_anti")\
-        .join(bestMatch_round3, "prinx", "left_anti")\
-        .crossJoin(target_concat)
-
-    cross_compare = cross_compare.withColumn(
-        "levenshtein", F.levenshtein(F.col("query_address"), F.col("target_address")))
-    cross_compare = cross_compare.withColumn("levenshtein_short", F.levenshtein(
-        F.col("query_address"), F.col("target_address_short")))
-    cross_compare = cross_compare.withColumn("levenshtein_medium", F.levenshtein(
-        F.col("query_address"), F.col("target_address_medium")))
-
-    cross_compare = cross_compare.filter(
-        "levenshtein<5 or levenshtein_short<5 or levenshtein_medium<5")
-
-    # ROUND 4
-
-    window = Window.partitionBy('prinx').orderBy("levenshtein")
-
-    bestMatch_round4 = cross_compare.filter("levenshtein < 5").withColumn('rank', F.rank().over(window))\
-        .filter('rank = 1')\
-        .dropDuplicates(['prinx'])
-
-    bestMatch_round4 = bestMatch_round4.withColumn(
-        "match_type", F.lit("Levenshtein < 5 on full address, postcode may differ"))
-    bestMatch_round4 = bestMatch_round4.withColumn("round", F.lit("round 4"))
-
-    bestMatch_round4 = bestMatch_round4.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
-
-    logger.info("End of Round 4")
-
-    # ROUND 5
-
-    # take all the unmatched, allow mismatched postcodes, match to line 1 and postcode only
-    cross_compare = cross_compare.join(bestMatch_round4, "prinx", "left_anti")
-
-    window = Window.partitionBy('prinx').orderBy("levenshtein_short")
-
-    bestMatch_round5 = cross_compare.filter("levenshtein_short < 5").withColumn('rank', F.rank().over(window))\
-        .filter('rank = 1')\
-        .dropDuplicates(['prinx'])
-
-    bestMatch_round5 = bestMatch_round5.withColumn(
-        "match_type", F.lit("Levenshtein < 5 on first address line, postcode may differ"))
-    bestMatch_round5 = bestMatch_round5.withColumn("round", F.lit("round 5"))
-
-    bestMatch_round5 = bestMatch_round5.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
-
-    logger.info("End of Round 5")
-
-    # ROUND 6
-
-    # take all the unmatched, allow mismatched postcodes, match to line 1 and 2 and postcode
-    cross_compare = cross_compare.join(bestMatch_round5, "prinx", "left_anti")
-
-    window = Window.partitionBy('prinx').orderBy("levenshtein_medium")
-
-    # logger.info('sort and filter')
-    bestMatch_round6 = cross_compare.filter("levenshtein_medium < 5").withColumn('rank', F.rank().over(window))\
-        .filter('rank = 1')\
-        .dropDuplicates(['prinx'])
-
-    bestMatch_round6 = bestMatch_round6.withColumn(
-        "match_type", F.lit("Levenshtein < 5 on first 2 address lines, postcode may differ"))
-    bestMatch_round6 = bestMatch_round6.withColumn("round", F.lit("round 6"))
-
-    bestMatch_round6 = bestMatch_round6.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
-
-    logger.info("End of Round 6")
-    
-    # ROUND 7 - last chance
-
-    # take all the rest (including empty postcodes) and mark as unmatched
-    unmatched = query_concat\
-        .join(perfectMatch, "prinx", "left_anti")\
-        .join(bestMatch_round1, "prinx", "left_anti")\
-        .join(bestMatch_round2, "prinx", "left_anti")\
-        .join(bestMatch_round3, "prinx", "left_anti")\
-        .join(bestMatch_round4, "prinx", "left_anti")\
-        .join(bestMatch_round5, "prinx", "left_anti")\
-        .join(bestMatch_round6, "prinx", "left_anti")
-
-    lastChanceCompare = unmatched.crossJoin(target_concat)
-    cross_compare = lastChanceCompare.withColumn(
-        "levenshtein", F.levenshtein(F.col("query_address"), F.col("target_address")))
-
-    window = Window.partitionBy('prinx').orderBy("levenshtein")
-
-    bestMatch_lastChance = cross_compare.withColumn('rank', F.rank().over(window))\
-        .filter('rank = 1')\
-        .dropDuplicates(['prinx'])
-
-    bestMatch_lastChance = bestMatch_lastChance.withColumn("match_type", F.lit("Best match after all constrained rounds. Postcode may differ."))
-    bestMatch_lastChance = bestMatch_lastChance.withColumn("round", F.lit("last chance"))
-    bestMatch_lastChance = bestMatch_lastChance.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), F.col("match_type"), "round")
-
-    logger.info("End of Round 7")
-
-    # PUT RESULTS OF ALL ROUNDS TOGETHER
-
-    all_best_match = perfectMatch.union(bestMatch_round1).union(bestMatch_round2).union(bestMatch_round3).union(
-        bestMatch_round4).union(bestMatch_round5).union(bestMatch_round6).union(bestMatch_lastChance)
-    
-    return all_best_match
-    
-def round_0(query_concat, target_concat, logger):
-    # COMPARE QUERY AND TARGET
-
-    cross_with_same_postcode = query_concat.join(
-        target_concat, query_concat.query_postcode == target_concat.target_postcode, "fullouter")
-
-
-    cross_compare = cross_with_same_postcode.withColumn(
-        "levenshtein", F.levenshtein(F.col("query_address"), F.col("target_address")))
-    cross_compare = cross_compare.withColumn("levenshtein_short", F.levenshtein(
-        F.col("query_address"), F.col("target_address_short")))
-    cross_compare = cross_compare.withColumn("levenshtein_medium", F.levenshtein(
-        F.col("query_address"), F.col("target_address_medium")))
-    cross_compare = cross_compare.withColumn("levenshtein_10char", F.levenshtein(
-        F.substring(F.col("query_address"), 1, 10), F.substring(F.col("target_address"), 1, 10)))
-
-
-    # ROUND 0 - look for perfect
-    perfectFull = cross_compare.filter("levenshtein = 0").dropDuplicates(['prinx'])
-    perfectFull = perfectFull.withColumn("match_type", F.lit("perfect"))
-    perfectFull = perfectFull.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
-
-
-
-    perfectShort = cross_compare\
-        .join(perfectFull, "prinx", "left_anti")\
-        .filter("levenshtein_short = 0")\
-        .dropDuplicates(['prinx'])
-
-    perfectShort = perfectShort.withColumn("match_type", F.lit("perfect on first line and postcode"))
-    perfectShort = perfectShort.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
-
-
-
-    perfectMedium = cross_compare\
-        .join(perfectFull, "prinx", "left_anti")\
-        .join(perfectShort, "prinx", "left_anti")\
-        .filter("levenshtein_medium = 0")\
-        .dropDuplicates(['prinx'])
-
-    perfectMedium = perfectMedium.withColumn("match_type", F.lit("perfect on first 2 lines and postcode"))
-    perfectMedium = perfectMedium.select(F.col("prinx"), F.col("query_address"), 
-    F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
-
-
-    perfect10char = cross_compare\
-        .join(perfectFull, "prinx", "left_anti")\
-        .join(perfectShort, "prinx", "left_anti")\
-        .join(perfectMedium, "prinx", "left_anti")\
-        .filter("levenshtein_10char = 0").dropDuplicates(['prinx'])
-
-    perfect10char = perfect10char.withColumn("match_type", F.lit("perfect on first 10 characters and postcode"))
-    perfect10char = perfect10char.select(F.col("prinx"), F.col("query_address"), F.col("uprn").alias("matched_uprn"), F.col("target_address").alias("matched_address"), F.col("blpu_class").alias("matched_blpu_class"), "match_type")
-
-
-    # put all 'perfect' together
-    perfectMatch = perfectFull.union(perfectShort).union(
-        perfectMedium).union(perfect10char)
-    perfectMatch = perfectMatch.withColumn("round", F.lit("round 0"))
-
-    all_best_match = perfectMatch
-    return all_best_match
-
-if __name__ == "__main__":
-    glueContext = GlueContext(SparkContext.getOrCreate())
-    logger = glueContext.get_logger()
-    job = Job(glueContext)
-
-
-    addresses_api_data_database = get_glue_env_var('addresses_api_data_database', '')
-    addresses_api_data_table = get_glue_env_var('addresses_api_data_table', '')
-    source_catalog_database = get_glue_env_var('source_catalog_database', '')
-    source_catalog_table = get_glue_env_var('source_catalog_table', '')
-    target_destination = get_glue_env_var('target_destination', '')
-    match_to_property_shell = get_glue_env_var('match_to_property_shell', '')
-
-    PARTITION_KEYS.append("data_source")
-
-
-    # PREP QUERY DATA
-
-    query_addresses = glueContext.create_dynamic_frame.from_catalog(
-        name_space=source_catalog_database,
-        table_name=source_catalog_table,
-    )
-
-    query_addresses = query_addresses.toDF()
-    query_addresses = get_latest_partitions(query_addresses)
-
-    query_concat = prep_source_data(query_addresses)
-
-    # PREP ADDRESSES API DATA
-
-    pushDownPredicate = create_pushdown_predicate(partitionDateColumn='import_date',daysBuffer=3)
-    target_addresses = glueContext.create_dynamic_frame.from_catalog(
-        name_space=addresses_api_data_database,
-        table_name=addresses_api_data_table,
-        push_down_predicate = pushDownPredicate
-    )
-
-    target_addresses = target_addresses.toDF()
-    target_addresses = get_latest_partitions(target_addresses)
-
-    target_concat = prep_addresses_api_data(target_addresses, match_to_property_shell)
-
-    # MATCH QUERY AND TARGET
-    all_best_match = match_addresses(query_concat, target_concat, logger)
-
-    # JOIN MATCH RESULTS WITH INITIAL DATASET
-    matchingResults = query_addresses.join(all_best_match, "prinx", "left")
-
-
-    # WRITE RESULTS
-    resultDataFrame = DynamicFrame.fromDF(
-        matchingResults, glueContext, "resultDataFrame")
-
-    logger.info("writing result dataframe")
-    parquetData = glueContext.write_dynamic_frame.from_options(
-        frame=resultDataFrame,
-        connection_type="s3",
-        format="parquet",
-        connection_options={"path": target_destination,
-                            "partitionKeys": PARTITION_KEYS},
-        transformation_ctx="parquetData")
-
-    job.commit()
+        target_columns = target_columns.where("blpu_class NOT LIKE 'P%'")
+
+    result = target_columns \
+        .withColumn("concat_lines", trim(concat_ws(" ", "line1", "line2", "line3"))) \
+        .withColumn("address_length", length(col("concat_lines"))) \
+        .withColumn("concat_lines",
+                    when(col("concat_lines").endswith(" HACKNEY"),
+                         col("concat_lines").substr(lit(1), col("address_length") - 8))
+                    .otherwise(col("concat_lines"))) \
+        .withColumn("target_address", concat_ws(" ", "concat_lines", "postcode")) \
+        .withColumn("target_address_short", concat_ws(" ", "line1", "postcode")) \
+        .withColumn("target_address_medium", concat_ws(" ", "line1", "line2", "postcode")) \
+        .select(col("target_address"), col("target_address_short"), col("target_address_medium"), col("uprn"),
+                col("blpu_class"), col("postcode").alias("target_postcode"))
+
+    return result
+
+
+def match_addresses(source: DataFrame, addresses: DataFrame, logger) -> DataFrame:
+    logger.info("Starting address matching")
+    # Compare source and addresses
+    data_with_same_postcode = addresses.join(source, source["query_postcode"] == addresses["target_postcode"])
+
+    similar_postcode_condition = (source["query_postcode"] != addresses["target_postcode"]) & \
+                                 (source["query_postcode"].substr(1, 2) == addresses["target_postcode"].substr(1, 2))
+    data_with_similar_postcode = addresses.join(source, similar_postcode_condition)
+
+    missing_postcode_condition = (source["query_postcode"].isNull() | (length(trim(source["query_postcode"])) == 0)) & \
+                                 (addresses["target_postcode"].isNull() |
+                                  (length(trim(addresses["target_postcode"])) == 0))
+    data_with_missing_postcode = addresses.join(source, missing_postcode_condition)
+
+    # Round 0 to 3 - where postcode matches perfectly
+    round0_condition = (col("levenshtein_full") == 0) | (col("levenshtein_short") == 0) | \
+                       (col("levenshtein_medium") == 0) | (col("levenshtein_10char") == 0)
+    round1_condition = col("levenshtein_full") < 3
+    round2_condition = col("levenshtein_short") < 3
+    round3_condition = col("levenshtein_medium") < 3
+
+    matching_with_same_postcode = data_with_same_postcode \
+        .withColumn("levenshtein_full", levenshtein(col("query_address"), col("target_address"))) \
+        .withColumn("levenshtein_short", levenshtein(col("query_address"), col("target_address_short"))) \
+        .withColumn("levenshtein_medium", levenshtein(col("query_address"), col("target_address_medium"))) \
+        .withColumn("levenshtein_10char", levenshtein(substring(col("query_address"), 1, 10),
+                                                      substring(col("target_address"), 1, 10))) \
+        .filter(round0_condition | round1_condition | round2_condition | round3_condition) \
+        .withColumn("round",
+                    when(round0_condition, lit("round 0"))
+                    .when(round1_condition, lit("round 1"))
+                    .when(round2_condition, lit("round 2"))
+                    .when(round3_condition, lit("round 3"))) \
+        .withColumn("match_type",
+                    when(col("levenshtein_full") == 0, lit("perfect"))
+                    .when(col("levenshtein_short") == 0, lit("perfect on first line and postcode"))
+                    .when(col("levenshtein_medium") == 0, lit("perfect on first 2 lines and postcode"))
+                    .when(col("levenshtein_10char") == 0, lit("perfect on first 10 characters and postcode"))
+                    .when(round1_condition, lit("Levenshtein < 3 on full address, same postcode"))
+                    .when(round2_condition, lit("Levenshtein < 3 on first address line, same postcode"))
+                    .when(round3_condition, lit("Levenshtein < 3 on first 2 address lines, same postcode"))) \
+        .select(col("prinx"), col("query_address"), col("uprn").alias("matched_uprn"),
+                col("target_address").alias("matched_address"), col("blpu_class").alias("matched_blpu_class"),
+                col("match_type"), col("round"))
+
+    # Round 4 to 6 - where post code is similar i.e. N16 9HS is similar to N16 6HT
+    round4_condition = col("levenshtein_full") < 5
+    round5_condition = col("levenshtein_short") < 5
+    round6_condition = col("levenshtein_medium") < 5
+
+    matching_with_similar_postcode = data_with_similar_postcode \
+        .withColumn("levenshtein_full", levenshtein(col("query_address"), col("target_address"))) \
+        .withColumn("levenshtein_short", levenshtein(col("query_address"), col("target_address_short"))) \
+        .withColumn("levenshtein_medium", levenshtein(col("query_address"), col("target_address_medium"))) \
+        .filter(round4_condition | round5_condition | round6_condition) \
+        .withColumn("round",
+                    when(round4_condition, lit("round 4"))
+                    .when(round5_condition, lit("round 5"))
+                    .when(round6_condition, lit("round 6"))) \
+        .withColumn("match_type",
+                    when(round4_condition, lit("Levenshtein < 5 on full address, postcode may differ"))
+                    .when(round5_condition, lit("Levenshtein < 5 on first address line, postcode may differ"))
+                    .when(round6_condition, lit("Levenshtein < 5 on first 2 address lines, postcode may differ"))) \
+        .select(col("prinx"), col("query_address"), col("uprn").alias("matched_uprn"),
+                col("target_address").alias("matched_address"), col("blpu_class").alias("matched_blpu_class"),
+                col("match_type"), col("round"))
+
+    matching_with_missing_postcode = data_with_missing_postcode \
+        .withColumn("levenshtein_full", levenshtein(col("query_address"), col("target_address"))) \
+        .filter(col("levenshtein_full") < 5) \
+        .withColumn("round", lit("round 7")) \
+        .withColumn("match_type", lit("Best match after all constrained rounds. Postcode may differ.")) \
+        .select(col("prinx"), col("query_address"), col("uprn").alias("matched_uprn"),
+                col("target_address").alias("matched_address"), col("blpu_class").alias("matched_blpu_class"),
+                col("match_type"), col("round"))
+
+    combined = matching_with_same_postcode.union(matching_with_similar_postcode).union(matching_with_missing_postcode)
+    # Select the best match if matched more than once, lower the round better the match
+    window = Window.partitionBy(col("prinx"))
+    result = combined \
+        .withColumn("best_match", min(col("round")).over(window)) \
+        .filter(col("round") == col("best_match")) \
+        .drop(col("best_match"))
+
+    return result
+
+
+def main():
+    # parser = argparse.ArgumentParser(description="Perform matching of addresses from source to gazetteer")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--mode", default=DEFAULT_MODE_AWS, choices=[DEFAULT_MODE_AWS, LOCAL_MODE], type=str,
+                        required=False, metavar="set --mode=local to run locally")
+    parser.add_argument(f"--addresses_data_path", type=str, required=False,
+                        metavar=f"set --addresses_data_path=/path/to/directory/containing address data to run locally")
+    parser.add_argument(f"--source_data_path", type=str, required=False,
+                        metavar=f"set --source_data_path=/path/to/directory/containing source data to run locally")
+    parser.add_argument(f"--target_destination", type=str, required=False,
+                        metavar=f"set --target_destination=/path/to/output_folder")
+    parser.add_argument(f"--match_to_property_shell", type=str, required=False,
+                        metavar=f"set --match_to_property_shell=property to match")
+    parser.add_argument(f"--partition_source", default=1, type=int, required=False,
+                        metavar=f"set --match_to_property_shell=number of partitions for source data (optimization)")
+    parser.add_argument(f"--partition_address", default=1, type=int, required=False,
+                        metavar=f"set --match_to_property_shell=number of partitions for address data (optimization)")
+    parser.add_argument(f"--partition_destination", default=1, type=int, required=False,
+                        metavar=f"set --match_to_property_shell=number of partitions destination (optimization)")
+
+    addresses_data_path_local_arg = "addresses_data_path"  # gazetteer (master) dataset path
+    source_data_path_local_arg = "source_data_path"  # source (to be matched) dataset path
+
+    addresses_api_data_database_glue_arg = "addresses_api_data_database"  # gazetteer (master) database name
+    addresses_api_data_table_glue_arg = "addresses_api_data_table"  # gazetteer (master) table name
+    source_catalog_database_glue_arg = "source_catalog_database"  # source (to be matched) table name
+    source_catalog_table_glue_arg = "source_catalog_table"  # gazetteer (to be matched) table name
+
+    target_destination_arg = "target_destination"  # output location (S3 path or local)
+    match_to_property_shell_arg = "match_to_property_shell"  # property to match location common to both local and glue
+    partition_source_arg = "partition_source"  # number of partitions for source data common to both local and glue
+    partition_address_arg = "partition_address"  # number of partitions for source data common to both local and glue
+    partition_destination_arg = "partition_destination"  # number of partitions for source data common to both
+
+    glue_args = [addresses_api_data_database_glue_arg, addresses_api_data_table_glue_arg,
+                 source_catalog_database_glue_arg, source_catalog_table_glue_arg, target_destination_arg,
+                 match_to_property_shell_arg]
+    local_args, _ = parser.parse_known_args()
+    mode = local_args.mode
+
+    with ExecutionContextProvider(mode, glue_args, local_args) as execution_context:
+        logger = execution_context.logger
+        target_destination = execution_context.get_input_args(target_destination_arg)
+        if not target_destination:
+            logger.error("target_destination is empty")
+            raise ValueError("target_destination cannot be empty")
+
+        partition_source = execution_context.get_input_args(partition_source_arg) or 5
+        partition_address = execution_context.get_input_args(partition_address_arg) or 5
+        partition_destination = execution_context.get_input_args(partition_destination_arg) or 2
+
+        # Prepare source data
+        source_data_path_local = execution_context.get_input_args(source_data_path_local_arg)
+        source_catalog_database = execution_context.get_input_args(source_catalog_database_glue_arg)
+        source_catalog_table = execution_context.get_input_args(source_catalog_table_glue_arg)
+
+        source_addresses_raw = execution_context \
+            .get_dataframe(local_path_parquet=source_data_path_local,
+                           name_space=source_catalog_database,
+                           table_name=source_catalog_table)\
+            .coalesce(partition_source)
+        source_addresses_latest = get_latest_partitions(source_addresses_raw)
+        source = prep_source_data(source_addresses_latest)
+
+        # Prepare gazetteer data
+        push_down_predicate = create_pushdown_predicate(partitionDateColumn="import_date", daysBuffer=3)
+        addresses_data_path_local = execution_context.get_input_args(addresses_data_path_local_arg)
+        addresses_api_data_database = execution_context.get_input_args(addresses_api_data_database_glue_arg)
+        addresses_api_data_table = execution_context.get_input_args(addresses_api_data_table_glue_arg)
+        addresses_data_raw = execution_context \
+            .get_dataframe(local_path_parquet=addresses_data_path_local,
+                           name_space=addresses_api_data_database,
+                           table_name=addresses_api_data_table) \
+            .coalesce(partition_address) \
+            .filter(push_down_predicate)
+        addresses_data_latest = get_latest_partitions(addresses_data_raw)
+
+        match_to_property_shell = execution_context.get_input_args(match_to_property_shell_arg)
+        addresses = prep_addresses_api_data(addresses_data_latest, match_to_property_shell)
+
+        # Match source
+        all_best_match = match_addresses(source, addresses, logger)
+
+        # Join match results with initial dataset
+        matching_results = source_addresses_latest.join(all_best_match, "prinx", how="left")\
+            .repartition(partition_destination)
+
+        execution_context.save_dataframe(matching_results, target_destination, *PARTITION_KEYS)
+
+
+if __name__ == '__main__':
+    main()
