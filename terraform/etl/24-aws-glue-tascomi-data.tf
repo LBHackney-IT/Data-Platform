@@ -66,7 +66,7 @@ resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
 
 # Ingestion
 module "ingest_tascomi_data" {
-  source = "../../modules/data-sources/aws-glue-job"
+  source = "../modules/data-sources/aws-glue-job"
 
   department                      = module.department_planning
   number_of_workers_for_glue_job  = local.number_of_workers
@@ -156,7 +156,7 @@ resource "aws_glue_trigger" "tascomi_api_response_crawler_trigger" {
 }
 
 module "tascomi_parse_tables_increments" {
-  source = "../../modules/data-sources/aws-glue-job"
+  source = "../modules/data-sources/aws-glue-job"
 
   department                 = module.department_planning
   job_name                   = "${local.short_identifier_prefix}tascomi_parse_tables_increments_planning"
@@ -187,7 +187,7 @@ module "tascomi_parse_tables_increments" {
 }
 
 module "tascomi_recast_tables_increments" {
-  source = "../../modules/data-sources/aws-glue-job"
+  source = "../modules/data-sources/aws-glue-job"
 
   department                 = module.department_planning
   job_name                   = "${local.short_identifier_prefix}tascomi_recast_tables_increments_planning"
@@ -219,7 +219,7 @@ module "tascomi_recast_tables_increments" {
 }
 
 module "tascomi_create_daily_snapshot" {
-  source = "../../modules/data-sources/aws-glue-job"
+  source = "../modules/data-sources/aws-glue-job"
 
   department                 = module.department_planning
   job_name                   = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
@@ -249,7 +249,7 @@ module "tascomi_create_daily_snapshot" {
 }
 
 module "tascomi_applications_to_trusted" {
-  source = "../../modules/data-sources/aws-glue-job"
+  source = "../modules/data-sources/aws-glue-job"
 
   department                 = module.department_planning
   job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
@@ -278,7 +278,7 @@ module "tascomi_applications_to_trusted" {
 }
 
 module "tascomi_officers_teams_to_trusted" {
-  source = "../../modules/data-sources/aws-glue-job"
+  source = "../modules/data-sources/aws-glue-job"
 
   department                 = module.department_planning
   job_name                   = "${local.short_identifier_prefix}tascomi_officers_trusted"
@@ -306,7 +306,7 @@ module "tascomi_officers_teams_to_trusted" {
 }
 
 module "tascomi_locations_to_trusted" {
-  source = "../../modules/data-sources/aws-glue-job"
+  source = "../modules/data-sources/aws-glue-job"
 
   department                 = module.department_planning
   job_name                   = "${local.short_identifier_prefix}tascomi_locations_trusted"
@@ -334,7 +334,7 @@ module "tascomi_locations_to_trusted" {
 }
 
 module "tascomi_subsidiary_tables_to_trusted" {
-  source = "../../modules/data-sources/aws-glue-job"
+  source = "../modules/data-sources/aws-glue-job"
 
   department                 = module.department_planning
   job_name                   = "${local.short_identifier_prefix}tascomi_subsidiary_tables_trusted"
