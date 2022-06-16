@@ -1,7 +1,7 @@
 module "repairs_dlo" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -24,7 +24,7 @@ module "repairs_dlo" {
 module "repairs_herts_heritage" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -47,7 +47,7 @@ module "repairs_herts_heritage" {
 module "repairs_avonline" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -70,7 +70,7 @@ module "repairs_avonline" {
 module "repairs_alpha_track" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -93,7 +93,7 @@ module "repairs_alpha_track" {
 module "repairs_stannah" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -116,7 +116,7 @@ module "repairs_stannah" {
 module "repairs_purdy" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -139,7 +139,7 @@ module "repairs_purdy" {
 module "repairs_axis" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -161,7 +161,7 @@ module "repairs_axis" {
 
 module "parking_spreadsheet_estate_permit_limits" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -182,7 +182,7 @@ module "parking_spreadsheet_estate_permit_limits" {
 
 module "parking_spreadsheet_parkmap_restrictions_report" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -203,7 +203,7 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
 
 module "sandbox_daro_covid_locations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -225,7 +225,7 @@ module "sandbox_daro_covid_locations" {
 
 module "sandbox_daro_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -247,7 +247,7 @@ module "sandbox_daro_covid_vaccinations" {
 module "covid_locations_lisa" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -270,7 +270,7 @@ module "covid_locations_lisa" {
 module "covid_vaccine_demo__locations_tim" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -292,7 +292,7 @@ module "covid_vaccine_demo__locations_tim" {
 module "covid_vaccine_demo__vaccinatons_tim" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -314,7 +314,7 @@ module "covid_vaccine_demo__vaccinatons_tim" {
 module "covid_vaccinations_lisa" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -336,7 +336,7 @@ module "covid_vaccinations_lisa" {
 module "huu_do_covid_vaccinations_locations" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -358,7 +358,7 @@ module "huu_do_covid_vaccinations_locations" {
 module "huu_do_covid_vaccinations_vaccinations" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -379,7 +379,7 @@ module "huu_do_covid_vaccinations_vaccinations" {
 
 module "sandbox_covid_locations_ben" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -400,7 +400,7 @@ module "sandbox_covid_locations_ben" {
 
 module "sandbox_covid_vaccinations_ben" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -422,7 +422,7 @@ module "sandbox_covid_vaccinations_ben" {
 module "sandbox_covid_locations_marta" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -444,7 +444,7 @@ module "sandbox_covid_locations_marta" {
 module "sandbox_covid_vaccinations_marta" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -466,7 +466,7 @@ module "sandbox_covid_vaccinations_marta" {
 module "sandbox_covid_vaccinations_adam" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -488,7 +488,7 @@ module "sandbox_covid_vaccinations_adam" {
 module "sandbox_covid_locations_adam" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -510,7 +510,7 @@ module "sandbox_covid_locations_adam" {
 module "sandbox_estates_round_crew_data" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -532,7 +532,7 @@ module "sandbox_estates_round_crew_data" {
 module "env_enforcement_asb_warnings" {
   count = local.is_live_environment ? 1 : 0
 
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -553,7 +553,7 @@ module "env_enforcement_asb_warnings" {
 
 module "sandbox_stevefarr_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -574,7 +574,7 @@ module "sandbox_stevefarr_covid_vaccinations" {
 
 module "sandbox_stevefarr_covid_locations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -595,7 +595,7 @@ module "sandbox_stevefarr_covid_locations" {
 
 module "sandbox_sanch_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -616,7 +616,7 @@ module "sandbox_sanch_covid_vaccinations" {
 
 module "sandbox_sanch_covid_locations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -637,7 +637,7 @@ module "sandbox_sanch_covid_locations" {
 
 module "sandbox_jlayton_covid_locations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -658,7 +658,7 @@ module "sandbox_jlayton_covid_locations" {
 
 module "sandbox_jlayton_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -679,7 +679,7 @@ module "sandbox_jlayton_covid_vaccinations" {
 
 module "vaccination_loc_arda" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -700,7 +700,7 @@ module "vaccination_loc_arda" {
 
 module "sandbox_everlander_covid_locations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -721,7 +721,7 @@ module "sandbox_everlander_covid_locations" {
 
 module "vaccination_vac_arda" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -742,7 +742,7 @@ module "vaccination_vac_arda" {
 
 module "sandbox_everlander_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -763,7 +763,7 @@ module "sandbox_everlander_covid_vaccinations" {
 
 module "sandbox_lindseycoulson_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -784,7 +784,7 @@ module "sandbox_lindseycoulson_covid_vaccinations" {
 
 module "sandbox_lindseycoulson_covid_locations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -805,7 +805,7 @@ module "sandbox_lindseycoulson_covid_locations" {
 
 module "sandbox_tuomo_covid_vaccinations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id
@@ -826,7 +826,7 @@ module "sandbox_tuomo_covid_vaccinations" {
 
 module "sandbox_tuomo_covid_locations" {
   count                           = local.is_live_environment ? 1 : 0
-  source                          = "../modules/data-sources/google-sheets-glue-job"
+  source                          = "../modules/resources/google-sheets-glue-job"
   identifier_prefix               = local.short_identifier_prefix
   is_live_environment             = local.is_live_environment
   glue_scripts_bucket_id          = module.glue_scripts.bucket_id

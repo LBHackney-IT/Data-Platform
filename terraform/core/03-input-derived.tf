@@ -43,3 +43,11 @@ locals {
 data "aws_ssm_parameter" "aws_vpc_id" {
   name = "/${local.application_snake}-${local.is_live_environment ? var.environment : "dev"}/vpc/vpc_id"
 }
+
+data "aws_glue_catalog_database" "landing_zone_catalog_database" {
+  name = "${local.identifier_prefix}-landing-zone-database"
+}
+
+data "aws_iam_role" "glue_role" {
+  name = "${local.identifier_prefix}-glue-role"
+}

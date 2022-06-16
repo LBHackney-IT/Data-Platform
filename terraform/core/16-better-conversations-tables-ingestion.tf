@@ -10,7 +10,7 @@ module "ingest_better_conversations_tables" {
   source        = "../modules/resources/aws-glue-job"
   environment   = var.environment
   tags          = module.tags.values
-  glue_role_arn = aws_iam_role.glue_role.arn
+  glue_role_arn = data.aws_iam_role.glue_role.arn
 
   job_name                       = "${local.short_identifier_prefix}Ingest Better Conversations tables"
   job_description                = "Ingest a snapshot of 2 Better Conversations tables from the API Prod Dynamo DB instance"
@@ -29,7 +29,7 @@ module "ingest_better_conversations_tables" {
   }
 
   crawler_details = {
-    database_name      = aws_glue_catalog_database.landing_zone_catalog_database.name
+    database_name      = data.aws_glue_catalog_database.landing_zone_catalog_database.name
     s3_target_location = "s3://${module.landing_zone.bucket_id}/better-conversations/"
     table_prefix       = "better_conversations_"
     configuration = jsonencode({
