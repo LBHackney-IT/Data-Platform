@@ -51,10 +51,3 @@ module "spark_ui_output_storage" {
   identifier_prefix = local.identifier_prefix
   bucket_identifier = "spark-ui-output-storage"
 }
-
-module "noiseworks_data_storage" {
-  source            = "../modules/data-sources/s3-bucket"
-  identifier_prefix = local.identifier_prefix
-  bucket_identifier = "noiseworks-data-storage"
-}
-
