@@ -21,9 +21,9 @@ module "redshift" {
 
 locals {
   unrestricted_schemas = [
-    replace(module.department_unrestricted.trusted_zone_catalog_database_name, "-", "_"),
+    replace(module.department_unrestricted.raw_zone_catalog_database_name, "-", "_"),
     replace(module.department_unrestricted.refined_zone_catalog_database_name, "-", "_"),
-    replace(module.department_unrestricted.raw_zone_catalog_database_name, "-", "_")
+    replace(module.department_unrestricted.trusted_zone_catalog_database_name, "-", "_")
   ]
 
   redshift_schemas = {
@@ -56,23 +56,23 @@ locals {
     replace(module.department_planning.refined_zone_catalog_database_name, "-", "_") = module.department_planning.refined_zone_catalog_database_name,
     replace(module.department_planning.trusted_zone_catalog_database_name, "-", "_") = module.department_planning.trusted_zone_catalog_database_name,
 
-    replace(module.department_sandbox.raw_zone_catalog_database_name, "-", "_")     = module.department_sandbox.trusted_zone_catalog_database_name,
+    replace(module.department_sandbox.raw_zone_catalog_database_name, "-", "_")     = module.department_sandbox.raw_zone_catalog_database_name,
     replace(module.department_sandbox.refined_zone_catalog_database_name, "-", "_") = module.department_sandbox.refined_zone_catalog_database_name,
     replace(module.department_sandbox.trusted_zone_catalog_database_name, "-", "_") = module.department_sandbox.trusted_zone_catalog_database_name,
 
-    replace(module.department_benefits_and_housing_needs.raw_zone_catalog_database_name, "-", "_")     = module.department_benefits_and_housing_needs.trusted_zone_catalog_database_name,
+    replace(module.department_benefits_and_housing_needs.raw_zone_catalog_database_name, "-", "_")     = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name,
     replace(module.department_benefits_and_housing_needs.refined_zone_catalog_database_name, "-", "_") = module.department_benefits_and_housing_needs.refined_zone_catalog_database_name,
     replace(module.department_benefits_and_housing_needs.trusted_zone_catalog_database_name, "-", "_") = module.department_benefits_and_housing_needs.trusted_zone_catalog_database_name,
 
-    replace(module.department_revenues.raw_zone_catalog_database_name, "-", "_")     = module.department_revenues.trusted_zone_catalog_database_name,
+    replace(module.department_revenues.raw_zone_catalog_database_name, "-", "_")     = module.department_revenues.raw_zone_catalog_database_name,
     replace(module.department_revenues.refined_zone_catalog_database_name, "-", "_") = module.department_revenues.refined_zone_catalog_database_name,
     replace(module.department_revenues.trusted_zone_catalog_database_name, "-", "_") = module.department_revenues.trusted_zone_catalog_database_name,
 
-    replace(module.department_environmental_services.raw_zone_catalog_database_name, "-", "_")     = module.department_environmental_services.trusted_zone_catalog_database_name,
+    replace(module.department_environmental_services.raw_zone_catalog_database_name, "-", "_")     = module.department_environmental_services.raw_zone_catalog_database_name,
     replace(module.department_environmental_services.refined_zone_catalog_database_name, "-", "_") = module.department_environmental_services.refined_zone_catalog_database_name,
     replace(module.department_environmental_services.trusted_zone_catalog_database_name, "-", "_") = module.department_environmental_services.trusted_zone_catalog_database_name,
 
-    replace(module.department_housing.raw_zone_catalog_database_name, "-", "_")     = module.department_housing.trusted_zone_catalog_database_name,
+    replace(module.department_housing.raw_zone_catalog_database_name, "-", "_")     = module.department_housing.raw_zone_catalog_database_name,
     replace(module.department_housing.refined_zone_catalog_database_name, "-", "_") = module.department_housing.refined_zone_catalog_database_name,
     replace(module.department_housing.trusted_zone_catalog_database_name, "-", "_") = module.department_housing.trusted_zone_catalog_database_name,
   }
