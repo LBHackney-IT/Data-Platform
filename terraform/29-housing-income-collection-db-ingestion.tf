@@ -15,8 +15,19 @@ module "housing_income_collection_database_ingestion" {
 
 locals {
   table_filter_expressions_housing_income_collection = local.is_live_environment ? {
-    case-priorities = "^housingfinancedbproduction_case_priorities",
-    agreements      = "^housingfinancedbproduction_agreements"
+    actions              = "^housingfinancedbproduction_actions"
+    agreements           = "^housingfinancedbproduction_agreements"
+    agreement_states     = "^housingfinancedbproduction_agreement_states"
+    ar_internal_metadata = "^housingfinancedbproduction_ar_internal_metadata"
+    cases                = "^housingfinancedbproduction_cases"
+    case_priorities      = "^housingfinancedbproduction_case_priorities"
+    court_cases          = "^housingfinancedbproduction_court_cases"
+    delayed_jobs         = "^housingfinancedbproduction_delayed_jobs"
+    documents            = "^housingfinancedbproduction_documents"
+    evictions            = "^housingfinancedbproduction_evictions"
+    legacy_migrations    = "^housingfinancedbproduction_agreement_legacy_migrations"
+    schema_migrations    = "^housingfinancedbproduction_schema_migrations"
+    users                = "^housingfinancedbproduction_users"
   } : {}
 }
 
