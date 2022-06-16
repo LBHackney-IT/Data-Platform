@@ -40,7 +40,7 @@ resource "aws_s3_bucket_object" "address_cleaning" {
 
 resource "aws_s3_bucket_object" "helpers" {
   bucket      = module.glue_scripts.bucket_arn
-  key         = "python-modules/data-sources/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
+  key         = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
   acl         = "private"
   source      = "../../scripts/lib/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
   source_hash = filemd5("../../scripts/lib/data_platform_glue_job_helpers-1.0-py3-none-any.whl")
@@ -48,7 +48,7 @@ resource "aws_s3_bucket_object" "helpers" {
 
 resource "aws_s3_bucket_object" "convertbng" {
   bucket      = module.glue_scripts.bucket_arn
-  key         = "python-modules/data-sources/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+  key         = "python-modules/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
   acl         = "private"
   source      = "../../scripts/lib/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
   source_hash = filemd5("../../scripts/lib/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
@@ -72,7 +72,7 @@ resource "aws_s3_bucket_object" "deeque_jar" {
 
 resource "aws_s3_bucket_object" "pydeequ" {
   bucket      = module.glue_scripts.bucket_arn
-  key         = "python-modules/data-sources/pydeequ-1.0.1.zip"
+  key         = "python-modules/pydeequ-1.0.1.zip"
   acl         = "private"
   source      = "../../external-lib/target/pydeequ-1.0.1.zip"
   source_hash = filemd5("../../external-lib/target/pydeequ-1.0.1.zip")

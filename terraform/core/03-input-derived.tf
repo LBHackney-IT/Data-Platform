@@ -50,7 +50,7 @@ data "aws_iam_role" "glue_role" {
 
 data "aws_s3_bucket_object" "helpers" {
   bucket = module.glue_scripts.bucket_arn
-  key    = "python-modules/data-sources/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
+  key    = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
 }
 
 data "aws_s3_bucket_object" "jars" {
@@ -60,7 +60,7 @@ data "aws_s3_bucket_object" "jars" {
 
 data "aws_s3_bucket_object" "pydeequ" {
   bucket = module.glue_scripts.bucket_arn
-  key    = "python-modules/data-sources/pydeequ-1.0.1.zip"
+  key    = "python-modules/pydeequ-1.0.1.zip"
 }
 
 data "aws_s3_bucket_object" "ingest_database_tables_via_jdbc_connection" {
