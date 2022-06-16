@@ -1,5 +1,5 @@
 locals {
-  alloy_queries                     = local.is_live_environment ? fileset("${path.module}/../scripts/jobs/env_services/aqs", "*json") : []
+  alloy_queries                     = local.is_live_environment ? fileset("${path.module}/../../scripts/jobs/env_services/aqs", "*json") : []
   alloy_query_names                 = local.is_live_environment ? [for i in tolist(local.alloy_queries) : trimsuffix(i, ".json")] : []
   alloy_queries_max_concurrent_runs = local.is_live_environment ? length(local.alloy_queries) : 1
 }
@@ -38,7 +38,7 @@ module "alloy_api_ingestion_raw_env_services" {
     "--s3_prefix"               = "env-services/alloy/api-responses/"
     "--secret_name"             = "${local.identifier_prefix}/env-services/alloy-api-key"
     "--database"                = module.department_environmental_services.raw_zone_catalog_database_name
-    "--aqs"                     = file("${path.module}/../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
+    "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--filename"                = "${local.alloy_query_names[count.index]}/${local.alloy_query_names[count.index]}.csv"
     "--resource"                = "${local.alloy_query_names[count.index]}"
   }

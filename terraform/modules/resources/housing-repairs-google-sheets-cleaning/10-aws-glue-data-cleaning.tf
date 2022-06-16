@@ -7,8 +7,8 @@ resource "aws_s3_bucket_object" "housing_repairs_repairs_cleaning_script" {
   bucket      = var.glue_scripts_bucket_id
   key         = "scripts/${local.object_key}"
   acl         = "private"
-  source      = "../scripts/jobs/${local.object_key}"
-  source_hash = filemd5("../scripts/jobs/${local.object_key}")
+  source      = "../../scripts/jobs/${local.object_key}"
+  source_hash = filemd5("../../scripts/jobs/${local.object_key}")
 }
 
 module "housing_repairs_google_sheets_cleaning" {
