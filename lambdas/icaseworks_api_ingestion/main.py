@@ -11,7 +11,7 @@ import time
 import boto3
 from dotenv import load_dotenv
 from os import getenv
-from datetime import datetime
+import datetime
 
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
@@ -70,7 +70,7 @@ def get_icaseworks_report_from(report_id,fromdate,auth_headers,auth_payload):
 def write_dataframe_to_s3(s3_client, data, s3_bucket, output_folder, filename):
     # add partitioning when writing file to s3 year/month/day/date
     filename = re.sub('[^a-zA-Z0-9]+', '-', filename).lower()
-    current_date = datetime.now()
+    current_date = datetime.datetime.now()
     day = str(current_date.day) if current_date.day > 10 else '0' + str(current_date.day)
     month = str(current_date.month) if current_date.month > 10 else '0' + str(current_date.month)
     year = str(current_date.year)
@@ -152,7 +152,11 @@ def lambda_handler(event, lambda_context):
         {"name":"Cases received", "id":122109}
     ]
 
-    date_to_track_from = "2019-01-01" # today minus 1
+    today = datetime.datetime.utcnow().date()
+    # Take only yesterday's data
+    date_to_track_from = today - datetime.timedelta(days=1)
+    print(f"Date to track from: {date_to_track_from}")
+
     s3_client = boto3.client('s3')
 
     for report_details in report_tables:
