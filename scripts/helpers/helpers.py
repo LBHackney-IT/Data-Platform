@@ -134,27 +134,36 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
 
 
 def get_latest_partitions(df: DataFrame) -> DataFrame:
-    """Filters the DataFrame based on the latest (most recent) partition.
-    Confirm if this can be changed to using import_date columns instead of import_year, import_month, import_day
+    """Filters the DataFrame based on the latest (most recent) partition. It uses import_date if available else it uses
+    import_year, import_month, import_day to calculate the latest partition.
 
     Args:
         df: Input DataFrame
-
-    Raises:
-        ValueError: if column import_date is not present in the DataFrame
 
     Returns:
         DataFrame belonging to the most recent partition.
 
     """
 
-    if "import_date" not in df.columns:
-        raise ValueError("Column import_date not found in the DataFrame")
+    if "import_date" in df.columns:
+        latest_partition = df.select(max(col("import_date")).alias("latest_import_date"))
+        result = df \
+            .join(broadcast(latest_partition), (df["import_date"] == latest_partition["latest_import_date"])) \
+            .drop("latest_import_date")
+    else:
+        latest_partition = df \
+            .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
+                                format="yyyy-L-d")).alias("latest_partition_date")) \
+            .select(year(col("latest_partition_date")).alias("latest_year"),
+                    month(col("latest_partition_date")).alias("latest_month"),
+                    dayofmonth(col("latest_partition_date")).alias("latest_day"))
 
-    latest_partition = df.select(max(col("import_date")).alias("latest_import_date"))
-    result = df \
-        .join(broadcast(latest_partition), (df["import_date"] == latest_partition["latest_import_date"])) \
-        .drop("latest_import_date")
+        result = df \
+            .join(broadcast(latest_partition),
+                  (df.import_year == latest_partition["latest_year"]) &
+                  (df.import_month == latest_partition["latest_month"]) &
+                  (df.import_day == latest_partition["latest_day"])) \
+            .drop("latest_year", "latest_month", "latest_day")
 
     return result
 
