@@ -154,7 +154,6 @@ def match_addresses(source: DataFrame, addresses: DataFrame, logger) -> DataFram
 
 
 def main():
-    # parser = argparse.ArgumentParser(description="Perform matching of addresses from source to gazetteer")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", default=DEFAULT_MODE_AWS, choices=[DEFAULT_MODE_AWS, LOCAL_MODE], type=str,
                         required=False, metavar="set --mode=local to run locally")
@@ -200,9 +199,9 @@ def main():
             logger.error("target_destination is empty")
             raise ValueError("target_destination cannot be empty")
 
-        partition_source = execution_context.get_input_args(partition_source_arg) or 5
-        partition_address = execution_context.get_input_args(partition_address_arg) or 5
-        partition_destination = execution_context.get_input_args(partition_destination_arg) or 2
+        partition_source = int(execution_context.get_input_args(partition_source_arg)) or 5
+        partition_address = int(execution_context.get_input_args(partition_address_arg)) or 5
+        partition_destination = int(execution_context.get_input_args(partition_destination_arg)) or 2
 
         # Prepare source data
         source_data_path_local = execution_context.get_input_args(source_data_path_local_arg)
@@ -238,7 +237,7 @@ def main():
 
         # Join match results with initial dataset
         matching_results = source_addresses_latest.join(all_best_match, "prinx", how="left")\
-            .repartition(partition_destination)
+            .coalesce(partition_destination)
 
         execution_context.save_dataframe(matching_results, target_destination, *PARTITION_KEYS)
 

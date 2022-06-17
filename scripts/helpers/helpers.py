@@ -137,7 +137,7 @@ def get_latest_partitions(df: DataFrame) -> DataFrame:
     """Filters the DataFrame based on the latest (most recent) partition.
     Confirm if this can be changed to using import_date columns instead of import_year, import_month, import_day
 
-    Args:if
+    Args:
         df: Input DataFrame
 
     Raises:

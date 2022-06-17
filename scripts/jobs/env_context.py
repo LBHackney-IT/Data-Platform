@@ -140,19 +140,20 @@ class ExecutionContextProvider:
             save_path: path where data will be saved
             partition_columns: partition columns
             save_mode: Can be one of the following: append or overwrite or error or ignore
-            * `append`: Append contents of this :class:`DataFrame` to existing data.
-            * `overwrite`: Overwrite existing data.
-            * `error` or `errorifexists`: Throw an exception if data already exists.
-            * `ignore`: Silently ignore this operation if data already exists.
 
         Raises:
             ValueError if save_path is empty
 
+        Notes: save_mode although optional but can take one of the following values
+        * `append`: Append contents of this :class:`DataFrame` to existing data.
+        * `overwrite`: Overwrite existing data.
+        * `error` or `errorifexists`: Throw an exception if data already exists.
+        * `ignore`: Silently ignore this operation if data already exists.
         """
         if not save_path:
             raise ValueError("save_path cannot be empty")
 
-        save_mode = save_mode or "append"
+        save_mode = save_mode if save_mode in ["append", "overwrite", "error", "errorifexists", "ignore"] else "append"
 
         if partition_columns:
             df.write.mode(save_mode).partitionBy(*partition_columns).parquet(save_path)
