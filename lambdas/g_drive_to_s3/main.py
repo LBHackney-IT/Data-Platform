@@ -8,9 +8,8 @@ from os import path, getenv, mkdir, listdir, rmdir, remove
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from oauth2client.service_account import ServiceAccountCredentials
-from googleapiclient import errors
-from googleapiclient import http
 from dotenv import load_dotenv
+from datetime import datetime
 
 
 def upload_file_to_s3(client, body_data, bucket_name, file_name):
@@ -32,6 +31,38 @@ def download_file(service, file_id):
 
 def directory_exists(directory_path):
     return path.isdir(directory_path)
+
+def file_changed(s3_client, drive_service, s3_bucket_name, s3_object_key, drive_file_id, http=None):
+    try:
+        s3_file_info = s3_client.get_object(Bucket=s3_bucket_name, Key=s3_object_key )
+    except s3_client.exceptions.NoSuchKey:
+        return True
+
+    modified_in_s3 = s3_file_info['LastModified']
+
+    drive_file_info = drive_service\
+        .files()\
+        .get(fileId=drive_file_id, supportsAllDrives=True, fields="modifiedTime,createdTime")\
+        .execute(http=http)
+
+    last_modified = drive_file_info.get('modifiedTime') or drive_file_info['createdTime']
+
+    # Parsing RFC 3339 date-time object, used by google drive.
+    modified_in_drive = datetime.strptime(last_modified, "%Y-%m-%dT%H:%M:%S.%f%z")
+
+    return modified_in_drive > modified_in_s3
+
+def run_glue_workflows():
+    glue_client = boto3.client('glue')
+
+    workflow_names = getenv("WORKFLOW_NAMES").split("/")
+
+    for workflow_name in workflow_names:
+        try:
+            response = glue_client.start_workflow_run(Name = workflow_name)
+        except Exception as e:
+            print('Failed to run '+ workflow_name)
+            print(e)
 
 def lambda_handler(event, lambda_context):
     load_dotenv()
@@ -82,26 +113,14 @@ def lambda_handler(event, lambda_context):
 
     file_id = getenv("FILE_ID")
 
-    file_body = download_file(drive_service, file_id)
-
     bucket_name = getenv("BUCKET_ID")
-
     file_name = getenv("FILE_NAME")
-
     s3_client = boto3.client('s3')
 
-    upload_file_to_s3(s3_client, file_body, bucket_name,file_name)
-
-    glue_client = boto3.client('glue')
-
-    workflow_names = getenv("WORKFLOW_NAMES").split("/")
-
-    for workflow_name in workflow_names:
-        try:
-            response = glue_client.start_workflow_run(Name = workflow_name)
-        except Exception as e:
-            print('Failed to run '+ workflow_name)
-            print(e)
+    if file_changed(s3_client, drive_service, bucket_name, file_name, file_id):
+        file_body = download_file(drive_service, file_id)
+        upload_file_to_s3(s3_client, file_body, bucket_name, file_name)
+        run_glue_workflows()
 
 if __name__ == '__main__':
     lambda_handler('event', 'lambda_context')

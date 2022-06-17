@@ -25,3 +25,17 @@ resource "google_service_account_key" "housing_json_credentials" {
     rotation_time = time_rotating.key_rotation_housing[0].rotation_rfc3339
   }
 }
+
+/* ==== SERVICE ACCOUNT - QLIK =================================================================================== */
+module "google_service_account" {
+  source                     = "../modules/google-service-account"
+  is_live_environment        = local.is_live_environment
+  department_name            = "${module.department_data_and_insight.identifier}-qlik"
+  identifier_prefix          = local.short_identifier_prefix
+  application                = var.application
+  google_project_id          = var.google_project_id
+  secrets_manager_kms_key_id = aws_kms_key.secrets_manager_key.id
+  tags                       = module.tags.values
+  secret_type                = "string"
+}
+
