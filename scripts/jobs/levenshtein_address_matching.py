@@ -27,8 +27,8 @@ import argparse
 from pyspark.sql import DataFrame, Window
 from pyspark.sql.functions import col, concat_ws, length, levenshtein, lit, min, substring, trim, when
 
-from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
-from scripts.helpers.helpers import get_latest_partitions, create_pushdown_predicate, PARTITION_KEYS
+from jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
+from helpers.helpers import get_latest_partitions, create_pushdown_predicate, PARTITION_KEYS
 
 
 def prep_source_data(query_addresses: DataFrame) -> DataFrame:
