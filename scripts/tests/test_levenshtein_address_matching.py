@@ -38,6 +38,7 @@ class AddressMatchingTests(unittest.TestCase):
     def tearDownClass(cls) -> None:
         cls.spark.stop()
 
+    @unittest.skip("temp")
     def test_prep_source_data(self):
         path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/source")
         source_raw = self.spark.read\
@@ -48,6 +49,7 @@ class AddressMatchingTests(unittest.TestCase):
         actual_columns = source.columns
         self.assertCountEqual(actual_columns, expected_columns)
 
+    @unittest.skip("temp")
     def test_prep_addresses_api_data(self):
         path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/addresses/")
         addresses_raw = self.spark \
@@ -60,6 +62,9 @@ class AddressMatchingTests(unittest.TestCase):
         self.assertEqual(addresses.count(), addresses_raw.count())
 
     def test_match_addresses(self):
+        path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/source")
+        self.logger.info(f"root_path = {self.root_path}")
+        self.logger.info(f"path = {path}")
         source_raw = self.spark.read.option("header", "true").csv("test_data/levenshtein_address_matching/source/")
         source = prep_source_data(source_raw)
         addresses_raw = self.spark \
