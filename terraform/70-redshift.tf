@@ -75,6 +75,10 @@ locals {
     replace(module.department_housing.raw_zone_catalog_database_name, "-", "_")     = module.department_housing.raw_zone_catalog_database_name,
     replace(module.department_housing.refined_zone_catalog_database_name, "-", "_") = module.department_housing.refined_zone_catalog_database_name,
     replace(module.department_housing.trusted_zone_catalog_database_name, "-", "_") = module.department_housing.trusted_zone_catalog_database_name,
+
+    replace(module.department_unrestricted.raw_zone_catalog_database_name, "-", "_")     = module.department_unrestricted.raw_zone_catalog_database_name,
+    replace(module.department_unrestricted.refined_zone_catalog_database_name, "-", "_") = module.department_unrestricted.refined_zone_catalog_database_name,
+    replace(module.department_unrestricted.trusted_zone_catalog_database_name, "-", "_") = module.department_unrestricted.trusted_zone_catalog_database_name
   }
 
   redshift_users = [
