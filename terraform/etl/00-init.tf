@@ -48,7 +48,7 @@ terraform {
   }
   backend "s3" {
     region  = "eu-west-2"
-    key     = "tfstate-etl"
+    key     = "tfstate"
     bucket  = "dataplatform-terraform-state"
     encrypt = true
   }
