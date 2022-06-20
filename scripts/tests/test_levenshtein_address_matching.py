@@ -21,7 +21,7 @@ class AddressMatchingTests(unittest.TestCase):
             .config("spark.sql.parquet.int96RebaseModeInRead", "LEGACY") \
             .config("spark.sql.parquet.int96RebaseModeInWrite", "LEGACY") \
             .master("local[*]") \
-            .appName("UnitTestLocal") \
+            .appName("AddressMatchingTests") \
             .getOrCreate()
 
         logging.basicConfig(
@@ -60,15 +60,20 @@ class AddressMatchingTests(unittest.TestCase):
         self.assertEqual(addresses.count(), addresses_raw.count())
 
     def test_match_addresses(self):
-        path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/source")
-        self.logger.info(f"root_path = {self.root_path}")
-        self.logger.info(f"path = {path}")
         source_raw = self.spark.read.option("header", "true").csv("test_data/levenshtein_address_matching/source/")
         source = prep_source_data(source_raw)
         addresses_raw = self.spark \
             .read.option("header", "true").csv("test_data/levenshtein_address_matching/addresses/")
         addresses = prep_addresses_api_data(addresses_raw, match_to_property_shell="")
         actual = match_addresses(source, addresses, self.logger)
+
+        path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/source")
+        self.logger.info(f"root_path = {self.root_path}")
+        self.logger.info(f"path = {path}")
+        self.logger.info(f"actual.count() = {actual.count()}")
+        self.logger.info(f"self.spark = {self.spark}")
+        self.logger.info(f"self.spark.port = {self.spark.sparkContext.uiWebUrl}")
+
         self.assertEqual(actual.count(), 2)
 
     def test_small_data_perfect_matches(self):
