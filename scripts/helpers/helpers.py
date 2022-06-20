@@ -5,8 +5,8 @@ import datetime
 import unicodedata
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as f, DataFrame
-from pyspark.sql.functions import col, from_json, concat, to_date, lit, year, month, dayofmonth, broadcast
-from pyspark.sql.types import StringType, StructType
+from pyspark.sql.functions import col, from_json, concat, max, to_date, lit, year, month, dayofmonth, broadcast, when
+from pyspark.sql.types import StringType, StructType, IntegerType
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 PARTITION_KEYS_SNAPSHOT = ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']
@@ -146,17 +146,32 @@ def get_latest_partitions(df: DataFrame) -> DataFrame:
     """
 
     if "import_date" in df.columns:
-        latest_partition = df.select(f.max(col("import_date")).alias("latest_import_date"))
+        latest_partition = df.select(max(col("import_date")).alias("latest_import_date"))
         result = df \
             .join(broadcast(latest_partition), (df["import_date"] == latest_partition["latest_import_date"])) \
             .drop("latest_import_date")
     else:
+        # The below code is temporary fix till docker test environment is fixed, post which delete this and use the one
+        # below which is commented as of now.
         latest_partition = df \
-            .select(f.max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"),
-                                         col("import_day")), format="yyyy-L-d")).alias("latest_partition_date")) \
+            .withColumn("import_year", col("import_year").cast(IntegerType())) \
+            .withColumn("import_month", col("import_month").cast(IntegerType())) \
+            .withColumn("import_day", col("import_day").cast(IntegerType())) \
+            .select(max(to_date(concat(
+            col("import_year"),
+            when(col("import_month") < 10, concat(lit("0"), col("import_month"))).otherwise(col("import_month")),
+            when(col("import_day") < 10, concat(lit("0"), col("import_day"))).otherwise(col("import_day"))),
+            format="yyyyMMdd")).alias("latest_partition_date")) \
             .select(year(col("latest_partition_date")).alias("latest_year"),
                     month(col("latest_partition_date")).alias("latest_month"),
                     dayofmonth(col("latest_partition_date")).alias("latest_day"))
+        # Unblock the below code when the test environment of docker is fixed and delete the above one.
+        # latest_partition = df \
+        #    .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
+        #                         format="yyyy-L-d")).alias("latest_partition_date")) \
+        #     .select(year(col("latest_partition_date")).alias("latest_year"),
+        #             month(col("latest_partition_date")).alias("latest_month"),
+        #             dayofmonth(col("latest_partition_date")).alias("latest_day"))
 
         result = df \
             .join(broadcast(latest_partition),
