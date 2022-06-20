@@ -5,7 +5,7 @@ services:
     image: amazon/aws-glue-libs@sha256:365ff50d6aae7774b491aa17b2eec9a07a8bcda5e2ad7f64df69f8fba2bf5d56
     working_dir: /root/scripts
     ports:
-      - "4041:4040"
+      - "4040:4050"
     entrypoint: bash -c "pip install -r ./requirements.test.txt && /home/aws-glue-libs/bin/gluepytest ./${filename}"
     volumes:
       - .:/root/scripts
