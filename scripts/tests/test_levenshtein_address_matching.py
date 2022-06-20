@@ -63,7 +63,7 @@ class AddressMatchingTests(unittest.TestCase):
         source_raw = self.spark.read.option("header", "true").csv("tests/test_data/levenshtein_address_matching/source/")
         source = prep_source_data(source_raw)
         addresses_raw = self.spark \
-            .read.option("header", "true").csv("test_data/levenshtein_address_matching/addresses/")
+            .read.option("header", "true").csv("tests/test_data/levenshtein_address_matching/addresses/")
         addresses = prep_addresses_api_data(addresses_raw, match_to_property_shell="")
         actual = match_addresses(source, addresses, self.logger)
 
