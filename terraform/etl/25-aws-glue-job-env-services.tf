@@ -5,7 +5,7 @@ locals {
 }
 
 resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
-  count   = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
+  count   = local.is_live_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
   enabled = local.is_live_environment
 
@@ -20,7 +20,7 @@ resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
 
 module "alloy_api_ingestion_raw_env_services" {
   source = "../modules/resources/aws-glue-job"
-  count  = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
+  count  = local.is_live_environment ? length(local.alloy_queries) : 0
 
   job_description = "This job queries the Alloy API for data and converts the exported csv to Parquet saved to S3"
   department      = module.department_environmental_services
@@ -40,14 +40,14 @@ module "alloy_api_ingestion_raw_env_services" {
     "--database"                = module.department_environmental_services.raw_zone_catalog_database_name
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--filename"                = "${local.alloy_query_names[count.index]}/${local.alloy_query_names[count.index]}.csv"
-    "--resource"                = "${local.alloy_query_names[count.index]}"
+    "--resource"                = local.alloy_query_names[count.index]
   }
 }
 
 
 
 resource "aws_glue_trigger" "alloy_daily_table_ingestion_crawler" {
-  count   = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
+  count   = local.is_live_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
   name    = "${local.short_identifier_prefix} ${local.alloy_query_names[count.index]} Alloy Ingestion Crawler"
   type    = "CONDITIONAL"
@@ -66,7 +66,7 @@ resource "aws_glue_trigger" "alloy_daily_table_ingestion_crawler" {
 }
 
 resource "aws_glue_crawler" "alloy_daily_table_ingestion" {
-  count = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
+  count = local.is_live_environment ? length(local.alloy_queries) : 0
   tags  = module.tags.values
 
   database_name = module.department_environmental_services.raw_zone_catalog_database_name
@@ -88,7 +88,7 @@ resource "aws_glue_crawler" "alloy_daily_table_ingestion" {
 
 module "alloy_daily_snapshot_env_services" {
   source = "../modules/resources/aws-glue-job"
-  count  = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
+  count  = local.is_live_environment ? length(local.alloy_queries) : 0
 
   job_description = "This job combines previous updates from the API to create a daily snapshot"
   department      = module.department_environmental_services
@@ -115,7 +115,7 @@ module "alloy_daily_snapshot_env_services" {
 }
 
 resource "aws_glue_trigger" "alloy_snapshot_crawler" {
-  count   = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
+  count   = local.is_live_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
   name    = "${local.short_identifier_prefix} ${local.alloy_query_names[count.index]} Alloy Snapshot Crawler"
   type    = "CONDITIONAL"
@@ -134,7 +134,7 @@ resource "aws_glue_trigger" "alloy_snapshot_crawler" {
 }
 
 resource "aws_glue_crawler" "alloy_snapshot" {
-  count = local.is_live_environment ? "${length(local.alloy_queries)}" : 0
+  count = local.is_live_environment ? length(local.alloy_queries) : 0
   tags  = module.tags.values
 
   database_name = module.department_environmental_services.refined_zone_catalog_database_name

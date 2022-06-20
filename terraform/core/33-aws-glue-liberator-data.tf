@@ -5,26 +5,6 @@ resource "aws_glue_workflow" "parking_liberator_data" {
   tags = module.tags.values
 }
 
-
-resource "aws_ssm_parameter" "parking_liberator_data_workflow_name" {
-  tags = module.tags.values
-
-  name        = "/${local.identifier_prefix}/glue/parking_liberator_data_workflow_name"
-  type        = "SecureString"
-  description = "Liberator Glue workflow name"
-  value       = aws_glue_workflow.parking_liberator_data.name
-}
-
-resource "aws_ssm_parameter" "parking_liberator_data_workflow_arn" {
-  tags = module.tags.values
-
-  name        = "/${local.identifier_prefix}/glue/parking_liberator_data_workflow_arn"
-  type        = "SecureString"
-  description = "Liberator Glue workflow arn"
-  value       = aws_glue_workflow.parking_liberator_data.arn
-}
-
-
 // LIBERATOR LANDING ZONE
 resource "aws_glue_catalog_database" "landing_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-landing-zone"
@@ -48,7 +28,7 @@ resource "aws_glue_crawler" "landing_zone_liberator" {
 
   database_name = aws_glue_catalog_database.landing_zone_liberator.name
   name          = "${local.identifier_prefix}-landing-zone-liberator"
-  role          = aws_iam_role.glue_role.arn
+  role          = data.aws_iam_role.glue_role.arn
 
   s3_target {
     path       = "s3://${module.landing_zone.bucket_id}/parking/liberator"
@@ -88,10 +68,10 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
   name              = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   number_of_workers = 2
   worker_type       = "Standard"
-  role_arn          = aws_iam_role.glue_role.arn
+  role_arn          = data.aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_tables_landing_to_raw.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${data.aws_s3_bucket_object.copy_tables_landing_to_raw.key}"
   }
 
   glue_version = "2.0"
@@ -103,7 +83,7 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
     "--table_filter_expression"   = "^liberator_(?!fpn).*"
     "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_liberator.name
     "--glue_database_name_target" = aws_glue_catalog_database.raw_zone_liberator.name
-    "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${data.aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog"   = "true"
     "--enable-spark-ui"           = "true"
     "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage.bucket_id}/parking/liberator"
@@ -116,10 +96,10 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw" {
   name              = "${local.short_identifier_prefix}Copy Env Enforcement Liberator landing zone to raw"
   number_of_workers = 2
   worker_type       = "Standard"
-  role_arn          = aws_iam_role.glue_role.arn
+  role_arn          = data.aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
-    script_location = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.copy_tables_landing_to_raw.key}"
+    script_location = "s3://${module.glue_scripts.bucket_id}/${data.aws_s3_bucket_object.copy_tables_landing_to_raw.key}"
   }
 
   glue_version = "2.0"
@@ -131,7 +111,7 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw" {
     "--table_filter_expression"   = "^liberator_fpn.*"
     "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_liberator.name
     "--glue_database_name_target" = module.department_env_enforcement.raw_zone_catalog_database_name
-    "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"            = "s3://${module.glue_scripts.bucket_id}/${data.aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog"   = "true"
     "--enable-spark-ui"           = "true"
     "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage.bucket_id}/env-enforcement/liberator"
@@ -152,7 +132,7 @@ resource "aws_glue_crawler" "refined_zone_parking_liberator_crawler" {
 
   database_name = aws_glue_catalog_database.refined_zone_liberator.name
   name          = "${local.identifier_prefix}-refined-zone-liberator"
-  role          = aws_iam_role.glue_role.arn
+  role          = data.aws_iam_role.glue_role.arn
 
   s3_target {
     path       = "s3://${module.refined_zone.bucket_id}/parking/liberator/"

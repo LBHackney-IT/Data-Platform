@@ -21,7 +21,7 @@ module "liberator_fpns_to_refined" {
 
   }
   script_name      = "liberator_fpns_refined"
-  triggered_by_job = aws_glue_job.copy_env_enforcement_liberator_landing_to_raw.name
+  triggered_by_job = "${local.short_identifier_prefix}Copy Env Enforcement Liberator landing zone to raw"
 
   crawler_details = {
     database_name      = module.department_env_enforcement.refined_zone_catalog_database_name
