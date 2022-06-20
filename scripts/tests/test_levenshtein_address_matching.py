@@ -6,6 +6,7 @@ class TestAddressMatching:
 
   
     def test_exact_match_gets_matched(self, spark):
+        print("Change the test cases as well")
         response = self.addresses_get_matched(spark, [
                 {'prinx': 14, 'query_address': '4 LEASIDE HOUSE E5 9HJ', 'query_postcode': 'E5 9HJ'}
             ],
