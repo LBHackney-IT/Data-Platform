@@ -21,7 +21,7 @@ class AddressMatchingTests(unittest.TestCase):
             .config("spark.sql.parquet.int96RebaseModeInRead", "LEGACY") \
             .config("spark.sql.parquet.int96RebaseModeInWrite", "LEGACY") \
             .master("local[*]") \
-            .appName("SparkLocal") \
+            .appName("UnitTestLocal") \
             .getOrCreate()
 
         logging.basicConfig(
@@ -38,7 +38,6 @@ class AddressMatchingTests(unittest.TestCase):
     def tearDownClass(cls) -> None:
         cls.spark.stop()
 
-    @unittest.skip("temp")
     def test_prep_source_data(self):
         path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/source")
         source_raw = self.spark.read\
@@ -49,7 +48,6 @@ class AddressMatchingTests(unittest.TestCase):
         actual_columns = source.columns
         self.assertCountEqual(actual_columns, expected_columns)
 
-    @unittest.skip("temp")
     def test_prep_addresses_api_data(self):
         path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/addresses/")
         addresses_raw = self.spark \
