@@ -5,7 +5,7 @@ import datetime
 import unicodedata
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as f, DataFrame
-from pyspark.sql.functions import col, from_json, concat, max, to_date, lit, year, month, dayofmonth, broadcast
+from pyspark.sql.functions import col, from_json, concat, to_date, lit, year, month, dayofmonth, broadcast
 from pyspark.sql.types import StringType, StructType
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
@@ -146,14 +146,14 @@ def get_latest_partitions(df: DataFrame) -> DataFrame:
     """
 
     if "import_date" in df.columns:
-        latest_partition = df.select(max(col("import_date")).alias("latest_import_date"))
+        latest_partition = df.select(f.max(col("import_date")).alias("latest_import_date"))
         result = df \
             .join(broadcast(latest_partition), (df["import_date"] == latest_partition["latest_import_date"])) \
             .drop("latest_import_date")
     else:
         latest_partition = df \
-            .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
-                                format="yyyy-L-d")).alias("latest_partition_date")) \
+            .select(f.max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"),
+                                         col("import_day")), format="yyyy-L-d")).alias("latest_partition_date")) \
             .select(year(col("latest_partition_date")).alias("latest_year"),
                     month(col("latest_partition_date")).alias("latest_month"),
                     dayofmonth(col("latest_partition_date")).alias("latest_day"))
