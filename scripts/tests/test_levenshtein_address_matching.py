@@ -5,7 +5,7 @@ from logging import Logger
 
 from pyspark.sql import SparkSession
 
-from scripts.jobs.levenshtein_address_matching import prep_source_data, prep_addresses_api_data, match_addresses
+from jobs.levenshtein_address_matching import prep_source_data, prep_addresses_api_data, match_addresses
 
 
 class AddressMatchingTests(unittest.TestCase):
