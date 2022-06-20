@@ -5,13 +5,16 @@ from logging import Logger
 
 from pyspark.sql import SparkSession
 
-from jobs.levenshtein_address_matching import prep_source_data, prep_addresses_api_data, match_addresses
+from scripts.jobs.levenshtein_address_matching import prep_source_data, prep_addresses_api_data, match_addresses
 
 
 class AddressMatchingTests(unittest.TestCase):
     spark: SparkSession = None
     logger: Logger = None
     root_path = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+    base_path_data = os.path.join(root_path, "tests", "test_data", "levenshtein_address_matching")
+    source_data_path = os.path.join(base_path_data, "source")
+    addresses_data_path = os.path.join(base_path_data, "addresses")
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -39,19 +42,14 @@ class AddressMatchingTests(unittest.TestCase):
         cls.spark.stop()
 
     def test_prep_source_data(self):
-        path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/source")
-        source_raw = self.spark.read\
-            .option("header", "true")\
-            .csv(path)
+        source_raw = self.spark.read.option("header", "true").csv(self.source_data_path)
         source = prep_source_data(source_raw)
         expected_columns = ["prinx", "query_address", "query_postcode"]
         actual_columns = source.columns
         self.assertCountEqual(actual_columns, expected_columns)
 
     def test_prep_addresses_api_data(self):
-        path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/addresses/")
-        addresses_raw = self.spark \
-            .read.option("header", "true").csv(path)
+        addresses_raw = self.spark.read.option("header", "true").csv(self.addresses_data_path)
         addresses = prep_addresses_api_data(addresses_raw, match_to_property_shell="")
         expected_columns = ["target_address", "target_address_short", "target_address_medium", "uprn", "blpu_class",
                             "target_postcode"]
@@ -60,20 +58,12 @@ class AddressMatchingTests(unittest.TestCase):
         self.assertEqual(addresses.count(), addresses_raw.count())
 
     def test_match_addresses(self):
-        source_raw = self.spark.read.option("header", "true").csv("tests/test_data/levenshtein_address_matching/source/")
+        source_raw = self.spark.read.option("header", "true").csv(self.source_data_path)
         source = prep_source_data(source_raw)
         addresses_raw = self.spark \
-            .read.option("header", "true").csv("tests/test_data/levenshtein_address_matching/addresses/")
+            .read.option("header", "true").csv(self.addresses_data_path)
         addresses = prep_addresses_api_data(addresses_raw, match_to_property_shell="")
         actual = match_addresses(source, addresses, self.logger)
-
-        path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/source")
-        self.logger.info(f"root_path = {self.root_path}")
-        self.logger.info(f"path = {path}")
-        self.logger.info(f"actual.count() = {actual.count()}")
-        self.logger.info(f"self.spark = {self.spark}")
-        self.logger.info(f"self.spark.port = {self.spark.sparkContext.uiWebUrl}")
-
         self.assertEqual(actual.count(), 2)
 
     def test_small_data_perfect_matches(self):
