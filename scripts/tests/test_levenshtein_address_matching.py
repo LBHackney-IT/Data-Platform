@@ -60,7 +60,7 @@ class AddressMatchingTests(unittest.TestCase):
         self.assertEqual(addresses.count(), addresses_raw.count())
 
     def test_match_addresses(self):
-        source_raw = self.spark.read.option("header", "true").csv("test_data/levenshtein_address_matching/source/")
+        source_raw = self.spark.read.option("header", "true").csv("tests/test_data/levenshtein_address_matching/source/")
         source = prep_source_data(source_raw)
         addresses_raw = self.spark \
             .read.option("header", "true").csv("test_data/levenshtein_address_matching/addresses/")
