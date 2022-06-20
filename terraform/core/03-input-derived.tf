@@ -44,42 +44,6 @@ data "aws_ssm_parameter" "aws_vpc_id" {
   name = "/${local.application_snake}-${local.is_live_environment ? var.environment : "dev"}/vpc/vpc_id"
 }
 
-data "aws_iam_role" "glue_role" {
-  name = "${local.identifier_prefix}-glue-role"
-}
-
-data "aws_s3_bucket_object" "helpers" {
-  bucket = module.glue_scripts.bucket_id
-  key    = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
-}
-
-data "aws_s3_bucket_object" "jars" {
-  bucket = module.glue_scripts.bucket_id
-  key    = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
-}
-
-data "aws_s3_bucket_object" "pydeequ" {
-  bucket = module.glue_scripts.bucket_id
-  key    = "python-modules/pydeequ-1.0.1.zip"
-}
-
-data "aws_s3_bucket_object" "ingest_database_tables_via_jdbc_connection" {
-  bucket = module.glue_scripts.bucket_id
-  key    = "scripts/ingest_database_tables_via_jdbc_connection.py"
-}
-
-data "aws_s3_bucket_object" "copy_tables_landing_to_raw" {
-  bucket = module.glue_scripts.bucket_id
-  key    = "scripts/copy_tables_landing_to_raw.py"
-}
-
-data "aws_s3_bucket_object" "dynamodb_tables_ingest" {
-  bucket = module.glue_scripts.bucket_id
-  key    = "scripts/ingest_tables_from_dynamo_db.py"
-}
-
-
-
 // ==== LANDING ZONE ===========
 resource "aws_glue_catalog_database" "landing_zone_catalog_database" {
   name = "${local.identifier_prefix}-landing-zone-database"

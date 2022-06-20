@@ -14,7 +14,7 @@ resource "aws_glue_crawler" "raw_zone_unrestricted_address_api_crawler" {
 
   database_name = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
   name          = "${local.identifier_prefix}-raw-zone-unrestricted-address-api"
-  role          = aws_iam_role.glue_role.arn
+  role          = data.aws_iam_role.glue_role.arn
   table_prefix  = "unrestricted_address_api_"
 
   s3_target {
@@ -48,7 +48,7 @@ resource "aws_glue_crawler" "refined_zone_sandbox_crawler" {
 
   database_name = module.department_sandbox.refined_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}sandbox-refined-zone"
-  role          = aws_iam_role.glue_role.arn
+  role          = data.aws_iam_role.glue_role.arn
 
   s3_target {
     path       = "s3://${module.refined_zone.bucket_id}/sandbox/"

@@ -26,8 +26,8 @@ module "alloy_api_ingestion_raw_env_services" {
   department      = module.department_environmental_services
   job_name        = "${local.short_identifier_prefix}_${local.alloy_query_names[count.index]}_alloy_api_ingestion_env_services"
 
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   trigger_enabled            = false
   script_name                = "alloy_api_ingestion"
@@ -94,8 +94,8 @@ module "alloy_daily_snapshot_env_services" {
   department      = module.department_environmental_services
   job_name        = "${local.short_identifier_prefix}_${local.alloy_query_names[count.index]}_alloy_snapshot_env_services"
 
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   triggered_by_crawler       = aws_glue_crawler.alloy_daily_table_ingestion[count.index].name
   script_name                = "alloy_create_snapshot"

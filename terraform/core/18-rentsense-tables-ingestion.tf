@@ -6,13 +6,13 @@ module "ingest_mtfh_rentsense_tables" {
   source        = "../modules/resources/aws-glue-job"
   environment   = var.environment
   tags          = module.tags.values
-  glue_role_arn = data.aws_iam_role.glue_role.arn
+  glue_role_arn = aws_iam_role.glue_role.arn
 
   job_name                       = "${local.short_identifier_prefix}Ingest MTFH Rentsense tables"
   job_description                = "Ingest Persons,ContactDetails,Assets for Rentsense from the Housing Dynamo DB instances"
-  script_s3_object_key           = data.aws_s3_bucket_object.dynamodb_tables_ingest.key
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
+  helper_module_key              = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
@@ -45,12 +45,12 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
 
   job_name                   = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables for Rentsense to housing department raw zone"
   department                 = module.department_housing
-  script_s3_object_key       = data.aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   environment                = var.environment
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  glue_role_arn              = data.aws_iam_role.glue_role.arn
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  glue_role_arn              = aws_iam_role.glue_role.arn
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id
   triggered_by_crawler       = module.ingest_mtfh_rentsense_tables.crawler_name

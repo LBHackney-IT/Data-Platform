@@ -3,7 +3,7 @@ resource "aws_glue_crawler" "trusted_zone_housing_repairs_crawler" {
 
   database_name = module.department_housing_repairs.trusted_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}trusted-zone-housing-repairs"
-  role          = aws_iam_role.glue_role.arn
+  role          = data.aws_iam_role.glue_role.arn
 
   s3_target {
     path       = "s3://${module.trusted_zone.bucket_arn}/housing-repairs/repairs/"

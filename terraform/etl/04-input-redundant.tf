@@ -33,3 +33,11 @@ variable "aws_data_platform_account_id" {
 variable "aws_dp_vpc_id" {
   default = false
 }
+
+variable "aws_vpc_id" {
+  default = false
+}
+
+variable "academy_production_database_username" {
+  default = false
+}

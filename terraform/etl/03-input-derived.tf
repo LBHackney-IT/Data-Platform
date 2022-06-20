@@ -52,3 +52,7 @@ data "aws_subnet_ids" "network" {
 data "aws_vpc" "network" {
   id = data.aws_ssm_parameter.aws_vpc_id.value
 }
+
+data "aws_iam_role" "glue_role" {
+  name = "${local.identifier_prefix}-glue-role"
+}

@@ -7,9 +7,11 @@ output "redshift_iam_role_arn" {
 }
 
 output "redshift_schemas" {
-  value = local.redshift_schemas
+  value     = local.redshift_schemas
+  sensitive = true
 }
 
 output "redshift_users" {
-  value = local.redshift_users
+  value     = local.redshift_users
+  sensitive = true
 }

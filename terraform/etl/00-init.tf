@@ -34,7 +34,7 @@ provider "google" {
 
 # General
 terraform {
-  required_version = "~> 1.0"
+  required_version = "~> 1.2.0"
 
   required_providers {
     aws = {
@@ -48,7 +48,7 @@ terraform {
   }
   backend "s3" {
     region  = "eu-west-2"
-    key     = "tfstate"
+    key     = "tfstate-etl"
     bucket  = "dataplatform-terraform-state"
     encrypt = true
   }

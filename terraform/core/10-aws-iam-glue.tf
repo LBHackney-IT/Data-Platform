@@ -173,7 +173,7 @@ data "aws_iam_policy_document" "access_to_s3_iam_and_secrets" {
       module.trusted_zone.kms_key_arn,
       module.noiseworks_data_storage.kms_key_arn,
       module.spark_ui_output_storage.kms_key_arn,
-      data.aws_kms_key.secrets_manager_key.arn
+      aws_kms_key.secrets_manager_key.arn
     ]
   }
   statement {
@@ -182,7 +182,7 @@ data "aws_iam_policy_document" "access_to_s3_iam_and_secrets" {
       "secretsmanager:GetSecretValue"
     ]
     resources = [
-      data.aws_ssm_parameter.sheets_credentials_housing_arn.value,
+      aws_secretsmanager_secret.sheets_credentials_housing.arn,
       aws_secretsmanager_secret.tascomi_api_public_key.id,
       aws_secretsmanager_secret.tascomi_api_private_key.id
     ]
@@ -200,7 +200,6 @@ resource "aws_iam_role_policy_attachment" "attach_glue_access_to_s3_iam_and_secr
   role       = aws_iam_role.glue_role.name
   policy_arn = aws_iam_policy.glue_access_to_s3_iam_and_secrets.arn
 }
-
 
 data "aws_iam_policy_document" "can_assume_all_roles" {
   statement {
