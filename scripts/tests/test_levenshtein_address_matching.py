@@ -1,4 +1,5 @@
 import logging
+import os
 import unittest
 from logging import Logger
 
@@ -10,6 +11,7 @@ from scripts.jobs.levenshtein_address_matching import prep_source_data, prep_add
 class AddressMatchingTests(unittest.TestCase):
     spark: SparkSession = None
     logger: Logger = None
+    root_path = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -37,15 +39,19 @@ class AddressMatchingTests(unittest.TestCase):
         cls.spark.stop()
 
     def test_prep_source_data(self):
-        source_raw = self.spark.read.option("header", "true").csv("test_data/levenshtein_address_matching/source/")
+        path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/source")
+        source_raw = self.spark.read\
+            .option("header", "true")\
+            .csv(path)
         source = prep_source_data(source_raw)
         expected_columns = ["prinx", "query_address", "query_postcode"]
         actual_columns = source.columns
         self.assertCountEqual(actual_columns, expected_columns)
 
     def test_prep_addresses_api_data(self):
+        path = os.path.join(self.root_path, "tests/test_data/levenshtein_address_matching/addresses/")
         addresses_raw = self.spark \
-            .read.option("header", "true").csv("test_data/levenshtein_address_matching/addresses/")
+            .read.option("header", "true").csv(path)
         addresses = prep_addresses_api_data(addresses_raw, match_to_property_shell="")
         expected_columns = ["target_address", "target_address_short", "target_address_medium", "uprn", "blpu_class",
                             "target_postcode"]
