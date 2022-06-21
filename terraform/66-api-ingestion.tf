@@ -35,6 +35,11 @@ module "copy_icaseworks_data_landing_to_raw" {
   helper_module_key          = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  script_s3_object_key       = aws_s3_bucket_object.copy_json_data_landing_to_raw.key
+  glue_scripts_bucket_id     = module.glue_scripts.bucket_id
+  glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
+  environment                = var.environment
+  trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--s3_bucket_target"    = "${module.raw_zone.bucket_id}/data-and-insight"
@@ -42,8 +47,6 @@ module "copy_icaseworks_data_landing_to_raw" {
     "--s3_prefix"           = "icaseworks/"
     "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
-  script_s3_object_key = aws_s3_bucket_object.copy_json_data_landing_to_raw.key
-  trigger_enabled      = false
   crawler_details = {
     database_name      = module.department_data_and_insight.raw_zone_catalog_database_name
     s3_target_location = "s3://${module.raw_zone.bucket_id}/data-and-insight/icaseworks/"
