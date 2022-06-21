@@ -28,7 +28,7 @@ from pyspark.sql import DataFrame, Window
 from pyspark.sql.functions import col, concat_ws, length, levenshtein, lit, min, substring, trim, when
 
 from jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
-from helpers.helpers import get_latest_partitions, create_pushdown_predicate, PARTITION_KEYS
+from helpers.helpers import get_latest_partitions_optimized, create_pushdown_predicate, PARTITION_KEYS
 
 
 def prep_source_data(query_addresses: DataFrame) -> DataFrame:
@@ -213,7 +213,7 @@ def main():
                            name_space=source_catalog_database,
                            table_name=source_catalog_table)\
             .coalesce(partition_source)
-        source_addresses_latest = get_latest_partitions(source_addresses_raw)
+        source_addresses_latest = get_latest_partitions_optimized(source_addresses_raw)
         source = prep_source_data(source_addresses_latest)
 
         # Prepare gazetteer data
@@ -227,7 +227,7 @@ def main():
                            table_name=addresses_api_data_table) \
             .coalesce(partition_address) \
             .filter(push_down_predicate)
-        addresses_data_latest = get_latest_partitions(addresses_data_raw)
+        addresses_data_latest = get_latest_partitions_optimized(addresses_data_raw)
 
         match_to_property_shell = execution_context.get_input_args(match_to_property_shell_arg)
         addresses = prep_addresses_api_data(addresses_data_latest, match_to_property_shell)
