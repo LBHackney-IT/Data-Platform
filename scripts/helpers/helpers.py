@@ -163,20 +163,19 @@ def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
         # The below code is temporary fix till docker test environment is fixed, post which delete this and use the one
         # below which is commented as of now.
         latest_partition = df \
-            .withColumn("import_year", col("import_year").cast(IntegerType())) \
-            .withColumn("import_month", col("import_month").cast(IntegerType())) \
-            .withColumn("import_day", col("import_day").cast(IntegerType())) \
+            .withColumn("import_year_int", col("import_year").cast(IntegerType())) \
+            .withColumn("import_month_int", col("import_month").cast(IntegerType())) \
+            .withColumn("import_day_int", col("import_day").cast(IntegerType())) \
             .select(max(to_date(concat(
-            col("import_year"),
-            when(col("import_month") < 10, concat(lit("0"), col("import_month"))).otherwise(col("import_month")),
-            when(col("import_day") < 10, concat(lit("0"), col("import_day"))).otherwise(col("import_day"))),
+            col("import_year_int"),
+            when(col("import_month_int") < 10, concat(lit("0"), col("import_month_int")))
+            .otherwise(col("import_month_int")),
+            when(col("import_day_int") < 10, concat(lit("0"), col("import_day_int")))
+            .otherwise(col("import_day_int"))),
             format="yyyyMMdd")).alias("latest_partition_date")) \
-            .select(year(col("latest_partition_date")).alias("latest_year"),
-                    month(col("latest_partition_date")).alias("latest_month"),
-                    dayofmonth(col("latest_partition_date")).alias("latest_day"))\
-            .select(year(col("latest_partition_date")).alias("latest_year"),
-                    month(col("latest_partition_date")).alias("latest_month"),
-                    dayofmonth(col("latest_partition_date")).alias("latest_day"))
+            .select(year(col("latest_partition_date")).alias("latest_year_int"),
+                    month(col("latest_partition_date")).alias("latest_month_int"),
+                    dayofmonth(col("latest_partition_date")).alias("latest_day_int"))
 
         # Unblock the below code when the test environment of docker is fixed and delete the above one.
         # latest_partition = df \
@@ -188,10 +187,10 @@ def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
 
         result = df \
             .join(broadcast(latest_partition),
-                  (df.import_year == latest_partition["latest_year"]) &
-                  (df.import_month == latest_partition["latest_month"]) &
-                  (df.import_day == latest_partition["latest_day"])) \
-            .drop("latest_year", "latest_month", "latest_day")
+                  (df.import_year == latest_partition["latest_year_int"]) &
+                  (df.import_month == latest_partition["latest_month_int"]) &
+                  (df.import_day == latest_partition["latest_day_int"])) \
+            .drop("latest_year_int", "latest_month_int", "latest_day_int")
 
     return result
 
