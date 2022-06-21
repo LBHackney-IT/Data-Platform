@@ -21,7 +21,7 @@ module "icaseworks_api_ingestion" {
     "SECRET_NAME"           = local.secret_name
     "TARGET_S3_BUCKET_NAME" = local.s3_target_bucket_name
     "OUTPUT_FOLDER"         = "icaseworks"
-    "GLUE_JOB_NAME"         = module.copy_icaseworks_data_landing_to_raw.job_name
+    "GLUE_JOB_NAME"         = module.copy_icaseworks_data_landing_to_raw[0].job_name
   }
 }
 
