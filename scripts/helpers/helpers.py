@@ -1,13 +1,13 @@
+import datetime
 import re
 import sys
-import boto3
-import datetime
 import unicodedata
-from awsglue.utils import getResolvedOptions
-from pyspark.sql import functions as f
-from pyspark.sql.functions import col, from_json
-from pyspark.sql.types import StringType, StructType 
 
+import boto3
+from awsglue.utils import getResolvedOptions
+from pyspark.sql import functions as f, DataFrame
+from pyspark.sql.functions import col, from_json, to_date, concat, when, lit, year, month, dayofmonth, broadcast
+from pyspark.sql.types import StringType, StructType, IntegerType
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 PARTITION_KEYS_SNAPSHOT = ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']
@@ -132,14 +132,54 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
     return set(folders)
 
 
-def get_latest_partitions(dfa):
-    dfa = dfa.where(f.col('import_year') == dfa.select(
-        f.max('import_year')).first()[0])
-    dfa = dfa.where(f.col('import_month') == dfa.select(
-        f.max('import_month')).first()[0])
-    dfa = dfa.where(f.col('import_day') == dfa.select(
-        f.max('import_day')).first()[0])
-    return dfa
+def get_latest_partitions(df: DataFrame) -> DataFrame:
+    """Filters the DataFrame based on the latest (most recent) partition. It uses import_date if available else it uses
+    import_year, import_month, import_day to calculate the latest partition.
+
+    Args:
+        df: Input DataFrame
+
+    Returns:
+        DataFrame belonging to the most recent partition.
+
+    """
+
+    if "import_date" in df.columns:
+        latest_partition = df.select(max(col("import_date")).alias("latest_import_date"))
+        result = df \
+            .join(broadcast(latest_partition), (df["import_date"] == latest_partition["latest_import_date"])) \
+            .drop("latest_import_date")
+    else:
+        # The below code is temporary fix till docker test environment is fixed, post which delete this and use the one
+        # below which is commented as of now.
+        latest_partition = df \
+            .withColumn("import_year", col("import_year").cast(IntegerType())) \
+            .withColumn("import_month", col("import_month").cast(IntegerType())) \
+            .withColumn("import_day", col("import_day").cast(IntegerType())) \
+            .select(max(to_date(concat(
+            col("import_year"),
+            when(col("import_month") < 10, concat(lit("0"), col("import_month"))).otherwise(col("import_month")),
+            when(col("import_day") < 10, concat(lit("0"), col("import_day"))).otherwise(col("import_day"))),
+            format="yyyyMMdd")).alias("latest_partition_date")) \
+            .select(year(col("latest_partition_date")).alias("latest_year"),
+                    month(col("latest_partition_date")).alias("latest_month"),
+                    dayofmonth(col("latest_partition_date")).alias("latest_day"))
+        # Unblock the below code when the test environment of docker is fixed and delete the above one.
+        # latest_partition = df \
+        #    .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
+        #                         format="yyyy-L-d")).alias("latest_partition_date")) \
+        #     .select(year(col("latest_partition_date")).alias("latest_year"),
+        #             month(col("latest_partition_date")).alias("latest_month"),
+        #             dayofmonth(col("latest_partition_date")).alias("latest_day"))
+
+        result = df \
+            .join(broadcast(latest_partition),
+                  (df.import_year == latest_partition["latest_year"]) &
+                  (df.import_month == latest_partition["latest_month"]) &
+                  (df.import_day == latest_partition["latest_day"])) \
+            .drop("latest_year", "latest_month", "latest_day")
+
+    return result
 
 
 def parse_json_into_dataframe(spark, column, dataframe):
