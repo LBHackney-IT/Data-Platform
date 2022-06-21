@@ -21,5 +21,37 @@ module "icaseworks_api_ingestion" {
     "SECRET_NAME"           = local.secret_name
     "TARGET_S3_BUCKET_NAME" = local.s3_target_bucket_name
     "OUTPUT_FOLDER"         = "icaseworks"
+    "GLUE_JOB_NAME"         = module.copy_icaseworks_data_landing_to_raw.job_name
+  }
+}
+
+module "copy_icaseworks_data_landing_to_raw" {
+  source = "../modules/aws-glue-job"
+
+  count = local.is_live_environment ? 1 : 0
+
+  job_name                   = "${local.short_identifier_prefix}iCaseworks (OneCase) Copy Landing to Raw"
+  glue_role_arn              = aws_iam_role.glue_role.arn
+  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-enable"
+    "--s3_bucket_target"    = "${module.raw_zone.bucket_id}/data-and-insight"
+    "--s3_bucket_source"    = module.landing_zone.bucket_id
+    "--s3_prefix"           = "icaseworks/"
+    "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+  }
+  script_s3_object_key = aws_s3_bucket_object.copy_json_data_landing_to_raw.key
+  trigger_enabled      = false
+  crawler_details = {
+    database_name      = module.department_data_and_insight.raw_zone_catalog_database_name
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/data-and-insight/icaseworks/"
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+        TableLevelConfiguration = 3
+      }
+    })
   }
 }
