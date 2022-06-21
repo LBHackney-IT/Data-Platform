@@ -25,7 +25,7 @@ class ExecutionContextProvider:
 
         with ExecutionContextProvider(mode, glue_args, local_args) as execution_context:
         logger = execution_context.logger
-        log.debug("Stating my job")
+        logger.info("Stating my job")
         my_df = execution_context.get_dataframe(local_path_parquet=data_path_local,
                                                 name_space=aws_catalog_database_name,
                                                 table_name=aws_catalog_table_name)
