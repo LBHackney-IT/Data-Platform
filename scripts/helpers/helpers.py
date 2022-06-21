@@ -132,14 +132,14 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
     return set(folders)
 
 
-def get_latest_partitions(dfa):
-    dfa = dfa.where(f.col('import_year') == dfa.select(
-        f.max('import_year')).first()[0])
-    dfa = dfa.where(f.col('import_month') == dfa.select(
-        f.max('import_month')).first()[0])
-    dfa = dfa.where(f.col('import_day') == dfa.select(
-        f.max('import_day')).first()[0])
-    return dfa
+# def get_latest_partitions(dfa):
+#     dfa = dfa.where(f.col('import_year') == dfa.select(
+#         f.max('import_year')).first()[0])
+#     dfa = dfa.where(f.col('import_month') == dfa.select(
+#         f.max('import_month')).first()[0])
+#     dfa = dfa.where(f.col('import_day') == dfa.select(
+#         f.max('import_day')).first()[0])
+#     return dfa
 
 
 def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
@@ -173,7 +173,11 @@ def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
             format="yyyyMMdd")).alias("latest_partition_date")) \
             .select(year(col("latest_partition_date")).alias("latest_year"),
                     month(col("latest_partition_date")).alias("latest_month"),
+                    dayofmonth(col("latest_partition_date")).alias("latest_day"))\
+            .select(year(col("latest_partition_date")).alias("latest_year"),
+                    month(col("latest_partition_date")).alias("latest_month"),
                     dayofmonth(col("latest_partition_date")).alias("latest_day"))
+
         # Unblock the below code when the test environment of docker is fixed and delete the above one.
         # latest_partition = df \
         #    .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
