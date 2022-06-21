@@ -93,15 +93,6 @@ def retrieve_credentials_from_secrets_manager(secrets_manager_client, secret_nam
     return response
 
 
-def run_glue_job(glue_client, glue_job_name):
-    try:
-        logger.info(f"Running Glue job: {glue_job_name}")
-        return glue_client.start_job_run(JobName=glue_job_name)
-    except Exception as e:
-        print(e)
-    raise e
-
-
 def lambda_handler(event, lambda_context):
     load_dotenv()
     s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
@@ -183,7 +174,5 @@ def lambda_handler(event, lambda_context):
 
     # Trigger glue job to copy from landing to raw and convert to parquet
     glue_client = boto3.client('glue')
-    run_glue_job(glue_client, glue_job_name)
-
-if __name__ == '__main__':
-    lambda_handler('event', 'lambda_context')
+    job_run_id = glue_client.start_job_run(JobName=glue_job_name)
+    logger.info(f"Glue job run ID: {job_run_id}")

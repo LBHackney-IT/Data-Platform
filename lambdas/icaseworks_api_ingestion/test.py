@@ -6,7 +6,7 @@ import requests
 import botocore.session
 from botocore.stub import Stubber
 from datetime import datetime
-from icaseworks_api_ingestion.main import get_icaseworks_report_from, get_token, encode_string, remove_illegal_characters, write_dataframe_to_s3, dictionary_to_string, retrieve_credentials_from_secrets_manager, run_glue_job
+from icaseworks_api_ingestion.main import get_icaseworks_report_from, get_token, encode_string, remove_illegal_characters, write_dataframe_to_s3, dictionary_to_string, retrieve_credentials_from_secrets_manager
 from icaseworks_api_ingestion.helpers import MockResponse
 
 BASE_URL = "https://hackneyreports.icasework.com/getreport?"
@@ -141,26 +141,4 @@ class TestCaseWorksApiIngestion(TestCase):
         self.stubber.activate()
 
         service_response = write_dataframe_to_s3(self.s3, data, bucket, output_folder, filename)
-        self.assertEqual(service_response, response)
-
-    def test_run_glue_job(self):
-        self.boto_session = botocore.session.get_session()
-        self.boto_session.set_credentials("", "")
-        self.glue = self.boto_session.create_client('glue', region_name='eu-west-2')
-        self.stubber = Stubber(self.glue)
-
-        glue_job_name = 'copy-landing-to-raw'
-
-        expected_params = {
-            'JobName': glue_job_name
-        }
-
-        response = {
-            'JobRunId': 'glue_job_run_id'
-        }
-
-        self.stubber.add_response('start_job_run', response, expected_params)
-        self.stubber.activate()
-
-        service_response = run_glue_job(self.glue, glue_job_name)
         self.assertEqual(service_response, response)
