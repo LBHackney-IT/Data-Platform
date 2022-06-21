@@ -4,11 +4,11 @@ process.on('unhandledRejection', error => {
   console.log(error)
 });
 
-process.env.ORIGIN_BUCKET_ID = "dataplatform-b-dalton-landing-zone";
-process.env.ORIGIN_PATH = "/";
-process.env.TARGET_BUCKET_ID = "dataplatform-b-dalton-landing-zone";
-process.env.TARGET_PATH = "/";
-const handler = require("./index");
+process.env.ORIGIN_BUCKET_ID = "dataplatform-joates-landing-zone";
+process.env.ORIGIN_PATH = "/parking";
+process.env.TARGET_BUCKET_ID = "dataplatform-joates-landing-zone";
+process.env.TARGET_PATH = "/potato";
+const handler = require("lambdas/lambda/index");
 
 handler.handler({});
 
