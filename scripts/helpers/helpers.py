@@ -6,7 +6,7 @@ import unicodedata
 import boto3
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as f, DataFrame
-from pyspark.sql.functions import col, from_json, to_date, concat, when, lit, year, month, dayofmonth, broadcast
+from pyspark.sql.functions import col, from_json, to_date, concat, when, lit, year, month, dayofmonth, broadcast, max
 from pyspark.sql.types import StringType, StructType, IntegerType
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
