@@ -36,6 +36,10 @@ locals {
     parking_raw_zone_liberator     = aws_glue_catalog_database.raw_zone_liberator.name,
     parking_refined_zone_liberator = aws_glue_catalog_database.refined_zone_liberator.name,
 
+    # This is to compensate for the liberator schemas names being different from the glue catalog databases
+    liberator_raw_zone     = aws_glue_catalog_database.raw_zone_liberator.name,
+    liberator_refined_zone = aws_glue_catalog_database.refined_zone_liberator.name,
+
     replace(module.department_parking.raw_zone_catalog_database_name, "-", "_")     = module.department_parking.raw_zone_catalog_database_name,
     replace(module.department_parking.refined_zone_catalog_database_name, "-", "_") = module.department_parking.refined_zone_catalog_database_name,
     replace(module.department_parking.trusted_zone_catalog_database_name, "-", "_") = module.department_parking.trusted_zone_catalog_database_name,
@@ -97,8 +101,10 @@ locals {
       schemas_to_grant_access_to = concat([
         replace(module.department_parking.raw_zone_catalog_database_name, "-", "_"),
         "parking_raw_zone_liberator",
+        "liberator_raw_zone",
         replace(module.department_parking.refined_zone_catalog_database_name, "-", "_"),
         "parking_refined_zone_liberator",
+        "liberator_refined_zone",
         replace(module.department_parking.trusted_zone_catalog_database_name, "-", "_"),
       ], local.unrestricted_schemas)
     },
