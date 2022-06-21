@@ -142,7 +142,7 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
 #     return dfa
 
 
-def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
+def get_latest_partitions(df: DataFrame) -> DataFrame:
     """Filters the DataFrame based on the latest (most recent) partition. It uses import_date if available else it uses
     import_year, import_month, import_day to calculate the latest partition.
 
