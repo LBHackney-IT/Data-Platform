@@ -12,6 +12,10 @@ import boto3
 from dotenv import load_dotenv
 from os import getenv
 import datetime
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
@@ -61,9 +65,9 @@ def get_token(url, encoded_header, encoded_payload, signature, headers):
 def get_icaseworks_report_from(report_id,fromdate,auth_headers,auth_payload):
     report_url = "https://hackneyreports.icasework.com/getreport?"
     request_url = f'{report_url}ReportId={report_id}&Format=json&From={fromdate}'
-    print(f'Request url: {request_url}')
+    logger.info(f'Request url: {request_url}')
     response = requests.get(request_url, headers=auth_headers, data=auth_payload)
-    print(f'Status Code: {response.status_code}')
+    logger.info(f'Status Code: {response.status_code}')
     return response.content
 
 
@@ -93,6 +97,7 @@ def lambda_handler(event, lambda_context):
     load_dotenv()
     s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
     output_folder_name = getenv("OUTPUT_FOLDER")
+    glue_job_name = getenv("GLUE_JOB_NAME")
     url = "https://hackney.icasework.com/token"
 
     headers = {
@@ -155,17 +160,19 @@ def lambda_handler(event, lambda_context):
     today = datetime.datetime.utcnow().date()
     # Take only yesterday's data
     date_to_track_from = today - datetime.timedelta(days=1)
-    print(f"Date to track from: {date_to_track_from}")
+    logger.info(f"Date to track from: {date_to_track_from}")
 
     s3_client = boto3.client('s3')
 
     for report_details in report_tables:
-        print(f'Pulling report for {report_details["name"]}')
+        logger.info(f'Pulling report for {report_details["name"]}')
         case_id_report_id = report_details["id"]
         case_id_list = get_icaseworks_report_from(case_id_report_id,date_to_track_from,auth_headers,auth_payload)
         report_details["data"] = case_id_list
         write_dataframe_to_s3(s3_client, report_details["data"], s3_bucket, output_folder_name, report_details["name"])
-        print(f'Finished writing report for {report_details["name"]} to S3')
+        logger.info(f'Finished writing report for {report_details["name"]} to S3')
 
-if __name__ == '__main__':
-    lambda_handler('event', 'lambda_context')
+    # Trigger glue job to copy from landing to raw and convert to parquet
+    glue_client = boto3.client('glue')
+    job_run_id = glue_client.start_job_run(JobName=glue_job_name)
+    logger.info(f"Glue job run ID: {job_run_id}")
