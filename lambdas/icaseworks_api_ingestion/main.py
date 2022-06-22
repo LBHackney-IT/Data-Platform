@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('./lib/')
 
 import pybase64
@@ -17,13 +18,14 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
     regex_list = [['=', ""], ['\/', "_"], ['+', "-"]]
     for r in regex_list:
         string = re.sub(string=string,
-                       pattern="[{}]".format(r[0]),
-                       repl=r[1])
+                        pattern="[{}]".format(r[0]),
+                        repl=r[1])
     return string
 
 
@@ -35,8 +37,8 @@ def encode_string(string):
     return processed_string
 
 
-def dictionary_to_string(dict):
-    return str(dict).replace("'", '"').replace(" ", "")
+def dictionary_to_string(dictionary):
+    return str(dictionary).replace("'", '"').replace(" ", "")
 
 
 def create_signature(header, payload, secret):
@@ -62,9 +64,9 @@ def get_token(url, encoded_header, encoded_payload, signature, headers):
     return auth_token
 
 
-def get_icaseworks_report_from(report_id,fromdate,auth_headers,auth_payload):
+def get_icaseworks_report_from(report_id, from_date, auth_headers, auth_payload):
     report_url = "https://hackneyreports.icasework.com/getreport?"
-    request_url = f'{report_url}ReportId={report_id}&Format=json&From={fromdate}'
+    request_url = f'{report_url}ReportId={report_id}&Format=json&From={from_date}'
     logger.info(f'Request url: {request_url}')
     response = requests.get(request_url, headers=auth_headers, data=auth_payload)
     logger.info(f'Status Code: {response.status_code}')
@@ -111,7 +113,7 @@ def lambda_handler(event, lambda_context):
     api_key = api_credentials.get("api_key")
     secret = api_credentials.get("secret")
 
-    header_object = {"alg":"HS256","typ":"JWT"}
+    header_object = {"alg": "HS256", "typ": "JWT"}
 
     # Create Header
     header_object = dictionary_to_string(header_object)
@@ -121,9 +123,9 @@ def lambda_handler(event, lambda_context):
     current_unix_time = int(time.time())
     str_time = str(current_unix_time)
     payload_object = {
-        "iss" : api_key,
-        "aud" : url,
-        "iat" : str_time
+        "iss": api_key,
+        "aud": url,
+        "iat": str_time
     }
 
     payload_object = dictionary_to_string(payload_object)
@@ -134,7 +136,8 @@ def lambda_handler(event, lambda_context):
     signature = create_signature(header, payload, secret)
 
     # Get token from response
-    auth_token = get_token(url=url, encoded_header=header, encoded_payload=payload, signature=signature, headers=headers)
+    auth_token = get_token(url=url, encoded_header=header, encoded_payload=payload, signature=signature,
+                           headers=headers)
 
     # Create auth header for API Calls and auth payload
     authorization = f'Bearer {auth_token}'
@@ -153,7 +156,7 @@ def lambda_handler(event, lambda_context):
         # {"name":"Corrective Actions", "id":122443},
         # {"name":"Compensation", "id":122442},
         # {"name":"Case Contacts", "id":122542},
-        {"name":"Cases received", "id":122109}
+        {"name": "Cases received", "id": 122109}
     ]
 
     today = datetime.datetime.utcnow().date()
@@ -166,7 +169,7 @@ def lambda_handler(event, lambda_context):
     for report_details in report_tables:
         logger.info(f'Pulling report for {report_details["name"]}')
         case_id_report_id = report_details["id"]
-        case_id_list = get_icaseworks_report_from(case_id_report_id,date_to_track_from,auth_headers,auth_payload)
+        case_id_list = get_icaseworks_report_from(case_id_report_id, date_to_track_from, auth_headers, auth_payload)
         report_details["data"] = case_id_list
         write_dataframe_to_s3(s3_client, report_details["data"], s3_bucket, output_folder_name, report_details["name"])
         logger.info(f'Finished writing report for {report_details["name"]} to S3')
