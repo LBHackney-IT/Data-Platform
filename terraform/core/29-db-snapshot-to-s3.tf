@@ -1,5 +1,5 @@
 module "lambda_artefact_storage_for_api_account" {
-  source            = "../modules/resources/s3-bucket"
+  source            = "../modules/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
@@ -13,7 +13,7 @@ module "lambda_artefact_storage_for_api_account" {
 }
 
 module "db_snapshot_to_s3" {
-  source                         = "../modules/resources/db-snapshot-to-s3"
+  source                         = "../modules/db-snapshot-to-s3"
   tags                           = module.tags.values
   project                        = var.project
   environment                    = var.environment

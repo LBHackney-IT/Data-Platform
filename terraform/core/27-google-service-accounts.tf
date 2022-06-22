@@ -28,7 +28,7 @@ resource "google_service_account_key" "housing_json_credentials" {
 
 /* ==== SERVICE ACCOUNT - QLIK =================================================================================== */
 module "google_service_account" {
-  source                     = "../modules/resources/google-service-account"
+  source                     = "../modules/google-service-account"
   is_live_environment        = local.is_live_environment
   department_name            = "${module.department_data_and_insight.identifier}-qlik"
   identifier_prefix          = local.short_identifier_prefix

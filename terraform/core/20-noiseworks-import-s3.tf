@@ -1,5 +1,5 @@
 module "noiseworks_data_storage" {
-  source            = "../modules/resources/s3-bucket"
+  source            = "../modules/s3-bucket"
   tags              = module.tags.values
   project           = var.project
   environment       = var.environment
