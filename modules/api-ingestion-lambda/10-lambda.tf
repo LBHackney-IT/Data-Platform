@@ -92,7 +92,7 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 resource "null_resource" "run_make_install_requirements" {
 
   triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset("${path.module}/../lambdas/${local.lambda_name_underscore}", "*") : filesha1(f)]))
+    dir_sha1 = data.archive_file.lambda.output_sha
   }
 
   provisioner "local-exec" {
@@ -102,21 +102,9 @@ resource "null_resource" "run_make_install_requirements" {
   }
 }
 
-data "null_data_source" "wait_for_lambda_exporter" {
-  inputs = {
-    # This ensures that this data resource will not be evaluated until
-    # after the null_resource has been created.
-    lambda_exporter_id = null_resource.run_make_install_requirements.id
-
-    # This value gives us something to implicitly depend on
-    # in the archive_file below.
-    source_dir = "../lambdas/${local.lambda_name_underscore}"
-  }
-}
-
 data "archive_file" "lambda" {
   type        = "zip"
-  source_dir  = data.null_data_source.wait_for_lambda_exporter.outputs["source_dir"]
+  source_dir  = "../lambdas/${local.lambda_name_underscore}"
   output_path = "../lambdas/${local.lambda_name_underscore}.zip"
 }
 
