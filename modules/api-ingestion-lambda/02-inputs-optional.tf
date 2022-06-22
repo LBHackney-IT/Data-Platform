@@ -21,3 +21,9 @@ variable "lambda_memory_size" {
   type        = number
   default     = 256
 }
+
+variable "glue_job_to_trigger" {
+  description = "Name of Glue job to trigger once data has been ingested to S3"
+  type        = string
+  default     = ""
+}
