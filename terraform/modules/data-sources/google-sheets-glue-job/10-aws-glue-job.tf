@@ -1,4 +1,4 @@
-module "google_sheet_import" {
+module "google_sheet_import_data_source" {
   source = "../aws-glue-job"
 
   department           = var.department
