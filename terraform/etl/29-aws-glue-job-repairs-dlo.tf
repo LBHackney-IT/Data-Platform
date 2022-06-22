@@ -7,7 +7,7 @@ resource "aws_s3_bucket_object" "housing_repairs_dlo_cleaning_script" {
 }
 
 module "housing_repairs_dlo_cleaning_job" {
-  source = "../modules/resources/aws-glue-job"
+  source = "../../modules/aws-glue-job"
   count  = local.is_live_environment ? 1 : 0
 
   department        = module.department_housing_repairs
@@ -31,7 +31,7 @@ module "housing_repairs_dlo_cleaning_job" {
 }
 
 module "housing_repairs_dlo_address_cleaning_job" {
-  source = "../modules/resources/aws-glue-job"
+  source = "../../modules/aws-glue-job"
   count  = local.is_live_environment ? 1 : 0
 
   department        = module.department_housing_repairs
@@ -57,7 +57,7 @@ module "housing_repairs_dlo_address_cleaning_job" {
 }
 
 module "get_uprn_from_uhref_job" {
-  source = "../modules/resources/aws-glue-job"
+  source = "../../modules/aws-glue-job"
   count  = local.is_live_environment ? 1 : 0
 
   department        = module.department_housing_repairs
@@ -85,7 +85,7 @@ module "get_uprn_from_uhref_job" {
 }
 
 module "repairs_dlo_levenshtein_address_matching" {
-  source = "../modules/resources/aws-glue-job"
+  source = "../../modules/aws-glue-job"
   count  = local.is_live_environment ? 1 : 0
 
   department        = module.department_housing_repairs

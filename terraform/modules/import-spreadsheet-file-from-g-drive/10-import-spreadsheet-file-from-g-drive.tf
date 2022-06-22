@@ -1,5 +1,5 @@
 module "import_file_from_g_drive" {
-  source                                    = "../g-drive-to-s3"
+  source                                    = "../g-drive-to-s33"
   tags                                      = var.tags
   identifier_prefix                         = var.identifier_prefix
   department_identifier                     = var.department.identifier
@@ -21,7 +21,7 @@ module "import_file_from_g_drive" {
 module "import_data_from_spreadsheet_job" {
   for_each = var.worksheets
 
-  source                         = "../import-data-from-spreadsheet-job"
+  source                         = "../import-data-from-spreadsheet-jobb"
   department                     = var.department
   glue_scripts_bucket_id         = var.glue_scripts_bucket_id
   glue_temp_storage_bucket_id    = var.glue_temp_storage_bucket_id
