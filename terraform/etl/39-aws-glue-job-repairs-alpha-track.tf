@@ -1,7 +1,7 @@
 module "housing_repairs_alphatrack" {
   count = local.is_live_environment ? 1 : 0
 
-  source = "../../modules/housing-repairs-google-sheets-cleaning"
+  source = "../modules/housing-repairs-google-sheets-cleaning"
 
   department                   = module.department_housing_repairs
   short_identifier_prefix      = local.short_identifier_prefix

@@ -1,5 +1,5 @@
 module "etl_ctax_live_properties" {
-  source                         = "../../modules/aws-glue-job"
+  source                         = "../modules/aws-glue-job"
   department                     = module.department_revenues
   job_name                       = "${local.short_identifier_prefix}etl_ctax_live_properties"
   helper_module_key              = data.aws_s3_bucket_object.helpers.key
@@ -18,7 +18,7 @@ module "etl_ctax_live_properties" {
 }
 
 module "etl_zerobase_ctax_live_properties" {
-  source                         = "../../modules/aws-glue-job"
+  source                         = "../modules/aws-glue-job"
   department                     = module.department_revenues
   job_name                       = "${local.short_identifier_prefix}etl_zerobase_ctax_live_properties"
   helper_module_key              = data.aws_s3_bucket_object.helpers.key

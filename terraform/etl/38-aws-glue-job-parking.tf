@@ -1,5 +1,5 @@
 module "manually_uploaded_parking_data_to_raw" {
-  source = "../../modules/aws-glue-job"
+  source = "../modules/aws-glue-job"
 
   count = local.is_live_environment ? 1 : 0
 
@@ -30,7 +30,7 @@ module "manually_uploaded_parking_data_to_raw" {
 }
 
 module "parking_pcn_denormalisation" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_pcn_denormalisation"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -48,7 +48,7 @@ module "parking_pcn_denormalisation" {
 }
 
 module "parking_persistent_evaders" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_persistent_evaders"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -66,7 +66,7 @@ module "parking_persistent_evaders" {
 }
 
 module "parking_school_street_vrms" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_school_street_vrms"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -84,7 +84,7 @@ module "parking_school_street_vrms" {
 }
 
 module "parking_estate_waiting_list_live_permits_type_gds" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_estate_waiting_list_live_permits_type_gds"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -102,7 +102,7 @@ module "parking_estate_waiting_list_live_permits_type_gds" {
 }
 
 module "parking_gds_permit_change_comparison" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_gds_permit_change_comparison"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -120,7 +120,7 @@ module "parking_gds_permit_change_comparison" {
 }
 
 module "parking_kpi_gds_summary" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_kpi_gds_summary"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -138,7 +138,7 @@ module "parking_kpi_gds_summary" {
 }
 
 module "parking_foi_pcn_gds_summary" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_foi_pcn_gds_summary"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -156,7 +156,7 @@ module "parking_foi_pcn_gds_summary" {
 }
 
 module "parking_permit_denormalised_gds_street_llpg" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_permit_denormalised_gds_street_llpg"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -174,7 +174,7 @@ module "parking_permit_denormalised_gds_street_llpg" {
 }
 
 module "parking_reps_and_appeals_correspondance_kpi_gds_summary" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_reps_and_appeals_correspondance_kpi_gds_summary"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -192,7 +192,7 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary" {
 }
 
 module "parking_reps_and_appeals_correspondance_kpi_gds_summary_qtr" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_reps_and_appeals_correspondance_kpi_gds_summary_qtr"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -210,7 +210,7 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary_qtr" {
 }
 
 module "parking_vouchers_approved_summary_gds" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_vouchers_approved_summary_gds"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -228,7 +228,7 @@ module "parking_vouchers_approved_summary_gds" {
 }
 
 module "parking_bailiff_allocation" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_bailiff_allocation"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -246,7 +246,7 @@ module "parking_bailiff_allocation" {
 }
 
 module "parking_bailiff_ea_warrant_total" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_bailiff_ea_warrant_total"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -264,7 +264,7 @@ module "parking_bailiff_ea_warrant_total" {
 }
 
 module "parking_bailiff_return" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_bailiff_return"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -282,7 +282,7 @@ module "parking_bailiff_return" {
 }
 
 module "parking_pcn_create_event_log" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_pcn_create_event_log"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -300,7 +300,7 @@ module "parking_pcn_create_event_log" {
 }
 
 module "parking_pcn_report_summary" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_pcn_report_summary"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -318,7 +318,7 @@ module "parking_pcn_report_summary" {
 }
 
 module "parking_pcn_ltn_report_summary" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_pcn_ltn_report_summary"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -336,7 +336,7 @@ module "parking_pcn_ltn_report_summary" {
 }
 
 module "parking_suspension_de-normalised_data" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_suspension_de-normalised_data"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -354,7 +354,7 @@ module "parking_suspension_de-normalised_data" {
 }
 
 module "parking_cycle_hangars_denormalisation" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_cycle_hangars_denormalisation"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -372,7 +372,7 @@ module "parking_cycle_hangars_denormalisation" {
 }
 
 module "parking_reps_and_appeals_correspondance" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_reps_and_appeals_correspondance"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -390,7 +390,7 @@ module "parking_reps_and_appeals_correspondance" {
 }
 
 module "parking_permit_de_normalisation" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_permit_de_normalisation"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -408,7 +408,7 @@ module "parking_permit_de_normalisation" {
 }
 
 module "parking_cedar_payments" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_cedar_payments"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -426,7 +426,7 @@ module "parking_cedar_payments" {
 }
 
 module "parking_cedar_fulling_total_summary" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_cedar_fulling_total_summary"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -444,7 +444,7 @@ module "parking_cedar_fulling_total_summary" {
 }
 
 module "parking_ceo_on_street" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_ceo_on_street"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -462,7 +462,7 @@ module "parking_ceo_on_street" {
 }
 
 module "parking_ceo_summary" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_ceo_summary"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -480,7 +480,7 @@ module "parking_ceo_summary" {
 }
 
 module "parking_deployment_target_details" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_deployment_target_details"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -498,7 +498,7 @@ module "parking_deployment_target_details" {
 }
 
 module "parking_ceo_average_on_street" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_ceo_average_on_street"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -516,7 +516,7 @@ module "parking_ceo_average_on_street" {
 }
 
 module "parking_percent_street_coverage" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_percent_street_coverage"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -534,7 +534,7 @@ module "parking_percent_street_coverage" {
 }
 
 module "parking_bailiff_warrant_figures" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_bailiff_warrant_figures"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -552,7 +552,7 @@ module "parking_bailiff_warrant_figures" {
 }
 
 module "parking_markets_denormalisation" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_markets_denormalisation"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -570,7 +570,7 @@ module "parking_markets_denormalisation" {
 }
 
 module "parking_ceo_average_on_street_hrs_mins_secs" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_ceo_average_on_street_hrs_mins_secs"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -588,7 +588,7 @@ module "parking_ceo_average_on_street_hrs_mins_secs" {
 }
 
 module "parking_market_licence_totals" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_market_licence_totals"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -606,7 +606,7 @@ module "parking_market_licence_totals" {
 }
 
 module "parking_cedar_backing_data_summary" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_cedar_backing_data_summary"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -624,7 +624,7 @@ module "parking_cedar_backing_data_summary" {
 }
 
 module "parking_percent_street_coverage_cpz" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_percent_street_coverage_cpz"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -642,7 +642,7 @@ module "parking_percent_street_coverage_cpz" {
 }
 
 module "parking_foreign_vrm_pcns" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_foreign_vrm_pcns"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
@@ -660,7 +660,7 @@ module "parking_foreign_vrm_pcns" {
 }
 
 module "parking_voucher_de_normalised" {
-  source                     = "../../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}parking_voucher_de_normalised"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key

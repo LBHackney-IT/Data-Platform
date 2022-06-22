@@ -1,7 +1,7 @@
 module "redshift" {
   count = local.is_live_environment ? 1 : 0
 
-  source                   = "../../modules/redshift"
+  source                   = "../modules/redshift"
   tags                     = module.tags.values
   identifier_prefix        = local.identifier_prefix
   subnet_ids_list          = local.subnet_ids_list
