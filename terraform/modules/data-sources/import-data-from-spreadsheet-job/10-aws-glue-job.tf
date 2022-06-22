@@ -1,5 +1,5 @@
 # Import test data
-module "spreadsheet_import_data_source" {
+module "spreadsheet_import" {
   source = "../aws-glue-job"
 
   department           = var.department
