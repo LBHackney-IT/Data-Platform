@@ -11,11 +11,11 @@ module "llpg_raw_to_trusted" {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.trusted_zone.bucket_id}/unrestricted/llpg/latest_llpg"
     "--enable-glue-datacatalog" = "true"
-    "--source_catalog_database" = "dataplatform-stg-raw-zone-unrestricted-address-api" 
+    "--source_catalog_database" = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
     "--source_catalog_table"    = "unrestricted_address_api_dbo_hackney_address"
 
   }
-  script_name      = "llpg_latest_to_trusted"
+  script_name          = "llpg_latest_to_trusted"
   triggered_by_crawler = aws_glue_crawler.raw_zone_unrestricted_address_api_crawler.name
 
   crawler_details = {
