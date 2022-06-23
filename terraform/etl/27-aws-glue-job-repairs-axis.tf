@@ -16,7 +16,7 @@ module "housing_repairs_axis" {
   address_cleaning_script_key  = aws_s3_bucket_object.address_cleaning.key
   addresses_api_data_catalog   = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
   address_matching_script_key  = aws_s3_bucket_object.levenshtein_address_matching.key
-  trusted_zone_bucket_id       = module.trusted_zone_data_source.bucket_arn
+  trusted_zone_bucket_id       = module.trusted_zone_data_source.bucket_id
 
   data_cleaning_script_name  = "repairs_axis_cleaning"
   source_catalog_table       = "housing_repairs_repairs_axis"

@@ -259,7 +259,7 @@ module "tascomi_applications_to_trusted" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
-    "--s3_bucket_target"        = "s3://${module.trusted_zone_data_source.bucket_arn}/planning/tascomi/applications"
+    "--s3_bucket_target"        = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
     "--source_catalog_table"    = "applications"
@@ -271,7 +271,7 @@ module "tascomi_applications_to_trusted" {
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
-    s3_target_location = "s3://${module.trusted_zone_data_source.bucket_arn}/planning/tascomi/applications"
+    s3_target_location = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
 
   }
 
@@ -288,7 +288,7 @@ module "tascomi_officers_teams_to_trusted" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
-    "--s3_bucket_target"        = "s3://${module.trusted_zone_data_source.bucket_arn}/planning/tascomi/officers"
+    "--s3_bucket_target"        = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/officers"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
     "--source_catalog_table"    = "users"
@@ -300,7 +300,7 @@ module "tascomi_officers_teams_to_trusted" {
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
-    s3_target_location = "s3://${module.trusted_zone_data_source.bucket_arn}/planning/tascomi/officers"
+    s3_target_location = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/officers"
   }
 
 }
@@ -316,7 +316,7 @@ module "tascomi_locations_to_trusted" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"         = "job-bookmark-enable"
-    "--s3_bucket_target"            = "s3://${module.trusted_zone_data_source.bucket_arn}/planning/tascomi/locations"
+    "--s3_bucket_target"            = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/locations"
     "--enable-glue-datacatalog"     = "true"
     "--source_catalog_database"     = aws_glue_catalog_database.refined_zone_tascomi.name
     "--source_catalog_unrestricted" = module.department_unrestricted_data_source.trusted_zone_catalog_database_name
@@ -328,7 +328,7 @@ module "tascomi_locations_to_trusted" {
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
-    s3_target_location = "s3://${module.trusted_zone_data_source.bucket_arn}/planning/tascomi/locations"
+    s3_target_location = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/locations"
   }
 
 }
@@ -344,7 +344,7 @@ module "tascomi_subsidiary_tables_to_trusted" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"       = "job-bookmark-enable"
-    "--s3_bucket_target"          = "s3://${module.trusted_zone_data_source.bucket_arn}/planning/tascomi/"
+    "--s3_bucket_target"          = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/"
     "--enable-glue-datacatalog"   = "true"
     "--source_catalog_database"   = aws_glue_catalog_database.refined_zone_tascomi.name
     "--source_catalog_table_list" = "decision_levels,decision_types,ps_development_codes,contacts"
@@ -354,7 +354,7 @@ module "tascomi_subsidiary_tables_to_trusted" {
 
   crawler_details = {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
-    s3_target_location = "s3://${module.trusted_zone_data_source.bucket_arn}/planning/tascomi/"
+    s3_target_location = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/"
   }
 
 }

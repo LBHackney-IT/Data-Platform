@@ -19,7 +19,9 @@ do
 done
 #
 #cp ./tfstate-etl.tfstate ../etl/tfstate-etl.tfstate
+#make apply
 #cd ../etl
 #make init
 #aws-vault exec hackney-dataplatform-"${1:-development}" -- terraform workspace select "${3:-ryanbratten}"
 #aws-vault exec hackney-dataplatform-"${1:-development}" -- terraform state push -force ./tfstate-etl.tfstate
+#make plan

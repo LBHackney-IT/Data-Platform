@@ -98,7 +98,7 @@ module "repairs_dlo_levenshtein_address_matching" {
     "--source_catalog_database"     = module.department_housing_repairs_data_source.refined_zone_catalog_database_name
     "--source_catalog_table"        = "housing_repairs_repairs_dlo_with_uprn_from_uhref"
     "--match_to_property_shell"     = "forbid"
-    "--target_destination"          = "s3://${module.trusted_zone_data_source.bucket_arn}/housing-repairs/repairs/"
+    "--target_destination"          = "s3://${module.trusted_zone_data_source.bucket_id}/housing-repairs/repairs/"
   }
   script_s3_object_key           = aws_s3_bucket_object.levenshtein_address_matching.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
