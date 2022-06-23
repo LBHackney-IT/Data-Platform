@@ -31,6 +31,11 @@ data "aws_iam_policy_document" "glue_agent_assume_role" {
       identifiers = ["glue.amazonaws.com"]
       type        = "Service"
     }
+
+    principals {
+      identifiers = ["lambda.amazonaws.com"]
+      type        = "Service"
+    }
   }
 }
 
