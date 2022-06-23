@@ -12,7 +12,3 @@ terraform {
     }
   }
 }
-
-provider "aws" {
-  alias = "aws_hackit_account"
-}

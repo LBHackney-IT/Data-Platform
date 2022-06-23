@@ -41,3 +41,11 @@ variable "aws_vpc_id" {
 variable "academy_production_database_username" {
   default = false
 }
+
+variable "academy_production_database_password" {
+  default = false
+}
+
+variable "deployment_user_arn" {
+  default = false
+}

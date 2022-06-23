@@ -12,8 +12,8 @@ module "housing_repairs_dlo_cleaning_job" {
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}Housing Repairs - Repairs DLO Cleaning"
-  helper_module_key = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key = data.aws_s3_object.helpers.key
+  pydeequ_zip_key   = data.aws_s3_object.pydeequ.key
   job_parameters = {
     "--source_catalog_database"          = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
     "--source_catalog_table"             = "housing_repairs_repairs_dlo"
@@ -36,8 +36,8 @@ module "housing_repairs_dlo_address_cleaning_job" {
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}DLO Repairs - Address Cleaning"
-  helper_module_key = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key = data.aws_s3_object.helpers.key
+  pydeequ_zip_key   = data.aws_s3_object.pydeequ.key
   job_parameters = {
     "--source_catalog_database"            = module.department_housing_repairs_data_source.refined_zone_catalog_database_name
     "--source_catalog_table"               = "housing_repairs_repairs_dlo_cleaned"
@@ -62,8 +62,8 @@ module "get_uprn_from_uhref_job" {
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}Get UPRN from UHref DLO repairs"
-  helper_module_key = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key = data.aws_s3_object.helpers.key
+  pydeequ_zip_key   = data.aws_s3_object.pydeequ.key
   glue_role_arn     = data.aws_iam_role.glue_role.arn
   job_parameters = {
     "--lookup_catalogue_table"      = "vulnerable_residents"
@@ -90,8 +90,8 @@ module "repairs_dlo_levenshtein_address_matching" {
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}Housing Repairs - Repairs DLO Levenshtein Address Matching"
-  helper_module_key = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key   = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key = data.aws_s3_object.helpers.key
+  pydeequ_zip_key   = data.aws_s3_object.pydeequ.key
   job_parameters = {
     "--addresses_api_data_database" = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
     "--addresses_api_data_table"    = "unrestricted_address_api_dbo_hackney_address"

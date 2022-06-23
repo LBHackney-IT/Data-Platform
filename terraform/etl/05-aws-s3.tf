@@ -58,32 +58,32 @@ module "noiseworks_data_storage_data_source" {
   bucket_identifier = "noiseworks-data-storage"
 }
 
-data "aws_s3_bucket_object" "helpers" {
+data "aws_s3_object" "helpers" {
   bucket = module.glue_scripts_data_source.bucket_id
   key    = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
 }
 
-data "aws_s3_bucket_object" "jars" {
+data "aws_s3_object" "jars" {
   bucket = module.glue_scripts_data_source.bucket_id
   key    = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
 }
 
-data "aws_s3_bucket_object" "pydeequ" {
+data "aws_s3_object" "pydeequ" {
   bucket = module.glue_scripts_data_source.bucket_id
   key    = "python-modules/pydeequ-1.0.1.zip"
 }
 
-data "aws_s3_bucket_object" "ingest_database_tables_via_jdbc_connection" {
+data "aws_s3_object" "ingest_database_tables_via_jdbc_connection" {
   bucket = module.glue_scripts_data_source.bucket_id
   key    = "scripts/ingest_database_tables_via_jdbc_connection.py"
 }
 
-data "aws_s3_bucket_object" "copy_tables_landing_to_raw" {
+data "aws_s3_object" "copy_tables_landing_to_raw" {
   bucket = module.glue_scripts_data_source.bucket_id
   key    = "scripts/copy_tables_landing_to_raw.py"
 }
 
-data "aws_s3_bucket_object" "dynamodb_tables_ingest" {
+data "aws_s3_object" "dynamodb_tables_ingest" {
   bucket = module.glue_scripts_data_source.bucket_id
   key    = "scripts/ingest_tables_from_dynamo_db.py"
 }

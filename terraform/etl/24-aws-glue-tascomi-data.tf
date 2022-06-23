@@ -72,8 +72,8 @@ module "ingest_tascomi_data" {
   number_of_workers_for_glue_job  = local.number_of_workers
   max_concurrent_runs_of_glue_job = local.tascomi_ingestion_max_concurrent_runs
   job_name                        = "${local.short_identifier_prefix}tascomi_api_ingestion_planning"
-  helper_module_key               = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                 = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key               = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
   job_parameters = {
     "--s3_bucket_target"        = module.raw_zone_data_source.bucket_id
     "--s3_prefix"               = "planning/tascomi/api-responses/"
@@ -160,8 +160,8 @@ module "tascomi_parse_tables_increments" {
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_parse_tables_increments_planning"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
@@ -191,9 +191,9 @@ module "tascomi_recast_tables_increments" {
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_recast_tables_increments_planning"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  helper_module_key          = data.aws_s3_object.helpers.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--column_dict_path"        = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.tascomi_column_type_dictionary.key}"
@@ -223,8 +223,8 @@ module "tascomi_create_daily_snapshot" {
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
@@ -254,8 +254,8 @@ module "tascomi_applications_to_trusted" {
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
   glue_job_worker_type       = "G.1X"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
@@ -283,8 +283,8 @@ module "tascomi_officers_teams_to_trusted" {
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_officers_trusted"
   glue_job_worker_type       = "G.1X"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
@@ -311,8 +311,8 @@ module "tascomi_locations_to_trusted" {
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_locations_trusted"
   glue_job_worker_type       = "G.1X"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"         = "job-bookmark-enable"
@@ -339,8 +339,8 @@ module "tascomi_subsidiary_tables_to_trusted" {
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_subsidiary_tables_trusted"
   glue_job_worker_type       = "G.1X"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"       = "job-bookmark-enable"

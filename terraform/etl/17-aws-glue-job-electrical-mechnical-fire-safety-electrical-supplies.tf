@@ -12,8 +12,8 @@ module "electrical_supplies" {
   glue_crawler_excluded_blobs  = local.glue_crawler_excluded_blobs
   glue_temp_storage_bucket_url = module.glue_temp_storage_data_source.bucket_url
   refined_zone_bucket_id       = module.refined_zone_data_source.bucket_id
-  helper_module_key            = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key              = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key            = data.aws_s3_object.helpers.key
+  pydeequ_zip_key              = data.aws_s3_object.pydeequ.key
   deequ_jar_file_path          = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.deeque_jar.key}"
   worksheet_resource           = module.repairs_fire_alarm_aov[0].worksheet_resources["electrical-supplies"]
   dataset_name                 = "electrical-supplies"
