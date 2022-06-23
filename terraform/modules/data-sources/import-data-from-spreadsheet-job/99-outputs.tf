@@ -1,5 +1,5 @@
 output "job_name" {
-  value = module.spreadsheet_import.job_name
+  value = module.spreadsheet_import_data_source.job_name
 }
 
 output "catalog_table" {
@@ -15,5 +15,5 @@ output "workflow_name" {
 }
 
 output "crawler_name" {
-  value = module.spreadsheet_import.crawler_name
+  value = module.spreadsheet_import_data_source.crawler_name
 }

@@ -40,7 +40,7 @@ output "trusted_zone_catalog_database_name" {
 
 output "google_service_account" {
   description = "The service account created for this department"
-  value       = module.google_service_account
+  value       = module.google_service_account_data_source
 }
 
 output "redshift_cluster_secret" {

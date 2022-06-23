@@ -1,10 +1,10 @@
-module "import_file_from_g_drive" {
+module "import_file_from_g_drive_data_source" {
   source            = "../g-drive-to-s3"
   identifier_prefix = var.identifier_prefix
   lambda_name       = lower(replace(var.glue_job_name, "/[^a-zA-Z0-9]+/", "-"))
 }
 
-module "import_data_from_spreadsheet_job" {
+module "import_data_from_spreadsheet_job_data_source" {
   for_each = var.worksheets
 
   source                        = "../import-data-from-spreadsheet-job"

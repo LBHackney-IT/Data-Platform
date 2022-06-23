@@ -1,4 +1,4 @@
-module "department_housing_repairs" {
+module "department_housing_repairs_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -11,11 +11,11 @@ module "department_housing_repairs" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Housing Repairs"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_parking" {
+module "department_parking_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -28,11 +28,11 @@ module "department_parking" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Parking"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_finance" {
+module "department_finance_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -45,11 +45,11 @@ module "department_finance" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Finance"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_data_and_insight" {
+module "department_data_and_insight_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -62,11 +62,11 @@ module "department_data_and_insight" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Data and Insight"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_env_enforcement" {
+module "department_env_enforcement_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -79,11 +79,11 @@ module "department_env_enforcement" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Env Enforcement"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_planning" {
+module "department_planning_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -96,11 +96,11 @@ module "department_planning" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Planning"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_unrestricted" {
+module "department_unrestricted_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -113,11 +113,11 @@ module "department_unrestricted" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Unrestricted"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_sandbox" {
+module "department_sandbox_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -130,11 +130,11 @@ module "department_sandbox" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Sandbox"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_benefits_and_housing_needs" {
+module "department_benefits_and_housing_needs_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -147,11 +147,11 @@ module "department_benefits_and_housing_needs" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Bens Housing Needs"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_revenues" {
+module "department_revenues_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -164,11 +164,11 @@ module "department_revenues" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Revenues"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_environmental_services" {
+module "department_environmental_services_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -181,11 +181,11 @@ module "department_environmental_services" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Env Services"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
-module "department_housing" {
+module "department_housing_data_source" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -198,6 +198,6 @@ module "department_housing" {
   short_identifier_prefix  = local.short_identifier_prefix
   identifier_prefix        = local.identifier_prefix
   name                     = "Housing"
-  glue_scripts_bucket      = module.glue_scripts
-  glue_temp_storage_bucket = module.glue_temp_storage
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
