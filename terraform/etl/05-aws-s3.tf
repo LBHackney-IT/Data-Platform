@@ -88,6 +88,11 @@ data "aws_s3_object" "dynamodb_tables_ingest" {
   key    = "scripts/ingest_tables_from_dynamo_db.py"
 }
 
+data "aws_s3_object" "copy_json_data_landing_to_raw" {
+  bucket = module.glue_scripts_data_source.bucket_id
+  key    = "scripts/copy_json_data_landing_to_raw.py"
+}
+
 resource "aws_s3_bucket_object" "google_sheets_import_script" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/google_sheets_import.py"
@@ -207,12 +212,3 @@ resource "aws_s3_bucket_object" "dynamodb_tables_ingest" {
   source      = "../../scripts/jobs/ingest_tables_from_dynamo_db.py"
   source_hash = filemd5("../scripts/jobs/ingest_tables_from_dynamo_db.py")
 }
-
-resource "aws_s3_bucket_object" "copy_json_data_landing_to_raw" {
-  bucket      = module.glue_scripts_data_source.bucket_id
-  key         = "scripts/copy_json_data_landing_to_raw.py"
-  acl         = "private"
-  source      = "../../scripts/jobs/copy_json_data_landing_to_raw.py"
-  source_hash = filemd5("../scripts/jobs/copy_json_data_landing_to_raw.py")
-}
-
