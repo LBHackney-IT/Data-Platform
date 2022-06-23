@@ -53,6 +53,16 @@ data "aws_iam_policy_document" "lambda" {
   }
 
   statement {
+    effect = "Allow"
+    actions = [
+      "glue:StartJobRun"
+    ]
+    resources = [
+      "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:job/${var.glue_job_to_trigger}"
+    ]
+  }
+
+  statement {
     actions = [
       "kms:*",
       "s3:*"
@@ -79,14 +89,35 @@ resource "aws_iam_role_policy_attachment" "lambda" {
   policy_arn = aws_iam_policy.lambda.arn
 }
 
+resource "null_resource" "run_make_install_requirements" {
+
+  triggers = {
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = "make install-requirements"
+    working_dir = "${path.module}/../../lambdas/${local.lambda_name_underscore}/"
+  }
+}
+
+data "null_data_source" "wait_for_lambda_exporter" {
+  inputs = {
+    # This ensures that this data resource will not be evaluated until
+    # after the null_resource has been created.
+    lambda_exporter_id = null_resource.run_make_install_requirements.id
+
+    # This value gives us something to implicitly depend on
+    # in the archive_file below.
+    source_dir = "../lambdas/${local.lambda_name_underscore}"
+  }
+}
+
 data "archive_file" "lambda" {
   type        = "zip"
-  source_dir  = "../lambdas/${local.lambda_name_underscore}"
+  source_dir  = data.null_data_source.wait_for_lambda_exporter.outputs["source_dir"]
   output_path = "../lambdas/${local.lambda_name_underscore}.zip"
-
-  depends_on = [
-    null_resource.run_make_install_requirements
-  ]
 }
 
 resource "aws_s3_bucket_object" "lambda" {
@@ -143,17 +174,4 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda" {
   function_name = aws_lambda_function.lambda.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.run_lambda.arn
-}
-
-resource "null_resource" "run_make_install_requirements" {
-
-  triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset("${path.module}/../lambdas/${local.lambda_name_underscore}", "*") : filesha1(f)]))
-  }
-
-  provisioner "local-exec" {
-    interpreter = ["bash", "-c"]
-    command     = "make install-requirements"
-    working_dir = "${path.module}/../../lambdas/${local.lambda_name_underscore}/"
-  }
 }

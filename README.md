@@ -13,6 +13,13 @@ The Data Dictionary & Playbook can be found on the [Document Site](http://playbo
 
 We use Architecture Decision Records (ADRs) to document architecture decisions that we make. They can be found in the
 [Data Platform - Playbook](http://playbook.hackney.gov.uk/)
+
+## Notebooks
+
+We use [Jupyter Notebooks](https://jupyter.org/) to prototype glue jobs.
+These can be hosted either [locally](https://github.com/LBHackney-IT/Data-Platform-Notebooks#running-jupyter-locally-using-docker) or in [AWS sagemaker](https://lbhackney-it.github.io/Data-Platform-Playbook/playbook/transforming-data/using-aws-glue/using-sagemaker).
+The notebooks are stored in the [Data Platform Notebooks](https://github.com/LBHackney-IT/Data-Platform-Notebooks) GitHub repository.
+
 ## Terraform Deployment
 
 The Terraform will be deployed, using GitHub Actions, on push to main / when a Pull Request is merged into main
