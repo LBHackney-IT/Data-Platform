@@ -121,8 +121,7 @@ resource "aws_s3_bucket" "ssl_connection_resources" {
   }
 
   versioning {
-    enabled    = true
-    mfa_delete = true
+    enabled = true
   }
 }
 

@@ -21,8 +21,7 @@ resource "aws_s3_bucket" "terraform_state_storage" {
   }
 
   versioning {
-    enabled    = true
-    mfa_delete = true
+    enabled = true
   }
 }
 

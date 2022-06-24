@@ -89,8 +89,7 @@ resource "aws_s3_bucket" "cloudtrail" {
   }
 
   versioning {
-    enabled    = true
-    mfa_delete = true
+    enabled = true
   }
 }
 
