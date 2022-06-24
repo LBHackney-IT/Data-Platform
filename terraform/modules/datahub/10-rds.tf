@@ -9,6 +9,7 @@ resource "aws_db_instance" "datahub" {
   db_subnet_group_name   = aws_db_subnet_group.datahub.name
   vpc_security_group_ids = [aws_security_group.datahub.id]
   skip_final_snapshot    = true
+  storage_encrypted      = true
 }
 
 resource "aws_db_subnet_group" "datahub" {
