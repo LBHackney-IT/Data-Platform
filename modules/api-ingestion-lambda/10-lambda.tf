@@ -125,8 +125,7 @@ resource "aws_s3_object" "lambda" {
   key         = "${local.lambda_name_underscore}.zip"
   source      = data.archive_file.lambda.output_path
   acl         = "private"
-  source_hash = data.archive_file.lambda.output_base64sha256
-  #  new source_hash = 86cd2PBNbZR+xMD1NZloTvCba6gL//f4vZh1ssF9H70=
+  source_hash = null_resource.run_make_install_requirements.triggers["dir_sha1"]
 }
 
 resource "aws_lambda_function" "lambda" {
