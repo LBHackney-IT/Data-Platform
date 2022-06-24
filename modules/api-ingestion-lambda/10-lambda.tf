@@ -126,6 +126,7 @@ resource "aws_s3_object" "lambda" {
   source      = data.archive_file.lambda.output_path
   acl         = "private"
   source_hash = data.archive_file.lambda.output_base64sha256
+  #  new source_hash = 86cd2PBNbZR+xMD1NZloTvCba6gL//f4vZh1ssF9H70=
 }
 
 resource "aws_lambda_function" "lambda" {
