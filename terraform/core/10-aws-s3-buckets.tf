@@ -119,6 +119,10 @@ resource "aws_s3_bucket" "ssl_connection_resources" {
       }
     }
   }
+
+  versioning {
+    enabled = true
+  }
 }
 
 resource "aws_kms_key" "ssl_connection_resources_key" {
