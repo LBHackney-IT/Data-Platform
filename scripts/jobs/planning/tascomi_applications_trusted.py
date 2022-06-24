@@ -342,6 +342,7 @@ mapStage = {
     '10': '10: DECISION ISSUED',
     '11': '11: UNDER APPEAL'}
     
+CONST_NAME = "No Reg. on Stat Returns"
 
 mapDev = {
     '(E)Major Development (TDC)': 'Other',
@@ -350,15 +351,15 @@ mapDev = {
     '(E)Minor Gypsy and Traveller sites development': 'Minor',
     '(E)Relevant Demolition In A Conservation Area (Other)': 'Other',
     'Advertisements':'Other',
-    'All Others':'Not Req. on Stat Returns',
-    'Certificate of Lawful Development': 'Not Req. on Stat Returns',
-    'Certificates of Appropriate Alternative Development': 'Not Req. on Stat Returns',
-    'Certificates of Lawfuless of Proposed Works to Listed Buildings': 'Not Req. on Stat Returns',
+    'All Others':CONST_NAME,
+    'Certificate of Lawful Development':CONST_NAME,
+    'Certificates of Appropriate Alternative Development': CONST_NAME,
+    'Certificates of Lawfuless of Proposed Works to Listed Buildings': CONST_NAME,
     'Change of use': 'Other',
     'Conservation Area Consents': 'Other',
-    'Extended construction hours': 'Not Req. on Stat Returns',
+    'Extended construction hours': CONST_NAME,
     'Householder': 'Other',
-    'Larger Household Extensions': 'Not Req. on Stat Returns',
+    'Larger Household Extensions': CONST_NAME,
     'Listed Building Alterations': 'Other',
     'Listed Building Consent to Demolish': 'Other',
     'Major Dwellings': 'Major',
@@ -371,16 +372,16 @@ mapDev = {
     'Minor Office': 'Minor',
     'Minor Residential': 'Minor',
     'Minor Retail': 'Minor',
-    'Non-Material Amendments': 'Not Req. on Stat Returns',
-    'Not Required On Statutory Returns': 'Not Req. on Stat Returns',
-    'Notifications': 'Not Req. on Stat Returns',
+    'Non-Material Amendments': CONST_NAME,
+    'Not Required On Statutory Returns': CONST_NAME,
+    'Notifications': CONST_NAME,
     'Office to Residential': 'Other',
     'Other Major Developments': 'Major',
     'Other Minor Developments': 'Minor',
-    'Prior notification - new dwellings': 'Not Req. on Stat Returns',
-    'Retail and Sui Generis Uses to Residential': 'Not Req. on Stat Returns',
-    'Storage or Distribution Centres to Residential':'Not Req. on Stat Returns',
-    'To State-Funded School or Registered Nursery': 'Not Req. on Stat Returns'}
+    'Prior notification - new dwellings': CONST_NAME,
+    'Retail and Sui Generis Uses to Residential': CONST_NAME,
+    'Storage or Distribution Centres to Residential':CONST_NAME,
+    'To State-Funded School or Registered Nursery': CONST_NAME}
 
 
 # The block below is the actual job. It is ignored when running tests locally.
