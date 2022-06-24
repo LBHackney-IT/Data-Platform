@@ -6,3 +6,7 @@ data "aws_instance" "qlik-sense-aws-instance" {
     values = ["Qlik Migration ${upper(var.environment)}"]
   }
 }
+
+data "aws_vpc" "vpc" {
+  id = var.vpc_id
+}

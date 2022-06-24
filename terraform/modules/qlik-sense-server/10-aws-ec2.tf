@@ -93,7 +93,7 @@ resource "aws_security_group" "qlik_sense" {
     from_port        = 3389
     to_port          = 3389
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    cidr_blocks      = [data.aws_vpc.vpc.cidr_block]
     ipv6_cidr_blocks = ["::/0"]
   }
 
