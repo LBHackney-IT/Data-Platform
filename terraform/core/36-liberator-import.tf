@@ -44,6 +44,15 @@ module "liberator_db_snapshot_to_s3" {
   workflow_arn                   = aws_glue_workflow.parking_liberator_data.arn
 }
 
+resource "aws_glue_workflow" "parking_liberator_data" {
+  # This resource is modified outside of terraform by parking analysts.
+  # Any change which forces the workflow to be recreated will lose their changes.
+  name = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  tags = module.tags.values
+}
+
+
+
 # Move .zip in production to pre production
 
 # Cloudwatch event target
