@@ -123,8 +123,9 @@ resource "aws_instance" "bastion" {
   key_name             = aws_key_pair.generated_key.key_name
   iam_instance_profile = aws_iam_instance_profile.bastion.name
 
-  subnet_id              = local.instance_subnet_id
-  vpc_security_group_ids = [aws_security_group.bastion.id]
+  subnet_id                   = local.instance_subnet_id
+  vpc_security_group_ids      = [aws_security_group.bastion.id]
+  associate_public_ip_address = false
 
   lifecycle {
     ignore_changes = [ami, subnet_id]
