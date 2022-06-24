@@ -27,9 +27,18 @@ resource "aws_sagemaker_notebook_instance" "nb" {
   lifecycle_config_name   = aws_sagemaker_notebook_instance_lifecycle_configuration.sagemaker_lifecycle.name
   default_code_repository = var.github_repository
   platform_identifier     = "notebook-al1-v1"
+  kms_key_id              = aws_kms_key.kms_key.key_id
 
   tags = merge({
     Name                  = "vehicle"
     aws-glue-dev-endpoint = local.glue_dev_endpoint_config.endpoint_name
   }, var.tags)
+}
+
+resource "aws_kms_key" "kms_key" {
+  tags = var.tags
+
+  description             = "${var.identifier_prefix} - sagemaker-notebook-${var.instance_name} KMS Key"
+  deletion_window_in_days = 10
+  enable_key_rotation     = true
 }

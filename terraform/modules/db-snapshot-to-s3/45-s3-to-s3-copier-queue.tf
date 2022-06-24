@@ -13,7 +13,7 @@ resource "aws_sqs_queue" "s3_to_s3_copier" {
   visibility_timeout_seconds = local.lambda_timeout * 6
 
   name              = lower("${var.identifier_prefix}-s3-to-s3-copier")
-  kms_master_key_id = aws_kms_key.kms_key.id
+  kms_master_key_id = aws_kms_key.kms_key.key_id
 }
 
 resource "aws_kms_key" "kms_key" {
@@ -51,7 +51,7 @@ resource "aws_sqs_queue" "s3_to_s3_copier_deadletter" {
   tags = var.tags
 
   name              = lower("${var.identifier_prefix}-s3-to-s3-copier-deadletter")
-  kms_master_key_id = aws_kms_key.kms_key.id
+  kms_master_key_id = aws_kms_key.kms_key.key_id
 }
 
 resource "aws_kms_key" "kms_key" {
