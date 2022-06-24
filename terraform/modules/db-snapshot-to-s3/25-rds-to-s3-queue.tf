@@ -14,10 +14,10 @@ resource "aws_sqs_queue" "rds_snapshot_to_s3" {
   visibility_timeout_seconds = local.lambda_timeout * 6
 
   name              = lower("${var.identifier_prefix}-rds-snapshot-to-s3")
-  kms_master_key_id = aws_kms_key.kms_key.key_id
+  kms_master_key_id = aws_kms_key.rds_snapshot_to_s3_kms_key.key_id
 }
 
-resource "aws_kms_key" "kms_key" {
+resource "aws_kms_key" "rds_snapshot_to_s3_kms_key" {
   tags = var.tags
 
   description             = "${var.project} - ${var.environment} - rds-snapshot-to-s3 KMS Key"
@@ -57,10 +57,10 @@ resource "aws_sqs_queue" "rds_snapshot_to_s3_deadletter" {
   tags = var.tags
 
   name              = lower("${var.identifier_prefix}-rds-snapshot-to-s3-deadletter")
-  kms_master_key_id = aws_kms_key.kms_key.key_id
+  kms_master_key_id = aws_kms_key.rds_snapshot_to_s3_deadletter_kms_key.key_id
 }
 
-resource "aws_kms_key" "kms_key" {
+resource "aws_kms_key" "rds_snapshot_to_s3_deadletter_kms_key" {
   tags = var.tags
 
   description             = "${var.project} - ${var.environment} - rds-snapshot-to-s3-deadletter KMS Key"
