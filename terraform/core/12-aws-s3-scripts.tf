@@ -58,6 +58,6 @@ resource "aws_s3_object" "copy_json_data_landing_to_raw" {
   bucket      = module.glue_scripts.bucket_id
   key         = "scripts/copy_json_data_landing_to_raw.py"
   acl         = "private"
-  source      = "../../scripts/jobs/copy_json_datRa_landing_to_raw.py"
+  source      = "../../scripts/jobs/copy_json_data_landing_to_raw.py"
   source_hash = filemd5("../../scripts/jobs/copy_json_data_landing_to_raw.py")
 }
