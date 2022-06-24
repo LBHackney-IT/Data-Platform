@@ -89,12 +89,11 @@ resource "aws_security_group" "qlik_sense" {
   }
 
   ingress {
-    description      = "Allow inbound RDP traffic"
-    from_port        = 3389
-    to_port          = 3389
-    protocol         = "tcp"
-    cidr_blocks      = [data.aws_vpc.vpc.cidr_block]
-    ipv6_cidr_blocks = ["::/0"]
+    description = "Allow inbound RDP traffic"
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = "tcp"
+    cidr_blocks = [data.aws_vpc.vpc.cidr_block]
   }
 
   tags = merge(var.tags, {
