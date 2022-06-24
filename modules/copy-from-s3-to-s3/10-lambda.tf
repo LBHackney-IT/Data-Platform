@@ -101,20 +101,44 @@ resource "aws_iam_role_policy_attachment" "copy_from_s3_to_s3_lambda" {
   policy_arn = aws_iam_policy.copy_from_s3_to_s3_lambda.arn
 }
 
-data "archive_file" "copy_from_s3_to_s3_lambda" {
+resource "null_resource" "lambda_builder" {
+  triggers = {
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "lambda/src/*") : filesha1("${path.module}/${f}")]))
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = "npm run build"
+    working_dir = "${path.module}/lambda/"
+  }
+}
+
+data "null_data_source" "wait_for_lambda_exporter" {
+  inputs = {
+    # This ensures that this data resource will not be evaluated until
+    # after the null_resource has been created.
+    lambda_exporter_id = null_resource.lambda_builder.id
+
+    # This value gives us something to implicitly depend on
+    # in the archive_file below.
+    source_dir = "${path.module}/lambda/dist/"
+  }
+}
+
+data "archive_file" "lambda_source_code" {
   type        = "zip"
-  source_dir  = "../lambdas/copy-from-s3-to-s3"
-  output_path = "../lambdas/copy-from-s3-to-s3.zip"
+  source_dir  = data.null_data_source.wait_for_lambda_exporter.outputs["source_dir"]
+  output_path = "${path.module}/lambda/copy-from-s3-to-s3.zip"
 }
 
 resource "aws_s3_object" "copy_from_s3_to_s3_lambda" {
-  bucket      = var.lambda_artefact_storage_bucket
+  bucket      = var.lambda_artefact_storage_bucket.bucket_id
   key         = "copy-from-s3-to-s3.zip"
-  source      = data.archive_file.copy_from_s3_to_s3_lambda.output_path
+  source      = data.archive_file.lambda_source_code.output_path
   acl         = "private"
-  source_hash = data.archive_file.copy_from_s3_to_s3_lambda.output_md5
+  source_hash = data.archive_file.lambda_source_code.output_md5
   depends_on = [
-    data.archive_file.copy_from_s3_to_s3_lambda
+    data.archive_file.lambda_source_code
   ]
 }
 
@@ -125,16 +149,16 @@ resource "aws_lambda_function" "copy_from_s3_to_s3_lambda" {
   handler          = "index.handler"
   runtime          = "nodejs14.x"
   function_name    = "${var.identifier_prefix}-copy-from-s3-to-s3"
-  s3_bucket        = var.lambda_artefact_storage_bucket
+  s3_bucket        = var.lambda_artefact_storage_bucket.bucket_id
   s3_key           = aws_s3_object.copy_from_s3_to_s3_lambda.key
-  source_code_hash = data.archive_file.copy_from_s3_to_s3_lambda.output_base64sha256
+  source_code_hash = data.archive_file.lambda_source_code.output_base64sha256
   timeout          = local.lambda_timeout
 
   environment {
     variables = {
       ORIGIN_BUCKET_ID = var.origin_bucket.bucket_id
       ORIGIN_PATH      = var.origin_path
-      TARGET_BUCKET_ID = var.target_bucket
+      TARGET_BUCKET_ID = var.target_bucket.bucket_id
       TARGET_PATH      = var.target_path
     }
   }

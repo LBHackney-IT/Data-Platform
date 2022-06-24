@@ -9,15 +9,18 @@ variable "identifier_prefix" {
 }
 
 variable "lambda_artefact_storage_bucket" {
-  type = string
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
 }
 
 variable "origin_bucket" {
   type = object({
     bucket_id   = string
-    kms_key_arn = string
-    kms_key_id  = string
     bucket_arn  = string
+    kms_key_arn = string
   })
 }
 
@@ -28,9 +31,8 @@ variable "origin_path" {
 variable "target_bucket" {
   type = object({
     bucket_id   = string
-    kms_key_arn = string
-    kms_key_id  = string
     bucket_arn  = string
+    kms_key_arn = string
   })
 }
 
