@@ -57,7 +57,6 @@ resource "aws_glue_catalog_database" "trusted_zone_tascomi" {
 
 # Columns type dictionary resources
 resource "aws_s3_object" "tascomi_column_type_dictionary" {
-  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/planning/tascomi-column-type-dictionary.json"
   acl         = "private"

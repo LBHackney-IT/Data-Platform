@@ -121,7 +121,6 @@ data "archive_file" "lambda" {
 }
 
 resource "aws_s3_object" "lambda" {
-  tags        = var.tags
   bucket      = var.lambda_artefact_storage_bucket
   key         = "${local.lambda_name_underscore}.zip"
   source      = data.archive_file.lambda.output_path

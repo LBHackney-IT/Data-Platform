@@ -15,7 +15,6 @@ locals {
 }
 
 resource "aws_s3_object" "job_script" {
-  tags  = var.tags
   count = var.script_s3_object_key == null ? 1 : 0
 
   bucket      = local.scripts_bucket_id

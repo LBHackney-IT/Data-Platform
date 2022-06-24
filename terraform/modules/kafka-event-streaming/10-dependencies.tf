@@ -9,7 +9,6 @@ module "kafka_dependency_storage" {
 }
 
 resource "aws_s3_object" "kafka_connector_s3" {
-  tags        = var.tags
   bucket      = module.kafka_dependency_storage.bucket_id
   key         = "plugins/confluentinc-kafka-connect-s3-10.0.5-merged.zip"
   acl         = "private"

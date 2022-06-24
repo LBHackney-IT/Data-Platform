@@ -1,5 +1,4 @@
 resource "aws_s3_object" "helpers" {
-  tags        = module.tags.values
   bucket      = module.glue_scripts.bucket_id
   key         = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
   acl         = "private"
@@ -8,7 +7,6 @@ resource "aws_s3_object" "helpers" {
 }
 
 resource "aws_s3_object" "convertbng" {
-  tags        = module.tags.values
   bucket      = module.glue_scripts.bucket_id
   key         = "python-modules/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
   acl         = "private"
@@ -17,7 +15,6 @@ resource "aws_s3_object" "convertbng" {
 }
 
 resource "aws_s3_object" "jars" {
-  tags        = module.tags.values
   bucket      = module.glue_scripts.bucket_id
   key         = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
   acl         = "private"
@@ -26,7 +23,6 @@ resource "aws_s3_object" "jars" {
 }
 
 resource "aws_s3_object" "pydeequ" {
-  tags        = module.tags.values
   bucket      = module.glue_scripts.bucket_id
   key         = "python-modules/pydeequ-1.0.1.zip"
   acl         = "private"
@@ -35,7 +31,6 @@ resource "aws_s3_object" "pydeequ" {
 }
 
 resource "aws_s3_object" "copy_tables_landing_to_raw" {
-  tags        = module.tags.values
   bucket      = module.glue_scripts.bucket_id
   key         = "scripts/copy_tables_landing_to_raw.py"
   acl         = "private"
@@ -44,7 +39,6 @@ resource "aws_s3_object" "copy_tables_landing_to_raw" {
 }
 
 resource "aws_s3_object" "ingest_database_tables_via_jdbc_connection" {
-  tags        = module.tags.values
   bucket      = module.glue_scripts.bucket_id
   key         = "scripts/ingest_database_tables_via_jdbc_connection.py"
   acl         = "private"
@@ -53,7 +47,6 @@ resource "aws_s3_object" "ingest_database_tables_via_jdbc_connection" {
 }
 
 resource "aws_s3_object" "dynamodb_tables_ingest" {
-  tags        = module.tags.values
   bucket      = module.glue_scripts.bucket_id
   key         = "scripts/ingest_tables_from_dynamo_db.py"
   acl         = "private"
@@ -62,7 +55,6 @@ resource "aws_s3_object" "dynamodb_tables_ingest" {
 }
 
 resource "aws_s3_object" "copy_json_data_landing_to_raw" {
-  tags        = module.tags.values
   bucket      = module.glue_scripts.bucket_id
   key         = "scripts/copy_json_data_landing_to_raw.py"
   acl         = "private"

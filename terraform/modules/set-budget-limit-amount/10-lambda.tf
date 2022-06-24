@@ -54,7 +54,6 @@ data "archive_file" "set_budget_limit_amount_lambda" {
 }
 
 resource "aws_s3_object" "set_budget_limit_amount_lambda" {
-  tags        = var.tags
   bucket      = var.lambda_artefact_storage_bucket
   key         = "set_budget_limit_amount.zip"
   source      = data.archive_file.set_budget_limit_amount_lambda.output_path

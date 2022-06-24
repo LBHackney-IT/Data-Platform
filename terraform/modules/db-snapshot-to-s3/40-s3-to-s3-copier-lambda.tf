@@ -123,7 +123,6 @@ data "archive_file" "s3_to_s3_copier_lambda" {
 }
 
 resource "aws_s3_object" "s3_to_s3_copier_lambda" {
-  tags        = var.tags
   bucket      = var.lambda_artefact_storage_bucket
   key         = "s3-to-s3-export-copier.zip"
   source      = data.archive_file.s3_to_s3_copier_lambda.output_path
