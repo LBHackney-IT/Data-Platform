@@ -154,7 +154,16 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
 resource "aws_sns_topic" "admin_failure_notifications" {
   tags = merge(module.tags.values, { "PlatformDepartment" = "${local.short_identifier_prefix}admin" })
 
-  name = "glue-failure-notification-${local.short_identifier_prefix}admin"
+  name              = "glue-failure-notification-${local.short_identifier_prefix}admin"
+  kms_master_key_id = aws_kms_key.admin_failure_notifications_kms_key.key_id
+}
+
+resource "aws_kms_key" "admin_failure_notifications_kms_key" {
+  tags = merge(module.tags.values, { "PlatformDepartment" = "${local.short_identifier_prefix}admin" })
+
+  description             = "${var.project} - ${var.environment} - glue-failure-notification-${local.short_identifier_prefix}admin KMS Key"
+  deletion_window_in_days = 10
+  enable_key_rotation     = true
 }
 
 resource "aws_sns_topic_subscription" "admin_failure_notifications" {
