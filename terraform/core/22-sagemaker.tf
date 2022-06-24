@@ -118,6 +118,7 @@ data "archive_file" "shutdown_notebooks" {
 }
 
 resource "aws_s3_object" "shutdown_notebooks" {
+  tags        = module.tags.values
   bucket      = module.lambda_artefact_storage.bucket_id
   key         = "shutdown_notebooks.zip"
   source      = data.archive_file.shutdown_notebooks.output_path

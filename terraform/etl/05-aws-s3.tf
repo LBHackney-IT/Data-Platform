@@ -94,6 +94,7 @@ data "aws_s3_object" "copy_json_data_landing_to_raw" {
 }
 
 resource "aws_s3_object" "google_sheets_import_script" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/google_sheets_import.py"
   acl         = "private"
@@ -102,6 +103,7 @@ resource "aws_s3_object" "google_sheets_import_script" {
 }
 
 resource "aws_s3_object" "address_matching" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/address_matching.py"
   acl         = "private"
@@ -110,6 +112,7 @@ resource "aws_s3_object" "address_matching" {
 }
 
 resource "aws_s3_object" "levenshtein_address_matching" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/levenshtein_address_matching.py"
   acl         = "private"
@@ -118,6 +121,7 @@ resource "aws_s3_object" "levenshtein_address_matching" {
 }
 
 resource "aws_s3_object" "copy_manually_uploaded_csv_data_to_raw" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/copy_manually_uploaded_csv_data_to_raw.py"
   acl         = "private"
@@ -126,6 +130,7 @@ resource "aws_s3_object" "copy_manually_uploaded_csv_data_to_raw" {
 }
 
 resource "aws_s3_object" "address_cleaning" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/address_cleaning.py"
   acl         = "private"
@@ -134,6 +139,7 @@ resource "aws_s3_object" "address_cleaning" {
 }
 
 resource "aws_s3_object" "helpers" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
   acl         = "private"
@@ -142,6 +148,7 @@ resource "aws_s3_object" "helpers" {
 }
 
 resource "aws_s3_object" "convertbng" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "python-modules/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
   acl         = "private"
@@ -150,6 +157,7 @@ resource "aws_s3_object" "convertbng" {
 }
 
 resource "aws_s3_object" "jars" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
   acl         = "private"
@@ -158,6 +166,7 @@ resource "aws_s3_object" "jars" {
 }
 
 resource "aws_s3_object" "deeque_jar" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "jars/deequ-1.0.3.jar"
   acl         = "private"
@@ -166,6 +175,7 @@ resource "aws_s3_object" "deeque_jar" {
 }
 
 resource "aws_s3_object" "pydeequ" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "python-modules/pydeequ-1.0.1.zip"
   acl         = "private"
@@ -174,6 +184,7 @@ resource "aws_s3_object" "pydeequ" {
 }
 
 resource "aws_s3_object" "spreadsheet_import_script" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/spreadsheet_import.py"
   acl         = "private"
@@ -182,6 +193,7 @@ resource "aws_s3_object" "spreadsheet_import_script" {
 }
 
 resource "aws_s3_object" "get_uprn_from_uhref" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/housing_repairs/get_uprn_from_uhref.py"
   acl         = "private"
@@ -190,6 +202,7 @@ resource "aws_s3_object" "get_uprn_from_uhref" {
 }
 
 resource "aws_s3_object" "copy_tables_landing_to_raw" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/copy_tables_landing_to_raw.py"
   acl         = "private"
@@ -198,6 +211,7 @@ resource "aws_s3_object" "copy_tables_landing_to_raw" {
 }
 
 resource "aws_s3_object" "ingest_database_tables_via_jdbc_connection" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/ingest_database_tables_via_jdbc_connection.py"
   acl         = "private"
@@ -206,6 +220,7 @@ resource "aws_s3_object" "ingest_database_tables_via_jdbc_connection" {
 }
 
 resource "aws_s3_object" "dynamodb_tables_ingest" {
+  tags        = module.tags.values
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/ingest_tables_from_dynamo_db.py"
   acl         = "private"

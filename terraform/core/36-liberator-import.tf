@@ -152,6 +152,7 @@ data "archive_file" "liberator_prod_to_pre_prod" {
 }
 
 resource "aws_s3_object" "liberator_prod_to_pre_prod" {
+  tags        = module.tags.values
   bucket      = module.lambda_artefact_storage.bucket_id
   key         = "liberator_prod_to_pre_prod.zip"
   source      = data.archive_file.liberator_prod_to_pre_prod.output_path
