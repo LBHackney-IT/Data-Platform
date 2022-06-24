@@ -94,8 +94,8 @@ class Redshift:
 def create_schemas(redshift, schemas: dict) -> None:
     create_schema_queries = [f"CREATE EXTERNAL SCHEMA IF NOT EXISTS {schema}" +
                              " FROM DATA CATALOG" +
-                             " DATABASE '{database}'" +
-                             " IAM_ROLE '{redshift.role}'" +
+                             f" DATABASE '{database}'" +
+                             f" IAM_ROLE '{redshift.role}'" +
                              " CREATE EXTERNAL DATABASE IF NOT EXISTS;" for schema, database in schemas.items()]
 
     redshift.execute_batch_queries(create_schema_queries)
