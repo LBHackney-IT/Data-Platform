@@ -17,6 +17,10 @@ resource "aws_elasticsearch_domain" "es" {
     tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
   }
 
+  encrypt_at_rest {
+    enabled = true
+  }
+
   ebs_options {
     ebs_enabled = true
     volume_size = 10
