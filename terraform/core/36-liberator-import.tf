@@ -151,7 +151,7 @@ data "archive_file" "liberator_prod_to_pre_prod" {
   output_path = "../../lambdas/liberator_prod_to_pre_prod.zip"
 }
 
-resource "aws_s3_bucket_object" "liberator_prod_to_pre_prod" {
+resource "aws_s3_object" "liberator_prod_to_pre_prod" {
   bucket      = module.lambda_artefact_storage.bucket_id
   key         = "liberator_prod_to_pre_prod.zip"
   source      = data.archive_file.liberator_prod_to_pre_prod.output_path
@@ -175,7 +175,7 @@ resource "aws_lambda_function" "liberator_prod_to_pre_prod" {
   runtime          = "python3.8"
   function_name    = "${local.short_identifier_prefix}liberator-prod-to-pre-prod"
   s3_bucket        = module.lambda_artefact_storage.bucket_id
-  s3_key           = aws_s3_bucket_object.liberator_prod_to_pre_prod.key
+  s3_key           = aws_s3_object.liberator_prod_to_pre_prod.key
   source_code_hash = data.archive_file.liberator_prod_to_pre_prod.output_base64sha256
   timeout          = "60"
 

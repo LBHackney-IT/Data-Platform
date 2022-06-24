@@ -56,7 +56,7 @@ resource "aws_glue_catalog_database" "trusted_zone_tascomi" {
 }
 
 # Columns type dictionary resources
-resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
+resource "aws_s3_object" "tascomi_column_type_dictionary" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/planning/tascomi-column-type-dictionary.json"
   acl         = "private"
@@ -196,7 +196,7 @@ module "tascomi_recast_tables_increments" {
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
-    "--column_dict_path"        = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.tascomi_column_type_dictionary.key}"
+    "--column_dict_path"        = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.tascomi_column_type_dictionary.key}"
     "--s3_bucket_target"        = "s3://${module.refined_zone_data_source.bucket_id}/planning/tascomi/increment/"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.raw_zone_tascomi.name

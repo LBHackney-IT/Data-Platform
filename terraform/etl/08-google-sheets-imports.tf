@@ -10,7 +10,7 @@ module "repairs_dlo" {
   glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1i9q42Kkbugwi4f2S4zdyid2ZjoN1XLjuYvqYqfHyygs"
@@ -33,7 +33,7 @@ module "repairs_herts_heritage" {
   glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1Psw8i2qooASPLjaBfGKNX7upiX7BeQSiMeJ8dQngSJI"
@@ -56,7 +56,7 @@ module "repairs_avonline" {
   glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1nM99bPaOPvg5o_cz9_yJR6jlnMB0oSHdFhAMKQkPJi4"
@@ -79,7 +79,7 @@ module "repairs_alpha_track" {
   glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1cbeVvMuNNinVQDeVfsUWalRpY6zK9oZPa3ebLtLSiAc"
@@ -102,7 +102,7 @@ module "repairs_stannah" {
   glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1CpC_Dn4aM8MSFb5a6HJ_FEsVYcahRsis9YIATcfArhw"
@@ -125,7 +125,7 @@ module "repairs_purdy" {
   glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1-PpKPnaPMA6AogsNXT5seqQk3VUB-naFnFJYhROkl2o"
@@ -148,7 +148,7 @@ module "repairs_axis" {
   glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
   google_sheets_document_id       = "1aDWO9ZAVar377jiYTXkZzDCIckCqbhppOW23B85hFsA"
@@ -170,7 +170,7 @@ module "parking_spreadsheet_estate_permit_limits" {
   glue_catalog_database_name      = module.department_parking_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "14H-kO4wB011ol7J7hLSJ9xv56R4xugmGsZCWNMbe1Ys"
   google_sheets_worksheet_name    = "Import into Qlik Inline Load"
@@ -191,7 +191,7 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
   glue_catalog_database_name      = module.department_parking_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "14Ago8grVd-tW7N0aSlcNZoxzsLDViSYys4shw1wLRno"
   google_sheets_worksheet_name    = "6th June 2019"
@@ -212,7 +212,7 @@ module "sandbox_daro_covid_locations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1-ZNoQGu0LGlaKYDBWD8MUo8hqfcnE5YbgCXVz2MUxSw"
   google_sheets_worksheet_name    = "locations"
@@ -234,7 +234,7 @@ module "sandbox_daro_covid_vaccinations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1-ZNoQGu0LGlaKYDBWD8MUo8hqfcnE5YbgCXVz2MUxSw"
   google_sheets_worksheet_name    = "vaccinations"
@@ -256,7 +256,7 @@ module "covid_locations_lisa" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "187SSANhwBF1SBL8EMG9YMEYcImZDZ4qHdSYlbmwQsjU"
   google_sheets_worksheet_name    = "locations"
@@ -279,7 +279,7 @@ module "covid_vaccine_demo__locations_tim" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1YNtyajaLORd4bTLP0OIq4B9Z0OtvJHcwOE52ngemqYs"
   google_sheets_worksheet_name    = "locations"
@@ -301,7 +301,7 @@ module "covid_vaccine_demo__vaccinatons_tim" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1YNtyajaLORd4bTLP0OIq4B9Z0OtvJHcwOE52ngemqYs"
   google_sheets_worksheet_name    = "vaccinations"
@@ -323,7 +323,7 @@ module "covid_vaccinations_lisa" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "187SSANhwBF1SBL8EMG9YMEYcImZDZ4qHdSYlbmwQsjU"
   google_sheets_worksheet_name    = "vaccinations"
@@ -345,7 +345,7 @@ module "huu_do_covid_vaccinations_locations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1woiyagiG9ixl5P5d-VN8dubgLyWuT1l1HFv2iqDb6b8"
   google_sheets_worksheet_name    = "locations"
@@ -367,7 +367,7 @@ module "huu_do_covid_vaccinations_vaccinations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1woiyagiG9ixl5P5d-VN8dubgLyWuT1l1HFv2iqDb6b8"
   google_sheets_worksheet_name    = "vaccinations"
@@ -388,7 +388,7 @@ module "sandbox_covid_locations_ben" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1sHtMYXjAmTjkl9rhplvgnCortnqqWa9QMJYJgQr_Mjg"
   google_sheets_worksheet_name    = "locations"
@@ -409,7 +409,7 @@ module "sandbox_covid_vaccinations_ben" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1sHtMYXjAmTjkl9rhplvgnCortnqqWa9QMJYJgQr_Mjg"
   google_sheets_worksheet_name    = "locations"
@@ -431,7 +431,7 @@ module "sandbox_covid_locations_marta" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1r3IzCNqAVmcVgEJ8niLLe5lzT-gvAAAdmIALrPlOpKE"
   google_sheets_worksheet_name    = "locations"
@@ -453,7 +453,7 @@ module "sandbox_covid_vaccinations_marta" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1r3IzCNqAVmcVgEJ8niLLe5lzT-gvAAAdmIALrPlOpKE"
   google_sheets_worksheet_name    = "vaccinations"
@@ -475,7 +475,7 @@ module "sandbox_covid_vaccinations_adam" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1jUk8NvVOqBNPZHsikoZ8Oi3K9xZbfJza6qOXRS3ewII"
   google_sheets_worksheet_name    = "vaccinations"
@@ -497,7 +497,7 @@ module "sandbox_covid_locations_adam" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1jUk8NvVOqBNPZHsikoZ8Oi3K9xZbfJza6qOXRS3ewII"
   google_sheets_worksheet_name    = "locations"
@@ -519,7 +519,7 @@ module "sandbox_estates_round_crew_data" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1C5Afb_4qz2_7m7xPXAW9g40nWDt1jrdla3TBARAlCEM"
   google_sheets_worksheet_name    = "EstatesRoundCrewData_07032022"
@@ -541,7 +541,7 @@ module "env_enforcement_asb_warnings" {
   glue_catalog_database_name      = module.department_env_enforcement_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1lPmgGbN_LuhObVAwE3BPdgUrFEFDWh9he4MO21DrxLY"
   google_sheets_worksheet_name    = "Form responses 1"
@@ -562,7 +562,7 @@ module "sandbox_stevefarr_covid_vaccinations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1Wlfr6uUcVCMH3hN2GFgNbl0ENB5E14t62imgwk3dfU8"
   google_sheets_worksheet_name    = "vaccinations"
@@ -583,7 +583,7 @@ module "sandbox_stevefarr_covid_locations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1Wlfr6uUcVCMH3hN2GFgNbl0ENB5E14t62imgwk3dfU8"
   google_sheets_worksheet_name    = "locations"
@@ -604,7 +604,7 @@ module "sandbox_sanch_covid_vaccinations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1vhChFVYjn78XmCb1ZwodCwWy3YXq7hIyToENsfEgRbc"
   google_sheets_worksheet_name    = "vaccinations"
@@ -625,7 +625,7 @@ module "sandbox_sanch_covid_locations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1vhChFVYjn78XmCb1ZwodCwWy3YXq7hIyToENsfEgRbc"
   google_sheets_worksheet_name    = "locations"
@@ -646,7 +646,7 @@ module "sandbox_jlayton_covid_locations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1BacwEndkvxOsmst5t9m6kGABkLKTLCzRDUML9TtJAaM"
   google_sheets_worksheet_name    = "locations"
@@ -667,7 +667,7 @@ module "sandbox_jlayton_covid_vaccinations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1BacwEndkvxOsmst5t9m6kGABkLKTLCzRDUML9TtJAaM"
   google_sheets_worksheet_name    = "vaccinations"
@@ -688,7 +688,7 @@ module "vaccination_loc_arda" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1-jBGmD0ZQiGiHHZOUxiiz2_PnGw-CEEmN5O4VvMAaco"
   google_sheets_worksheet_name    = "locations"
@@ -709,7 +709,7 @@ module "sandbox_everlander_covid_locations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1FsCa905Xe9aumGtpFdwPVrSbWhEMtasbRT_rKuytAfg"
   google_sheets_worksheet_name    = "locations"
@@ -730,7 +730,7 @@ module "vaccination_vac_arda" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1-jBGmD0ZQiGiHHZOUxiiz2_PnGw-CEEmN5O4VvMAaco"
   google_sheets_worksheet_name    = "vaccinations"
@@ -751,7 +751,7 @@ module "sandbox_everlander_covid_vaccinations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1FsCa905Xe9aumGtpFdwPVrSbWhEMtasbRT_rKuytAfg"
   google_sheets_worksheet_name    = "vaccinations"
@@ -772,7 +772,7 @@ module "sandbox_lindseycoulson_covid_vaccinations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1m8M8lv5-KP6ssbpqzupeLLvsQW6fkNbCOaM2KUcvUTM"
   google_sheets_worksheet_name    = "vaccinations"
@@ -793,7 +793,7 @@ module "sandbox_lindseycoulson_covid_locations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1m8M8lv5-KP6ssbpqzupeLLvsQW6fkNbCOaM2KUcvUTM"
   google_sheets_worksheet_name    = "locations"
@@ -814,7 +814,7 @@ module "sandbox_tuomo_covid_vaccinations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1A4HkdA94G7jXA6zDnHmI2lA6Ttmy4Rj4R0OQPsb4vZ0"
   google_sheets_worksheet_name    = "vaccinations"
@@ -835,7 +835,7 @@ module "sandbox_tuomo_covid_locations" {
   glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1A4HkdA94G7jXA6zDnHmI2lA6Ttmy4Rj4R0OQPsb4vZ0"
   google_sheets_worksheet_name    = "locations"

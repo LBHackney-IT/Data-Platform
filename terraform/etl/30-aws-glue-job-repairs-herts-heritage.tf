@@ -15,7 +15,7 @@ module "housing_repairs_herts_heritage" {
   helper_module_key            = data.aws_s3_object.helpers.key
   pydeequ_zip_key              = data.aws_s3_object.pydeequ.key
   addresses_api_data_catalog   = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
-  address_matching_script_key  = aws_s3_bucket_object.levenshtein_address_matching.key
+  address_matching_script_key  = aws_s3_object.levenshtein_address_matching.key
   trusted_zone_bucket_id       = module.trusted_zone_data_source.bucket_id
 
   source_catalog_table = "housing_repairs_repairs_herts_heritage"
@@ -23,7 +23,7 @@ module "housing_repairs_herts_heritage" {
   workflow_name        = module.repairs_herts_heritage[0].workflow_name
 
   dataset_name                = "repairs-herts-heritage"
-  address_cleaning_script_key = aws_s3_bucket_object.address_cleaning.key
+  address_cleaning_script_key = aws_s3_object.address_cleaning.key
   match_to_property_shell     = "forbid"
   spark_ui_output_storage_id  = module.spark_ui_output_storage_data_source.bucket_id
 }

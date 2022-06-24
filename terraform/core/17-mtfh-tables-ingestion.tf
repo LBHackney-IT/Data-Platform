@@ -14,9 +14,9 @@ module "ingest_mtfh_tables" {
 
   job_name                       = "${local.short_identifier_prefix}Ingest MTFH tables"
   job_description                = "Ingest a snapshot of the tenures table from the Housing Dynamo DB instance"
-  script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
-  helper_module_key              = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
+  script_s3_object_key           = aws_s3_object.dynamodb_tables_ingest.key
+  helper_module_key              = aws_s3_object.helpers.key
+  pydeequ_zip_key                = aws_s3_object.pydeequ.key
   number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
@@ -48,11 +48,11 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
 
   job_name                   = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"
   department                 = module.department_housing
-  script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  script_s3_object_key       = aws_s3_object.copy_tables_landing_to_raw.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   environment                = var.environment
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
-  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
   glue_role_arn              = aws_iam_role.glue_role.arn
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id

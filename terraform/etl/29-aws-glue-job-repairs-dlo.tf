@@ -1,4 +1,4 @@
-resource "aws_s3_bucket_object" "housing_repairs_dlo_cleaning_script" {
+resource "aws_s3_object" "housing_repairs_dlo_cleaning_script" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/housing_repairs/repairs_dlo_cleaning.py"
   acl         = "private"
@@ -19,7 +19,7 @@ module "housing_repairs_dlo_cleaning_job" {
     "--source_catalog_table"             = "housing_repairs_repairs_dlo"
     "--cleaned_repairs_s3_bucket_target" = "s3://${module.refined_zone_data_source.bucket_id}/housing-repairs/repairs-dlo/cleaned"
   }
-  script_s3_object_key       = aws_s3_bucket_object.housing_repairs_dlo_cleaning_script.key
+  script_s3_object_key       = aws_s3_object.housing_repairs_dlo_cleaning_script.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   workflow_name              = module.repairs_dlo[0].workflow_name
   triggered_by_crawler       = module.repairs_dlo[0].crawler_name
@@ -45,7 +45,7 @@ module "housing_repairs_dlo_address_cleaning_job" {
     "--source_address_column_header"       = "property_address"
     "--source_postcode_column_header"      = "postal_code_raw"
   }
-  script_s3_object_key       = aws_s3_bucket_object.address_cleaning.key
+  script_s3_object_key       = aws_s3_object.address_cleaning.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   workflow_name              = module.repairs_dlo[0].workflow_name
   triggered_by_crawler       = module.housing_repairs_dlo_cleaning_job[0].crawler_name
@@ -73,7 +73,7 @@ module "get_uprn_from_uhref_job" {
     "--source_uhref_header"         = "property_reference_uh"
     "--target_destination"          = "s3://${module.refined_zone_data_source.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
   }
-  script_s3_object_key       = aws_s3_bucket_object.get_uprn_from_uhref.key
+  script_s3_object_key       = aws_s3_object.get_uprn_from_uhref.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   workflow_name              = module.repairs_dlo[0].workflow_name
   triggered_by_crawler       = module.housing_repairs_dlo_address_cleaning_job[0].crawler_name
@@ -100,7 +100,7 @@ module "repairs_dlo_levenshtein_address_matching" {
     "--match_to_property_shell"     = "forbid"
     "--target_destination"          = "s3://${module.trusted_zone_data_source.bucket_id}/housing-repairs/repairs/"
   }
-  script_s3_object_key           = aws_s3_bucket_object.levenshtein_address_matching.key
+  script_s3_object_key           = aws_s3_object.levenshtein_address_matching.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   workflow_name                  = module.repairs_dlo[0].workflow_name
   triggered_by_crawler           = module.get_uprn_from_uhref_job[0].crawler_name

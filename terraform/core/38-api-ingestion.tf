@@ -34,10 +34,10 @@ module "copy_icaseworks_data_landing_to_raw" {
 
   job_name                   = "${local.short_identifier_prefix}iCaseworks (OneCase) Copy Landing to Raw"
   glue_role_arn              = aws_iam_role.glue_role.arn
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
-  script_s3_object_key       = aws_s3_bucket_object.copy_json_data_landing_to_raw.key
+  script_s3_object_key       = aws_s3_object.copy_json_data_landing_to_raw.key
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   environment                = var.environment
@@ -47,7 +47,7 @@ module "copy_icaseworks_data_landing_to_raw" {
     "--s3_bucket_target"    = "${module.raw_zone.bucket_id}/data-and-insight"
     "--s3_bucket_source"    = module.landing_zone.bucket_id
     "--s3_prefix"           = "icaseworks/"
-    "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_object.helpers.key}"
   }
   crawler_details = {
     database_name      = module.department_data_and_insight.raw_zone_catalog_database_name

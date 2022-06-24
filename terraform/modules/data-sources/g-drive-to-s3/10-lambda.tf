@@ -2,7 +2,7 @@ data "aws_iam_role" "g_drive_to_s3_copier_lambda" {
   name = lower("${var.identifier_prefix}from-g-drive-${var.lambda_name}")
 }
 
-data "aws_s3_bucket_object" "g_drive_to_s3_copier_lambda" {
+data "aws_s3_object" "g_drive_to_s3_copier_lambda" {
   bucket = var.lambda_artefact_storage_bucket
   key    = "g_drive_to_s3.zip"
 }

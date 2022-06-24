@@ -15,7 +15,7 @@ module "manually_uploaded_parking_data_to_raw" {
     "--s3_prefix"           = "parking/manual/"
     "--extra-py-files"      = "s3://${module.glue_scripts_data_source.bucket_id}/${data.aws_s3_object.helpers.key}"
   }
-  script_s3_object_key = aws_s3_bucket_object.copy_manually_uploaded_csv_data_to_raw.key
+  script_s3_object_key = aws_s3_object.copy_manually_uploaded_csv_data_to_raw.key
   trigger_enabled      = false
   crawler_details = {
     database_name      = module.department_parking_data_source.raw_zone_catalog_database_name
