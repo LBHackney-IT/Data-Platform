@@ -12,14 +12,13 @@ module "mtfh_reshape_to_refined" {
     "--s3_bucket_target"        = "s3://${module.refined_zone.bucket_id}/housing/mtfh"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = module.department_housing.raw_zone_catalog_database_name
-    "--source_catalog_table"    = "housing-raw-zone"
   }
   script_name          = "housing_mtfh_reshape_to_refined"
   triggered_by_crawler = module.copy_mtfh_dynamo_db_tables_for_rentsense_to_housing_department_raw_zone.crawler_name
 
   crawler_details = {
     database_name      = module.department_housing.refined_zone_catalog_database_name
-    s3_target_location = "s3://${module.refined_zone.bucket_id}/housing/mtfh""
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/housing/mtfh"
   }
 
 }
