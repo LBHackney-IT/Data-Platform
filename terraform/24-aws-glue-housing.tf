@@ -19,7 +19,7 @@ module "mtfh_reshape_to_refined" {
 
   crawler_details = {
     database_name      = module.department_housing.refined_zone_catalog_database_name
-    s3_target_location = "s3://${module.refined_zone.bucket_id}/housing/mtfh""
+    s3_target_location = "s3://${module.refined_zone.bucket_id}/housing/mtfh"
   }
 
 }
