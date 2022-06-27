@@ -92,7 +92,7 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 resource "null_resource" "run_make_install_requirements" {
 
   triggers = {
-    dir_sha1 = data.archive_file.lambda.output_sha
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
   }
 
   provisioner "local-exec" {
@@ -102,18 +102,30 @@ resource "null_resource" "run_make_install_requirements" {
   }
 }
 
+data "null_data_source" "wait_for_lambda_exporter" {
+  inputs = {
+    # This ensures that this data resource will not be evaluated until
+    # after the null_resource has been created.
+    lambda_exporter_id = null_resource.run_make_install_requirements.id
+
+    # This value gives us something to implicitly depend on
+    # in the archive_file below.
+    source_dir = "../lambdas/${local.lambda_name_underscore}"
+  }
+}
+
 data "archive_file" "lambda" {
   type        = "zip"
-  source_dir  = "../lambdas/${local.lambda_name_underscore}"
+  source_dir  = data.null_data_source.wait_for_lambda_exporter.outputs["source_dir"]
   output_path = "../lambdas/${local.lambda_name_underscore}.zip"
 }
 
-resource "aws_s3_bucket_object" "lambda" {
+resource "aws_s3_object" "lambda" {
   bucket      = var.lambda_artefact_storage_bucket
   key         = "${local.lambda_name_underscore}.zip"
   source      = data.archive_file.lambda.output_path
   acl         = "private"
-  source_hash = data.archive_file.lambda.output_md5
+  source_hash = null_resource.run_make_install_requirements.triggers["dir_sha1"]
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -124,7 +136,7 @@ resource "aws_lambda_function" "lambda" {
   runtime          = "python3.8"
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
-  s3_key           = aws_s3_bucket_object.lambda.key
+  s3_key           = aws_s3_object.lambda.key
   source_code_hash = data.archive_file.lambda.output_base64sha256
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
