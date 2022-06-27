@@ -1,7 +1,7 @@
 locals {
   s3_target_bucket_name = module.landing_zone.bucket_id
   secret_name           = "icaseworks-key"
-  glue_job_name         = module.copy_icaseworks_data_landing_to_raw[0].job_name
+  glue_job_name         = local.is_live_environment ? module.copy_icaseworks_data_landing_to_raw[0].job_name : ""
 }
 
 module "icaseworks_api_ingestion" {
