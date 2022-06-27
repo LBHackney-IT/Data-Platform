@@ -14,7 +14,7 @@ module "mtfh_reshape_to_refined" {
     "--source_catalog_database" = module.department_housing.raw_zone_catalog_database_name
   }
   script_name          = "housing_mtfh_reshape_to_refined"
-  triggered_by_crawler = module.copy_mtfh_dynamo_db_tables_for_rentsense_to_housing_department_raw_zone.crawler_name
+  triggered_by_crawler = module.copy_mtfh_dynamo_db_tables_to_raw_zone.crawler_name
 
   crawler_details = {
     database_name      = module.department_housing.refined_zone_catalog_database_name
