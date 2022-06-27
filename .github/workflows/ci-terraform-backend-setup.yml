@@ -1,4 +1,4 @@
-name: 'CI-Backend-Setup'
+name: 'CI'
 on:
   push:
     branches-ignore:
@@ -15,6 +15,7 @@ on:
 
 jobs:
   CI:
+    name : "Backend-Setup"
     uses: ./.github/workflows/validate-and-lint-terraform.yml
     with:
       environment: "stg"

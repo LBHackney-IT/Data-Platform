@@ -65,7 +65,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Data Platform in ${{ inputs.build_path }}
+    name: Terraform Apply
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source

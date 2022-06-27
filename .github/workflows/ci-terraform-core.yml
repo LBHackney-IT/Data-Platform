@@ -1,4 +1,4 @@
-name: 'CI-Core'
+name: 'CI'
 on:
   push:
     branches-ignore:
@@ -15,6 +15,7 @@ on:
 
 jobs:
   CI:
+    name : "Core"
     uses: ./.github/workflows/plan-and-lint-terraform.yml
     with:
       environment: "stg"

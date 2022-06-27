@@ -60,7 +60,7 @@ on:
 
 jobs:
   validate:
-    name: Test Terraform in ${{ inputs.build_path }}
+    name: Terraform Validate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -98,7 +98,7 @@ jobs:
           terraform validate
 
   lint:
-    name: Lint Terraform in ${{ inputs.build_path }}
+    name: Terraform Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

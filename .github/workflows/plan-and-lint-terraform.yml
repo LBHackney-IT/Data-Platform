@@ -60,7 +60,7 @@ on:
 
 jobs:
   plan:
-    name: Test Terraform in ${{ inputs.build_path }}
+    name: Terraform Plan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -129,7 +129,7 @@ jobs:
 #           terraform-compliance -f ../compliance/ -p plan.out
 
   lint:
-    name: Lint Terraform in ${{ inputs.build_path }}
+    name: Terraform Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
