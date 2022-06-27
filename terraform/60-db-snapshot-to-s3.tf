@@ -13,6 +13,7 @@ module "lambda_artefact_storage_for_api_account" {
 }
 
 module "db_snapshot_to_s3" {
+  count                          = local.is_production_environment ? 1 : 0
   source                         = "../modules/db-snapshot-to-s3"
   tags                           = module.tags.values
   project                        = var.project
