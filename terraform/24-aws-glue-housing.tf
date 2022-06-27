@@ -3,7 +3,7 @@ module "mtfh_reshape_to_refined" {
 
   department                 = module.department_housing
   job_name                   = "${local.short_identifier_prefix}noisework_complaints_to_refined"
-  glue_job_worker_type       = "G.1X"
+  glue_job_worker_type       = "Standard"
   helper_module_key          = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
