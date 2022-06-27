@@ -35,7 +35,7 @@ locals {
       { name : "AUTH_OIDC_CLIENT_SECRET", valueFrom : data.aws_ssm_parameter.datahub_google_client_secret.arn },
     ]
     port_mappings = [
-      { containerPort : 9002, hostPort : 9002 }
+      { containerPort : 9002, hostPort : 9002, protocol : "tcp" }
     ]
     mount_points = []
     volumes      = []
@@ -75,7 +75,7 @@ locals {
       { name : "EBEAN_DATASOURCE_PASSWORD", valueFrom : aws_ssm_parameter.datahub_rds_password.arn },
     ]
     port_mappings = [
-      { containerPort : 8080, hostPort : 8080 }
+      { containerPort : 8080, hostPort : 8080, protocol : "tcp" }
     ]
     mount_points = []
     volumes      = []
@@ -106,7 +106,7 @@ locals {
     ]
     secrets = []
     port_mappings = [
-      { containerPort : 9090, hostPort : 9090 }
+      { containerPort : 9090, hostPort : 9090, protocol : "tcp" }
     ]
     mount_points = []
     volumes      = []
@@ -130,7 +130,7 @@ locals {
     ]
     secrets = []
     port_mappings = [
-      { containerPort : 9090, hostPort : 9090 }
+      { containerPort : 9090, hostPort : 9090, protocol : "tcp" }
     ]
     mount_points = []
     volumes      = []

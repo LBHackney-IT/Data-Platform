@@ -118,6 +118,16 @@ jobs:
           sync_production_to_pre_production_task_role: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
           pre_production_liberator_data_storage_kms_key_arn: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
 
+#       - name: Terraform Compliance
+#         shell: bash
+#         working-directory: "${{ inputs.build_path }}"
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install pip
+#           pip install --upgrade orjson
+#           pip install terraform-compliance[faster_parsing]
+#           terraform-compliance -f ../compliance/ -p plan.out
+
   lint:
     name: Lint Terraform in ${{ inputs.build_path }}
     runs-on: ubuntu-latest

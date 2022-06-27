@@ -1,4 +1,4 @@
-name: 'CI'
+name: 'CI-Backend-Setup'
 on:
   push:
     branches-ignore:

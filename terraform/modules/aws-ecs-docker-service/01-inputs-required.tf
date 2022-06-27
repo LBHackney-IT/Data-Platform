@@ -42,6 +42,7 @@ variable "container_properties" {
     port_mappings = list(object({
       containerPort = number
       hostPort      = number
+      protocol      = string
     }))
     environment_variables = list(object({
       name  = string
