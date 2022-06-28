@@ -1,4 +1,4 @@
-name: Deploy Data-Platform Terraform
+name: State Migration
 env:
   aws_deploy_region: "eu-west-2"
 
