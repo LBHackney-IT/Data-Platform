@@ -21,6 +21,7 @@ module "ingest_mtfh_tables" {
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  schedule                       = "cron(30 5 ? * * *)"
   job_parameters = {
     "--table_names"       = "TenureInformation", # This is a comma delimited list of Dynamo DB table names to be imported
     "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
@@ -46,7 +47,7 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
 
   source = "../modules/aws-glue-job"
 
-  job_name                   = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"
+  job_name                   = replace(lower("${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"), "/[^a-zA-Z0-9]+/", "-")
   department                 = module.department_housing
   script_s3_object_key       = aws_s3_object.copy_tables_landing_to_raw.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id

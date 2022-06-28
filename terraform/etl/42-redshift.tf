@@ -184,9 +184,9 @@ locals {
       user_name  = module.department_planning_data_source.identifier_snake_case
       secret_arn = module.department_planning_data_source.redshift_cluster_secret
       schemas_to_grant_access_to = concat([
-        replace(module.department_sandbox_data_source.raw_zone_catalog_database_name, "-", "_"),
-        replace(module.department_sandbox_data_source.refined_zone_catalog_database_name, "-", "_"),
-        replace(module.department_sandbox_data_source.trusted_zone_catalog_database_name, "-", "_"),
+        replace(module.department_planning_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_planning_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_planning_data_source.trusted_zone_catalog_database_name, "-", "_"),
         "dataplatform_stg_tascomi_refined_zone"
       ], local.unrestricted_schemas)
     },
