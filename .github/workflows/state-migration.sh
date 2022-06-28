@@ -13,7 +13,7 @@ terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_tabl
 
 while read -r resource_address; do
     terraform state mv -dry-run -state-out=./"${environment}"-terraform-etl.tfstate "$resource_address" "$resource_address";
-done < ../../.github/workflows/resources-to-move=${environment}.txt
+done < ../../.github/workflows/resources-to-move-"${environment}".txt
 
 #echo "New Core State"
 #terraform state list
