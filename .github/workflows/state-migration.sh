@@ -22,4 +22,5 @@ done
 
 #
 #cp ./"${1}"-terraform-etl.tfstate ../etl/"${1}"-terraform-etl.tfstate
+#cd ../etl
 #terraform state push -force ./"${1}"-terraform-etl.tfstate
