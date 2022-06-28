@@ -1,27 +1,25 @@
-#TEST_DEV= ./state-migration.sh -dry-run 2>&1 | tee state-migration-output
-#TEST_STAGING= ./state-migration.sh staging -dry-run 2>&1 | tee state-migration-output
-#TEST_PRODUCTION= ./state-migration.sh production -dry-run 2>&1 | tee state-migration-output
-#FOR_REAL_DEV= ./state-migration.sh 2>&1 | tee state-migration-output
-#FOR_REAL_STAGING= ./state-migration.sh staging 2>&1 | tee state-migration-output
-#FOR_REAL_PRODUCTION= ./state-migration.sh production 2>&1 | tee state-migration-output
+#!/bin/bash
 
-make init
-WORKSPACE="${3:-ryanbratten}" make workspace-select
-rm -f state-migration-output
+environment="${1}"
+aws_access_key_id="${2}"
+aws_secret_access_key="${3}"
+terraform_state_s3_key_prefix="${4}"
+
+aws configure set default.region eu-west-2
+aws configure set aws_access_key_id "${aws_access_key_id}"
+aws configure set aws_secret_access_key "${aws_secret_access_key}"
+terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${terraform_state_s3_key_prefix}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${terraform_state_s3_key_prefix}/${environment}-terraform.tfstate"
+
 FILES="../etl/*.tf"
 for f in $FILES
 do
     grep -Eo -e '^module \".*\"' -e '^data \".*\"' "$f" | tr -s " \"" "." | sed 's/\.$//' | \
-    while read -r resource_address; do aws-vault exec hackney-dataplatform-"${1:-development}" -- terraform state mv $2 -state-out=./tfstate-etl.tfstate "$resource_address" "$resource_address"; done
+    while read -r resource_address; do terraform state mv -dry-run -state-out=./"${environment}"-terraform-etl.tfstate "$resource_address" "$resource_address"; done
 
     grep -Eo '^resource \".*\"' "$f" | tr -s " \"" "." | sed 's/\.$//' | sed 's/^resource\.//' | \
-    while read -r resource_address; do aws-vault exec hackney-dataplatform-"${1:-development}" -- terraform state mv $2 -state-out=./tfstate-etl.tfstate "$resource_address" "$resource_address"; done;
+    while read -r resource_address; do terraform state mv -dry-run -state-out=./"${environment}"-terraform-etl.tfstate "$resource_address" "$resource_address"; done;
 done
+
 #
-#cp ./tfstate-etl.tfstate ../etl/tfstate-etl.tfstate
-#make apply
-#cd ../etl
-#make init
-#aws-vault exec hackney-dataplatform-"${1:-development}" -- terraform workspace select "${3:-ryanbratten}"
-#aws-vault exec hackney-dataplatform-"${1:-development}" -- terraform state push -force ./tfstate-etl.tfstate
-#make plan
+#cp ./"${1}"-terraform-etl.tfstate ../etl/"${1}"-terraform-etl.tfstate
+#terraform state push -force ./"${1}"-terraform-etl.tfstate
