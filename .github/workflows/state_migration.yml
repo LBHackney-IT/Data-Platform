@@ -53,6 +53,6 @@ jobs:
       - name: Run State migration
         id: state-migration
         run: |
-          ./.github/workflows/state-migration.sh ${{ github.event.inputs.environment }} ${{secrets.AWS_ACCESS_KEY_ID}} ${{secrets.AWS_SECRET_ACCESS_KEY}} "data-platform"
+          chmod +x ./.github/workflows/state-migration.sh && ./.github/workflows/state-migration.sh ${{ github.event.inputs.environment }} ${{secrets.AWS_ACCESS_KEY_ID}} ${{secrets.AWS_SECRET_ACCESS_KEY}} "data-platform"
         shell: bash
 
