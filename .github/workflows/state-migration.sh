@@ -19,7 +19,8 @@ done < ../../.github/workflows/resources-to-move.txt
 #terraform state list
 #
 #ls
+cp ./state-migration.sh ../etl/state-migration.sh
 #cp ./"${environment}"-terraform-etl.tfstate ../etl/"${environment}"-terraform-etl.tfstate
-#cd ../etl
-#ls
+cd ../etl
+ls
 #terraform state push -force ./"${environment}"-terraform-etl.tfstate
