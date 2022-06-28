@@ -5,6 +5,8 @@ aws_access_key_id="${2}"
 aws_secret_access_key="${3}"
 terraform_state_s3_key_prefix="${4}"
 
+cd ./terraform/core
+
 aws configure set default.region eu-west-2
 aws configure set aws_access_key_id "${aws_access_key_id}"
 aws configure set aws_secret_access_key "${aws_secret_access_key}"
@@ -21,6 +23,7 @@ do
 done
 
 #
-#cp ./"${1}"-terraform-etl.tfstate ../etl/"${1}"-terraform-etl.tfstate
-#cd ../etl
+cp ./"${1}"-terraform-etl.tfstate ../etl/"${1}"-terraform-etl.tfstate
+cd ../etl
+ls
 #terraform state push -force ./"${1}"-terraform-etl.tfstate
