@@ -1,4 +1,4 @@
-name: State Migration Production
+name: State Migration
 env:
   aws_deploy_region: "eu-west-2"
 
@@ -10,6 +10,7 @@ on:
         required: true
         description: Deployment environment
         options:
+          - stg
           - prod
     secrets:
       google_project_id:
