@@ -2,7 +2,7 @@ module "mtfh_reshape_to_refined" {
   source = "../modules/aws-glue-job"
 
   department                 = module.department_housing
-  job_name                   = "${local.short_identifier_prefix}noisework_complaints_to_refined"
+  job_name                   = "${local.short_identifier_prefix}mtfh_reshape_to_refined"
   glue_job_worker_type       = "Standard"
   helper_module_key          = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
