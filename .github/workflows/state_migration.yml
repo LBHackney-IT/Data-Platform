@@ -13,11 +13,42 @@ on:
           - stg
           - prod
     secrets:
+      google_project_id:
+        required: true
+      aws_deploy_account_id:
+        description: "ID of Account being deployed to"
+        required: true
+      INFRASTRUCTURE_PRIVATE_KEY:
+        required: true
       AWS_ACCESS_KEY_ID:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
+      AWS_API_ACCOUNT_PROD:
+        required: true
+      AWS_MOSAIC_PROD_ACCOUNT_ID:
+        required: true
+      AWS_DATA_PLATFORM_ACCOUNT_ID:
+        required: true
+      AWS_HACKIT_ACCOUNT_ID:
+        required: true
       AWS_ROLE_TO_ASSUME:
+        required: true
+      AWS_API_VPC_ID:
+        required: true
+      AWS_HOUSING_VPC_ID:
+        required: true
+      AWS_MOSAIC_VPC_ID:
+        required: true
+      AWS_DP_VPC_ID:
+        required: true
+      GOOGLE_CREDENTIALS:
+        required: true
+      COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE:
+        required: true
+      SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE:
+        required: true
+      PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN:
         required: true
 
 jobs:
@@ -53,6 +84,6 @@ jobs:
       - name: Run State migration
         id: state-migration
         run: |
-          chmod +x ./.github/workflows/state-migration.sh && ./.github/workflows/state-migration.sh ${{ github.event.inputs.environment }} ${{secrets.AWS_ACCESS_KEY_ID}} ${{secrets.AWS_SECRET_ACCESS_KEY}} "data-platform"
+          chmod +x ./.github/workflows/state-migration.sh && ./.github/workflows/state-migration.sh ${{ github.event.inputs.environment }} ${{secrets.AWS_ACCESS_KEY_ID}} ${{secrets.AWS_SECRET_ACCESS_KEY}} "data-platform" ${{ env.aws_deploy_region }} ${{ secrets.GOOGLE_PROJECT_ID }} ${{ secrets.AWS_DEPLOY_ACCOUNT_ID }} ${{ secrets.AWS_API_ACCOUNT_PROD }} ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }} ${{ secrets.AWS_DATA_PLATFORM_ACCOUNT_ID }} ${{ secrets.AWS_API_VPC_ID }} ${{ secrets.AWS_HOUSING_VPC_ID }} ${{ secrets.AWS_MOSAIC_VPC_ID }} ${{ secrets.AWS_DP_VPC_ID }} ${{ secrets.AWS_HACKIT_ACCOUNT_ID }} ${{ secrets.AWS_ROLE_TO_ASSUME }} ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }} ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }} ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
         shell: bash
 
