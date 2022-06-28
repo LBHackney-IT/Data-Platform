@@ -5,8 +5,8 @@ module "copy_icaseworks_data_landing_to_raw" {
 
   job_name                   = "${local.short_identifier_prefix}iCaseworks (OneCase) Copy Landing to Raw"
   glue_role_arn              = data.aws_iam_role.glue_role.arn
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   script_s3_object_key       = data.aws_s3_bucket_object.copy_json_data_landing_to_raw.key
   glue_scripts_bucket_id     = module.glue_scripts_data_source.bucket_id
