@@ -88,6 +88,14 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
+      - name: Download external dependencies
+        working-directory: "./external-lib"
+        run: make all
+
+      - name: Package AWS Glue Job Helpers Module & Python modules
+        working-directory: "./scripts"
+        run: make all
+
       - name: Run State migration
         id: state-migration
         working-directory: ./terraform/core
