@@ -29,6 +29,9 @@ on:
       terraform_state_s3_key_prefix:
         required: true
         type: string
+      terraform_state_file_name:
+        required: true
+        type: string
     secrets:
       GOOGLE_PROJECT_ID:
         required: true
@@ -70,7 +73,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Data Platform in ${{ inputs.build_path }}
+    name: Terraform Apply
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
@@ -142,6 +145,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_deploy_region: ${{ env.aws_deploy_region }}
           terraform_state_s3_key_prefix: ${{ inputs.terraform_state_s3_key_prefix }}
+          terraform_state_file_name: ${{ inputs.terraform_state_file_name }}
           build_path: ${{ inputs.build_path }}
           automation_build_url: ${{ inputs.automation_build_url }}
           environment: ${{ inputs.environment }}
@@ -169,10 +173,10 @@ jobs:
           terraform_destroy: false
 
       - name: Configure Redshift users, external schemas and user permissions for external schema
-        working-directory: "./terraform"
+        working-directory: "./terraform/etl"
         run: |
           terraform_outputs=$(terraform output -json)
-          cd ../scripts
+          cd ../../scripts
           source .venv/bin/activate
           AWS_PROFILE=deploy_role python ./configure_redshift.py "$terraform_outputs"
 

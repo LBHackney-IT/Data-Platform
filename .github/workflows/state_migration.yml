@@ -13,16 +13,47 @@ on:
           - stg
           - prod
     secrets:
+      google_project_id:
+        required: true
+      aws_deploy_account_id:
+        description: "ID of Account being deployed to"
+        required: true
+      INFRASTRUCTURE_PRIVATE_KEY:
+        required: true
       AWS_ACCESS_KEY_ID:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
+      AWS_API_ACCOUNT_PROD:
+        required: true
+      AWS_MOSAIC_PROD_ACCOUNT_ID:
+        required: true
+      AWS_DATA_PLATFORM_ACCOUNT_ID:
+        required: true
+      AWS_HACKIT_ACCOUNT_ID:
+        required: true
       AWS_ROLE_TO_ASSUME:
+        required: true
+      AWS_API_VPC_ID:
+        required: true
+      AWS_HOUSING_VPC_ID:
+        required: true
+      AWS_MOSAIC_VPC_ID:
+        required: true
+      AWS_DP_VPC_ID:
+        required: true
+      GOOGLE_CREDENTIALS:
+        required: true
+      COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE:
+        required: true
+      SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE:
+        required: true
+      PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN:
         required: true
 
 jobs:
   deploy:
-    name: Deploy Data Platform in ${{ inputs.build_path }}
+    name: State Migration for ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
@@ -50,9 +81,17 @@ jobs:
           echo "role_session_name=deploy" >> ~/.aws/config
           echo "region=eu-west-2" >> ~/.aws/config
 
+
       - name: Run State migration
         id: state-migration
+        working-directory: ./terraform/core
         run: |
-          ${{ github.action_path }}/state-migration.sh ${{ github.event.inputs.environment }} ${{secrets.AWS_ACCESS_KEY_ID}} ${{secrets.AWS_SECRET_ACCESS_KEY}} "data-platform"
+          chmod +x ../../.github/workflows/state-migration.sh && ../../.github/workflows/state-migration.sh ${{ github.event.inputs.environment }} ${{secrets.AWS_ACCESS_KEY_ID}} ${{secrets.AWS_SECRET_ACCESS_KEY}} "data-platform"
         shell: bash
+
+      - name: Archive ETL state file
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.inputs.environment }}-terraform-etl.tfstate
+          path: ./terraform/etl/${{ github.event.inputs.environment }}-terraform-etl.tfstate
 
