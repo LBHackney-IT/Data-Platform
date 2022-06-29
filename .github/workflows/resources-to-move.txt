@@ -240,10 +240,6 @@ module.alloy_daily_snapshot_env_services[13].aws_glue_job.job
 module.alloy_daily_snapshot_env_services[13].aws_glue_trigger.job_trigger
 module.alloy_daily_snapshot_env_services[13].aws_s3_bucket_object.job_script[0]
 module.communal_lighting[0].aws_s3_bucket_object.housing_repairs_elec_mech_fire_data_cleaning_script
-module.copy_icaseworks_data_landing_to_raw[0].aws_glue_crawler.crawler[0]
-module.copy_icaseworks_data_landing_to_raw[0].aws_glue_job.job
-module.copy_icaseworks_data_landing_to_raw[0].aws_glue_trigger.crawler_trigger[0]
-module.copy_icaseworks_data_landing_to_raw[0].aws_glue_trigger.job_trigger
 module.covid_locations_lisa[0].aws_glue_workflow.workflow
 module.covid_vaccinations_arda_sandbox.aws_glue_crawler.crawler[0]
 module.covid_vaccinations_arda_sandbox.aws_glue_job.job
