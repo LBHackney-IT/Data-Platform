@@ -174,7 +174,7 @@ jobs:
 
       - name: Configure Redshift users, external schemas and user permissions for external schema
         working-directory: "./terraform/etl"
-        if: ${{ inputs.build_path }} == './terraform/etl'
+        if: ${{ inputs.build_path  == './terraform/etl' }}
         run: |
           terraform_outputs=$(terraform output -json)
           cd ../../scripts
