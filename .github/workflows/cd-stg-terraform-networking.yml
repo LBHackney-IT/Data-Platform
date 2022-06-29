@@ -29,7 +29,7 @@ jobs:
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
-      build_path: "./terraform-networking"
+      build_path: "./terraform/networking"
       terraform_state_s3_key_prefix: "data-platform-network"
       terraform_state_file_name: "stg-terraform.tfstate"
     secrets:
@@ -59,7 +59,7 @@ jobs:
       terraform_infra_remove: ${{ github.event.inputs.terraform_infra_remove }}
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
-      build_path: "./terraform-networking"
+      build_path: "./terraform/networking"
       terraform_state_s3_key_prefix: "data-platform-network"
       terraform_state_file_name: "stg-terraform.tfstate"
     secrets:

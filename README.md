@@ -34,7 +34,7 @@ The terraform/etl directory contains the ETL and Glue related infrastructure and
 
 #### /terraform/networking
 
-The terraform-networking directory contains the networking aspect of the data platform (see [`Networking`](#Networking)) and at the time of writing has one Github action to deploy to staging and one to deploy to production.
+The terraform/networking directory contains the networking aspect of the data platform (see [`Networking`](#Networking)) and at the time of writing has one Github action to deploy to staging and one to deploy to production.
 
 #### /terraform/backend-setup
 
