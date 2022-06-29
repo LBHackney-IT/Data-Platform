@@ -76,7 +76,7 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
     "--table_filter_expression"   = "^liberator_(?!fpn).*"
     "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_liberator.name
     "--glue_database_name_target" = aws_glue_catalog_database.raw_zone_liberator.name
-    "--extra-py-files"            = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"            = "s3://${module.glue_scripts_data_source.bucket_id}/${data.aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog"   = "true"
     "--enable-spark-ui"           = "true"
     "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage_data_source.bucket_id}/parking/liberator"
@@ -104,7 +104,7 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw" {
     "--table_filter_expression"   = "^liberator_fpn.*"
     "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_liberator.name
     "--glue_database_name_target" = module.department_env_enforcement_data_source.raw_zone_catalog_database_name
-    "--extra-py-files"            = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"            = "s3://${module.glue_scripts_data_source.bucket_id}/${data.aws_s3_bucket_object.helpers.key}"
     "--enable-glue-datacatalog"   = "true"
     "--enable-spark-ui"           = "true"
     "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage_data_source.bucket_id}/env-enforcement/liberator"

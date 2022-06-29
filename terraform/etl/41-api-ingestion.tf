@@ -18,7 +18,7 @@ module "copy_icaseworks_data_landing_to_raw" {
     "--s3_bucket_target"    = "${module.raw_zone_data_source.bucket_id}/data-and-insight"
     "--s3_bucket_source"    = module.landing_zone_data_source.bucket_id
     "--s3_prefix"           = "icaseworks/"
-    "--extra-py-files"      = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"      = "s3://${module.glue_scripts_data_source.bucket_id}/${data.aws_s3_bucket_object.helpers.key}"
   }
   crawler_details = {
     database_name      = module.department_data_and_insight_data_source.raw_zone_catalog_database_name
