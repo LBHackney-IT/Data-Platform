@@ -16,21 +16,15 @@ aws configure set aws_secret_access_key "${aws_secret_access_key}"
 #done < ../../.github/workflows/resources-to-import.txt
 #cd ../core
 
-
-
-#
-#terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${terraform_state_s3_key_prefix}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${terraform_state_s3_key_prefix}/${environment}-terraform.tfstate"
-#while read -r resource_address; do
-#    terraform state mv -lock=false -state-out=../etl/"${environment}"-terraform-etl.tfstate "$resource_address" "$resource_address";
-#done < ../../.github/workflows/resources-to-move.txt
-#
-#echo "New Core State"
-#terraform state list
-#
-#cd ../etl
-#ls
-#terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${terraform_state_s3_key_prefix}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${terraform_state_s3_key_prefix}/${environment}-terraform-etl.tfstate"
-#terraform state push -force ./"${environment}"-terraform-etl.tfstate
-
 terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${terraform_state_s3_key_prefix}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${terraform_state_s3_key_prefix}/${environment}-terraform.tfstate"
-terraform force-unlock -force 5949bfd0-76d0-ae70-82bf-d2fe9df6d797
+while read -r resource_address; do
+    terraform state mv -lock=false -state-out=../etl/"${environment}"-terraform-etl.tfstate "$resource_address" "$resource_address";
+done < ../../.github/workflows/resources-to-move.txt
+
+echo "New Core State"
+terraform state list
+
+cd ../etl
+ls
+terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${terraform_state_s3_key_prefix}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${terraform_state_s3_key_prefix}/${environment}-terraform-etl.tfstate"
+terraform state push -force ./"${environment}"-terraform-etl.tfstate
