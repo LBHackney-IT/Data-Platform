@@ -15,12 +15,11 @@ while read -r resource_address; do
     terraform state mv -dry-run -state-out=./"${environment}"-terraform-etl.tfstate "$resource_address" "$resource_address";
 done < ../../.github/workflows/resources-to-move.txt
 
-#echo "New Core State"
-#terraform state list
-#
-#ls
-cp ./state-migration.sh ../etl/state-migration.sh
-#cp ./"${environment}"-terraform-etl.tfstate ../etl/"${environment}"-terraform-etl.tfstate
+echo "New Core State"
+terraform state list
+
+ls
+cp ./"${environment}"-terraform-etl.tfstate ../etl/"${environment}"-terraform-etl.tfstate
 cd ../etl
 ls
-#terraform state push -force ./"${environment}"-terraform-etl.tfstate
+terraform state push -force ./"${environment}"-terraform-etl.tfstate
