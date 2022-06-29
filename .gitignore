@@ -20,3 +20,7 @@ notebook/aws-config/credentials
 **/.venv
 **/__pycache__
 /venv/
+.vscode/
+**/*.log
+**/plan.out
+**/plan.out.json

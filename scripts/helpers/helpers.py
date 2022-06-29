@@ -1,14 +1,17 @@
+import datetime
 import re
 import sys
-import boto3
-import datetime
 import unicodedata
+
+import boto3
 from awsglue.utils import getResolvedOptions
-from pyspark.sql import functions as f
-from pyspark.sql.functions import col, from_json
-from pyspark.sql.types import StringType, StructType 
+from pyspark.sql import functions as f, DataFrame
+from pyspark.sql.functions import col, from_json, to_date, concat, when, lit, year, month, dayofmonth, broadcast, max
+from pyspark.sql.types import StringType, StructType, IntegerType
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
+PARTITION_KEYS_SNAPSHOT = ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']
+
 
 def format_name(col_name):
     non_alpha_num_chars_stripped = re.sub('[^a-zA-Z0-9]+', "_", col_name)
@@ -21,6 +24,7 @@ def clean_column_names(df):
         df = df.withColumnRenamed(col_name, format_name(col_name))
     return df
 
+
 def normalize_column_name(column: str) -> str:
     """
     Normalize column name by replacing all non alphanumeric characters with underscores
@@ -32,12 +36,32 @@ def normalize_column_name(column: str) -> str:
     formatted_name = format_name(column)
     return unicodedata.normalize('NFKD', formatted_name).encode('ASCII', 'ignore').decode()
 
+
 def get_glue_env_var(key, default=None):
+    """
+    Looks for a single variable passed in as a job parameters.
+    The key given will match to any parameter that the key is a sub string of.
+    So if you have two parameter keys where one is a substring of another it could return the wrong value.
+    :param key: The key of the parameter to retrieve
+    :param default: A value to return if the given key doesn't exist. Optional.
+    :return: The value of the parameter
+    Example of applying: source_catalog_database = get_glue_env_var("source_catalog_database", "")
+    """
     if f'--{key}' in sys.argv:
         return getResolvedOptions(sys.argv, [key])[key]
     else:
         return default
 
+def get_glue_env_vars(*keys):
+    """
+    Retrieves values for the given keys passed in as job parameters.
+    This will error if a given key can't be found in the job parameters.
+    :param keys: The keys of the parameters to retrieve passed as separate arguments
+    :return: A tuple containing the values for the parameters
+    Example of applying: (source_catalog_database, source_catalog_table) = get_glue_env_vars("source_catalog_database", "source_catalog_table")
+    """
+    vars = getResolvedOptions(sys.argv, [*keys])
+    return (vars[key] for key in keys)
 
 def get_secret(secret_name, region_name):
     session = boto3.session.Session()
@@ -55,6 +79,7 @@ def get_secret(secret_name, region_name):
         return get_secret_value_response['SecretString']
     else:
         return get_secret_value_response['SecretBinary'].decode('ascii')
+
 
 def add_timestamp_column(data_frame):
     now = datetime.datetime.now()
@@ -117,6 +142,59 @@ def get_latest_partitions(dfa):
     return dfa
 
 
+def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
+    """Filters the DataFrame based on the latest (most recent) partition. It uses import_date if available else it uses
+    import_year, import_month, import_day to calculate the latest partition.
+
+    Args:
+        df: Input DataFrame
+
+    Returns:
+        DataFrame belonging to the most recent partition.
+
+    """
+
+    if "import_date" in df.columns:
+        latest_partition = df.select(max(col("import_date")).alias("latest_import_date"))
+        result = df \
+            .join(broadcast(latest_partition), (df["import_date"] == latest_partition["latest_import_date"])) \
+            .drop("latest_import_date")
+    else:
+        # The below code is temporary fix till docker test environment is fixed, post which delete this and use the one
+        # below which is commented as of now.
+        latest_partition = df \
+            .withColumn("import_year_int", col("import_year").cast(IntegerType())) \
+            .withColumn("import_month_int", col("import_month").cast(IntegerType())) \
+            .withColumn("import_day_int", col("import_day").cast(IntegerType())) \
+            .select(max(to_date(concat(
+            col("import_year_int"),
+            when(col("import_month_int") < 10, concat(lit("0"), col("import_month_int")))
+            .otherwise(col("import_month_int")),
+            when(col("import_day_int") < 10, concat(lit("0"), col("import_day_int")))
+            .otherwise(col("import_day_int"))),
+            format="yyyyMMdd")).alias("latest_partition_date")) \
+            .select(year(col("latest_partition_date")).alias("latest_year_int"),
+                    month(col("latest_partition_date")).alias("latest_month_int"),
+                    dayofmonth(col("latest_partition_date")).alias("latest_day_int"))
+
+        # Unblock the below code when the test environment of docker is fixed and delete the above one.
+        # latest_partition = df \
+        #    .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
+        #                         format="yyyy-L-d")).alias("latest_partition_date")) \
+        #     .select(year(col("latest_partition_date")).alias("latest_year"),
+        #             month(col("latest_partition_date")).alias("latest_month"),
+        #             dayofmonth(col("latest_partition_date")).alias("latest_day"))
+
+        result = df \
+            .join(broadcast(latest_partition),
+                  (df.import_year == latest_partition["latest_year_int"]) &
+                  (df.import_month == latest_partition["latest_month_int"]) &
+                  (df.import_day == latest_partition["latest_day_int"])) \
+            .drop("latest_year_int", "latest_month_int", "latest_day_int")
+
+    return result
+
+
 def parse_json_into_dataframe(spark, column, dataframe):
     """
     This method parses in a dataframe containing a JSON formatted column and expands JSON into own columns by
@@ -151,23 +229,32 @@ def table_exists_in_catalog(glue_context, table, database):
 
 
 def create_pushdown_predicate(partitionDateColumn, daysBuffer):
-    '''
-    This method creates a pushdown predicate to pass when reading data and creating a DDF. 
-    The partition date column will in most cases be 'import_date'. 
+    """
+    This method creates a pushdown predicate to pass when reading data and creating a DDF.
+    The partition date column will in most cases be 'import_date'.
     The daysBuffer is the number of days we want to load before the current day.
     If passing daysBuffer=0, we create no pushdown predicate and the whole dataset will be loaded.
-    '''
+    """
     if daysBuffer > 0:
-        pushDownPredicate = f"{partitionDateColumn}>=date_format(date_sub(current_date, {daysBuffer}), 'yyyyMMdd')"
+        push_down_predicate = f"{partitionDateColumn}>=date_format(date_sub(current_date, {daysBuffer}), 'yyyyMMdd')"
     else:
-        pushDownPredicate = ''
-    return pushDownPredicate
+        push_down_predicate = ''
+    return push_down_predicate
 
 
 def check_if_dataframe_empty(df):
-    '''
+    """
     This method returns an exception if the dataframe is empty.
-    '''
+    """
     if df.rdd.isEmpty():
         raise Exception('Dataframe is empty')
 
+
+def get_latest_rows_by_date(df, column):
+    """
+    Filters dataframe to keep rows byt specifying a date column. E.g. to get the
+    latest snapshot_date, column='snapshot_date'
+    """
+    date_filter = df.select(max(column)).first()[0]
+    df = df.where(col(column) == date_filter)
+    return df

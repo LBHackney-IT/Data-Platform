@@ -1,4 +1,4 @@
-name: Deploy Production Terraform Networking
+name: Deploy Prod Terraform Networking
 concurrency: production-deploy
 
 on:
@@ -19,8 +19,9 @@ jobs:
     with:
       environment: "prod"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
-      build_path: "./terraform-networking"
+      build_path: "./terraform/networking"
       terraform_state_s3_key_prefix: "data-platform-network"
+      terraform_state_file_name: "prod-terraform.tfstate"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
@@ -37,6 +38,9 @@ jobs:
       AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
       AWS_DP_VPC_ID: ${{ secrets.AWS_DP_STG_VPC_ID }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_PROD }}
+      COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
+      SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
+      PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
   deploy:
     needs: ["validate"]
     uses: ./.github/workflows/deploy_terraform_networking.yml
@@ -45,8 +49,9 @@ jobs:
       terraform_infra_remove: ${{ github.event.inputs.terraform_infra_remove }}
       environment: "prod"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
-      build_path: "./terraform-networking"
+      build_path: "./terraform/networking"
       terraform_state_s3_key_prefix: "data-platform-network"
+      terraform_state_file_name: "prod-terraform.tfstate"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}

@@ -1,1 +1,5 @@
 boto3
+google-api-python-client
+python-dotenv
+oauth2client
+pybase64

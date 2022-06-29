@@ -14,11 +14,14 @@ inputs:
   terraform_state_s3_key_prefix:
     description: "S3 key prefix for Terraform state"
     required: true
+  terraform_state_file_name:
+    description: "S3 Object name for the Terraform state"
+    required: true
   build_path:
     description: "Build path that contains the source"
     required: true
   environment:
-    description: "Name of the environemnt e.g. dev, stg, prod, mgmt"
+    description: "Name of the environment e.g. dev, stg, prod, mgmt"
     required: true
   google_project_id:
     description: "Id of google project to which service accounts will be deployed to"
@@ -56,6 +59,15 @@ inputs:
   aws_deploy_iam_role_name:
     description: "AWS IAM role name to assume for deployment"
     required: true
+  copy_liberator_to_pre_prod_lambda_execution_role:
+    description: "AWS IAM role name to assume for triggering the lambda to copy liberator data to pre-prod"
+    required: true
+  sync_production_to_pre_production_task_role:
+    description: "Role arn for the prod to pre-prod raw, refined & trusted zones sync task. Only used in pre-production environment."
+    required: true
+  pre_production_liberator_data_storage_kms_key_arn:
+    description: "KMS Key ARN for the liberator data storage bucket in pre production"
+    required: true
   branch:
     description: "Git branch being ran against"
     required: true
@@ -90,7 +102,7 @@ runs:
         aws configure set default.region eu-west-2 > /dev/null 2>&1
         aws configure set aws_access_key_id ${{ inputs.aws_access_key_id }} > /dev/null 2>&1
         aws configure set aws_secret_access_key ${{ inputs.aws_secret_access_key }} > /dev/null 2>&1
-        terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ inputs.terraform_state_s3_key_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.tfstate"
+        terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ inputs.terraform_state_s3_key_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.terraform_state_file_name }}"
         echo -e "Terraform S3 bucket: lbhackney-terraform-state"
         echo -e "Terraform state file: ${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.state"
         echo -e "\n"
@@ -103,7 +115,7 @@ runs:
         if [ "${{ inputs.terraform_import }}" != "" ]; then
             ${{ github.action_path }}/../.helpers/box.sh "Running Terraform import"
             if [ "${{ inputs.branch }}" == "main" ]; then
-              terraform import -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' ${{ inputs.terraform_import }}
+              terraform import -var-file='../config/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' ${{ inputs.terraform_import }}
             else
               echo -e "Not on default branch branch, so skipping Terraform import."
             fi
@@ -131,7 +143,7 @@ runs:
         if [ "${{ inputs.terraform_destroy }}" == "destroy_me" ]; then
             ${{ github.action_path }}/../.helpers/box.sh "Running Terraform destroy"
             if [ "${{ inputs.branch }}" == "main" ]; then
-              terraform destroy -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -var 'aws_housing_vpc_id=${{ inputs.aws_housing_vpc_id }}' -var 'aws_mosaic_vpc_id=${{ inputs.aws_mosaic_vpc_id }}' -var 'aws_dp_vpc_id=${{ inputs.aws_dp_vpc_id }}' -var '' -auto-approve
+              terraform destroy -var-file='../config/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -var 'aws_housing_vpc_id=${{ inputs.aws_housing_vpc_id }}' -var 'aws_mosaic_vpc_id=${{ inputs.aws_mosaic_vpc_id }}' -var 'aws_dp_vpc_id=${{ inputs.aws_dp_vpc_id }}' -var 'copy_liberator_to_pre_prod_lambda_execution_role=${{ inputs.copy_liberator_to_pre_prod_lambda_execution_role }}' -var 'sync_production_to_pre_production_task_role=${{ inputs.sync_production_to_pre_production_task_role }}' -var 'pre_production_liberator_data_storage_kms_key_arn=${{ inputs.pre_production_liberator_data_storage_kms_key_arn }}' -auto-approve
               ${{ github.action_path }}/../.helpers/success_destroy.sh
               echo -e "Terraform run completed successfully."
             else
@@ -146,11 +158,21 @@ runs:
       run: |
         if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
           ${{ github.action_path }}/../.helpers/box.sh "Running Terraform plan"
-          terraform plan -var-file='../config/terraform/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -var 'aws_housing_vpc_id=${{ inputs.aws_housing_vpc_id }}' -var 'aws_mosaic_vpc_id=${{ inputs.aws_mosaic_vpc_id }}' -var 'aws_dp_vpc_id=${{ inputs.aws_dp_vpc_id }}' -input=false -out=plan.out
+          terraform plan -var-file='../config/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -var 'aws_housing_vpc_id=${{ inputs.aws_housing_vpc_id }}' -var 'aws_mosaic_vpc_id=${{ inputs.aws_mosaic_vpc_id }}' -var 'aws_dp_vpc_id=${{ inputs.aws_dp_vpc_id }}' -var 'copy_liberator_to_pre_prod_lambda_execution_role=${{ inputs.copy_liberator_to_pre_prod_lambda_execution_role }}' -var 'sync_production_to_pre_production_task_role=${{ inputs.sync_production_to_pre_production_task_role }}' -var 'pre_production_liberator_data_storage_kms_key_arn=${{ inputs.pre_production_liberator_data_storage_kms_key_arn }}' -input=false -out=plan.out
           echo -e "\n"
         fi
       shell: bash
       working-directory: "${{ inputs.build_path }}"
+
+#    - name: Terraform Compliance
+#      shell: bash
+#      working-directory: "${{ inputs.build_path }}"
+#      run: |
+#        sudo apt-get update
+#        sudo apt-get install pip
+#        pip install --upgrade orjson
+#        pip install terraform-compliance[faster_parsing]
+#        terraform-compliance -f ../compliance/ -p plan.out
 
     - name: Terraform Apply
       id: apply

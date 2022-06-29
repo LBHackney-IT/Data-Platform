@@ -29,6 +29,9 @@ on:
       terraform_state_s3_key_prefix:
         required: true
         type: string
+      terraform_state_file_name:
+        required: true
+        type: string
     secrets:
       GOOGLE_PROJECT_ID:
         required: true
@@ -61,11 +64,16 @@ on:
         required: true
       GOOGLE_CREDENTIALS:
         required: true
-
+      COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE:
+        required: true
+      SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE:
+        required: true
+      PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN:
+        required: true
 
 jobs:
   deploy:
-    name: Deploy Data Platform in ${{ inputs.build_path }}
+    name: Terraform Apply
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
@@ -75,7 +83,7 @@ jobs:
         uses: hashicorp/setup-terraform@v1.3.2
         with:
           terraform_wrapper: false
-          terraform_version: 1.0.11
+          terraform_version: 1.2.0
 
       - name: Add a key to allow access to Infastructure
         run: |
@@ -137,6 +145,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_deploy_region: ${{ env.aws_deploy_region }}
           terraform_state_s3_key_prefix: ${{ inputs.terraform_state_s3_key_prefix }}
+          terraform_state_file_name: ${{ inputs.terraform_state_file_name }}
           build_path: ${{ inputs.build_path }}
           automation_build_url: ${{ inputs.automation_build_url }}
           environment: ${{ inputs.environment }}
@@ -151,6 +160,9 @@ jobs:
           aws_dp_vpc_id: ${{ secrets.AWS_DP_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          copy_liberator_to_pre_prod_lambda_execution_role: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
+          sync_production_to_pre_production_task_role: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
+          pre_production_liberator_data_storage_kms_key_arn: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
           branch: "main"
           terraform_import: ${{ inputs.terraform_infra_import }}
           terraform_remove: ${{ inputs.terraform_infra_remove }}
@@ -161,10 +173,11 @@ jobs:
           terraform_destroy: false
 
       - name: Configure Redshift users, external schemas and user permissions for external schema
-        working-directory: "./terraform"
+        working-directory: "./terraform/etl"
+        if: ${{ inputs.build_path  == './terraform/etl' }}
         run: |
           terraform_outputs=$(terraform output -json)
-          cd ../scripts
+          cd ../../scripts
           source .venv/bin/activate
           AWS_PROFILE=deploy_role python ./configure_redshift.py "$terraform_outputs"
 
