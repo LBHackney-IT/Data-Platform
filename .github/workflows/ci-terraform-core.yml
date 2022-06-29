@@ -22,7 +22,7 @@ jobs:
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
       build_path: "./terraform/core"
       terraform_state_s3_key_prefix: "data-platform"
-      terraform_state_file_name: ${{ inputs.environment }}-terraform.tfstate
+      terraform_state_file_name: "stg-terraform.tfstate"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
