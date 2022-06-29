@@ -4,8 +4,9 @@ on:
     branches-ignore:
       - "main"
     paths-ignore:
-      - 'terraform-networking/**'
-      - 'terraform/**'
+      - 'terraform/etl/**'
+      - 'terraform/networking/**'
+      - 'terraform/core/**'
       - 'scripts/**'
       - 'lambdas/**'
       - 'notebook/**'
@@ -14,12 +15,14 @@ on:
 
 jobs:
   CI:
+    name : "Backend-Setup"
     uses: ./.github/workflows/validate-and-lint-terraform.yml
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
-      build_path: "./terraform-backend-setup"
+      build_path: "./terraform/backend-setup"
       terraform_state_s3_key_prefix: "data-platform-backend-setup"
+      terraform_state_file_name: "stg-terraform.tfstate"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
