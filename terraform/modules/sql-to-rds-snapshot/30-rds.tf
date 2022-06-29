@@ -15,7 +15,7 @@ resource "aws_db_instance" "ingestion_db" {
   username            = "dataplatform"
   password            = random_password.rds_password.result
   skip_final_snapshot = true
-  storage_encrypted   = true
+  //  storage_encrypted   = true
 }
 
 resource "random_password" "rds_password" {
