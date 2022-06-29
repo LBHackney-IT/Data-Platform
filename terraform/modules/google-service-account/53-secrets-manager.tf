@@ -13,9 +13,9 @@ resource "aws_secretsmanager_secret" "sheets_credentials" {
 resource "aws_ssm_parameter" "sheets_credentials" {
   tags = var.tags
 
-  name        = "/${var.identifier_prefix}/secrets_manager/${var.department_name}/sheets-credential/name"
+  name        = "/${var.identifier_prefix}${var.department_name}/secrets_manager/sheets-credential/name"
   type        = "SecureString"
-  description = "The name of the housing sheets secret"
+  description = "The name of the google service account sheets credentials secret"
   value       = aws_secretsmanager_secret.sheets_credentials.name
 }
 
