@@ -92,13 +92,13 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 resource "null_resource" "run_make_install_requirements" {
 
   triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
   }
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
     command     = "make install-requirements"
-    working_dir = "${path.module}/../../lambdas/${local.lambda_name_underscore}/"
+    working_dir = "${path.module}/../../../lambdas/${local.lambda_name_underscore}/"
   }
 }
 
