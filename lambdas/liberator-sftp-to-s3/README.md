@@ -15,7 +15,7 @@ npm install
 
 2. Move to the terraform folder and apply to deploy the lambda.
 ```sh
-cd ../../terraform
+cd ../../terraform/core
 make init
 make apply
 ```
