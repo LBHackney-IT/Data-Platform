@@ -126,14 +126,6 @@ resource "aws_s3_bucket_object" "convertbng" {
   source_hash = filemd5("../../scripts/lib/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
 }
 
-resource "aws_s3_bucket_object" "jars" {
-  bucket      = module.glue_scripts_data_source.bucket_id
-  key         = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
-  acl         = "private"
-  source      = "../../external-lib/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
-  source_hash = filemd5("../../external-lib/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar")
-}
-
 resource "aws_s3_bucket_object" "deeque_jar" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "jars/deequ-1.0.3.jar"

@@ -6,6 +6,14 @@ resource "aws_s3_bucket_object" "helpers" {
   source_hash = filemd5("../../scripts/lib/data_platform_glue_job_helpers-1.0-py3-none-any.whl")
 }
 
+resource "aws_s3_bucket_object" "jars" {
+  bucket      = module.glue_scripts.bucket_id
+  key         = "jars/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
+  acl         = "private"
+  source      = "../../external-lib/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar"
+  source_hash = filemd5("../../external-lib/target/java-lib-1.0-SNAPSHOT-jar-with-dependencies.jar")
+}
+
 resource "aws_s3_bucket_object" "convertbng" {
   bucket      = module.glue_scripts.bucket_id
   key         = "python-modules/convertbng-0.6.36-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
