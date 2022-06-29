@@ -1029,3 +1029,8 @@ module.repairs_fire_alarm_aov[0].module.import_data_from_spreadsheet_job["sheet9
 module.repairs_fire_alarm_aov[0].module.import_data_from_spreadsheet_job["sheet9"].module.spreadsheet_import.aws_glue_job.job
 module.repairs_fire_alarm_aov[0].module.import_data_from_spreadsheet_job["sheet9"].module.spreadsheet_import.aws_glue_trigger.crawler_trigger[0]
 module.repairs_fire_alarm_aov[0].module.import_data_from_spreadsheet_job["sheet9"].module.spreadsheet_import.aws_glue_trigger.job_trigger
+module.mtfh_reshape_to_refined.aws_glue_crawler.crawler[0]
+module.mtfh_reshape_to_refined.aws_glue_job.job
+module.mtfh_reshape_to_refined.aws_glue_trigger.crawler_trigger[0]
+module.mtfh_reshape_to_refined.aws_glue_trigger.job_trigger
+module.mtfh_reshape_to_refined.aws_s3_bucket_object.job_script[0]
