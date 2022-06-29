@@ -171,18 +171,18 @@ runs:
 #        pip install terraform-compliance[faster_parsing]
 #        terraform-compliance -f ../compliance/ -p plan.out
 
-    - name: Terraform Apply
-      id: apply
-      run: |
-        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
-          if [ "${{ inputs.branch }}" == "main" ]; then
-            ${{ github.action_path }}/../.helpers/box.sh "Running Terraform apply"
-            terraform apply -auto-approve -input=false plan.out
-          else
-            echo -e "Not on main branch, so skipping Terraform apply."
-          fi
-          ${{ github.action_path }}/../.helpers/success.sh
-          echo -e "Terraform run completed successfully."
-        fi
-      shell: bash
-      working-directory: "${{ inputs.build_path }}"
+#    - name: Terraform Apply
+#      id: apply
+#      run: |
+#        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
+#          if [ "${{ inputs.branch }}" == "main" ]; then
+#            ${{ github.action_path }}/../.helpers/box.sh "Running Terraform apply"
+#            terraform apply -auto-approve -input=false plan.out
+#          else
+#            echo -e "Not on main branch, so skipping Terraform apply."
+#          fi
+#          ${{ github.action_path }}/../.helpers/success.sh
+#          echo -e "Terraform run completed successfully."
+#        fi
+#      shell: bash
+#      working-directory: "${{ inputs.build_path }}"
