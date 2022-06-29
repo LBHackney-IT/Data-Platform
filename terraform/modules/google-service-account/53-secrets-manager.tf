@@ -10,6 +10,15 @@ resource "aws_secretsmanager_secret" "sheets_credentials" {
   kms_key_id = var.secrets_manager_kms_key_id
 }
 
+resource "aws_ssm_parameter" "sheets_credentials" {
+  tags = var.tags
+
+  name        = "/${var.identifier_prefix}/secrets_manager/${var.department_name}/sheets-credential/name"
+  type        = "SecureString"
+  description = "The name of the housing sheets secret"
+  value       = aws_secretsmanager_secret.sheets_credentials.name
+}
+
 resource "aws_secretsmanager_secret_version" "json_credentials_binary" {
   count = var.is_live_environment && var.secret_type == "binary" ? 1 : 0
 
