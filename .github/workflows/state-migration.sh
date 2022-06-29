@@ -16,7 +16,7 @@ aws configure set aws_secret_access_key "${aws_secret_access_key}"
 #done < ../../.github/workflows/resources-to-import.txt
 #aws s3 cp s3://lbhackney-terraform-state/"${terraform_state_s3_key_prefix}"/"${environment}"-terraform-etl.tfstate .
 
-cd ../core
+#cd ../core
 terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${terraform_state_s3_key_prefix}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${terraform_state_s3_key_prefix}/${environment}-terraform.tfstate"
 while read -r resource_address; do
     terraform state mv -lock=false -state-out=../etl/"${environment}"-terraform-etl.tfstate "$resource_address" "$resource_address";
