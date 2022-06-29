@@ -22,3 +22,5 @@ notebook/aws-config/credentials
 /venv/
 .vscode/
 **/*.log
+**/plan.out
+**/plan.out.json
