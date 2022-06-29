@@ -89,3 +89,9 @@ jobs:
           chmod +x ../../.github/workflows/state-migration.sh && ../../.github/workflows/state-migration.sh ${{ github.event.inputs.environment }} ${{secrets.AWS_ACCESS_KEY_ID}} ${{secrets.AWS_SECRET_ACCESS_KEY}} "data-platform"
         shell: bash
 
+      - name: Archive ETL state file
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.inputs.environment }}-terraform-etl.tfstate
+          path: ./terraform/etl/${{ github.event.inputs.environment }}-terraform-etl.tfstate
+
