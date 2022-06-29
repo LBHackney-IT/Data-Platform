@@ -19,6 +19,9 @@ on:
       terraform_state_s3_key_prefix:
         required: true
         type: string
+      terraform_state_file_name:
+        required: true
+        type: string
     secrets:
       google_project_id:
         required: true
@@ -100,6 +103,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_deploy_region: ${{ env.aws_deploy_region }}
           terraform_state_s3_key_prefix: ${{ inputs.terraform_state_s3_key_prefix }}
+          terraform_state_file_name: ${{ inputs.terraform_state_file_name }}
           build_path: ${{ inputs.build_path }}
           automation_build_url: ${{ inputs.automation_build_url }}
           environment: ${{ inputs.environment }}
@@ -157,7 +161,7 @@ jobs:
           aws configure set region eu-west-2 > /dev/null 2>&1
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} > /dev/null 2>&1
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} > /dev/null 2>&1
-          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ inputs.terraform_state_s3_key_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.tfstate"
+          terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ inputs.terraform_state_s3_key_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.terraform_state_file_name }}"
 
       - name: Run `tflint` on ${{ inputs.build_path }}
         working-directory: ${{ inputs.build_path }}
