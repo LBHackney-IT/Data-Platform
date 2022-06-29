@@ -1,4 +1,4 @@
-name: Deploy Production Terraform ETL
+name: Deploy Prod Terraform ETL
 concurrency: production-deploy
 
 on:
@@ -53,6 +53,7 @@ jobs:
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
       build_path: "./terraform/etl"
       terraform_state_s3_key_prefix: "data-platform"
+      terraform_state_file_name: "prod-terraform-etl.tfstate"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
