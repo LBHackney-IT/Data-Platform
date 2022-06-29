@@ -11,6 +11,7 @@ from icaseworks_api_ingestion.helpers import MockResponse
 
 BASE_URL = "https://hackneyreports.icasework.com/getreport?"
 
+
 class TestCaseWorksApiIngestion(TestCase):
     @patch('icaseworks_api_ingestion.main.requests.get')
     def test_get_icaseworks_report_from(self, get_requests_mock):
@@ -30,7 +31,6 @@ class TestCaseWorksApiIngestion(TestCase):
         self.assertEqual(response, content)
         request_url = f"{BASE_URL}ReportId={report_id}&Format=json&From={from_date}"
         get_requests_mock.assert_called_with(request_url, headers=auth_headers, data=auth_payload)
-
 
     @patch('icaseworks_api_ingestion.main.requests.post')
     def test_get_token(self, post_requests_mock):
@@ -52,7 +52,6 @@ class TestCaseWorksApiIngestion(TestCase):
 
         self.assertEqual("test123", response)
         post_requests_mock.assert_called_with(url, headers=headers, data=data)
-
 
     def test_retrieve_credentials_from_secrets_manager(self):
         self.secrets_boto_session = botocore.session.get_session()
@@ -84,7 +83,6 @@ class TestCaseWorksApiIngestion(TestCase):
         service_response = retrieve_credentials_from_secrets_manager(self.secrets_manager, secret_name)
         self.assertEqual(service_response, response)
 
-
     def test_dictionary_to_string(self):
         expected = '{"iss":"this","aud":"https://url.com","iat":"time"}'
         dictionary = {"iss" : "this", "aud": "https://url.com", "iat": "time"}
@@ -92,7 +90,6 @@ class TestCaseWorksApiIngestion(TestCase):
         actual = dictionary_to_string(dictionary)
 
         self.assertEqual(expected, actual)
-
 
     def test_encode_string(self):
         string = "Hello world"
@@ -102,7 +99,6 @@ class TestCaseWorksApiIngestion(TestCase):
 
         self.assertEqual(expected, actual)
 
-
     def test_remove_illegal_characters(self):
         illegal_char_string = "_123=c/bc+"
 
@@ -110,7 +106,6 @@ class TestCaseWorksApiIngestion(TestCase):
         actual = remove_illegal_characters(illegal_char_string)
 
         self.assertEqual(expected, actual, f"expected: {expected} but got: {actual}")
-
 
     def test_write_dataframe_to_s3(self):
         self.boto_session = botocore.session.get_session()

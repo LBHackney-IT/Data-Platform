@@ -1,4 +1,6 @@
 import sys
+
+
 sys.path.append('./lib/')
 
 import pybase64
@@ -11,15 +13,20 @@ import time
 import boto3
 from dotenv import load_dotenv
 from os import getenv
-from datetime import datetime
+import datetime
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
 
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
     regex_list = [['=', ""], ['\/', "_"], ['+', "-"]]
     for r in regex_list:
         string = re.sub(string=string,
-                       pattern="[{}]".format(r[0]),
-                       repl=r[1])
+                        pattern="[{}]".format(r[0]),
+                        repl=r[1])
     return string
 
 
@@ -31,8 +38,8 @@ def encode_string(string):
     return processed_string
 
 
-def dictionary_to_string(dict):
-    return str(dict).replace("'", '"').replace(" ", "")
+def dictionary_to_string(dictionary):
+    return str(dictionary).replace("'", '"').replace(" ", "")
 
 
 def create_signature(header, payload, secret):
@@ -58,19 +65,18 @@ def get_token(url, encoded_header, encoded_payload, signature, headers):
     return auth_token
 
 
-def get_icaseworks_report_from(report_id,fromdate,auth_headers,auth_payload):
+def get_icaseworks_report_from(report_id, from_date, auth_headers, auth_payload):
     report_url = "https://hackneyreports.icasework.com/getreport?"
-    request_url = f'{report_url}ReportId={report_id}&Format=json&From={fromdate}'
-    print(f'Request url: {request_url}')
+    request_url = f'{report_url}ReportId={report_id}&Format=json&From={from_date}'
+    logger.info(f'Request url: {request_url}')
     response = requests.get(request_url, headers=auth_headers, data=auth_payload)
-    print(f'Status Code: {response.status_code}')
+    logger.info(f'Status Code: {response.status_code}')
     return response.content
 
 
 def write_dataframe_to_s3(s3_client, data, s3_bucket, output_folder, filename):
-    # add partitioning when writing file to s3 year/month/day/date
     filename = re.sub('[^a-zA-Z0-9]+', '-', filename).lower()
-    current_date = datetime.now()
+    current_date = datetime.datetime.now()
     day = str(current_date.day) if current_date.day > 10 else '0' + str(current_date.day)
     month = str(current_date.month) if current_date.month > 10 else '0' + str(current_date.month)
     year = str(current_date.year)
@@ -93,6 +99,7 @@ def lambda_handler(event, lambda_context):
     load_dotenv()
     s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
     output_folder_name = getenv("OUTPUT_FOLDER")
+    glue_job_name = getenv("GLUE_JOB_NAME")
     url = "https://hackney.icasework.com/token"
 
     headers = {
@@ -107,7 +114,7 @@ def lambda_handler(event, lambda_context):
     api_key = api_credentials.get("api_key")
     secret = api_credentials.get("secret")
 
-    header_object = {"alg":"HS256","typ":"JWT"}
+    header_object = {"alg": "HS256", "typ": "JWT"}
 
     # Create Header
     header_object = dictionary_to_string(header_object)
@@ -117,9 +124,9 @@ def lambda_handler(event, lambda_context):
     current_unix_time = int(time.time())
     str_time = str(current_unix_time)
     payload_object = {
-        "iss" : api_key,
-        "aud" : url,
-        "iat" : str_time
+        "iss": api_key,
+        "aud": url,
+        "iat": str_time
     }
 
     payload_object = dictionary_to_string(payload_object)
@@ -130,7 +137,8 @@ def lambda_handler(event, lambda_context):
     signature = create_signature(header, payload, secret)
 
     # Get token from response
-    auth_token = get_token(url=url, encoded_header=header, encoded_payload=payload, signature=signature, headers=headers)
+    auth_token = get_token(url=url, encoded_header=header, encoded_payload=payload, signature=signature,
+                           headers=headers)
 
     # Create auth header for API Calls and auth payload
     authorization = f'Bearer {auth_token}'
@@ -149,19 +157,25 @@ def lambda_handler(event, lambda_context):
         # {"name":"Corrective Actions", "id":122443},
         # {"name":"Compensation", "id":122442},
         # {"name":"Case Contacts", "id":122542},
-        {"name":"Cases received", "id":122109}
+        {"name": "Cases received", "id": 122109}
     ]
 
-    date_to_track_from = "2019-01-01" # today minus 1
+    today = datetime.datetime.utcnow().date()
+    # Take only yesterday's data
+    date_to_track_from = today - datetime.timedelta(days=1)
+    logger.info(f"Date to track from: {date_to_track_from}")
+
     s3_client = boto3.client('s3')
 
     for report_details in report_tables:
-        print(f'Pulling report for {report_details["name"]}')
+        logger.info(f'Pulling report for {report_details["name"]}')
         case_id_report_id = report_details["id"]
-        case_id_list = get_icaseworks_report_from(case_id_report_id,date_to_track_from,auth_headers,auth_payload)
+        case_id_list = get_icaseworks_report_from(case_id_report_id, date_to_track_from, auth_headers, auth_payload)
         report_details["data"] = case_id_list
         write_dataframe_to_s3(s3_client, report_details["data"], s3_bucket, output_folder_name, report_details["name"])
-        print(f'Finished writing report for {report_details["name"]} to S3')
+        logger.info(f'Finished writing report for {report_details["name"]} to S3')
 
-if __name__ == '__main__':
-    lambda_handler('event', 'lambda_context')
+    # Trigger glue job to copy from landing to raw and convert to parquet
+    glue_client = boto3.client('glue')
+    job_run_id = glue_client.start_job_run(JobName=glue_job_name)
+    logger.info(f"Glue job run ID: {job_run_id}")

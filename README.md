@@ -13,21 +13,32 @@ The Data Dictionary & Playbook can be found on the [Document Site](http://playbo
 
 We use Architecture Decision Records (ADRs) to document architecture decisions that we make. They can be found in the
 [Data Platform - Playbook](http://playbook.hackney.gov.uk/)
+
+## Notebooks
+
+We use [Jupyter Notebooks](https://jupyter.org/) to prototype glue jobs.
+These can be hosted either [locally](https://github.com/LBHackney-IT/Data-Platform-Notebooks#running-jupyter-locally-using-docker) or in [AWS sagemaker](https://lbhackney-it.github.io/Data-Platform-Playbook/playbook/transforming-data/using-aws-glue/using-sagemaker).
+The notebooks are stored in the [Data Platform Notebooks](https://github.com/LBHackney-IT/Data-Platform-Notebooks) GitHub repository.
+
 ## Terraform Deployment
 
 The Terraform will be deployed, using GitHub Actions, on push to main / when a Pull Request is merged into main
 
-#### /terraform
+#### /terraform/core
 
-The terraform directory contains the majority of the infrastructure and at the time of writing has one Github action to deploy to staging and one to deploy to production.
+The terraform/core directory contains the majority of the infrastructure and at the time of writing has one Github action to deploy to staging and one to deploy to production.
 
-#### /terraform-networking
+#### /terraform/etl
 
-The terraform-networking directory contains the networking aspect of the data platform (see [`Networking`](#Networking)) and at the time of writing has one Github action to deploy to staging and one to deploy to production.
+The terraform/etl directory contains the ETL and Glue related infrastructure and at the time of writing has one Github action to deploy to staging and one to deploy to production.
 
-#### /terraform-backend-setup
+#### /terraform/networking
 
-The terraform-backend-setup directory is just for Dev’s bucket deployment, so it does not need a Github action. The terraform state for this area is maintained in the repo and we run it locally.
+The terraform/networking directory contains the networking aspect of the data platform (see [`Networking`](#Networking)) and at the time of writing has one Github action to deploy to staging and one to deploy to production.
+
+#### /terraform/backend-setup
+
+The terraform/backend-setup directory is just for Dev’s bucket deployment, so it does not need a Github action. The terraform state for this area is maintained in the repo and we run it locally.
 
 ## Terraform Development
 
@@ -35,7 +46,7 @@ The terraform-backend-setup directory is just for Dev’s bucket deployment, so 
 
 #### Set up
 
-1. Create a env.tfvars file for local deployment, this can be done by running `cp config/terraform/env.tfvars.example config/terraform/env.tfvars` from the project root directory.
+1. Create a env.tfvars file for local deployment, this can be done by running `cp terraform/config/env.tfvars.example terraform/config/env.tfvars` from the project root directory.
 2. Update the following required variables in the newly created file:
 
 - `environment` - Environment you're working in (this is normally `dev`)
@@ -106,14 +117,16 @@ Generate Credentials for Vault
 $ aws-vault exec hackney-dataplatform-development -- aws sts get-caller-identity
 ```
 
-Ensure that GNU Make is installed on your computer. The full commands for the below instructions can be found in `/terraform/Makefile`
+Ensure that GNU Make is installed on your computer. The full commands for the below instructions can be found in `/terraform/core/Makefile` & `/terraform/etl/Makefile`
 
 Initialise the Project
 
 - Before you run, ensure:
   - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
   - You are in the project's `terraform` directory 
-  - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform directory
+  - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform/core & terraform/etl directories
+    
+- Please complete the below make commands in both the terraform/core & terraform/etl directories
 
 ```
 $ make init
@@ -138,10 +151,15 @@ $ WORKSPACE={developer} make workspace-select
 - The full path of where the file is saved will be displayed, for example `/Users/*/.config/gcloud/application_default_credentials.json`
   - Copy this file to the root of the project by running the following command in the root of the project `cp /Users/*/.config/gcloud/application_default_credentials.json ./google_service_account_creds.json`
 
-5. Next run `make init` in the `/terraform` directory.
-   This will initialize terraform using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
+5. Next run `make init` in the `/terraform/core` directory.
+   This will initialize terraform/core using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
    - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
-   - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform directory
+   - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform/core directory
+
+6. Next run `make init` in the `/terraform/etl` directory.
+   This will initialize terraform/etl using the AWS profile `hackney-dataplatform-development`. Before you run, ensure:
+    - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
+    - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform/etl directory
 
 #### Terraform commands
 

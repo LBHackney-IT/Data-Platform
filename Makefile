@@ -7,34 +7,37 @@ format:
 	terraform fmt -recursive
 
 lint:
-	$(MAKE) -C terraform lint-init lint
-	$(MAKE) -C terraform-networking lint-init lint
-	$(MAKE) -C terraform-backend-setup lint-init lint
+	$(MAKE) -C terraform/core lint-init lint
+	$(MAKE) -C terraform/etl lint-init lint
+	$(MAKE) -C terraform/networking lint-init lint
+	$(MAKE) -C terraform/backend-setup lint-init lint
 
 init:
 	cd external-lib && make all
 	cd scripts && make all
-	cd terraform && make init
-	cd terraform-networking && make init
-	cd terraform-backend-setup && make init
+	cd terraform/core && make init
+	cd terraform/etl && make init
+	cd terraform/networking && make init
+	cd terraform/backend-setup && make init
 	git config core.hooksPath .github/hooks
 
 apply:
 	cd scripts && make all
 	cd external-lib && make all
-	cd terraform && make apply
+	cd terraform/core && make apply
 
 plan:
 	cd scripts && make all
 	cd external-lib && make all
-	cd terraform && make plan
+	cd terraform/core && make plan
 
 validate:
 	cd scripts && make all
 	cd external-lib && make all
-	$(MAKE) -C terraform validate
-	$(MAKE) -C terraform-networking validate
-	$(MAKE) -C terraform-backend-setup validate
+	$(MAKE) -C terraform/core validate
+	$(MAKE) -C terraform/etl validate
+	$(MAKE) -C terraform/networking validate
+	$(MAKE) -C terraform/backend-setup validate
 
 start-qlik-ssm-session:
 	@echo "Environment (development,staging,production): "; read ENVIRONMENT; \
