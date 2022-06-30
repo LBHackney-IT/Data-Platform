@@ -104,6 +104,7 @@ runs:
       working-directory: "${{ inputs.build_path }}"
 
     - name: Terraform Compliance
+      id: terraform-compliance
       working-directory: "${{ inputs.build_path }}"
       uses: terraform-compliance/github_action@main
       with:
