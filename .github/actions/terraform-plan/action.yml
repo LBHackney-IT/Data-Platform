@@ -72,6 +72,8 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: terraform-compliance/github_action@main
+
     - name: Setup build environment
       id: setup
       run: |
@@ -106,7 +108,5 @@ runs:
     - name: Terraform Compliance
       id: terraform-compliance
       working-directory: "${{ inputs.build_path }}"
-      uses: terraform-compliance/github_action@main
-      with:
-        plan: plan.out.json
-        features: ../compliance/
+      shell: bash
+      run: terraform-compliance -p plan.out.json -f ../compliance/
