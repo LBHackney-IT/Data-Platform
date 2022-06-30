@@ -14,7 +14,7 @@ module "mtfh_reshape_to_refined" {
     "--source_catalog_database" = module.department_housing_data_source.raw_zone_catalog_database_name
   }
   script_name          = "housing_mtfh_reshape_to_refined"
-  triggered_by_crawler = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"
+  triggered_by_crawler = module.copy_mtfh_dynamo_db_tables_to_raw_zone.crawler_name
 
   crawler_details = {
     database_name      = module.department_housing_data_source.refined_zone_catalog_database_name
