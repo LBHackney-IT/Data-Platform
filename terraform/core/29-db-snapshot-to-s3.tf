@@ -25,8 +25,4 @@ module "db_snapshot_to_s3" {
   zone_bucket_id                 = module.raw_zone.bucket_id
   service_area                   = "unrestricted"
   rds_instance_ids               = var.rds_instance_ids
-
-  providers = {
-    aws = aws.aws_api_account
-  }
 }
