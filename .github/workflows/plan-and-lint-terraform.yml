@@ -66,6 +66,8 @@ jobs:
     name: Terraform Plan
     runs-on: ubuntu-latest
     steps:
+      - uses: terraform-compliance/github_action@main
+
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -123,7 +125,6 @@ jobs:
           pre_production_liberator_data_storage_kms_key_arn: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
 
       - name: Terraform Compliance
-        uses: terraform-compliance/github_action@main
         id: terraform-compliance
         working-directory: "${{ inputs.build_path }}"
         shell: bash
