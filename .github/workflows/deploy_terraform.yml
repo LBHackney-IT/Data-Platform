@@ -182,13 +182,16 @@ jobs:
           AWS_PROFILE=deploy_role python ./configure_redshift.py "$terraform_outputs"
 
       - name: Build and Deploy SQL to Parquet Image to ECR
+        if: ${{ inputs.build_path  == './terraform/core' }}
         run: |
           AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
 
       - name: Build and Deploy Production to Pre-Production sync Image to ECR
+        if: ${{ inputs.build_path  == './terraform/core' }}
         run: |
           ENVIRONMENT=${{ inputs.environment }} AWS_PROFILE=deploy_role ./docker/production-to-pre-production/deploy.sh
 
       - name: Generate Self Signed certificate
+        if: ${{ inputs.build_path  == './terraform/core' }}
         run: |
           AWS_DEFAULT_REGION=eu-west-2 AWS_PROFILE=deploy_role ./.github/generate-ssl-keys.sh
