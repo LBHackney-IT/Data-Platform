@@ -1,6 +1,5 @@
 locals {
-  number_of_workers_for_mtfh_ingestion   = 12
-  copy_mtfh_dynamo_db_tables_to_raw_zone = replace(lower("${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"), "/[^a-zA-Z0-9]+/", "-")
+  number_of_workers_for_mtfh_ingestion = 12
 }
 
 data "aws_ssm_parameter" "role_arn_to_access_housing_tables" {
@@ -48,7 +47,7 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
 
   source = "../modules/aws-glue-job"
 
-  job_name                   = local.copy_mtfh_dynamo_db_tables_to_raw_zone
+  job_name                   = replace(lower("${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"), "/[^a-zA-Z0-9]+/", "-")
   department                 = module.department_housing
   script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
@@ -83,7 +82,7 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
 
 resource "aws_ssm_parameter" "copy_mtfh_dynamo_db_tables_to_raw_zone_crawler_name" {
   tags  = module.tags.values
-  name  = "${local.copy_mtfh_dynamo_db_tables_to_raw_zone}-crawler"
+  name  = "/${local.short_identifier_prefix}/glue_crawler/housing/copy_mtfh_dynamo_db_tables_to_raw_zone_crawler_name"
   type  = "String"
   value = module.copy_mtfh_dynamo_db_tables_to_raw_zone.crawler_name
 }
