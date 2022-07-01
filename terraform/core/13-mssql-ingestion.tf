@@ -168,5 +168,6 @@ module "copy_academy_revenues_to_raw_zone" {
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
     "--job-bookmark-option"              = "job-bookmark-enable"
+    "--write-shuffle-files-to-s3"        = "true"
   }
 }
