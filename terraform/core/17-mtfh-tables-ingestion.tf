@@ -82,6 +82,7 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
 }
 
 resource "aws_ssm_parameter" "copy_mtfh_dynamo_db_tables_to_raw_zone_crawler_name" {
+  tags  = module.tags.values
   name  = "${local.copy_mtfh_dynamo_db_tables_to_raw_zone}-crawler"
   type  = "String"
   value = module.copy_mtfh_dynamo_db_tables_to_raw_zone.crawler_name
