@@ -1,5 +1,5 @@
 data "aws_ssm_parameter" "copy_mtfh_dynamo_db_tables_to_raw_zone_crawler" {
-  name = "/${local.short_identifier_prefix}/glue_crawler/housing/copy_mtfh_dynamo_db_tables_to_raw_zone_crawler_name"
+  name = "/${local.identifier_prefix}/glue_crawler/housing/copy_mtfh_dynamo_db_tables_to_raw_zone_crawler_name"
 }
 
 module "mtfh_reshape_to_refined" {
