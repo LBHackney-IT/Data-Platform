@@ -65,8 +65,8 @@ module "{module_name}" {{
   source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${{local.short_identifier_prefix}}{job_name}"
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "{script_name}"
   triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name
@@ -81,7 +81,7 @@ module "{module_name}" {{
 
 """.format(module_name=script_name_without_extension, job_name=script_name_without_extension, script_name=script_name_without_extension, job_description=job_description.strip())
 
-  with open(f"terraform/{terraform_file_to_write_to}", "a") as f:
+  with open(f"terraform/etl/{terraform_file_to_write_to}", "a") as f:
     f.write(module_block)
 
 def get_glue_job_script():

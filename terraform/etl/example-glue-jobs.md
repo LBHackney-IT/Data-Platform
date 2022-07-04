@@ -67,8 +67,8 @@ module "Address_cleaning" {
     catalog_database                   = module.department_housing_repairs.raw_zone_catalog_database_name
     refined_zone_catalog_database_name = module.department_housing_repairs.refined_zone_catalog_database_name
     dataset_name                       = "lift-breakdown-ela"
-    address_cleaning_script_key        = aws_s3_bucket_object.address_cleaning.key
-    address_matching_script_key        = aws_s3_bucket_object.levenshtein_address_matching.key
+    address_cleaning_script_key        = aws_s3_object.address_cleaning.key
+    address_matching_script_key        = aws_s3_object.levenshtein_address_matching.key
     addresses_api_data_catalog         = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
     trusted_zone_bucket_id             = module.trusted_zone.bucket_id
     match_to_property_shell            = "force"

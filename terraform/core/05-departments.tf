@@ -70,8 +70,8 @@ module "department_parking" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-parking@hackney.gov.uk"
   notebook_instance = {
     github_repository = aws_sagemaker_code_repository.data_platform.code_repository_name
-    extra_python_libs = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.pydeequ.key}"
-    extra_jars        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.jars.key}"
+    extra_python_libs = "s3://${module.glue_scripts.bucket_id}/${aws_s3_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_object.pydeequ.key}"
+    extra_jars        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_object.jars.key}"
   }
 }
 
@@ -258,8 +258,8 @@ module "department_sandbox" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-sandbox@hackney.gov.uk"
   notebook_instance = {
     github_repository = aws_sagemaker_code_repository.data_platform.code_repository_name
-    extra_python_libs = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.pydeequ.key}"
-    extra_jars        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.jars.key}"
+    extra_python_libs = "s3://${module.glue_scripts.bucket_id}/${aws_s3_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_object.pydeequ.key}"
+    extra_jars        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_object.jars.key}"
   }
 }
 
