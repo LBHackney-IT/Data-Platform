@@ -29,10 +29,6 @@ resource "aws_sagemaker_notebook_instance" "nb" {
   platform_identifier     = "notebook-al1-v1"
   kms_key_id              = aws_kms_key.kms_key.key_id
 
-  lifecycle {
-    prevent_destroy = var.is_live_environment ? true : false
-  }
-
   tags = merge({
     Name                  = "vehicle"
     aws-glue-dev-endpoint = local.glue_dev_endpoint_config.endpoint_name
