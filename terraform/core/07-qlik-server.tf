@@ -10,4 +10,5 @@ module "qlik_server" {
   identifier_prefix       = local.identifier_prefix
   short_identifier_prefix = local.short_identifier_prefix
   environment             = var.environment
+  is_live_environment     = local.is_live_environment
 }

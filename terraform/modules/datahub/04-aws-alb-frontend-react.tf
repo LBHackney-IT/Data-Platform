@@ -51,7 +51,7 @@ resource "aws_alb" "datahub_frontend_react" {
   security_groups    = [aws_security_group.datahub_frontend_react.id]
   subnets            = var.vpc_subnet_ids
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = var.is_live_environment ? true : false
   }
 }
 

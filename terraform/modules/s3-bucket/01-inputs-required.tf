@@ -27,3 +27,8 @@ variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string
 }
+
+variable "prevent_destroy" {
+  description = "Prevent accidental destroy of S3 bucket"
+  type        = boolean
+}

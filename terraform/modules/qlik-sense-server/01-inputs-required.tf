@@ -37,3 +37,8 @@ variable "environment" {
   description = "Enviroment e.g. dev, stg, prod, mgmt."
   type        = string
 }
+
+variable "is_live_environment" {
+  description = "A flag indicting if we are running in a live environment for setting up automation"
+  type        = bool
+}
