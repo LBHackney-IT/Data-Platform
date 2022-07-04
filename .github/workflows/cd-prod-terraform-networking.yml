@@ -1,5 +1,5 @@
 name: Deploy Prod Terraform Networking
-concurrency: production-deploy
+concurrency: production-deploy-networking
 
 on:
   release:

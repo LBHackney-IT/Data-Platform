@@ -1,14 +1,14 @@
 name: Deploy STG Terraform ETL
-concurrency: staging-deploy
+concurrency: staging-deploy-etl
 
 on:
-#  push:
-#    branches:
-#      - main
-#    paths-ignore:
-#      - 'terraform/core/**'
-#      - 'terraform/networking/**'
-#      - 'terraform/backend-setup/**'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'terraform/core/**'
+      - 'terraform/networking/**'
+      - 'terraform/backend-setup/**'
   workflow_dispatch:
     inputs:
       terraform_infra_import:
