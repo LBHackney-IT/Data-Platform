@@ -6,6 +6,7 @@ module "lambda_artefact_storage_for_api_account" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Lambda Artefact Storage"
   bucket_identifier = "api-lambda-artefact-storage"
+  prevent_destroy   = false
 
   providers = {
     aws = aws.aws_api_account

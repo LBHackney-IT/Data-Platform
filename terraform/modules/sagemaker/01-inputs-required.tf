@@ -22,3 +22,8 @@ variable "github_repository" {
   description = "Name of the sagemaker code repository to use as the default repository"
   type        = string
 }
+
+variable "is_live_environment" {
+  description = "A flag indicting if we are running in a live environment for setting up automation"
+  type        = bool
+}
