@@ -1,6 +1,6 @@
 module "etl_ctax_live_properties" {
   source                         = "../modules/aws-glue-job"
-  department                     = module.department_revenues
+  department                     = module.department_revenues_data_source
   job_name                       = "${local.short_identifier_prefix}etl_ctax_live_properties"
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
@@ -10,7 +10,7 @@ module "etl_ctax_live_properties" {
   glue_job_worker_type           = "G.2X"
   number_of_workers_for_glue_job = 10
   glue_job_timeout               = 1440
-  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
@@ -19,7 +19,7 @@ module "etl_ctax_live_properties" {
 
 module "etl_zerobase_ctax_live_properties" {
   source                         = "../modules/aws-glue-job"
-  department                     = module.department_revenues
+  department                     = module.department_revenues_data_source
   job_name                       = "${local.short_identifier_prefix}etl_zerobase_ctax_live_properties"
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
@@ -29,7 +29,7 @@ module "etl_zerobase_ctax_live_properties" {
   glue_job_worker_type           = "G.2X"
   number_of_workers_for_glue_job = 10
   glue_job_timeout               = 1440
-  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment

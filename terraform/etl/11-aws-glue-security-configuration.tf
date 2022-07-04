@@ -11,7 +11,7 @@ resource "aws_glue_security_configuration" "glue_job_security_configuration_to_r
     }
 
     s3_encryption {
-      kms_key_arn        = module.raw_zone.kms_key_arn
+      kms_key_arn        = module.raw_zone_data_source.kms_key_arn
       s3_encryption_mode = "SSE-KMS"
     }
   }
@@ -30,7 +30,7 @@ resource "aws_glue_security_configuration" "glue_job_security_configuration_to_r
     }
 
     s3_encryption {
-      kms_key_arn        = module.refined_zone.kms_key_arn
+      kms_key_arn        = module.refined_zone_data_source.kms_key_arn
       s3_encryption_mode = "SSE-KMS"
     }
   }
@@ -49,7 +49,7 @@ resource "aws_glue_security_configuration" "glue_job_security_configuration_to_t
     }
 
     s3_encryption {
-      kms_key_arn        = module.trusted_zone.kms_key_arn
+      kms_key_arn        = module.trusted_zone_data_source.kms_key_arn
       s3_encryption_mode = "SSE-KMS"
     }
   }
