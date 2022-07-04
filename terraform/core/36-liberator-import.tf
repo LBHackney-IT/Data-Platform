@@ -8,7 +8,6 @@ module "liberator_data_storage" {
   bucket_name                    = "Liberator Data Storage"
   bucket_identifier              = "liberator-data-storage"
   role_arns_to_share_access_with = var.environment == "stg" && var.copy_liberator_to_pre_prod_lambda_execution_role != null ? [var.copy_liberator_to_pre_prod_lambda_execution_role] : []
-  prevent_destroy                = local.is_live_environment ? true : false
 }
 
 module "liberator_dump_to_rds_snapshot" {

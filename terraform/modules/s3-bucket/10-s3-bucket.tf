@@ -87,10 +87,6 @@ resource "aws_s3_bucket" "bucket" {
   versioning {
     enabled = true
   }
-
-  lifecycle {
-    prevent_destroy = var.prevent_destroy
-  }
 }
 
 resource "aws_s3_bucket_public_access_block" "block_public_access" {

@@ -82,7 +82,7 @@ resource "aws_alb" "qlik_sense" {
   idle_timeout       = 4000
 
   lifecycle {
-    prevent_destroy = var.is_live_environment ? true : false
+    prevent_destroy = true
   }
 }
 

@@ -6,7 +6,6 @@ module "landing_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Landing Zone"
   bucket_identifier = "landing-zone"
-  prevent_destroy   = local.is_live_environment ? true : false
 }
 
 module "raw_zone" {
@@ -21,7 +20,6 @@ module "raw_zone" {
   role_arns_to_share_access_with = concat(
     local.is_production_environment ? [module.db_snapshot_to_s3[0].s3_to_s3_copier_lambda_role_arn] : [],
   [var.sync_production_to_pre_production_task_role])
-  prevent_destroy = local.is_live_environment ? true : false
 }
 
 module "refined_zone" {
@@ -35,7 +33,6 @@ module "refined_zone" {
   role_arns_to_share_access_with = [
     var.sync_production_to_pre_production_task_role
   ]
-  prevent_destroy = local.is_live_environment ? true : false
 }
 
 module "trusted_zone" {
@@ -49,7 +46,6 @@ module "trusted_zone" {
   role_arns_to_share_access_with = [
     var.sync_production_to_pre_production_task_role
   ]
-  prevent_destroy = local.is_live_environment ? true : false
 }
 
 module "glue_scripts" {
@@ -60,7 +56,6 @@ module "glue_scripts" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Glue Scripts"
   bucket_identifier = "glue-scripts"
-  prevent_destroy   = false
 }
 
 module "glue_temp_storage" {
@@ -71,7 +66,6 @@ module "glue_temp_storage" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Glue Temp Storage"
   bucket_identifier = "glue-temp-storage"
-  prevent_destroy   = false
 }
 
 module "athena_storage" {
@@ -82,7 +76,6 @@ module "athena_storage" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Athena Storage"
   bucket_identifier = "athena-storage"
-  prevent_destroy   = false
 }
 
 module "lambda_artefact_storage" {
@@ -93,7 +86,6 @@ module "lambda_artefact_storage" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Lambda Artefact Storage"
   bucket_identifier = "dp-lambda-artefact-storage"
-  prevent_destroy   = false
 }
 
 module "spark_ui_output_storage" {
@@ -104,7 +96,6 @@ module "spark_ui_output_storage" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Spark UI Storage"
   bucket_identifier = "spark-ui-output-storage"
-  prevent_destroy   = false
 }
 
 # This is a public bucket, used by the playbook documentation,

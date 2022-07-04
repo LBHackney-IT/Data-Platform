@@ -6,7 +6,6 @@ module "noiseworks_data_storage" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Noiseworks Data Storage"
   bucket_identifier = "noiseworks-data-storage"
-  prevent_destroy   = local.is_live_environment ? true : false
 }
 
 # Noiseworks User
