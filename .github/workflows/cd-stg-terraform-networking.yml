@@ -1,13 +1,14 @@
-name: Deploy Staging Terraform Networking
-concurrency: staging-deploy
+name: Deploy STG Terraform Networking
+concurrency: staging-deploy-networking
 
 on:
   push:
     branches:
       - main
     paths-ignore:
-      - 'terraform/**'
-      - 'terraform-backend-setup/**'
+      - 'terraform/core/**'
+      - 'terraform/etl/**'
+      - 'terraform/backend-setup/**'
       - 'scripts/**'
       - 'lambdas/**'
       - 'notebook/**'
@@ -28,8 +29,9 @@ jobs:
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
-      build_path: "./terraform-networking"
+      build_path: "./terraform/networking"
       terraform_state_s3_key_prefix: "data-platform-network"
+      terraform_state_file_name: "stg-terraform.tfstate"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
@@ -57,8 +59,9 @@ jobs:
       terraform_infra_remove: ${{ github.event.inputs.terraform_infra_remove }}
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
-      build_path: "./terraform-networking"
+      build_path: "./terraform/networking"
       terraform_state_s3_key_prefix: "data-platform-network"
+      terraform_state_file_name: "stg-terraform.tfstate"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
