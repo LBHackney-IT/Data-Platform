@@ -1,12 +1,12 @@
 resource "aws_glue_crawler" "trusted_zone_housing_repairs_crawler" {
-  tags = module.department_housing_repairs_data_source.tags
+  tags = module.department_housing_repairs.tags
 
-  database_name = module.department_housing_repairs_data_source.trusted_zone_catalog_database_name
+  database_name = module.department_housing_repairs.trusted_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}trusted-zone-housing-repairs"
   role          = data.aws_iam_role.glue_role.arn
 
   s3_target {
-    path       = "s3://${module.trusted_zone_data_source.bucket_id}/housing-repairs/repairs/"
+    path       = "s3://${module.trusted_zone.bucket_id}/housing-repairs/repairs/"
     exclusions = local.glue_crawler_excluded_blobs
   }
 
@@ -19,7 +19,7 @@ resource "aws_glue_crawler" "trusted_zone_housing_repairs_crawler" {
 }
 
 resource "aws_glue_trigger" "housing_repairs_trusted_crawler" {
-  tags = module.department_housing_repairs_data_source.tags
+  tags = module.department_housing_repairs.tags
 
   name     = "${local.short_identifier_prefix}housing-repairs-repairs-trusted-crawler-trigger"
   schedule = "cron(0 7,8,9,10 ? * MON-FRI *)"

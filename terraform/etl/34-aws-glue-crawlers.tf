@@ -18,7 +18,7 @@ resource "aws_glue_crawler" "raw_zone_unrestricted_address_api_crawler" {
   table_prefix  = "unrestricted_address_api_"
 
   s3_target {
-    path       = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/addresses_api/"
+    path       = "s3://${module.raw_zone.bucket_id}/unrestricted/addresses_api/"
     exclusions = local.glue_crawler_excluded_blobs
   }
 
@@ -46,12 +46,12 @@ resource "aws_glue_trigger" "addresses_api_crawler_trigger" {
 resource "aws_glue_crawler" "refined_zone_sandbox_crawler" {
   tags = module.tags.values
 
-  database_name = module.department_sandbox_data_source.refined_zone_catalog_database_name
+  database_name = module.department_sandbox.refined_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}sandbox-refined-zone"
   role          = data.aws_iam_role.glue_role.arn
 
   s3_target {
-    path       = "s3://${module.refined_zone_data_source.bucket_id}/sandbox/"
+    path       = "s3://${module.refined_zone.bucket_id}/sandbox/"
     exclusions = local.glue_crawler_excluded_blobs
   }
 

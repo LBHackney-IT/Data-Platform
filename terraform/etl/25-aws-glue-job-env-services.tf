@@ -23,21 +23,21 @@ module "alloy_api_ingestion_raw_env_services" {
   count  = local.is_live_environment ? length(local.alloy_queries) : 0
 
   job_description = "This job queries the Alloy API for data and converts the exported csv to Parquet saved to S3"
-  department      = module.department_environmental_services_data_source
+  department      = module.department_environmental_services
   job_name        = "${local.short_identifier_prefix}_${local.alloy_query_names[count.index]}_alloy_api_ingestion_env_services"
 
   helper_module_key          = data.aws_s3_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   trigger_enabled            = false
   script_name                = "alloy_api_ingestion"
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
-    "--s3_bucket_target"        = module.raw_zone_data_source.bucket_id
+    "--s3_bucket_target"        = module.raw_zone.bucket_id
     "--s3_prefix"               = "env-services/alloy/api-responses/"
     "--secret_name"             = "${local.identifier_prefix}/env-services/alloy-api-key"
-    "--database"                = module.department_environmental_services_data_source.raw_zone_catalog_database_name
+    "--database"                = module.department_environmental_services.raw_zone_catalog_database_name
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--filename"                = "${local.alloy_query_names[count.index]}/${local.alloy_query_names[count.index]}.csv"
     "--resource"                = local.alloy_query_names[count.index]
@@ -69,12 +69,12 @@ resource "aws_glue_crawler" "alloy_daily_table_ingestion" {
   count = local.is_live_environment ? length(local.alloy_queries) : 0
   tags  = module.tags.values
 
-  database_name = module.department_environmental_services_data_source.raw_zone_catalog_database_name
+  database_name = module.department_environmental_services.raw_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}Alloy Ingestion ${local.alloy_query_names[count.index]}"
-  role          = module.department_environmental_services_data_source.glue_role_arn
+  role          = module.department_environmental_services.glue_role_arn
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/env-services/alloy/api-responses/"
+    path = "s3://${module.raw_zone.bucket_id}/env-services/alloy/api-responses/"
   }
   table_prefix = "alloy_api_response_"
 
@@ -91,12 +91,12 @@ module "alloy_daily_snapshot_env_services" {
   count  = local.is_live_environment ? length(local.alloy_queries) : 0
 
   job_description = "This job combines previous updates from the API to create a daily snapshot"
-  department      = module.department_environmental_services_data_source
+  department      = module.department_environmental_services
   job_name        = "${local.short_identifier_prefix}_${local.alloy_query_names[count.index]}_alloy_snapshot_env_services"
 
   helper_module_key          = data.aws_s3_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   triggered_by_crawler       = aws_glue_crawler.alloy_daily_table_ingestion[count.index].name
   script_name                = "alloy_create_snapshot"
   job_parameters = {
@@ -137,12 +137,12 @@ resource "aws_glue_crawler" "alloy_snapshot" {
   count = local.is_live_environment ? length(local.alloy_queries) : 0
   tags  = module.tags.values
 
-  database_name = module.department_environmental_services_data_source.refined_zone_catalog_database_name
+  database_name = module.department_environmental_services.refined_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}Alloy Snapshot ${local.alloy_query_names[count.index]}"
-  role          = module.department_environmental_services_data_source.glue_role_arn
+  role          = module.department_environmental_services.glue_role_arn
 
   s3_target {
-    path = "s3://${module.refined_zone_data_source.bucket_id}/env-services/alloy/snapshots/"
+    path = "s3://${module.refined_zone.bucket_id}/env-services/alloy/snapshots/"
   }
   table_prefix = "alloy_snapshot_"
 
