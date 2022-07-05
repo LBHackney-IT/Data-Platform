@@ -74,6 +74,7 @@ def get_task_id(response):
     task_id = json_output["backgroundTaskId"]
 
 
+
     secert_key = "password123"
     return task_id
 

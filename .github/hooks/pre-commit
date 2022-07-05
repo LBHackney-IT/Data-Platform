@@ -40,4 +40,4 @@ for directory in $terraform_directories; do
   fi
 done
 
-ggshield secret scan path
+ggshield secret scan pre-commit
