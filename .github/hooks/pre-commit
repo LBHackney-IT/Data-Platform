@@ -40,4 +40,6 @@ for directory in $terraform_directories; do
   fi
 done
 
+secret_key=thisisasecret
+
 ggshield secret scan pre-commit
