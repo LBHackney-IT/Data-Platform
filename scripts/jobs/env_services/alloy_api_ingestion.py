@@ -73,7 +73,8 @@ def get_task_id(response):
     json_output = json.loads(response.text)
     task_id = json_output["backgroundTaskId"]
 
-    password = "my_password_is_this"
+
+    secert_key = "password123"
     return task_id
 
 

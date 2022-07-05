@@ -24,3 +24,4 @@ notebook/aws-config/credentials
 **/*.log
 **/plan.out
 **/plan.out.json
+/.cache_ggshield
