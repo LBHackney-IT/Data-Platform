@@ -40,6 +40,17 @@ data "aws_iam_policy_document" "s3_to_s3_copier" {
       aws_sqs_queue.s3_to_s3_copier.arn
     ]
   }
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_kms_key.s3_to_s3_copier_kms_key.arn,
+    ]
+  }
 }
 
 resource "aws_sqs_queue_policy" "s3_copier_to_s3" {
@@ -51,15 +62,7 @@ resource "aws_sqs_queue" "s3_to_s3_copier_deadletter" {
   tags = var.tags
 
   name              = lower("${var.identifier_prefix}-s3-to-s3-copier-deadletter")
-  kms_master_key_id = aws_kms_key.s3_to_s3_copier_deadletter_kms_key.key_id
-}
-
-resource "aws_kms_key" "s3_to_s3_copier_deadletter_kms_key" {
-  tags = var.tags
-
-  description             = "${var.project} - ${var.environment} - s3-to-s3-copier-deadletter KMS Key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
+  kms_master_key_id = aws_kms_key.s3_to_s3_copier_kms_key.key_id
 }
 
 resource "aws_lambda_event_source_mapping" "s3_to_s3_copier_mapping" {
