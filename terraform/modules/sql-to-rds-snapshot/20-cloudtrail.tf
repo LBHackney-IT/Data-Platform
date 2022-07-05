@@ -68,25 +68,9 @@ data "aws_iam_policy_document" "assume_policy" {
   }
 }
 
-resource "aws_kms_key" "key" {
-  tags = var.tags
-
-  description             = "${var.project} ${var.environment} - ${var.identifier_prefix}-cloudtrail Bucket Key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
-}
-
 resource "aws_s3_bucket" "cloudtrail" {
   bucket        = "${var.identifier_prefix}-cloudtrail"
   force_destroy = true
-  //  server_side_encryption_configuration {
-  //    rule {
-  //      apply_server_side_encryption_by_default {
-  //        kms_master_key_id = aws_kms_key.key.arn
-  //        sse_algorithm     = "aws:kms"
-  //      }
-  //    }
-  //  }
 
   versioning {
     enabled = true

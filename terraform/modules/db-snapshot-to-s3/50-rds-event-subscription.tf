@@ -58,7 +58,6 @@ resource "aws_sns_topic" "rds_snapshot_to_s3" {
   sqs_success_feedback_role_arn    = aws_iam_role.sns_cloudwatch_logging.arn
   sqs_success_feedback_sample_rate = 100
   sqs_failure_feedback_role_arn    = aws_iam_role.sns_cloudwatch_logging.arn
-  //  kms_master_key_id                = aws_kms_key.rds_snapshot_to_s3_kms_key.key_id
 }
 
 resource "aws_db_event_subscription" "snapshot_to_s3" {

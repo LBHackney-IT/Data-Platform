@@ -2,15 +2,6 @@ resource "aws_sns_topic" "glue_jobs" {
   tags = merge(var.tags, { "PlatformDepartment" = local.department_identifier })
 
   name = "glue-failure-notification-${var.short_identifier_prefix}${local.department_identifier}"
-  //  kms_master_key_id = aws_kms_key.glue_jobs_kms_key.key_id
-}
-
-resource "aws_kms_key" "glue_jobs_kms_key" {
-  tags = merge(var.tags, { "PlatformDepartment" = local.department_identifier })
-
-  description             = "${var.environment} - glue-failure-notification-${var.short_identifier_prefix}${local.department_identifier} KMS Key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
 }
 
 locals {
