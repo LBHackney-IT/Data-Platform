@@ -14,15 +14,15 @@ then
   echo "Git not installed"
   exit 0;
 fi
-
-if ! command -v pip &> /dev/null
-then
-  echo "Pip not installed"
-  exit 0;
-else
-  pip install pre-commit
-  pre-commit install
-fi
+#
+#if ! command -v pip &> /dev/null
+#then
+#  echo "Pip not installed"
+#  exit 0;
+#else
+#  pip install pre-commit
+#  pre-commit install
+#fi
 
 #Find all the directories with terraform files in them
 terraform_directories=$(find "$(pwd)" -type f -name '*.tfvars' -or -name '*.tf' | sed -r 's|/[^/]+$||' | sort | uniq )
