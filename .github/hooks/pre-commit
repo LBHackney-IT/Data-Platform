@@ -17,12 +17,12 @@ fi
 
 if ! command -v pip &> /dev/null
 then
-  echo "Pip not installed, please install Pip"
+  echo "pip not installed"
   exit 0;
 else
   pip install pre-commit &> /dev/null
   pip install -U ggshield &> /dev/null
-  ggshield auth login
+  ggshield auth login &> /dev/null
 fi
 
 #Find all the directories with terraform files in them
