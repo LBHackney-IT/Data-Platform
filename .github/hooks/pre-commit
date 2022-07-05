@@ -20,8 +20,10 @@ then
   echo "pip not installed"
   exit 0;
 else
+  echo "ggshield"
   if ! command -v ggshield &> /dev/null
   then
+    echo "ggshield"
     pip install pre-commit &> /dev/null
     pip install -U ggshield &> /dev/null
     ggshield auth login &> /dev/null
