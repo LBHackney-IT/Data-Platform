@@ -23,6 +23,64 @@ resource "aws_kms_key" "rds_snapshot_to_s3_kms_key" {
   description             = "${var.project} - ${var.environment} - rds-snapshot-to-s3 KMS Key"
   deletion_window_in_days = 10
   enable_key_rotation     = true
+  policy                  = data.aws_iam_policy_document.rds_snapshot_to_s3_kms_key_policy.json
+}
+
+data "aws_sns_topic" "rds_snapshot_to_s3" {
+  name = "dataplatform-stg-dp-rds-snapshot-to-s3"
+}
+
+data "aws_iam_policy_document" "rds_snapshot_to_s3_kms_key_policy" {
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+
+    principals {
+      identifiers = ["sns.amazonaws.com"]
+      type        = "Service"
+    }
+
+    resources = [
+      data.aws_sns_topic.rds_snapshot_to_s3.arn
+    ]
+
+    condition {
+      test     = "ArnLike"
+      variable = "AWS:SourceOwner"
+
+      values = [
+        data.aws_caller_identity.current.arn,
+      ]
+    }
+  }
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+
+    principals {
+      identifiers = ["events.rds.amazonaws.com"]
+      type        = "Service"
+    }
+
+    resources = [
+      "arn:aws:rds:eu-west-2:120038763019:db:${var.rds_instance_ids}"
+    ]
+
+    condition {
+      test     = "ArnLike"
+      variable = "AWS:SourceOwner"
+
+      values = [
+        data.aws_caller_identity.current.arn,
+      ]
+    }
+  }
 }
 
 data "aws_iam_policy_document" "rds_snapshot_to_s3" {
@@ -57,15 +115,7 @@ resource "aws_sqs_queue" "rds_snapshot_to_s3_deadletter" {
   tags = var.tags
 
   name              = lower("${var.identifier_prefix}-rds-snapshot-to-s3-deadletter")
-  kms_master_key_id = aws_kms_key.rds_snapshot_to_s3_deadletter_kms_key.key_id
-}
-
-resource "aws_kms_key" "rds_snapshot_to_s3_deadletter_kms_key" {
-  tags = var.tags
-
-  description             = "${var.project} - ${var.environment} - rds-snapshot-to-s3-deadletter KMS Key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
+  kms_master_key_id = aws_kms_key.rds_snapshot_to_s3_kms_key.key_id
 }
 
 resource "aws_sns_topic_subscription" "subscribe_sqs_to_sns_topic" {
