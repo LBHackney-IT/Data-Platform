@@ -1,8 +1,8 @@
 resource "aws_sns_topic" "glue_jobs" {
   tags = merge(var.tags, { "PlatformDepartment" = local.department_identifier })
 
-  name              = "glue-failure-notification-${var.short_identifier_prefix}${local.department_identifier}"
-  kms_master_key_id = aws_kms_key.glue_jobs_kms_key.key_id
+  name = "glue-failure-notification-${var.short_identifier_prefix}${local.department_identifier}"
+  //  kms_master_key_id = aws_kms_key.glue_jobs_kms_key.key_id
 }
 
 resource "aws_kms_key" "glue_jobs_kms_key" {

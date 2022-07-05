@@ -12,8 +12,8 @@ resource "aws_sqs_queue" "s3_to_s3_copier" {
   // See: https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html
   visibility_timeout_seconds = local.lambda_timeout * 6
 
-  name              = lower("${var.identifier_prefix}-s3-to-s3-copier")
-  kms_master_key_id = aws_kms_key.s3_to_s3_copier_kms_key.key_id
+  name = lower("${var.identifier_prefix}-s3-to-s3-copier")
+  //  kms_master_key_id = aws_kms_key.s3_to_s3_copier_kms_key.key_id
 }
 
 resource "aws_kms_key" "s3_to_s3_copier_kms_key" {
@@ -50,8 +50,8 @@ resource "aws_sqs_queue_policy" "s3_copier_to_s3" {
 resource "aws_sqs_queue" "s3_to_s3_copier_deadletter" {
   tags = var.tags
 
-  name              = lower("${var.identifier_prefix}-s3-to-s3-copier-deadletter")
-  kms_master_key_id = aws_kms_key.s3_to_s3_copier_deadletter_kms_key.key_id
+  name = lower("${var.identifier_prefix}-s3-to-s3-copier-deadletter")
+  //  kms_master_key_id = aws_kms_key.s3_to_s3_copier_deadletter_kms_key.key_id
 }
 
 resource "aws_kms_key" "s3_to_s3_copier_deadletter_kms_key" {
