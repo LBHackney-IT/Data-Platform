@@ -176,6 +176,25 @@ resource "aws_kms_key" "admin_failure_notifications_kms_key" {
   enable_key_rotation     = true
 }
 
+data "aws_iam_policy_document" "admin_failure_notifications_kms_key_policy" {
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+
+    principals {
+      identifiers = ["lambda.amazonaws.com"]
+      type        = "Service"
+    }
+
+    resources = [
+      aws_lambda_function.glue_failure_notification_lambda.arn
+    ]
+  }
+}
+
 resource "aws_sns_topic_subscription" "admin_failure_notifications" {
   endpoint  = local.google_group_admin_display_name
   protocol  = "email"
