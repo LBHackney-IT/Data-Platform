@@ -174,6 +174,7 @@ resource "aws_kms_key" "admin_failure_notifications_kms_key" {
   description             = "${var.project} - ${var.environment} - glue-failure-notification-${local.short_identifier_prefix}admin KMS Key"
   deletion_window_in_days = 10
   enable_key_rotation     = true
+  policy                  = data.aws_iam_policy_document.admin_failure_notifications_kms_key_policy.json
 }
 
 data "aws_iam_policy_document" "admin_failure_notifications_kms_key_policy" {
