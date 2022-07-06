@@ -1,5 +1,5 @@
-name: Deploy Production Terraform Networking
-concurrency: production-deploy
+name: Deploy Prod Terraform Networking
+concurrency: production-deploy-networking
 
 on:
   release:
@@ -19,8 +19,9 @@ jobs:
     with:
       environment: "prod"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
-      build_path: "./terraform-networking"
+      build_path: "./terraform/networking"
       terraform_state_s3_key_prefix: "data-platform-network"
+      terraform_state_file_name: "prod-terraform.tfstate"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
@@ -48,8 +49,9 @@ jobs:
       terraform_infra_remove: ${{ github.event.inputs.terraform_infra_remove }}
       environment: "prod"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
-      build_path: "./terraform-networking"
+      build_path: "./terraform/networking"
       terraform_state_s3_key_prefix: "data-platform-network"
+      terraform_state_file_name: "prod-terraform.tfstate"
     secrets:
       GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
       AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}

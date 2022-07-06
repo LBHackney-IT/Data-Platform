@@ -9,7 +9,7 @@ fi
 
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-terraform_dir="${script_dir}/../../terraform"
+terraform_dir="${script_dir}/../../terraform/core"
 ecr_url=$(AWS_PROFILE="" terraform -chdir=${terraform_dir} output -raw prod_to_pre_prod_ecr_repository_endpoint)
 
 docker build -f ${script_dir}/Dockerfile -t ${ecr_url} ${script_dir}
