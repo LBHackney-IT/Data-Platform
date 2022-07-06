@@ -415,7 +415,7 @@ module "department_adult_social_care" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-  #  google_group_display_name       = "saml-aws-data-platform-collaborator-adult-social-care@hackney.gov.uk" // TODO: update with correct name
+google_group_display_name       = "saml-aws-data-platform-collaborator-adult-social-care@hackney.gov.uk"
 }
 
 module "department_children_family_services" {
@@ -446,5 +446,5 @@ module "department_children_family_services" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-  #  google_group_display_name       = "saml-aws-data-platform-collaborator-children-family-services@hackney.gov.uk" // TODO: update with correct name
+google_group_display_name       = "saml-aws-data-platform-collaborator-children-and-family-services@hackney.gov.uk"
 }
