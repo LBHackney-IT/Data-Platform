@@ -61,6 +61,22 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_kms_key_policy" {
 
     resources = [for item in var.rds_instance_ids : "arn:aws:rds:eu-west-2:${data.aws_caller_identity.current.account_id}:db:${item}"]
   }
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+
+    principals {
+      identifiers = ["lambda.amazonaws.com"]
+      type        = "Service"
+    }
+
+    resources = [
+      aws_lambda_function.rds_snapshot_to_s3_lambda.arn
+    ]
+  }
 }
 
 data "aws_iam_policy_document" "rds_snapshot_to_s3" {

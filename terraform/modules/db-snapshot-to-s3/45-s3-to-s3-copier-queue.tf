@@ -39,7 +39,8 @@ data "aws_iam_policy_document" "s3_to_s3_copier_kms_key_policy" {
     }
 
     resources = [
-      aws_lambda_function.rds_snapshot_to_s3_lambda.arn
+      aws_lambda_function.rds_snapshot_to_s3_lambda.arn,
+      aws_lambda_function.s3_to_s3_copier_lambda.arn
     ]
   }
 }
@@ -58,17 +59,6 @@ data "aws_iam_policy_document" "s3_to_s3_copier" {
     }
     resources = [
       aws_sqs_queue.s3_to_s3_copier.arn
-    ]
-  }
-
-  statement {
-    actions = [
-      "kms:GenerateDataKey*",
-      "kms:Decrypt"
-    ]
-    effect = "Allow"
-    resources = [
-      aws_kms_key.s3_to_s3_copier_kms_key.arn,
     ]
   }
 }
