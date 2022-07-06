@@ -98,6 +98,17 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
       var.zone_kms_key_arn,
     ]
   }
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_kms_key.s3_to_s3_copier_kms_key.arn,
+    ]
+  }
 }
 
 resource "aws_iam_policy" "rds_snapshot_to_s3_lambda" {

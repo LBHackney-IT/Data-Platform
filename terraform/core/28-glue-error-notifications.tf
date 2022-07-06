@@ -9,7 +9,7 @@ data "archive_file" "glue_job_failure_notification_lambda" {
 }
 
 resource "aws_s3_bucket_object" "glue_job_failure_notification_lambda" {
-  bucket      = module.lambda_artefact_storage_data_source.bucket_id
+  bucket      = module.lambda_artefact_storage.bucket_id
   key         = "glue-failure-notifications.zip"
   source      = data.archive_file.glue_job_failure_notification_lambda.output_path
   acl         = "private"
@@ -23,7 +23,7 @@ resource "aws_lambda_function" "glue_failure_notification_lambda" {
   handler          = "index.handler"
   runtime          = "nodejs14.x"
   function_name    = "${local.short_identifier_prefix}glue-failure-notification"
-  s3_bucket        = module.lambda_artefact_storage_data_source.bucket_id
+  s3_bucket        = module.lambda_artefact_storage.bucket_id
   s3_key           = aws_s3_bucket_object.glue_job_failure_notification_lambda.key
   source_code_hash = data.archive_file.glue_job_failure_notification_lambda.output_base64sha256
   timeout          = local.lambda_timeout
@@ -163,6 +163,26 @@ resource "aws_kms_key" "admin_failure_notifications_kms_key" {
   description             = "${var.project} - ${var.environment} - glue-failure-notification-${local.short_identifier_prefix}admin KMS Key"
   deletion_window_in_days = 10
   enable_key_rotation     = true
+  policy                  = data.aws_iam_policy_document.admin_failure_notifications_kms_key_policy.json
+}
+
+data "aws_iam_policy_document" "admin_failure_notifications_kms_key_policy" {
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+
+    principals {
+      identifiers = ["lambda.amazonaws.com"]
+      type        = "Service"
+    }
+
+    resources = [
+      aws_lambda_function.glue_failure_notification_lambda.arn
+    ]
+  }
 }
 
 resource "aws_sns_topic_subscription" "admin_failure_notifications" {
