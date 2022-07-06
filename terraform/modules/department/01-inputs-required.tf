@@ -132,8 +132,3 @@ variable "redshift_port" {
   description = "Port that the redshift cluster is running on"
   type        = number
 }
-
-variable "glue_failure_notification_lambda_arn" {
-  description = "Arn of the lambda that will publish to the glue failure notification sns topic"
-  type        = string
-}

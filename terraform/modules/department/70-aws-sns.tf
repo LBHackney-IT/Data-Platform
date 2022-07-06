@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "glue_jobs_kms_key_policy" {
       type        = "Service"
     }
 
-    resources = [var.glue_failure_notification_lambda_arn]
+    resources = ["*"]
   }
 }
 
