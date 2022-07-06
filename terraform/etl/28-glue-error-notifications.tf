@@ -101,6 +101,17 @@ data "aws_iam_policy_document" "glue_failure_notification_lambda" {
       "arn:aws:sns:*:*:glue-failure-notification-*"
     ]
   }
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_kms_key.admin_failure_notifications_kms_key.arn,
+    ]
+  }
 }
 
 resource "aws_iam_policy" "glue_failure_notification_lambda" {
