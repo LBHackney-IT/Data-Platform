@@ -22,6 +22,26 @@ resource "aws_kms_key" "s3_to_s3_copier_kms_key" {
   description             = "${var.project} - ${var.environment} - s3-to-s3-copier KMS Key"
   deletion_window_in_days = 10
   enable_key_rotation     = true
+  policy                  = data.aws_iam_policy_document.s3_to_s3_copier_kms_key_policy.json
+}
+
+data "aws_iam_policy_document" "s3_to_s3_copier_kms_key_policy" {
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+
+    principals {
+      identifiers = ["lambda.amazonaws.com"]
+      type        = "Service"
+    }
+
+    resources = [
+      aws_lambda_function.s3_to_s3_copier_lambda.arn
+    ]
+  }
 }
 
 data "aws_iam_policy_document" "s3_to_s3_copier" {
