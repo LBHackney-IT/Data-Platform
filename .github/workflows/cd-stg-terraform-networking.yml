@@ -1,5 +1,5 @@
 name: Deploy STG Terraform Networking
-concurrency: staging-deploy
+concurrency: staging-deploy-networking
 
 on:
   push:
