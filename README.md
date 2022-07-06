@@ -123,7 +123,7 @@ Initialise the Project
 
 - Before you run, ensure:
   - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
-  - You are in the project's `terraform` directory 
+  - You are in the project's `terraform/core` directory 
   - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform/core & terraform/etl directories
     
 - Please complete the below make commands in both the terraform/core & terraform/etl directories
