@@ -59,9 +59,7 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_kms_key_policy" {
       type        = "Service"
     }
 
-    resources = [
-      "arn:aws:rds:eu-west-2:${data.aws_caller_identity.current.account_id}:db:${var.rds_instance_ids}"
-    ]
+    resources = [for item in var.rds_instance_ids : "arn:aws:rds:eu-west-2:${data.aws_caller_identity.current.account_id}:db:${item}"]
   }
 }
 
