@@ -27,7 +27,7 @@ resource "aws_kms_key" "rds_snapshot_to_s3_kms_key" {
 }
 
 data "aws_sns_topic" "rds_snapshot_to_s3" {
-  name = "dataplatform-stg-dp-rds-snapshot-to-s3"
+  name = "${var.identifier_prefix}-dp-rds-snapshot-to-s3"
 }
 
 data "aws_iam_policy_document" "rds_snapshot_to_s3_kms_key_policy" {
@@ -46,15 +46,6 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_kms_key_policy" {
     resources = [
       data.aws_sns_topic.rds_snapshot_to_s3.arn
     ]
-
-    condition {
-      test     = "ArnLike"
-      variable = "AWS:SourceOwner"
-
-      values = [
-        data.aws_caller_identity.current.arn,
-      ]
-    }
   }
 
   statement {
@@ -69,17 +60,8 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_kms_key_policy" {
     }
 
     resources = [
-      "arn:aws:rds:eu-west-2:120038763019:db:${var.rds_instance_ids}"
+      "arn:aws:rds:eu-west-2:${data.aws_caller_identity.current.account_id}:db:${var.rds_instance_ids}"
     ]
-
-    condition {
-      test     = "ArnLike"
-      variable = "AWS:SourceOwner"
-
-      values = [
-        data.aws_caller_identity.current.arn,
-      ]
-    }
   }
 }
 
