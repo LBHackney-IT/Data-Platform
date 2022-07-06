@@ -17,6 +17,20 @@ resource "aws_kms_key" "glue_jobs_kms_key" {
 data "aws_iam_policy_document" "glue_jobs_kms_key_policy" {
 
   statement {
+    effect = "Allow"
+    actions = [
+      "kms:*"
+    ]
+    resources = [
+      "*"
+    ]
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
+  }
+
+  statement {
     actions = [
       "kms:GenerateDataKey*",
       "kms:Decrypt"

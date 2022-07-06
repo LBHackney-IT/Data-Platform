@@ -33,6 +33,20 @@ data "aws_sns_topic" "rds_snapshot_to_s3" {
 data "aws_iam_policy_document" "rds_snapshot_to_s3_kms_key_policy" {
 
   statement {
+    effect = "Allow"
+    actions = [
+      "kms:*"
+    ]
+    resources = [
+      "*"
+    ]
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
+  }
+
+  statement {
     actions = [
       "kms:GenerateDataKey*",
       "kms:Decrypt"
