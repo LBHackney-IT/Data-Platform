@@ -169,6 +169,20 @@ resource "aws_kms_key" "admin_failure_notifications_kms_key" {
 data "aws_iam_policy_document" "admin_failure_notifications_kms_key_policy" {
 
   statement {
+    effect = "Allow"
+    actions = [
+      "kms:*"
+    ]
+    resources = [
+      "*"
+    ]
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.data_platform.account_id}:root"]
+    }
+  }
+
+  statement {
     actions = [
       "kms:GenerateDataKey*",
       "kms:Decrypt"
