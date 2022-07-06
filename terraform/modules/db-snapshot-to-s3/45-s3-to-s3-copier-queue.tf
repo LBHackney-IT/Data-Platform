@@ -52,9 +52,7 @@ data "aws_iam_policy_document" "s3_to_s3_copier_kms_key_policy" {
       type        = "Service"
     }
 
-    resources = [
-      aws_lambda_function.s3_to_s3_copier_lambda.arn
-    ]
+    resources = ["*"]
   }
 }
 

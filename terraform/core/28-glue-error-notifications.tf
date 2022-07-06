@@ -193,9 +193,7 @@ data "aws_iam_policy_document" "admin_failure_notifications_kms_key_policy" {
       type        = "Service"
     }
 
-    resources = [
-      aws_lambda_function.glue_failure_notification_lambda.arn
-    ]
+    resources = ["*"]
   }
 }
 
