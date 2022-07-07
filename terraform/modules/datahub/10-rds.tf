@@ -1,4 +1,5 @@
 resource "aws_db_instance" "datahub" {
+  count                  = var.is_live_environment ? 1 : 0
   allocated_storage      = 15
   engine                 = "mysql"
   engine_version         = "5.7"
@@ -9,7 +10,26 @@ resource "aws_db_instance" "datahub" {
   db_subnet_group_name   = aws_db_subnet_group.datahub.name
   vpc_security_group_ids = [aws_security_group.datahub.id]
   skip_final_snapshot    = true
-  //  storage_encrypted      = true
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+//Duplicating this block is the only way to conditionally apply
+//prevent_destroy lifecylce block as variables are not allowed
+//inside that block
+resource "aws_db_instance" "datahub" {
+  count                  = var.is_live_environment ? 0 : 1
+  allocated_storage      = 15
+  engine                 = "mysql"
+  engine_version         = "5.7"
+  instance_class         = "db.t3.micro"
+  username               = "datahub"
+  identifier             = replace("${var.short_identifier_prefix}datahub", "-", "")
+  password               = random_password.datahub_secret.result
+  db_subnet_group_name   = aws_db_subnet_group.datahub.name
+  vpc_security_group_ids = [aws_security_group.datahub.id]
+  skip_final_snapshot    = true
 }
 
 resource "aws_db_subnet_group" "datahub" {
