@@ -53,3 +53,13 @@ variable "lambda_environment_variables" {
   description = "An object containing environment variables to be used in the Lambda"
   type        = map(string)
 }
+
+variable "lambda_handler" {
+  description = "name of the file and main lambda function"
+  type        = string
+}
+
+variable "runtime_language" {
+  description = "the language of the lambda function"
+  type        = string
+}

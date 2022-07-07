@@ -90,7 +90,7 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 }
 
 resource "null_resource" "run_make_install_requirements" {
-
+  # need to distinguish between python and nodejs
   triggers = {
     dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
   }
@@ -132,8 +132,8 @@ resource "aws_lambda_function" "lambda" {
   tags = var.tags
 
   role             = aws_iam_role.lambda.arn
-  handler          = "main.lambda_handler"
-  runtime          = "python3.8"
+  handler          = var.lambda_handler
+  runtime          = var.runtime_language
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_bucket_object.lambda.key
