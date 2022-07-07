@@ -111,26 +111,9 @@ resource "aws_s3_bucket" "ssl_connection_resources" {
   bucket = "${local.identifier_prefix}-ssl-connection-resources"
   tags   = module.tags.values
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.ssl_connection_resources_key.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
-
   versioning {
     enabled = true
   }
-}
-
-resource "aws_kms_key" "ssl_connection_resources_key" {
-  tags = module.tags.values
-
-  description             = "${var.project} ${var.environment} - ${local.identifier_prefix}-ssl-connection-resources Bucket Key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
 }
 
 resource "aws_s3_bucket_acl" "ssl_connection_resources" {
