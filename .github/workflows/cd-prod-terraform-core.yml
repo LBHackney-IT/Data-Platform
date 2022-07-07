@@ -1,5 +1,5 @@
 name: Deploy Prod Terraform Core
-concurrency: production-deploy
+concurrency: production-deploy-core
 
 on:
   release:

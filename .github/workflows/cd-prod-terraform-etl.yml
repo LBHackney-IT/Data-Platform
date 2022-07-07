@@ -1,5 +1,5 @@
 name: Deploy Prod Terraform ETL
-concurrency: production-deploy
+concurrency: production-deploy-etl
 
 on:
   release:
