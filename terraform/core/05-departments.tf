@@ -428,7 +428,6 @@ module "department_adult_social_care" {
   identity_store_id                    = local.identity_store_id
   google_group_admin_display_name      = local.google_group_admin_display_name
   google_group_display_name            = "saml-aws-data-platform-collaborator-adult-social-care@hackney.gov.uk"
-  glue_failure_notification_lambda_arn = aws_lambda_function.glue_failure_notification_lambda.arn
 }
 
 module "department_children_family_services" {
@@ -460,5 +459,4 @@ module "department_children_family_services" {
   identity_store_id                    = local.identity_store_id
   google_group_admin_display_name      = local.google_group_admin_display_name
   google_group_display_name            = "saml-aws-data-platform-collaborator-children-and-family-services@hackney.gov.uk"
-  glue_failure_notification_lambda_arn = aws_lambda_function.glue_failure_notification_lambda.arn
 }
