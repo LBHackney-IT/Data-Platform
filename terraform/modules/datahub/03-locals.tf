@@ -51,9 +51,9 @@ locals {
     standalone_onetime_task = false
     environment_variables = [
       { name : "DATASET_ENABLE_SCSI", value : "false" },
-      { name : "EBEAN_DATASOURCE_USERNAME", value : aws_db_instance.datahub.username },
-      { name : "EBEAN_DATASOURCE_HOST", value : aws_db_instance.datahub.endpoint },
-      { name : "EBEAN_DATASOURCE_URL", value : "jdbc:mysql://${aws_db_instance.datahub.endpoint}/${aws_db_instance.datahub.identifier}?verifyServerCertificate=false&useSSL=true&useUnicode=yes&characterEncoding=UTF-8" },
+      { name : "EBEAN_DATASOURCE_USERNAME", value : var.is_live_environment ? aws_db_instance.datahub.username : aws_db_instance.datahub_dev.username },
+      { name : "EBEAN_DATASOURCE_HOST", value : var.is_live_environment ? aws_db_instance.datahub.endpoint : aws_db_instance.datahub_dev.endpoint },
+      { name : "EBEAN_DATASOURCE_URL", value : var.is_live_environment ? "jdbc:mysql://${aws_db_instance.datahub.endpoint}/${aws_db_instance.datahub.identifier}?verifyServerCertificate=false&useSSL=true&useUnicode=yes&characterEncoding=UTF-8" : "jdbc:mysql://${aws_db_instance.datahub_dev.endpoint}/${aws_db_instance.datahub_dev.identifier}?verifyServerCertificate=false&useSSL=true&useUnicode=yes&characterEncoding=UTF-8" },
       { name : "EBEAN_DATASOURCE_DRIVER", value : "com.mysql.jdbc.Driver" },
       { name : "KAFKA_BOOTSTRAP_SERVER", value : var.kafka_properties.kafka_bootstrap_server },
       { name : "KAFKA_SCHEMAREGISTRY_URL", value : var.schema_registry_properties.schema_registry_url },
@@ -177,10 +177,10 @@ locals {
     load_balancer_required  = false
     standalone_onetime_task = true
     environment_variables = [
-      { name : "MYSQL_HOST", value : aws_db_instance.datahub.address },
-      { name : "MYSQL_PORT", value : aws_db_instance.datahub.port },
-      { name : "MYSQL_USERNAME", value : aws_db_instance.datahub.username },
-      { name : "DATAHUB_DB_NAME", value : aws_db_instance.datahub.identifier },
+      { name : "MYSQL_HOST", value : var.is_live_environment ? aws_db_instance.datahub.address : aws_db_instance.datahub_dev.address },
+      { name : "MYSQL_PORT", value : var.is_live_environment ? aws_db_instance.datahub.port : aws_db_instance.datahub_dev.port },
+      { name : "MYSQL_USERNAME", value : var.is_live_environment ? aws_db_instance.datahub.username : aws_db_instance.datahub_dev.username },
+      { name : "DATAHUB_DB_NAME", value : var.is_live_environment ? aws_db_instance.datahub.identifier : aws_db_instance.datahub_dev },
     ]
     secrets = [
       { name : "MYSQL_PASSWORD", valueFrom : aws_ssm_parameter.datahub_rds_password.arn },

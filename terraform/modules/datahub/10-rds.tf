@@ -18,7 +18,7 @@ resource "aws_db_instance" "datahub" {
 //Duplicating this block is the only way to conditionally apply
 //prevent_destroy lifecylce block as variables are not allowed
 //inside that block
-resource "aws_db_instance" "datahub" {
+resource "aws_db_instance" "datahub_dev" {
   count                  = var.is_live_environment ? 0 : 1
   allocated_storage      = 15
   engine                 = "mysql"

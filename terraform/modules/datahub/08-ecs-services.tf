@@ -93,7 +93,7 @@ module "mysql_setup" {
   }
   is_live_environment = var.is_live_environment
   depends_on = [
-    aws_db_instance.datahub
+    var.is_live_environment ? aws_db_instance.datahub : aws_db_instance.datahub_dev
   ]
 }
 

@@ -24,7 +24,7 @@ data "aws_ssm_parameter" "datahub_google_client_secret" {
 resource "aws_ssm_parameter" "datahub_rds_password" {
   name  = "/${var.identifier_prefix}/datahub/datahub_rds_password"
   type  = "SecureString"
-  value = aws_db_instance.datahub.password
+  value = var.is_live_environment ? aws_db_instance.datahub.password : aws_db_instance.datahub_dev.password
   tags = merge(var.tags, {
     "Name" : "Datahub RDS Password"
   })
