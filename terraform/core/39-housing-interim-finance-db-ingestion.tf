@@ -15,9 +15,9 @@ module "housing_interim_finance_database_ingestion" {
 
 locals {
   table_filter_expressions_housing_interim_finance = local.is_live_environment ? {
-    ma-tenancy-agreement       = "^housing-finance-sql-db-production-replica_MATenancyAgreement",
-    uh-account-recovery-action = "^housing-finance-sql-db-production-replica_UH_Araction",
-    ma-property                = "^housing-finance-sql-db-production-replica_MAProperty"
+    ma-tenancy-agreement       = "^SOW2b_MATenancyAgreement",
+    uh-account-recovery-action = "^SOW2b_UH_Araction",
+    ma-property                = "^SOW2b_MAProperty"
   } : {}
 }
 
