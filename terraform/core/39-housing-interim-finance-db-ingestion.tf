@@ -5,10 +5,10 @@ module "housing_interim_finance_database_ingestion" {
   source = "../modules/database-ingestion-via-jdbc-connection"
 
   name                        = "housing-interim-finance-database"
-  jdbc_connection_url         = "jdbc:sqlserver://housing-finance-sql-db-production-replica.cfem8ikpzzjl.eu-west-2.rds.amazonaws.com:1433;databaseName=housing-finance-sql-db-production-replica"
+  jdbc_connection_url         = "jdbc:sqlserver://housing-finance-sql-db-production-replica.cfem8ikpzzjl.eu-west-2.rds.amazonaws.com:1433;databaseName=SOW2b"
   jdbc_connection_description = "JDBC connection to Housing Interim Finance database"
   jdbc_connection_subnet      = data.aws_subnet.network[local.instance_subnet_id]
-  database_secret_name        = "database-credentials/housing-finance-sql-db-production-replica-housing-interim-finance"
+  database_secret_name        = "database-credentials/SOW2b-housing-interim-finance"
   identifier_prefix           = local.short_identifier_prefix
   create_workflow             = false
 }
