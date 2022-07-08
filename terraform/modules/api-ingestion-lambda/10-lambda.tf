@@ -89,8 +89,9 @@ resource "aws_iam_role_policy_attachment" "lambda" {
   policy_arn = aws_iam_policy.lambda.arn
 }
 
+
 resource "null_resource" "run_make_install_requirements" {
-  # need to distinguish between python and nodejs
+  count = runtime_language == "python3.8" ? 1 : 0
   triggers = {
     dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
   }
@@ -98,6 +99,19 @@ resource "null_resource" "run_make_install_requirements" {
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
     command     = "make install-requirements"
+    working_dir = "${path.module}/../../../lambdas/${local.lambda_name_underscore}/"
+  }
+}
+
+resource "null_resource" "run_make_install_requirements" {
+  count = runtime_language == "nodejs14.x" ? 1 : 0
+  triggers = {
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = "npm install"
     working_dir = "${path.module}/../../../lambdas/${local.lambda_name_underscore}/"
   }
 }
