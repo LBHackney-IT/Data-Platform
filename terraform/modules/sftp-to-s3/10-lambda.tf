@@ -20,6 +20,6 @@ module "sftp_to_s3_ingestion" {
     "SFTP_USERNAME"     = local.sftp_server_username.value
     "SFTP_PASSWORD"     = local.sftp_server_password.value
     "S3_BUCKET"         = var.s3_target_bucket_id
-    "OBJECT_KEY_PREFIX" = "${var.department_identifier}"
+    "OBJECT_KEY_PREFIX" = "${var.department_identifier}/"
   }
 }

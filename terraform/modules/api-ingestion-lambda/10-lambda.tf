@@ -91,7 +91,7 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 
 
 resource "null_resource" "run_make_install_requirements" {
-  count = runtime_language == "python3.8" ? 1 : 0
+  count = var.runtime_language == "python3.8" ? 1 : 0
   triggers = {
     dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
   }
@@ -103,8 +103,8 @@ resource "null_resource" "run_make_install_requirements" {
   }
 }
 
-resource "null_resource" "run_make_install_requirements" {
-  count = runtime_language == "nodejs14.x" ? 1 : 0
+resource "null_resource" "run_npm_install" {
+  count = var.runtime_language == "nodejs14.x" ? 1 : 0
   triggers = {
     dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
   }

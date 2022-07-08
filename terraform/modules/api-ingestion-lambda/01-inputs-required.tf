@@ -62,4 +62,13 @@ variable "lambda_handler" {
 variable "runtime_language" {
   description = "the language of the lambda function"
   type        = string
+  validation {
+    condition = (
+      contains([
+        "python3.8",
+        "nodejs14.x"
+      ], var.runtime_language)
+    )
+    error_message = "The value cannot be a blank string, and must be one of the following: 'python3.8' or 'nodejs14.x'"
+  }
 }
