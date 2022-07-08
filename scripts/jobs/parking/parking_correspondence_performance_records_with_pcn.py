@@ -7,13 +7,11 @@ from awsglue.job import Job
 from awsglue import DynamicFrame
 from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS_SNAPSHOT
 
-
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
         frame.toDF().createOrReplaceTempView(alias)
     result = spark.sql(query)
     return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
-
 
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 sc = SparkContext()
@@ -243,9 +241,6 @@ Response_generated_at
 ,pcnfoidetails_pcn_foi_full.import_month as pcn_import_month
 ,pcnfoidetails_pcn_foi_full.import_day as pcn_import_day
 ,pcnfoidetails_pcn_foi_full.import_date as pcn_import_date
-
-
-
 from liberator_pcn_ic
 left join pcnfoidetails_pcn_foi_full on liberator_pcn_ic.ticketserialnumber = pcnfoidetails_pcn_foi_full.pcn and pcnfoidetails_pcn_foi_full.import_date = liberator_pcn_ic.import_date
 
