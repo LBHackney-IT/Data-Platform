@@ -676,3 +676,20 @@ module "manually_uploaded_parking_data_to_raw" {
 #    "--environment"         = var.environment
 #  }
 #}
+#module "parking_correspondence_performance_records_with_pcn" {
+#  source                     = "../modules/aws-glue-job"
+#  department                 = module.department_parking_data_source
+#  job_name                   = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn"
+#  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+#  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+#  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+#  script_name                = "parking_correspondence_performance_records_with_pcn"
+#  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+#  job_description            = "Correspondence performance with pcn"
+#  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+#  trigger_enabled            = false
+#  job_parameters = {
+#    "--job-bookmark-option" = "job-bookmark-enable"
+#    "--environment"         = var.environment
+#  }
+#}
