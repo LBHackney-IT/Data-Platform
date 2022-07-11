@@ -161,7 +161,7 @@ def lambda_handler(event, lambda_context):
 
     today = datetime.datetime.utcnow().date()
     # Take only yesterday's data
-    date_to_track_from = today - datetime.timedelta(days=1)
+    date_to_track_from = today - datetime.timedelta(days=7)
     logger.info(f"Date to track from: {date_to_track_from}")
 
     s3_client = boto3.client('s3')
