@@ -5,7 +5,7 @@ module "housing_interim_finance_database_ingestion" {
   source = "../modules/database-ingestion-via-jdbc-connection"
 
   name                        = "housing-interim-finance-database"
-  jdbc_connection_url         = "jdbc:sqlserver://housing-finance-sql-db-production-replica.cfem8ikpzzjl.eu-west-2.rds.amazonaws.com:1433;databaseName=SOW2b"
+  jdbc_connection_url         = "jdbc:sqlserver://housing-finance-sql-db-production-replica.cfem8ikpzzjl.eu-west-2.rds.amazonaws.com:1433;databaseName=sow2b"
   jdbc_connection_description = "JDBC connection to Housing Interim Finance database"
   jdbc_connection_subnet      = data.aws_subnet.network[local.instance_subnet_id]
   database_secret_name        = "database-credentials/SOW2b-housing-interim-finance"
@@ -15,9 +15,9 @@ module "housing_interim_finance_database_ingestion" {
 
 locals {
   table_filter_expressions_housing_interim_finance = local.is_live_environment ? {
-    ma-tenancy-agreement       = "^SOW2b_MATenancyAgreement",
-    uh-account-recovery-action = "^SOW2b_UH_Araction",
-    ma-property                = "^SOW2b_MAProperty"
+    ma-tenancy-agreement       = "^sow2b_MATenancyAgreement",
+    uh-account-recovery-action = "^sow2b_UHAraction",
+    ma-property                = "^sow2b_MAProperty"
   } : {}
 }
 
