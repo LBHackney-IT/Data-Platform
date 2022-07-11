@@ -116,11 +116,25 @@ resource "null_resource" "run_npm_install" {
   }
 }
 
-data "null_data_source" "wait_for_lambda_exporter" {
+data "null_data_source" "wait_for_python_lambda_exporter" {
+  count = var.runtime_language == "python3.8" ? 1 : 0
   inputs = {
     # This ensures that this data resource will not be evaluated until
     # after the null_resource has been created.
     lambda_exporter_id = null_resource.run_make_install_requirements.id
+
+    # This value gives us something to implicitly depend on
+    # in the archive_file below.
+    source_dir = "../../lambdas/${local.lambda_name_underscore}"
+  }
+}
+
+data "null_data_source" "wait_for_node_lambda_exporter" {
+  count = var.runtime_language == "nodejs14.x" ? 1 : 0
+  inputs = {
+    # This ensures that this data resource will not be evaluated until
+    # after the null_resource has been created.
+    lambda_exporter_id = null_resource.run_npm_install.id
 
     # This value gives us something to implicitly depend on
     # in the archive_file below.
