@@ -17,7 +17,9 @@ locals {
   table_filter_expressions_housing_interim_finance = local.is_live_environment ? {
     ma-tenancy-agreement       = "^sow2b_dbo_matenancyagreement$",
     uh-account-recovery-action = "^sow2b_dbo_uharaction$",
-    ma-property                = "^sow2b_dbo_maproperty$"
+    ma-property                = "^sow2b_dbo_maproperty$",
+    uh-mini-transaction        = "^sow2b_dbo_uhminitransaction$",
+    ss-mini-transaction        = "^sow2b_dbo_ssminitransaction$"
   } : {}
 }
 
