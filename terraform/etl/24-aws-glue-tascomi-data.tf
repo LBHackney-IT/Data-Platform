@@ -96,7 +96,7 @@ resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
   schedule = "cron(0 3 * * ? *)"
-  enabled  = local.is_live_environment
+  enabled  = local.is_production_environment
 
   actions {
     job_name = module.ingest_tascomi_data.job_name
@@ -113,7 +113,7 @@ resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
   schedule = "cron(0 22 ? * SUN *)"
-  enabled  = local.is_live_environment
+  enabled  = local.is_production_environment
 
   actions {
     job_name = module.ingest_tascomi_data.job_name
@@ -148,7 +148,7 @@ resource "aws_glue_trigger" "tascomi_api_response_crawler_trigger" {
   name     = "${local.short_identifier_prefix}Tascomi API response crawler Trigger"
   type     = "SCHEDULED"
   schedule = "cron(0 4,5 * * ? *)"
-  enabled  = local.is_live_environment
+  enabled  = local.is_production_environment
 
   actions {
     crawler_name = aws_glue_crawler.tascomi_api_response_crawler.name
