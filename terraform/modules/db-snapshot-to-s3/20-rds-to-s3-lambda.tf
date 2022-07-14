@@ -107,6 +107,7 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
     effect = "Allow"
     resources = [
       aws_kms_key.s3_to_s3_copier_kms_key.arn,
+      aws_kms_key.rds_snapshot_to_s3_kms_key.arn
     ]
   }
 }

@@ -71,9 +71,8 @@ SELECT
    permit_referece, 
    CAST(status_date as Timestamp) as status_date, 
    status, 
-   status_change_by, 
-   partition_4,
-   ROW_NUMBER() OVER ( PARTITION BY permit_referece ORDER BY permit_referece, status_date DESC, partition_4 DESC) row_num
+   status_change_by,
+   ROW_NUMBER() OVER ( PARTITION BY permit_referece ORDER BY permit_referece, status_date DESC) row_num
 FROM liberator_permit_status
 WHERE permit_referece like 'HYS%' AND 
       import_Date = (Select MAX(import_date) from liberator_permit_status)),
