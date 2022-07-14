@@ -1134,38 +1134,6 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220526" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1RAfX0kVsvGSl_TgDhkqlzlj_oqPSpkx6"
-  glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220526"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
-  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "20220526 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF8.csv"
-  worksheets = {
-    sheet1 : {
-      header_row_number = 0
-      worksheet_name    = "20220526"
-    }
-  }
-}
-
-module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220526" {
-  count                          = local.is_live_environment ? 1 : 0
-  source                         = "../modules/import-spreadsheet-file-from-g-drive"
-  department                     = module.department_parking_data_source
-  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
-  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
-  glue_role_arn                  = data.aws_iam_role.glue_role.arn
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
-  jars_key                       = data.aws_s3_bucket_object.jars.key
-  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
-  identifier_prefix              = local.short_identifier_prefix
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
-  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
-  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
-  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1xbUUP9Veagfj5qncFYaqEKL9YL0Z7hME"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220525"
   output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
