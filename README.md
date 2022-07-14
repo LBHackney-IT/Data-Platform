@@ -55,7 +55,7 @@ The terraform/backend-setup directory is just for Dev’s bucket deployment, so 
 - `aws_deploy_iam_role_name` - This is the role that will be used to deploy the infrastructure (for development purposes this is normally `LBH_Automation_Deployment_Role`)
 - `google_project_id` - The Google Project to create service accounts in (for DevScratch `dataplatform-dev0`)
 
-3. For local deployment AWS needs a AWS CLI profile (assumed to be called `hackney-dev-scratch`) in the profile configuration file (which can be set in `~/.aws/config`). Read [documentation on Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for more guidance setting up AWS credentials and named profiles.
+3. For local deployment AWS needs a AWS CLI profile (assumed to be called `hackney-dataplatform-development`) in the profile configuration file (which can be set in `~/.aws/config`). Read [documentation on Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for more guidance setting up AWS credentials and named profiles.
 
 To set up this profile, you can use the AWS CLI using the following command:
 
@@ -123,6 +123,7 @@ Initialise the Project
 
 - Before you run, ensure:
   - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
+  - You are in the project's `terraform/core` directory 
   - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform/core & terraform/etl directories
     
 - Please complete the below make commands in both the terraform/core & terraform/etl directories
