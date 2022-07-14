@@ -1562,3 +1562,707 @@ module "puzzel_total_overview_20210526_UTF8" {
     }
   }
 }
+
+module "calendar" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "11hIukvOsZB0l2yNzMiPkl59vTXV5U0jI"
+  glue_job_name                  = "Calendar"
+  output_folder_name             = "Calendar"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "calendar.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "calendar"
+    }
+  }
+}
+
+module "Cash_Collection_Date" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1ULDbN0CxL3AoLAznWMhphLiVL7mhRSH9"
+  glue_job_name                  = "Cash_Collection_Date"
+  output_folder_name             = "Cash_Collection"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Cash_Collection_Date.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Cash_Collection_Date"
+    }
+  }
+}
+
+module "Cedar_Backing_Data_May_2022" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "18jmhuuGc6okzhsGrrrChCOyYX3KCnxeN"
+  glue_job_name                  = "Cedar_Backing_Data May 2022"
+  output_folder_name             = "Cedar_Backing_Data"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Cedar Backing May_2022.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Cedar_Backing_Data"
+    }
+  }
+}
+
+module "Cedar_Parking_Payments_May_2022" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1sfGLjFT5OiC71HwjyvmMiLg5xNdtGA6T"
+  glue_job_name                  = "Cedar_Parking_Payments May 2022"
+  output_folder_name             = "Cedar_Parking_Payments"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Cedar_Parking_Payments_May_2022.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Cedar_Parking_Payments"
+    }
+  }
+}
+
+module "CEO_Beat_Streets_v2" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1Xb8sL8zvY-fLl4jLBIWzTllj7c_NM-Ob"
+  glue_job_name                  = "CEO_Beat_Streets_v2"
+  output_folder_name             = "CEO_Beat_Streets"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Copy of Beat Streets v2.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Beat Streets v2"
+    }
+  }
+}
+
+module "CEO_Beat_Streets_within_zones_latest" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1hHBzrOFHnz5lUSemKFyIugIc-TtIW13c"
+  glue_job_name                  = "Streets within Zones - latest"
+  output_folder_name             = "CEO_Beat_Streets"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Streets within Zones - latest.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Streets within Zones - latest"
+    }
+  }
+}
+
+module "CEO_Beat_Streets_within_zones_update" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1QF3vpZQkID5FzWUfqSyPagwzy2tkZ-ob"
+  glue_job_name                  = "Streets within Zones - Update"
+  output_folder_name             = "CEO_Beat_Streets"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Streets within Zones - Update.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Streets within Zones - Update"
+    }
+  }
+}
+
+module "SStreet_CPZ_Visit_Targets_23112021" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1yzTmRgWcOHEYN5aWAWDz8olUGEB7saLh"
+  glue_job_name                  = "Street_CPZ_Visit_Targets_23112021"
+  output_folder_name             = "CEO_Beat_Visit_Requirements"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Street_CPZ_Visit_Targets@23-11-2021_Latest_File.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Street_CPZ_Visit_Targets_23112021"
+    }
+  }
+}
+
+module "CEO_Visit_Timings_Full" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1BUI7Firtzt7Yskg2bIhLzj--S8KaF3WQ"
+  glue_job_name                  = "CEO Visit Timings_Full"
+  output_folder_name             = "CEO_Visit_Req_Timings"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "CEO Visit Timings_Full.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "CEO Visit Timings_Full"
+    }
+  }
+}
+
+module "Citypay_Import" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1lErUkzqr5O3V4Y13QSjHu6PlVeEPBREa"
+  glue_job_name                  = "Citypay_Import"
+  output_folder_name             = "CityPay_Payments"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Citypay_Import.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Citypay_Import"
+    }
+  }
+}
+
+module "FixedSchoolStreetVRMs" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1Lsrb0Zi_snxDgeF078hP1GT_p6GLvYsl"
+  glue_job_name                  = "FixedSchoolStreetVRMs"
+  output_folder_name             = "Fixed_School_Street_VRMs"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "FixedSchoolStreetVRMs.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "FixedSchoolStreetVRMs"
+    }
+  }
+}
+
+module "BPLU_CLASS_PartyID_Address2" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1C229MLTUyXWloqph4KlutaBeU8YrwBfe"
+  glue_job_name                  = "BPLU_CLASS_PartyID_Address2"
+  output_folder_name             = "Licensing_PP_Addresses"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "BPLU_CLASS, PartyID and Address2.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "BPLU_CLASS_PartyID_Address2"
+    }
+  }
+}
+
+module "Licensing_BLPU_Class_PP_Addresses" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1_oDVH8lMTCDsODyCERDOMB7R2-Ln7Vg-"
+  glue_job_name                  = "Licensing_BLPU_Class_PP_Addresses"
+  output_folder_name             = "Licensing_PP_Addresses"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Licensing BLPU Class PP Addresses.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Licensing_BLPU_Class_PP_Addresses"
+    }
+  }
+}
+
+module "LTN_London_Fields" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1JAv1vyNtCB1q-oV59eoVdTGfbvI6vL7s"
+  glue_job_name                  = "LTN_London_Fields"
+  output_folder_name             = "LTN_London_Fields"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "LTN_London_Fields.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "LTN_London_Fields"
+    }
+  }
+}
+
+module "OffenceCode" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1Mci0PtXcZ5FNzihbFTA7s2XckUQs5Se9"
+  glue_job_name                  = "OffenceCode"
+  output_folder_name             = "Offence_Code"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "OffenceCode.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "OffenceCode"
+    }
+  }
+}
+
+module "PD_Location_Machines" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1Xb9S4UwG1YA7OkMHST1fxOANRGJ5FMBa"
+  glue_job_name                  = "PD_Location_Machines"
+  output_folder_name             = "PD_Location_Machines"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "PD_Location_Machines.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "PD_Location_Machines"
+    }
+  }
+}
+
+module "Ringg_Daily_Transactions_May_2022" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1VFkHrvQksmhmLRLgGgt6NBTHC8sREjwZ"
+  glue_job_name                  = "Ringg_Daily_Transactions_May_2022"
+  output_folder_name             = "Ringgo_Daily"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Ringg_Daily_Transactions_May_2022.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Ringg_Daily_Transactions_May_2022"
+    }
+  }
+}
+
+module "Ringgo_Forecast_Mins" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "10HoVMwbrTUrIGiKZGcpUacHQh_s3xzsM"
+  glue_job_name                  = "Ringgo_Forecast_Mins"
+  output_folder_name             = "Ringgo_Mins_Forecast"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Ringgo_Forecast_Mins.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Ringgo_Forecast_Mins"
+    }
+  }
+}
+
+module "Ringgo_session_forecast" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1uK92S_2IYfNUmGnV9WmnaJrjQREkjoT3"
+  glue_job_name                  = "Ringgo_session_forecast"
+  output_folder_name             = "Ringgo_Session_Forecast"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Ringgo_session_forecast.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Ringgo_session_forecast"
+    }
+  }
+}
+
+module "School_Streets_19012022" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1DtnD_FLip4uOihzh539EtdjeJobSWWRA"
+  glue_job_name                  = "School_Streets_19012022"
+  output_folder_name             = "School_Street_Camera_Locations"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "School Streets_19012022.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "School_Streets_19012022"
+    }
+  }
+}
+
+module "school_street_extra" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1IOX44y5v9unE_acaCrcJlpu4kU0Ht803"
+  glue_job_name                  = "school_street_extra"
+  output_folder_name             = "School_Street_UPRN"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "school street extra.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "school_street_extra"
+    }
+  }
+}
+
+module "Voucher_Import" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1ZOdB9fL3z-x2k21dfSHyxpuZDr6tWbhl"
+  glue_job_name                  = "Voucher_Import"
+  output_folder_name             = "Visitor_Voucher_Forecast"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Voucher Import.csv"
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "Voucher_Import"
+    }
+  }
+}
