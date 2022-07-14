@@ -239,7 +239,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220209" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1oWAo5-hmTnBH5lEUzjNkBf7-GxxfVXMG"
-  glue_job_name                  = "20220209 - ETA_Decisions"
+  glue_job_name                  = "ETA_Decisions - 20220209"
   output_folder_name             = "eta-decision-records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220209 - ETA_Decisions - GDS or Qlik data Load - records.csv"
@@ -271,7 +271,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220317" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1BgC7fEHRpOHO1NwPc8_HuIa9hJvDFqbH"
-  glue_job_name                  = "20220317 - ETA_Decisions"
+  glue_job_name                  = "ETA_Decisions - 20220317"
   output_folder_name             = "eta-decision-records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220317 - ETA_Decisions - GDS or Qlik data Load - records.csv"
@@ -303,7 +303,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220401" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1XqnMJR7-rjLl2MbVKChqRWu-DVWIACyr"
-  glue_job_name                  = "20220401 - ETA_Decisions"
+  glue_job_name                  = "ETA_Decisions - 20220401"
   output_folder_name             = "eta-decision-records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220401 - ETA_Decisions - GDS or Qlik data Load - records UTF8.csv"
@@ -335,7 +335,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220506" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1J_VdrUDgziXjYC6uy716jtFcEcZqjQP1"
-  glue_job_name                  = "20220506 - ETA_Decisions"
+  glue_job_name                  = "ETA_Decisions - 20220506"
   output_folder_name             = "eta-decision-records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220506 - ETA_Decisions - GDS or Qlik data Load UTF-8.csv"
@@ -367,7 +367,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220420" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1FaBQhl-uoUMIIKppvcDsvctbqmiKzHen"
-  glue_job_name                  = "20220420 - ETA_Decisions"
+  glue_job_name                  = "ETA_Decisions - 20220420"
   output_folder_name             = "eta-decision-records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220420 - ETA_Decisions - GDS or Qlik data Load - records.csv"
@@ -399,7 +399,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220616" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1zNiIZNrv-vKZEuFBrzBzEYU93pclygYd"
-  glue_job_name                  = "20220616 - ETA_Decisions"
+  glue_job_name                  = "ETA_Decisions - 20220616"
   output_folder_name             = "eta-decision-records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220616 - ETA_Decisions - GDS or Qlik data Load - records - UTF8.csv"
@@ -1647,7 +1647,7 @@ module "Cash_Collection_Date" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1ULDbN0CxL3AoLAznWMhphLiVL7mhRSH9"
-  glue_job_name                  = "Cash_Collection_Date"
+  glue_job_name                  = "Cash Collection Date"
   output_folder_name             = "cash-collection"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cash_Collection_Date.csv"
@@ -1679,7 +1679,7 @@ module "Cedar_Backing_Data_May_2022" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "18jmhuuGc6okzhsGrrrChCOyYX3KCnxeN"
-  glue_job_name                  = "Cedar_Backing_Data May 2022"
+  glue_job_name                  = "Cedar Backing Data May 2022"
   output_folder_name             = "cedar-backing-data"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cedar Backing May_2022.csv"
@@ -1711,7 +1711,7 @@ module "Cedar_Parking_Payments_May_2022" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1sfGLjFT5OiC71HwjyvmMiLg5xNdtGA6T"
-  glue_job_name                  = "Cedar_Parking_Payments May 2022"
+  glue_job_name                  = "Cedar Parking Payments May 2022"
   output_folder_name             = "cedar-parking-payments"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cedar_Parking_Payments_May_2022.csv"
@@ -1743,7 +1743,7 @@ module "CEO_Beat_Streets_v2" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1Xb8sL8zvY-fLl4jLBIWzTllj7c_NM-Ob"
-  glue_job_name                  = "CEO_Beat_Streets_v2"
+  glue_job_name                  = "CEO Beat Streets v2"
   output_folder_name             = "ceo-beat-streets"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Copy of Beat Streets v2.csv"
@@ -1839,7 +1839,7 @@ module "SStreet_CPZ_Visit_Targets_23112021" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1yzTmRgWcOHEYN5aWAWDz8olUGEB7saLh"
-  glue_job_name                  = "Street_CPZ_Visit_Targets_23112021"
+  glue_job_name                  = "Street CPZ Visit Targets - 23112021"
   output_folder_name             = "ceo-beat-visit-requirements"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Street_CPZ_Visit_Targets@23-11-2021_Latest_File.csv"
@@ -1871,7 +1871,7 @@ module "CEO_Visit_Timings_Full" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1BUI7Firtzt7Yskg2bIhLzj--S8KaF3WQ"
-  glue_job_name                  = "CEO Visit Timings_Full"
+  glue_job_name                  = "CEO Visit Timings Full"
   output_folder_name             = "ceo-visit-req-timings"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "CEO Visit Timings_Full.csv"
@@ -1903,7 +1903,7 @@ module "Citypay_Import" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1lErUkzqr5O3V4Y13QSjHu6PlVeEPBREa"
-  glue_job_name                  = "Citypay_Import"
+  glue_job_name                  = "Citypay Import"
   output_folder_name             = "citypay-payments"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Citypay_Import.csv"
@@ -1935,7 +1935,7 @@ module "FixedSchoolStreetVRMs" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1Lsrb0Zi_snxDgeF078hP1GT_p6GLvYsl"
-  glue_job_name                  = "FixedSchoolStreetVRMs"
+  glue_job_name                  = "Fixed School Street VRMs"
   output_folder_name             = "fixed-school-street-vrms"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "FixedSchoolStreetVRMs.csv"
@@ -1967,7 +1967,7 @@ module "BPLU_CLASS_PartyID_Address2" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1C229MLTUyXWloqph4KlutaBeU8YrwBfe"
-  glue_job_name                  = "BPLU_CLASS_PartyID_Address2"
+  glue_job_name                  = "BPLU CLASS PartyID Address 2"
   output_folder_name             = "licensing-pp-addresses"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "BPLU_CLASS, PartyID and Address2.csv"
@@ -1999,7 +1999,7 @@ module "Licensing_BLPU_Class_PP_Addresses" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1_oDVH8lMTCDsODyCERDOMB7R2-Ln7Vg-"
-  glue_job_name                  = "Licensing_BLPU_Class_PP_Addresses"
+  glue_job_name                  = "Licensing BLPU Class PP Addresses"
   output_folder_name             = "licensing-pp-addresses"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Licensing BLPU Class PP Addresses.csv"
@@ -2031,7 +2031,7 @@ module "LTN_London_Fields" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1JAv1vyNtCB1q-oV59eoVdTGfbvI6vL7s"
-  glue_job_name                  = "LTN_London_Fields"
+  glue_job_name                  = "LTN London Fields"
   output_folder_name             = "ltn-london-fields"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "LTN_London_Fields.csv"
@@ -2063,7 +2063,7 @@ module "OffenceCode" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1Mci0PtXcZ5FNzihbFTA7s2XckUQs5Se9"
-  glue_job_name                  = "OffenceCode"
+  glue_job_name                  = "Offence Code"
   output_folder_name             = "offence-code"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "OffenceCode.csv"
@@ -2095,7 +2095,7 @@ module "PD_Location_Machines" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1Xb9S4UwG1YA7OkMHST1fxOANRGJ5FMBa"
-  glue_job_name                  = "PD_Location_Machines"
+  glue_job_name                  = "PD Location Machines"
   output_folder_name             = "pd-location-machines"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "PD_Location_Machines.csv"
@@ -2127,7 +2127,7 @@ module "Ringg_Daily_Transactions_May_2022" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1VFkHrvQksmhmLRLgGgt6NBTHC8sREjwZ"
-  glue_job_name                  = "Ringg_Daily_Transactions_May_2022"
+  glue_job_name                  = "Ringg Daily Transactions May 2022"
   output_folder_name             = "ringgo-daily"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringg_Daily_Transactions_May_2022.csv"
@@ -2159,7 +2159,7 @@ module "Ringgo_Forecast_Mins" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "10HoVMwbrTUrIGiKZGcpUacHQh_s3xzsM"
-  glue_job_name                  = "Ringgo_Forecast_Mins"
+  glue_job_name                  = "Ringgo Forecast Mins"
   output_folder_name             = "ringgo-mins-forecast"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_Forecast_Mins.csv"
@@ -2191,7 +2191,7 @@ module "Ringgo_session_forecast" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1uK92S_2IYfNUmGnV9WmnaJrjQREkjoT3"
-  glue_job_name                  = "Ringgo_session_forecast"
+  glue_job_name                  = "Ringgo session forecast"
   output_folder_name             = "ringgo-session-forecast"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_session_forecast.csv"
@@ -2223,7 +2223,7 @@ module "School_Streets_19012022" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1DtnD_FLip4uOihzh539EtdjeJobSWWRA"
-  glue_job_name                  = "School_Streets_19012022"
+  glue_job_name                  = "School Streets 19012022"
   output_folder_name             = "school-street-camera-locations"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "School Streets_19012022.csv"
@@ -2255,7 +2255,7 @@ module "school_street_extra" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1IOX44y5v9unE_acaCrcJlpu4kU0Ht803"
-  glue_job_name                  = "school_street_extra"
+  glue_job_name                  = "school street extra"
   output_folder_name             = "school-street-uprn"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "school street extra.csv"
@@ -2287,7 +2287,7 @@ module "Voucher_Import" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1ZOdB9fL3z-x2k21dfSHyxpuZDr6tWbhl"
-  glue_job_name                  = "Voucher_Import"
+  glue_job_name                  = "Voucher Import"
   output_folder_name             = "visitor-voucher-forecast"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Voucher Import.csv"
