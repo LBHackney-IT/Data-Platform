@@ -684,7 +684,7 @@ module "parking_correspondence_performance_records_with_pcn" {
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   script_name                = "parking_correspondence_performance_records_with_pcn"
-  Glue_version                = "3.0"
+  glue_version               = "3.0"
 #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description            = "correspondence performance records with pcn"
 #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
@@ -702,7 +702,7 @@ module "parking_dc_liberator_latest_permit_status" {
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   script_name                = "parking_dc_liberator_latest_permit_status"
-  Glue_version                = "3.0"
+  glue_version               = "3.0"
 #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description            = "Parking Latest permit status from the Liberator Landing zone permit status table."
 #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
