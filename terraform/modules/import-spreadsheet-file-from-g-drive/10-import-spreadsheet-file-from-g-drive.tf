@@ -16,6 +16,7 @@ module "import_file_from_g_drive" {
   secrets_manager_kms_key                   = var.secrets_manager_kms_key
   workflow_names                            = [for job in module.import_data_from_spreadsheet_job : job.workflow_name]
   workflow_arns                             = [for job in module.import_data_from_spreadsheet_job : job.workflow_arn]
+  ingestion_schedule                        = var.ingestion_schedule
 }
 
 module "import_data_from_spreadsheet_job" {
