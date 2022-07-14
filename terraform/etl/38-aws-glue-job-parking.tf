@@ -694,7 +694,7 @@ module "parking_correspondence_performance_records_with_pcn" {
     "--environment"         = var.environment
   }
 }
-module "parking_dc_liberator_latest_permit_status.py" {
+module "parking_dc_liberator_latest_permit_status" {
   source                     = "../modules/aws-glue-job"
   department                 = module.department_parking_data_source
   job_name                   = "${local.short_identifier_prefix}parking_dc_liberator_latest_permit_status"
