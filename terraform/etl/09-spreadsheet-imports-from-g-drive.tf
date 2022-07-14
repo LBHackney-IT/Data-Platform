@@ -2064,7 +2064,7 @@ module "Hackney_downs_ltn" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1dnrICXGpp9l9P_0f-vpz4AMUl-M7HBh-"
   glue_job_name                  = "Hackney downs ltn"
-  output_folder_name             = "LTN_London_Fields"
+  output_folder_name             = "LTN_Hackney_Downs"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Hackney_downs_ltn.csv"
   worksheets = {
