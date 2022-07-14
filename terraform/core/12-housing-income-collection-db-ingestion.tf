@@ -14,33 +14,18 @@ module "housing_income_collection_database_ingestion" {
 }
 
 locals {
-  table_filter_expressions_housing_income_collection = local.is_live_environment ? {
-    actions              = "^housingfinancedbproduction_actions"
-    agreements           = "^housingfinancedbproduction_agreements"
-    agreement_states     = "^housingfinancedbproduction_agreement_states"
-    ar_internal_metadata = "^housingfinancedbproduction_ar_internal_metadata"
-    cases                = "^housingfinancedbproduction_cases"
-    case_priorities      = "^housingfinancedbproduction_case_priorities"
-    court_cases          = "^housingfinancedbproduction_court_cases"
-    delayed_jobs         = "^housingfinancedbproduction_delayed_jobs"
-    documents            = "^housingfinancedbproduction_documents"
-    evictions            = "^housingfinancedbproduction_evictions"
-    legacy_migrations    = "^housingfinancedbproduction_agreement_legacy_migrations"
-    schema_migrations    = "^housingfinancedbproduction_schema_migrations"
-    users                = "^housingfinancedbproduction_users"
-  } : {}
+  table_filter_expressions_housing_income_collection = local.is_live_environment ? "(^housingfinancedbproduction_actions$|^housingfinancedbproduction_agreements$|^housingfinancedbproduction_agreement_states$|^housingfinancedbproduction_ar_internal_metadata$|^housingfinancedbproduction_cases$|^housingfinancedbproduction_case_priorities$|^housingfinancedbproduction_court_cases$|^housingfinancedbproduction_delayed_jobs$|^housingfinancedbproduction_documents$|^housingfinancedbproduction_evictions$|^housingfinancedbproduction_agreement_legacy_migrations$|^housingfinancedbproduction_schema_migrations$|^housingfinancedbproduction_users$)" : ""
 }
 
 resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" {
   tags     = module.tags.values
-  for_each = local.table_filter_expressions_housing_income_collection
-  name     = "${local.short_identifier_prefix}housing-income-collection-table-${each.key}"
+  name     = "${local.short_identifier_prefix}housing-income-collection-tables"
   type     = "CONDITIONAL"
 
   actions {
-    job_name = module.ingest_housing_income_collection_database_to_housing_raw_zone[each.key].job_name
+    job_name = module.ingest_housing_income_collection_database_to_housing_raw_zone.job_name
     arguments = {
-      "--table_filter_expression" = each.value
+      "--table_filter_expression" = local.table_filter_expressions_housing_income_collection
     }
   }
 
@@ -53,14 +38,13 @@ resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" 
 }
 
 module "ingest_housing_income_collection_database_to_housing_raw_zone" {
-  for_each = local.table_filter_expressions_housing_income_collection
   tags     = module.tags.values
 
   source = "../modules/aws-glue-job"
 
   department = module.department_housing
 
-  job_name                   = "${local.short_identifier_prefix}Housing Income Collection Database Ingestion-${each.key}"
+  job_name                   = "${local.short_identifier_prefix}Housing Income Collection Database Ingestion"
   script_s3_object_key       = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
   environment                = var.environment
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
@@ -73,7 +57,7 @@ module "ingest_housing_income_collection_database_to_housing_raw_zone" {
     "--source_data_database"        = module.housing_income_collection_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/housing/"
     "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/housing/ingestion-details/"
-    "--table_filter_expression"     = each.value
+    "--table_filter_expression"     = local.table_filter_expressions_housing_income_collection
   }
   crawler_details = {
     database_name      = module.department_housing.raw_zone_catalog_database_name
