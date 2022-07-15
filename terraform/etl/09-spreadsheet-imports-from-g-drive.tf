@@ -240,7 +240,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220209" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1oWAo5-hmTnBH5lEUzjNkBf7-GxxfVXMG"
   glue_job_name                  = "ETA_Decisions - 20220209"
-  output_folder_name             = "eta_decision_records"
+  output_folder_name             = "g-drive/eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220209 - ETA_Decisions - GDS or Qlik data Load - records.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -273,7 +273,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220317" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1BgC7fEHRpOHO1NwPc8_HuIa9hJvDFqbH"
   glue_job_name                  = "ETA_Decisions - 20220317"
-  output_folder_name             = "eta_decision_records"
+  output_folder_name             = "g-drive/eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220317 - ETA_Decisions - GDS or Qlik data Load - records.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -306,7 +306,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220401" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1XqnMJR7-rjLl2MbVKChqRWu-DVWIACyr"
   glue_job_name                  = "ETA_Decisions - 20220401"
-  output_folder_name             = "eta_decision_records"
+  output_folder_name             = "g-drive/eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220401 - ETA_Decisions - GDS or Qlik data Load - records UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -339,7 +339,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220506" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1J_VdrUDgziXjYC6uy716jtFcEcZqjQP1"
   glue_job_name                  = "ETA_Decisions - 20220506"
-  output_folder_name             = "eta_decision_records"
+  output_folder_name             = "g-drive/eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220506 - ETA_Decisions - GDS or Qlik data Load UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -372,7 +372,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220420" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1FaBQhl-uoUMIIKppvcDsvctbqmiKzHen"
   glue_job_name                  = "ETA_Decisions - 20220420"
-  output_folder_name             = "eta_decision_records"
+  output_folder_name             = "g-drive/eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220420 - ETA_Decisions - GDS or Qlik data Load - records.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -405,7 +405,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220616" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1zNiIZNrv-vKZEuFBrzBzEYU93pclygYd"
   glue_job_name                  = "ETA_Decisions - 20220616"
-  output_folder_name             = "eta_decision_records"
+  output_folder_name             = "g-drive/eta_decision_records"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220616 - ETA_Decisions - GDS or Qlik data Load - records - UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -438,7 +438,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220427" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1iDrqKGmIIpSkdnCoeAVmEJ0yFpgQXXvA"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG - 20220427"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220427 - PCNs VRM match to Permits VRM and NLPG by Registered and Current addresses Post Code - 13 months - final in glue via athena no comma fields removed dups UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -471,7 +471,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220511" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1bVGcBiOKqn4fl95Ha3V7tRP0ZYZLwVR9"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG - 20220511"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220511 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -504,7 +504,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220512" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "11SXSI88j4ae06a9jGaQ6Gdt0MGvYXbcB"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG - 20220512"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220512 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -537,7 +537,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220513" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1xNXCXZotqGiPkL7KnfvfiUzV5UaYwqlH"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG - 20220513"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220513 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -570,7 +570,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220516" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "136qMDWhKA757B_NsfnQXEVfNUhT72eEn"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG - 20220516"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220516 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -603,7 +603,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220629" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1jzSA1XA20tvkXw9s5QxhQPVNrcBtYlkk"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220629"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220629 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -636,7 +636,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220628" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1orQnCHboCUp22g1588MXSLDikzeI8dn5"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220628"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220628 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -669,7 +669,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220627" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "12SyIsc54-nsYTcbHT72AMYlOco_VX88K"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220627"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220627 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -702,7 +702,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220624" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1jyxLP2FYVqrCUOoTzAlzS0mp_8CVWWyi"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220624"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220624 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -735,7 +735,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220623" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1dssQylsAqF5pcUfUyrjVY0qhxQOAmAOX"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220623"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220623 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -768,7 +768,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220622" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1AY0HGOuUWdhZFeg1XD8RCCf9k0qhQpJQ"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220622"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220622 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -801,7 +801,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220621" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1bECWtpHbCVhPio4PrPXsct-_Mn_fVnBk"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220621"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220621 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -834,7 +834,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220617" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1ufP4bxO7UzriiULVj2bzK2AEPYEnyHlo"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220617"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220617 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -867,7 +867,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220616" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1nWDwJi9x14s6foBNKj8S6ZszB5b2XGJ7"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220616"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220616 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -900,7 +900,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220615" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "111w_v78KmEenZUdGGGmRIN0umJm7NuOT"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220615"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220615 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -933,7 +933,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220614" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "13tb9CR5jMr_NotTUivC5BzzKmco2NwTu"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220614"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220614 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -966,7 +966,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220613" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1XJu46qRaF3fT81vGEUuyVT0svcrp4awf"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220613"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220613 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -999,7 +999,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220601" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1n4cmLgh5Isw7-n2Kiy8TVw7Npylu2K-N"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220601"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220601 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1032,7 +1032,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220531" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1BeAJTPIPfEpQmUP7qwvkebUs5dS4xYv5"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220531"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220531 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1065,7 +1065,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220530" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1Qhs9UvqMmX1EUc8Fq7LYR9BVUr5YOwhK"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220530"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220530 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1098,7 +1098,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220527" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "12nLcB6gK84LMcberT0EywSduFxu44Qmw"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220527"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220527 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1131,7 +1131,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220526" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1xbUUP9Veagfj5qncFYaqEKL9YL0Z7hME"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220525"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220525 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1164,7 +1164,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220524" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1WbiaLUn4dCwEMkvGFeyN4C4o201wL7C1"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220524"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220524 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1197,7 +1197,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220523" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1KYNvazjl0H2zYoRrFwaBKzevvN4hUNZQ"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220523"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220523 - PCN Permits VRM NLPG LLPG matching - Last 3 months with Company filter UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1230,7 +1230,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220519" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1CVkaYbvE475F0C1JTxBu_ZgFWtjKaMTG"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220519"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220519 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1263,7 +1263,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220518" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1HMtukW52hPrEmreezurwkHqd1d99-umJ"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220518"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220518 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1296,7 +1296,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220517" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "120bDNemRwC-f_w4czInbAlte0sttWh_t"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220517"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220517 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1329,7 +1329,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220714" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1mvzKB2HbQBOj3-tU9buPw5eSVGglQoPn"
   glue_job_name                  = "PCN Permits VRM NLPG LLPG matching - 20220714"
-  output_folder_name             = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
+  output_folder_name             = "g-drive/parking_pcn_permit_nlpg_llpg_matching_via_athena"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220714 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1362,7 +1362,7 @@ module "eta_decision" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1__tn7nTss2OsVURylMmqNq8zzE20ke2T"
   glue_job_name                  = "ETA_Decisions"
-  output_folder_name             = "ETA_Decision"
+  output_folder_name             = "g-drive/ETA_Decision"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "ETA_Decision.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1395,7 +1395,7 @@ module "permits_consultation_survey_20220506" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1iLScmA-tIvyoqOj3smbzkvzRhnfkDxOS"
   glue_job_name                  = "Permits Consultation Survey 20220506"
-  output_folder_name             = "Parking Permit Survey Consultation Hub"
+  output_folder_name             = "g-drive/Parking Permit Survey Consultation Hub"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2022-05-06-13-31-09 UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1428,7 +1428,7 @@ module "permits_consultation_survey_20210602" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1kkTU-FKe4b24lPQf0DGnOT3gPndHHY8S"
   glue_job_name                  = "Permits Consultation Survey 20210602"
-  output_folder_name             = "Parking Permit Survey Consultation Hub"
+  output_folder_name             = "g-drive/Parking Permit Survey Consultation Hub"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2021-06-02-11-58-45 UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1461,7 +1461,7 @@ module "permits_consultation_survey_20210708" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1MAFFPGkyX5j1CrBQY41VDRW9OuvTgnxp"
   glue_job_name                  = "Permits Consultation Survey 20210708"
-  output_folder_name             = "Parking Permit Survey Consultation Hub"
+  output_folder_name             = "g-drive/Parking Permit Survey Consultation Hub"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2021-07-08-14-32-21.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1494,7 +1494,7 @@ module "permits_consultation_survey_20211103" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1NZp50_o_dp10HuaZ0DzJBsCOiWDpab_w"
   glue_job_name                  = "Permits Consultation Survey 20211103"
-  output_folder_name             = "Parking Permit Survey Consultation Hub"
+  output_folder_name             = "g-drive/Parking Permit Survey Consultation Hub"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2021-11-03-12-23-16.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1527,7 +1527,7 @@ module "permits_consultation_survey_20211104" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1s8KU2cqY7Kjn_WAIxbZjwr8UD6yNPBeA"
   glue_job_name                  = "Permits Consultation Survey 20211104"
-  output_folder_name             = "Parking Permit Survey Consultation Hub"
+  output_folder_name             = "g-drive/Parking Permit Survey Consultation Hub"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2021-11-04-11-12-22.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1560,7 +1560,7 @@ module "permits_consultation_survey_20220601" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1VYcNHPH2DRk4qyHhS2ZPzc9-s4OECJbG"
   glue_job_name                  = "Permits Consultation Survey 20220601"
-  output_folder_name             = "Parking Permit Survey Consultation Hub"
+  output_folder_name             = "g-drive/Parking Permit Survey Consultation Hub"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2022-06-01-10-52-16 - UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1593,7 +1593,7 @@ module "puzzel_total_overview_20210526" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1BBqhNGiZXVQBTXmLGKNXUqb11naAyiAS"
   glue_job_name                  = "Puzzel TotOview 20210526"
-  output_folder_name             = "Puzzel"
+  output_folder_name             = "g-drive/Puzzel"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20210526 - Total Overview 10 05 2021 - 25 05 2021 - TotOview.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1626,7 +1626,7 @@ module "puzzel_total_overview_20210526_UTF8" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1JFMumtYhEcOJhCyXUve4QfxAmNYmLkmp"
   glue_job_name                  = "Puzzel TotOview 20210526 UTF8"
-  output_folder_name             = "Puzzel"
+  output_folder_name             = "g-drive/Puzzel"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20210526 - Total Overview 10 05 2021 - 25 05 2021 - TotOview UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1659,7 +1659,7 @@ module "calendar" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "11hIukvOsZB0l2yNzMiPkl59vTXV5U0jI"
   glue_job_name                  = "Calendar"
-  output_folder_name             = "Calendar"
+  output_folder_name             = "g-drive/Calendar"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "calendar.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1692,7 +1692,7 @@ module "Cash_Collection_Date" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1ULDbN0CxL3AoLAznWMhphLiVL7mhRSH9"
   glue_job_name                  = "Cash Collection Date"
-  output_folder_name             = "Cash_Collection"
+  output_folder_name             = "g-drive/Cash_Collection"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cash_Collection_Date.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1725,7 +1725,7 @@ module "Cedar_Backing_Data_May_2022" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "18jmhuuGc6okzhsGrrrChCOyYX3KCnxeN"
   glue_job_name                  = "Cedar Backing Data May 2022"
-  output_folder_name             = "Cedar_Backing_Data"
+  output_folder_name             = "g-drive/Cedar_Backing_Data"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cedar Backing May_2022.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1758,7 +1758,7 @@ module "Cedar_Parking_Payments_May_2022" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1sfGLjFT5OiC71HwjyvmMiLg5xNdtGA6T"
   glue_job_name                  = "Cedar Parking Payments May 2022"
-  output_folder_name             = "Cedar_Parking_Payments"
+  output_folder_name             = "g-drive/Cedar_Parking_Payments"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cedar_Parking_Payments_May_2022.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1791,7 +1791,7 @@ module "CEO_Beat_Streets_v2" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1Xb8sL8zvY-fLl4jLBIWzTllj7c_NM-Ob"
   glue_job_name                  = "CEO Beat Streets v2"
-  output_folder_name             = "CEO_Beat_Streets"
+  output_folder_name             = "g-drive/CEO_Beat_Streets"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Copy of Beat Streets v2.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1824,7 +1824,7 @@ module "CEO_Beat_Streets_within_zones_latest" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1hHBzrOFHnz5lUSemKFyIugIc-TtIW13c"
   glue_job_name                  = "Streets within Zones - latest"
-  output_folder_name             = "CEO_Beat_Streets"
+  output_folder_name             = "g-drive/CEO_Beat_Streets"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Streets within Zones - latest.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1857,7 +1857,7 @@ module "CEO_Beat_Streets_within_zones_update" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1QF3vpZQkID5FzWUfqSyPagwzy2tkZ-ob"
   glue_job_name                  = "Streets within Zones - Update"
-  output_folder_name             = "CEO_Beat_Streets"
+  output_folder_name             = "g-drive/CEO_Beat_Streets"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Streets within Zones - Update.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1890,7 +1890,7 @@ module "Street_CPZ_Visit_Targets_23112021" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1yzTmRgWcOHEYN5aWAWDz8olUGEB7saLh"
   glue_job_name                  = "Street CPZ Visit Targets - 23112021"
-  output_folder_name             = "CEO_Beat_Visit_Requirements"
+  output_folder_name             = "g-drive/CEO_Beat_Visit_Requirements"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Street_CPZ_Visit_Targets@23-11-2021_Latest_File.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1923,7 +1923,7 @@ module "CEO_Visit_Timings_Full" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1BUI7Firtzt7Yskg2bIhLzj--S8KaF3WQ"
   glue_job_name                  = "CEO Visit Timings Full"
-  output_folder_name             = "CEO_Visit_Req_Timings"
+  output_folder_name             = "g-drive/CEO_Visit_Req_Timings"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "CEO Visit Timings_Full.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1956,7 +1956,7 @@ module "Citypay_Import" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1lErUkzqr5O3V4Y13QSjHu6PlVeEPBREa"
   glue_job_name                  = "Citypay Import"
-  output_folder_name             = "CityPay_Payments"
+  output_folder_name             = "g-drive/CityPay_Payments"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Citypay_Import.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -1989,7 +1989,7 @@ module "FixedSchoolStreetVRMs" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1Lsrb0Zi_snxDgeF078hP1GT_p6GLvYsl"
   glue_job_name                  = "Fixed School Street VRMs"
-  output_folder_name             = "Fixed_School_Street_VRMs"
+  output_folder_name             = "g-drive/Fixed_School_Street_VRMs"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "FixedSchoolStreetVRMs.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2022,7 +2022,7 @@ module "BPLU_CLASS_PartyID_Address2" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1C229MLTUyXWloqph4KlutaBeU8YrwBfe"
   glue_job_name                  = "BPLU CLASS PartyID Address 2"
-  output_folder_name             = "Licensing_PP_Addresses"
+  output_folder_name             = "g-drive/Licensing_PP_Addresses"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "BPLU_CLASS, PartyID and Address2.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2055,7 +2055,7 @@ module "Licensing_BLPU_Class_PP_Addresses" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1_oDVH8lMTCDsODyCERDOMB7R2-Ln7Vg-"
   glue_job_name                  = "Licensing BLPU Class PP Addresses"
-  output_folder_name             = "Licensing_PP_Addresses"
+  output_folder_name             = "g-drive/Licensing_PP_Addresses"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Licensing BLPU Class PP Addresses.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2088,7 +2088,7 @@ module "LTN_London_Fields" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1JAv1vyNtCB1q-oV59eoVdTGfbvI6vL7s"
   glue_job_name                  = "LTN London Fields"
-  output_folder_name             = "LTN_London_Fields"
+  output_folder_name             = "g-drive/LTN_London_Fields"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "LTN_London_Fields.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2121,7 +2121,7 @@ module "Hackney_downs_ltn" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1dnrICXGpp9l9P_0f-vpz4AMUl-M7HBh-"
   glue_job_name                  = "Hackney downs ltn"
-  output_folder_name             = "LTN_Hackney_Downs"
+  output_folder_name             = "g-drive/LTN_Hackney_Downs"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Hackney_downs_ltn.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2154,7 +2154,7 @@ module "OffenceCode" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1Mci0PtXcZ5FNzihbFTA7s2XckUQs5Se9"
   glue_job_name                  = "Offence Code"
-  output_folder_name             = "Offence_Code"
+  output_folder_name             = "g-drive/Offence_Code"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "OffenceCode.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2187,7 +2187,7 @@ module "PD_Location_Machines" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1Xb9S4UwG1YA7OkMHST1fxOANRGJ5FMBa"
   glue_job_name                  = "PD Location Machines"
-  output_folder_name             = "PD_Location_Machines"
+  output_folder_name             = "g-drive/PD_Location_Machines"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "PD_Location_Machines.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2220,7 +2220,7 @@ module "Ringgo_Daily_Transactions_May_2022" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1VFkHrvQksmhmLRLgGgt6NBTHC8sREjwZ"
   glue_job_name                  = "Ringg Daily Transactions May 2022"
-  output_folder_name             = "Ringgo_Daily"
+  output_folder_name             = "g-drive/Ringgo_Daily"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringg_Daily_Transactions_May_2022.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2253,7 +2253,7 @@ module "Ringgo_Forecast_Mins" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "10HoVMwbrTUrIGiKZGcpUacHQh_s3xzsM"
   glue_job_name                  = "Ringgo Forecast Mins"
-  output_folder_name             = "Ringgo_Mins_Forecast"
+  output_folder_name             = "g-drive/Ringgo_Mins_Forecast"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_Forecast_Mins.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2286,7 +2286,7 @@ module "Ringgo_session_forecast" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1uK92S_2IYfNUmGnV9WmnaJrjQREkjoT3"
   glue_job_name                  = "Ringgo session forecast"
-  output_folder_name             = "Ringgo_Session_Forecast"
+  output_folder_name             = "g-drive/Ringgo_Session_Forecast"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_session_forecast.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2319,7 +2319,7 @@ module "School_Streets_19012022" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1DtnD_FLip4uOihzh539EtdjeJobSWWRA"
   glue_job_name                  = "School Streets 19012022"
-  output_folder_name             = "School_Street_Camera_Locations"
+  output_folder_name             = "g-drive/School_Street_Camera_Locations"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "School Streets_19012022.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2352,7 +2352,7 @@ module "school_street_extra" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1IOX44y5v9unE_acaCrcJlpu4kU0Ht803"
   glue_job_name                  = "school street extra"
-  output_folder_name             = "School_Street_UPRN"
+  output_folder_name             = "g-drive/School_Street_UPRN"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "school street extra.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
@@ -2385,7 +2385,7 @@ module "Voucher_Import" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1ZOdB9fL3z-x2k21dfSHyxpuZDr6tWbhl"
   glue_job_name                  = "Voucher Import"
-  output_folder_name             = "Visitor_Voucher_Forecast"
+  output_folder_name             = "g-drive/Visitor_Voucher_Forecast"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Voucher Import.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
