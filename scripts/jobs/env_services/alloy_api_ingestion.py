@@ -6,8 +6,6 @@ import sys
 import time
 import zipfile
 
-import boto3
-import pandas as pd
 import requests
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
@@ -22,7 +20,7 @@ from helpers.helpers import (
     get_secret,
     table_exists_in_catalog,
 )
-from pyspark.context import SparkContext
+from pyspark.context import SparkContext, SparkFiles
 from pyspark.sql import SparkSession, SQLContext
 
 
@@ -101,13 +99,11 @@ if __name__ == "__main__":
     args = getResolvedOptions(sys.argv, ["JOB_NAME"])
     sc = SparkContext.getOrCreate()
     glue_context = GlueContext(sc)
+    sqlContext = SQLContext(sc)
     spark = SparkSession(sc)
     logger = glue_context.get_logger()
     job = Job(glue_context)
     job.init(args["JOB_NAME"], args)
-    sparkContext = SparkContext.getOrCreate()
-    glueContext = GlueContext(sparkContext)
-    sqlContext = SQLContext(sparkContext)
 
     resource = get_glue_env_var("resource", "")
     bucket_target = get_glue_env_var("s3_bucket_target", "")
@@ -181,9 +177,9 @@ if __name__ == "__main__":
         sparkDynamicDataFrame = sparkDynamicDataFrame.na.drop("all")
         sparkDynamicDataFrame = add_import_time_columns(sparkDynamicDataFrame)
         dataframe = DynamicFrame.fromDF(
-            sparkDynamicDataFrame, glueContext, f"alloy_{resource}"
+            sparkDynamicDataFrame, glue_context, f"alloy_{resource}"
         )
-        parquetData = glueContext.write_dynamic_frame.from_options(
+        parquetData = glue_context.write_dynamic_frame.from_options(
             frame=dataframe,
             connection_type="s3",
             connection_options={"path": s3_target_url, "partitionKeys": PARTITION_KEYS},
