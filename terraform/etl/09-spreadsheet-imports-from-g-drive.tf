@@ -244,6 +244,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220209" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220209 - ETA_Decisions - GDS or Qlik data Load - records.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -277,6 +278,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220317" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220317 - ETA_Decisions - GDS or Qlik data Load - records.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -310,6 +312,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220401" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220401 - ETA_Decisions - GDS or Qlik data Load - records UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -343,6 +346,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220506" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220506 - ETA_Decisions - GDS or Qlik data Load UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -376,6 +380,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220420" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220420 - ETA_Decisions - GDS or Qlik data Load - records.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -409,6 +414,7 @@ module "eta_decision_records_gds_or_qlik_data_load_records_20220616" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220616 - ETA_Decisions - GDS or Qlik data Load - records - UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -442,6 +448,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220427" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220427 - PCNs VRM match to Permits VRM and NLPG by Registered and Current addresses Post Code - 13 months - final in glue via athena no comma fields removed dups UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -475,6 +482,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220511" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220511 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -508,6 +516,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220512" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220512 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -541,6 +550,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220513" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220513 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -574,6 +584,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220516" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220516 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -607,6 +618,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220629" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220629 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -640,6 +652,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220628" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220628 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -673,6 +686,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220627" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220627 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -706,6 +720,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220624" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220624 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -739,6 +754,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220623" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220623 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -772,6 +788,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220622" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220622 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -805,6 +822,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220621" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220621 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -838,6 +856,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220617" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220617 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -871,6 +890,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220616" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220616 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -904,6 +924,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220615" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220615 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -937,6 +958,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220614" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220614 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -970,6 +992,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220613" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220613 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1003,6 +1026,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220601" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220601 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1036,6 +1060,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220531" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220531 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1069,6 +1094,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220530" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220530 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1102,6 +1128,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220527" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220527 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1135,6 +1162,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220526" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220525 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1168,6 +1196,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220524" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220524 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1201,6 +1230,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220523" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220523 - PCN Permits VRM NLPG LLPG matching - Last 3 months with Company filter UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1234,6 +1264,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220519" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220519 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1267,6 +1298,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220518" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220518 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1300,6 +1332,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220517" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220517 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1333,6 +1366,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220714" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220714 - PCN Permits VRM NLPG LLPG matching - Last 3 months - UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1366,6 +1400,7 @@ module "parking_pcn_permit_nlpg_llpg_matching_via_athena_20220715" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20220715 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1399,6 +1434,7 @@ module "eta_decision" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "ETA_Decision.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1432,6 +1468,7 @@ module "permits_consultation_survey_20220506" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2022-05-06-13-31-09 UTF-8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1465,6 +1502,7 @@ module "permits_consultation_survey_20210602" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2021-06-02-11-58-45 UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1498,6 +1536,7 @@ module "permits_consultation_survey_20210708" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2021-07-08-14-32-21.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1531,6 +1570,7 @@ module "permits_consultation_survey_20211103" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2021-11-03-12-23-16.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1564,6 +1604,7 @@ module "permits_consultation_survey_20211104" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2021-11-04-11-12-22.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1597,6 +1638,7 @@ module "permits_consultation_survey_20220601" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Permits Consultation Survey - export-2022-06-01-10-52-16 - UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1630,6 +1672,7 @@ module "puzzel_total_overview_20210526" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20210526 - Total Overview 10 05 2021 - 25 05 2021 - TotOview.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1663,6 +1706,7 @@ module "puzzel_total_overview_20210526_UTF8" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "20210526 - Total Overview 10 05 2021 - 25 05 2021 - TotOview UTF8.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1696,6 +1740,7 @@ module "calendar" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "calendar.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1729,6 +1774,7 @@ module "Cash_Collection_Date" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cash_Collection_Date_June_2022.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1762,6 +1808,7 @@ module "Cedar_Backing_Data" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cedar Backing June 2022.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1795,6 +1842,7 @@ module "Cedar_Parking_Payments" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cedar_Parking_Payments_June_2022.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1828,6 +1876,7 @@ module "CEO_Beat_Streets_v2" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Copy of Beat Streets v2.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1861,6 +1910,7 @@ module "CEO_Beat_Streets_within_zones_latest" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Streets within Zones - latest.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1894,6 +1944,7 @@ module "CEO_Beat_Streets_within_zones_update" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Streets within Zones - Update.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1927,6 +1978,7 @@ module "Street_CPZ_Visit_Targets_23112021" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Street_CPZ_Visit_Targets@23-11-2021_Latest_File.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1960,6 +2012,7 @@ module "CEO_Visit_Timings_Full" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "CEO Visit Timings_Full.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1993,6 +2046,7 @@ module "Citypay_Import" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Citypay_Import_June_2022.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2026,6 +2080,7 @@ module "FixedSchoolStreetVRMs" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "FixedSchoolStreetVRMs.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2059,6 +2114,7 @@ module "BPLU_CLASS_PartyID_Address2" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "BPLU_CLASS, PartyID and Address2.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2092,6 +2148,7 @@ module "Licensing_BLPU_Class_PP_Addresses" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Licensing BLPU Class PP Addresses.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2125,6 +2182,7 @@ module "LTN_London_Fields" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "LTN_London_Fields.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2158,6 +2216,7 @@ module "Hackney_downs_ltn" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Hackney_downs_ltn.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2191,6 +2250,7 @@ module "OffenceCode" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "OffenceCode.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2224,6 +2284,7 @@ module "PD_Location_Machines" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "PD_Location_Machines.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2257,6 +2318,7 @@ module "Ringgo_Daily_Transactions" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_Daily_June_2022.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2290,6 +2352,7 @@ module "Ringgo_Forecast_Mins" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_Forecast_Mins.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2323,6 +2386,7 @@ module "Ringgo_session_forecast" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_session_forecast.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2356,6 +2420,7 @@ module "School_Streets_19012022" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "School Streets_19012022.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2389,6 +2454,7 @@ module "school_street_extra" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "school street extra.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -2422,6 +2488,7 @@ module "Voucher_Import" {
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Voucher Import.csv"
   ingestion_schedule             = "cron(0 22 * * ? *)"
+  enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0

@@ -9,3 +9,9 @@ variable "glue_role_arn" {
   type        = string
   default     = null
 }
+
+variable "enable_bookmarking" {
+  description = "Enable glue job bookmarking"
+  type        = bool
+  default     = false
+}

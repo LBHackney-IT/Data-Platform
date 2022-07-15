@@ -204,3 +204,9 @@ variable "glue_version" {
     error_message = "Glue version supplied is not valid, must be \"1.0\", \"2.0\" or \"3.0\"."
   }
 }
+
+variable "enable_bookmarking" {
+  description = "Enable glue job bookmarking"
+  type        = bool
+  default     = false
+}

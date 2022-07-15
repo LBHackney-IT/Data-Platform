@@ -43,4 +43,5 @@ module "import_data_from_spreadsheet_job" {
   worksheet_name                 = each.value.worksheet_name
   identifier_prefix              = var.identifier_prefix
   spark_ui_output_storage_id     = var.spark_ui_output_storage_id
+  enable_bookmarking             = var.enable_bookmarking
 }

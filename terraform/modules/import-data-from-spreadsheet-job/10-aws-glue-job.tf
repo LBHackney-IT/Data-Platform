@@ -27,7 +27,8 @@ module "spreadsheet_import" {
       }
     })
   }
-  trigger_enabled = false
+  trigger_enabled    = false
+  enable_bookmarking = var.enable_bookmarking
 }
 
 resource "aws_glue_workflow" "workflow" {

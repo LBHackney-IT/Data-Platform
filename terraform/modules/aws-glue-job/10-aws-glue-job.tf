@@ -25,8 +25,9 @@ resource "aws_s3_bucket_object" "job_script" {
 }
 
 locals {
-  object_key      = var.script_s3_object_key == null ? aws_s3_bucket_object.job_script[0].key : var.script_s3_object_key
-  job_name_prefix = local.environment == "stg" ? "stg " : ""
+  object_key          = var.script_s3_object_key == null ? aws_s3_bucket_object.job_script[0].key : var.script_s3_object_key
+  job_name_prefix     = local.environment == "stg" ? "stg " : ""
+  job_bookmark_option = var.enable_bookmarking ? "job-bookmark-enable" : "job-bookmark-disable"
 }
 
 resource "aws_glue_job" "job" {
@@ -57,6 +58,7 @@ resource "aws_glue_job" "job" {
       "--enable-continuous-cloudwatch-log" = "true"
       "--enable-spark-ui"                  = "true"
       "--spark-event-logs-path"            = local.spark_ui_storage
+      "--job-bookmark-option"              = local.job_bookmark_option
   })
 }
 
