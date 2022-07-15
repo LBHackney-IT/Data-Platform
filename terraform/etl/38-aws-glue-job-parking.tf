@@ -712,3 +712,21 @@ module "parking_dc_liberator_latest_permit_status" {
     "--environment"         = var.environment
   }
 }
+module "parking_dc_liberator_permit_llpg_street_records" {
+  source                     = "../modules/aws-glue-job"
+  department                 = module.department_parking_data_source
+  job_name                   = "${local.short_identifier_prefix}parking_dc_liberator_permit_llpg_street_records"
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                = "parking_dc_liberator_permit_llpg_street_records"
+  glue_version               = "3.0"
+  #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  job_description = "Street records for the permit llpg table in the liberator raw zone"
+  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled = false
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disabled"
+    "--environment"         = var.environment
+  }
+}
