@@ -159,7 +159,7 @@ resource "aws_cloudwatch_event_rule" "ingestion_schedule" {
   schedule_expression = var.ingestion_schedule
 }
 
-resource "aws_cloudwatch_event_target" "run_lambda_every_day_at_6" {
+resource "aws_cloudwatch_event_target" "run_lambda" {
   rule      = aws_cloudwatch_event_rule.ingestion_schedule.name
   target_id = "g_drive_to_s3_copier_lambda"
   arn       = aws_lambda_function.g_drive_to_s3_copier_lambda.arn
@@ -171,4 +171,14 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_g_drive_to_s3_copier"
   function_name = aws_lambda_function.g_drive_to_s3_copier_lambda.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.ingestion_schedule.arn
+}
+
+moved {
+  from = aws_cloudwatch_event_rule.every_day_at_6
+  to   = aws_cloudwatch_event_rule.ingestion_schedule
+}
+
+moved {
+  from = aws_cloudwatch_event_target.run_lambda_every_day_at_6
+  to   = aws_cloudwatch_event_target.run_lambda
 }
