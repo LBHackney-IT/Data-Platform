@@ -12,6 +12,10 @@ data "aws_iam_policy_document" "lambda_assume_role" {
   }
 }
 
+locals {
+  command = var.runtime_language == "python3.8" ? "make install-requirements" : (var.runtime_language == "nodejs14.x" ? "npm install" : 0)
+}
+
 resource "aws_iam_role" "lambda" {
   tags               = var.tags
   name               = lower("${var.identifier_prefix}${var.lambda_name}")
@@ -90,38 +94,23 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 }
 
 
-resource "null_resource" "run_make_install_requirements" {
-  count = var.runtime_language == "python3.8" ? 1 : 0
+resource "null_resource" "run_install_requirements" {
   triggers = {
     dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
   }
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command     = "make install-requirements"
+    command     = local.command
     working_dir = "${path.module}/../../../lambdas/${local.lambda_name_underscore}/"
   }
 }
 
-resource "null_resource" "run_npm_install" {
-  count = var.runtime_language == "nodejs14.x" ? 1 : 0
-  triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
-  }
-
-  provisioner "local-exec" {
-    interpreter = ["bash", "-c"]
-    command     = "npm install"
-    working_dir = "${path.module}/../../../lambdas/${local.lambda_name_underscore}/"
-  }
-}
-
-data "null_data_source" "wait_for_python_lambda_exporter" {
-  count = var.runtime_language == "python3.8" ? 1 : 0
+data "null_data_source" "wait_for_lambda_exporter" {
   inputs = {
     # This ensures that this data resource will not be evaluated until
     # after the null_resource has been created.
-    lambda_exporter_id = null_resource.run_make_install_requirements[count.index].id
+    lambda_exporter_id = null_resource.run_install_requirements.id
 
     # This value gives us something to implicitly depend on
     # in the archive_file below.
@@ -129,62 +118,30 @@ data "null_data_source" "wait_for_python_lambda_exporter" {
   }
 }
 
-data "null_data_source" "wait_for_node_lambda_exporter" {
-  count = var.runtime_language == "nodejs14.x" ? 1 : 0
-  inputs = {
-    # This ensures that this data resource will not be evaluated until
-    # after the null_resource has been created.
-    lambda_exporter_id = null_resource.run_npm_install[count.index].id
-
-    # This value gives us something to implicitly depend on
-    # in the archive_file below.
-    source_dir = "../../lambdas/${local.lambda_name_underscore}"
-  }
-}
-
-data "archive_file" "python_lambda" {
-  count       = var.runtime_language == "python3.8" ? 1 : 0
+data "archive_file" "lambda" {
   type        = "zip"
-  source_dir  = data.null_data_source.wait_for_python_lambda_exporter[count.index].outputs["source_dir"]
+  source_dir  = data.null_data_source.wait_for_lambda_exporter.outputs["source_dir"]
   output_path = "../../lambdas/${local.lambda_name_underscore}.zip"
 }
 
-data "archive_file" "node_lambda" {
-  count       = var.runtime_language == "nodejs14.x" ? 1 : 0
-  type        = "zip"
-  source_dir  = data.null_data_source.wait_for_node_lambda_exporter[count.index].outputs["source_dir"]
-  output_path = "../../lambdas/${local.lambda_name_underscore}.zip"
-}
-
-resource "aws_s3_bucket_object" "python_lambda" {
-  count       = var.runtime_language == "python3.8" ? 1 : 0
+resource "aws_s3_bucket_object" "lambda" {
   bucket      = var.lambda_artefact_storage_bucket
   key         = "${local.lambda_name_underscore}.zip"
-  source      = data.archive_file.python_lambda[count.index].output_path
+  source      = data.archive_file.lambda.output_path
   acl         = "private"
-  source_hash = null_resource.run_make_install_requirements[count.index].triggers["dir_sha1"]
+  source_hash = null_resource.run_install_requirements.triggers["dir_sha1"]
 }
 
-resource "aws_s3_bucket_object" "node_lambda" {
-  count       = var.runtime_language == "nodejs14.x" ? 1 : 0
-  bucket      = var.lambda_artefact_storage_bucket
-  key         = "${local.lambda_name_underscore}.zip"
-  source      = data.archive_file.node_lambda[count.index].output_path
-  acl         = "private"
-  source_hash = null_resource.run_npm_install[count.index].triggers["dir_sha1"]
-}
-
-resource "aws_lambda_function" "python_lambda" {
-  count = var.runtime_language == "python3.8" ? 1 : 0
-  tags  = var.tags
+resource "aws_lambda_function" "lambda" {
+  tags = var.tags
 
   role             = aws_iam_role.lambda.arn
   handler          = var.lambda_handler
   runtime          = var.runtime_language
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
-  s3_key           = aws_s3_bucket_object.python_lambda[count.index].key
-  source_code_hash = data.archive_file.python_lambda[count.index].output_base64sha256
+  s3_key           = aws_s3_bucket_object.lambda.key
+  source_code_hash = data.archive_file.lambda.output_base64sha256
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
 
@@ -196,75 +153,29 @@ resource "aws_lambda_function" "python_lambda" {
   }
 }
 
-resource "aws_lambda_function" "node_lambda" {
-  count = var.runtime_language == "nodejs14.x" ? 1 : 0
-  tags  = var.tags
-
-  role             = aws_iam_role.lambda.arn
-  handler          = var.lambda_handler
-  runtime          = var.runtime_language
-  function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
-  s3_bucket        = var.lambda_artefact_storage_bucket
-  s3_key           = aws_s3_bucket_object.node_lambda[count.index].key
-  source_code_hash = data.archive_file.node_lambda[count.index].output_base64sha256
-  timeout          = var.lambda_timeout
-  memory_size      = var.lambda_memory_size
-
-  ephemeral_storage {
-    size = var.ephemeral_storage
-  }
-  environment {
-    variables = var.lambda_environment_variables
-  }
-}
-
-resource "aws_lambda_function_event_invoke_config" "python_lambda" {
-  count                  = var.runtime_language == "python3.8" ? 1 : 0
-  function_name          = aws_lambda_function.python_lambda[count.index].function_name
+resource "aws_lambda_function_event_invoke_config" "lambda" {
+  function_name          = aws_lambda_function.lambda.function_name
   maximum_retry_attempts = 0
   qualifier              = "$LATEST"
 }
 
-resource "aws_lambda_function_event_invoke_config" "mode_lambda" {
-  count                  = var.runtime_language == "nodejs14.x" ? 1 : 0
-  function_name          = aws_lambda_function.node_lambda[count.index].function_name
-  maximum_retry_attempts = 0
-  qualifier              = "$LATEST"
-}
 resource "aws_cloudwatch_event_rule" "run_lambda" {
   name_prefix         = "${var.lambda_name}-lambda-"
   description         = "Fires every day at "
   schedule_expression = var.lambda_execution_cron_schedule
 }
 
-resource "aws_cloudwatch_event_target" "run_python_lambda" {
-  count     = var.runtime_language == "python3.8" ? 1 : 0
+resource "aws_cloudwatch_event_target" "run_lambda" {
   rule      = aws_cloudwatch_event_rule.run_lambda.name
   target_id = "${var.lambda_name}-"
-  arn       = aws_lambda_function.python_lambda[count.index].arn
+  arn       = aws_lambda_function.lambda.arn
 }
 
-resource "aws_cloudwatch_event_target" "run_node_lambda" {
-  count     = var.runtime_language == "nodejs14.x" ? 1 : 0
-  rule      = aws_cloudwatch_event_rule.run_lambda.name
-  target_id = "${var.lambda_name}-"
-  arn       = aws_lambda_function.node_lambda[count.index].arn
-}
-
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_python_lambda" {
-  count         = var.runtime_language == "python3.8" ? 1 : 0
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.python_lambda[count.index].function_name
+  function_name = aws_lambda_function.lambda.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.run_lambda.arn
 }
 
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_node_lambda" {
-  count         = var.runtime_language == "nodejs14.x" ? 1 : 0
-  statement_id  = "AllowExecutionFromCloudWatch"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.python_lambda[count.index].function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.run_lambda.arn
-}

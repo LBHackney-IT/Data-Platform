@@ -684,10 +684,10 @@ module "parking_correspondence_performance_records_with_pcn" {
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   script_name                = "parking_correspondence_performance_records_with_pcn"
-#  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description            = "correspondence performance records with pcn"
-#  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled            = false
+  #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  job_description = "correspondence performance records with pcn"
+  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
