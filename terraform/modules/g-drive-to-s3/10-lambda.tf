@@ -172,13 +172,3 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_g_drive_to_s3_copier"
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.ingestion_schedule.arn
 }
-
-moved {
-  from = aws_cloudwatch_event_rule.every_day_at_6
-  to   = aws_cloudwatch_event_rule.ingestion_schedule
-}
-
-moved {
-  from = aws_cloudwatch_event_target.run_lambda_every_day_at_6
-  to   = aws_cloudwatch_event_target.run_lambda
-}
