@@ -101,6 +101,17 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
       ]
     }
   }
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_kms_key.s3_to_s3_copier_kms_key.arn
+    ]
+  }
 }
 
 resource "aws_iam_policy" "s3_to_s3_copier_lambda" {
@@ -122,7 +133,7 @@ data "archive_file" "s3_to_s3_copier_lambda" {
   output_path = "../../lambdas/s3-to-s3-export-copier.zip"
 }
 
-resource "aws_s3_object" "s3_to_s3_copier_lambda" {
+resource "aws_s3_bucket_object" "s3_to_s3_copier_lambda" {
   bucket      = var.lambda_artefact_storage_bucket
   key         = "s3-to-s3-export-copier.zip"
   source      = data.archive_file.s3_to_s3_copier_lambda.output_path
@@ -141,7 +152,7 @@ resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
   runtime          = "nodejs14.x"
   function_name    = "${var.identifier_prefix}-s3-to-s3-copier"
   s3_bucket        = var.lambda_artefact_storage_bucket
-  s3_key           = aws_s3_object.s3_to_s3_copier_lambda.key
+  s3_key           = aws_s3_bucket_object.s3_to_s3_copier_lambda.key
   source_code_hash = data.archive_file.s3_to_s3_copier_lambda.output_base64sha256
   timeout          = local.lambda_timeout
 
@@ -154,7 +165,7 @@ resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
   }
 
   depends_on = [
-    aws_s3_object.s3_to_s3_copier_lambda,
+    aws_s3_bucket_object.s3_to_s3_copier_lambda,
   ]
 }
 

@@ -163,7 +163,7 @@ module "parking_permit_denormalised_gds_street_llpg" {
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   script_name                = "parking_permit_denormalised_gds_street_llpg"
-  triggered_by_job           = module.parking_pcn_denormalisation.job_name
+  triggered_by_job           = module.parking_permit_de_normalisation.job_name
   job_description            = "parking_permit_denormalised_data and bolts on fields from llpg (usrn, Street record street name, street_description, ward code, ward name, property_shell, blpu_class, usage_primary, usage_description, planning_use_class, longitude & latitude) to be used in gds(Google Data Studio)"
   workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled            = false
@@ -673,6 +673,42 @@ module "parking_voucher_de_normalised" {
   trigger_enabled            = false
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
+  }
+}
+module "parking_correspondence_performance_records_with_pcn" {
+  source                     = "../modules/aws-glue-job"
+  department                 = module.department_parking_data_source
+  job_name                   = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn"
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                = "parking_correspondence_performance_records_with_pcn"
+  glue_version               = "3.0"
+  #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  job_description = "correspondence performance records with pcn"
+  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled = false
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-enable"
+    "--environment"         = var.environment
+  }
+}
+module "parking_dc_liberator_latest_permit_status" {
+  source                     = "../modules/aws-glue-job"
+  department                 = module.department_parking_data_source
+  job_name                   = "${local.short_identifier_prefix}parking_dc_liberator_latest_permit_status"
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                = "parking_dc_liberator_latest_permit_status"
+  glue_version               = "3.0"
+  #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  job_description = "Parking Latest permit status from the Liberator Landing zone permit status table."
+  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled = false
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disabled"
     "--environment"         = var.environment
   }
 }
