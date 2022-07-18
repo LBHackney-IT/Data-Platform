@@ -38,12 +38,14 @@ data "aws_iam_policy_document" "copy_from_s3_to_s3_lambda" {
       "s3:*"
     ]
     effect = "Allow"
-    resources = [
-      "${var.origin_bucket.bucket_arn}/*",
-      var.origin_bucket.kms_key_arn,
-      "${var.target_bucket.bucket_arn}/*",
-      var.target_bucket.kms_key_arn
-    ]
+    resources = concat(
+      [
+        "${var.origin_bucket.bucket_arn}/*",
+        "${var.target_bucket.bucket_arn}/*",
+      ],
+      var.origin_bucket.kms_key_arn != null ? [var.origin_bucket.kms_key_arn] : [],
+      var.target_bucket.kms_key_arn != null ? [var.target_bucket.kms_key_arn] : []
+    )
   }
 
   statement {
@@ -160,6 +162,7 @@ resource "aws_lambda_function" "copy_from_s3_to_s3_lambda" {
       ORIGIN_PATH      = var.origin_path
       TARGET_BUCKET_ID = var.target_bucket.bucket_id
       TARGET_PATH      = var.target_path
+      ASSUME_ROLE_ARN  = var.assume_role != false ? var.assume_role : null
     }
   }
 

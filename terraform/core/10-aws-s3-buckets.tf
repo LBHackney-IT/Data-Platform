@@ -6,6 +6,11 @@ module "landing_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Landing Zone"
   bucket_identifier = "landing-zone"
+
+  role_arns_to_share_access_with = [
+    "arn:aws:iam::971933469343:root",
+    "arn:aws:iam::971933469343:role/customer-midas-roles-pluto-HackneyMidasRole-1M6PTJ5VS8104"
+  ]
 }
 
 module "raw_zone" {
@@ -122,4 +127,3 @@ resource "aws_s3_bucket_acl" "ssl_connection_resources" {
   bucket = aws_s3_bucket.ssl_connection_resources[0].id
   acl    = "public-read"
 }
-
