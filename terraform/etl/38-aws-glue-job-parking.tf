@@ -712,3 +712,57 @@ module "parking_dc_liberator_latest_permit_status" {
     "--environment"         = var.environment
   }
 }
+module "parking_disputes_kpi_gds_summary" {
+  source                     = "../modules/aws-glue-job"
+  department                 = module.department_parking_data_source
+  job_name                   = "${local.short_identifier_prefix}parking_disputes_kpi_gds_summary"
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                = "parking_disputes_kpi_gds_summary"
+  glue_version               = "3.0"
+  #  triggered_by_job           = "${local.short_identifier_prefix}parking_pcn_denormalisation"
+  job_description = "Disputes and responses for KPI reporting in Google Data Studio (GDS) summary"
+  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled = false
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disabled"
+    "--environment"         = var.environment
+  }
+}
+module "parking_foi_pcn_gds_daily_summary" {
+  source                     = "../modules/aws-glue-job"
+  department                 = module.department_parking_data_source
+  job_name                   = "${local.short_identifier_prefix}parking_foi_pcn_gds_daily_summary"
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                = "parking_foi_pcn_gds_daily_summary"
+  glue_version               = "3.0"
+  #  triggered_by_job           = "${local.short_identifier_prefix}parking_pcn_denormalisation"
+  job_description = "Daily summarising data from the FOI Google Data Studio dashboard as need to be under 100,000"
+  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled = false
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disabled"
+    "--environment"         = var.environment
+  }
+}
+module "parking_eta_decision_records_pcn_dispute_gds" {
+  source                     = "../modules/aws-glue-job"
+  department                 = module.department_parking_data_source
+  job_name                   = "${local.short_identifier_prefix}parking_eta_decision_records_pcn_dispute_gds"
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                = "parking_eta_decision_records_pcn_dispute_gds"
+  glue_version               = "3.0"
+  #  triggered_by_job           = "${local.short_identifier_prefix}parking_pcn_denormalisation"
+  job_description = "Daily summarising data from the FOI Google Data Studio dashboard as need to be under 100,000"
+  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled = false
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disabled"
+    "--environment"         = var.environment
+  }
+}
