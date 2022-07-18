@@ -254,7 +254,7 @@ module "Cash_Collection_Date" {
 }
 
 module "Cedar_Backing_Data" {
-  count                          = local.is_live_environment ? 1 : 0
+  count                          = local.is_production_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
@@ -288,7 +288,7 @@ module "Cedar_Backing_Data" {
 }
 
 module "Cedar_Parking_Payments" {
-  count                          = local.is_live_environment ? 1 : 0
+  count                          = local.is_production_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
@@ -322,7 +322,7 @@ module "Cedar_Parking_Payments" {
 }
 
 module "Citypay_Import" {
-  count                          = local.is_live_environment ? 1 : 0
+  count                          = local.is_production_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
@@ -356,7 +356,7 @@ module "Citypay_Import" {
 }
 
 module "Ringgo_Daily_Transactions" {
-  count                          = local.is_live_environment ? 1 : 0
+  count                          = local.is_production_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
@@ -390,7 +390,7 @@ module "Ringgo_Daily_Transactions" {
 }
 
 module "Ringgo_session_forecast" {
-  count                          = local.is_live_environment ? 1 : 0
+  count                          = local.is_production_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
@@ -424,7 +424,7 @@ module "Ringgo_session_forecast" {
 }
 
 module "Voucher_Import" {
-  count                          = local.is_live_environment ? 1 : 0
+  count                          = local.is_production_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
