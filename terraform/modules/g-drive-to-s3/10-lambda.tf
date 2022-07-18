@@ -154,7 +154,7 @@ resource "aws_lambda_function_event_invoke_config" "g_drive_to_s3_copier_lambda"
 }
 
 resource "aws_cloudwatch_event_rule" "ingestion_schedule" {
-  name_prefix         = "g-drive-to-s3-copier-ingestion_schedule"
+  name_prefix         = "g-drive-to-s3-copier-schedule"
   description         = "Ingestion Schedule"
   schedule_expression = var.ingestion_schedule
 }
