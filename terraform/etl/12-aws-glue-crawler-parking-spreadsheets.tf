@@ -7,7 +7,7 @@ resource "aws_glue_crawler" "raw_zone_parking_g_drive_crawler" {
 
   s3_target {
     path       = "s3://${module.raw_zone_data_source.bucket_id}/parking/g-drive"
-    exclusions = toSet(local.glue_crawler_excluded_blobs)
+    exclusions = local.glue_crawler_excluded_blobs
   }
 
   configuration = jsonencode({
