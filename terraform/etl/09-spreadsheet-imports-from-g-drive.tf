@@ -220,7 +220,7 @@ module "data_and_insight_hb_combined" {
 }
 
 module "Cash_Collection_Date" {
-  count                          = local.is_live_environment ? 1 : 0
+  count                          = local.is_production_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
