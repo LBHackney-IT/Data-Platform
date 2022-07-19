@@ -19,7 +19,7 @@ resource "aws_glue_crawler" "raw_zone_parking_g_drive_crawler" {
 }
 
 resource "aws_glue_trigger" "raw_zone_parking_spreadsheets_crawler" {
-  tags = module.department_housing_repairs_data_source.tags
+  tags = module.department_parking_data_source.tags
 
   name     = "${local.short_identifier_prefix}parking-raw-g-drive-crawler-trigger"
   schedule = "cron(0 23 * * ? *)"
