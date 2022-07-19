@@ -1,7 +1,7 @@
 variable "lambda_execution_cron_schedule" {
   description = "CRON expression to schedule the Lambda"
   type        = string
-  default     = "cron(0 6 * * ? *)"
+  default     = "cron(44 12 * * ? *)"
 }
 
 variable "ephemeral_storage" {
@@ -22,8 +22,14 @@ variable "lambda_memory_size" {
   default     = 256
 }
 
-variable "glue_job_to_trigger" {
-  description = "Name of Glue job to trigger once data has been ingested to S3"
-  type        = string
-  default     = ""
+# variable "glue_job_to_trigger" {
+#   description = "Name of Glue job to trigger once data has been ingested to S3"
+#   type        = string
+#   default     = ""
+# }
+
+variable "trigger_to_run" {
+  description = "Name of the Glue trigger to run once data has been ingested to S3"
+  type = string
+  default =""
 }
