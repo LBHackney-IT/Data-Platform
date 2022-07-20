@@ -116,6 +116,8 @@ runs:
       id: unlock
       run: |
         ${{ github.action_path }}/../.helpers/box.sh "Running Terraform state unlock"
+        echo "Terraform State Lock Id:"
+        echo ${{ inputs.terraform_state_lock_id }}
         terraform force-unlock -force ${{ inputs.terraform_state_lock_id }}
         echo -e "\n"
       shell: bash
