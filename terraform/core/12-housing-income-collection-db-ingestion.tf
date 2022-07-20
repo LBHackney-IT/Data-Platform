@@ -18,9 +18,9 @@ locals {
 }
 
 resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" {
-  tags     = module.tags.values
-  name     = "${local.short_identifier_prefix}housing-income-collection-tables"
-  type     = "CONDITIONAL"
+  tags = module.tags.values
+  name = "${local.short_identifier_prefix}housing-income-collection-tables"
+  type = "CONDITIONAL"
 
   actions {
     job_name = module.ingest_housing_income_collection_database_to_housing_raw_zone.job_name
@@ -38,7 +38,7 @@ resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" 
 }
 
 module "ingest_housing_income_collection_database_to_housing_raw_zone" {
-  tags     = module.tags.values
+  tags = module.tags.values
 
   source = "../modules/aws-glue-job"
 

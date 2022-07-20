@@ -143,6 +143,7 @@ module "parking_kpi_gds_summary" {
   trigger_enabled                = local.is_production_environment
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
+  glue_job_timeout               = 240
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
