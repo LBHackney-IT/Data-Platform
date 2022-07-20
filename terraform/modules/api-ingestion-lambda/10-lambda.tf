@@ -52,24 +52,13 @@ data "aws_iam_policy_document" "lambda" {
     ]
   }
 
-  # statement {
-  #   effect = "Allow"
-  #   actions = [
-  #     "glue:StartJobRun"
-  #   ]
-  #   resources = [
-  #     "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:job/${var.glue_job_to_trigger}"
-  #   ]
-  # }
-
-  #TODO: TK add this statement
   statement {
     effect = "Allow"
     actions = [
-      "glue:StartTrigger"
+      "glue:StartJobRun"
     ]
     resources = [
-      "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:trigger/${var.trigger_to_run}"
+      "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:job/${var.glue_job_to_trigger}"
     ]
   }
 
