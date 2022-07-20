@@ -1,5 +1,5 @@
 module "repairs_fire_alarm_aov" {
-  count = local.is_live_environment ? 1 : 0
+  count = local.is_production_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_housing_repairs_data_source
@@ -76,7 +76,7 @@ module "repairs_fire_alarm_aov" {
 }
 
 module "env_enforcement_estate_cleaning" {
-  count = local.is_live_environment ? 1 : 0
+  count = local.is_production_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_env_enforcement_data_source
@@ -121,7 +121,7 @@ module "env_enforcement_estate_cleaning" {
 }
 
 module "env_enforcement_fix_my_street_noise" {
-  count = local.is_live_environment ? 1 : 0
+  count = local.is_production_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_env_enforcement_data_source
@@ -154,7 +154,7 @@ module "env_enforcement_fix_my_street_noise" {
 }
 
 module "env_enforcement_cc_tv" {
-  count = local.is_live_environment ? 1 : 0
+  count = local.is_production_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_env_enforcement_data_source
@@ -187,7 +187,7 @@ module "env_enforcement_cc_tv" {
 }
 
 module "data_and_insight_hb_combined" {
-  count = local.is_live_environment ? 1 : 0
+  count = local.is_production_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   department                     = module.department_data_and_insight_data_source
