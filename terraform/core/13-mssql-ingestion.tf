@@ -105,7 +105,7 @@ resource "aws_glue_trigger" "academy_revenues_and_benefits_housing_needs_landing
   name     = "${local.short_identifier_prefix}academy-revenues-benefits-housing-needs-database-ingestion-crawler-trigger"
   type     = "SCHEDULED"
   schedule = "cron(15 8,12 ? * MON,TUE,WED,THU,FRI *)"
-  enabled  = local.is_live_environment
+  enabled  = local.is_production_environment
 
   actions {
     crawler_name = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
