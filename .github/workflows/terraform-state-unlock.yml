@@ -1,4 +1,4 @@
-name: Terraform State Unlcok
+name: Terraform State Unlock
 concurrency: terraform-state-unlock
 
 on:
