@@ -707,7 +707,7 @@ module "parking_dc_liberator_latest_permit_status" {
   #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled = false
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disabled"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -725,7 +725,7 @@ module "parking_disputes_kpi_gds_summary" {
   #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled = false
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disabled"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -743,7 +743,7 @@ module "parking_foi_pcn_gds_daily_summary" {
   #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled = false
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disabled"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -761,7 +761,7 @@ module "parking_eta_decision_records_pcn_dispute_gds" {
   #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled = false
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disabled"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -779,7 +779,7 @@ module "parking_dc_liberator_permit_llpg_street_records" {
   #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled = false
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disabled"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
