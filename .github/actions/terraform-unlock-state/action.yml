@@ -113,7 +113,7 @@ runs:
       working-directory: "${{ inputs.build_path }}"
 
     - name: Terraform State Unlock
-      id: plan
+      id: unlock
       run: |
         ${{ github.action_path }}/../.helpers/box.sh "Running Terraform state unlock"
         terraform force-unlock -force ${{ inputs.terraform_state_lock_id }}

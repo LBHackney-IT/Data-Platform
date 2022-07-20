@@ -1,4 +1,4 @@
-name: Deploy Data-Platform Terraform
+name: Terraform State Unlock
 env:
   aws_deploy_region: "eu-west-2"
 
@@ -76,7 +76,7 @@ on:
 
 jobs:
   deploy:
-    name: Terraform Apply
+    name: Terraform State Unlock
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
@@ -111,7 +111,7 @@ jobs:
           echo "role_session_name=deploy" >> ~/.aws/config
           echo "region=eu-west-2" >> ~/.aws/config
 
-      - name: Deploy Data Platform in ${{ inputs.build_path }}
+      - name: Unlock State in ${{ inputs.build_path }}
         uses: ./.github/actions/terraform-unlock-state
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}

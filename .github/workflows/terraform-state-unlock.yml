@@ -25,7 +25,7 @@ jobs:
     uses: ./.github/workflows/unlock_terraform_state.yml
     with:
       environment: ${{ github.event.inputs.environment }}
-      automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+      automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_${{ github.event.inputs.environment }}.yml"
       build_path: "./terraform/${{ github.event.inputs.terraform_directory }}"
       terraform_state_s3_key_prefix: "data-platform"
       terraform_state_file_name: "${{ github.event.inputs.environment }}-terraform.tfstate"
