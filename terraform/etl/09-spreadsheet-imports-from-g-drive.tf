@@ -243,7 +243,7 @@ module "Cash_Collection_Date" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cash_Collection/Cash_Collection_Date_June_2022.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -277,7 +277,7 @@ module "Cedar_Backing_Data" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cedar_Backing_Data/Cedar Backing June 2022.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -311,7 +311,7 @@ module "Cedar_Parking_Payments" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cedar_Parking_Payments/Cedar_Parking_Payments_June_2022.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -345,7 +345,7 @@ module "Citypay_Import" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "CityPay_Payments/Citypay_Import_June_2022.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -379,7 +379,7 @@ module "Ringgo_Daily_Transactions" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_Daily/Ringgo_Daily_June_2022.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -413,7 +413,7 @@ module "Ringgo_session_forecast" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_Session_Forecast/Ringgo_session_forecast.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -447,7 +447,7 @@ module "Voucher_Import" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Visitor_Voucher_Forecast/Voucher Import.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
