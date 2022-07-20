@@ -19,7 +19,7 @@ variable "lambda_timeout" {
 variable "lambda_memory_size" {
   description = "Memory for lambda in MBs"
   type        = number
-  default     = 256
+  default     = 128
 }
 
 variable "glue_job_to_trigger" {
@@ -27,4 +27,3 @@ variable "glue_job_to_trigger" {
   type        = string
   default     = ""
 }
-
