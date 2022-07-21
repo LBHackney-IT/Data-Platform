@@ -42,7 +42,6 @@ module "parking_pcn_denormalisation" {
   triggered_by_job               = module.parking_pcn_create_event_log.job_name
   job_description                = "This job creates a single de-normalised PCN record with the latest details against it (Events, finance, ETA, etc.). This can then be queried (WITHOUT joins)."
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -63,7 +62,6 @@ module "parking_persistent_evaders" {
   triggered_by_job               = module.parking_pcn_denormalisation.job_name
   job_description                = "Job to identify VRM's according to the criteria of Persistent Evaders, and return details of all tickets issued to those VRM's."
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -84,7 +82,6 @@ module "parking_school_street_vrms" {
   triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
   job_description                = "Permit changes comparison - compare changes in permits from the parking_permit_denormalised_gds_street_llpg table to be used in google data studio  Compares latest import to previous import in table"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -105,7 +102,6 @@ module "parking_estate_waiting_list_live_permits_type_gds" {
   triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
   job_description                = "Filters for distinct record id's and adds number of Live permits by type.  This is for use by Parking Permits team."
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -126,7 +122,6 @@ module "parking_gds_permit_change_comparison" {
   triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
   job_description                = "Permit changes comparison - compare changes in permits from the parking_permit_denormalised_gds_street_llpg table to be used in google data studio  Compares latest import to previous import in table"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -147,7 +142,6 @@ module "parking_kpi_gds_summary" {
   triggered_by_job               = module.parking_pcn_denormalisation.job_name
   job_description                = "Summarising data from the FOI Summary table to be used in Google Data Studio as need to be under 100,000"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   glue_job_timeout               = 240
@@ -169,7 +163,6 @@ module "parking_foi_pcn_gds_summary" {
   triggered_by_job               = module.parking_pcn_denormalisation.job_name
   job_description                = "Summarising data from the FOI Google Data Studio dashboard as need to be under 100,000 -"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -190,7 +183,6 @@ module "parking_permit_denormalised_gds_street_llpg" {
   triggered_by_job               = module.parking_permit_de_normalisation.job_name
   job_description                = "parking_permit_denormalised_data and bolts on fields from llpg (usrn, Street record street name, street_description, ward code, ward name, property_shell, blpu_class, usage_primary, usage_description, planning_use_class, longitude & latitude) to be used in gds(Google Data Studio)"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -211,7 +203,6 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "Reps & Appeals correspondence KPI GDS summary"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -232,7 +223,6 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary_qtr" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "Reps & Appeals correspondence KPI GDS summary by Quarters"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -253,7 +243,6 @@ module "parking_vouchers_approved_summary_gds" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "Summary of voucher applications approved by FY, Month year, cpz and cpz name for use in GDS"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -274,7 +263,6 @@ module "parking_bailiff_allocation" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the % return figures for the Bailiff data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -295,7 +283,6 @@ module "parking_bailiff_ea_warrant_total" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the % return figures for the Bailiff data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -316,7 +303,6 @@ module "parking_bailiff_return" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the % return figures for the Bailiff data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -337,7 +323,6 @@ module "parking_pcn_create_event_log" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job reviews the PCN Events trying to find the LATEST event date for a number of Events (i.e. DVLA Requested, DVLA Received). The output is a SINGLE PCN record containing some 30+ fields of Dates. The field name identifies what the date field is"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -358,7 +343,6 @@ module "parking_pcn_report_summary" {
   triggered_by_job               = module.parking_pcn_denormalisation.job_name
   job_description                = "This job creates the % return figures for the Bailiff data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -379,7 +363,6 @@ module "parking_pcn_ltn_report_summary" {
   triggered_by_job               = module.parking_pcn_denormalisation.job_name
   job_description                = "This job creates the LTN PCN count and Total paid"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -400,7 +383,6 @@ module "parking_suspension_de-normalised_data" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the Suspension de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -421,7 +403,6 @@ module "parking_cycle_hangars_denormalisation" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "denormalisation and deduplication of cycle hangars extracts"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -442,7 +423,6 @@ module "parking_reps_and_appeals_correspondance" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "Reps & Appeals correspondence KPI"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -463,7 +443,6 @@ module "parking_permit_de_normalisation" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the Permit de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -484,7 +463,6 @@ module "parking_cedar_payments" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the % return figures for the Bailiff data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -505,7 +483,6 @@ module "parking_cedar_fulling_total_summary" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the % return figures for the Bailiff data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -526,7 +503,6 @@ module "parking_ceo_on_street" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the Permit de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -547,7 +523,6 @@ module "parking_ceo_summary" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the Permit de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -568,7 +543,6 @@ module "parking_deployment_target_details" {
   triggered_by_job               = module.parking_ceo_on_street.job_name
   job_description                = "This job creates the Permit de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -589,7 +563,6 @@ module "parking_ceo_average_on_street" {
   triggered_by_job               = module.parking_ceo_on_street.job_name
   job_description                = "This job creates the Permit de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -610,7 +583,6 @@ module "parking_percent_street_coverage" {
   triggered_by_job               = module.parking_deployment_target_details.job_name
   job_description                = "This job creates the Permit de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -631,7 +603,6 @@ module "parking_bailiff_warrant_figures" {
   triggered_by_job               = module.parking_pcn_denormalisation.job_name
   job_description                = "This job creates the Permit de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -652,7 +623,6 @@ module "parking_markets_denormalisation" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the % return figures for the Bailiff data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -673,7 +643,6 @@ module "parking_ceo_average_on_street_hrs_mins_secs" {
   triggered_by_job               = module.parking_ceo_on_street.job_name
   job_description                = "This job creates the Permit de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -694,7 +663,6 @@ module "parking_market_licence_totals" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the Permit de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -715,7 +683,6 @@ module "parking_cedar_backing_data_summary" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "This job creates the % return figures for the Bailiff data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -736,7 +703,6 @@ module "parking_percent_street_coverage_cpz" {
   triggered_by_job               = module.parking_deployment_target_details.job_name
   job_description                = "This job creates the Permit de-normalised data"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -757,7 +723,6 @@ module "parking_foreign_vrm_pcns" {
   triggered_by_job               = module.parking_pcn_denormalisation.job_name
   job_description                = "This job creates the LTN PCN count and Total paid"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -778,7 +743,6 @@ module "parking_voucher_de_normalised" {
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "Permit changes comparison - compare changes in permits from the parking_permit_denormalised_gds_street_llpg table to be used in google data studio  Compares latest import to previous import in table"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = true
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {

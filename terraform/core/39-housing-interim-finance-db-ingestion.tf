@@ -28,6 +28,7 @@ resource "aws_glue_trigger" "housing_interim_finance_filter_ingestion_tables" {
   for_each = local.table_filter_expressions_housing_interim_finance
   name     = "${local.short_identifier_prefix}housing-interim-finance-table-${each.key}"
   type     = "CONDITIONAL"
+  enabled  = local.is_production_environment
 
   actions {
     job_name = module.ingest_housing_interim_finance_database_to_housing_raw_zone[each.key].job_name
