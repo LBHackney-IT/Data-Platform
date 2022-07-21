@@ -292,3 +292,29 @@ def rename_file(source_bucket, src_prefix, filename):
     except Exception as error:
             ## do nothing
             print('Error Occured: rename_file', error)
+
+
+def move_file(bucket, source_path, target_path, filename):
+    print("S3 Bucket: ", bucket)
+    print("Source Path: ", source_path)
+    print("Target Path: ", target_path)
+    try:
+        client = boto3.client('s3')
+
+        source_key = source_path + filename
+        target_key = target_path + filename
+        ## Store Target File File Prefix, this is the new name of the file
+        target_source = {
+            'Bucket': bucket,
+            'Key': source_key
+        }
+
+        ### Now Copy the file with New Name
+        client.copy(CopySource=target_source, Bucket=bucket, Key=target_key)
+
+        ### Delete the old file
+        #client.delete_object(Bucket=bucket, Key=source_key)
+        print("File Moved to: ", target_key)
+    except Exception as error:
+            ## do nothing
+            print('Error Occured: rename_file', error)

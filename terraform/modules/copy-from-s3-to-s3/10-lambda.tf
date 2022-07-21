@@ -74,20 +74,6 @@ data "aws_iam_policy_document" "copy_from_s3_to_s3_lambda" {
       "*"
     ]
   }
-
-  #  dynamic "statement" {
-  #    for_each = var.workflow_arn == "" ? [] : [1]
-  #
-  #    content {
-  #      actions = [
-  #        "glue:StartWorkflowRun",
-  #      ]
-  #      effect    = "Allow"
-  #      resources = [
-  #        var.workflow_arn
-  #      ]
-  #    }
-  #  }
 }
 
 resource "aws_iam_policy" "copy_from_s3_to_s3_lambda" {

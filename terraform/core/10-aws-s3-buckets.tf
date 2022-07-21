@@ -6,11 +6,6 @@ module "landing_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Landing Zone"
   bucket_identifier = "landing-zone"
-
-  role_arns_to_share_access_with = [
-    "arn:aws:iam::971933469343:root",
-    "arn:aws:iam::971933469343:role/customer-midas-roles-pluto-HackneyMidasRole-1M6PTJ5VS8104"
-  ]
 }
 
 module "raw_zone" {
@@ -36,7 +31,9 @@ module "refined_zone" {
   bucket_name       = "Refined Zone"
   bucket_identifier = "refined-zone"
   role_arns_to_share_access_with = [
-    var.sync_production_to_pre_production_task_role
+    var.sync_production_to_pre_production_task_role,
+    "arn:aws:iam::971933469343:root",
+    "arn:aws:iam::971933469343:role/customer-midas-roles-pluto-HackneyMidasRole-1M6PTJ5VS8104"
   ]
 }
 
