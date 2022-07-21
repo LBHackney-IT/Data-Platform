@@ -1,5 +1,5 @@
 module "academy_mssql_database_ingestion" {
-  count = local.is_production_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
   source = "../modules/database-ingestion-via-jdbc-connection"
