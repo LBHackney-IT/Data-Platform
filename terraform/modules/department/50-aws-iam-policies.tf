@@ -367,7 +367,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:CreateJob",
       "glue:CreateScript",
       "glue:CreateSession",
-      "glue:CreateTrigger",
       "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
       "glue:DeleteTrigger",
