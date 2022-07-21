@@ -9,3 +9,7 @@ output "job_name" {
 output "job_arn" {
   value = aws_glue_job.job.arn
 }
+
+output "trigger_name" {
+  value = aws_glue_trigger.job_trigger.name
+}

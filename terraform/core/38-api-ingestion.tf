@@ -1,7 +1,7 @@
 locals {
   s3_target_bucket_name = module.landing_zone.bucket_id
   secret_name           = "icaseworks-key"
-  glue_job_name         = local.is_live_environment ? module.copy_icaseworks_data_landing_to_raw[0].job_name : ""
+  glue_trigger_name     = local.is_live_environment ? module.copy_icaseworks_data_landing_to_raw[0].trigger_name : ""
 }
 
 module "icaseworks_api_ingestion" {
@@ -18,14 +18,14 @@ module "icaseworks_api_ingestion" {
   s3_target_bucket_arn           = module.landing_zone.bucket_arn
   s3_target_bucket_name          = local.s3_target_bucket_name
   api_credentials_secret_name    = local.secret_name
-  glue_job_to_trigger            = local.glue_job_name
+  trigger_to_run                 = local.glue_trigger_name
   s3_target_bucket_kms_key_arn   = module.landing_zone.kms_key_arn
   ephemeral_storage              = 6144
   lambda_environment_variables = {
     "SECRET_NAME"           = local.secret_name
     "TARGET_S3_BUCKET_NAME" = local.s3_target_bucket_name
     "OUTPUT_FOLDER"         = "icaseworks"
-    "GLUE_JOB_NAME"         = local.glue_job_name
+    "TRIGGER_NAME"          = local.glue_trigger_name
   }
 }
 
