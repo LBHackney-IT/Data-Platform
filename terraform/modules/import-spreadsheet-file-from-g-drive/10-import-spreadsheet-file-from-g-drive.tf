@@ -17,6 +17,7 @@ module "import_file_from_g_drive" {
   workflow_names                            = [for job in module.import_data_from_spreadsheet_job : job.workflow_name]
   workflow_arns                             = [for job in module.import_data_from_spreadsheet_job : job.workflow_arn]
   ingestion_schedule                        = var.ingestion_schedule
+  ingestion_schedule_enabled                = var.is_production_environment || !var.is_live_environment
 }
 
 module "import_data_from_spreadsheet_job" {

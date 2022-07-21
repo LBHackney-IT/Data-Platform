@@ -1,5 +1,5 @@
 module "repairs_fire_alarm_aov" {
-  count = local.is_production_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
@@ -78,7 +78,7 @@ module "repairs_fire_alarm_aov" {
 }
 
 module "env_enforcement_estate_cleaning" {
-  count = local.is_production_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
@@ -125,7 +125,7 @@ module "env_enforcement_estate_cleaning" {
 }
 
 module "env_enforcement_fix_my_street_noise" {
-  count = local.is_production_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
@@ -160,7 +160,7 @@ module "env_enforcement_fix_my_street_noise" {
 }
 
 module "env_enforcement_cc_tv" {
-  count = local.is_production_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
@@ -195,7 +195,7 @@ module "env_enforcement_cc_tv" {
 }
 
 module "data_and_insight_hb_combined" {
-  count = local.is_production_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
@@ -230,7 +230,7 @@ module "data_and_insight_hb_combined" {
 }
 
 module "Cash_Collection_Date" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
@@ -266,7 +266,7 @@ module "Cash_Collection_Date" {
 }
 
 module "Cedar_Backing_Data" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
@@ -302,7 +302,7 @@ module "Cedar_Backing_Data" {
 }
 
 module "Cedar_Parking_Payments" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
@@ -338,7 +338,7 @@ module "Cedar_Parking_Payments" {
 }
 
 module "Citypay_Import" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
@@ -374,7 +374,7 @@ module "Citypay_Import" {
 }
 
 module "Ringgo_Daily_Transactions" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
@@ -410,7 +410,7 @@ module "Ringgo_Daily_Transactions" {
 }
 
 module "Ringgo_session_forecast" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
@@ -446,7 +446,7 @@ module "Ringgo_session_forecast" {
 }
 
 module "Voucher_Import" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment

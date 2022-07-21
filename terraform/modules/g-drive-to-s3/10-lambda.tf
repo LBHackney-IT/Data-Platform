@@ -154,21 +154,24 @@ resource "aws_lambda_function_event_invoke_config" "g_drive_to_s3_copier_lambda"
 }
 
 resource "aws_cloudwatch_event_rule" "ingestion_schedule" {
+  count               = var.ingestion_schedule_enabled ? 1 : 0
   name_prefix         = "g-drive-to-s3-copier-schedule"
   description         = "Ingestion Schedule"
   schedule_expression = var.ingestion_schedule
 }
 
 resource "aws_cloudwatch_event_target" "run_lambda" {
-  rule      = aws_cloudwatch_event_rule.ingestion_schedule.name
+  count     = var.ingestion_schedule_enabled ? 1 : 0
+  rule      = aws_cloudwatch_event_rule.ingestion_schedule[0].name
   target_id = "g_drive_to_s3_copier_lambda"
   arn       = aws_lambda_function.g_drive_to_s3_copier_lambda.arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_g_drive_to_s3_copier" {
+  count         = var.ingestion_schedule_enabled ? 1 : 0
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.g_drive_to_s3_copier_lambda.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.ingestion_schedule.arn
+  source_arn    = aws_cloudwatch_event_rule.ingestion_schedule[0].arn
 }
