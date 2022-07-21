@@ -18,9 +18,10 @@ locals {
 }
 
 resource "aws_glue_trigger" "housing_interim_finance_filter_ingestion_tables" {
-  tags = module.tags.values
-  name = "${local.short_identifier_prefix}housing-interim-finance-tables"
-  type = "CONDITIONAL"
+  tags    = module.tags.values
+  name    = "${local.short_identifier_prefix}housing-interim-finance-tables"
+  type    = "CONDITIONAL"
+  enabled = local.is_production_environment
 
   actions {
     job_name = module.ingest_housing_interim_finance_database_to_housing_raw_zone.job_name
@@ -40,7 +41,9 @@ resource "aws_glue_trigger" "housing_interim_finance_filter_ingestion_tables" {
 module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
   tags = module.tags.values
 
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department = module.department_housing
 

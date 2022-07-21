@@ -70,9 +70,9 @@ data "aws_iam_policy_document" "task_role" {
       "s3:DeleteObject*"
     ]
     resources = [
-      "arn:aws:s3:::dataplatform-stg-raw-zone-prod-copy*",
-      "arn:aws:s3:::dataplatform-stg-refined-zone-prod-copy*",
-      "arn:aws:s3:::dataplatform-stg-trusted-zone-prod-copy*"
+      "arn:aws:s3:::dataplatform-stg-raw-zone*",
+      "arn:aws:s3:::dataplatform-stg-refined-zone*",
+      "arn:aws:s3:::dataplatform-stg-trusted-zone*"
     ]
   }
 }
@@ -94,9 +94,9 @@ module "sync_production_to_pre_production" {
       environment_variables = [
         { name = "NUMBER_OF_DAYS_TO_RETAIN", value = "90" },
         { name = "S3_SYNC_SOURCE", value = module.raw_zone.bucket_id },
-        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-raw-zone-prod-copy" }
+        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-raw-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
+      cloudwatch_rule_schedule_expression = "cron(0 22 ? * * *)"
     },
     {
       task_prefix = "refined-zone-"
@@ -105,9 +105,9 @@ module "sync_production_to_pre_production" {
       environment_variables = [
         { name = "NUMBER_OF_DAYS_TO_RETAIN", value = "90" },
         { name = "S3_SYNC_SOURCE", value = module.refined_zone.bucket_id },
-        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-refined-zone-prod-copy" }
+        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-refined-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
+      cloudwatch_rule_schedule_expression = "cron(0 22 ? * * *)"
     },
     {
       task_prefix = "trusted-zone-"
@@ -116,9 +116,9 @@ module "sync_production_to_pre_production" {
       environment_variables = [
         { name = "NUMBER_OF_DAYS_TO_RETAIN", value = "90" },
         { name = "S3_SYNC_SOURCE", value = module.trusted_zone.bucket_id },
-        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-trusted-zone-prod-copy" }
+        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-trusted-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
+      cloudwatch_rule_schedule_expression = "cron(0 22 ? * * *)"
     }
   ]
 }

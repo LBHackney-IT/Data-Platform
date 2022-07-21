@@ -367,7 +367,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:CreateJob",
       "glue:CreateScript",
       "glue:CreateSession",
-      "glue:CreateTrigger",
       "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
       "glue:DeleteTrigger",
@@ -380,7 +379,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:StartExportLabelsTaskRun",
       "glue:StartImportLabelsTaskRun",
       "glue:StartJobRun",
-      "glue:StartTrigger",
       "glue:StartWorkflowRun",
       "glue:StopCrawler",
       "glue:StopCrawlerSchedule",
@@ -390,7 +388,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:UpdateDag",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
-      "glue:UpdateTrigger",
       "glue:Query*",
     ]
     resources = ["*"]

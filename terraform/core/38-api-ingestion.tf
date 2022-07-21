@@ -30,7 +30,9 @@ module "icaseworks_api_ingestion" {
 }
 
 module "copy_icaseworks_data_landing_to_raw" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   count = local.is_live_environment ? 1 : 0
 

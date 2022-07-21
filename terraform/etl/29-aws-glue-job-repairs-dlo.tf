@@ -7,8 +7,10 @@ resource "aws_s3_bucket_object" "housing_repairs_dlo_cleaning_script" {
 }
 
 module "housing_repairs_dlo_cleaning_job" {
-  source = "../modules/aws-glue-job"
-  count  = local.is_live_environment ? 1 : 0
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
+  count                     = local.is_live_environment ? 1 : 0
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}Housing Repairs - Repairs DLO Cleaning"
@@ -31,8 +33,10 @@ module "housing_repairs_dlo_cleaning_job" {
 }
 
 module "housing_repairs_dlo_address_cleaning_job" {
-  source = "../modules/aws-glue-job"
-  count  = local.is_live_environment ? 1 : 0
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
+  count                     = local.is_live_environment ? 1 : 0
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}DLO Repairs - Address Cleaning"
@@ -57,8 +61,10 @@ module "housing_repairs_dlo_address_cleaning_job" {
 }
 
 module "get_uprn_from_uhref_job" {
-  source = "../modules/aws-glue-job"
-  count  = local.is_live_environment ? 1 : 0
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
+  count                     = local.is_live_environment ? 1 : 0
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}Get UPRN from UHref DLO repairs"
@@ -85,8 +91,10 @@ module "get_uprn_from_uhref_job" {
 }
 
 module "repairs_dlo_levenshtein_address_matching" {
-  source = "../modules/aws-glue-job"
-  count  = local.is_live_environment ? 1 : 0
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
+  count                     = local.is_live_environment ? 1 : 0
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}Housing Repairs - Repairs DLO Levenshtein Address Matching"

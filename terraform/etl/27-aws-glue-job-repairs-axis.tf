@@ -1,7 +1,9 @@
 module "housing_repairs_axis" {
   count = local.is_live_environment ? 1 : 0
 
-  source = "../modules/housing-repairs-google-sheets-cleaning"
+  source                    = "../modules/housing-repairs-google-sheets-cleaning"
+  is_production_environment = local.is_production_environment
+  is_live_environment       = local.is_live_environment
 
   department                   = module.department_housing_repairs_data_source
   short_identifier_prefix      = local.short_identifier_prefix

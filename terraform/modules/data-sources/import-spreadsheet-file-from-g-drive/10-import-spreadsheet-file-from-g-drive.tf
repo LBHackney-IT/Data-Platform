@@ -8,6 +8,8 @@ module "import_data_from_spreadsheet_job_data_source" {
   for_each = var.worksheets
 
   source                        = "../import-data-from-spreadsheet-job"
+  is_production_environment     = var.is_production_environment
+  is_live_environment           = var.is_live_environment
   department                    = var.department
   glue_catalog_database_name    = var.glue_catalog_database_name
   spreadsheet_import_script_key = var.spreadsheet_import_script_key
