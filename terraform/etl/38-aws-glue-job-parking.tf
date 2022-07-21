@@ -44,7 +44,7 @@ module "parking_pcn_denormalisation" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -84,7 +84,7 @@ module "parking_school_street_vrms" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -104,7 +104,7 @@ module "parking_estate_waiting_list_live_permits_type_gds" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -124,7 +124,7 @@ module "parking_gds_permit_change_comparison" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -145,7 +145,7 @@ module "parking_kpi_gds_summary" {
   glue_job_worker_type           = "G.1X"
   glue_job_timeout               = 240
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -165,7 +165,7 @@ module "parking_foi_pcn_gds_summary" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -205,7 +205,7 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -225,7 +225,7 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary_qtr" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -245,7 +245,7 @@ module "parking_vouchers_approved_summary_gds" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -265,7 +265,7 @@ module "parking_bailiff_allocation" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -285,7 +285,7 @@ module "parking_bailiff_ea_warrant_total" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -305,7 +305,7 @@ module "parking_bailiff_return" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -325,7 +325,7 @@ module "parking_pcn_create_event_log" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -345,7 +345,7 @@ module "parking_pcn_report_summary" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -385,7 +385,7 @@ module "parking_suspension_de-normalised_data" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -405,7 +405,7 @@ module "parking_cycle_hangars_denormalisation" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -425,7 +425,7 @@ module "parking_reps_and_appeals_correspondance" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -445,7 +445,7 @@ module "parking_permit_de_normalisation" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -465,7 +465,7 @@ module "parking_cedar_payments" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -485,7 +485,7 @@ module "parking_cedar_fulling_total_summary" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -505,7 +505,7 @@ module "parking_ceo_on_street" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -525,7 +525,7 @@ module "parking_ceo_summary" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -545,7 +545,7 @@ module "parking_deployment_target_details" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -585,7 +585,7 @@ module "parking_percent_street_coverage" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -605,7 +605,7 @@ module "parking_bailiff_warrant_figures" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -625,7 +625,7 @@ module "parking_markets_denormalisation" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -645,7 +645,7 @@ module "parking_ceo_average_on_street_hrs_mins_secs" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -665,7 +665,7 @@ module "parking_market_licence_totals" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -685,7 +685,7 @@ module "parking_cedar_backing_data_summary" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -705,7 +705,7 @@ module "parking_percent_street_coverage_cpz" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -745,7 +745,7 @@ module "parking_voucher_de_normalised" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
