@@ -7,9 +7,9 @@ from awsglue.job import Job
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.types import StringType
-from helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from helpers.repairs import map_repair_priority, clean_column_names
-from helpers.data_quality_testing import get_metrics_target_location, cancel_job_if_failing_quality_checks
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from scripts.helpers.repairs import map_repair_priority, clean_column_names
+from scripts.helpers.data_quality_testing import get_metrics_target_location, cancel_job_if_failing_quality_checks
 
 from pydeequ.analyzers import Size
 from pydeequ.checks import Check, CheckLevel

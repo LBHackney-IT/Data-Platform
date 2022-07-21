@@ -9,7 +9,7 @@ from pyspark.sql.functions import col, lit, upper
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 
-from helpers.helpers import get_glue_env_var, add_import_time_columns, PARTITION_KEYS
+from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, PARTITION_KEYS
 
 
 if __name__ == "__main__":

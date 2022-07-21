@@ -9,7 +9,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.functions import col, max
 from pyspark.sql import Window
 from datetime import datetime
-from helpers.helpers import get_glue_env_var, table_exists_in_catalog, create_pushdown_predicate
+from scripts.helpers.helpers import get_glue_env_var, table_exists_in_catalog, create_pushdown_predicate
 
 
 def get_latest_snapshot(dfa):

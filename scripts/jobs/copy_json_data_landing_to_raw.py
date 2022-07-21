@@ -9,7 +9,7 @@ from pyspark.sql.types import IntegerType
 from pyspark.sql import SparkSession
 import boto3
 
-from helpers.helpers import get_glue_env_var, add_import_time_columns, get_s3_subfolders, PARTITION_KEYS, \
+from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, get_s3_subfolders, PARTITION_KEYS, \
     clean_column_names, get_latest_partitions
 
 s3_client = boto3.client('s3')

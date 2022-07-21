@@ -1,4 +1,4 @@
-from helpers.database_ingestion_helpers import update_table_ingestion_details
+from scripts.helpers.database_ingestion_helpers import update_table_ingestion_details
 
 class TestDatabaseIngestionHelpers:
   def test_update_table_ingestion_details_adds_one_table_ingestion_details(self):

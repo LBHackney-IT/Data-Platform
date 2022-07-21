@@ -1,4 +1,4 @@
-from jobs.planning.tascomi_create_daily_snapshot import prepare_increments, apply_increments
+from scripts.jobs.planning.tascomi_create_daily_snapshot import prepare_increments, apply_increments
 from pyspark.sql import Row
 from datetime import datetime, date
 

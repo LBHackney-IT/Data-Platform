@@ -7,7 +7,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from pyspark.sql.functions import col
 from pyspark.sql.types import IntegerType, BooleanType, DateType, TimestampType, LongType, DoubleType
-from helpers.helpers import get_glue_env_var, PARTITION_KEYS, table_exists_in_catalog
+from scripts.helpers.helpers import get_glue_env_var, PARTITION_KEYS, table_exists_in_catalog
 
 
 def castColumns(columnDict,tableName,df,typeName,dataType):

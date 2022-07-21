@@ -1,6 +1,6 @@
-from jobs.housing_repairs.repairs_avonline_cleaning import clean_avonline_repairs
+from scripts.jobs.housing_repairs.repairs_avonline_cleaning import clean_avonline_repairs
 from pyspark.sql import Row
-from tests.helpers import assertions
+from scripts.tests.helpers import assertions
 
 class TestAvonlineCleaning:
     def test_title_case_conversion(self, spark):

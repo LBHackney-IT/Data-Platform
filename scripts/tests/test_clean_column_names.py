@@ -1,5 +1,5 @@
-from helpers.helpers import clean_column_names
-from tests.helpers.dataframe_conversions import list_to_dataframe, dataframe_to_list
+from scripts.helpers.helpers import clean_column_names
+from scripts.tests.helpers.dataframe_conversions import list_to_dataframe, dataframe_to_list
 
 class TestCleanColumnNames:
   def test_lowercases_a_column_name(self, spark):
