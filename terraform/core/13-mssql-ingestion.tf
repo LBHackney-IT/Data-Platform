@@ -131,14 +131,15 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   glue_job_timeout           = 220
   triggered_by_crawler       = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
-    "--s3_bucket_target"          = module.raw_zone.bucket_id
-    "--s3_prefix"                 = "benefits-housing-needs/"
-    "--table_filter_expression"   = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
-    "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_academy.name
-    "--glue_database_name_target" = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
-    "--enable-glue-datacatalog"   = "true"
-    "--job-bookmark-option"       = "job-bookmark-enable"
-    "--write-shuffle-files-to-s3" = "true"
+    "--s3_bucket_target"           = module.raw_zone.bucket_id
+    "--s3_prefix"                  = "benefits-housing-needs/"
+    "--table_filter_expression"    = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
+    "--glue_database_name_source"  = aws_glue_catalog_database.landing_zone_academy.name
+    "--glue_database_name_target"  = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
+    "--enable-glue-datacatalog"    = "true"
+    "--job-bookmark-option"        = "job-bookmark-enable"
+    "--write-shuffle-files-to-s3"  = "true"
+    "--write-shuffle-spills-to-s3" = "true"
   }
 }
 
