@@ -131,20 +131,6 @@ exports.handler = async () => {
         console.log('Assume Role Complete')
     }
 
-    const path = Path.resolve(Path.join(__dirname, 'test.txt'))
-    console.log(path)
-    const fileContent = FileSystem.readFileSync(path);
-
-    const params = {
-        Bucket: "feeds-pluto-mobysoft",
-        Key: 'hackneylondonborough.beta/test2.txt', // File name you want to save as in S3
-        Body: fileContent
-    };
-    // console.log(params)
-    //
-    // const result = await s3Client.upload(params).promise()
-    // console.log(`File uploaded successfully. ${result.Location}`)
-
     console.log('Running S3 to S3 Copier')
     console.log(`Evaluating Origin: ${originBucketId}`)
     console.log(`Path: ${originPath}`)

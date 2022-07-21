@@ -5,13 +5,13 @@ module "copy_from_s3_to_s3" {
   identifier_prefix              = local.identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage
   origin_bucket                  = module.landing_zone
-  origin_path                    = "housing/rentsense"
+  origin_path                    = "housing/rentsense/export/"
   target_bucket = {
     bucket_id   = "feeds-pluto-mobysoft"
     bucket_arn  = "arn:aws:s3:::feeds-pluto-mobysoft"
-    kms_key_id  = null //"874631b2-909c-4268-99f7-8fbdda42178f"
-    kms_key_arn = null //"arn:aws:kms:eu-west-2:937934410339:key/874631b2-909c-4268-99f7-8fbdda42178f"
+    kms_key_id  = null
+    kms_key_arn = null
   }
-  target_path = "hackneylondonborough.beta/"
+  target_path = var.rentsense_target_path
   assume_role = "arn:aws:iam::971933469343:role/customer-midas-roles-pluto-HackneyMidasRole-1M6PTJ5VS8104"
 }
