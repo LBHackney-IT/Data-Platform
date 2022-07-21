@@ -65,3 +65,7 @@ variable "datahub_url" {
   type        = string
 }
 
+variable "rentsense_target_path" {
+  description = "The S3 path to target when copying rentsense data"
+  type        = string
+}
