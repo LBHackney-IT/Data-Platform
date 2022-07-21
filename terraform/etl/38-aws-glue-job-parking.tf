@@ -1,5 +1,6 @@
 //module "manually_uploaded_parking_data_to_raw" {
 //  source = "../modules/aws-glue-job"
+is_live_environment = local.is_live_environment
 //  is_production_environment = local.is_production_environment
 //
 //  count = local.is_live_environment ? 1 : 0
@@ -32,6 +33,7 @@
 
 module "parking_pcn_denormalisation" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_pcn_denormalisation"
@@ -52,6 +54,7 @@ module "parking_pcn_denormalisation" {
 
 module "parking_persistent_evaders" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_persistent_evaders"
@@ -72,6 +75,7 @@ module "parking_persistent_evaders" {
 
 module "parking_school_street_vrms" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_school_street_vrms"
@@ -92,6 +96,7 @@ module "parking_school_street_vrms" {
 
 module "parking_estate_waiting_list_live_permits_type_gds" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_estate_waiting_list_live_permits_type_gds"
@@ -112,6 +117,7 @@ module "parking_estate_waiting_list_live_permits_type_gds" {
 
 module "parking_gds_permit_change_comparison" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_gds_permit_change_comparison"
@@ -132,6 +138,7 @@ module "parking_gds_permit_change_comparison" {
 
 module "parking_kpi_gds_summary" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_kpi_gds_summary"
@@ -153,6 +160,7 @@ module "parking_kpi_gds_summary" {
 
 module "parking_foi_pcn_gds_summary" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_foi_pcn_gds_summary"
@@ -173,6 +181,7 @@ module "parking_foi_pcn_gds_summary" {
 
 module "parking_permit_denormalised_gds_street_llpg" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_permit_denormalised_gds_street_llpg"
@@ -193,6 +202,7 @@ module "parking_permit_denormalised_gds_street_llpg" {
 
 module "parking_reps_and_appeals_correspondance_kpi_gds_summary" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_reps_and_appeals_correspondance_kpi_gds_summary"
@@ -213,6 +223,7 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary" {
 
 module "parking_reps_and_appeals_correspondance_kpi_gds_summary_qtr" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_reps_and_appeals_correspondance_kpi_gds_summary_qtr"
@@ -233,6 +244,7 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary_qtr" {
 
 module "parking_vouchers_approved_summary_gds" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_vouchers_approved_summary_gds"
@@ -253,6 +265,7 @@ module "parking_vouchers_approved_summary_gds" {
 
 module "parking_bailiff_allocation" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_bailiff_allocation"
@@ -273,6 +286,7 @@ module "parking_bailiff_allocation" {
 
 module "parking_bailiff_ea_warrant_total" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_bailiff_ea_warrant_total"
@@ -293,6 +307,7 @@ module "parking_bailiff_ea_warrant_total" {
 
 module "parking_bailiff_return" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_bailiff_return"
@@ -313,6 +328,7 @@ module "parking_bailiff_return" {
 
 module "parking_pcn_create_event_log" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_pcn_create_event_log"
@@ -333,6 +349,7 @@ module "parking_pcn_create_event_log" {
 
 module "parking_pcn_report_summary" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_pcn_report_summary"
@@ -353,6 +370,7 @@ module "parking_pcn_report_summary" {
 
 module "parking_pcn_ltn_report_summary" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_pcn_ltn_report_summary"
@@ -373,6 +391,7 @@ module "parking_pcn_ltn_report_summary" {
 
 module "parking_suspension_de-normalised_data" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_suspension_de-normalised_data"
@@ -393,6 +412,7 @@ module "parking_suspension_de-normalised_data" {
 
 module "parking_cycle_hangars_denormalisation" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_cycle_hangars_denormalisation"
@@ -413,6 +433,7 @@ module "parking_cycle_hangars_denormalisation" {
 
 module "parking_reps_and_appeals_correspondance" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_reps_and_appeals_correspondance"
@@ -433,6 +454,7 @@ module "parking_reps_and_appeals_correspondance" {
 
 module "parking_permit_de_normalisation" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_permit_de_normalisation"
@@ -453,6 +475,7 @@ module "parking_permit_de_normalisation" {
 
 module "parking_cedar_payments" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_cedar_payments"
@@ -473,6 +496,7 @@ module "parking_cedar_payments" {
 
 module "parking_cedar_fulling_total_summary" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_cedar_fulling_total_summary"
@@ -493,6 +517,7 @@ module "parking_cedar_fulling_total_summary" {
 
 module "parking_ceo_on_street" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_ceo_on_street"
@@ -513,6 +538,7 @@ module "parking_ceo_on_street" {
 
 module "parking_ceo_summary" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_ceo_summary"
@@ -533,6 +559,7 @@ module "parking_ceo_summary" {
 
 module "parking_deployment_target_details" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_deployment_target_details"
@@ -553,6 +580,7 @@ module "parking_deployment_target_details" {
 
 module "parking_ceo_average_on_street" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_ceo_average_on_street"
@@ -573,6 +601,7 @@ module "parking_ceo_average_on_street" {
 
 module "parking_percent_street_coverage" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_percent_street_coverage"
@@ -593,6 +622,7 @@ module "parking_percent_street_coverage" {
 
 module "parking_bailiff_warrant_figures" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_bailiff_warrant_figures"
@@ -613,6 +643,7 @@ module "parking_bailiff_warrant_figures" {
 
 module "parking_markets_denormalisation" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_markets_denormalisation"
@@ -633,6 +664,7 @@ module "parking_markets_denormalisation" {
 
 module "parking_ceo_average_on_street_hrs_mins_secs" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_ceo_average_on_street_hrs_mins_secs"
@@ -653,6 +685,7 @@ module "parking_ceo_average_on_street_hrs_mins_secs" {
 
 module "parking_market_licence_totals" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_market_licence_totals"
@@ -673,6 +706,7 @@ module "parking_market_licence_totals" {
 
 module "parking_cedar_backing_data_summary" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_cedar_backing_data_summary"
@@ -693,6 +727,7 @@ module "parking_cedar_backing_data_summary" {
 
 module "parking_percent_street_coverage_cpz" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_percent_street_coverage_cpz"
@@ -713,6 +748,7 @@ module "parking_percent_street_coverage_cpz" {
 
 module "parking_foreign_vrm_pcns" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_foreign_vrm_pcns"
@@ -733,6 +769,7 @@ module "parking_foreign_vrm_pcns" {
 
 module "parking_voucher_de_normalised" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_parking_data_source
   job_name                       = "${local.short_identifier_prefix}parking_voucher_de_normalised"
@@ -752,6 +789,7 @@ module "parking_voucher_de_normalised" {
 }
 module "parking_correspondence_performance_records_with_pcn" {
   source                     = "../modules/aws-glue-job"
+  is_live_environment        = local.is_live_environment
   is_production_environment  = local.is_production_environment
   department                 = module.department_parking_data_source
   job_name                   = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn"
@@ -772,6 +810,7 @@ module "parking_correspondence_performance_records_with_pcn" {
 }
 module "parking_dc_liberator_latest_permit_status" {
   source                     = "../modules/aws-glue-job"
+  is_live_environment        = local.is_live_environment
   is_production_environment  = local.is_production_environment
   department                 = module.department_parking_data_source
   job_name                   = "${local.short_identifier_prefix}parking_dc_liberator_latest_permit_status"
@@ -793,6 +832,7 @@ module "parking_dc_liberator_latest_permit_status" {
 }
 module "parking_disputes_kpi_gds_summary" {
   source                     = "../modules/aws-glue-job"
+  is_live_environment        = local.is_live_environment
   is_production_environment  = local.is_production_environment
   department                 = module.department_parking_data_source
   job_name                   = "${local.short_identifier_prefix}parking_disputes_kpi_gds_summary"
@@ -814,6 +854,7 @@ module "parking_disputes_kpi_gds_summary" {
 }
 module "parking_foi_pcn_gds_daily_summary" {
   source                     = "../modules/aws-glue-job"
+  is_live_environment        = local.is_live_environment
   is_production_environment  = local.is_production_environment
   department                 = module.department_parking_data_source
   job_name                   = "${local.short_identifier_prefix}parking_foi_pcn_gds_daily_summary"
@@ -835,6 +876,7 @@ module "parking_foi_pcn_gds_daily_summary" {
 }
 module "parking_eta_decision_records_pcn_dispute_gds" {
   source                     = "../modules/aws-glue-job"
+  is_live_environment        = local.is_live_environment
   is_production_environment  = local.is_production_environment
   department                 = module.department_parking_data_source
   job_name                   = "${local.short_identifier_prefix}parking_eta_decision_records_pcn_dispute_gds"
@@ -856,6 +898,7 @@ module "parking_eta_decision_records_pcn_dispute_gds" {
 }
 module "parking_dc_liberator_permit_llpg_street_records" {
   source                     = "../modules/aws-glue-job"
+  is_live_environment        = local.is_live_environment
   is_production_environment  = local.is_production_environment
   department                 = module.department_parking_data_source
   job_name                   = "${local.short_identifier_prefix}parking_dc_liberator_permit_llpg_street_records"

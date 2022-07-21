@@ -42,6 +42,7 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
   tags = module.tags.values
 
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department = module.department_housing

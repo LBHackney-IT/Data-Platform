@@ -60,6 +60,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   tags     = module.tags.values
 
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   job_name                       = "${local.short_identifier_prefix}Academy Revs & Bens Housing Needs Database Ingestion-${each.key}"
@@ -119,6 +120,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   tags  = module.tags.values
 
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   job_name                   = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
@@ -151,6 +153,7 @@ module "copy_academy_revenues_to_raw_zone" {
   tags  = module.tags.values
 
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   job_name                   = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"

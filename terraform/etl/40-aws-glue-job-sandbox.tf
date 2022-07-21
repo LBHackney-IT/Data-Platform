@@ -1,5 +1,6 @@
 module "load_locations_vaccine_to_refined_sandbox" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
@@ -22,6 +23,7 @@ module "load_locations_vaccine_to_refined_sandbox" {
 
 module "job_template" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
@@ -39,6 +41,7 @@ module "job_template" {
 
 module "load_covid_data_to_refined_marta" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
@@ -62,6 +65,7 @@ module "load_covid_data_to_refined_marta" {
 
 module "load_covid_data_to_refined_adam" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
@@ -86,6 +90,7 @@ module "load_covid_data_to_refined_adam" {
 
 module "job_template_tim" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
@@ -104,6 +109,7 @@ module "job_template_tim" {
 
 module "steve_covid_locations_and_vaccinations_sandbox" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
@@ -127,6 +133,7 @@ module "steve_covid_locations_and_vaccinations_sandbox" {
 
 module "stg_job_template_huu_do_sandbox" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
@@ -150,6 +157,7 @@ module "stg_job_template_huu_do_sandbox" {
 
 module "covid_vaccinations_verlander_sandbox" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
@@ -172,6 +180,7 @@ module "covid_vaccinations_verlander_sandbox" {
 
 module "covid_vaccinations_arda_sandbox" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source

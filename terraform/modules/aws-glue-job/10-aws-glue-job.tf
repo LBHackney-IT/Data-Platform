@@ -75,7 +75,7 @@ resource "aws_glue_trigger" "job_trigger" {
   type          = local.trigger_type
   workflow_name = var.workflow_name
   schedule      = var.schedule
-  enabled       = var.trigger_enabled && var.is_production_environment
+  enabled       = var.trigger_enabled && (var.is_production_environment || !var.is_live_environment)
 
 
   dynamic "predicate" {

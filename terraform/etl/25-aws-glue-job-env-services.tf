@@ -20,6 +20,7 @@ resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
 
 module "alloy_api_ingestion_raw_env_services" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
   count                     = local.is_live_environment ? length(local.alloy_queries) : 0
 
@@ -89,6 +90,7 @@ resource "aws_glue_crawler" "alloy_daily_table_ingestion" {
 
 module "alloy_daily_snapshot_env_services" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
   count                     = local.is_live_environment ? length(local.alloy_queries) : 0
 

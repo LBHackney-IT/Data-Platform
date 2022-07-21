@@ -67,6 +67,7 @@ resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
 # Ingestion
 module "ingest_tascomi_data" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                      = module.department_planning_data_source
@@ -158,6 +159,7 @@ resource "aws_glue_trigger" "tascomi_api_response_crawler_trigger" {
 
 module "tascomi_parse_tables_increments" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
@@ -190,6 +192,7 @@ module "tascomi_parse_tables_increments" {
 
 module "tascomi_recast_tables_increments" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
@@ -223,6 +226,7 @@ module "tascomi_recast_tables_increments" {
 
 module "tascomi_create_daily_snapshot" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
@@ -254,6 +258,7 @@ module "tascomi_create_daily_snapshot" {
 
 module "tascomi_applications_to_trusted" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
@@ -284,6 +289,7 @@ module "tascomi_applications_to_trusted" {
 
 module "tascomi_officers_teams_to_trusted" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
@@ -313,6 +319,7 @@ module "tascomi_officers_teams_to_trusted" {
 
 module "tascomi_locations_to_trusted" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
@@ -342,6 +349,7 @@ module "tascomi_locations_to_trusted" {
 
 module "tascomi_subsidiary_tables_to_trusted" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source

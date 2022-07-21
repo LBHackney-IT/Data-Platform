@@ -8,6 +8,7 @@ data "aws_ssm_parameter" "role_arn_to_access_housing_tables" {
 
 module "ingest_mtfh_tables" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
   environment               = var.environment
   tags                      = module.tags.values
@@ -47,6 +48,7 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
   tags = module.tags.values
 
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   job_name                   = replace(lower("${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"), "/[^a-zA-Z0-9]+/", "-")

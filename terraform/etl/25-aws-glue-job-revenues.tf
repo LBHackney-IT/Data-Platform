@@ -1,5 +1,6 @@
 module "etl_ctax_live_properties" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_revenues_data_source
   job_name                       = "${local.short_identifier_prefix}etl_ctax_live_properties"
@@ -20,6 +21,7 @@ module "etl_ctax_live_properties" {
 
 module "etl_zerobase_ctax_live_properties" {
   source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
   department                     = module.department_revenues_data_source
   job_name                       = "${local.short_identifier_prefix}etl_zerobase_ctax_live_properties"

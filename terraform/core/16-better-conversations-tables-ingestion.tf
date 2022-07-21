@@ -8,6 +8,7 @@ data "aws_ssm_parameter" "role_arn_to_access_better_conversations_tables" {
 
 module "ingest_better_conversations_tables" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
   environment               = var.environment
   tags                      = module.tags.values

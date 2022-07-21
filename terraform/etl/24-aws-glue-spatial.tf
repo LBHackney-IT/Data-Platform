@@ -1,5 +1,6 @@
 module "llpg_raw_to_trusted" {
   source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_unrestricted_data_source

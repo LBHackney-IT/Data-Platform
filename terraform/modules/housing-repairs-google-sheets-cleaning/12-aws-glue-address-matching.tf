@@ -1,5 +1,6 @@
 module "housing_repairs_google_sheets_address_matching" {
   source                    = "../aws-glue-job"
+  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department        = var.department
