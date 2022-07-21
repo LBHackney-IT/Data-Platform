@@ -313,7 +313,7 @@ def move_file(bucket, source_path, target_path, filename):
         client.copy(CopySource=target_source, Bucket=bucket, Key=target_key)
 
         ### Delete the old file
-        #client.delete_object(Bucket=bucket, Key=source_key)
+        client.delete_object(Bucket=bucket, Key=source_key)
         print("File Moved to: ", target_key)
     except Exception as error:
             ## do nothing
