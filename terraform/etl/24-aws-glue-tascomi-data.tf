@@ -66,7 +66,8 @@ resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
 
 # Ingestion
 module "ingest_tascomi_data" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                      = module.department_planning_data_source
   number_of_workers_for_glue_job  = local.number_of_workers
@@ -156,7 +157,8 @@ resource "aws_glue_trigger" "tascomi_api_response_crawler_trigger" {
 }
 
 module "tascomi_parse_tables_increments" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_parse_tables_increments_planning"
@@ -187,7 +189,8 @@ module "tascomi_parse_tables_increments" {
 }
 
 module "tascomi_recast_tables_increments" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_recast_tables_increments_planning"
@@ -219,7 +222,8 @@ module "tascomi_recast_tables_increments" {
 }
 
 module "tascomi_create_daily_snapshot" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
@@ -249,7 +253,8 @@ module "tascomi_create_daily_snapshot" {
 }
 
 module "tascomi_applications_to_trusted" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
@@ -278,7 +283,8 @@ module "tascomi_applications_to_trusted" {
 }
 
 module "tascomi_officers_teams_to_trusted" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_officers_trusted"
@@ -306,7 +312,8 @@ module "tascomi_officers_teams_to_trusted" {
 }
 
 module "tascomi_locations_to_trusted" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_locations_trusted"
@@ -334,7 +341,8 @@ module "tascomi_locations_to_trusted" {
 }
 
 module "tascomi_subsidiary_tables_to_trusted" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_subsidiary_tables_trusted"

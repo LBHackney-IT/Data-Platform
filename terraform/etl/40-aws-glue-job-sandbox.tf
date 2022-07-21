@@ -1,5 +1,6 @@
 module "load_locations_vaccine_to_refined_sandbox" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
   job_name                   = "${local.short_identifier_prefix}daro_covid_locations_and_vaccinations"
@@ -20,7 +21,8 @@ module "load_locations_vaccine_to_refined_sandbox" {
 }
 
 module "job_template" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
   job_name                   = "${local.short_identifier_prefix}job_template"
@@ -36,7 +38,8 @@ module "job_template" {
 }
 
 module "load_covid_data_to_refined_marta" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
   job_name                   = "${local.short_identifier_prefix}marta_training_job"
@@ -58,7 +61,8 @@ module "load_covid_data_to_refined_marta" {
 
 
 module "load_covid_data_to_refined_adam" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
   job_name                   = "${local.short_identifier_prefix}load_covid_data_to_refined_adam"
@@ -81,7 +85,8 @@ module "load_covid_data_to_refined_adam" {
 
 
 module "job_template_tim" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
   job_name                   = "${local.short_identifier_prefix}training_job_tim"
@@ -98,7 +103,8 @@ module "job_template_tim" {
 }
 
 module "steve_covid_locations_and_vaccinations_sandbox" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
   job_name                   = "${local.short_identifier_prefix}steve_covid_locations_and_vaccinations"
@@ -120,7 +126,8 @@ module "steve_covid_locations_and_vaccinations_sandbox" {
 }
 
 module "stg_job_template_huu_do_sandbox" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
   job_name                   = "${local.short_identifier_prefix}job_template_huu_do"
@@ -142,7 +149,8 @@ module "stg_job_template_huu_do_sandbox" {
 }
 
 module "covid_vaccinations_verlander_sandbox" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
   job_name                   = "${local.short_identifier_prefix}covid_vaccinations_verlander"
@@ -163,7 +171,8 @@ module "covid_vaccinations_verlander_sandbox" {
 }
 
 module "covid_vaccinations_arda_sandbox" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_sandbox_data_source
   job_name                   = "${local.short_identifier_prefix}covid_vaccinations_arda"

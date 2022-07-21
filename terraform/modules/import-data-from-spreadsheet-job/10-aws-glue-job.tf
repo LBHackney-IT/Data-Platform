@@ -1,6 +1,7 @@
 # Import test data
 module "spreadsheet_import" {
-  source = "../aws-glue-job"
+  source                    = "../aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department        = var.department
   job_name          = "Spreadsheet Import Job - ${var.department.identifier}-${var.glue_job_name}"

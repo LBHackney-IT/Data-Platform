@@ -1,5 +1,6 @@
 module "google_sheet_import_data_source" {
-  source = "../aws-glue-job"
+  source                    = "../aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department           = var.department
   job_name             = "Google Sheets Import Job - ${local.import_name}"

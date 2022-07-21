@@ -40,7 +40,8 @@ resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" 
 module "ingest_housing_income_collection_database_to_housing_raw_zone" {
   tags = module.tags.values
 
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department = module.department_housing
 

@@ -12,7 +12,8 @@ resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_data_cleaning_sc
 }
 
 module "housing_repairs_elec_mech_fire_cleaning" {
-  source = "../aws-glue-job"
+  source                    = "../aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department        = var.department
   job_name          = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Cleaning"

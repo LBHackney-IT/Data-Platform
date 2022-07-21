@@ -58,7 +58,8 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   for_each = local.table_filter_expressions
   tags     = module.tags.values
 
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   job_name                       = "${local.short_identifier_prefix}Academy Revs & Bens Housing Needs Database Ingestion-${each.key}"
   script_s3_object_key           = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
@@ -116,7 +117,8 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   job_name                   = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
   script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key
@@ -147,7 +149,8 @@ module "copy_academy_revenues_to_raw_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   job_name                   = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
   script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key

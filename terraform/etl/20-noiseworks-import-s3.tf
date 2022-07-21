@@ -1,5 +1,6 @@
 module "noiseworks_to_raw_zone" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_env_enforcement_data_source
   job_name                   = "${local.short_identifier_prefix}noiseworks_to_raw_zone"
