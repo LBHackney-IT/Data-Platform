@@ -238,7 +238,7 @@ module "parking_vouchers_approved_summary_gds" {
   pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   script_name                    = "parking_vouchers_approved_summary_gds"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  triggered_by_job               = "${local.short_identifier_prefix}parking_dc_liberator_latest_permit_status"
   job_description                = "Summary of voucher applications approved by FY, Month year, cpz and cpz name for use in GDS"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled                = local.is_production_environment
@@ -757,14 +757,15 @@ module "parking_correspondence_performance_records_with_pcn" {
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   script_name                = "parking_correspondence_performance_records_with_pcn"
-  glue_version               = "3.0" #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  glue_version               = "3.0" 
+  triggered_by_job           = module.parking_pcn_denormalisation.job_name #"${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description            = "correspondence performance records with pcn"
-  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = false
+  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
@@ -777,10 +778,10 @@ module "parking_dc_liberator_latest_permit_status" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   script_name                = "parking_dc_liberator_latest_permit_status"
   glue_version               = "3.0"
-  #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description = "Parking Latest permit status from the Liberator Landing zone permit status table."
-  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = false
+  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -817,10 +818,10 @@ module "parking_foi_pcn_gds_daily_summary" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   script_name                = "parking_foi_pcn_gds_daily_summary"
   glue_version               = "3.0"
-  #  triggered_by_job           = "${local.short_identifier_prefix}parking_pcn_denormalisation"
+  triggered_by_job           = "${local.short_identifier_prefix}parking_pcn_denormalisation"
   job_description = "Daily summarising data from the FOI Google Data Studio dashboard as need to be under 100,000"
-  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = false
+  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
@@ -857,9 +858,9 @@ module "parking_dc_liberator_permit_llpg_street_records" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   script_name                = "parking_dc_liberator_permit_llpg_street_records"
   glue_version               = "3.0"
-  #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  # triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description = "Street records for the permit llpg table in the liberator raw zone"
-  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  # workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled                = false
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
