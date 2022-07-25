@@ -161,13 +161,6 @@ jobs:
           sync_production_to_pre_production_task_role: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
           pre_production_liberator_data_storage_kms_key_arn: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
           branch: "main"
-          terraform_import: ${{ inputs.terraform_infra_import }}
-          terraform_remove: ${{ inputs.terraform_infra_remove }}
-          # DANGER ZONE
-          # In order to allow you to run a Terraform destroy (that will delete all AWS resources managed by Terraform,
-          # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
-          # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
-          terraform_destroy: false
 
       - name: Configure Redshift users, external schemas and user permissions for external schema
         working-directory: "./terraform/etl"
