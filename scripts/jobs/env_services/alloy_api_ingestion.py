@@ -6,20 +6,16 @@ import sys
 import time
 import zipfile
 
+import boto3
 import requests
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
-from helpers.helpers import (
-    PARTITION_KEYS,
-    add_import_time_columns,
-    clean_column_names,
-    get_glue_env_var,
-    get_secret,
-    table_exists_in_catalog,
-)
+from helpers.helpers import (PARTITION_KEYS, add_import_time_columns,
+                             clean_column_names, get_glue_env_var, get_secret,
+                             table_exists_in_catalog)
 from pyspark.context import SparkContext, SparkFiles
 from pyspark.sql import SparkSession, SQLContext
 
@@ -84,7 +80,7 @@ def api_response_json(response):
     except requests.exceptions.RequestException as e:
         logger.info(str(e))
         raise
-    return response.json()
+    return json.loads(response.text)
 
 
 def number_unnamed_columns(df):
@@ -101,24 +97,31 @@ if __name__ == "__main__":
     glue_context = GlueContext(sc)
     sqlContext = SQLContext(sc)
     spark = SparkSession(sc)
+    s3 = boto3.resource("s3")
     logger = glue_context.get_logger()
     job = Job(glue_context)
     job.init(args["JOB_NAME"], args)
 
     resource = get_glue_env_var("resource", "")
     bucket_target = get_glue_env_var("s3_bucket_target", "")
+    alloy_download_bucket = get_glue_env_var(
+        "alloy_download_bucket", ""
+    )  # env-services/alloy/alloy_api_downloads/
     api_key = get_secret(get_glue_env_var("secret_name", ""), "eu-west-2")
     database = get_glue_env_var("database", "")
-    s3_prefix = get_glue_env_var("s3_prefix", "")
+    s3_prefix = get_glue_env_var("s3_prefix", "")  # env-services/alloy/api-responses/
     table_prefix = get_glue_env_var("table_prefix", "")
     aqs = get_glue_env_var("aqs", "")
 
-    s3_target_url = "s3://" + bucket_target + "/" + s3_prefix + resource + "/"
     glue_catalogue_table_name = table_prefix + resource
+    s3_target_url = "s3://" + bucket_target + "/" + s3_prefix + resource + "/"
+    s3_download_url = "s3://" + bucket_target + "/" + alloy_download_bucket
 
     last_import_date_time = format_time(
         get_last_import_date_time(glue_context, database, glue_catalogue_table_name)
     )
+
+    logger.info(f"last import date time: {last_import_date_time}")
 
     if resource == "":
         raise Exception("--resource value must be defined in the job aruguments")
@@ -131,10 +134,13 @@ if __name__ == "__main__":
     aqs = json.loads(aqs)
     aqs = update_aqs(aqs, last_import_date_time)
     filename = aqs["fileName"]
+    file_path = filename.split(".")[0] + "/" + filename
 
     response = requests.post(post_url, data=json.dumps(aqs), headers=headers)
     response = api_response_json(response)
     task_id = response["backgroundTaskId"]
+
+    logger.info(f"task id: {task_id}")
 
     url = f"https://api.{region}.alloyapp.io/api/task/{task_id}?token={api_key}"
     task_status = ""
@@ -143,12 +149,9 @@ if __name__ == "__main__":
     while task_status != "Complete":
         time.sleep(60)
         response = requests.get(url)
+
         response = api_response_json(response)
         task_status = response["task"]["status"]
-
-        if response.status_code != 200:
-            logger.info(f"breaking with api status: {response.status_code}")
-            break
 
     else:
         url = f"https://api.{region}.alloyapp.io/api/export/{task_id}/file?token={api_key}"
@@ -156,33 +159,35 @@ if __name__ == "__main__":
         response = api_response_json(response)
         file_id = response["fileItemId"]
 
+        logger.info(f"file id: {file_id}")
+
         url_download = f"https://api.uk.alloyapp.io/api/file/{file_id}?token={api_key}"
         r = requests.get(url_download, headers=headers)
 
-        with zipfile.ZipFile(io.BytesIO(r.content)) as z:
-            returned_csv = z.extract(member=f"{filename[:-4]}/{filename}")
+        with io.BytesIO(r.content) as z:
+            with zipfile.ZipFile(z, mode="r") as zip:
+                s3.meta.client.upload_fileobj(
+                    zip.open(file_path),
+                    Bucket=bucket_target,
+                    Key=alloy_download_bucket + filename,
+                )
 
-        returned_csv = html.unescape(returned_csv)
-        sc.addFile(returned_csv)
+        df = spark.read.options(header=True, inferSchema=True).csv(
+            s3_download_url + filename"
+        )
+        df = clean_column_names(df)
+        df = df.replace("nan", None).replace("NaT", None)
+        df = df.na.drop("all")
+        df = add_import_time_columns(df)
 
-        sparkDynamicDataFrame = spark.read.csv(
-            SparkFiles.get(filename), header=True, inferSchema=True
-        )
-        sparkDynamicDataFrame = number_unnamed_columns(sparkDynamicDataFrame)
-        sparkDynamicDataFrame = clean_column_names(sparkDynamicDataFrame)
-        sparkDynamicDataFrame = sparkDynamicDataFrame.replace("nan", None).replace(
-            "NaT", None
-        )
-        # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
-        sparkDynamicDataFrame = sparkDynamicDataFrame.na.drop("all")
-        sparkDynamicDataFrame = add_import_time_columns(sparkDynamicDataFrame)
-        dataframe = DynamicFrame.fromDF(
-            sparkDynamicDataFrame, glue_context, f"alloy_{resource}"
-        )
+        dataframe = DynamicFrame.fromDF(df, glue_context, f"alloy_Gully Cleanse")
         parquetData = glue_context.write_dynamic_frame.from_options(
             frame=dataframe,
             connection_type="s3",
-            connection_options={"path": s3_target_url, "partitionKeys": PARTITION_KEYS},
+            connection_options={
+                "path": s3_target_url,
+                "partitionKeys": PARTITION_KEYS,
+            },
             format="parquet",
             transformation_ctx=f"alloy_{resource}_sink",
         )
