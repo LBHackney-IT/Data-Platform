@@ -91,13 +91,13 @@ resource "aws_iam_role_policy_attachment" "copy_from_s3_to_s3_lambda" {
 
 resource "null_resource" "lambda_builder" {
   triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset(path.module, "lambdas/src/s3-to-s3-export-copier/*") : filesha1("${path.module}/${f}")]))
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "lambda/src/*") : filesha1("${path.module}/${f}")]))
   }
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
     command     = "npm run build"
-    working_dir = "${path.module}/lambdas/s3-to-s3-export-copier/"
+    working_dir = "${path.module}/lambda/"
   }
 }
 
@@ -109,19 +109,19 @@ data "null_data_source" "wait_for_lambda_exporter" {
 
     # This value gives us something to implicitly depend on
     # in the archive_file below.
-    source_dir = "${path.module}/lambdas/s3-to-s3-export-copier/"
+    source_dir = "${path.module}/lambda/src/"
   }
 }
 
 data "archive_file" "lambda_source_code" {
   type        = "zip"
   source_dir  = data.null_data_source.wait_for_lambda_exporter.outputs["source_dir"]
-  output_path = "${path.module}/lambdas/copy-from-s3-to-s3.zip"
+  output_path = "${path.module}/lambda/copy-from-s3-to-s3.zip"
 }
 
 resource "aws_s3_object" "copy_from_s3_to_s3_lambda" {
   bucket      = var.lambda_artefact_storage_bucket.bucket_id
-  key         = "s3-to-s3-export-copier.zip"
+  key         = "copy-from-s3-to-s3.zip"
   source      = data.archive_file.lambda_source_code.output_path
   acl         = "private"
   source_hash = data.archive_file.lambda_source_code.output_md5
