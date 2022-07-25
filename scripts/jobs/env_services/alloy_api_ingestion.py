@@ -1,5 +1,4 @@
 import datetime
-import html
 import io
 import json
 import sys
@@ -13,9 +12,14 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
-from helpers.helpers import (PARTITION_KEYS, add_import_time_columns,
-                             clean_column_names, get_glue_env_var, get_secret,
-                             table_exists_in_catalog)
+from helpers.helpers import (
+    PARTITION_KEYS,
+    add_import_time_columns,
+    clean_column_names,
+    get_glue_env_var,
+    get_secret,
+    table_exists_in_catalog,
+)
 from pyspark.context import SparkContext, SparkFiles
 from pyspark.sql import SparkSession, SQLContext
 
@@ -104,12 +108,10 @@ if __name__ == "__main__":
 
     resource = get_glue_env_var("resource", "")
     bucket_target = get_glue_env_var("s3_bucket_target", "")
-    alloy_download_bucket = get_glue_env_var(
-        "alloy_download_bucket", ""
-    )  # env-services/alloy/alloy_api_downloads/
+    alloy_download_bucket = get_glue_env_var("alloy_download_bucket", "")
     api_key = get_secret(get_glue_env_var("secret_name", ""), "eu-west-2")
     database = get_glue_env_var("database", "")
-    s3_prefix = get_glue_env_var("s3_prefix", "")  # env-services/alloy/api-responses/
+    s3_prefix = get_glue_env_var("s3_prefix", "")
     table_prefix = get_glue_env_var("table_prefix", "")
     aqs = get_glue_env_var("aqs", "")
 
@@ -173,7 +175,7 @@ if __name__ == "__main__":
                 )
 
         df = spark.read.options(header=True, inferSchema=True).csv(
-            s3_download_url + filename"
+            s3_download_url + filename
         )
         df = clean_column_names(df)
         df = df.replace("nan", None).replace("NaT", None)
