@@ -20,7 +20,7 @@ from helpers.helpers import (
     get_secret,
     table_exists_in_catalog,
 )
-from pyspark.context import SparkContext, SparkFiles
+from pyspark.context import SparkContext
 from pyspark.sql import SparkSession, SQLContext
 
 
