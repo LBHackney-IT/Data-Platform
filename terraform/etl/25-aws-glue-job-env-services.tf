@@ -40,6 +40,7 @@ module "alloy_api_ingestion_raw_env_services" {
     "--database"                = module.department_environmental_services_data_source.raw_zone_catalog_database_name
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--resource"                = local.alloy_query_names[count.index]
+    "--alloy_download_bucket"   = "env-services/alloy/alloy_api_downloads/"
   }
 }
 
