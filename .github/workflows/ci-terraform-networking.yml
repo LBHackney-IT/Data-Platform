@@ -1,4 +1,4 @@
-name: 'CI'
+name: 'Networking'
 on:
   push:
     branches-ignore:
@@ -15,7 +15,7 @@ on:
 
 jobs:
   CI-Staging-Plan:
-    name : "Staging Networking"
+    name : "Staging"
     uses: ./.github/workflows/plan-terraform.yml
     with:
       environment: "stg"
@@ -43,7 +43,7 @@ jobs:
       SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
   CI-Production-Plan:
-    name : "Production Networking"
+    name : "Production"
     uses: ./.github/workflows/plan-terraform.yml
     with:
       environment: "prod"
@@ -71,7 +71,7 @@ jobs:
       SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
   CI-Staging-Lint:
-    name : "Staging Networking"
+    name : "Lint"
     uses: ./.github/workflows/lint-terraform.yml
     with:
       environment: "stg"
