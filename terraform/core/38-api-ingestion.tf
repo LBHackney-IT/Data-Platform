@@ -12,7 +12,7 @@ module "icaseworks_api_ingestion" {
   identifier_prefix              = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   lambda_name                    = "icaseworks-api-ingestion"
-  lambda_handler                 = "main.handler"
+  lambda_handler                 = "main.lambda_handler"
   runtime_language               = "python3.8"
   secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   s3_target_bucket_arn           = module.landing_zone.bucket_arn
@@ -30,7 +30,9 @@ module "icaseworks_api_ingestion" {
 }
 
 module "copy_icaseworks_data_landing_to_raw" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   count = local.is_live_environment ? 1 : 0
 
