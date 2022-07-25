@@ -6,7 +6,7 @@ import requests
 import botocore.session
 from botocore.stub import Stubber
 from datetime import datetime
-from icaseworks_api_ingestion.main import get_icaseworks_report_from, get_token, encode_string, remove_illegal_characters, write_dataframe_to_s3, dictionary_to_string, retrieve_credentials_from_secrets_manager
+from icaseworks_api_ingestion.main import get_icaseworks_report_from, get_token, encode_string, remove_illegal_characters, write_dataframe_to_s3, dictionary_to_string, retrieve_credentials_from_secrets_manager, single_digit_to_zero_prefixed_string
 from icaseworks_api_ingestion.helpers import MockResponse
 
 BASE_URL = "https://hackneyreports.icasework.com/getreport?"
@@ -142,3 +142,11 @@ class TestCaseWorksApiIngestion(TestCase):
 
         service_response = write_dataframe_to_s3(self.s3, data, bucket, output_folder, filename)
         self.assertEqual(service_response, response)
+
+    def test_single_digit_to_zero_prefixed_string_prefixes_single_digit_with_zero(self):
+        result_with_zero_prefix = single_digit_to_zero_prefixed_string(9)
+        self.assertEqual(result_with_zero_prefix, "09")
+
+    def test_single_digit_to_zero_prefixed_does_not_prefix_double_digits_with_zero(self):
+        result_without_zero_prefix = single_digit_to_zero_prefixed_string(10)
+        self.assertEqual(result_without_zero_prefix, "10")

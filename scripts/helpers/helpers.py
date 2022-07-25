@@ -258,3 +258,63 @@ def get_latest_rows_by_date(df, column):
     date_filter = df.select(max(column)).first()[0]
     df = df.where(col(column) == date_filter)
     return df
+
+
+def rename_file(source_bucket, src_prefix, filename):
+    print("S3 Bucket: ", source_bucket)
+    print("Prefix: ", src_prefix)
+    print("Filename: ", filename)
+    try:
+        client = boto3.client('s3')
+
+        ## Get a list of files with prefix (we know there will be only one file)
+        response = client.list_objects(
+            Bucket = source_bucket,
+            Prefix = src_prefix
+        )
+        name = response["Contents"][0]["Key"]
+
+        print("Found File: ", name)
+
+        ## Store Target File File Prefix, this is the new name of the file
+        target_source = {'Bucket': source_bucket, 'Key': name}
+
+        target_key = src_prefix + filename
+
+        print("New Filename: ", target_key)
+
+        ### Now Copy the file with New Name
+        client.copy(CopySource=target_source, Bucket=source_bucket, Key=target_key)
+
+        ### Delete the old file
+        client.delete_object(Bucket=source_bucket, Key=name)
+
+    except Exception as error:
+            ## do nothing
+            print('Error Occured: rename_file', error)
+
+
+def move_file(bucket, source_path, target_path, filename):
+    print("S3 Bucket: ", bucket)
+    print("Source Path: ", source_path)
+    print("Target Path: ", target_path)
+    try:
+        client = boto3.client('s3')
+
+        source_key = source_path + filename
+        target_key = target_path + filename
+        ## Store Target File File Prefix, this is the new name of the file
+        target_source = {
+            'Bucket': bucket,
+            'Key': source_key
+        }
+
+        ### Now Copy the file with New Name
+        client.copy(CopySource=target_source, Bucket=bucket, Key=target_key)
+
+        ### Delete the old file
+        client.delete_object(Bucket=bucket, Key=source_key)
+        print("File Moved to: ", target_key)
+    except Exception as error:
+            ## do nothing
+            print('Error Occured: rename_file', error)

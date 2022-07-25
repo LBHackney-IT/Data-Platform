@@ -25,6 +25,11 @@ variable "is_live_environment" {
   type        = bool
 }
 
+variable "is_production_environment" {
+  description = "A flag indicting if we are running in production for setting up automation"
+  type        = bool
+}
+
 variable "identifier_prefix" {
   description = "Project wide resource identifier prefix"
   type        = string

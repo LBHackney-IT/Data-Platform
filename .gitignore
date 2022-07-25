@@ -1,7 +1,7 @@
 .idea/
 .terraform*
 *.tfstate*
-lambdas/*/node_modules
+**/node_modules
 lambdas/*/lib
 lambdas/*/requirements.txt
 lambdas/*/key_file.json
