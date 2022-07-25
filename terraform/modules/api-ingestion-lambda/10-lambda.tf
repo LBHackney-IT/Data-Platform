@@ -59,16 +59,6 @@ data "aws_iam_policy_document" "lambda" {
   statement {
     effect = "Allow"
     actions = [
-      "glue:StartJobRun"
-    ]
-    resources = [
-      "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:job/${var.glue_job_to_trigger}"
-    ]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
       "glue:StartTrigger"
     ]
     resources = [
