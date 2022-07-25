@@ -87,14 +87,6 @@ def api_response_json(response):
     return json.loads(response.text)
 
 
-def number_unnamed_columns(df):
-    for i, col_name in enumerate(df.columns):
-        if col_name.strip() != "":
-            col_name
-        else:
-            "column_" + str(i)
-
-
 if __name__ == "__main__":
     args = getResolvedOptions(sys.argv, ["JOB_NAME"])
     sc = SparkContext.getOrCreate()
