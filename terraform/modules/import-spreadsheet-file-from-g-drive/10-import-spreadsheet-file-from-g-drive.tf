@@ -36,11 +36,12 @@ module "import_data_from_spreadsheet_job" {
   landing_zone_bucket_id         = var.landing_zone_bucket_id
   glue_job_name                  = "${var.identifier_prefix}${var.glue_job_name} - ${each.value.worksheet_name}"
   output_folder_name             = var.output_folder_name
-  data_set_name                  = lower(replace(replace(replace(trimspace(each.value.worksheet_name), ".", ""), "/[^a-zA-Z0-9]+/", "-"), "/-+/", "-"))
+  data_set_name                  = local.is_csv ? var.worksheets.sheet1.worksheet_name : lower(replace(replace(replace(trimspace(each.value.worksheet_name), ".", ""), "/[^a-zA-Z0-9]+/", "-"), "/-+/", "-"))
   raw_zone_bucket_id             = var.raw_zone_bucket_id
   input_file_name                = var.input_file_name
   header_row_number              = each.value.header_row_number
   worksheet_name                 = each.value.worksheet_name
   identifier_prefix              = var.identifier_prefix
   spark_ui_output_storage_id     = var.spark_ui_output_storage_id
+  enable_bookmarking             = var.enable_bookmarking
 }

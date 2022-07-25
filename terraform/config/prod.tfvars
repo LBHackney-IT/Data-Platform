@@ -17,3 +17,4 @@ redshift_public_ips                 = ["18.168.126.173"]
 redshift_port                       = 5439
 emails_to_notify_with_budget_alerts = ["saml-aws-data-platform-admins@hackney.gov.uk"]
 datahub_url                         = "https://datahub.hackney.gov.uk"
+rentsense_target_path               = "hackneylondonborough/rent/"
