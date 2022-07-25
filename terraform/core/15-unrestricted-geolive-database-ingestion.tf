@@ -14,8 +14,10 @@ module "boundaries_geolive_database_ingestion" {
 }
 
 module "boundaries_geolive_ingestion_job" {
-  count  = local.is_live_environment ? 1 : 0
-  source = "../modules/aws-glue-job"
+  count                     = local.is_live_environment ? 1 : 0
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries schema ingestion"
