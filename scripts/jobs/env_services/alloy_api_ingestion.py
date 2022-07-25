@@ -174,7 +174,7 @@ if __name__ == "__main__":
         df = df.na.drop("all")
         df = add_import_time_columns(df)
 
-        dataframe = DynamicFrame.fromDF(df, glue_context, f"alloy_Gully Cleanse")
+        dataframe = DynamicFrame.fromDF(df, glue_context, f"alloy_{resource}")
         parquetData = glue_context.write_dynamic_frame.from_options(
             frame=dataframe,
             connection_type="s3",
