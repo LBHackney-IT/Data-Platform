@@ -2,6 +2,8 @@ module "repairs_fire_alarm_aov" {
   count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_housing_repairs_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
@@ -79,6 +81,8 @@ module "env_enforcement_estate_cleaning" {
   count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_env_enforcement_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_env_enforcement_data_source.raw_zone_catalog_database_name
@@ -124,6 +128,8 @@ module "env_enforcement_fix_my_street_noise" {
   count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_env_enforcement_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_env_enforcement_data_source.raw_zone_catalog_database_name
@@ -157,6 +163,8 @@ module "env_enforcement_cc_tv" {
   count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_env_enforcement_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_env_enforcement_data_source.raw_zone_catalog_database_name
@@ -190,6 +198,8 @@ module "data_and_insight_hb_combined" {
   count = local.is_live_environment ? 1 : 0
 
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_data_and_insight_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_data_and_insight_data_source.raw_zone_catalog_database_name
@@ -220,8 +230,10 @@ module "data_and_insight_hb_combined" {
 }
 
 module "Cash_Collection_Date" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
@@ -243,7 +255,7 @@ module "Cash_Collection_Date" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cash_Collection/Cash_Collection_Date_June_2022.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -254,8 +266,10 @@ module "Cash_Collection_Date" {
 }
 
 module "Cedar_Backing_Data" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
@@ -277,7 +291,7 @@ module "Cedar_Backing_Data" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cedar_Backing_Data/Cedar Backing June 2022.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -288,8 +302,10 @@ module "Cedar_Backing_Data" {
 }
 
 module "Cedar_Parking_Payments" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
@@ -311,7 +327,7 @@ module "Cedar_Parking_Payments" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Cedar_Parking_Payments/Cedar_Parking_Payments_June_2022.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -322,8 +338,10 @@ module "Cedar_Parking_Payments" {
 }
 
 module "Citypay_Import" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
@@ -345,7 +363,7 @@ module "Citypay_Import" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "CityPay_Payments/Citypay_Import_June_2022.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -356,8 +374,10 @@ module "Citypay_Import" {
 }
 
 module "Ringgo_Daily_Transactions" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
@@ -379,7 +399,7 @@ module "Ringgo_Daily_Transactions" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_Daily/Ringgo_Daily_June_2022.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -390,8 +410,10 @@ module "Ringgo_Daily_Transactions" {
 }
 
 module "Ringgo_session_forecast" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
@@ -413,7 +435,7 @@ module "Ringgo_session_forecast" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Ringgo_Session_Forecast/Ringgo_session_forecast.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
@@ -424,8 +446,10 @@ module "Ringgo_session_forecast" {
 }
 
 module "Voucher_Import" {
-  count                          = local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
   department                     = module.department_parking_data_source
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
@@ -447,7 +471,7 @@ module "Voucher_Import" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Visitor_Voucher_Forecast/Voucher Import.csv"
-  ingestion_schedule             = "cron(0 22 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {

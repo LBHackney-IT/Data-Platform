@@ -109,7 +109,7 @@ data "null_data_source" "wait_for_lambda_exporter" {
 
     # This value gives us something to implicitly depend on
     # in the archive_file below.
-    source_dir = "${path.module}/lambda/dist/"
+    source_dir = "${path.module}/lambda/src/"
   }
 }
 
