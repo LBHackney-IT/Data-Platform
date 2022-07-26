@@ -41,6 +41,7 @@ resource "aws_glue_trigger" "filter_ingestion_tables" {
   tags     = module.tags.values
   name     = "${local.short_identifier_prefix}academy_revs_and_bens_ingestion_trigger-${each.key}"
   type     = "CONDITIONAL"
+  enabled  = local.is_production_environment
 
   actions {
     job_name = module.ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone[each.key].job_name
@@ -58,7 +59,9 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   for_each = local.table_filter_expressions
   tags     = module.tags.values
 
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   job_name                       = "${local.short_identifier_prefix}Academy Revs & Bens Housing Needs Database Ingestion-${each.key}"
   script_s3_object_key           = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
@@ -105,7 +108,7 @@ resource "aws_glue_trigger" "academy_revenues_and_benefits_housing_needs_landing
   name     = "${local.short_identifier_prefix}academy-revenues-benefits-housing-needs-database-ingestion-crawler-trigger"
   type     = "SCHEDULED"
   schedule = "cron(15 8,12 ? * MON,TUE,WED,THU,FRI *)"
-  enabled  = local.is_live_environment
+  enabled  = local.is_production_environment
 
   actions {
     crawler_name = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
@@ -116,7 +119,9 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   job_name                   = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
   script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key
@@ -131,14 +136,15 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   glue_job_timeout           = 220
   triggered_by_crawler       = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
-    "--s3_bucket_target"          = module.raw_zone.bucket_id
-    "--s3_prefix"                 = "benefits-housing-needs/"
-    "--table_filter_expression"   = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
-    "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_academy.name
-    "--glue_database_name_target" = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
-    "--enable-glue-datacatalog"   = "true"
-    "--job-bookmark-option"       = "job-bookmark-enable"
-    "--write-shuffle-files-to-s3" = "true"
+    "--s3_bucket_target"           = module.raw_zone.bucket_id
+    "--s3_prefix"                  = "benefits-housing-needs/"
+    "--table_filter_expression"    = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
+    "--glue_database_name_source"  = aws_glue_catalog_database.landing_zone_academy.name
+    "--glue_database_name_target"  = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
+    "--enable-glue-datacatalog"    = "true"
+    "--job-bookmark-option"        = "job-bookmark-enable"
+    "--write-shuffle-files-to-s3"  = "true"
+    "--write-shuffle-spills-to-s3" = "true"
   }
 }
 
@@ -146,7 +152,9 @@ module "copy_academy_revenues_to_raw_zone" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   job_name                   = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
   script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key
@@ -169,5 +177,6 @@ module "copy_academy_revenues_to_raw_zone" {
     "--enable-continuous-cloudwatch-log" = "true"
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--write-shuffle-files-to-s3"        = "true"
+    "--write-shuffle-spills-to-s3"       = "true"
   }
 }

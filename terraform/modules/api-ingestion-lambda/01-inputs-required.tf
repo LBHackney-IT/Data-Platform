@@ -53,3 +53,22 @@ variable "lambda_environment_variables" {
   description = "An object containing environment variables to be used in the Lambda"
   type        = map(string)
 }
+
+variable "lambda_handler" {
+  description = "name of the file and main lambda function"
+  type        = string
+}
+
+variable "runtime_language" {
+  description = "the language of the lambda function"
+  type        = string
+  validation {
+    condition = (
+      contains([
+        "python3.8",
+        "nodejs14.x"
+      ], var.runtime_language)
+    )
+    error_message = "The value cannot be a blank string, and must be one of the following: 'python3.8' or 'nodejs14.x'"
+  }
+}
