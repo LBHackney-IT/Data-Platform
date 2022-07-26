@@ -922,7 +922,7 @@ module "Parking_Ringgo_Review-copy" {
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                = "Parking_Ringgo_Review-copy"
+  script_name                = "parking_ringgo_review-copy"
   #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description = "Quarterly review of Ringgo sessions"
   #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
