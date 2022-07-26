@@ -76,17 +76,17 @@ module "tuomo_data_flow_ingest_test_db_to_tuomo_landin_zone" {
   #environment = already set above
   #tags = already set above
 
-  #crawler should not be set for landing zone data, data should be available for queries from raw zone onwards only
-  #   crawler_details = {
-  #     database_name      = module.department_housing.raw_zone_catalog_database_name
-  #     s3_target_location = "s3://${module.raw_zone.bucket_id}/housing/"
-  #     configuration = jsonencode({
-  #       Version = 1.0
-  #       Grouping = {
-  #         TableLevelConfiguration = 3
-  #       }
-  #     })
-  #   }
+  ## 
+  crawler_details = {
+    database_name      = aws_glue_catalog_database.landing_zone_catalog_database.name
+    s3_target_location = "s3://${module.landing_zone.bucket_id}/tuomo-test-db/"
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+        TableLevelConfiguration = 3
+      }
+    })
+  }
 
-  schedule = "cron(46 15 ? * WED *)" #TODO TK: remove schedule after testing
+  schedule = "cron(45 10 ? * Tue *)" #TODO TK: remove schedule after testing
 }
