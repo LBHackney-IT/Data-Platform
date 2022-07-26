@@ -9,6 +9,7 @@ on:
       - 'terraform/core/**'
       - 'terraform/etl/**'
       - 'terraform/backend-setup/**'
+      - 'terraform/modules/**'
       - 'scripts/**'
       - 'lambdas/**'
       - 'notebook/**'
