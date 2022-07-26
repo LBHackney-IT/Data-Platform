@@ -54,3 +54,13 @@ variable "worksheet_name" {
   description = "Name of spreadsheet worksheet in google drive"
   type        = string
 }
+
+variable "is_production_environment" {
+  description = "A flag indicting if we are running in production for setting up automation"
+  type        = bool
+}
+
+variable "is_live_environment" {
+  description = "A flag indicting if we are running in a live environment for setting up automation"
+  type        = bool
+}
