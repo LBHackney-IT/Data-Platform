@@ -1,0 +1,112 @@
+name: AWS Terraform
+description: Terraform state unlock against Hackney AWS
+inputs:
+  aws_access_key_id:
+    description: "AWS access key to use"
+    required: true
+  aws_secret_access_key:
+    description: "AWS secret access key to use"
+    required: true
+  aws_deploy_region:
+    description: "AWS region to deploy to"
+    default: "eu-west-2"
+    required: true
+  terraform_state_s3_key_prefix:
+    description: "S3 key prefix for Terraform state"
+    required: true
+  terraform_state_file_name:
+    description: "S3 Object name for the Terraform state"
+    required: true
+  terraform_state_lock_id:
+    description: "Lock ID for the Terraform state"
+    required: true
+  build_path:
+    description: "Build path that contains the source"
+    required: true
+  environment:
+    description: "Name of the environment e.g. dev, stg, prod, mgmt"
+    required: true
+  google_project_id:
+    description: "Id of google project to which service accounts will be deployed to"
+    required: true
+  automation_build_url:
+    description: "URL of the GitHub Action Run to pass to Terraform"
+    required: true
+  aws_deploy_account_id:
+    description: "AWS account id to deploy to"
+    required: true
+  aws_api_account_id:
+    description: "AWS api account id to deploy to"
+    required: true
+  aws_mosaic_prod_account_id:
+    description: "AWS Mosaic prod account id to connect to"
+    required: true
+  aws_data_platform_account_id:
+    description: "AWS Data Platform account ID"
+    required: true
+  aws_api_vpc_id:
+    description: "AWS API Account VPC ID"
+    required: true
+  aws_housing_vpc_id:
+    description: "AWS Housing Account VPC ID"
+    required: true
+  aws_mosaic_vpc_id:
+    description: "AWS Mosaic Account VPC ID"
+    required: true
+  aws_dp_vpc_id:
+    description: "Data Platform VPC ID"
+    required: true
+  aws_hackit_account_id:
+    description: "AWS HackIT account id to deploy to"
+    required: true
+  aws_deploy_iam_role_name:
+    description: "AWS IAM role name to assume for deployment"
+    required: true
+  copy_liberator_to_pre_prod_lambda_execution_role:
+    description: "AWS IAM role name to assume for triggering the lambda to copy liberator data to pre-prod"
+    required: true
+  sync_production_to_pre_production_task_role:
+    description: "Role arn for the prod to pre-prod raw, refined & trusted zones sync task. Only used in pre-production environment."
+    required: true
+  pre_production_liberator_data_storage_kms_key_arn:
+    description: "KMS Key ARN for the liberator data storage bucket in pre production"
+    required: true
+  branch:
+    description: "Git branch being ran against"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup build environment
+      id: setup
+      run: |
+        ${{ github.action_path }}/../.helpers/box.sh "Setting up build environment"
+      shell: bash
+      working-directory: "${{ inputs.build_path }}"
+
+    - name: Terraform Init
+      id: init
+      run: |
+        ${{ github.action_path }}/../.helpers/box.sh "Running Terraform init"
+        echo -e "Configuring AWS credentials."
+        aws configure set default.region eu-west-2 > /dev/null 2>&1
+        aws configure set aws_access_key_id ${{ inputs.aws_access_key_id }} > /dev/null 2>&1
+        aws configure set aws_secret_access_key ${{ inputs.aws_secret_access_key }} > /dev/null 2>&1
+        terraform init -backend-config="region=eu-west-2" -backend-config="dynamodb_table=lbhackney-terraform-state-lock" -backend-config="encrypt=true" -backend-config="workspace_key_prefix=${{ inputs.terraform_state_s3_key_prefix }}" -backend-config="bucket=lbhackney-terraform-state" -backend-config="key=${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.terraform_state_file_name }}"
+        echo -e "Terraform S3 bucket: lbhackney-terraform-state"
+        echo -e "Terraform state file: ${{ inputs.terraform_state_s3_key_prefix }}/${{ inputs.environment }}-terraform.state"
+        echo -e "\n"
+      shell: bash
+      working-directory: "${{ inputs.build_path }}"
+
+    - name: Terraform State Unlock
+      id: unlock
+      run: |
+        ${{ github.action_path }}/../.helpers/box.sh "Running Terraform state unlock"
+        echo "Terraform State Lock Id:"
+        echo ${{ inputs.terraform_state_lock_id }}
+        terraform force-unlock -force ${{ inputs.terraform_state_lock_id }}
+        echo -e "\n"
+      shell: bash
+      working-directory: "${{ inputs.build_path }}"

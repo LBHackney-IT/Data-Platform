@@ -3,10 +3,12 @@ locals {
 }
 
 module "ingest_mtfh_rentsense_tables" {
-  source        = "../modules/aws-glue-job"
-  environment   = var.environment
-  tags          = module.tags.values
-  glue_role_arn = aws_iam_role.glue_role.arn
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
+  environment               = var.environment
+  tags                      = module.tags.values
+  glue_role_arn             = aws_iam_role.glue_role.arn
 
   job_name                       = "${local.short_identifier_prefix}Ingest MTFH Rentsense tables"
   job_description                = "Ingest Persons,ContactDetails,Assets for Rentsense from the Housing Dynamo DB instances"
@@ -41,7 +43,9 @@ module "ingest_mtfh_rentsense_tables" {
 module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
   tags = module.tags.values
 
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   job_name                   = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables for Rentsense to housing department raw zone"
   department                 = module.department_housing

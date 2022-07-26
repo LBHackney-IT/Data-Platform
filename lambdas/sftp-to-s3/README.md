@@ -26,7 +26,7 @@ You can make changes to the lambda code then re apply the terraform to update th
 
 1. Replace `<your-workspace-name>` with the name of your terraform workspace and run.
 ```sh
-aws-vault exec hackney-dataplatform-development -- aws lambda invoke --function-name dataplatform-<your-workspace-name>-liberator-data-upload out
+aws-vault exec hackney-dataplatform-development -- aws lambda invoke --function-name dataplatform-<your-workspace-name>-sftp-to-s3 out
 ```
 
-You can view the logs for the invocation in the cloudwatch log group `/aws/lambda/dataplatform-<your-workspace-name>-liberator-data-upload`.
+You can view the logs for the invocation in the cloudwatch log group `/aws/lambda/dataplatform-<your-workspace-name>-sftp-to-s3`.
