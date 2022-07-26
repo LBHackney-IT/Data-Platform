@@ -48,3 +48,9 @@ variable "ingestion_schedule" {
   type        = string
   default     = "cron(0 6 * * ? *)"
 }
+
+variable "enable_bookmarking" {
+  description = "Enable glue job bookmarking"
+  type        = bool
+  default     = false
+}

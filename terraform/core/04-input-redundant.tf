@@ -30,6 +30,10 @@ variable "aws_data_platform_account_id" {
   default = false
 }
 
+variable "aws_vpc_id" {
+  default = false
+}
+
 variable "aws_dp_vpc_id" {
   default = false
 }
