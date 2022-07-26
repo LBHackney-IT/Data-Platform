@@ -163,7 +163,7 @@ module "parking_permit_denormalised_gds_street_llpg" {
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
+    "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
 }
