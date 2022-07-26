@@ -912,3 +912,27 @@ module "parking_visitor_voucher_qtrly_review" {
     "--environment"         = var.environment
   }
 }
+# MRB 25-07-2022 Job created   
+module "Parking_Ringgo_Review-copy" {
+  source                     = "../modules/aws-glue-job"
+  is_live_environment        = local.is_live_environment
+  is_production_environment  = local.is_production_environment
+  department                 = module.department_parking_data_source
+  job_name                   = "${local.short_identifier_prefix}Parking_Ringgo_Review-copy"
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                = "Parking_Ringgo_Review-copy"
+  #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  job_description = "Quarterly review of Ringgo sessions"
+  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  schedule                       = "cron(0 1 10 * ? *)"
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "3.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
+}
