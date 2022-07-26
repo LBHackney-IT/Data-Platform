@@ -1,13 +1,12 @@
 
 module "liberator_data_storage" {
-  source                         = "../modules/s3-bucket"
-  tags                           = module.tags.values
-  project                        = var.project
-  environment                    = var.environment
-  identifier_prefix              = local.identifier_prefix
-  bucket_name                    = "Liberator Data Storage"
-  bucket_identifier              = "liberator-data-storage"
-  role_arns_to_share_access_with = var.environment == "stg" && var.copy_liberator_to_pre_prod_lambda_execution_role != null ? [var.copy_liberator_to_pre_prod_lambda_execution_role] : []
+  source            = "../modules/s3-bucket"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "Liberator Data Storage"
+  bucket_identifier = "liberator-data-storage"
 }
 
 module "liberator_dump_to_rds_snapshot" {

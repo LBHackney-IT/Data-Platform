@@ -30,7 +30,7 @@ variable "glue_job_to_trigger" {
 
 variable "trigger_to_run" {
   description = "Name of Glue trigger to start once data has been ingested to S3"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
