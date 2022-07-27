@@ -118,7 +118,7 @@ if __name__ == "__main__":
     logger.info(f"last import date time: {last_import_date_time}")
 
     if resource == "":
-        raise Exception("--resource value must be defined in the job aruguments")
+        raise Exception("--resource value must be defined in the job arguments")
 
     logger.info(f"Getting resource {resource}")
 
