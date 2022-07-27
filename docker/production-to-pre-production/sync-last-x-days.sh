@@ -15,10 +15,10 @@ for i in $(seq 0 $((days_to_retain-1))); do
     date_to_import_hyphen_separated=$(date +"%Y-%m-%d" -d "${date} -${i} day")
 
     sync_include_opts+=( --include="*date=$date_to_import/*" )
-    sync_include_opts+=( --include="*import_date=$date_to_import_hyphen_separated/*" )
+    sync_include_opts+=( --include="*date=$date_to_import_hyphen_separated/*" )
 
     rm_exclude_opts+=( --exclude="*date=$date_to_import/*" )
-    rm_exclude_opts+=( --exclude="*import_date=$date_to_import_hyphen_separated/*" )
+    rm_exclude_opts+=( --exclude="*date=$date_to_import_hyphen_separated/*" )
 done
 
 echo "Include flags to be used with s3 sync cmd: ${sync_include_opts[*]}"
