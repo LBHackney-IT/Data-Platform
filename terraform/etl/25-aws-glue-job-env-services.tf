@@ -5,7 +5,7 @@ locals {
 }
 
 resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
-  count   = local.is_live_environment ? length(local.alloy_queries) : 0
+  count   = local.is_production_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
   enabled = local.is_production_environment
 
@@ -41,19 +41,19 @@ module "alloy_api_ingestion_raw_env_services" {
     "--secret_name"             = "${local.identifier_prefix}/env-services/alloy-api-key"
     "--database"                = module.department_environmental_services_data_source.raw_zone_catalog_database_name
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
-    "--filename"                = "${local.alloy_query_names[count.index]}/${local.alloy_query_names[count.index]}.csv"
     "--resource"                = local.alloy_query_names[count.index]
+    "--alloy_download_bucket"   = "env-services/alloy/alloy_api_downloads/"
   }
 }
 
 
 
 resource "aws_glue_trigger" "alloy_daily_table_ingestion_crawler" {
-  count   = local.is_live_environment ? length(local.alloy_queries) : 0
+  count   = local.is_production_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
   name    = "${local.short_identifier_prefix} ${local.alloy_query_names[count.index]} Alloy Ingestion Crawler"
   type    = "CONDITIONAL"
-  enabled = local.is_live_environment
+  enabled = local.is_production_environment
 
   actions {
     crawler_name = aws_glue_crawler.alloy_daily_table_ingestion[count.index].name
@@ -112,7 +112,7 @@ module "alloy_daily_snapshot_env_services" {
     "--increment_prefix"           = "alloy_api_response_"
     "--snapshot_prefix"            = "alloy_snapshot_"
     "--id_col"                     = "item_id"
-    "--increment_date_col "        = "import_datetime"
+    "--increment_date_col"         = "import_datetime"
     "--snapshot_date_col"          = "snapshot_date"
     "--s3_bucket_target"           = "s3://dataplatform-stg-refined-zone/env-services/alloy/snapshots/"
   }
@@ -123,7 +123,7 @@ resource "aws_glue_trigger" "alloy_snapshot_crawler" {
   tags    = module.tags.values
   name    = "${local.short_identifier_prefix} ${local.alloy_query_names[count.index]} Alloy Snapshot Crawler"
   type    = "CONDITIONAL"
-  enabled = local.is_live_environment
+  enabled = local.is_production_environment
 
   actions {
     crawler_name = aws_glue_crawler.alloy_snapshot[count.index].name
