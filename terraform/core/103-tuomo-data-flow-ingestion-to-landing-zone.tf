@@ -41,6 +41,10 @@ locals {
 }
 
 module "tuomo_data_flow_ingest_test_db_to_tuomo_landin_zone" {
+  #new required values 
+  is_production_environment = false
+  is_live_environment = false
+
   #create a job per table. Inhgesting all tables in one job is too heavy
   ##for_each = local.tuomo_data_flow_table_filter_expressions_test_db
   tags     = module.tags.values
@@ -89,4 +93,5 @@ module "tuomo_data_flow_ingest_test_db_to_tuomo_landin_zone" {
   }
 
   schedule = "cron(45 10 ? * Tue *)" #TODO TK: remove schedule after testing
+
 }
