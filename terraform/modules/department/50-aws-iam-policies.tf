@@ -310,6 +310,7 @@ data "aws_iam_policy_document" "athena_can_write_to_s3" {
     ]
     resources = [
       var.athena_storage_bucket.bucket_arn,
+      "${var.athena_storage_bucket.bucket_arn}/primary/*",
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
