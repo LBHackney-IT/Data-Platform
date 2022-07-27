@@ -1,7 +1,9 @@
 module "lift_breakdown_el" {
   count = local.is_live_environment ? 1 : 0
 
-  source = "../modules/electrical-mechnical-fire-safety-cleaning-job"
+  source                    = "../modules/electrical-mechnical-fire-safety-cleaning-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   short_identifier_prefix      = local.short_identifier_prefix
   identifier_prefix            = local.identifier_prefix

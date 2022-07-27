@@ -1,4 +1,4 @@
-name: 'CI'
+name: 'ETL'
 on:
   push:
     branches-ignore:
@@ -14,9 +14,65 @@ on:
       - 'docker/**'
 
 jobs:
-  CI:
-    name : "ETL"
-    uses: ./.github/workflows/plan-and-lint-terraform.yml
+  ETL-Plan-Staging:
+    name : "Staging"
+    uses: ./.github/workflows/plan-terraform.yml
+    with:
+      environment: "stg"
+      automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+      build_path: "./terraform/etl"
+      terraform_state_s3_key_prefix: "data-platform"
+      terraform_state_file_name: "stg-terraform-etl.tfstate"
+    secrets:
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_STG }}
+      AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+      INFRASTRUCTURE_PRIVATE_KEY: ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_MOSAIC_PROD_ACCOUNT_ID: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
+      AWS_API_ACCOUNT_PROD: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_DEV }}
+      AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      AWS_API_VPC_ID: ${{ secrets.AWS_API_VPC_ID }}
+      AWS_HOUSING_VPC_ID: ${{ secrets.AWS_HOUSING_VPC_ID }}
+      AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
+      AWS_DP_VPC_ID: ${{ secrets.AWS_DP_DEV_VPC_ID }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
+      COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
+      SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
+      PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
+  ETL-Plan-Production:
+    name: "Production"
+    uses: ./.github/workflows/plan-terraform.yml
+    with:
+      environment: "prod"
+      automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_prod.yml"
+      build_path: "./terraform/etl"
+      terraform_state_s3_key_prefix: "data-platform"
+      terraform_state_file_name: "prod-terraform-etl.tfstate"
+    secrets:
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
+      AWS_DEPLOY_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_PROD }}
+      INFRASTRUCTURE_PRIVATE_KEY: ${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_API_ACCOUNT_PROD: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+      AWS_MOSAIC_PROD_ACCOUNT_ID: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
+      AWS_HACKIT_ACCOUNT_ID: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
+      AWS_DATA_PLATFORM_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_DATA_PLATFORM_STG }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      AWS_API_VPC_ID: ${{ secrets.AWS_API_VPC_ID }}
+      AWS_HOUSING_VPC_ID: ${{ secrets.AWS_HOUSING_VPC_ID }}
+      AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
+      AWS_DP_VPC_ID: ${{ secrets.AWS_DP_STG_VPC_ID }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_PROD }}
+      COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
+      SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
+      PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
+  ETL-Lint:
+    name : "Lint"
+    uses: ./.github/workflows/lint-terraform.yml
     with:
       environment: "stg"
       automation_build_url: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"

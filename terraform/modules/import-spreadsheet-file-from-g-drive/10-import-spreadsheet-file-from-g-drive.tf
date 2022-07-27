@@ -16,12 +16,16 @@ module "import_file_from_g_drive" {
   secrets_manager_kms_key                   = var.secrets_manager_kms_key
   workflow_names                            = [for job in module.import_data_from_spreadsheet_job : job.workflow_name]
   workflow_arns                             = [for job in module.import_data_from_spreadsheet_job : job.workflow_arn]
+  ingestion_schedule                        = var.ingestion_schedule
+  ingestion_schedule_enabled                = var.is_production_environment || !var.is_live_environment
 }
 
 module "import_data_from_spreadsheet_job" {
   for_each = var.worksheets
 
   source                         = "../import-data-from-spreadsheet-job"
+  is_production_environment      = var.is_production_environment
+  is_live_environment            = var.is_live_environment
   department                     = var.department
   glue_scripts_bucket_id         = var.glue_scripts_bucket_id
   glue_temp_storage_bucket_id    = var.glue_temp_storage_bucket_id
@@ -35,11 +39,12 @@ module "import_data_from_spreadsheet_job" {
   landing_zone_bucket_id         = var.landing_zone_bucket_id
   glue_job_name                  = "${var.identifier_prefix}${var.glue_job_name} - ${each.value.worksheet_name}"
   output_folder_name             = var.output_folder_name
-  data_set_name                  = lower(replace(replace(replace(trimspace(each.value.worksheet_name), ".", ""), "/[^a-zA-Z0-9]+/", "-"), "/-+/", "-"))
+  data_set_name                  = local.is_csv ? var.worksheets.sheet1.worksheet_name : lower(replace(replace(replace(trimspace(each.value.worksheet_name), ".", ""), "/[^a-zA-Z0-9]+/", "-"), "/-+/", "-"))
   raw_zone_bucket_id             = var.raw_zone_bucket_id
   input_file_name                = var.input_file_name
   header_row_number              = each.value.header_row_number
   worksheet_name                 = each.value.worksheet_name
   identifier_prefix              = var.identifier_prefix
   spark_ui_output_storage_id     = var.spark_ui_output_storage_id
+  enable_bookmarking             = var.enable_bookmarking
 }

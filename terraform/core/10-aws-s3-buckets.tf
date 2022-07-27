@@ -18,7 +18,7 @@ module "raw_zone" {
   bucket_identifier = "raw-zone"
 
   role_arns_to_share_access_with = concat(
-    local.is_production_environment ? module.db_snapshot_to_s3[0].s3_to_s3_copier_lambda_role_arn : [],
+    local.is_production_environment ? [module.db_snapshot_to_s3[0].s3_to_s3_copier_lambda_role_arn] : [],
   [var.sync_production_to_pre_production_task_role])
 }
 
@@ -31,7 +31,9 @@ module "refined_zone" {
   bucket_name       = "Refined Zone"
   bucket_identifier = "refined-zone"
   role_arns_to_share_access_with = [
-    var.sync_production_to_pre_production_task_role
+    var.sync_production_to_pre_production_task_role,
+    "arn:aws:iam::971933469343:root",
+    "arn:aws:iam::971933469343:role/customer-midas-roles-pluto-HackneyMidasRole-1M6PTJ5VS8104"
   ]
 }
 
@@ -111,26 +113,9 @@ resource "aws_s3_bucket" "ssl_connection_resources" {
   bucket = "${local.identifier_prefix}-ssl-connection-resources"
   tags   = module.tags.values
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.ssl_connection_resources_key.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
-
   versioning {
     enabled = true
   }
-}
-
-resource "aws_kms_key" "ssl_connection_resources_key" {
-  tags = module.tags.values
-
-  description             = "${var.project} ${var.environment} - ${local.identifier_prefix}-ssl-connection-resources Bucket Key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
 }
 
 resource "aws_s3_bucket_acl" "ssl_connection_resources" {
@@ -139,4 +124,3 @@ resource "aws_s3_bucket_acl" "ssl_connection_resources" {
   bucket = aws_s3_bucket.ssl_connection_resources[0].id
   acl    = "public-read"
 }
-

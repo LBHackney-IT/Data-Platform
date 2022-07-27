@@ -1,6 +1,8 @@
 # Import test data
 module "spreadsheet_import" {
-  source = "../aws-glue-job"
+  source                    = "../aws-glue-job"
+  is_live_environment       = var.is_live_environment
+  is_production_environment = var.is_production_environment
 
   department        = var.department
   job_name          = "Spreadsheet Import Job - ${var.department.identifier}-${var.glue_job_name}"
@@ -8,10 +10,11 @@ module "spreadsheet_import" {
   pydeequ_zip_key   = var.pydeequ_zip_key
   glue_role_arn     = var.glue_role_arn
   job_parameters = {
-    "--s3_bucket_source"  = "s3://${var.landing_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}/${var.input_file_name}"
-    "--s3_bucket_target"  = "s3://${var.raw_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}/${var.data_set_name}"
-    "--header_row_number" = var.header_row_number
-    "--worksheet_name"    = var.worksheet_name
+    "--s3_bucket_source"    = "s3://${var.landing_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}/${var.input_file_name}"
+    "--s3_bucket_target"    = "s3://${var.raw_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}/${var.data_set_name}"
+    "--header_row_number"   = var.header_row_number
+    "--worksheet_name"      = var.worksheet_name
+    "--job_bookmark_option" = local.job_bookmark_option
   }
   script_s3_object_key       = var.spreadsheet_import_script_key
   spark_ui_output_storage_id = var.spark_ui_output_storage_id
