@@ -42,4 +42,4 @@ echo "Syncing records....."
 aws s3 sync $s3_sync_source $s3_sync_target --acl "bucket-owner-full-control" --exclude "*" "${sync_include_opts[@]}"
 
 echo "Removing old records..."
-aws s3 rm $s3_sync_target --recursive --exclude "*" "${rm_exclude_opts[@]}"
+aws s3 rm $s3_sync_target --recursive --exclude "*" "${rm_include_opts[@]}"
