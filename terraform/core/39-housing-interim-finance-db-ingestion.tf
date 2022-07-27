@@ -1,5 +1,6 @@
 module "housing_interim_finance_database_ingestion" {
-  count = local.is_live_environment ? 1 : 0
+  count = 0 #TODO: TK dev only
+  #count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
   source = "../modules/database-ingestion-via-jdbc-connection"
@@ -18,13 +19,14 @@ locals {
 }
 
 resource "aws_glue_trigger" "housing_interim_finance_filter_ingestion_tables" {
+  count = 0 #TODO: TK dev only
   tags    = module.tags.values
   name    = "${local.short_identifier_prefix}housing-interim-finance-tables"
   type    = "CONDITIONAL"
   enabled = local.is_production_environment
 
   actions {
-    job_name = module.ingest_housing_interim_finance_database_to_housing_raw_zone.job_name
+    job_name = module.ingest_housing_interim_finance_database_to_housing_raw_zone[0].job_name
     arguments = {
       "--table_filter_expression" = local.table_filter_expressions_housing_interim_finance
     }
@@ -39,12 +41,14 @@ resource "aws_glue_trigger" "housing_interim_finance_filter_ingestion_tables" {
 }
 
 module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
+  count = 0 #TODO: TK dev only
+  
   tags = module.tags.values
 
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
-
+  
   department = module.department_housing
 
   job_name                   = "${local.short_identifier_prefix}Housing Interim Finance Database Ingestion"
