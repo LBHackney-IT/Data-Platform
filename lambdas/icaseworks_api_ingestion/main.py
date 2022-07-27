@@ -98,7 +98,7 @@ def lambda_handler(event, lambda_context):
     load_dotenv()
     s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
     output_folder_name = getenv("OUTPUT_FOLDER")
-    glue_trigger_name = getenv("GLUE_TRIGGER_NAME")
+    glue_trigger_name = getenv("TRIGGER_NAME")
     url = "https://hackney.icasework.com/token"
 
     headers = {

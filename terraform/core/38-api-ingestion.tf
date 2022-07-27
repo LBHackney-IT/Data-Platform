@@ -45,7 +45,7 @@ module "copy_icaseworks_data_landing_to_raw" {
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   environment                = var.environment
-  trigger_enabled            = false
+  trigger_enabled            = true
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--s3_bucket_target"    = "${module.raw_zone.bucket_id}/data-and-insight"
