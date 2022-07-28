@@ -22,6 +22,10 @@ for i in $(seq 0 $((days_to_retain-1))); do
     sync_include_opts+=( --include="*import_year=$(date -d "$date_to_import" "+%Y")/import_month=$(date -d "$date_to_import" "+%-m")/import_day=$(date -d "$date_to_import" "+%-d")/*" )
     # Include for sync from source to target: *import_year=2022/import_month=07/import_day=27/*
     sync_include_opts+=( --include="*import_year=$(date -d "$date_to_import" "+%Y")/import_month=$(date -d "$date_to_import" "+%m")/import_day=$(date -d "$date_to_import" "+%d")/*" )
+
+    echo "Include flags to be used with s3 sync cmd: ${sync_include_opts[*]}"
+    echo "Syncing records from $date_to_import"
+    aws s3 sync $s3_sync_source $s3_sync_target --acl "bucket-owner-full-control" --exclude "*" --exclude="*_\$folder\$" "${sync_include_opts[@]}"
 done
 
 date_to_delete=$(date +"%Y%m%d" -d "${date} -${days_to_retain} day")
@@ -35,11 +39,7 @@ rm_include_opts+=( --include="*import_year=$(date -d "$date_to_delete" "+%Y")/im
 # Exclude from deletion on target: *import_year=2022/import_month=07/import_day=27/*
 rm_include_opts+=( --include="*import_year=$(date -d "$date_to_delete" "+%Y")/import_month=$(date -d "$date_to_delete" "+%m")/import_day=$(date -d "$date_to_delete" "+%d")/*" )
 
-echo "Include flags to be used with s3 sync cmd: ${sync_include_opts[*]}"
 echo "Include flags to be used with s3 rm cmd: ${rm_include_opts[*]}"
-
-echo "Syncing records....."
-aws s3 sync $s3_sync_source $s3_sync_target --acl "bucket-owner-full-control" --exclude "*" --exclude="*_\$folder\$" "${sync_exclude_opts[@]}" "${sync_include_opts[@]}"
 
 echo "Removing old records..."
 aws s3 rm $s3_sync_target --recursive --exclude "*" "${rm_include_opts[@]}"
