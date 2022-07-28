@@ -45,12 +45,10 @@ module "tuomo_data_flow_ingest_test_db_to_tuomo_landin_zone" {
   is_production_environment = false
   is_live_environment = false
 
-  #create a job per table. Inhgesting all tables in one job is too heavy
   ##for_each = local.tuomo_data_flow_table_filter_expressions_test_db
   tags     = module.tags.values
 
   source = "../modules/aws-glue-job"
-  #work out how to use departments on development (should be able to use housing for example)
   #department = module.department_housing
 
   ##job_name                   = "${local.short_identifier_prefix}Tuomo Test Database Ingestion-${each.key}"
@@ -75,12 +73,7 @@ module "tuomo_data_flow_ingest_test_db_to_tuomo_landin_zone" {
   }
   #these are required since department is not provided
   glue_role_arn = aws_iam_role.glue_role.arn #"global" role/resource
-  #glue_scripts_bucket_id = already set above
-  #glue_temp_bucket_id = already set above
-  #environment = already set above
-  #tags = already set above
 
-  ## 
   crawler_details = {
     database_name      = aws_glue_catalog_database.landing_zone_catalog_database.name
     s3_target_location = "s3://${module.landing_zone.bucket_id}/tuomo-test-db/"

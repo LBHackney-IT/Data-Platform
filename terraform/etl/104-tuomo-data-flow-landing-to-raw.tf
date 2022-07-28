@@ -1,27 +1,27 @@
-# module "tuomo_test_db_to_landing_zone" {
-#   source = "../modules/aws-glue-job"
+module "tuomo_test_db_to_landing_zone" {
+  source = "../modules/aws-glue-job"
 
-#     #will it work wihout department?!
-#   #department  = module.department_housing_repairs
-#   job_name    = "${local.short_identifier_prefix}tuomo test db person table from landing to raw"
-#   script_name = "tuomo_test_db_from_landing_to_raw_zone"
+  is_live_environment = false
+  is_production_environment = false
 
-#   helper_module_key = aws_s3_bucket_object.helpers.key
-#   pydeequ_zip_key = aws_s3_bucket_object.pydeequ.key
-#   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
+  job_name    = "${local.short_identifier_prefix}tuomo test db person table from landing to raw"
+  script_name = "tuomo_test_db_from_landing_to_raw_zone"
 
-#   schedule    = "cron(0 15 ? * TUE _)"
+  helper_module_key = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key   = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  glue_version = "3.0"
 
-# ##THIS IS REQUIRED BECAUSE DEPARTMENT IS NOT SET
-#   glue_role_arn = aws_iam_role.glue_role.arn
+  #schedule    = "cron(0 15 ? * TUE _)"
 
-# #   job_parameters = {
-# #     "--s3_bucket_source" = "${module.landing_zone.bucket_id}/manual/housing-repairs/repairs-axis/"
-# #     "--s3_bucket_target" = "${module.raw_zone.bucket_id}/housing-repairs/repairs-axis/"
-# #   }
-# #   crawler_details = {
-# #     database_name      = module.department_housing_repairs.raw_zone_catalog_database_name
-# #     s3_target_location = "s3://${module.raw_zone.bucket_id}/housing-repairs/repairs-axis/"
-# #     table_prefix       = "housing_repairs_"
-# #   }
-# }
+  #THIS IS REQUIRED BECAUSE DEPARTMENT IS NOT SET
+  glue_role_arn = data.aws_iam_role.glue_role.arn
+  
+  glue_temp_bucket_id = "dataplatform-${local.short_identifier_prefix}glue-temp-storage"
+  glue_scripts_bucket_id =  module.glue_scripts_data_source.bucket_id
+
+  crawler_details = {
+    database_name      = "dataplatform-${local.short_identifier_prefix}raw-zone-database"
+    s3_target_location = "s3://dataplatform-${local.short_identifier_prefix}raw-zone/tuomo-test-db/"
+  }
+}
