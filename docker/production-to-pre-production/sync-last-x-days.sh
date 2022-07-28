@@ -1,5 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
+#Kill any background processes on script exit
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 date=`date +"%Y%m%d"`
 
@@ -13,7 +15,7 @@ echo "S3 bucket target: $s3_sync_target"
 for i in $(seq 0 $((days_to_retain-1))); do
     date_to_import=$(date +"%Y%m%d" -d "${date} -${i} day")
     date_to_import_hyphen_separated=$(date +"%Y-%m-%d" -d "${date} -${i} day")
-
+    unset -v sync_include_opts
     # Include for sync from source to target: *date=20220727/*
     sync_include_opts+=( --include="*date=$date_to_import/*" )
     # Include for sync from source to target: *date=2022-07-27/*
@@ -25,7 +27,7 @@ for i in $(seq 0 $((days_to_retain-1))); do
 
     echo "Include flags to be used with s3 sync cmd: ${sync_include_opts[*]}"
     echo "Syncing records from $date_to_import"
-    aws s3 sync $s3_sync_source $s3_sync_target --acl "bucket-owner-full-control" --exclude "*" --exclude="*_\$folder\$" "${sync_include_opts[@]}"
+    aws s3 sync $s3_sync_source $s3_sync_target --acl "bucket-owner-full-control" --exclude "*" "${sync_include_opts[@]}" &
 done
 
 date_to_delete=$(date +"%Y%m%d" -d "${date} -${days_to_retain} day")
