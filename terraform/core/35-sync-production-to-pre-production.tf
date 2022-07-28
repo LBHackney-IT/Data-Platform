@@ -91,7 +91,10 @@ data "aws_iam_policy_document" "task_role" {
     resources = [
       "arn:aws:s3:::dataplatform-stg-raw-zone*",
       "arn:aws:s3:::dataplatform-stg-refined-zone*",
-      "arn:aws:s3:::dataplatform-stg-trusted-zone*"
+      "arn:aws:s3:::dataplatform-stg-trusted-zone*",
+      "arn:aws:s3:::dataplatform-stg-raw-zone/*",
+      "arn:aws:s3:::dataplatform-stg-refined-zone/*",
+      "arn:aws:s3:::dataplatform-stg-trusted-zone/*"
     ]
   }
 }
