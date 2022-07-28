@@ -118,7 +118,7 @@ module "sync_production_to_pre_production" {
         { name = "S3_SYNC_SOURCE", value = module.raw_zone.bucket_id },
         { name = "S3_SYNC_TARGET", value = "dataplatform-stg-raw-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 0 * * 1 *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
     },
     {
       task_prefix = "refined-zone-"
@@ -129,7 +129,7 @@ module "sync_production_to_pre_production" {
         { name = "S3_SYNC_SOURCE", value = module.refined_zone.bucket_id },
         { name = "S3_SYNC_TARGET", value = "dataplatform-stg-refined-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 0 * * 1 *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
     },
     {
       task_prefix = "trusted-zone-"
@@ -140,7 +140,7 @@ module "sync_production_to_pre_production" {
         { name = "S3_SYNC_SOURCE", value = module.trusted_zone.bucket_id },
         { name = "S3_SYNC_TARGET", value = "dataplatform-stg-trusted-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 0 * * 1 *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
     }
   ]
 }
@@ -164,6 +164,12 @@ resource "aws_s3_bucket_replication_configuration" "raw_zone" {
         replica_kms_key_id = "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0"
       }
     }
+
+    source_selection_criteria {
+      sse_kms_encrypted_objects {
+        status = "Enabled"
+      }
+    }
   }
 }
 resource "aws_s3_bucket_replication_configuration" "refined_zone" {
@@ -185,6 +191,12 @@ resource "aws_s3_bucket_replication_configuration" "refined_zone" {
         replica_kms_key_id = "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21"
       }
     }
+
+    source_selection_criteria {
+      sse_kms_encrypted_objects {
+        status = "Enabled"
+      }
+    }
   }
 }
 resource "aws_s3_bucket_replication_configuration" "trusted_zone" {
@@ -204,6 +216,12 @@ resource "aws_s3_bucket_replication_configuration" "trusted_zone" {
       }
       encryption_configuration {
         replica_kms_key_id = "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"
+      }
+    }
+
+    source_selection_criteria {
+      sse_kms_encrypted_objects {
+        status = "Enabled"
       }
     }
   }
