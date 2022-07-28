@@ -126,14 +126,14 @@ module "sync_production_to_pre_production" {
 resource "aws_s3_bucket_replication_configuration" "raw_zone" {
   count  = local.is_production_environment ? 1 : 0
   role   = var.sync_production_to_pre_production_task_role
-  bucket = "s3://dataplatform-prod-raw-zone"
+  bucket = module.raw_zone.bucket_id
 
   rule {
     id     = "Production to pre-production raw zone replication"
     status = "Enabled"
 
     destination {
-      bucket  = "s3://dataplatform-stg-raw-zone"
+      bucket  = "arn:aws:s3:::dataplatform-stg-raw-zone"
       account = "120038763019"
       access_control_translation {
         owner = "Destination"
@@ -147,14 +147,14 @@ resource "aws_s3_bucket_replication_configuration" "raw_zone" {
 resource "aws_s3_bucket_replication_configuration" "refined_zone" {
   count  = local.is_production_environment ? 1 : 0
   role   = var.sync_production_to_pre_production_task_role
-  bucket = "s3://dataplatform-prod-refined-zone"
+  bucket = module.refined_zone.bucket_id
 
   rule {
     id     = "Production to pre-production refined zone replication"
     status = "Enabled"
 
     destination {
-      bucket  = "s3://dataplatform-stg-refined-zone"
+      bucket  = "arn:aws:s3:::dataplatform-stg-refined-zone"
       account = "120038763019"
       access_control_translation {
         owner = "Destination"
@@ -168,14 +168,14 @@ resource "aws_s3_bucket_replication_configuration" "refined_zone" {
 resource "aws_s3_bucket_replication_configuration" "trusted_zone" {
   count  = local.is_production_environment ? 1 : 0
   role   = var.sync_production_to_pre_production_task_role
-  bucket = "s3://dataplatform-prod-trusted-zone"
+  bucket = module.trusted_zone.bucket_id
 
   rule {
     id     = "Production to pre-production trusted zone replication"
     status = "Enabled"
 
     destination {
-      bucket  = "s3://dataplatform-stg-trusted-zone"
+      bucket  = "arn:aws:s3:::dataplatform-stg-trusted-zone"
       account = "120038763019"
       access_control_translation {
         owner = "Destination"
