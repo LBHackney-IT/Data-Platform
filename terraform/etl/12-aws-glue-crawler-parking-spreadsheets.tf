@@ -1,8 +1,7 @@
 resource "aws_glue_crawler" "raw_zone_parking_g_drive_crawler" {
-  count = !local.is_production_environment ? 1 : 0
-  tags  = module.department_parking_data_source.tags
+  tags = module.department_parking_data_source.tags
 
-  database_name = aws_glue_catalog_database.parking_raw_zone_manual_catalog_database[0].name
+  database_name = module.department_parking_data_source.raw_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}raw-zone-parking-g-drive"
   role          = data.aws_iam_role.glue_role.arn
 
@@ -20,15 +19,14 @@ resource "aws_glue_crawler" "raw_zone_parking_g_drive_crawler" {
 }
 
 resource "aws_glue_trigger" "raw_zone_parking_spreadsheets_crawler" {
-  count = !local.is_production_environment ? 1 : 0
-  tags  = module.department_parking_data_source.tags
+  tags = module.department_parking_data_source.tags
 
   name     = "${local.short_identifier_prefix}parking-raw-g-drive-crawler-trigger"
   schedule = "cron(0 23 * * ? *)"
   type     = "SCHEDULED"
-  enabled  = !local.is_production_environment
+  enabled  = local.is_live_environment
 
   actions {
-    crawler_name = aws_glue_crawler.raw_zone_parking_g_drive_crawler[0].name
+    crawler_name = aws_glue_crawler.raw_zone_parking_g_drive_crawler.name
   }
 }
