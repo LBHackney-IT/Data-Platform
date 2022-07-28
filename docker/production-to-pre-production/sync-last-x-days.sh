@@ -1,7 +1,5 @@
 #!/bin/bash
 set -eu -o pipefail
-#Kill any background processes on script exit
-trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 date=`date +"%Y%m%d"`
 
@@ -27,7 +25,7 @@ for i in $(seq 0 $((days_to_retain-1))); do
 
     echo "Include flags to be used with s3 sync cmd: ${sync_include_opts[*]}"
     echo "Syncing records from $date_to_import"
-    aws s3 sync $s3_sync_source $s3_sync_target --acl "bucket-owner-full-control" --exclude "*" "${sync_include_opts[@]}" &
+    aws s3 sync $s3_sync_source $s3_sync_target --acl "bucket-owner-full-control" --exclude "*" "${sync_include_opts[@]}"
 done
 
 date_to_delete=$(date +"%Y%m%d" -d "${date} -${days_to_retain} day")
