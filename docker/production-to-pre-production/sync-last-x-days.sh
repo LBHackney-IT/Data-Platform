@@ -13,7 +13,7 @@ echo "S3 bucket target: $s3_sync_target"
 #*****
 #*****
 #This script no longer copies the data from production to pre-production
-#The data copy is now handled by S3 replication configuration. Please see: terraform/core/40-production-to-pre-production-data-replication.tf
+#The data copy is now handled by S3 replication configuration. Please see: terraform/core/35-sync-production-to-pre-production.tf
 #This script now only cleans up the data in pre-production that is older than the period defined by the NUMBER_OF_DAYS_TO_RETAIN variable
 #*****
 #*****
