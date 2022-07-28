@@ -39,7 +39,7 @@ echo "Include flags to be used with s3 sync cmd: ${sync_include_opts[*]}"
 echo "Include flags to be used with s3 rm cmd: ${rm_include_opts[*]}"
 
 echo "Syncing records....."
-aws s3 sync $s3_sync_source $s3_sync_target --acl "bucket-owner-full-control" --exclude "*" "${sync_include_opts[@]}"
+aws s3 sync $s3_sync_source $s3_sync_target --acl "bucket-owner-full-control" --exclude "*" --exclude="*_\$folder\$" "${sync_exclude_opts[@]}" "${sync_include_opts[@]}"
 
 echo "Removing old records..."
 aws s3 rm $s3_sync_target --recursive --exclude "*" "${rm_include_opts[@]}"
