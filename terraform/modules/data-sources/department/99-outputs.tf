@@ -28,6 +28,11 @@ output "raw_zone_catalog_database_name" {
   value       = data.aws_ssm_parameter.raw_zone_catalog_database_name.value
 }
 
+output "raw_zone_manual_catalog_database_name" {
+  description = "Raw Zone Manual Catalog Database Name"
+  value       = data.aws_ssm_parameter.raw_zone_manual_catalog_database_name.value
+}
+
 output "refined_zone_catalog_database_name" {
   description = "Refined Zone Catalog Database Name"
   value       = data.aws_ssm_parameter.refined_zone_catalog_database_name.value
