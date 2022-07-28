@@ -118,7 +118,7 @@ module "sync_production_to_pre_production" {
         { name = "S3_SYNC_SOURCE", value = module.raw_zone.bucket_id },
         { name = "S3_SYNC_TARGET", value = "dataplatform-stg-raw-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 22 ? * * *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 * * 1 *)"
     },
     {
       task_prefix = "refined-zone-"
@@ -129,7 +129,7 @@ module "sync_production_to_pre_production" {
         { name = "S3_SYNC_SOURCE", value = module.refined_zone.bucket_id },
         { name = "S3_SYNC_TARGET", value = "dataplatform-stg-refined-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 22 ? * * *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 * * 1 *)"
     },
     {
       task_prefix = "trusted-zone-"
@@ -140,7 +140,7 @@ module "sync_production_to_pre_production" {
         { name = "S3_SYNC_SOURCE", value = module.trusted_zone.bucket_id },
         { name = "S3_SYNC_TARGET", value = "dataplatform-stg-trusted-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 22 ? * * *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 * * 1 *)"
     }
   ]
 }
