@@ -10,6 +10,18 @@ data "aws_iam_policy_document" "ecs_assume_role" {
       type = "Service"
     }
   }
+
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "s3.amazonaws.com"
+      ]
+      type = "Service"
+    }
+  }
 }
 
 data "aws_iam_policy_document" "task_role" {
@@ -17,6 +29,10 @@ data "aws_iam_policy_document" "task_role" {
     effect = "Allow"
     actions = [
       "s3:GetObject*",
+      "s3:GetReplicationConfiguration",
+      "s3:GetObjectVersionForReplication",
+      "s3:GetObjectVersionAcl",
+      "s3:GetObjectVersionTagging",
       "s3:ListBucket",
     ]
     resources = [
@@ -67,7 +83,10 @@ data "aws_iam_policy_document" "task_role" {
     actions = [
       "s3:ListBucket",
       "s3:PutObject*",
-      "s3:DeleteObject*"
+      "s3:DeleteObject*",
+      "s3:ReplicateObject",
+      "s3:ReplicateTags",
+      "s3:ObjectOwnerOverrideToBucketOwner"
     ]
     resources = [
       "arn:aws:s3:::dataplatform-stg-raw-zone*",
