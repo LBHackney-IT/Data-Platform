@@ -24,6 +24,8 @@ for i in $(seq 0 $((days_to_retain-1))); do
 
   # Exclude from deletion on target: *date=20220727/*
   rm_exclude_opts+=( --exclude="*date=$date_to_retain/*" )
+  # Exclude from deletion on target: 20220727/*
+  rm_exclude_opts+=( --exclude="$date_to_retain/*" )
   # Exclude from deletion on target: *date=2022-07-27/*
   rm_exclude_opts+=( --exclude="*date=$date_to_retain_hyphen_separated/*" )
   # Exclude from deletion on target: *import_year=2022/import_month=7/import_day=27/*
