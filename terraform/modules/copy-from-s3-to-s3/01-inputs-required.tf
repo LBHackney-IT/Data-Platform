@@ -39,3 +39,8 @@ variable "target_bucket" {
 variable "target_path" {
   type = string
 }
+
+variable "lambda_name" {
+  description = "The name to give the lambda"
+  type        = string
+}
