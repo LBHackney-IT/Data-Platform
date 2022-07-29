@@ -109,7 +109,7 @@ data "null_data_source" "wait_for_lambda_exporter" {
 
     # This value gives us something to implicitly depend on
     # in the archive_file below.
-    source_dir = "${path.module}/lambda/src/"
+    source_dir = "${path.module}/lambda/dist/"
   }
 }
 
@@ -136,7 +136,7 @@ resource "aws_lambda_function" "copy_from_s3_to_s3_lambda" {
   role             = aws_iam_role.copy_from_s3_to_s3.arn
   handler          = "index.handler"
   runtime          = "nodejs14.x"
-  function_name    = "${var.identifier_prefix}-copy-from-s3-to-s3"
+  function_name    = "${var.identifier_prefix}-${var.lambda_name}"
   s3_bucket        = var.lambda_artefact_storage_bucket.bucket_id
   s3_key           = aws_s3_object.copy_from_s3_to_s3_lambda.key
   source_code_hash = data.archive_file.lambda_source_code.output_base64sha256
