@@ -399,6 +399,10 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:UpdateDag",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
+      "glue:UpdateTable",
+      "glue:GetTableVersions",
+      "glue:GetTable",
+      "glue:GetTables",
       "glue:Query*",
     ]
     resources = ["*"]
