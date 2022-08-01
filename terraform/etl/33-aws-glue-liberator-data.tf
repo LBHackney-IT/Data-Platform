@@ -137,5 +137,8 @@ resource "aws_glue_crawler" "refined_zone_parking_liberator_crawler" {
     Grouping = {
       TableLevelConfiguration = 4
     }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+    }
   })
 }
