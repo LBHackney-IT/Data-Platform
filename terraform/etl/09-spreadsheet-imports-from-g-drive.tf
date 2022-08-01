@@ -511,7 +511,7 @@ module "parking_permits_consultation_survey_20220801" {
   worksheets = {
     sheet1 : {
       header_row_number = 0
-      worksheet_name    = "20220801"
+      worksheet_name    = "Parking Permit Survey Consultation Hub"
     }
   }
 }
