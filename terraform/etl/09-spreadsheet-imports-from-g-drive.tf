@@ -505,7 +505,7 @@ module "parking_permits_consultation_survey_20220801" {
   glue_job_name                  = "Parking Permit Survey Consultation Hub - 20220801"
   output_folder_name             = "Parking Permit Survey Consultation Hub"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "permits_consultation_survey/Permits Consultation Survey - export-2022-08-01-11-04-48 UTF-8.csv"
+  input_file_name                = "Permits Consultation Survey - export-2022-08-01-11-04-48 UTF-8.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = false
   worksheets = {
