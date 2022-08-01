@@ -1,0 +1,74 @@
+{
+    "aqs": {
+        "type": "Join",
+        "properties": {
+            "attributes": [
+                "attributes_itemsTitle",
+                "attributes_itemsSubtitle",
+                "attributes_premisesBlpuClass",
+                "attributes_nlpgPremisesServiceType_5f9beae0a198dd0064e02c1a",
+                "attributes_nlpgPremisesFlashTimeBand_5fb7bd3ff52bbc00650d9eb4",
+                "attributes_nlpgPremisesUprn"
+            ],
+            "collectionCode": [
+                "Live"
+            ],
+            "dodiCode": "designs_nlpgPremises",
+            "joinAttributes": [
+                "root.attributes_nlpgPremisesServiceType_5f9beae0a198dd0064e02c1a.attributes_dWServiceTypeServiceType_5f9bea46bb524b006572f728",
+                "root.attributes_nlpgPremisesFlashTimeBand_5fb7bd3ff52bbc00650d9eb4.attributes_flashBandFlashBand_5fb7b7259e3c300067404c2b"
+            ],
+            "sortInfo": {
+                "attributeCode": "attributes_premisesBlpuClass",
+                "sortOrder": "Ascending"
+            }
+        },
+        "children": [
+            {
+                "type": "And",
+                "children": [
+                    {
+                        "type": "And",
+                        "children": [
+                            {
+                                "type": "Equals",
+                                "children": [
+                                    {
+                                        "type": "Attribute",
+                                        "properties": {
+                                            "attributeCode": "attributes_premisesBlpuClass"
+                                        }
+                                    },
+                                    {
+                                        "type": "String",
+                                        "properties": {
+                                            "value": [
+                                                "R",
+                                                "RD",
+                                                "RD01",
+                                                "RD02",
+                                                "RD03",
+                                                "RD04",
+                                                "RD06",
+                                                "RD07",
+                                                "RD08",
+                                                "RH01",
+                                                "RH02",
+                                                "RH03",
+                                                "X"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "parameterValues": [],
+    "fileName": "NLPG Premises.csv",
+    "discriminator": "CsvExportWebRequestModel",
+    "exportHeaderType": "Name"
+}
