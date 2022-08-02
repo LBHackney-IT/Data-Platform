@@ -97,6 +97,7 @@ module "parking_gds_permit_change_comparison" {
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
+  glue_version                   = "3.0"
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
