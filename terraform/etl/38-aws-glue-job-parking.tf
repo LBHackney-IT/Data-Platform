@@ -832,7 +832,6 @@ module "parking_foi_pcn_gds_daily_summary" {
   pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   script_name                    = "parking_foi_pcn_gds_daily_summary"
-  glue_version                   = "3.0"
   triggered_by_job               = module.parking_pcn_denormalisation.job_name
   job_description                = "Daily summarising data from the FOI Google Data Studio dashboard as need to be under 100,000"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
