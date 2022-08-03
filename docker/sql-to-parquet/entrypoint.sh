@@ -1,13 +1,16 @@
 #!/bin/bash
 set -eu -o pipefail
 
-DATE=`date +"%y%m%d"`
+DATE=${IMPORT_DATE:-$(date +"%y%m%d")}
+
+echo "Date used for import - $DATE"
 
 FILENAME="liberator_dump_${DATE}"
 DBNAME="liberator"
 
-DATE=`date +"%y-%m-%d-%H%M%S"`
+DATE=${SNAPSHOT_DATE:-$(date +"%y-%m-%d-%H%M%S")}
 SNAPSHOT_ID="sql-to-parquet-${DATE}"
+echo "Snapshot Id - $SNAPSHOT_ID"
 MYSQL_CONN_PARAMS="--user=${MYSQL_USER} --password=${MYSQL_PASS} --host=${MYSQL_HOST}"
 
 python3 delete_db_snapshots_in_db.py
