@@ -74,6 +74,14 @@ data "aws_iam_policy_document" "copy_from_s3_to_s3_lambda" {
       "*"
     ]
   }
+
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect    = "Allow"
+    resources = [var.assume_role]
+  }
 }
 
 resource "aws_iam_policy" "copy_from_s3_to_s3_lambda" {
