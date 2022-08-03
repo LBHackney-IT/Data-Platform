@@ -9,6 +9,7 @@ on:
       - 'terraform/core/**'
       - 'terraform/etl/**'
       - 'terraform/backend-setup/**'
+      - 'terraform/modules/**'
       - 'scripts/**'
       - 'lambdas/**'
       - 'notebook/**'
@@ -51,7 +52,7 @@ jobs:
       COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
       SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
-  deploy-stg:
+  pre-production:
     needs: ["validate"]
     uses: ./.github/workflows/deploy_terraform_networking.yml
     with:
@@ -78,8 +79,8 @@ jobs:
       AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
       AWS_DP_VPC_ID: ${{ secrets.AWS_DP_DEV_VPC_ID }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
-  deploy-prod:
-    needs: [ "deploy-stg" ]
+  production:
+    needs: [ "pre-production" ]
     uses: ./.github/workflows/deploy_terraform_networking.yml
     with:
       terraform_infra_import: ${{ github.event.inputs.terraform_infra_import }}

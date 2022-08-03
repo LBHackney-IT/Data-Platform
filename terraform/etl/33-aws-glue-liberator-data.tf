@@ -36,7 +36,7 @@ resource "aws_glue_trigger" "landing_zone_liberator_crawled" {
 
   name          = "${local.identifier_prefix} Landing Zone Liberator Crawled"
   type          = "CONDITIONAL"
-  enabled       = true
+  enabled       = local.is_production_environment || !local.is_live_environment
   workflow_name = "${local.short_identifier_prefix}parking-liberator-data-workflow"
 
   predicate {

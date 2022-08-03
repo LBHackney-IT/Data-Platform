@@ -283,9 +283,13 @@ data "aws_iam_policy_document" "athena_can_write_to_s3" {
     sid    = "KmsKeyAthenaStorageAccess"
     effect = "Allow"
     actions = [
+      "kms:Encrypt",
       "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
       "kms:DescribeKey",
-      "kms:GenerateDataKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
     ]
     resources = [
       var.athena_storage_bucket.kms_key_arn,
@@ -296,10 +300,17 @@ data "aws_iam_policy_document" "athena_can_write_to_s3" {
     sid    = "AthenaStorageS3Write"
     effect = "Allow"
     actions = [
+      "s3:GetBucketLocation",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:AbortMultipartUpload",
       "s3:PutObject",
+      "s3:ListMultipartUploadParts"
     ]
     resources = [
       var.athena_storage_bucket.bucket_arn,
+      "${var.athena_storage_bucket.bucket_arn}/primary/*",
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
@@ -388,6 +399,10 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:UpdateDag",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
+      "glue:UpdateTable",
+      "glue:GetTableVersions",
+      "glue:GetTable",
+      "glue:GetTables",
       "glue:Query*",
     ]
     resources = ["*"]

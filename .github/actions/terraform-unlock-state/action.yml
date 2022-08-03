@@ -74,18 +74,6 @@ inputs:
   branch:
     description: "Git branch being ran against"
     required: true
-  terraform_import:
-    description: "Terraform import statement"
-    default: ""
-    required: true
-  terraform_destroy:
-    description: 'Runs a Terraform destroy if the value is set to "destroy_me". Else does nothing'
-    default: ""
-    required: false
-  terraform_remove:
-    description: "Terraform state rm statement"
-    default: ""
-    required: false
 
 runs:
   using: "composite"

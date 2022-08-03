@@ -1,0 +1,55 @@
+{
+    "aqs": {
+        "type": "Join",
+        "properties": {
+            "dodiCode": "designs_managementInspection_5d774fc2fe2ad80a285bae69",
+            "collectionCode": [
+                "Live"
+            ],
+            "attributes": [
+                "attributes_itemsTitle",
+                "attributes_itemsSubtitle",
+                "attributes_tasksStatus",
+                "attributes_tasksTeam",
+                "attributes_tasksRaisedTime",
+                "attributes_tasksStartTime",
+                "attributes_tasksCompletionTime",
+                "attributes_managementInspectionLiftComments_5d77506afe2ad809a0b220db",
+                "attributes_managementInspectionCommunalCorridorsGrading_5d775099fe2ad809a0b220e5",
+                "attributes_managementInspectionStairwayComments_5d7750befe2ad809a0b220ea",
+                "attributes_managementInspectionChuteHopperRoomsComments_5d7750f3fe2ad80a285baeb0",
+                "attributes_managementInspectionWindowLouvreComments_5d775118fe2ad80a285baeba",
+                "attributes_managementInspectionBlockLightingComments_5d775142fe2ad809a0b220f4",
+                "attributes_managementInspectionRoadwaysPathwaysComments_5d775175fe2ad809a0b220f9",
+                "attributes_managementInspectionPlayAreasPlaygroundComments_5d7751abfe2ad809a0b220fe",
+                "attributes_managementInspectionRefuseBinsBinChambersComments_5d7751dafe2ad809a0b22107",
+                "attributes_managementInspectionLawnFlowerBedsShrubsComments_5d775213fe2ad809a0b22115",
+                "attributes_managementInspectionCarParkGaragesComments_5d77523efe2ad809a0b2211a",
+                "attributes_managementInspectionEntranceComments_601bff11b7a5840065b73fac",
+                "attributes_managementInspectionEntranceGrading_601bff3ebf1eb20065da5703"
+            ],
+            "joinAttributes": [
+                "root.attributes_tasksStatus.attributes_taskStatusesStatus",
+                "root.attributes_tasksTeam.attributes_teamsTeamName",
+                "root.attributes_managementInspectionLiftGrading_5d77505cfe2ad80a285bae8f.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionCommunalCorridorsGrading_5d77508bfe2ad80a285baea1.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionStairwayGrading_5d7750b0fe2ad80a285baea6.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionChuteHopperRoomsGrading_5d7750ddfe2ad80a285baeab.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionWindowLouvreGrading_5d77510bfe2ad80a285baeb5.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionBlockLightingGrading_5d775133fe2ad809a0b220ef.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionRoadwayPathwaysGrading_5d77515cfe2ad80a285bb016.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionPlayAreasPlaygroundsGrading_5d775195fe2ad80a285bb01b.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionRefuseBinsBinChambersGrading_5d7751c6fe2ad80a285bb021.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionLawnFlowerBedsShrubsGrading_5d7751f9fe2ad809a0b2210c.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionCarParksGaragesGrading_5d77522cfe2ad80a285bb026.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root.attributes_managementInspectionEntranceGrading_601bff3ebf1eb20065da5703.attributes_grading1000309Description_5d5fa808fe2ad8106427bedd",
+                "root^attributes_tasksAssignableTasks<designs_estateBlock1000770_5d5fca96fe2ad8106427e81b>.attributes_estateBlock1000770Area_621cd4322aff0101afc86270"
+            ]
+        },
+        "children": []
+    },
+    "parameterValues": [],
+    "fileName": "Management Inspection.csv",
+    "discriminator": "CsvExportWebRequestModel",
+    "exportHeaderType": "Name"
+}
