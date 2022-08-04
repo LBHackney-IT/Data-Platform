@@ -14,7 +14,7 @@ lint:
 
 init:
 	cd external-lib && make all
-	cd scripts && make all
+	make package-helpers
 	cd terraform/core && make init
 	cd terraform/etl && make init
 	cd terraform/networking && make init
@@ -22,17 +22,17 @@ init:
 	git config core.hooksPath .github/hooks
 
 apply:
-	cd scripts && make all
+	make package-helpers
 	cd external-lib && make all
 	cd terraform/core && make apply
 
 plan:
-	cd scripts && make all
+	make package-helpers
 	cd external-lib && make all
 	cd terraform/core && make plan
 
 validate:
-	cd scripts && make all
+	make package-helpers
 	cd external-lib && make all
 	$(MAKE) -C terraform/core validate
 	$(MAKE) -C terraform/etl validate
