@@ -8,8 +8,8 @@ import pyspark.sql.functions as F
 from pyspark.sql.functions import *
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.types import StringType
-from helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
-from helpers.repairs import clean_column_names, map_repair_priority
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from scripts.helpers.repairs import clean_column_names, map_repair_priority
 
 source_catalog_database = get_glue_env_var('source_catalog_database', '')
 source_catalog_table = get_glue_env_var('source_catalog_table', '')

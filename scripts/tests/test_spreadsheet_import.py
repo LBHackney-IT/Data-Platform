@@ -1,4 +1,4 @@
-from jobs.spreadsheet_import import infer_file_type, load_file
+from scripts.jobs.spreadsheet_import import infer_file_type, load_file
 from pyspark.sql import SQLContext
 import pytest
 import os
@@ -33,9 +33,9 @@ class TestXlsxImport:
 
     @pytest.mark.parametrize("test_file_type", test_file_types)
     def test_should_convert_file_to_data_frame(self, spark, mocker, test_file_type):
-        import jobs.spreadsheet_import
-        mocker.patch('jobs.spreadsheet_import.create_dataframe_from_' + test_file_type, return_value=True)
-        spy = mocker.spy(jobs.spreadsheet_import, 'create_dataframe_from_' + test_file_type)
+        import scripts.jobs.spreadsheet_import
+        mocker.patch('scripts.jobs.spreadsheet_import.create_dataframe_from_' + test_file_type, return_value=True)
+        spy = mocker.spy(scripts.jobs.spreadsheet_import, 'create_dataframe_from_' + test_file_type)
         load_file(test_file_type, SQLContext(spark.sparkContext), "", 2, "")
         assert spy.call_count == 1
 

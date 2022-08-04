@@ -11,7 +11,7 @@ from pyspark.sql.functions import rank, col
 import pyspark.sql.functions as F
 from awsglue.dynamicframe import DynamicFrame
 
-from helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import get_glue_env_var
 
 ## write into the log file with:
 ## @params: [JOB_NAME]

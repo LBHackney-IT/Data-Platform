@@ -8,7 +8,7 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql import SQLContext
 
-from helpers.helpers import get_glue_env_var, add_import_time_columns, clean_column_names, PARTITION_KEYS
+from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, clean_column_names, PARTITION_KEYS
 
 
 def create_dataframe_from_xlsx(sql_context, worksheet_name, header_row_number, file_path):
