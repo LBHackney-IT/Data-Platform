@@ -12,7 +12,8 @@ resource "aws_mskconnect_custom_plugin" "avro_converter_s3_sink" {
 
 locals {
   topics = [
-    "tenure_api"
+    "tenure_api",
+    "contact_details_api"
   ]
 }
 
