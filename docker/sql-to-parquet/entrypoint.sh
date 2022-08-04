@@ -7,7 +7,7 @@ if [ -z "${IMPORT_DATE_OVERRIDE+x}" ]; then
   SNAPSHOT_DATE=$(date +"%y-%m-%d-%H%M%S")
 # Else if the import date is passed in then use that - back dated ingestion
 else
-  DATE="${IMPORT_DATE_OVERRIDE/-/}"
+  DATE="${IMPORT_DATE_OVERRIDE//-/}"
   SNAPSHOT_DATE="${IMPORT_DATE_OVERRIDE}-000000"
 fi
 
