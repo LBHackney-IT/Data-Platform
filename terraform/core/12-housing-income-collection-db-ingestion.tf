@@ -18,14 +18,13 @@ locals {
 }
 
 resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" {
-  count   = local.is_live_environment ? 1 : 0
   tags    = module.tags.values
   name    = "${local.short_identifier_prefix}housing-income-collection-tables"
   type    = "CONDITIONAL"
   enabled = local.is_production_environment
 
   actions {
-    job_name = module.ingest_housing_income_collection_database_to_housing_raw_zone[0].job_name
+    job_name = module.ingest_housing_income_collection_database_to_housing_raw_zone.job_name
     arguments = {
       "--table_filter_expression" = local.table_filter_expressions_housing_income_collection
     }
@@ -40,8 +39,7 @@ resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" 
 }
 
 module "ingest_housing_income_collection_database_to_housing_raw_zone" {
-  count = local.is_live_environment ? 1 : 0
-  tags  = module.tags.values
+  tags = module.tags.values
 
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
