@@ -19,11 +19,13 @@ DBNAME="liberator"
 
 MYSQL_CONN_PARAMS="--user=${MYSQL_USER} --password=${MYSQL_PASS} --host=${MYSQL_HOST}"
 
+echo "Delete old snapshots in database"
 python3 delete_db_snapshots_in_db.py
 
 mkdir flatfile
 cd flatfile
 
+echo "Copy zip file from s3 bucket to disk"
 SQL_OBJECT_KEY="parking/${FILENAME}.zip"
 aws s3 cp s3://${BUCKET_NAME}/${SQL_OBJECT_KEY} .
 
@@ -32,10 +34,15 @@ aws s3 cp s3://${BUCKET_NAME}/${SQL_OBJECT_KEY} .
 # from disk
 sleep 5
 
+echo "Unzip file"
 unzip ${FILENAME}.zip
 
+echo "Drop and recreate RDS database if it exists"
 echo "DROP DATABASE IF EXISTS ${DBNAME}" | mysql ${MYSQL_CONN_PARAMS}
 echo "CREATE DATABASE IF NOT EXISTS ${DBNAME}" | mysql ${MYSQL_CONN_PARAMS}
 
+echo "Run SQL from zip into RDS database"
 mysql ${MYSQL_CONN_PARAMS} --database=${DBNAME} < *.sql
+
+echo "Take snapshot of RDS database"
 aws rds create-db-snapshot --db-instance-identifier ${RDS_INSTANCE_ID} --db-snapshot-identifier ${SNAPSHOT_ID}
