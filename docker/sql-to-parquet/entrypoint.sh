@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-# If the import date is not passed in then used today's date - normal process
+# If the import date is not passed in then use today's date - normal process
 if [ -z "${IMPORT_DATE_OVERRIDE+x}" ]; then
   DATE=$(date +"%y%m%d")
   SNAPSHOT_DATE=$(date +"%y-%m-%d-%H%M%S")
