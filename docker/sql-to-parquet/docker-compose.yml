@@ -4,6 +4,5 @@ services:
     container_name: cmd-runner
 #    Use for testing https://hackney.atlassian.net/browse/DPP-194
 #    environment:
-#      - IMPORT_DATE=220802
-#      - SNAPSHOT_DATE=22-08-02-134100
+#      - IMPORT_DATE=22-08-02
     build: .
