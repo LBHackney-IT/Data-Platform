@@ -24,3 +24,13 @@ notebook/aws-config/credentials
 **/*.log
 **/plan.out
 **/plan.out.json
+__pycache__/
+spark_events/
+build/
+dist/
+*.egg-info
+.pytest_cache
+.venv
+/build/
+/dist/
+/terraform/modules/copy-from-s3-to-s3/copy-from-s3-to-s3.zip

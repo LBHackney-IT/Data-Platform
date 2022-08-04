@@ -1,12 +1,13 @@
-from jobs.recast_tables import castColumns, castColumnsAllTypes
+from scripts.jobs.recast_tables import castColumns, castColumnsAllTypes
 from pyspark.sql import Row
 from pyspark.sql.types import TimestampType, IntegerType, BooleanType, FloatType, LongType, DoubleType, DateType
 from datetime import datetime, date
+import os
 
 class TestRecastTables:
 
-    column_type_dictionary_path =  "./tests/stubs/column_type_dictionary.json"
-    column_type_dictionary_partial_path =  "./tests/stubs/column_type_dictionary_partial.json"
+    column_type_dictionary_path =  os.path.dirname(__file__) + "/stubs/column_type_dictionary.json"
+    column_type_dictionary_partial_path =  os.path.dirname(__file__) + "/stubs/column_type_dictionary_partial.json"
     def test_castColumns_timestamp(self, spark):
         input_data = [{'submit_date': '2021-09-24 08:58:47'}]
         expected = [{'submit_date': datetime(2021, 9, 24, 8, 58, 47)}]

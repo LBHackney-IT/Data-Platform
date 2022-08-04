@@ -11,7 +11,7 @@ from pyspark.sql.functions import rank, col, trim, when, max, trim
 import pyspark.sql.functions as F
 from pyspark.sql.types import StringType
 from awsglue.dynamicframe import DynamicFrame
-from helpers.helpers import get_glue_env_var, get_latest_partitions
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions
 
 
 

@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from jobs.levenshtein_address_matching import prep_source_data, prep_addresses_api_data, match_addresses
+from scripts.jobs.levenshtein_address_matching import prep_source_data, prep_addresses_api_data, match_addresses
 
 
 @pytest.fixture

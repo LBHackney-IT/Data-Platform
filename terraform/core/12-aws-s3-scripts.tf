@@ -30,6 +30,14 @@ resource "aws_s3_bucket_object" "pydeequ" {
   source_hash = filemd5("../../external-lib/target/pydeequ-1.0.1.zip")
 }
 
+resource "aws_s3_bucket_object" "deeque_jar" {
+  bucket      = module.glue_scripts.bucket_id
+  key         = "jars/deequ-1.0.3.jar"
+  acl         = "private"
+  source      = "../../external-lib/target/deequ-1.0.3.jar"
+  source_hash = filemd5("../../external-lib/target/deequ-1.0.3.jar")
+}
+
 resource "aws_s3_bucket_object" "copy_tables_landing_to_raw" {
   bucket      = module.glue_scripts.bucket_id
   key         = "scripts/copy_tables_landing_to_raw.py"
