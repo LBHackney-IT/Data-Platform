@@ -25,6 +25,11 @@ apply:
 	make package-helpers
 	cd external-lib && make all
 	cd terraform/core && make apply
+	cd terraform/etl && make apply
+
+destroy:
+	cd terraform/core && make destroy
+	cd terraform/etl && make destroy
 
 plan:
 	make package-helpers
