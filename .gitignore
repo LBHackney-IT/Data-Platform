@@ -33,3 +33,4 @@ dist/
 .venv
 /build/
 /dist/
+/terraform/modules/copy-from-s3-to-s3/copy-from-s3-to-s3.zip
