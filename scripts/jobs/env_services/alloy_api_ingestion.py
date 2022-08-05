@@ -38,8 +38,8 @@ def get_last_import_date_time(glue_context, database, glue_catalogue_table_name)
         glue_context.sql(
             f"SELECT max(import_datetime) as max_import_date_time FROM `{database}`.{glue_catalogue_table_name}"
         )
-            .take(1)[0]
-            .max_import_date_time
+        .take(1)[0]
+        .max_import_date_time
     )
 
 
