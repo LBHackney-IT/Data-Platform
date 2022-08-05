@@ -6,11 +6,13 @@ const bucketDestination = process.env.BUCKET_DESTINATION;
 const targetServiceArea = process.env.SERVICE_AREA;
 const workflowName = process.env.WORKFLOW_NAME
 
-async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucketName, targetPath, snapshotTime) {
+async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucketName, targetPath, snapshotTime, exportTaskIdentifier) {
   console.log("sourceBucketName", sourceBucketName);
   console.log("targetBucketName", targetBucketName);
   console.log("sourcePath", sourcePath);
   console.log("targetPath", targetPath);
+  console.log("snapshotTime", snapshotTime);
+  console.log("exportTaskIdentifier", exportTaskIdentifier);
   console.log();
 
   // plan, list through the source, if got continuation token, recursive
@@ -26,10 +28,19 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
 
     listResponse = await s3Client.listObjectsV2(listObjectsParams).promise();
 
-    const day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
-    const month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
-    const year = snapshotTime.getFullYear();
-    const date = year + month + day;
+    let day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
+    let month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
+    let year = snapshotTime.getFullYear();
+    let date = year + month + day;
+
+    //Example: sql-to-parquet-21-07-01-override - back dated ingestion so use time from snapshot instead of today
+    if(exportTaskIdentifier.matches("^sql-to-parquet-\\d\\d-\\d\\d-\\d\\d-override")){
+        let split = exportTaskIdentifier.split("-");
+        day = split[5]
+        month = split[4]
+        year = split[3]
+        date = year + month + day;
+    }
 
     console.log("list response contents", listResponse.Contents);
 
@@ -130,7 +141,7 @@ exports.handler = async (events) => {
       const snapshotTime = exportTaskStatus.SnapshotTime;
 
       // If it has copy the files from s3 bucket A => s3 bucket B
-      await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, targetServiceArea, snapshotTime);
+      await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, targetServiceArea, snapshotTime, message.ExportTaskIdentifier);
 
       if (workflowName) {
         await startWorkflowRun(workflowName);
