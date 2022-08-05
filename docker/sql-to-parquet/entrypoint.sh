@@ -35,7 +35,7 @@ aws s3 cp s3://"${BUCKET_NAME}"/"${SQL_OBJECT_KEY}" .
 sleep 5
 
 echo "Unzip file"
-unzip ${FILENAME}.zip
+unzip "${FILENAME}".zip
 
 echo "Drop and recreate RDS database if it exists"
 echo "DROP DATABASE IF EXISTS ${DBNAME}" | mysql "${MYSQL_CONN_PARAMS}"
