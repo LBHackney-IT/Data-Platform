@@ -6,146 +6,152 @@ const bucketDestination = process.env.BUCKET_DESTINATION;
 const targetServiceArea = process.env.SERVICE_AREA;
 const workflowName = process.env.WORKFLOW_NAME
 
-async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucketName, targetPath, snapshotTime, exportTaskIdentifier) {
-  console.log("sourceBucketName", sourceBucketName);
-  console.log("targetBucketName", targetBucketName);
-  console.log("sourcePath", sourcePath);
-  console.log("targetPath", targetPath);
-  console.log("snapshotTime", snapshotTime);
-  console.log("exportTaskIdentifier", exportTaskIdentifier);
-  console.log();
+async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucketName, targetPath, snapshotTime, exportTaskIdentifier, is_backdated) {
+    console.log("sourceBucketName", sourceBucketName);
+    console.log("targetBucketName", targetBucketName);
+    console.log("sourcePath", sourcePath);
+    console.log("targetPath", targetPath);
+    console.log("snapshotTime", snapshotTime);
+    console.log("exportTaskIdentifier", exportTaskIdentifier);
+    console.log("is_backdated", is_backdated);
+    console.log();
 
-  // plan, list through the source, if got continuation token, recursive
+    // plan, list through the source, if got continuation token, recursive
 
-  let listResponse;
-  do {
-    const listObjectsParams = {
-      Bucket: sourceBucketName,
-      Prefix: sourcePath,
-      ContinuationToken: listResponse?.NextContinuationToken
-    };
-    console.log("continuation token", listResponse?.NextContinuationToken);
-
-    listResponse = await s3Client.listObjectsV2(listObjectsParams).promise();
-
-    let day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
-    let month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
-    let year = snapshotTime.getFullYear();
-    let date = year + month + day;
-
-    //Example: sql-to-parquet-21-07-01-override - back dated ingestion so use time from snapshot instead of today
-    if(exportTaskIdentifier.matches("^sql-to-parquet-\\d\\d-\\d\\d-\\d\\d-override")){
-        let split = exportTaskIdentifier.split("-");
-        day = split[5]
-        month = split[4]
-        year = split[3]
-        date = year + month + day;
-    }
-
-    console.log("list response contents", listResponse.Contents);
-
-    await Promise.all(
-      listResponse.Contents.map(async (file) => {
-        if (!file.Key.endsWith("parquet")) {
-          return;
-        }
-        const [snapShotName, databaseName, tableName] = file.Key.split("/", 3);
-
-        const fileName = file.Key.substr(`${snapShotName}/${databaseName}/${tableName}`.length + 1);
-        // remove extra partitions if necessary and get name of parquet files
-        const parquetFileName = getParquetFileName(fileName);
-
-        console.log("fileName:", fileName);
-        console.log("parquetFileName:", parquetFileName);
-        const copyObjectParams = {
-          Bucket: targetBucketName,
-          CopySource: `${sourceBucketName}/${file.Key}`,
-          Key: `${targetPath}/${databaseName}/${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/import_date=${date}/${parquetFileName}`,
-          ACL: "bucket-owner-full-control",
+    let listResponse;
+    do {
+        const listObjectsParams = {
+            Bucket: sourceBucketName,
+            Prefix: sourcePath,
+            ContinuationToken: listResponse?.NextContinuationToken
         };
-        console.log("copyObjectParams", copyObjectParams)
+        console.log("continuation token", listResponse?.NextContinuationToken);
 
-        await s3Client.copyObject(copyObjectParams).promise().catch(console.log);
-      })
-    );
-  } while (listResponse.IsTruncated && listResponse.NextContinuationToken)
+        listResponse = await s3Client.listObjectsV2(listObjectsParams).promise();
+
+        let day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
+        let month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
+        let year = snapshotTime.getFullYear();
+        let date = year + month + day;
+
+        if (is_backdated) {
+            let split = exportTaskIdentifier.split("-");
+            day = split[5]
+            month = split[4]
+            year = split[3]
+            date = year + month + day;
+        }
+
+        console.log("list response contents", listResponse.Contents);
+
+        await Promise.all(
+            listResponse.Contents.map(async (file) => {
+                if (!file.Key.endsWith("parquet")) {
+                    return;
+                }
+                const [snapShotName, databaseName, tableName] = file.Key.split("/", 3);
+
+                const fileName = file.Key.substr(`${snapShotName}/${databaseName}/${tableName}`.length + 1);
+                // remove extra partitions if necessary and get name of parquet files
+                const parquetFileName = getParquetFileName(fileName);
+
+                console.log("fileName:", fileName);
+                console.log("parquetFileName:", parquetFileName);
+                const copyObjectParams = {
+                    Bucket: targetBucketName,
+                    CopySource: `${sourceBucketName}/${file.Key}`,
+                    Key: `${targetPath}/${databaseName}/${tableName}/import_year=${year}/import_month=${month}/import_day=${day}/import_date=${date}/${parquetFileName}`,
+                    ACL: "bucket-owner-full-control",
+                };
+                console.log("copyObjectParams", copyObjectParams)
+
+                await s3Client.copyObject(copyObjectParams).promise().catch(console.log);
+            })
+        );
+    } while (listResponse.IsTruncated && listResponse.NextContinuationToken)
 }
 
 function getParquetFileName(fileName) {
-  if (!fileName.startsWith('p')) {
-    const index = fileName.lastIndexOf('/');
-    return fileName.substr(index + 1);
-  }
-  return fileName;
+    if (!fileName.startsWith('p')) {
+        const index = fileName.lastIndexOf('/');
+        return fileName.substr(index + 1);
+    }
+    return fileName;
 }
 
 async function startWorkflowRun(workflowName) {
-  const glue = new AWS.Glue({apiVersion: '2017-03-31'});
-  const params = {
-    Name: workflowName
-  };
-  console.log("starting workflow run with params", params)
+    const glue = new AWS.Glue({apiVersion: '2017-03-31'});
+    const params = {
+        Name: workflowName
+    };
+    console.log("starting workflow run with params", params)
 
-  await glue.startWorkflowRun(params).promise();
+    await glue.startWorkflowRun(params).promise();
 }
 
 exports.handler = async (events) => {
-  const rdsClient = new AWS.RDS({region: AWS_REGION});
-  const s3Client = new AWS.S3({region: AWS_REGION});
-  const sqsClient = new AWS.SQS({region: AWS_REGION});
+    const rdsClient = new AWS.RDS({region: AWS_REGION});
+    const s3Client = new AWS.S3({region: AWS_REGION});
+    const sqsClient = new AWS.SQS({region: AWS_REGION});
 
-  await Promise.all(
-    events.Records.map(async (event) => {
-      const message = JSON.parse(event.body);
-      console.log("message.ExportTaskIdentifier", message.ExportTaskIdentifier);
-      const describeExportTasks = await rdsClient.describeExportTasks({
-        ExportTaskIdentifier: message.ExportTaskIdentifier
-      }).promise();
+    await Promise.all(
+        events.Records.map(async (event) => {
+            const message = JSON.parse(event.body);
+            console.log("message.ExportTaskIdentifier", message.ExportTaskIdentifier);
+            const describeExportTasks = await rdsClient.describeExportTasks({
+                ExportTaskIdentifier: message.ExportTaskIdentifier
+            }).promise();
 
-      console.log("describeExportTasks", describeExportTasks);
+            console.log("describeExportTasks", describeExportTasks);
 
-      if (!describeExportTasks || !describeExportTasks.ExportTasks || describeExportTasks.ExportTasks.length === 0) {
-        throw new Error('describeExportTasks or it\'s child ExportTasks is missing')
-      }
+            if (!describeExportTasks || !describeExportTasks.ExportTasks || describeExportTasks.ExportTasks.length === 0) {
+                throw new Error('describeExportTasks or it\'s child ExportTasks is missing')
+            }
 
-      const exportTaskStatus = describeExportTasks.ExportTasks.pop();
+            const exportTaskStatus = describeExportTasks.ExportTasks.pop();
 
-      // Don't re-queue if status is cancelled
-      if (exportTaskStatus.Status === 'CANCELED') {
-        return;
-      }
+            // Don't re-queue if status is cancelled
+            if (exportTaskStatus.Status === 'CANCELED') {
+                return;
+            }
 
-      // Check to see if the export has finished
-      if (exportTaskStatus.Status !== 'COMPLETE') {
-        // If NOT then requeue the event with an extended delay
-        console.log(event.eventSourceARN);
+            // Check to see if the export has finished
+            if (exportTaskStatus.Status !== 'COMPLETE') {
+                // If NOT then requeue the event with an extended delay
+                console.log(event.eventSourceARN);
 
-        const queueName = event.eventSourceARN.split(':').pop();
+                const queueName = event.eventSourceARN.split(':').pop();
 
-        const getQueueUrlResponse = await sqsClient.getQueueUrl({
-          QueueName: queueName
-        }).promise();
+                const getQueueUrlResponse = await sqsClient.getQueueUrl({
+                    QueueName: queueName
+                }).promise();
 
-        console.log(getQueueUrlResponse);
-        await sqsClient.sendMessage({
-          QueueUrl: getQueueUrlResponse.QueueUrl,
-          MessageBody: event.body,
-          DelaySeconds: 300
-        }).promise();
-        return;
-      }
+                console.log(getQueueUrlResponse);
+                await sqsClient.sendMessage({
+                    QueueUrl: getQueueUrlResponse.QueueUrl,
+                    MessageBody: event.body,
+                    DelaySeconds: 300
+                }).promise();
+                return;
+            }
 
-      const sourceBucketName = message.ExportBucket
-      const targetBucketName = bucketDestination;
-      const pathPrefix = `${message.ExportTaskIdentifier}`;
-      const snapshotTime = exportTaskStatus.SnapshotTime;
+            const sourceBucketName = message.ExportBucket
+            const targetBucketName = bucketDestination;
+            const pathPrefix = `${message.ExportTaskIdentifier}`;
+            const snapshotTime = exportTaskStatus.SnapshotTime;
+            let is_backdated = false;
 
-      // If it has copy the files from s3 bucket A => s3 bucket B
-      await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, targetServiceArea, snapshotTime, message.ExportTaskIdentifier);
+            //Example: sql-to-parquet-21-07-01-override - back dated ingestion so use time from snapshot instead of today
+            if (message.ExportTaskIdentifier.matches("^sql-to-parquet-\\d\\d-\\d\\d-\\d\\d-backdated")) {
+                is_backdated = true;
+            }
 
-      if (workflowName) {
-        await startWorkflowRun(workflowName);
-      }
-    })
-  )
+            // If it has copy the files from s3 bucket A => s3 bucket B
+            await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, targetServiceArea, snapshotTime, message.ExportTaskIdentifier, is_backdated);
+
+            if (workflowName && !is_backdated) {
+                await startWorkflowRun(workflowName);
+            }
+        })
+    )
 };

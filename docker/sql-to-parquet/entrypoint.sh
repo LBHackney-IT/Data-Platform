@@ -8,7 +8,7 @@ if [ -z "${IMPORT_DATE_OVERRIDE+x}" ]; then
 # Else if the import date is passed in then use that - back dated ingestion
 else
   DATE="${IMPORT_DATE_OVERRIDE//-/}"
-  SNAPSHOT_DATE="${IMPORT_DATE_OVERRIDE}-override"
+  SNAPSHOT_DATE="${IMPORT_DATE_OVERRIDE}-backdated"
 fi
 
 echo "Date used for import - $DATE"
