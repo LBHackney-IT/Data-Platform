@@ -503,7 +503,7 @@ module "parking_permits_consultation_survey_20220801" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1FJUrwqxR_BWJdXIn0u6jYMixXIczCyQF"
   glue_job_name                  = "Parking Permit Survey Consultation Hub - 20220801"
-  output_folder_name             = "Parking Permit Survey Consultation Hub"
+  output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Parking Permit Survey Consultation Hub/Permits Consultation Survey - export-2022-08-01-11-04-48 UTF-8.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
