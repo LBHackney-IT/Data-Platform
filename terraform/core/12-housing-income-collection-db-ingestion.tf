@@ -63,7 +63,7 @@ module "ingest_housing_income_collection_database_to_housing_raw_zone" {
     "--table_filter_expression"     = local.table_filter_expressions_housing_income_collection
   }
   crawler_details = {
-    database_name      = local.is_live_environment ? module.housing_income_collection_database_ingestion[0].ingestion_database_name : ""
+    database_name      = module.department_housing.raw_zone_catalog_database_name
     s3_target_location = "s3://${module.raw_zone.bucket_id}/housing/"
     configuration = jsonencode({
       Version = 1.0
