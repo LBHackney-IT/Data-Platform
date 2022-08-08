@@ -167,9 +167,9 @@ jobs:
         if: ${{ (inputs.build_path  == './terraform/etl') && (success()) }}
         run: |
           terraform_outputs=$(terraform output -json)
-          cd ../../scripts
+          cd ../../
           source .venv/bin/activate
-          AWS_PROFILE=deploy_role python ./configure_redshift.py "$terraform_outputs"
+          AWS_PROFILE=deploy_role python ./scripts/configure_redshift.py "$terraform_outputs"
 
       - name: Build and Deploy SQL to Parquet Image to ECR
         if: ${{ (inputs.build_path  == './terraform/core') && (success()) && (inputs.environment != 'stg') }}

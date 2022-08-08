@@ -250,11 +250,11 @@ module "Cash_Collection_Date" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1jHeuAW4VVLv9shz9Y7rsktulNJLBXfTP"
+  google_drive_document_id       = "1djk-qnpJNMY1teIkuR2fUfAuWPzvefz8"
   glue_job_name                  = "Cash Collection Date"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Cash_Collection/Cash_Collection_Date_June_2022.csv"
+  input_file_name                = "Cash_Collection/Cash_Collection_Date_July_2022.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -286,11 +286,11 @@ module "Cedar_Backing_Data" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1J-Ej_yCsLeZMc-76JpS-16GSZxHy0pK7"
+  google_drive_document_id       = "1Ast-FDGp0ZMDu42kWF8-mHjB86YytSIM"
   glue_job_name                  = "Cedar Backing Data"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Cedar_Backing_Data/Cedar Backing June 2022.csv"
+  input_file_name                = "Cedar_Backing_Data/Cedar_Backing_July_2022.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -322,11 +322,11 @@ module "Cedar_Parking_Payments" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1H6pEWYOOu4_WwD_IVoLU5SGFiT1Kih3P"
+  google_drive_document_id       = "1G76iwzWgIXlCnUe3lVonFhDK_Ixk6Cbg"
   glue_job_name                  = "Cedar Parking Payments"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Cedar_Parking_Payments/Cedar_Parking_Payments_June_2022.csv"
+  input_file_name                = "Cedar_Parking_Payments/Cedar_Parking_Payments_July_2022.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -358,11 +358,11 @@ module "Citypay_Import" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "17cZQXvvrvcm0gy6AWlcpYGPQbsESjFwO"
+  google_drive_document_id       = "1_YUy7doSeMlO4-H2vbHSThTP1chT5GZQ"
   glue_job_name                  = "Citypay Import"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "CityPay_Payments/Citypay_Import_June_2022.csv"
+  input_file_name                = "CityPay_Payments/Citypay_Import_July_2022.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -394,11 +394,11 @@ module "Ringgo_Daily_Transactions" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1lNC6CyXG635mqC6dk3C_8kWSUnfNicsB"
+  google_drive_document_id       = "1Y0slGFLxawgnT0bH0WjTrBzCFN8rNwVJ"
   glue_job_name                  = "Ringg Daily Transactions"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Ringgo_Daily/Ringgo_Daily_June_2022.csv"
+  input_file_name                = "Ringgo_Daily/Ringgo_Daily_July_2022.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -430,11 +430,11 @@ module "Ringgo_session_forecast" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1Ybt4AeHR0IKFKxTRDvCP_7nkRlmHZnKB"
+  google_drive_document_id       = "1pYUY2okmr6UWsbikPW-ZXIGZ_z44IHe8"
   glue_job_name                  = "Ringgo session forecast"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Ringgo_Session_Forecast/Ringgo_session_forecast.csv"
+  input_file_name                = "Ringgo_Session_Forecast/Ringgo_session_forecast_July_2022.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -466,11 +466,11 @@ module "Voucher_Import" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1pfhf2F7gwKf2hdcK_pda16KUOS_Pi6PY"
+  google_drive_document_id       = "1T9MMh0wZv4ChvZt25jcf4j5CtnGht3nz"
   glue_job_name                  = "Voucher Import"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Visitor_Voucher_Forecast/Voucher Import.csv"
+  input_file_name                = "Visitor_Voucher_Forecast/Voucher Import_June_2022.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -503,7 +503,7 @@ module "parking_permits_consultation_survey_20220801" {
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1FJUrwqxR_BWJdXIn0u6jYMixXIczCyQF"
   glue_job_name                  = "Parking Permit Survey Consultation Hub - 20220801"
-  output_folder_name             = "Parking Permit Survey Consultation Hub"
+  output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Parking Permit Survey Consultation Hub/Permits Consultation Survey - export-2022-08-01-11-04-48 UTF-8.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
@@ -512,6 +512,41 @@ module "parking_permits_consultation_survey_20220801" {
     sheet1 : {
       header_row_number = 0
       worksheet_name    = "Parking Permit Survey Consultation Hub"
+    }
+  }
+}
+module "Permit_Diesel_Electric_Forecast" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  jars_key                       = data.aws_s3_bucket_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1b6hcWaUFTV3_n8wewjHPkR3ewA_MJSK-"
+  glue_job_name                  = "Voucher Import"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Permit_Diesel_Electric_Forecast/permit_diesel_electric_forecast_july.csv"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
+  enable_bookmarking             = true
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "permit_diesel_electric_forecast"
     }
   }
 }

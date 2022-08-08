@@ -20,21 +20,8 @@ from scripts.helpers.helpers import (
     get_secret,
     table_exists_in_catalog,
 )
+from pyspark.context import SparkContext
 from pyspark.sql import SparkSession, SQLContext
-from scripts.helpers.helpers import get_glue_env_var, get_secret, table_exists_in_catalog, normalize_column_name,  convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
-
-
-def download_file_to_df(file_id, api_key, filename):
-    """
-    download export from api, extract csv from zip, read csv as pandas df
-    """
-    url_download = f'https://api.uk.alloyapp.io/api/file/{file_id}?token={api_key}'
-    r = requests.get(url_download, headers=headers)
-    z = zipfile.ZipFile(io.BytesIO(r.content))
-    df = pd.read_csv(html.unescape(
-        z.extract(member=filename)), index_col=False)
-    return df
-
 
 
 def get_last_import_date_time(glue_context, database, glue_catalogue_table_name):
