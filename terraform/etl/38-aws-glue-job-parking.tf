@@ -836,6 +836,7 @@ module "parking_foi_pcn_gds_daily_summary" {
   job_description                = "Daily summarising data from the FOI Google Data Studio dashboard as need to be under 100,000"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled                = local.is_production_environment
+  glue_job_timeout               = 240
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   job_parameters = {

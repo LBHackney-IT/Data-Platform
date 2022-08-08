@@ -8,7 +8,7 @@ from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
 from pyspark.sql.functions import *
 import pyspark.sql.functions as F
-from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS,parse_json_into_dataframe, table_exists_in_catalog
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS,parse_json_into_dataframe, table_exists_in_catalog
 
 # Define the functions that will be used in your job (optional). For Production jobs, these functions should be tested via unit testing.
 def clear_target_folder(s3_bucket_target):

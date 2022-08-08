@@ -1,9 +1,9 @@
-from helpers.helpers import parse_json_into_dataframe
+from scripts.helpers.helpers import parse_json_into_dataframe
 from pyspark.sql import Row
 from datetime import datetime
 from unittest import TestCase
 
-from tests.helpers import assertions
+from scripts.tests.helpers import assertions
 
 
 class TestTascomiParsingRefinement:

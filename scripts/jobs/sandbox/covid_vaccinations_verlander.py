@@ -6,7 +6,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from pyspark.sql.functions import col, max, lit
 from awsglue.dynamicframe import DynamicFrame
-from helpers.helpers import get_glue_env_vars, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS
+from scripts.helpers.helpers import get_glue_env_var, get_glue_env_vars, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS
 
 # The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":

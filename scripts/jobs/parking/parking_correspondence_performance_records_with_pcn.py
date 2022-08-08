@@ -5,7 +5,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
-from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS_SNAPSHOT
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS_SNAPSHOT
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():

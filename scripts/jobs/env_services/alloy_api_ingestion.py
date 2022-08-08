@@ -12,7 +12,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
-from helpers.helpers import (
+from scripts.helpers.helpers import (
     PARTITION_KEYS,
     add_import_time_columns,
     clean_column_names,

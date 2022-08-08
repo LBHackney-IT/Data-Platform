@@ -1,4 +1,4 @@
-from helpers.helpers import get_glue_env_var, get_glue_env_vars
+from scripts.helpers.helpers import get_glue_env_var, get_glue_env_vars
 from unittest.mock import patch
 
 

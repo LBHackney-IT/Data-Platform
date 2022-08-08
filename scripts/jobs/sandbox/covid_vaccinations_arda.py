@@ -7,7 +7,7 @@ from awsglue.job import Job
 from awsglue.utils import getResolvedOptions
 from pyspark.sql.functions import rank, col, trim, when, max
 import pyspark.sql.functions as F
-from helpers.helpers import get_glue_env_var, PARTITION_KEYS
+from scripts.helpers.helpers import get_glue_env_var, PARTITION_KEYS
 
 # The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":
