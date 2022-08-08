@@ -26,10 +26,6 @@ resource "aws_kms_key" "rds_snapshot_to_s3_kms_key" {
   policy                  = data.aws_iam_policy_document.rds_snapshot_to_s3_kms_key_policy.json
 }
 
-data "aws_sns_topic" "rds_snapshot_to_s3" {
-  name = "${var.identifier_prefix}-rds-snapshot-to-s3"
-}
-
 data "aws_iam_policy_document" "rds_snapshot_to_s3_kms_key_policy" {
 
   statement {
