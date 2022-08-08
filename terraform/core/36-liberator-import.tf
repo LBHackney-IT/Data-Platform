@@ -10,7 +10,7 @@ module "liberator_data_storage" {
 }
 
 module "liberator_dump_to_rds_snapshot" {
-  count = local.is_production_environment ? 1 : 0
+  count = local.is_production_or_development_environment ? 1 : 0
 
   source                     = "../modules/sql-to-rds-snapshot"
   tags                       = module.tags.values
@@ -26,7 +26,7 @@ module "liberator_dump_to_rds_snapshot" {
 }
 
 module "liberator_db_snapshot_to_s3" {
-  count = local.is_production_environment ? 1 : 0
+  count = local.is_production_or_development_environment ? 1 : 0
 
   source                         = "../modules/db-snapshot-to-s3"
   tags                           = module.tags.values
