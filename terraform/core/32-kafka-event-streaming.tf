@@ -20,4 +20,8 @@ module "kafka_event_streaming" {
     "arn:aws:iam::937934410339:role/mtfh-reporting-data-listener/development/mtfh-reporting-data-listener-lambdaExecutionRole",
     "arn:aws:iam::364864573329:role/mtfh-reporting-data-listener/development/mtfh-reporting-data-listener-lambdaExecutionRole"
   ]
+  topics = [
+    "tenure_api",
+    "contact_details_api"
+  ]
 }
