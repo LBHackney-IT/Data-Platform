@@ -1,6 +1,6 @@
 # Help File
 
-## Local Developement
+## Local Development & Testing
 
 Kafka takes a long time to create in AWS, specifically the MSK connectors. Due to this kafka is not deployed to dev environments by default. 
 If you wish to test our kafka changes in a dev environment then please follow these steps:

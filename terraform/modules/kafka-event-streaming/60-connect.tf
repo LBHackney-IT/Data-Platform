@@ -94,9 +94,5 @@ resource "aws_mskconnect_connector" "topics" {
     }
   }
 
-  timeouts {
-    create = "30m"
-  }
-
   service_execution_role_arn = aws_iam_role.kafka_connector.arn
 }
