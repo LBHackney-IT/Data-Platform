@@ -72,3 +72,8 @@ variable "glue_database_name" {
   description = "Name of the database to crawl the streamed data to"
   type        = string
 }
+
+variable "topics" {
+  description = "Kafka streaming topics"
+  type        = list(string)
+}
