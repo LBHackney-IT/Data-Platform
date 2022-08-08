@@ -1,4 +1,14 @@
 # Help File
+
+## Local Developement
+
+Kafka takes a long time to create in AWS, specifically the MSK connectors. Due to this kafka is not deployed to dev environments by default. 
+If you wish to test our kafka changes in a dev environment then please follow these steps:
+
+1. In ```32-kafka-event-streaming.tf``` modify the count on line two so that it reads ```count       = local.is_live_environment ? 1 : 1```. Do not commit this change
+2. Deploy terraform/core to your dev environment
+3. 
+
 ## Cli Help
 
 ### Installing the Kafka CLI tools

@@ -21,6 +21,15 @@ resource "aws_security_group" "kafka" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
+
+  ingress {
+    description      = "Allows inbound traffic on kafka port"
+    from_port        = 9094
+    to_port          = 9094
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
 }
 
 resource "aws_security_group_rule" "allow_outbound_traffic_within_sg" {
