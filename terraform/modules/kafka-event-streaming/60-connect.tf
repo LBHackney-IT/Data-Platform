@@ -12,7 +12,7 @@ resource "aws_mskconnect_custom_plugin" "avro_converter_s3_sink" {
 
 resource "aws_mskconnect_connector" "topics" {
   for_each    = toset(var.topics)
-  name        = replace(lower(each.value), "/[^a-zA-Z0-9]+/", "-")
+  name        = replace(lower("${var.short_identifier_prefix}${each.value}"), "/[^a-zA-Z0-9]+/", "-")
   description = "Kafka connector to write ${each.value} events to S3"
 
   kafkaconnect_version = "2.7.1"
@@ -92,6 +92,10 @@ resource "aws_mskconnect_connector" "topics" {
         enabled   = true
       }
     }
+  }
+
+  timeouts {
+    create = "30m"
   }
 
   service_execution_role_arn = aws_iam_role.kafka_connector.arn
