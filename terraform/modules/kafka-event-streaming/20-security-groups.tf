@@ -22,6 +22,7 @@ resource "aws_security_group" "kafka" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  //https://docs.aws.amazon.com/msk/latest/developerguide/port-info.html
   ingress {
     description      = "Allows inbound traffic on kafka port"
     from_port        = 9094
