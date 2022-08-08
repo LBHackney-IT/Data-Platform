@@ -8,7 +8,7 @@ resource "aws_security_group" "kafka" {
     description      = "Allows all inbound traffic"
     from_port        = 80
     to_port          = 80
-    protocol         = "-1"
+    protocol         = "TCP"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
@@ -17,7 +17,7 @@ resource "aws_security_group" "kafka" {
     description      = "Allows all inbound traffic"
     from_port        = 443
     to_port          = 443
-    protocol         = "-1"
+    protocol         = "TCP"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
