@@ -23,9 +23,18 @@ resource "aws_security_group" "kafka" {
   }
 
   ingress {
-    description      = "Allows inbound traffic on kafka port"
+    description      = "Allows inbound traffic on Kafka port"
     from_port        = 9094
     to_port          = 9094
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "Allows inbound traffic on ZooKeeper port"
+    from_port        = 2182
+    to_port          = 2182
     protocol         = "TCP"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
