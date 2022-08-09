@@ -4,8 +4,9 @@ Kafka takes a long time to create in AWS, specifically the MSK connectors. Due t
 If you wish to test our kafka changes in a dev environment then please follow these steps:
 
 1. In ```32-kafka-event-streaming.tf``` modify the count on line two so that it reads ```count       = local.is_live_environment ? 1 : 1```. Do not commit this change
-2. Deploy terraform/core to your dev environment
-3. 
+2. Deploy terraform/core to your dev environment, this will deploy kafka but it will also deploy a test lambda for each kafka topic
+3. Navigate in AWS to the Lambdas are
+4. Search for ```{your-username}-kafka-test```
 
 ## Schema Registry UI
 We haven't had chance to setup an UI for the schema registry in the environment yet, so I have instead been using the

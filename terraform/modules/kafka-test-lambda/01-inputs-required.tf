@@ -17,8 +17,8 @@ variable "kafka_cluster_config" {
     zookeeper_connect_string = string
     bootstrap_brokers        = string
     bootstrap_brokers_tls    = string
-    vpc_security_groups      = list
-    vpc_subnets              = string
+    vpc_security_groups      = list(string)
+    vpc_subnets              = list(string)
     cluster_name             = string
     cluster_arn              = string
   })

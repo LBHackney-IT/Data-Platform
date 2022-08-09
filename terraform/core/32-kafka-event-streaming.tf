@@ -1,4 +1,5 @@
 module "kafka_event_streaming" {
+  count       = local.is_live_environment ? 1 : 1
   source      = "../modules/kafka-event-streaming"
   tags        = module.tags.values
   environment = var.environment
@@ -30,15 +31,14 @@ locals {
 }
 
 module "kafka_test_lambda" {
-  for_each                       = !local.is_production_environment ? local.topics : []
+  count                          = !local.is_production_environment ? 1 : 0
   source                         = "../modules/kafka-test-lambda"
-  lambda_name                    = "${each.value}-kafka-test"
+  lambda_name                    = "kafka-test"
   tags                           = module.tags.values
   identifier_prefix              = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
-  kafka_cluster_config           = module.kafka_event_streaming.cluster_config
+  kafka_cluster_config           = module.kafka_event_streaming[0].cluster_config
   lambda_environment_variables = {
-    "TARGET_KAFKA_BROKERS" = module.kafka_event_streaming.cluster_config.bootstrap_brokers_tls
-    "TARGET_KAFKA_TOPIC"   = each.value
+    "TARGET_KAFKA_BROKERS" = module.kafka_event_streaming[0].cluster_config.bootstrap_brokers_tls
   }
 }

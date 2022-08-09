@@ -18,7 +18,7 @@ locals {
 
 resource "aws_iam_role" "lambda" {
   tags               = var.tags
-  name               = lower("${var.identifier_prefix}kafka-test")
+  name               = lower("${var.identifier_prefix}${var.lambda_name}")
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
@@ -141,11 +141,5 @@ resource "aws_lambda_function" "lambda" {
   environment {
     variables = var.lambda_environment_variables
   }
-}
-
-resource "aws_lambda_function_event_invoke_config" "lambda" {
-  function_name          = aws_lambda_function.lambda.function_name
-  maximum_retry_attempts = 0
-  qualifier              = "$LATEST"
 }
 
