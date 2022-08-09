@@ -9,5 +9,7 @@ output "cluster_config" {
     bootstrap_brokers_tls    = aws_msk_cluster.kafka_cluster.bootstrap_brokers_tls
     vpc_security_groups      = [aws_security_group.kafka.id]
     vpc_subnets              = var.subnet_ids
+    cluster_name             = aws_msk_cluster.kafka_cluster.cluster_name
+    cluster_arn              = aws_msk_cluster.kafka_cluster.arn
   }
 }

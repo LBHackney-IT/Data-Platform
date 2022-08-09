@@ -19,6 +19,8 @@ variable "kafka_cluster_config" {
     bootstrap_brokers_tls    = string
     vpc_security_groups      = list
     vpc_subnets              = string
+    cluster_name             = string
+    cluster_arn              = string
   })
 }
 

@@ -34,6 +34,40 @@ data "aws_iam_policy_document" "lambda" {
       "*"
     ]
   }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kafka-cluster:Connect",
+      "kafka-cluster:AlterCluster",
+      "kafka-cluster:DescribeCluster"
+    ]
+    resources = [
+      var.kafka_cluster_config.cluster_arn
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kafka-cluster:*Topic*",
+      "kafka-cluster:WriteData",
+      "kafka-cluster:ReadData",
+    ]
+    resources = [
+      var.kafka_cluster_config.cluster_arn
+      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:topic/${var.kafka_cluster_config.cluster_name}/*"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kafka-cluster:AlterGroup",
+      "kafka-cluster:DescribeGroup"
+    ]
+    resources = [
+      var.kafka_cluster_config.cluster_arn,
+      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:group/${var.kafka_cluster_config.cluster_name}/*"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "lambda" {
