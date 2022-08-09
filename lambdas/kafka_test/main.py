@@ -1,10 +1,11 @@
 import sys
+
+sys.path.append('./lib/')
+
 from dotenv import load_dotenv
 from os import getenv
 from kafka import KafkaProducer
 from kafka import KafkaConsumer
-
-sys.path.append('./lib/')
 
 
 def lambda_handler(event, lambda_context):
