@@ -101,7 +101,6 @@ dq_params = {'appeals': {'unique': ['id'], 'complete': 'id'},
              'asset_constraints': {'unique': ['id'], 'complete': 'id'}
              }
 
-
 if __name__ == "__main__":
     args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
