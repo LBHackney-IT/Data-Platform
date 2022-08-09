@@ -1,5 +1,4 @@
 module "kafka_event_streaming" {
-  count       = local.is_live_environment ? 1 : 1
   source      = "../modules/kafka-event-streaming"
   tags        = module.tags.values
   environment = var.environment
@@ -20,8 +19,26 @@ module "kafka_event_streaming" {
     "arn:aws:iam::937934410339:role/mtfh-reporting-data-listener/development/mtfh-reporting-data-listener-lambdaExecutionRole",
     "arn:aws:iam::364864573329:role/mtfh-reporting-data-listener/development/mtfh-reporting-data-listener-lambdaExecutionRole"
   ]
+  topics = local.topics
+}
+
+locals {
   topics = [
     "tenure_api",
     "contact_details_api"
   ]
+}
+
+module "kafka_test_lambda" {
+  for_each                       = !local.is_production_environment ? local.topics : []
+  source                         = "../modules/kafka-test-lambda"
+  lambda_name                    = "${each.value}-kafka-test"
+  tags                           = module.tags.values
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
+  kafka_cluster_config           = module.kafka_event_streaming.cluster_config
+  lambda_environment_variables = {
+    "TARGET_KAFKA_BROKERS" = module.kafka_event_streaming.cluster_config.bootstrap_brokers_tls
+    "TARGET_KAFKA_TOPIC"   = each.value
+  }
 }
