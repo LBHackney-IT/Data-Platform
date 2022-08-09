@@ -28,7 +28,11 @@ def lambda_handler(event, lambda_context):
 
 def list_topics(kafka_brokers, version_split):
     print('Listing all available topics in the cluster')
-    consumer = KafkaConsumer(bootstrap_servers=kafka_brokers, api_version=(version_split[0], version_split[1], version_split[2]), security_protocol='SSL')
+    consumer = KafkaConsumer(bootstrap_servers=kafka_brokers,
+                             security_protocol='SSL',
+                             api_version=(int(version_split[0]),
+                                          int(version_split[1]),
+                                          int(version_split[2])))
     print(consumer.topics())
 
 
