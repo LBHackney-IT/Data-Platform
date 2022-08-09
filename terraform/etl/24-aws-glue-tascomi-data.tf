@@ -240,6 +240,7 @@ module "tascomi_create_daily_snapshot" {
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
     "--table_list"              = local.table_list
+    "--deequ_metrics_location"  = "s3://${module.refined_zone_data_source.bucket_id}/quality-metrics/department=planning/dataset=tascomi/deequ-metrics.json"
   }
   script_name          = "tascomi_create_daily_snapshot"
   triggered_by_crawler = module.tascomi_recast_tables_increments.crawler_name
