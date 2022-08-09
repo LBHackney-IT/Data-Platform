@@ -40,8 +40,6 @@ data "aws_iam_policy_document" "lambda" {
       "kafka-cluster:Connect",
       "kafka-cluster:AlterCluster",
       "kafka-cluster:DescribeCluster",
-      "kafka:DescribeClusterV2",
-      "kafka:GetBootstrapBrokers"
     ]
     resources = [
       var.kafka_cluster_config.cluster_arn
