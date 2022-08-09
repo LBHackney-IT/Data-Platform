@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "lambda" {
       "kafka-cluster:ReadData",
     ]
     resources = [
-      var.kafka_cluster_config.cluster_arn
+      var.kafka_cluster_config.cluster_arn,
       "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:topic/${var.kafka_cluster_config.cluster_name}/*"
     ]
   }

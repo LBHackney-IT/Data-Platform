@@ -11,45 +11,28 @@ def lambda_handler(event, lambda_context):
     load_dotenv()
     kafka_brokers = getenv("TARGET_KAFKA_BROKERS")
     kafka_topic = getenv("TARGET_KAFKA_TOPIC")
+    operation = event['operation']
 
-    # List all available topics in the cluster
-    list_topics(kafka_brokers, kafka_topic)
+    if operation == "list-all-topics":
+        # List all available topics in the cluster
+        list_topics(kafka_brokers)
 
-    # Send message to the configured topic
-    send_msg_async(kafka_brokers, kafka_topic)
+    if operation == "send-message-to-topic":
+        # Send message to the configured topic
+        message = event['message']
+        send_msg_async(kafka_brokers, kafka_topic, message)
 
 
-def list_topics(kafka_brokers, kafka_topic):
-    print("Sending message")
-    ca_root_location = 'CARoot.pem'
-    cert_location = 'certificate.pem'
-    key_location = 'key.pem'
-    password = 'welcome123'
-
-    consumer = KafkaConsumer(bootstrap_servers=kafka_brokers,
-                             security_protocol='SSL',
-                             ssl_check_hostname=True,
-                             ssl_cafile=ca_root_location,
-                             ssl_certfile=cert_location,
-                             ssl_keyfile=key_location,
-                             ssl_password=password)
+def list_topics(kafka_brokers):
+    print("Listing Topics")
+    consumer = KafkaConsumer(bootstrap_servers=kafka_brokers, security_protocol='SSL')
     print(consumer.topics())
 
 
-def send_msg_async(kafka_brokers, kafka_topic):
+def send_msg_async(kafka_brokers, kafka_topic, message):
     print("Sending message")
-    ca_root_location = 'CARoot.pem'
-    cert_location = 'certificate.pem'
-    key_location = 'key.pem'
-    password = 'welcome123'
 
-    producer = KafkaProducer(bootstrap_servers=kafka_brokers,
-                             security_protocol='SSL',
-                             ssl_check_hostname=True,
-                             ssl_cafile=ca_root_location,
-                             ssl_certfile=cert_location,
-                             ssl_keyfile=key_location,
-                             ssl_password=password)
+    producer = KafkaProducer(bootstrap_servers=kafka_brokers, security_protocol='SSL')
 
-    producer.send(kafka_topic, bytes('Hello Kafka!', 'utf-8'))
+    producer.send(kafka_topic, bytes(message, 'utf-8'))
     producer.flush()
