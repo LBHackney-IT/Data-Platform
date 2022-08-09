@@ -39,11 +39,25 @@ data "aws_iam_policy_document" "lambda" {
     actions = [
       "kafka-cluster:Connect",
       "kafka-cluster:AlterCluster",
-      "kafka-cluster:DescribeCluster"
+      "kafka-cluster:DescribeCluster",
+      "kafka:DescribeClusterV2",
+      "kafka:GetBootstrapBrokers"
     ]
     resources = [
       var.kafka_cluster_config.cluster_arn
     ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterface",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DescribeVpcs",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeSecurityGroups"
+    ]
+    resources = ["*"]
   }
   statement {
     effect = "Allow"
