@@ -25,9 +25,10 @@ If you wish to test our kafka changes in a dev environment then please follow th
     1. ```brew cask install java``` or manually install if on Windows
     2. ```brew install kafka``` or manually install if on Windows
 6. Set up properties
-    1. ```cd cd /usr/local/opt/kafka/bin/```
+    1. ```cd cd /usr/local/opt/kafka/bin/``` or find your kafka install location
     1. ```echo "security.protocol=SSL" > server.properties```
 7. You are now ready to run any of the following commands to test your deployed kafka instance:
+   
    #### Write an event into a topic
    This only works if you have specifically installed the AVRO package. It is NOT included in the package listed above.
    ```shell
