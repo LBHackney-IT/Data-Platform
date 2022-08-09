@@ -14,11 +14,9 @@ def lambda_handler(event, lambda_context):
     print(f'Operation: {operation}')
 
     if operation == "list-all-topics":
-        # List all available topics in the cluster
         list_topics(kafka_brokers)
 
     if operation == "send-message-to-topic":
-        # Send message to the configured topic
         message = event['message']
         kafka_topic = event['topic']
         send_msg_async(kafka_brokers, kafka_topic, message)
