@@ -40,7 +40,7 @@ def prepare_increments(increment_df):
     # In case there are several days worth of increments: only keep the latest version of a record
     id_partition = Window.partitionBy('id')
     # preparation step: create a temporary column to replace NULL last_updated values with 01/01/2020
-    increment_df = increment_df.withColumn("last_updated_nonull", \
+    increment_df = increment_df.withColumn("last_updated_nonull",
                                            F.when(F.isnull("last_updated"),
                                                   F.to_timestamp(F.lit('2020-01-01 00:00:00.000'))) \
                                            .otherwise(F.col("last_updated")))
