@@ -19,7 +19,11 @@ read -r topic_name_to_use
 
 bastion_instance_id=$(aws-vault exec hackney-dataplatform-development --  aws ec2 describe-instances  --filters "Name=tag:Name,Values=dataplatform-${WORKSPACE}-bastion" | jq -r '.Reservations[].Instances[].InstanceId')
 
-topic_message=$(tr -d '\n' < ../../kafka-schema-registry/schemas/"$topic_name_to_use".json | jq -Rsa .)
+topic_schema=$(tr -d '\n' < ../../kafka-schema-registry/schemas/"$topic_name_to_use".json | jq -Rsa .)
+topic_schema="${topic_schema#?}"
+topic_schema="${topic_schema%?}"
+
+topic_message=$(tr -d '\n' < ./test-events/"$topic_name_to_use".json | jq -Rsa .)
 topic_message="${topic_message#?}"
 topic_message="${topic_message%?}"
 
@@ -32,17 +36,18 @@ cat <<EOF > send-message-to-topic.json
           "if [ ! -d 'confluent-2.0.0' ]; then",
             "sudo yum install java",
             "wget http://packages.confluent.io/archive/2.0/confluent-2.0.0-2.11.7.zip",
-            "tar -xzf confluent-2.0.0-2.11.7.zip",
+            "sleep 30",
+            "unzip confluent-2.0.0-2.11.7.zip",
             "cd confluent-2.0.0",
             "killall -9 java",
-            "sleep 360",
           "else",
+            "killall -9 java",
             "echo 'Kafka already installed'",
             "cd confluent-2.0.0",
           "fi",
           "echo 'security.protocol=SSL' > server.properties",
           "echo 'Sending Message to kafka:'",
-          "bin/kafka-avro-console-producer --broker-list $KAFKA_SERVERS --topic $KAFKA_TOPIC --property value.schema=$topic_message"
+          "echo $topic_message | bin/kafka-avro-console-producer --broker-list $KAFKA_SERVERS --topic $KAFKA_TOPIC --property value.schema=$topic_schema"
         ]
     }
 }

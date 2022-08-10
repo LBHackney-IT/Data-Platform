@@ -1,10 +1,348 @@
 {
-  "type": "record",
-  "name": "myrecord",
-  "fields": [
-    {
-      "name": "f1",
-      "type": "string"
+  "type" : "record",
+  "name" : "TenureAPIChangeEvent",
+  "fields" : [ {
+    "name" : "Id",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "EventType",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "SourceDomain",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "SourceSystem",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "Version",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "CorrelationId",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "DateTime",
+    "type" : "int"
+  }, {
+    "name" : "User",
+    "type" : [ "null", {
+      "type" : "record",
+      "name" : "User",
+      "fields" : [ {
+        "name" : "Name",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "Email",
+        "type" : [ "null", "string" ],
+        "default" : null
+      } ],
+      "connect.name" : "User"
+    } ],
+    "default" : null
+  }, {
+    "name" : "Tenure",
+    "type" : {
+      "type" : "record",
+      "name" : "TenureInformation",
+      "fields" : [ {
+        "name" : "Id",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "PaymentReference",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "HouseholdMembers",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : {
+            "type" : "record",
+            "name" : "HouseholdMember",
+            "fields" : [ {
+              "name" : "Id",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "Type",
+              "type" : {
+                "type" : "enum",
+                "name" : "HouseholdMembersType",
+                "symbols" : [ "Person", "Organisation" ],
+                "connect.parameters" : {
+                  "io.confluent.connect.avro.Enum" : "HouseholdMembersType",
+                  "io.confluent.connect.avro.Enum.Person" : "Person",
+                  "io.confluent.connect.avro.Enum.Organisation" : "Organisation"
+                },
+                "connect.name" : "HouseholdMembersType"
+              }
+            }, {
+              "name" : "FullName",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "IsResponsible",
+              "type" : "boolean"
+            }, {
+              "name" : "DateOfBirth",
+              "type" : "int"
+            }, {
+              "name" : "PersonTenureType",
+              "type" : {
+                "type" : "enum",
+                "name" : "PersonTenureType",
+                "symbols" : [ "Tenant", "Leaseholder", "Freeholder", "HouseholdMember", "Occupant" ],
+                "connect.parameters" : {
+                  "io.confluent.connect.avro.Enum" : "PersonTenureType",
+                  "io.confluent.connect.avro.Enum.Tenant" : "Tenant",
+                  "io.confluent.connect.avro.Enum.Leaseholder" : "Leaseholder",
+                  "io.confluent.connect.avro.Enum.Freeholder" : "Freeholder",
+                  "io.confluent.connect.avro.Enum.HouseholdMember" : "HouseholdMember",
+                  "io.confluent.connect.avro.Enum.Occupant" : "Occupant"
+                },
+                "connect.name" : "PersonTenureType"
+              }
+            } ],
+            "connect.name" : "HouseholdMember"
+          }
+        } ],
+        "default" : null
+      }, {
+        "name" : "TenuredAsset",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "TenuredAsset",
+          "fields" : [ {
+            "name" : "Id",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "Type",
+            "type" : [ "null", {
+              "type" : "enum",
+              "name" : "TenuredAssetType",
+              "symbols" : [ "Block", "Concierge", "Dwelling", "LettableNonDwelling", "MediumRiseBlock", "NA", "TravellerSite" ],
+              "connect.parameters" : {
+                "io.confluent.connect.avro.Enum" : "TenuredAssetType",
+                "io.confluent.connect.avro.Enum.Block" : "Block",
+                "io.confluent.connect.avro.Enum.Concierge" : "Concierge",
+                "io.confluent.connect.avro.Enum.Dwelling" : "Dwelling",
+                "io.confluent.connect.avro.Enum.LettableNonDwelling" : "LettableNonDwelling",
+                "io.confluent.connect.avro.Enum.MediumRiseBlock" : "MediumRiseBlock",
+                "io.confluent.connect.avro.Enum.NA" : "NA",
+                "io.confluent.connect.avro.Enum.TravellerSite" : "TravellerSite"
+              },
+              "connect.name" : "TenuredAssetType"
+            } ],
+            "default" : null
+          }, {
+            "name" : "FullAddress",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "Uprn",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "PropertyReference",
+            "type" : [ "null", "string" ],
+            "default" : null
+          } ],
+          "connect.name" : "TenuredAsset"
+        } ],
+        "default" : null
+      }, {
+        "name" : "Charges",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "Charges",
+          "fields" : [ {
+            "name" : "Rent",
+            "type" : "float"
+          }, {
+            "name" : "CurrentBalance",
+            "type" : "float"
+          }, {
+            "name" : "BillingFrequency",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "ServiceCharge",
+            "type" : "float"
+          }, {
+            "name" : "OtherCharges",
+            "type" : "float"
+          }, {
+            "name" : "CombinedServiceCharges",
+            "type" : "float"
+          }, {
+            "name" : "CombinedRentCharges",
+            "type" : "float"
+          }, {
+            "name" : "TenancyInsuranceCharge",
+            "type" : "float"
+          }, {
+            "name" : "OriginalRentCharge",
+            "type" : "float"
+          }, {
+            "name" : "OriginalServiceCharge",
+            "type" : "float"
+          } ],
+          "connect.name" : "Charges"
+        } ],
+        "default" : null
+      }, {
+        "name" : "StartOfTenureDate",
+        "type" : [ "null", "int" ],
+        "default" : null
+      }, {
+        "name" : "EndOfTenureDate",
+        "type" : [ "null", "int" ],
+        "default" : null
+      }, {
+        "name" : "TenureType",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "TenureType",
+          "fields" : [ {
+            "name" : "Code",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "Description",
+            "type" : [ "null", "string" ],
+            "default" : null
+          } ],
+          "connect.name" : "TenureType"
+        } ],
+        "default" : null
+      }, {
+        "name" : "IsTenanted",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "IsActive",
+        "type" : "boolean"
+      }, {
+        "name" : "Terminated",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "Terminated",
+          "fields" : [ {
+            "name" : "IsTerminated",
+            "type" : "boolean"
+          }, {
+            "name" : "ReasonForTermination",
+            "type" : [ "null", "string" ],
+            "default" : null
+          } ],
+          "connect.name" : "Terminated"
+        } ],
+        "default" : null
+      }, {
+        "name" : "SuccessionDate",
+        "type" : [ "null", "int" ],
+        "default" : null
+      }, {
+        "name" : "AgreementType",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "AgreementType",
+          "fields" : [ {
+            "name" : "Code",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "Description",
+            "type" : [ "null", "string" ],
+            "default" : null
+          } ],
+          "connect.name" : "AgreementType"
+        } ],
+        "default" : null
+      }, {
+        "name" : "EvictionDate",
+        "type" : [ "null", "int" ],
+        "default" : null
+      }, {
+        "name" : "PotentialEndDate",
+        "type" : [ "null", "int" ],
+        "default" : null
+      }, {
+        "name" : "Notices",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : {
+            "type" : "record",
+            "name" : "Notices",
+            "fields" : [ {
+              "name" : "Type",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "ServedDate",
+              "type" : "int"
+            }, {
+              "name" : "ExpiryDate",
+              "type" : "int"
+            }, {
+              "name" : "EffectiveDate",
+              "type" : "int"
+            }, {
+              "name" : "EndDate",
+              "type" : [ "null", "int" ],
+              "default" : null
+            } ],
+            "connect.name" : "Notices"
+          }
+        } ],
+        "default" : null
+      }, {
+        "name" : "LegacyReferences",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : {
+            "type" : "record",
+            "name" : "LegacyReferences",
+            "fields" : [ {
+              "name" : "Name",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "Value",
+              "type" : [ "null", "string" ],
+              "default" : null
+            } ],
+            "connect.name" : "LegacyReferences"
+          }
+        } ],
+        "default" : null
+      }, {
+        "name" : "IsMutualExchange",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "InformHousingBenefitsForChanges",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "IsSublet",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "SubletEndDate",
+        "type" : [ "null", "int" ],
+        "default" : null
+      } ],
+      "connect.name" : "TenureInformation"
     }
-  ]
+  } ],
+  "connect.version" : 1,
+  "connect.name" : "TenureAPIChangeEvent"
 }

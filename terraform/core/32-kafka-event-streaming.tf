@@ -30,19 +30,19 @@ locals {
   ]
 }
 
-//module "kafka_test_lambda" {
-//  count                          = local.is_production_environment ? 0 : 1
-//  source                         = "../modules/kafka-test-lambda"
-//  lambda_name                    = "kafka-test"
-//  tags                           = module.tags.values
-//  identifier_prefix              = local.short_identifier_prefix
-//  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
-//  kafka_cluster_config           = module.kafka_event_streaming[0].cluster_config
-//  lambda_environment_variables = {
-//    "TARGET_KAFKA_BROKERS" = module.kafka_event_streaming[0].cluster_config.bootstrap_brokers_tls
-//    "TARGET_KAFKA_VERSION" = module.kafka_event_streaming[0].cluster_config.kafka_version
-//  }
-//  depends_on = [
-//    module.kafka_event_streaming
-//  ]
-//}
+module "kafka_test_lambda" {
+  count                          = local.is_production_environment ? 0 : 1
+  source                         = "../modules/kafka-test-lambda"
+  lambda_name                    = "kafka-test"
+  tags                           = module.tags.values
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
+  kafka_cluster_config           = module.kafka_event_streaming[0].cluster_config
+  lambda_environment_variables = {
+    "TARGET_KAFKA_BROKERS" = module.kafka_event_streaming[0].cluster_config.bootstrap_brokers_tls
+    "TARGET_KAFKA_VERSION" = module.kafka_event_streaming[0].cluster_config.kafka_version
+  }
+  depends_on = [
+    module.kafka_event_streaming
+  ]
+}
