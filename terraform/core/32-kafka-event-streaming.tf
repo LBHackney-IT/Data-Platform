@@ -31,7 +31,7 @@ locals {
 }
 
 module "kafka_test_lambda" {
-  count                          = !local.is_production_environment ? 1 : 0
+  count                          = local.is_production_environment ? 0 : 1
   source                         = "../modules/kafka-test-lambda"
   lambda_name                    = "kafka-test"
   tags                           = module.tags.values
@@ -42,4 +42,7 @@ module "kafka_test_lambda" {
     "TARGET_KAFKA_BROKERS" = module.kafka_event_streaming[0].cluster_config.bootstrap_brokers_tls
     "TARGET_KAFKA_VERSION" = module.kafka_event_streaming[0].cluster_config.kafka_version
   }
+  depends_on = [
+    module.kafka_event_streaming
+  ]
 }

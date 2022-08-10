@@ -37,17 +37,6 @@ data "aws_iam_policy_document" "lambda" {
   statement {
     effect = "Allow"
     actions = [
-      "kafka-cluster:Connect",
-      "kafka-cluster:AlterCluster",
-      "kafka-cluster:DescribeCluster",
-    ]
-    resources = [
-      var.kafka_cluster_config.cluster_arn
-    ]
-  }
-  statement {
-    effect = "Allow"
-    actions = [
       "ec2:CreateNetworkInterface",
       "ec2:DescribeNetworkInterfaces",
       "ec2:DescribeVpcs",
@@ -60,23 +49,29 @@ data "aws_iam_policy_document" "lambda" {
   statement {
     effect = "Allow"
     actions = [
-      "kafka-cluster:*Topic*",
-      "kafka-cluster:WriteData",
-      "kafka-cluster:ReadData",
+      "kafka:DescribeClusterV2",
+      "kafka:GetBootstrapBrokers"
     ]
-    resources = [
-      var.kafka_cluster_config.cluster_arn,
-      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:topic/${var.kafka_cluster_config.cluster_name}/*"
-    ]
+    resources = ["*"]
   }
   statement {
     effect = "Allow"
     actions = [
+      "kafka-cluster:Connect",
+      "kafka-cluster:AlterCluster",
+      "kafka-cluster:DescribeCluster",
+      "kafka-cluster:DescribeGroup",
       "kafka-cluster:AlterGroup",
-      "kafka-cluster:DescribeGroup"
+      "kafka-cluster:DescribeTopic",
+      "kafka-cluster:ReadData",
+      "kafka-cluster:WriteData",
+      "kafka-cluster:*Topic*",
+      "kafka-cluster:DescribeClusterDynamicConfiguration"
     ]
     resources = [
       var.kafka_cluster_config.cluster_arn,
+      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:cluster/${var.kafka_cluster_config.cluster_name}/*",
+      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:topic/${var.kafka_cluster_config.cluster_name}/*",
       "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:group/${var.kafka_cluster_config.cluster_name}/*"
     ]
   }

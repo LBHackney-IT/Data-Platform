@@ -7,7 +7,7 @@ If you wish to test our kafka changes in a dev environment then please follow th
 2. Deploy terraform/core to your dev environment, this will deploy kafka but it will also deploy a test lambda for each kafka topic
 3. Navigate in AWS to the Lambdas are
 4. Search for ```{your-username}-kafka-test```
-5. This lambda can be used to run a variety of operations against the Kafka cluster. 
+5. This lambda can be used to run a variety of operations against the Kafka cluster.
 
 ## Schema Registry UI
 We haven't had chance to setup an UI for the schema registry in the environment yet, so I have instead been using the
