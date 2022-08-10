@@ -22,6 +22,7 @@ variable "kafka_cluster_config" {
     cluster_name             = string
     cluster_arn              = string
     kafka_version            = string
+    kms_key_arn              = string
   })
 }
 

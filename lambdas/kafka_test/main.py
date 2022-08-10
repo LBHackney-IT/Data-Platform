@@ -30,6 +30,7 @@ def list_topics(kafka_brokers, kafka_version_split):
     print('Listing all available topics in the cluster')
     consumer = KafkaConsumer(bootstrap_servers=kafka_brokers,
                              security_protocol='SSL',
+                             group_id='kafka-test',
                              api_version=(int(kafka_version_split[0]),
                                           int(kafka_version_split[1]),
                                           int(kafka_version_split[2])))
@@ -41,6 +42,7 @@ def send_msg_async(kafka_brokers, kafka_topic, message, kafka_version_split):
 
     producer = KafkaProducer(bootstrap_servers=kafka_brokers,
                              security_protocol='SSL',
+                             group_id='kafka-test',
                              api_version=(int(kafka_version_split[0]),
                                           int(kafka_version_split[1]),
                                           int(kafka_version_split[2])))

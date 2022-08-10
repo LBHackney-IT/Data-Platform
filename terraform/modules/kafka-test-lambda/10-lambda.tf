@@ -5,7 +5,8 @@ data "aws_iam_policy_document" "lambda_assume_role" {
     ]
     principals {
       identifiers = [
-        "lambda.amazonaws.com"
+        "lambda.amazonaws.com",
+        "kafka.amazonaws.com"
       ]
       type = "Service"
     }
@@ -49,6 +50,7 @@ data "aws_iam_policy_document" "lambda" {
   statement {
     effect = "Allow"
     actions = [
+      "kafka:DescribeCluster",
       "kafka:DescribeClusterV2",
       "kafka:GetBootstrapBrokers"
     ]
@@ -73,6 +75,22 @@ data "aws_iam_policy_document" "lambda" {
       "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:cluster/${var.kafka_cluster_config.cluster_name}/*",
       "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:topic/${var.kafka_cluster_config.cluster_name}/*",
       "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:group/${var.kafka_cluster_config.cluster_name}/*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
+    ]
+    resources = [
+      var.kafka_cluster_config.kms_key_arn
     ]
   }
 }
