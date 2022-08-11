@@ -9,6 +9,8 @@ requests = "*"
 pybase64 = "*"
 kafka-python = "*"
 confluent-kafka = "*"
+avro = "*"
+fastavro = "*"
 
 [dev-packages]
 boto3 = "*"

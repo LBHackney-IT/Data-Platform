@@ -1,17 +1,20 @@
 import sys
+import uuid
+import json
 
 sys.path.append('./lib/')
 
 from dotenv import load_dotenv
 from os import getenv
-from kafka import KafkaProducer
-from kafka import KafkaConsumer
+from confluent_kafka import avro
 from confluent_kafka.admin import AdminClient
+from confluent_kafka.avro import AvroProducer
 
 
 def lambda_handler(event, lambda_context):
     load_dotenv()
     kafka_brokers = getenv("TARGET_KAFKA_BROKERS")
+    schema_registry_url = getenv("SCHEMA_REGISTRY_URL")
     operation = event['operation']
     print(f'Operation: {operation}')
 
@@ -21,7 +24,8 @@ def lambda_handler(event, lambda_context):
     if operation == "send-message-to-topic":
         message = event['message']
         kafka_topic = event['topic']
-        send_msg_async(kafka_brokers, kafka_topic, message)
+        kafka_schema_file_name = event['kafka_schema_file_name']
+        send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka_schema_file_name, message)
 
 
 def list_topics_confluent(kafka_brokers):
@@ -34,5 +38,38 @@ def list_topics_confluent(kafka_brokers):
         print(topic)
 
 
-def send_msg_async(kafka_brokers, kafka_topic, message,):
+def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka_schema_file_name, message):
     print(f'Sending message to the {kafka_topic}')
+
+    key_schema, value_schema = load_avro_schema_from_file(kafka_schema_file_name)
+
+    producer_config = {
+        "bootstrap.servers": kafka_brokers,
+        'security.protocol': 'ssl',
+        "schema.registry.url": schema_registry_url
+    }
+
+    producer = AvroProducer(producer_config, default_key_schema=key_schema, default_value_schema=value_schema)
+
+    key = "kakfa-test" + str(uuid.uuid4())
+    value = json.loads(message)
+
+    try:
+        producer.produce(topic=kafka_topic, key=key, value=value)
+    except Exception as e:
+        print(f"Exception while producing record value - {value} to topic - {kafka_topic}: {e}")
+    else:
+        print(f"Successfully producing record value - {value} to topic - {kafka_topic}")
+
+    producer.flush()
+
+
+def load_avro_schema_from_file(kafka_schema_file_name):
+    key_schema_string = """
+    {"type": "string"}
+    """
+
+    key_schema = avro.loads(key_schema_string)
+    value_schema = avro.load("./lib/" + kafka_schema_file_name)
+
+    return key_schema, value_schema
