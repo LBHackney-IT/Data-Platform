@@ -4,7 +4,7 @@
   "SourceDomain": "Tenure",
   "SourceSystem": "TenureAPI",
   "Version": "v1",
-  "CorrelationId": "110b02d8-f62d-4016-b60c-684b565a83bc",
+  "CorrelationId": "990b02d8-f62d-4016-b60c-684b565a83bc",
   "DateTime": 1660124562,
   "User": {
     "Name": "Tester Test",
@@ -12,11 +12,11 @@
   },
   "Tenure": {
     "Id": "b5702ead-79de-8b95-0c22-f4df3f28e251",
-    "PaymentReference": "1743015504",
+    "PaymentReference": "9943015504",
     "HouseholdMembers": [
       {
         "Id": "220c3b66-07d8-4577-d61c-5486595b4ac5",
-        "Type": "Test",
+        "Type": "Person",
         "FullName": "Tester",
         "IsResponsible": true,
         "DateOfBirth": -1506729600,
@@ -28,7 +28,7 @@
       "Type": "Dwelling",
       "FullAddress": "Test address",
       "Uprn": "122344567889",
-      "PropertyReference": "00001252"
+      "PropertyReference": "99001252"
     },
     "Charges": {
       "Rent": 100.63,
@@ -70,7 +70,7 @@
     "LegacyReferences": [
       {
         "Name": "uh_tag_ref",
-        "Value": "006293/01"
+        "Value": "996293/01"
       },
       {
         "Name": "u_saff_tenancy",

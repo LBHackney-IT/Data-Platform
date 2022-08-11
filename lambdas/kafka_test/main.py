@@ -20,7 +20,7 @@ def lambda_handler(event, lambda_context):
     print(f'Operation: {operation}')
 
     if operation == "list-all-topics":
-        list_topics_confluent(kafka_brokers)
+        list_all_topics(kafka_brokers)
 
     if operation == "send-message-to-topic":
         kafka_topic = event['topic']
@@ -28,7 +28,7 @@ def lambda_handler(event, lambda_context):
         send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka_schema_file_name)
 
 
-def list_topics_confluent(kafka_brokers):
+def list_all_topics(kafka_brokers):
     print('Listing all available topics in the cluster:')
     admin = AdminClient({
         'bootstrap.servers': kafka_brokers,
@@ -59,10 +59,12 @@ def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka
         producer.produce(topic=kafka_topic, key=key, value=value)
     except Exception as e:
         print(f"Exception while producing record value - {value} to topic - {kafka_topic}: {e}")
+        producer.flush()
+        raise e
     else:
         print(f"Successfully producing record value - {value} to topic - {kafka_topic}")
+        producer.flush()
 
-    producer.flush()
 
 
 def load_avro_schema_from_file(kafka_schema_file_name):
