@@ -21,7 +21,6 @@ variable "kafka_cluster_config" {
     vpc_subnets              = list(string)
     cluster_name             = string
     cluster_arn              = string
-    kafka_version            = string
     kms_key_arn              = string
   })
 }

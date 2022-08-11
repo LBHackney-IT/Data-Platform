@@ -11,7 +11,6 @@ output "cluster_config" {
     vpc_subnets              = var.subnet_ids
     cluster_name             = aws_msk_cluster.kafka_cluster.cluster_name
     cluster_arn              = aws_msk_cluster.kafka_cluster.arn
-    kafka_version            = aws_msk_cluster.kafka_cluster.kafka_version
     kms_key_arn              = aws_kms_key.kafka.arn
   }
 }
