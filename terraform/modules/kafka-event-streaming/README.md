@@ -15,6 +15,11 @@ If you wish to test our kafka changes in a dev environment then please follow th
 6. In order to run this lambda please naviagte to lambdas/kafka-test/lambda-events
 7. In this folder you will find json files containing the correct lambda test event message structure to trigger either of the above operations against the kafka cluster
 8. Take the contents of either test lambda event and paste it into the Event JSON window on the test table of the ```{your-username}-kafka-test``` lambda and then click test
+    1. list-all-topics:
+        1. This is fairly straight forward, it will print out a list of topics currently in the cluster
+    2. send-message-to-topic:
+        1. This will fire a preconfigured message stored in /lambdas/topics-messages to the topic of your choice
+        2. Once the lambda has completed successfully you should see the event has been processed by Kafka and that the data has appeared in the event-streaming folder in the raw zone
 
 ## Schema Registry UI
 We haven't had chance to setup an UI for the schema registry in the environment yet, so I have instead been using the
