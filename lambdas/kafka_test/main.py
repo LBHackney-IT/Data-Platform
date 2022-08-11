@@ -3,6 +3,7 @@ import uuid
 import json
 
 sys.path.append('./lib/')
+sys.path.append('./test-messages/')
 
 from dotenv import load_dotenv
 from os import getenv
@@ -22,10 +23,9 @@ def lambda_handler(event, lambda_context):
         list_topics_confluent(kafka_brokers)
 
     if operation == "send-message-to-topic":
-        message = event['message']
         kafka_topic = event['topic']
         kafka_schema_file_name = event['kafka_schema_file_name']
-        send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka_schema_file_name, message)
+        send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka_schema_file_name)
 
 
 def list_topics_confluent(kafka_brokers):
@@ -38,7 +38,7 @@ def list_topics_confluent(kafka_brokers):
         print(topic)
 
 
-def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka_schema_file_name, message):
+def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka_schema_file_name):
     print(f'Sending message to the {kafka_topic}')
 
     key_schema, value_schema = load_avro_schema_from_file(kafka_schema_file_name)
@@ -52,7 +52,8 @@ def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka
     producer = AvroProducer(producer_config, default_key_schema=key_schema, default_value_schema=value_schema)
 
     key = "kakfa-test" + str(uuid.uuid4())
-    value = json.loads(message)
+    with open("./test-messages/" + kafka_schema_file_name) as json_file:
+        value = json.loads(json_file)
 
     try:
         producer.produce(topic=kafka_topic, key=key, value=value)
