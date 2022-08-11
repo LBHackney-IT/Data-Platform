@@ -66,7 +66,6 @@ def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka
         producer.flush()
 
 
-
 def load_avro_schema_from_file(kafka_schema_file_name):
     key_schema_string = """
     {"type": "string"}
