@@ -41,7 +41,7 @@ def list_all_topics(kafka_brokers):
 def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka_schema_file_name):
     print(f'Sending message to the {kafka_topic}')
 
-    key_schema, value_schema = load_avro_schema_from_file(kafka_schema_file_name)
+    key_schema, value_schema = load_schema_from_file(kafka_schema_file_name)
 
     producer_config = {
         "bootstrap.servers": kafka_brokers,
@@ -66,7 +66,7 @@ def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka
         producer.flush()
 
 
-def load_avro_schema_from_file(kafka_schema_file_name):
+def load_schema_from_file(kafka_schema_file_name):
     key_schema_string = """
     {"type": "string"}
     """
