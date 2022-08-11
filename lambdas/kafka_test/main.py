@@ -53,7 +53,7 @@ def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka
 
     key = "kakfa-test" + str(uuid.uuid4())
     with open("./test-messages/" + kafka_schema_file_name) as json_file:
-        value = json.loads(json_file)
+        value = json.loads(json_file.read())
 
     try:
         producer.produce(topic=kafka_topic, key=key, value=value)
