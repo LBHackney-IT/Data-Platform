@@ -3,7 +3,7 @@ import uuid
 import json
 
 sys.path.append('./lib/')
-sys.path.append('topic-messages/')
+sys.path.append('./topic-messages/')
 
 from dotenv import load_dotenv
 from os import getenv
