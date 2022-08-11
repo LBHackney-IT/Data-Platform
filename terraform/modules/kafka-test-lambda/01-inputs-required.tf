@@ -39,3 +39,12 @@ variable "lambda_environment_variables" {
   description = "An object containing environment variables to be used in the Lambda"
   type        = map(string)
 }
+
+variable "vpc_id" {
+  description = "VPC ID to deploy the kafta instance into"
+  type        = string
+}
+
+variable "subnet_ids" {
+  type = list(string)
+}

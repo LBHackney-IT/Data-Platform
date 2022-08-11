@@ -14,7 +14,8 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 }
 
 locals {
-  command = "make install-requirements"
+  command                 = "make install-requirements"
+  confluent_kafka_command = "docker run -v \"$PWD\":/var/task \"lambci/lambda:build-python3.8\" /bin/sh -c \"pip install -r requirements.txt -t python/lib/python3.8/site-packages/; exit\""
 }
 
 resource "aws_iam_role" "lambda" {
@@ -165,6 +166,11 @@ resource "aws_lambda_function" "lambda" {
   }
   environment {
     variables = var.lambda_environment_variables
+  }
+
+  vpc_config {
+    security_group_ids = [aws_security_group.kafka-test.id]
+    subnet_ids         = var.subnet_ids
   }
 }
 

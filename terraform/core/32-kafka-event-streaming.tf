@@ -35,6 +35,8 @@ module "kafka_test_lambda" {
   source                         = "../modules/kafka-test-lambda"
   lambda_name                    = "kafka-test"
   tags                           = module.tags.values
+  vpc_id                         = data.aws_vpc.network.id
+  subnet_ids                     = data.aws_subnet_ids.network.ids
   identifier_prefix              = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   kafka_cluster_config           = module.kafka_event_streaming[0].cluster_config

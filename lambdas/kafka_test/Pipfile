@@ -8,6 +8,7 @@ python-dotenv = "*"
 requests = "*"
 pybase64 = "*"
 kafka-python = "*"
+confluent-kafka = "*"
 
 [dev-packages]
 boto3 = "*"

@@ -6,5 +6,6 @@ install-requirements:
 	# could be downloaded and packaged up for the lambda
 
 	. venv/bin/activate && sudo pipenv lock --requirements > requirements.txt
-	. venv/bin/activate && sudo pip install --target ./lib -r requirements.txt
+	#. venv/bin/activate && sudo pip install --target ./lib -r requirements.txt
+	. venv/bin/activate && sudo docker run -v $(PWD):/var/task "lambci/lambda:build-python3.8" /bin/sh -c "pip install --target ./lib -r requirements.txt; exit"
 	rm -rf venv/
