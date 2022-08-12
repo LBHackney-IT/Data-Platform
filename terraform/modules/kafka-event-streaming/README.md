@@ -1,15 +1,13 @@
 ## Local Development & Testing
 
 Kafka takes a long time to create in AWS, specifically the MSK connectors. Due to this kafka is not deployed to dev environments by default. 
-If you wish to test our kafka changes in a dev environment then please follow these steps:
+If you wish to test kafka changes in a dev environment then please follow these steps:
 
 1. In ```32-kafka-event-streaming.tf``` modify the count on line 2 so that it reads ```count       = local.is_live_environment ? 1 : 1```. Do not commit this change
 2. Deploy terraform/core to your dev environment, this will deploy kafka, it will also deploy a lambda for testing kafka
-3. Navigate in AWS to the Lambdas area
-4. Search for ```{your-username}-kafka-test```
-5. In order to run this lambda please navigate to lambdas/kafka-test/lambda-events
-6. In this folder you will find json files containing the correct lambda test event message structure to trigger operations against the kafka cluster
-7. Take the contents of one of the files and paste it into the Event JSON window on the test tab of the ```{your-username}-kafka-test``` lambda and then click test
+3. In the AWS console search for a lambda with the following name: ```{your-terraform-workspace-name}-kafka-test```
+6. In the /lambdas/kafka-test/lambda-events folder you will find json files containing the correct lambda test event message structure to trigger operations against the kafka cluster
+7. Take the contents of one of the files and paste it into the Event JSON window on the test tab of the lambda and then click test to run it
     1. list-all-topics:
         1. This is fairly straight forward, it will print out a list of topics currently in the cluster
     2. send-message-to-topic:
