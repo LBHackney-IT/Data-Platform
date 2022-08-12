@@ -1,3 +1,4 @@
 pytest-watch
 freezegun
 pytest-mock
+pydeequ
