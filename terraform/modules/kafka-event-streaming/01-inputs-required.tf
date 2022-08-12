@@ -63,6 +63,11 @@ variable "is_live_environment" {
   type        = bool
 }
 
+variable "is_production_environment" {
+  description = "A flag indicting if we are running in a production environment for setting up automation"
+  type        = bool
+}
+
 variable "glue_iam_role" {
   description = "Name of the role that can be used to crawl the resulting data"
   type        = string
@@ -76,4 +81,8 @@ variable "glue_database_name" {
 variable "topics" {
   description = "Kafka streaming topics"
   type        = list(string)
+}
+
+variable "lambda_artefact_storage_bucket" {
+  type = string
 }

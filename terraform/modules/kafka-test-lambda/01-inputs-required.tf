@@ -12,17 +12,20 @@ variable "lambda_artefact_storage_bucket" {
   type = string
 }
 
-variable "kafka_cluster_config" {
-  type = object({
-    zookeeper_connect_string = string
-    bootstrap_brokers        = string
-    bootstrap_brokers_tls    = string
-    vpc_security_groups      = list(string)
-    vpc_subnets              = list(string)
-    cluster_name             = string
-    cluster_arn              = string
-    kms_key_arn              = string
-  })
+variable "kafka_cluster_arn" {
+  type = string
+}
+
+variable "kafka_cluster_kms_key_arn" {
+  type = string
+}
+
+variable "kafka_cluster_name" {
+  type = string
+}
+
+variable "kafka_security_group_id" {
+  type = string
 }
 
 variable "lambda_name" {

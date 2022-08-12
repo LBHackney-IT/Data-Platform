@@ -72,10 +72,10 @@ data "aws_iam_policy_document" "lambda" {
       "kafka-cluster:DescribeClusterDynamicConfiguration"
     ]
     resources = [
-      var.kafka_cluster_config.cluster_arn,
-      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:cluster/${var.kafka_cluster_config.cluster_name}/*",
-      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:topic/${var.kafka_cluster_config.cluster_name}/*",
-      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:group/${var.kafka_cluster_config.cluster_name}/*"
+      var.kafka_cluster_arn,
+      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:cluster/${var.kafka_cluster_name}/*",
+      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:topic/${var.kafka_cluster_name}/*",
+      "arn:aws:kafka:eu-west-2:${data.aws_caller_identity.current.account_id}:group/${var.kafka_cluster_name}/*"
     ]
   }
 
@@ -91,7 +91,7 @@ data "aws_iam_policy_document" "lambda" {
       "kms:RetireGrant"
     ]
     resources = [
-      var.kafka_cluster_config.kms_key_arn
+      var.kafka_cluster_kms_key_arn
     ]
   }
 }
@@ -169,7 +169,7 @@ resource "aws_lambda_function" "lambda" {
   }
 
   vpc_config {
-    security_group_ids = [aws_security_group.kafka-test.id]
+    security_group_ids = [var.kafka_security_group_id]
     subnet_ids         = var.subnet_ids
   }
 }

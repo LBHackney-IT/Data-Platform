@@ -49,7 +49,6 @@ def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka
         'bootstrap.servers': kafka_brokers,
         'security.protocol': 'ssl',
         'schema.registry.url': schema_registry_url,
-        'group.id': 'kafka-test',
         'client.id': 'kafka-test'
 
     }
