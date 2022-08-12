@@ -78,11 +78,6 @@ variable "glue_database_name" {
   type        = string
 }
 
-variable "topics" {
-  description = "Kafka streaming topics"
-  type        = list(string)
-}
-
 variable "lambda_artefact_storage_bucket" {
   type = string
 }

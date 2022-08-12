@@ -9,6 +9,6 @@ module "schema_registry" {
   bootstrap_servers                      = aws_msk_cluster.kafka_cluster.bootstrap_brokers_tls
   bastion_private_key_ssm_parameter_name = var.bastion_private_key_ssm_parameter_name
   bastion_instance_id                    = var.bastion_instance_id
-  topics                                 = var.topics
+  topics                                 = local.topics
   is_live_environment                    = var.is_live_environment
 }

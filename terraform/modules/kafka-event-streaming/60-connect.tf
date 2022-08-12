@@ -10,8 +10,16 @@ resource "aws_mskconnect_custom_plugin" "avro_converter_s3_sink" {
   }
 }
 
+
+locals {
+  topics = [
+    "tenure_api",
+    "contact_details_api"
+  ]
+}
+
 resource "aws_mskconnect_connector" "topics" {
-  for_each    = toset(var.topics)
+  for_each    = toset(local.topics)
   name        = replace(lower("${var.short_identifier_prefix}${each.value}"), "/[^a-zA-Z0-9]+/", "-")
   description = "Kafka connector to write ${each.value} events to S3"
 
