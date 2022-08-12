@@ -32,7 +32,9 @@ def list_all_topics(kafka_brokers):
     print('Listing all available topics in the cluster:')
     admin = AdminClient({
         'bootstrap.servers': kafka_brokers,
-        'security.protocol': 'ssl'
+        'security.protocol': 'ssl',
+        'group.id': 'kafka-test',
+        'client.id': 'kafka-test'
     })
     for topic in admin.list_topics().topics:
         print(topic)
@@ -44,9 +46,12 @@ def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka
     key_schema, value_schema = load_schema_from_file(kafka_schema_file_name)
 
     producer_config = {
-        "bootstrap.servers": kafka_brokers,
+        'bootstrap.servers': kafka_brokers,
         'security.protocol': 'ssl',
-        "schema.registry.url": schema_registry_url
+        'schema.registry.url': schema_registry_url,
+        'group.id': 'kafka-test',
+        'client.id': 'kafka-test'
+
     }
 
     producer = AvroProducer(producer_config, default_key_schema=key_schema, default_value_schema=value_schema)
