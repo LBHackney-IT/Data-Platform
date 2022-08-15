@@ -169,7 +169,7 @@ resource "aws_lambda_function" "lambda" {
   }
 
   vpc_config {
-    security_group_ids = [var.kafka_security_group_id]
+    security_group_ids = var.kafka_security_group_id
     subnet_ids         = var.subnet_ids
   }
 }

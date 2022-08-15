@@ -25,7 +25,7 @@ variable "kafka_cluster_name" {
 }
 
 variable "kafka_security_group_id" {
-  type = string
+  type = list(string)
 }
 
 variable "lambda_name" {
