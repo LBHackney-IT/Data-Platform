@@ -10,6 +10,15 @@ from os import getenv
 from confluent_kafka import avro
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.avro import AvroProducer
+from confluent_kafka.cimpl import NewTopic, KafkaException
+
+BOOTSTRAP_SERVERS_KEY = "bootstrap.servers"
+SECURITY_PROTOCOL_KEY = "security.protocol"
+SECURITY_PROTOCOL_VALUE = "ssl"
+SCHEMA_REGISTRY_URL_KEY = "schema.registry.url"
+GROUP_ID_KEY = "group.id"
+CLIENT_ID_KEY = "client.id"
+CLIENT_ID_VALUE = "kafka-test"
 
 
 def lambda_handler(event, lambda_context):
@@ -24,39 +33,42 @@ def lambda_handler(event, lambda_context):
 
     if operation == "send-message-to-topic":
         kafka_topic = event['topic']
-        kafka_schema_file_name = event['kafka_schema_file_name']
-        send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka_schema_file_name)
+        send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic)
 
 
 def list_all_topics(kafka_brokers):
     print('Listing all available topics in the cluster:')
     admin = AdminClient({
-        'bootstrap.servers': kafka_brokers,
-        'security.protocol': 'ssl',
-        'group.id': 'kafka-test',
-        'client.id': 'kafka-test'
+        BOOTSTRAP_SERVERS_KEY: kafka_brokers,
+        SECURITY_PROTOCOL_KEY: SECURITY_PROTOCOL_VALUE,
+        CLIENT_ID_KEY: CLIENT_ID_VALUE
     })
-    for topic in admin.list_topics().topics:
+    topics = admin.list_topics().topics
+    for topic in topics:
         print(topic)
+    return topics
 
 
-def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka_schema_file_name):
+def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic):
     print(f'Sending message to the {kafka_topic}')
 
-    key_schema, value_schema = load_schema_from_file(kafka_schema_file_name)
+    key_schema, value_schema = load_schema_from_file(kafka_topic)
+
+    topics = list_all_topics(kafka_brokers)
+    if kafka_topic not in topics:
+        create_topic(kafka_brokers, kafka_topic)
 
     producer_config = {
-        'bootstrap.servers': kafka_brokers,
-        'security.protocol': 'ssl',
-        'schema.registry.url': schema_registry_url,
-        'client.id': 'kafka-test'
-
+        BOOTSTRAP_SERVERS_KEY: kafka_brokers,
+        SECURITY_PROTOCOL_KEY: SECURITY_PROTOCOL_VALUE,
+        SCHEMA_REGISTRY_URL_KEY: schema_registry_url,
+        CLIENT_ID_KEY: CLIENT_ID_VALUE
     }
 
     producer = AvroProducer(producer_config, default_key_schema=key_schema, default_value_schema=value_schema)
 
-    key = "kakfa-test" + str(uuid.uuid4())
-    with open("./topic-messages/" + kafka_schema_file_name) as json_file:
+    key = CLIENT_ID_VALUE + str(uuid.uuid4())
+    with open("./topic-messages/" + kafka_topic + ".json") as json_file:
         value = json.loads(json_file.read())
 
     try:
@@ -70,12 +82,36 @@ def send_message_to_topic(kafka_brokers, schema_registry_url, kafka_topic, kafka
         producer.flush()
 
 
-def load_schema_from_file(kafka_schema_file_name):
+def load_schema_from_file(kafka_topic):
     key_schema_string = """
     {"type": "string"}
     """
 
     key_schema = avro.loads(key_schema_string)
-    value_schema = avro.load("./lib/" + kafka_schema_file_name)
+    value_schema = avro.load("./lib/" + kafka_topic + ".json")
 
     return key_schema, value_schema
+
+
+def create_topic(kafka_brokers, kafka_topic):
+    print(f'{kafka_topic} topic does not exist. Creating..')
+    admin = AdminClient({
+        BOOTSTRAP_SERVERS_KEY: kafka_brokers,
+        SECURITY_PROTOCOL_KEY: SECURITY_PROTOCOL_VALUE,
+        CLIENT_ID_KEY: CLIENT_ID_VALUE
+    })
+    topic_list = [NewTopic(kafka_topic, 2, 1)]
+
+    try:
+        result = admin.create_topics(topic_list, operation_timeout=30)
+        for _, f in result.items():
+            try:
+                f.result()
+            except KafkaException as ex:
+                print(f'  {ex.args[0]}')
+    except Exception as e:
+        print(f"Exception while creating topic - {kafka_topic}: {e}")
+        raise e
+    else:
+        print(f"Successfully created topic - {kafka_topic}")
+

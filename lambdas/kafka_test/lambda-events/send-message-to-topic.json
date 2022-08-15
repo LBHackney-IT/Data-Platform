@@ -1,5 +1,4 @@
 {
   "operation": "send-message-to-topic",
-  "topic": "tenure_api",
-  "kafka_schema_file_name": "tenure_api.json"
+  "topic": "tenure_api"
 }
