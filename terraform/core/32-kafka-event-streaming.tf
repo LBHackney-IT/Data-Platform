@@ -1,5 +1,10 @@
+locals {
+  kafka_event_streaming_count = local.is_live_environment ? 1 : 0
+  deploy_kafka_test_lambda    = local.kafka_event_streaming_count > 0 && !local.is_production_environment
+}
+
 module "kafka_event_streaming" {
-  count       = local.is_live_environment ? 1 : 1
+  count       = local.kafka_event_streaming_count
   source      = "../modules/kafka-event-streaming"
   tags        = module.tags.values
   environment = var.environment
@@ -23,7 +28,7 @@ module "kafka_event_streaming" {
 }
 
 module "kafka_test_lambda" {
-  count                          = 1
+  count                          = local.deploy_kafka_test_lambda ? 1 : 0
   source                         = "../modules/kafka-test-lambda"
   lambda_name                    = "kafka-test"
   tags                           = module.tags.values
