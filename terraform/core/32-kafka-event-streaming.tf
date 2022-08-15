@@ -23,7 +23,7 @@ module "kafka_event_streaming" {
 }
 
 module "kafka_test_lambda" {
-  count                          = local.is_production_environment ? 0 : 1
+  count                          = 0
   source                         = "../modules/kafka-test-lambda"
   lambda_name                    = "kafka-test"
   tags                           = module.tags.values
