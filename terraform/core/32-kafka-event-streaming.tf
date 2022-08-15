@@ -1,5 +1,5 @@
 module "kafka_event_streaming" {
-  count       = local.is_live_environment ? 1 : 0
+  count       = local.is_live_environment ? 1 : 1
   source      = "../modules/kafka-event-streaming"
   tags        = module.tags.values
   environment = var.environment
@@ -23,7 +23,7 @@ module "kafka_event_streaming" {
 }
 
 module "kafka_test_lambda" {
-  count                          = 0
+  count                          = 1
   source                         = "../modules/kafka-test-lambda"
   lambda_name                    = "kafka-test"
   tags                           = module.tags.values

@@ -12,7 +12,7 @@ If you wish to test kafka changes in a dev environment then please follow these 
     1. list-all-topics:
         1. This is fairly straight forward, it will print out a list of topics currently in the cluster
     2. send-message-to-topic:
-        1. This will fire a preconfigured message stored in /lambdas/topics-messages to the topic of your choice
+        1. This will fire a preconfigured message stored in /lambdas/kafka-test/topics-messages to the topic of your choice
         2. Once the lambda has completed successfully you should see the event has been processed by Kafka and that the data has appeared in the event-streaming folder in the raw zone
 
 ## Schema Registry UI
