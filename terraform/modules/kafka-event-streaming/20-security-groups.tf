@@ -4,12 +4,38 @@ resource "aws_security_group" "kafka" {
   vpc_id      = var.vpc_id
   description = "Specifies rules for traffic to the kafka cluster"
 
-  # TODO: Allow only traffic from port 80 & 443
   ingress {
     description      = "Allows all inbound traffic"
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "Allows all inbound traffic"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "Allows inbound traffic on Kafka port"
+    from_port        = 9094
+    to_port          = 9094
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "Allows inbound traffic on ZooKeeper port"
+    from_port        = 2182
+    to_port          = 2182
+    protocol         = "TCP"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }

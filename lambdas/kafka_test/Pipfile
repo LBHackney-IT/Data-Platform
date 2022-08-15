@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-dotenv = "*"
+requests = "*"
+pybase64 = "*"
+kafka-python = "*"
+confluent-kafka = "*"
+avro = "*"
+fastavro = "*"
+
+[dev-packages]
+boto3 = "*"
+
+[requires]
+python_version = "3"
