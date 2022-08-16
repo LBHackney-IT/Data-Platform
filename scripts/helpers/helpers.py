@@ -318,3 +318,31 @@ def move_file(bucket, source_path, target_path, filename):
     except Exception as error:
             ## do nothing
             print('Error Occured: rename_file', error)
+
+
+def working_days_diff(dataframe, id_column, date_from_column, date_to_column, result_column, bank_holiday_dataframe):
+    """
+    This function calculates the number of working days between 2 dates.
+    The id_column in the source table must be UNIQUE.
+    The function requires a dataframe of bank holidays. You can find Hackney bank holidays
+    in csv format in data platform raw zone/unrestricted
+    and load it before calling the function using:
+    bank_holiday_dataframe = execution_context.spark_session.read.format("csv").option("header", "true").load(
+            "s3://dataplatform-stg-raw-zone/unrestricted/util/hackney_bank_holiday.csv")
+    """
+    # Prepare a working table containing only the required columns from the input table
+    df_dates = dataframe.select(id_column, date_from_column, date_to_column)
+    # Explode the table creating one row per day between date_from and date_to
+    df_exploded = df_dates.withColumn('exploded', f.explode(
+        f.sequence(f.to_date(date_from_column), f.to_date(date_to_column))))
+    # Filter out line that are bank weekends or bank holidays
+    df_exploded = df_exploded.filter(~f.dayofweek('exploded').isin([1, 7]))
+    df_exploded = df_exploded.join(f.broadcast(bank_holiday_dataframe),
+                                   df_exploded.exploded == bank_holiday_dataframe.date, 'left_anti')
+    # Re-group the exploded lines and count days, excluding the first day
+    df_dates = df_exploded.groupBy(id_column).agg(
+        f.count('exploded').alias(result_column))
+    df_dates = df_dates.withColumn(result_column, col(result_column) - 1)
+    # Join result back to the full input table using the id column
+    dataframe = dataframe.join(df_dates, id_column, 'left')
+    return dataframe
