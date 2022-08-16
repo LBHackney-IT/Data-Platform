@@ -10,9 +10,10 @@ from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
 from pyspark.sql.functions import * 
+from pyspark.sql.types import IntegerType, StringType, FloatType
 from datetime import date
 import pyspark.sql.functions as F
-from helpers.helpers import move_file,rename_file, get_glue_env_var, get_latest_partitions_optimized , create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS,parse_json_into_dataframe, table_exists_in_catalog
+from scripts.helpers.helpers import move_file, rename_file, get_glue_env_var, get_latest_partitions_optimized , create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog
 
 def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource('s3')
@@ -23,6 +24,8 @@ def clear_target_folder(s3_bucket_target):
     bucket.objects.filter(Prefix=prefix).delete()
     return
 
+
+# The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":
     
     # read job parameters
@@ -39,6 +42,7 @@ if __name__ == "__main__":
     job = Job(glueContext)
     today = date.today()
     
+    # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
     logger.info(f'The job is starting. The source table is {source_catalog_database}')
 
     df = glueContext.create_data_frame.from_catalog( 
@@ -79,11 +83,11 @@ if __name__ == "__main__":
          transformation_ctx = "sow2b_dbo_matenancyagreement_source")
     df7 = get_latest_partitions_optimized(df7)
    
-    df8 = glueContext.create_data_frame.from_catalog( 
-         database = source_raw_database, 
-         table_name = "sow2b_dbo_maproperty", 
-         transformation_ctx = "sow2b_dbo_maproperty_source")
-    df8 = get_latest_partitions_optimized(df8)
+    # df8 = glueContext.create_data_frame.from_catalog( 
+    #      database = source_raw_database, 
+    #      table_name = "sow2b_dbo_maproperty", 
+    #      transformation_ctx = "sow2b_dbo_maproperty_source")
+    # df8 = get_latest_partitions_optimized(df8)
     
     df9 = glueContext.create_data_frame.from_catalog( 
          database = source_raw_database, 
@@ -96,6 +100,18 @@ if __name__ == "__main__":
          table_name = "sow2b_dbo_ssminitransaction", 
          transformation_ctx = "sow2b_dbo_ssminitransaction_source")
     df10 = get_latest_partitions_optimized(df10)
+    
+    patchofficer = glueContext.create_data_frame.from_catalog( 
+                 database = source_raw_database, 
+                 table_name = "officer_patch_mapping", 
+                 transformation_ctx = "officer_patch_mapping_source")
+    patchofficer = get_latest_partitions_optimized(patchofficer)
+
+    patchproperty= glueContext.create_data_frame.from_catalog( 
+                 database = source_raw_database, 
+                 table_name = "property_patch_mapping", 
+                 transformation_ctx = "officer_patch_mapping_source")
+    patchproperty = get_latest_partitions_optimized(patchproperty)
     
 #Mapping tables
 
@@ -382,16 +398,32 @@ if __name__ == "__main__":
             'WPA': 'Warrant of Possession',
             'BLI': 'Informal Agreement Breach Letter Sent'
         }
+        
+        
+# clear the rentsense export bucket so that only one date is being moved in the S3 shift
+    clear_target_folder(s3_bucket_target+'/export')
     
-#data loads
+# create the patch information
+    patch = patchproperty.join(patchofficer,patchproperty.patch ==  patchofficer.patch_name,"left")
+    
+    patch = patch.selectExpr("llpg_ref_uprn",
+                                 "officer_patch as HousingOfficerName",
+                                 "patch_name as Patch")
+    
+    patch = patch.distinct()
+ 
+    
+#data loads - takes all records that have no end date and secure tenancies, intro and mesne tenancies are added after as there are some tenancy ids with both
     accounts = df2.filter("endoftenuredate is NULL and paymentreference<>''")
     accounts_s = accounts.where(col("description").isin({"Secure"}))
     accounts_int = accounts.where(col("description").isin({"Introductory","Mense Profit Ac"}))
-    accounts_int = accounts_int.join(accounts_s,accounts_int.paymentreference == accounts_s.paymentreference,'leftanti') #remove the uprns in the other dataset
+    accounts_int = accounts_int.join(accounts_s,accounts_int.paymentreference == accounts_s.paymentreference,'leftanti') #remove the paymentreference in the other dataset
     
     accounts = accounts_s.union(accounts_int)
     accounts.select(col("startOfTenureDate"),to_date(col("startOfTenureDate"),"yyyy-MM-dd").alias("date")) \
           .drop("startOfTenureDate").withColumnRenamed("date","startOfTenureDate")
+          
+    accounts = accounts.join(patch,accounts.uprn ==  patch.llpg_ref_uprn,"left")
     
     #get the max date to remove dupes
     start_ten = accounts.selectExpr("paymentreference as AccountR",
@@ -406,7 +438,9 @@ if __name__ == "__main__":
                                   "tenure_code as TenureTypeCode",
                                   "endoftenuredate as TenancyEndDate",
                                   "'Hackney' as LocalAuthority",
-                                    "import_date as import_date"
+                                   "HousingOfficerName",
+                                  "Patch",
+                                  "import_date as import_date"
                                     )
 
     accounts2 = accounts2.distinct()
@@ -419,25 +453,38 @@ if __name__ == "__main__":
                                   "max_date as TenancyStartDate",
                                   "TenancyEndDate",
                                   "LocalAuthority",
-                                    "import_date as import_date"
+                                  "HousingOfficerName",
+                                  "Patch",
+                                  "import_date as import_date"
                                     )
         
     accounts2 = accounts2.distinct()
+    
+    # add additional columns; blank until data is made available
+    # accounts2 = accounts2.withColumn('HousingOfficerName', lit(None).cast(FloatType()))
+    # accounts2 = accounts2.withColumn('Patch', lit(None).cast(StringType()))
+    
+    accounts2 = add_import_time_columns(accounts2)
 
     dynamic_frame = DynamicFrame.fromDF(accounts2.repartition(1), glueContext, "target_data_to_write")
-   
+    #dynamic_frame = DynamicFrame.fromDF(accounts2, glueContext, "target_data_to_write")
+    
     # wipe out the target folder in the refined zone
-    clear_target_folder(s3_bucket_target+'/accounts')
-
-    #save out the data
+   # clear_target_folder(s3_bucket_target+'/accounts')
+    #clear_target_folder(s3_bucket_target+'gzip/accounts')
+    
+        #save out the data
 
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
         format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target+'/accounts', "partitionKeys": ['import_date']},
+        connection_options={"path": s3_bucket_target+'/accounts', "partitionKeys": PARTITION_KEYS},   
+        #connection_options={"path": s3_bucket_target+'/accounts', "partitionKeys": ['import_date']},    
         transformation_ctx="target_data_to_write")
-        
+
+    dynamic_frame = DropFields.apply(dynamic_frame,paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month','import_day'])
+
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
@@ -446,22 +493,24 @@ if __name__ == "__main__":
         transformation_ctx="target_data_to_write")
         
     filename = f"/rent.accounts%s.csv.gz" % today.strftime("%Y%m%d")
+#    rename_file("dataplatform-stg-refined-zone", "housing/rentsense/gzip/accounts", filename)
     rename_file(s3_bucket, "housing/rentsense/gzip/accounts", filename)
     
     #move file to export folder
     target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
+    #move_file("dataplatform-stg-refined-zone", "housing/rentsense/gzip/accounts/", target_path, f"rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"))
     move_file(s3_bucket, "housing/rentsense/gzip/accounts/", target_path, f"rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"))
-
 
     #Arrangements
 
     ten = accounts.select('uh_ten_ref','paymentreference')
-    Arr = df5.join(ten,df5.tenancy_ref ==  ten.uh_ten_ref,"left")
+    Arr = df5.join(ten,df5.tenancy_ref ==  ten.uh_ten_ref,"inner")
     Arr = Arr.distinct()
     
     agg_end = df6.where(col("agreement_state").isin({"cancelled","completed"}))
     agg_end = agg_end.selectExpr("agreement_id",
                                  "created_at as AgreementEndDate")
+
 
     Arr = Arr.join(agg_end,Arr.id ==  agg_end.agreement_id,"left")
     Arr = Arr.withColumn("AgreementStartDate",F.to_date(F.col("start_date"),"yyyy-MM-dd"))\
@@ -475,24 +524,35 @@ if __name__ == "__main__":
                     "frequency as AgreementFrequency",
                     "initial_payment_date as FirstInstallmentDueDate",
                     "AgreementCreatedDate",
+                    "Amount as AgreementAmount", 
                      "import_date")
+                     
+    # add additional columns; blank until data is made available
+    Arr = Arr.withColumn('AgreementAmount', lit(None).cast(FloatType()))
+    Arr = Arr.withColumn('AgreementCode', lit(None).cast(StringType()))
 
     Arr = Arr.distinct()
+    
+    Arr = add_import_time_columns(Arr)
 
     dynamic_frame = DynamicFrame.fromDF(Arr.repartition(1), glueContext, "target_data_to_write")
     
     # wipe out the target folder in the refined zone
-    clear_target_folder(s3_bucket_target+'/arrangements')
-
-    #save out the data
+    #clear_target_folder(s3_bucket_target+'/arrangements')
+    
+    #clear_target_folder(s3_bucket_target+'gzip/arrangements')
+    
+        #save out the data
 
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
         format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target+'/arrangements', "partitionKeys": ['import_date']},
+        connection_options={"path": s3_bucket_target+'/arrangements', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
-   
+
+    dynamic_frame = DropFields.apply(dynamic_frame,paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month','import_day'])
+
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
@@ -572,11 +632,15 @@ if __name__ == "__main__":
                 "import_date")
                      
     tens = tens.distinct()
+    
+    tens = add_import_time_columns(tens)
 
     dynamic_frame = DynamicFrame.fromDF(tens.repartition(1), glueContext, "target_data_to_write")
     
     # wipe out the target folder in the refined zone
-    clear_target_folder(s3_bucket_target+'/tenants')
+    #clear_target_folder(s3_bucket_target+'/tenants')
+    
+    #clear_target_folder(s3_bucket_target+'gzip/tenants')
     
     #save out the data
     
@@ -584,9 +648,11 @@ if __name__ == "__main__":
         frame=dynamic_frame,
         connection_type="s3",
         format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target+'/tenants', "partitionKeys": ['import_date']},
+        connection_options={"path": s3_bucket_target+'/tenants', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
         
+    dynamic_frame = DropFields.apply(dynamic_frame,paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month','import_day'])
+    
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
@@ -618,20 +684,26 @@ if __name__ == "__main__":
     
     balances = balances.distinct()
     
+    balances = add_import_time_columns(balances)
+    
     dynamic_frame = DynamicFrame.fromDF(balances.repartition(1), glueContext, "target_data_to_write")
         
     # wipe out the target folder in the trusted zone
-    clear_target_folder(s3_bucket_target+'/balances')
+    #clear_target_folder(s3_bucket_target+'/balances')
+    
+    #clear_target_folder(s3_bucket_target+'gzip/balances')
     
     #save out the data
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
         format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target+'/balances', "partitionKeys": ['import_date']},
+        connection_options={"path": s3_bucket_target+'/balances', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
     
+    dynamic_frame = DropFields.apply(dynamic_frame,paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month','import_day'])    
     #gzip_version
+    
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
@@ -646,12 +718,16 @@ if __name__ == "__main__":
     target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
     move_file(s3_bucket, "housing/rentsense/gzip/balances/", target_path, f"rent.balances%s.csv.gz" % today.strftime("%Y%m%d"))
     
+
     #Actions
+
     ten = accounts.select('uh_ten_ref','paymentreference')
     
     actions = df9.withColumn("uh_ten_ref1",F.trim(F.col("tag_ref")))\
                   .withColumn("ActionDate",F.to_date(F.col("action_date"),"yyyy-MM-dd"))
-
+    
+    #actions = actions.filter("action_date>'2022-01-01'")
+    
     actions = actions.filter((F.col("action_date")>date_sub(current_date(),365)) & (F.col("action_date")<current_date()))
     
     actions = ten.join(actions,ten.uh_ten_ref ==  actions.uh_ten_ref1,"left")
@@ -667,21 +743,25 @@ if __name__ == "__main__":
                                   "action_no as ActionSeq",
                                   "action_comment as Notes",
                                   "import_date")
+                                  
+    actions = add_import_time_columns(actions)
     
     dynamic_frame = DynamicFrame.fromDF(actions.repartition(1), glueContext, "target_data_to_write")
         
     # wipe out the target folder in the trusted zone
-    clear_target_folder(s3_bucket_target+'/actions')
+    #clear_target_folder(s3_bucket_target+'/actions')
     
+    #clear_target_folder(s3_bucket_target+'gzip/actions')
     #save out the data
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
         format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target+'/actions', "partitionKeys": ['import_date']},
+        connection_options={"path": s3_bucket_target+'/actions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
     
     #gzip_version
+    dynamic_frame = DropFields.apply(dynamic_frame,paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month','import_day'])
     
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
@@ -696,13 +776,24 @@ if __name__ == "__main__":
     #move file to export folder
     target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
     move_file(s3_bucket, "housing/rentsense/gzip/actions/", target_path, f"rent.actions%s.csv.gz" % today.strftime("%Y%m%d"))
+    
+
+    
 
     #Transactions
     
     ten = accounts.select('uh_ten_ref','paymentreference')
     
+    ##change to the date parameters 365
+    # df10 = df10.withColumn("ReportDate",date_sub(current_date(),365))\
+    #           .withColumn("Today",current_date())
+    
+    # df11 = df10.filter("post_date >= ReportDate and post_date <= Today")
+    
     df11 = df10.filter((F.col("post_date")>date_sub(current_date(),365)) & (F.col("post_date")<current_date()))
 
+    #df11 = df11.withColumn("TransactionID",F.monotonically_increasing_id())\
+    
     df11 =  df11.withColumn("TransactionID",F.monotonically_increasing_id())\
                .withColumn("code_lookup",F.trim(F.col("trans_type")))\
                .replace(to_replace=mapTransactions, subset=['code_lookup'])
@@ -712,8 +803,7 @@ if __name__ == "__main__":
     trans =  ten.join(trans,ten.uh_ten_ref ==  trans.uh_ten_ref1,"inner")
     
     trans = trans.selectExpr("paymentreference as AccountReference",
-                             "uh_ten_ref1",
-                              "TransactionID",
+                             "TransactionID",
                               "post_date as TransactionDate",
                              "post_date as TransactionPostDate",
                               "trans_type as TransactionCode",
@@ -721,21 +811,29 @@ if __name__ == "__main__":
                               "code_lookup as TransactionDescription",
                              "import_date"
                                 )
+    
+    
     trans = trans.distinct()
+    
+    trans = add_import_time_columns(trans)
     
     dynamic_frame = DynamicFrame.fromDF(trans.repartition(1), glueContext, "target_data_to_write")
     
-    clear_target_folder(s3_bucket_target+'/transactions')
+    #clear_target_folder(s3_bucket_target+'/transactions')
+    
+    #clear_target_folder(s3_bucket_target+'gzip/transactions')
     
     #save out the data
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
         format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target+'/transactions', "partitionKeys": ['import_date']},
+        connection_options={"path": s3_bucket_target+'/transactions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
-    
+
     #gzip_version
+    dynamic_frame = DropFields.apply(dynamic_frame,paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month','import_day'])
+    
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
@@ -750,6 +848,8 @@ if __name__ == "__main__":
     target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
     move_file(s3_bucket, "housing/rentsense/gzip/transactions/", target_path, f"rent.transactions%s.csv.gz" % today.strftime("%Y%m%d"))
     
+    
+
     job.commit()
 
    
