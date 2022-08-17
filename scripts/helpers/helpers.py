@@ -318,3 +318,12 @@ def move_file(bucket, source_path, target_path, filename):
     except Exception as error:
             ## do nothing
             print('Error Occured: rename_file', error)
+            
+def clear_target_folder(s3_bucket_target):
+    s3 = boto3.resource('s3')
+    folderString = s3_bucket_target.replace('s3://', '')
+    bucketName = folderString.split('/')[0]
+    prefix = folderString.replace(bucketName+'/', '')+'/'
+    bucket = s3.Bucket(bucketName)
+    bucket.objects.filter(Prefix=prefix).delete()
+    return
