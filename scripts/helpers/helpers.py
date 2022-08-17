@@ -324,7 +324,7 @@ def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource('s3')
     folder_string = s3_bucket_target.replace('s3://', '')
     bucket_name = folderString.split('/')[0]
-    prefix = folderString.replace(bucketName+'/', '')+'/'
+    prefix = folder_string.replace(bucket_name+'/', '')+'/'
     bucket = s3.Bucket(bucketName)
     bucket.objects.filter(Prefix=prefix).delete()
     return
