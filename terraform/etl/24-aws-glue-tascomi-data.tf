@@ -273,9 +273,9 @@ module "tascomi_applications_to_trusted" {
     "--target_destination"        = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
-    "--source_catalog_table"    = "applications"
-    "--source_catalog_table2"   = "application_types"
-    "--source_catalog_table3"   = "ps_development_codes"
+    "--source_catalog_table_applications"    = "applications"
+    "--source_catalog_table_application_types"   = "application_types"
+    "--source_catalog_table_ps_codes"   = "ps_development_codes"
   }
   script_name          = "tascomi_applications_trusted"
   triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name

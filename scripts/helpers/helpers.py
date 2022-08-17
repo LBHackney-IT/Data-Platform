@@ -195,6 +195,59 @@ def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
     return result
 
 
+def get_latest_snapshot_optimized(df: DataFrame) -> DataFrame:
+    """Filters the DataFrame based on the latest (most recent) snapshot_date partition. It uses snapshot_date if available else it uses
+    snapshot_year, snapshot_month, snapshot_day to calculate the latest partition.
+
+    Args:
+        df: Input DataFrame
+
+    Returns:
+        DataFrame belonging to the most recent partition.
+
+    """
+
+    if "snapshot_date" in df.columns:
+        latest_partition = df.select(max(col("snapshot_date")).alias("latest_snapshot_date"))
+        result = df \
+            .join(broadcast(latest_partition), (df["snapshot_date"] == latest_partition["latest_snapshot_date"])) \
+            .drop("latest_snapshot_date")
+    else:
+        # The below code is temporary fix till docker test environment is fixed, post which delete this and use the one
+        # below which is commented as of now.
+        latest_partition = df \
+            .withColumn("snapshot_year_int", col("snapshot_year").cast(IntegerType())) \
+            .withColumn("snapshot_month_int", col("snapshot_month").cast(IntegerType())) \
+            .withColumn("snapshot_day_int", col("snapshot_day").cast(IntegerType())) \
+            .select(max(to_date(concat(
+                col("snapshot_year_int"),
+                when(col("snapshot_month_int") < 10, concat(lit("0"), col("snapshot_month_int")))
+                .otherwise(col("snapshot_month_int")),
+                when(col("snapshot_day_int") < 10, concat(lit("0"), col("snapshot_day_int")))
+                .otherwise(col("snapshot_day_int"))),
+                format="yyyyMMdd")).alias("latest_snapshot_date")) \
+            .select(year(col("latest_snapshot_date")).alias("latest_year_int"),
+                    month(col("latest_snapshot_date")).alias("latest_month_int"),
+                    dayofmonth(col("latest_snapshot_date")).alias("latest_day_int"))
+
+        # Unblock the below code when the test environment of docker is fixed and delete the above one.
+        # latest_partition = df \
+        #    .select(max(to_date(concat(col("snapshot_year"), lit("-"), col("snapshot_month"), lit("-"), col("snapshot_day")),
+        #                         format="yyyy-L-d")).alias("latest_partition_date")) \
+        #     .select(year(col("latest_partition_date")).alias("latest_year"),
+        #             month(col("latest_partition_date")).alias("latest_month"),
+        #             dayofmonth(col("latest_partition_date")).alias("latest_day"))
+
+        result = df \
+            .join(broadcast(latest_partition),
+                  (df.snapshot_year == latest_partition["latest_year_int"]) &
+                  (df.snapshot_month == latest_partition["latest_month_int"]) &
+                  (df.snapshot_day == latest_partition["latest_day_int"])) \
+            .drop("latest_year_int", "latest_month_int", "latest_day_int")
+
+    return result
+
+
 def parse_json_into_dataframe(spark, column, dataframe):
     """
     This method parses in a dataframe containing a JSON formatted column and expands JSON into own columns by
@@ -329,16 +382,30 @@ def working_days_diff(dataframe, id_column, date_from_column, date_to_column, re
     and load it before calling the function using:
     bank_holiday_dataframe = execution_context.spark_session.read.format("csv").option("header", "true").load(
             "s3://dataplatform-stg-raw-zone/unrestricted/util/hackney_bank_holiday.csv")
+    Args:
+        dataframe: The input dataframe
+        id_column: The column from the input dataframe acting as a unique ID
+        date_from_column: the column from the input dataframe representing the starting date for the calculation
+        date_to_column: the column from the input dataframe representing the ending date for the calculation
+        result_column: the column that will be used to store the days count result
+        bank_holiday_dataframe: an external dataframe containing a list of bank holidays in date format stored in a column called 'date'
+
+    Returns: dataframe - the input dataframe with the result_column added and populated
+
     """
     # Prepare a working table containing only the required columns from the input table
     df_dates = dataframe.select(id_column, date_from_column, date_to_column)
+
     # Explode the table creating one row per day between date_from and date_to
     df_exploded = df_dates.withColumn('exploded', f.explode(
         f.sequence(f.to_date(date_from_column), f.to_date(date_to_column))))
-    # Filter out line that are bank weekends or bank holidays
-    df_exploded = df_exploded.filter(~f.dayofweek('exploded').isin([1, 7]))
-    df_exploded = df_exploded.join(f.broadcast(bank_holiday_dataframe),
-                                   df_exploded.exploded == bank_holiday_dataframe.date, 'left_anti')
+
+    # turn bank holidays into a list
+    bank_holiday_list = bank_holiday_dataframe.rdd.map(lambda x: x.date).collect()
+    # Filter out line that are bank weekends or bank holidays (filter is faster than left_anti join)
+    df_exploded = df_exploded.filter(~f.dayofweek('exploded').isin([1, 7])) \
+        .filter(~df_exploded.exploded.isin(bank_holiday_list))
+
     # Re-group the exploded lines and count days, excluding the first day
     df_dates = df_exploded.groupBy(id_column).agg(
         f.count('exploded').alias(result_column))

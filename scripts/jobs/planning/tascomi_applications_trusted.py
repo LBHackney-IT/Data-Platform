@@ -22,32 +22,25 @@ No need to provide mode (or optionally set it to 'aws')
 """
 
 import argparse
-import sys
 import boto3
-from awsglue.transforms import *
-from awsglue.utils import getResolvedOptions
-from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.functions import *
-import pyspark.sql.functions as F
+import pyspark.sql.functions as f
 
 from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
-from scripts.helpers.helpers import create_pushdown_predicate, PARTITION_KEYS_SNAPSHOT, working_days_diff
+from scripts.helpers.helpers import create_pushdown_predicate, get_latest_snapshot_optimized, PARTITION_KEYS_SNAPSHOT, working_days_diff
 
 
 # Define the functions that will be used in your job (optional).
 # For Production jobs, these functions should be tested via unit testing.
 
 
-def get_latest_snapshot(df):
-    df = df.where(F.col('snapshot_date') == df.select(max('snapshot_date')).first()[0])
-    return df
-
-
 # Creates a function that clears the target folder in S3
 def clear_target_folder(s3_bucket_target):
+    # s3_client = boto3.resource("s3")
+    # parsed_s3_url = urlparse(s3_file_url, allow_fragments=True)
+    # bucket_name = parsed_s3_url.netloc
+    # s3_object_key = parsed_s3_url.path[1:]
+
     s3 = boto3.resource('s3')
     folderString = s3_bucket_target.replace('s3://', '')
     bucketName = folderString.split('/')[0]
@@ -425,15 +418,15 @@ def main():
     application_types_data_path_local_arg = "application_types_data_path"  # planning applications types data path
     ps_development_codes_data_path_local_arg = "ps_development_codes_data_path"  # ps_codes types data path
 
-    source_catalog_table_glue_arg = "source_catalog_table"  # planning applications table name
-    source_catalog_table2_glue_arg = "source_catalog_table2"  # planning applications types table name
-    source_catalog_table3_glue_arg = "source_catalog_table3"  # ps_codes table name
+    source_catalog_table_applications_glue_arg = "source_catalog_table_applications"  # planning applications table name
+    source_catalog_table_application_types_glue_arg = "source_catalog_table_application_types"  # planning applications types table name
+    source_catalog_table_ps_codes_glue_arg = "source_catalog_table_ps_codes"  # ps_codes table name
     source_catalog_database_glue_arg = "source_catalog_database"  # source database name
 
     target_destination_arg = "target_destination"  # output location (S3 path or local)
 
-    glue_args = [source_catalog_table_glue_arg, source_catalog_table2_glue_arg,
-                 source_catalog_table3_glue_arg, source_catalog_database_glue_arg, target_destination_arg]
+    glue_args = [source_catalog_table_applications_glue_arg, source_catalog_table_application_types_glue_arg,
+                 source_catalog_table_ps_codes_glue_arg, source_catalog_database_glue_arg, target_destination_arg]
     local_args, _ = parser.parse_known_args()
     execution_mode = local_args.execution_mode
 
@@ -447,14 +440,14 @@ def main():
         # read job parameters
 
         applications_data_path_local = execution_context.get_input_args(applications_data_path_local_arg)
-        source_catalog_table = execution_context.get_input_args(source_catalog_table_glue_arg)
+        source_catalog_table = execution_context.get_input_args(source_catalog_table_applications_glue_arg)
 
         application_types_data_path_local = execution_context.get_input_args(application_types_data_path_local_arg)
-        source_catalog_table2 = execution_context.get_input_args(source_catalog_table2_glue_arg)
+        source_catalog_table2 = execution_context.get_input_args(source_catalog_table_application_types_glue_arg)
 
         ps_development_codes_data_path_local = execution_context.get_input_args(
             ps_development_codes_data_path_local_arg)
-        source_catalog_table3 = execution_context.get_input_args(source_catalog_table3_glue_arg)
+        source_catalog_table3 = execution_context.get_input_args(source_catalog_table_ps_codes_glue_arg)
         source_catalog_database = execution_context.get_input_args(source_catalog_database_glue_arg)
 
         # Log something. This will be output in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
@@ -462,7 +455,7 @@ def main():
         logger.info(f'execution mode = {execution_mode}')
 
         # Load data from glue catalog
-        df = execution_context \
+        applications_df = execution_context \
             .get_dataframe(local_path_parquet=applications_data_path_local,
                            name_space=source_catalog_database,
                            table_name=source_catalog_table,
@@ -472,109 +465,100 @@ def main():
 
         # If the source data IS partitionned by import_date, you have loaded several days but only need
         # the latest version, use the get_latest_partitions() helper
-        df = get_latest_snapshot(df)
+        applications_df = get_latest_snapshot_optimized(applications_df)
 
-        # Drop Columns we know are not needed by Qlik
-        df = df.drop(*columns_to_delete_from_apps_table)
-
-        # Rename id column
-        df = df.withColumnRenamed("id", "application_id")
+        # Drop and rename columns we know are not needed by Qlik
+        applications_df = applications_df.drop(*columns_to_delete_from_apps_table) \
+            .withColumnRenamed("id", "application_id")
 
         # Create Calculated Fields for Reporting Measures
 
         # Date Calculations
-        df = df.withColumn('day_of_week', F.dayofweek(F.col('decision_issued_date'))) \
+        applications_df = applications_df.withColumn('day_of_week', f.dayofweek(f.col('decision_issued_date'))) \
             .selectExpr('*', 'date_sub(decision_issued_date, day_of_week-2) as decision_report_week') \
-            .withColumn('day_of_week', F.dayofweek(F.col('registration_date'))) \
+            .withColumn('day_of_week', f.dayofweek(f.col('registration_date'))) \
             .selectExpr('*', 'date_sub(registration_date, day_of_week-2) as registration_report_week') \
-            .withColumn('day_of_week', F.dayofweek(F.col('received_date'))) \
+            .withColumn('day_of_week', f.dayofweek(f.col('received_date'))) \
             .selectExpr('*', 'date_sub(received_date, day_of_week-2) as received_report_week') \
-            .withColumn('export_date', F.date_sub(current_date(), 1)) \
-            .withColumn('days_received_to_decision', F.datediff('decision_issued_date', 'received_date')) \
-            .withColumn('days_received_to_valid', F.datediff('valid_date', 'received_date')) \
-            .withColumn('days_in_system', F.datediff('export_date', 'received_date'))
+            .withColumn('export_date', f.date_sub(current_date(), 1)) \
+            .withColumn('days_received_to_decision', f.datediff('decision_issued_date', 'received_date')) \
+            .withColumn('days_received_to_valid', f.datediff('valid_date', 'received_date')) \
+            .withColumn('days_in_system', f.datediff('export_date', 'received_date'))
 
         # calculate days_valid_to_registered taking into account bank holidays
         bank_hol = execution_context.spark_session.read.format("csv").option("header", "true").load(
-            "s3://dataplatform-stg-raw-zone/unrestricted/util/hackney_bank_holiday.csv")
+            "C:\\Users\\sballey\\data_dp\\data\\hackney_bank_holiday")
         # replace with local path in local mode "C:\\Users\\sballey\\data_dp\\data\\hackney_bank_holiday"
         # "s3://dataplatform-stg-raw-zone/unrestricted/util/hackney_bank_holiday.csv"
-        bank_hol = bank_hol.withColumn('date', F.to_date('date', "dd-MM-yyyy"))
-        df = working_days_diff(df, 'application_id', 'valid_date', 'registration_date', 'days_valid_to_registered',
+        bank_hol = bank_hol.withColumn('date', f.to_date('date', "dd-MM-yyyy"))
+        applications_df = working_days_diff(applications_df, 'application_id', 'valid_date', 'registration_date', 'days_valid_to_registered',
                                bank_hol)
 
         # Merge Dates to calculate correct expiry date
-        df = df.withColumn('date_application_expiry', F.coalesce('extension_of_time_due_date', 'expiry_date'))
+        applications_df = applications_df.withColumn('date_application_expiry', f.coalesce('extension_of_time_due_date', 'expiry_date'))
 
         # Create Flags for reporting measures
-        df = df.withColumn("flag_validated", when(df.valid_date.isNull(), 0).otherwise(1)) \
-            .withColumn("flag_decided", when(df.decision_issued_date.isNull(), 0).otherwise(1)) \
-            .withColumn("flag_extended", when(df.extension_of_time_due_date.isNull(), 0).otherwise(1)) \
-            .withColumn("flag_registered", when(df.registration_date.isNull(), 0).otherwise(1)) \
-            .withColumn("flag_ppa", when(df.ppa_decision_due_date.isNull(), 0).otherwise(1))
+        applications_df = applications_df.withColumn("flag_validated", when(applications_df.valid_date.isNull(), 0).otherwise(1)) \
+            .withColumn("flag_decided", when(applications_df.decision_issued_date.isNull(), 0).otherwise(1)) \
+            .withColumn("flag_extended", when(applications_df.extension_of_time_due_date.isNull(), 0).otherwise(1)) \
+            .withColumn("flag_registered", when(applications_df.registration_date.isNull(), 0).otherwise(1)) \
+            .withColumn("flag_ppa", when(applications_df.ppa_decision_due_date.isNull(), 0).otherwise(1))
 
         # Apply Map to application stage field - first convert data types so they are both strings
-        df = df.withColumn('application_stage_name', col('application_stage').cast('string'))
-        df = df.replace(to_replace=mapStage, subset=['application_stage_name'])
+        applications_df = applications_df.withColumn('application_stage_name', col('application_stage').cast('string'))
+        applications_df = applications_df.replace(to_replace=mapStage, subset=['application_stage_name'])
         # Applications table is ready for joining
 
         # Load Application Types Table
-        df2 = execution_context \
+        application_types_df = execution_context \
             .get_dataframe(local_path_parquet=application_types_data_path_local,
                            name_space=source_catalog_database,
                            table_name=source_catalog_table2,
                            push_down_predicate=create_pushdown_predicate('snapshot_date', 3))
 
-        df2 = get_latest_snapshot(df2)
+        application_types_df = get_latest_snapshot_optimized(application_types_df)
 
-        # Rename Relevant Columns
-        df2 = df2.withColumnRenamed("name", "application_type") \
-            .withColumnRenamed("code", "application_type_code")
-
-        # Keep Only Relevant Columns
-        df2 = df2.select("id", "application_type", "application_type_code")
+        # Rename and remove Columns
+        application_types_df = application_types_df.withColumnRenamed("name", "application_type") \
+            .withColumnRenamed("code", "application_type_code") \
+            .select("id", "application_type", "application_type_code")
 
         # Load PS Codes
-        df3 = execution_context \
+        ps_codes_df = execution_context \
             .get_dataframe(local_path_parquet=ps_development_codes_data_path_local,
                            name_space=source_catalog_database,
                            table_name=source_catalog_table3,
                            push_down_predicate=create_pushdown_predicate('snapshot_date', 3))
 
-        df3 = get_latest_snapshot(df3)
+        ps_codes_df = get_latest_snapshot_optimized(ps_codes_df)
 
-        # Rename Relevant Columns
-        df3 = df3.withColumnRenamed("id", "ps_id") \
-            .withColumnRenamed("name", "development_type")
-
-        # Keep Only Relevant Columns
-        df3 = df3.select("ps_id", "expiry_days", 'development_type')
-
-        # Apply Dev Type Mapping
-        df3 = df3.withColumn("dev_type", col("development_type"))
-        df3 = df3.replace(to_replace=mapDev, subset=['dev_type'])
+        # Rename and remove Columns, apply Dev Type mapping
+        ps_codes_df = ps_codes_df.withColumnRenamed("id", "ps_id") \
+            .withColumnRenamed("name", "development_type") \
+            .select("ps_id", "expiry_days", 'development_type') \
+            .withColumn("dev_type", col("development_type")) \
+            .replace(to_replace=mapDev, subset=['dev_type'])
 
         # Left Join Application Types and PS Development Codes onto Applications Table
-        df = df.join(df2, df.application_type_id == df2.id, "left")
-        df = df.join(df3, df.ps_development_code_id == df3.ps_id, "left")
+        applications_df = applications_df.join(application_types_df, applications_df.application_type_id == application_types_df.id, "left") \
+            .join(ps_codes_df, applications_df.ps_development_code_id == ps_codes_df.ps_id, "left")
 
         # Create Additional Calculations that required fields from the joined tables
-        df = df.selectExpr('*', 'date_add(received_date, expiry_days) as calc_expiry_date')
-        df = df.withColumn('current_expiry_date', F.coalesce('date_application_expiry', 'calc_expiry_date'))
-        df = df.withColumn('flag_overdue_decided', when(df.decision_issued_date > df.current_expiry_date, 1)
-                           .otherwise(0)) \
-            .withColumn('flag_overdue_live', when(df.export_date > df.current_expiry_date, 1)
+        applications_df = applications_df.selectExpr('*', 'date_add(received_date, expiry_days) as calc_expiry_date') \
+            .withColumn('current_expiry_date', f.coalesce('date_application_expiry', 'calc_expiry_date'))
+        applications_df = applications_df.withColumn('flag_overdue_decided', when(applications_df.decision_issued_date > applications_df.current_expiry_date, 1)
                         .otherwise(0)) \
-            .withColumn('flag_overdue_registration', when(df.days_valid_to_registered > 5, 1)
+            .withColumn('flag_overdue_live', when(applications_df.export_date > applications_df.current_expiry_date, 1)
                         .otherwise(0)) \
-            .withColumn('days_over_expiry', F.datediff('decision_issued_date', 'current_expiry_date'))
+            .withColumn('flag_overdue_registration', when(applications_df.days_valid_to_registered > 5, 1)
+                        .otherwise(0)) \
+            .withColumn('days_over_expiry', f.datediff('decision_issued_date', 'current_expiry_date'))
 
-        # Add a Counter
-        df = df.withColumn('counter_application', lit(1))
+        # Add a Counter and Drop Duplicated Id columns created by the Join
+        applications_df = applications_df.withColumn('counter_application', lit(1)) \
+            .drop("ps_id", "id")
 
-        # Drop Duplicated Id columns created by the Join
-        df = df.drop("ps_id", "id")
-        df.select('valid_date', 'registration_date', 'days_valid_to_registered', 'flag_overdue_registration').show()
+        applications_df.select('valid_date', 'registration_date', 'days_valid_to_registered', 'flag_overdue_registration').show()
 
         # Data Processing Ends
 
@@ -583,7 +567,7 @@ def main():
         # clear_target_folder(target_destination)
 
         # Write data
-        execution_context.save_dataframe(df, target_destination, *PARTITION_KEYS_SNAPSHOT)
+        execution_context.save_dataframe(applications_df, target_destination, *PARTITION_KEYS_SNAPSHOT)
 
 
 if __name__ == '__main__':
