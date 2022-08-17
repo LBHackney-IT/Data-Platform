@@ -373,6 +373,7 @@ def move_file(bucket, source_path, target_path, filename):
             print('Error Occured: rename_file', error)
 
 
+
 def working_days_diff(dataframe, id_column, date_from_column, date_to_column, result_column, bank_holiday_dataframe):
     """
     This function calculates the number of working days between 2 dates.
@@ -413,3 +414,14 @@ def working_days_diff(dataframe, id_column, date_from_column, date_to_column, re
     # Join result back to the full input table using the id column
     dataframe = dataframe.join(df_dates, id_column, 'left')
     return dataframe
+            
+            
+def clear_target_folder(s3_bucket_target):
+    s3 = boto3.resource('s3')
+    folder_string = s3_bucket_target.replace('s3://', '')
+    bucket_name = folderString.split('/')[0]
+    prefix = folder_string.replace(bucket_name+'/', '')+'/'
+    bucket = s3.Bucket(bucket_name)
+    bucket.objects.filter(Prefix=prefix).delete()
+    return
+
