@@ -1,0 +1,21 @@
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "targetId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "targetType": "person",
+  "contactInformation": {
+    "contactType": "phone",
+    "subType": "correspondenceAddress",
+    "value": "string",
+    "description": "string",
+    "addressExtended": {
+      "uprn": "string",
+      "isOverseasAddress": true,
+      "overseasAddress": "string"
+    }
+  },
+  "sourceServiceArea": {
+    "area": "string",
+    "isDefault": true
+  },
+  "recordValidUntil": "2022-08-15T08:51:47.008Z"
+}

@@ -34,3 +34,5 @@ dist/
 /build/
 /dist/
 /terraform/modules/copy-from-s3-to-s3/copy-from-s3-to-s3.zip
+/terraform/modules/kafka-event-streaming/local-testing/list-topics.json
+/terraform/modules/kafka-event-streaming/local-testing/send-message-to-topic.json
