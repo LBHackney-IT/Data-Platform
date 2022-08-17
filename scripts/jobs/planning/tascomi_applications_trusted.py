@@ -27,27 +27,11 @@ from pyspark.sql.functions import *
 import pyspark.sql.functions as f
 
 from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
-from scripts.helpers.helpers import create_pushdown_predicate, get_latest_snapshot_optimized, PARTITION_KEYS_SNAPSHOT, working_days_diff
+from scripts.helpers.helpers import create_pushdown_predicate, get_latest_snapshot_optimized, PARTITION_KEYS_SNAPSHOT, working_days_diff, clear_target_folder
 
 
 # Define the functions that will be used in your job (optional).
 # For Production jobs, these functions should be tested via unit testing.
-
-
-# Creates a function that clears the target folder in S3
-def clear_target_folder(s3_bucket_target):
-    # s3_client = boto3.resource("s3")
-    # parsed_s3_url = urlparse(s3_file_url, allow_fragments=True)
-    # bucket_name = parsed_s3_url.netloc
-    # s3_object_key = parsed_s3_url.path[1:]
-
-    s3 = boto3.resource('s3')
-    folderString = s3_bucket_target.replace('s3://', '')
-    bucketName = folderString.split('/')[0]
-    prefix = folderString.replace(bucketName + '/', '') + '/'
-    bucket = s3.Bucket(bucketName)
-    bucket.objects.filter(Prefix=prefix).delete()
-    return
 
 
 columns_to_delete_from_apps_table = (
@@ -564,7 +548,7 @@ def main():
 
         # wipe out the target folder in the trusted zone - comment out in local mode
         logger.info(f'clearing target bucket')
-        # clear_target_folder(target_destination)
+        clear_target_folder(target_destination)
 
         # Write data
         execution_context.save_dataframe(applications_df, target_destination, *PARTITION_KEYS_SNAPSHOT)
