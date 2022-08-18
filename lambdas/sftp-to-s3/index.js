@@ -6,24 +6,25 @@ const AWS_REGION = "eu-west-2";
 
 let s3Bucket = process.env.S3_BUCKET;
 let objectKeyPrefix = process.env.OBJECT_KEY_PREFIX;
+let filePathOnServer = process.env.TARGET_FILEPATH;
+let sourceFilePrefix = process.env.SOURCE_FILE_PREFIX;
+let targetFilePrefix = process.env.TARGET_FILE_PREFIX;
 let config = {
   host: process.env.SFTP_HOST,
   username: process.env.SFTP_USERNAME,
   password: process.env.SFTP_PASSWORD,
-  port: 22
+  port: 22,
 };
 
-const filePathOnServer = 'LogiXML';
-
-const YYMMDD = () => {
+const getCurrentDate = () => {
   const today = new Date();
-  const year = today.getFullYear().toString().substring(2, 4);
+  const year = today.getFullYear().toString();
   const month = (today.getMonth() + 1).toString().padStart(2, '0');
   const day = today.getDate().toString().padStart(2, '0');
-  return `${year}${month}${day}`;
+  return `${year}-${month}-${day}`;
 }
 
-const fileNamePattern = `data_warehouse${YYMMDD()}*`;
+const fileNamePattern = `${sourceFilePrefix}${getCurrentDate()}*`;
 
 async function findFiles(sftpConn) {
   const validPath = await sftpConn.exists(filePathOnServer);
@@ -59,14 +60,14 @@ async function checkS3ForFile() {
   const s3Client = new AWS.S3({ region: AWS_REGION });
   const params = {
     Bucket: s3Bucket,
-    Key: `${objectKeyPrefix}liberator_dump_${YYMMDD()}.zip`,
+    Key: `${objectKeyPrefix}${targetFilePrefix}_dump_${YYMMDD()}.zip`,
   };
 
   try {
     await s3Client.headObject(params).promise();
     return true;
   } catch (error) {
-    console.log("Today's liberator file not yet present in S3 bucket, retrieving file from SFTP")
+    console.log(`Today's ${targetFilePrefix} file not yet present in S3 bucket, retrieving file from SFTP`)
     return false;
   }
 }
@@ -77,7 +78,7 @@ function putFile() {
 
   const params = {
     Bucket: s3Bucket,
-    Key: `${objectKeyPrefix}liberator_dump_${YYMMDD()}.zip`,
+    Key: `${objectKeyPrefix}${targetFilePrefix}_dump_${YYMMDD()}.zip`,
     Body: stream
   };
 
@@ -101,7 +102,7 @@ exports.handler = async () => {
   const sftp = new sftpClient();
 
   if (await checkS3ForFile()) {
-    console.log("Today's liberator file is already present in S3 bucket!");
+    console.log(`Today's ${targetFilePrefix} file is already present in S3 bucket!`);
     return { success: true, message: `File already found in s3, no further action taken` };
 }
 
