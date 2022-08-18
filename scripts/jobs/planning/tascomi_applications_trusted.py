@@ -471,7 +471,7 @@ def main():
 
         # calculate days_valid_to_registered taking into account bank holidays
         bank_hol = execution_context.spark_session.read.format("csv").option("header", "true").load(
-            "C:\\Users\\sballey\\data_dp\\data\\hackney_bank_holiday")
+            "s3://dataplatform-stg-raw-zone/unrestricted/util/hackney_bank_holiday.csv")
         # replace with local path in local mode "C:\\Users\\sballey\\data_dp\\data\\hackney_bank_holiday"
         # "s3://dataplatform-stg-raw-zone/unrestricted/util/hackney_bank_holiday.csv"
         bank_hol = bank_hol.withColumn('date', f.to_date('date', "dd-MM-yyyy"))
@@ -541,8 +541,6 @@ def main():
         # Add a Counter and Drop Duplicated Id columns created by the Join
         applications_df = applications_df.withColumn('counter_application', lit(1)) \
             .drop("ps_id", "id")
-
-        applications_df.select('valid_date', 'registration_date', 'days_valid_to_registered', 'flag_overdue_registration').show()
 
         # Data Processing Ends
 
