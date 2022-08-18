@@ -60,7 +60,7 @@ async function checkS3ForFile() {
   const s3Client = new AWS.S3({ region: AWS_REGION });
   const params = {
     Bucket: s3Bucket,
-    Key: `${objectKeyPrefix}${targetFilePrefix}_dump_${YYMMDD()}.zip`,
+    Key: `${objectKeyPrefix}${targetFilePrefix}_dump_${getCurrentDate()}.zip`,
   };
 
   try {
@@ -78,7 +78,7 @@ function putFile() {
 
   const params = {
     Bucket: s3Bucket,
-    Key: `${objectKeyPrefix}${targetFilePrefix}_dump_${YYMMDD()}.zip`,
+    Key: `${objectKeyPrefix}${targetFilePrefix}_dump_${getCurrentDate()}.zip`,
     Body: stream
   };
 
