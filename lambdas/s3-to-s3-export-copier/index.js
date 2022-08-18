@@ -120,6 +120,7 @@ exports.handler = async (events) => {
     await Promise.all(
         events.Records.map(async (event) => {
             const message = JSON.parse(event.body);
+            console.log("event", event);
             console.log("message.ExportTaskIdentifier", message.ExportTaskIdentifier);
             const describeExportTasks = await rdsClient.describeExportTasks({
                 ExportTaskIdentifier: message.ExportTaskIdentifier
@@ -165,19 +166,20 @@ exports.handler = async (events) => {
             let is_backdated = false;
 
             //Example: sql-to-parquet-21-07-01-override - back dated ingestion so use time from snapshot instead of today
-            if (message.ExportTaskIdentifier.matches("^sql-to-parquet-\\d\\d-\\d\\d-\\d\\d-backdated")) {
+            let pattern = /^sql-to-parquet-\d\d-\d\d-\d\d-backdated$/;
+            if (pattern.test(pathPrefix)) {
                 is_backdated = true;
             }
 
             // If it has copy the files from s3 bucket A => s3 bucket B
-            await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, targetServiceArea, snapshotTime, message.ExportTaskIdentifier, is_backdated);
+            await s3CopyFolder(s3Client, sourceBucketName, pathPrefix, targetBucketName, targetServiceArea, snapshotTime, pathPrefix, is_backdated);
 
             if (workflowName && !is_backdated) {
                 await startWorkflowRun(workflowName);
             }
 
             if (backdatedWorkflowName && is_backdated) {
-                let {day, month, year, date} = getDateTime(snapshotTime, message.ExportTaskIdentifier, is_backdated);
+                let {day, month, year, date} = getDateTime(snapshotTime, pathPrefix, is_backdated);
                 await startBackdatedWorkflowRun(backdatedWorkflowName, date);
             }
         })

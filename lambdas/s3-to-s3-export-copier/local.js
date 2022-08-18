@@ -12,10 +12,7 @@ handler.handler({
     {
       "messageId": "2e1424d4-f796-459a-8184-9c92662be6da",
       "receiptHandle": "AQEBzWwaftRI0KuVm4tP+/7q1rGgNqicHq...",
-      "body": JSON.stringify({
-        ExportTaskIdentifier: "dataplatform-test-export2",
-        ExportBucket: "dataplatform-ryanbratten-rds-export-storage"
-      }),
+      "body": '{"ExportTaskIdentifier":"sql-to-parquet-22-06-01-backdated","ExportBucket":"dataplatform-ryanbratten-dp-rds-export-storage"}',
       "attributes": {
         "ApproximateReceiveCount": "1",
         "SentTimestamp": "1545082650636",
