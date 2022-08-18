@@ -173,7 +173,8 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.trusted_zone_bucket.kms_key_arn,
       var.athena_storage_bucket.kms_key_arn,
       var.glue_scripts_bucket.kms_key_arn,
-      var.spark_ui_output_storage_bucket.kms_key_arn
+      var.spark_ui_output_storage_bucket.kms_key_arn,
+      var.glue_temp_storage_bucket.kms_key_arn
     ]
   }
 

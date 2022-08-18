@@ -41,7 +41,6 @@ SqlQuery0 = """
 /* 
 Correspondence Performance records last 13 months with PCN FOI records
 16/06/2022 - Created 
-
 */
 Select  
 case
@@ -55,7 +54,6 @@ cast(Case when  liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenas
 cast(Case when liberator_pcn_ic.whenassigned != '' AND liberator_pcn_ic.response_generated_at = '' then  current_timestamp - cast( liberator_pcn_ic.whenassigned as timestamp) end as string) as assigned_in_progress_time,
 cast(Case when liberator_pcn_ic.whenassigned != '' AND liberator_pcn_ic.response_generated_at != '' then  cast( liberator_pcn_ic.Response_generated_at as timestamp) - cast( liberator_pcn_ic.whenassigned as timestamp) end as string) as assigned_response_time,
 cast(Case when liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.response_generated_at != '' then cast( liberator_pcn_ic.Response_generated_at as timestamp) - cast( liberator_pcn_ic.date_received as timestamp) end as string) as response_time,
-
 /*unassigned days*/
 cast(Case when  liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = '' then datediff(current_timestamp, cast(substr(liberator_pcn_ic.date_received, 1, 10) as date)  )  end as string) as unassigned_days,
 Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = '' and (datediff( current_timestamp, cast(substr(liberator_pcn_ic.date_received, 1, 10) as date) )) <= 5 Then '5 or Less days'
@@ -66,7 +64,6 @@ When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = ''
 end as unassigned_days_group
 ,Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = '' and (datediff( current_timestamp, cast(substr(liberator_pcn_ic.date_received, 1, 10) as date) )) <= 56 Then 1  ELSE 0 END as unassigned_days_kpiTotFiftySixLess
 ,Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = '' and (datediff( current_timestamp, cast(substr(liberator_pcn_ic.date_received, 1, 10) as date) )) <= 14 Then 1  ELSE 0 END as unassigned_days_kpiTotFourteenLess,
-
 /*Days to assign*/
 cast(Case when  liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned != '' then  datediff( cast(substr( liberator_pcn_ic.whenassigned, 1, 10) as date), cast(substr(liberator_pcn_ic.date_received, 1, 10) as date)) end as string) as Days_to_assign,
 Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned != '' and  (datediff( cast(substr( liberator_pcn_ic.whenassigned, 1, 10) as date), cast(substr(liberator_pcn_ic.date_received, 1, 10) as date))) <= 5 Then '5 or Less days'
@@ -110,7 +107,6 @@ When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.response_generate
 end as ResponseDays_group
 ,Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.response_generated_at != '' and  (datediff( cast(substr(liberator_pcn_ic.response_generated_at, 1, 10) as date), cast(substr(liberator_pcn_ic.date_received, 1, 10) as date))) <= 56 Then 1  ELSE 0 END as ResponseDays_kpiTotFiftySixLess
 ,Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.response_generated_at != '' and  (datediff( cast(substr(liberator_pcn_ic.response_generated_at, 1, 10) as date), cast(substr(liberator_pcn_ic.date_received, 1, 10) as date))) <= 14 Then 1  ELSE 0 END as ResponseDays_kpiTotFourteenLess,
-
 Response_generated_at
 ,Date_Received
 ,concat(substr(Cast(liberator_pcn_ic.date_received as varchar(10)),1, 7), '-01') as MonthYear  
@@ -126,21 +122,20 @@ Response_generated_at
 ,whenassigned
 ,ticketserialnumber
 ,noderef
-,liberator_pcn_ic.record_created
-,liberator_pcn_ic.import_timestamp
-,liberator_pcn_ic.import_year
-,liberator_pcn_ic.import_month
+,substr(cast(liberator_pcn_ic.record_created as string), 1, 19) as record_created
+,substr(cast(liberator_pcn_ic.import_timestamp as string), 1, 19) as import_timestamp
+,substr(cast(liberator_pcn_ic.import_year as string), 1, 04) as import_year
+,substr(cast(liberator_pcn_ic.import_month as string), 1, 02) as import_month
 ,liberator_pcn_ic.import_day
-,liberator_pcn_ic.import_date
-
+,substr(cast(liberator_pcn_ic.import_date as string), 1, 08) as import_date
 /*pcn data*/
 ,pcnfoidetails_pcn_foi_full.pcn as pcn_pcn
-,pcnfoidetails_pcn_foi_full.pcnissuedate as pcn_pcnissuedate
-,pcnfoidetails_pcn_foi_full.pcnissuedatetime as pcn_pcnissuedatetime
-,pcnfoidetails_pcn_foi_full.pcn_canx_date as pcn_pcn_canx_date
+,substr(cast(pcnfoidetails_pcn_foi_full.pcnissuedate as string), 1, 10)  as pcn_pcnissuedate
+,substr(cast(pcnfoidetails_pcn_foi_full.pcnissuedatetime as string), 1, 19)  as pcn_pcnissuedatetime
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_canx_date as string), 1, 10)  as pcn_pcn_canx_date
 ,pcnfoidetails_pcn_foi_full.cancellationgroup as pcn_cancellationgroup
 ,pcnfoidetails_pcn_foi_full.cancellationreason as pcn_cancellationreason
-,pcnfoidetails_pcn_foi_full.pcn_casecloseddate as pcn_pcn_casecloseddate
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_casecloseddate as string), 1, 10)  as pcn_pcn_casecloseddate
 ,pcnfoidetails_pcn_foi_full.street_location as pcn_street_location
 ,pcnfoidetails_pcn_foi_full.whereonlocation as pcn_whereonlocation
 ,pcnfoidetails_pcn_foi_full.zone as pcn_zone
@@ -175,15 +170,15 @@ Response_generated_at
 ,pcnfoidetails_pcn_foi_full.lib_payment_ref as pcn_lib_payment_ref
 ,pcnfoidetails_pcn_foi_full.baliff_from as pcn_baliff_from
 ,pcnfoidetails_pcn_foi_full.bailiff_to as pcn_bailiff_to
-,pcnfoidetails_pcn_foi_full.bailiff_processedon as pcn_bailiff_processedon
+,substr(cast(pcnfoidetails_pcn_foi_full.bailiff_processedon as string), 1, 19)  as pcn_bailiff_processedon
 ,pcnfoidetails_pcn_foi_full.bailiff_redistributionreason as pcn_bailiff_redistributionreason
 ,pcnfoidetails_pcn_foi_full.bailiff as pcn_bailiff
-,pcnfoidetails_pcn_foi_full.warrantissuedate as pcn_warrantissuedate
+,substr(cast(pcnfoidetails_pcn_foi_full.warrantissuedate as string), 1, 19)  as pcn_warrantissuedate
 ,pcnfoidetails_pcn_foi_full.allocation as pcn_allocation
-,pcnfoidetails_pcn_foi_full.eta_datenotified as pcn_eta_datenotified
-,pcnfoidetails_pcn_foi_full.eta_packsubmittedon as pcn_eta_packsubmittedon
-,pcnfoidetails_pcn_foi_full.eta_evidencedate as pcn_eta_evidencedate
-,pcnfoidetails_pcn_foi_full.eta_adjudicationdate as pcn_eta_adjudicationdate
+,substr(cast(pcnfoidetails_pcn_foi_full.eta_datenotified as string), 1, 19)  as pcn_eta_datenotified
+,substr(cast(pcnfoidetails_pcn_foi_full.eta_packsubmittedon as string), 1, 19)  as pcn_eta_packsubmittedon
+,substr(cast(pcnfoidetails_pcn_foi_full.eta_evidencedate as string), 1, 19)  as pcn_eta_evidencedate
+,substr(cast(pcnfoidetails_pcn_foi_full.eta_adjudicationdate as string), 1, 19)   as pcn_eta_adjudicationdate
 ,pcnfoidetails_pcn_foi_full.eta_appealgrounds as pcn_eta_appealgrounds
 ,pcnfoidetails_pcn_foi_full.eta_decisionreceived as pcn_eta_decisionreceived
 ,pcnfoidetails_pcn_foi_full.eta_outcome as pcn_eta_outcome
@@ -196,54 +191,54 @@ Response_generated_at
 ,pcnfoidetails_pcn_foi_full.fin_year_flag as pcn_fin_year_flag
 ,pcnfoidetails_pcn_foi_full.fin_year as pcn_fin_year
 ,pcnfoidetails_pcn_foi_full.ticket_ref as pcn_ticket_ref
-,pcnfoidetails_pcn_foi_full.nto_printed as pcn_nto_printed
-,pcnfoidetails_pcn_foi_full.appeal_accepted as pcn_appeal_accepted
-,pcnfoidetails_pcn_foi_full.arrived_in_pound as pcn_arrived_in_pound
-,pcnfoidetails_pcn_foi_full.cancellation_reversed as pcn_cancellation_reversed
-,pcnfoidetails_pcn_foi_full.cc_printed as pcn_cc_printed
-,pcnfoidetails_pcn_foi_full.drr as pcn_drr
-,pcnfoidetails_pcn_foi_full.en_printed as pcn_en_printed
-,pcnfoidetails_pcn_foi_full.hold_released as pcn_hold_released
-,pcnfoidetails_pcn_foi_full.dvla_response as pcn_dvla_response
-,pcnfoidetails_pcn_foi_full.dvla_request as pcn_dvla_request
-,pcnfoidetails_pcn_foi_full.full_rate_uplift as pcn_full_rate_uplift
-,pcnfoidetails_pcn_foi_full.hold_until as pcn_hold_until
-,pcnfoidetails_pcn_foi_full.lifted_at as pcn_lifted_at
-,pcnfoidetails_pcn_foi_full.lifted_by as pcn_lifted_by
-,pcnfoidetails_pcn_foi_full.loaded as pcn_loaded
-,pcnfoidetails_pcn_foi_full.nor_sent as pcn_nor_sent
-,pcnfoidetails_pcn_foi_full.notice_held as pcn_notice_held
-,pcnfoidetails_pcn_foi_full.ofr_printed as pcn_ofr_printed
-,pcnfoidetails_pcn_foi_full.pcn_printed as pcn_pcn_printed
-,pcnfoidetails_pcn_foi_full.reissue_nto_requested as pcn_reissue_nto_requested
-,pcnfoidetails_pcn_foi_full.reissue_pcn as pcn_reissue_pcn
-,pcnfoidetails_pcn_foi_full.set_back_to_pre_cc_stage as pcn_set_back_to_pre_cc_stage
-,pcnfoidetails_pcn_foi_full.vehicle_released_for_auction as pcn_vehicle_released_for_auction
-,pcnfoidetails_pcn_foi_full.warrant_issued as pcn_warrant_issued
-,pcnfoidetails_pcn_foi_full.warrant_redistributed as pcn_warrant_redistributed
-,pcnfoidetails_pcn_foi_full.warrant_request_granted as pcn_warrant_request_granted
-,pcnfoidetails_pcn_foi_full.ad_hoc_vq4_request as pcn_ad_hoc_vq4_request
-,pcnfoidetails_pcn_foi_full.paper_vq5_received as pcn_paper_vq5_received
-,pcnfoidetails_pcn_foi_full.pcn_extracted_for_buslane as pcn_pcn_extracted_for_buslane
-,pcnfoidetails_pcn_foi_full.pcn_extracted_for_pre_debt as pcn_pcn_extracted_for_pre_debt
-,pcnfoidetails_pcn_foi_full.pcn_extracted_for_collection as pcn_pcn_extracted_for_collection
-,pcnfoidetails_pcn_foi_full.pcn_extracted_for_drr as pcn_pcn_extracted_for_drr
-,pcnfoidetails_pcn_foi_full.pcn_extracted_for_cc as pcn_pcn_extracted_for_cc
-,pcnfoidetails_pcn_foi_full.pcn_extracted_for_nto as pcn_pcn_extracted_for_nto
-,pcnfoidetails_pcn_foi_full.pcn_extracted_for_print as pcn_pcn_extracted_for_print
-,pcnfoidetails_pcn_foi_full.warning_notice_extracted_for_print as pcn_warning_notice_extracted_for_print
-,pcnfoidetails_pcn_foi_full.pcn_extracted_for_ofr as pcn_pcn_extracted_for_ofr
-,pcnfoidetails_pcn_foi_full.pcn_extracted_for_warrant_request as pcn_pcn_extracted_for_warrant_request
-,pcnfoidetails_pcn_foi_full.pre_debt_new_debtor_details as pcn_pre_debt_new_debtor_details
-,pcnfoidetails_pcn_foi_full.importdattime as pcn_importdattime
-,pcnfoidetails_pcn_foi_full.importdatetime as pcn_importdatetime
-,pcnfoidetails_pcn_foi_full.import_year as pcn_import_year
-,pcnfoidetails_pcn_foi_full.import_month as pcn_import_month
+,substr(cast(pcnfoidetails_pcn_foi_full.nto_printed as string), 1, 19) as pcn_nto_printed
+,substr(cast(pcnfoidetails_pcn_foi_full.appeal_accepted as string), 1, 19) as pcn_appeal_accepted
+,substr(cast(pcnfoidetails_pcn_foi_full.arrived_in_pound as string), 1, 19)  as pcn_arrived_in_pound
+,substr(cast(pcnfoidetails_pcn_foi_full.cancellation_reversed as string), 1, 19)  as pcn_cancellation_reversed
+,substr(cast(pcnfoidetails_pcn_foi_full.cc_printed as string), 1, 19)  as pcn_cc_printed
+,substr(cast(pcnfoidetails_pcn_foi_full.drr as string), 1, 19)  as pcn_drr
+,substr(cast(pcnfoidetails_pcn_foi_full.en_printed as string), 1, 19)  as pcn_en_printed
+,substr(cast(pcnfoidetails_pcn_foi_full.hold_released as string), 1, 19)  as pcn_hold_released
+,substr(cast(pcnfoidetails_pcn_foi_full.dvla_response as string), 1, 19)  as pcn_dvla_response
+,substr(cast(pcnfoidetails_pcn_foi_full.dvla_request as string), 1, 19)  as pcn_dvla_request
+,substr(cast(pcnfoidetails_pcn_foi_full.full_rate_uplift as string), 1, 19)  as pcn_full_rate_uplift
+,substr(cast(pcnfoidetails_pcn_foi_full.hold_until as string), 1, 19)  as pcn_hold_until
+,substr(cast(pcnfoidetails_pcn_foi_full.lifted_at as string), 1, 19)  as pcn_lifted_at
+,substr(cast(pcnfoidetails_pcn_foi_full.lifted_by as string), 1, 19)  as pcn_lifted_by
+,substr(cast(pcnfoidetails_pcn_foi_full.loaded as string), 1, 19)  as pcn_loaded
+,substr(cast(pcnfoidetails_pcn_foi_full.nor_sent as string), 1, 19)  as pcn_nor_sent
+,substr(cast(pcnfoidetails_pcn_foi_full.notice_held as string), 1, 19)  as pcn_notice_held
+,substr(cast(pcnfoidetails_pcn_foi_full.ofr_printed as string), 1, 19)  as pcn_ofr_printed
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_printed as string), 1, 19)  as pcn_pcn_printed
+,substr(cast(pcnfoidetails_pcn_foi_full.reissue_nto_requested as string), 1, 19)  as pcn_reissue_nto_requested
+,substr(cast(pcnfoidetails_pcn_foi_full.reissue_pcn as string), 1, 19)  as pcn_reissue_pcn
+,substr(cast(pcnfoidetails_pcn_foi_full.set_back_to_pre_cc_stage as string), 1, 19)  as pcn_set_back_to_pre_cc_stage
+,substr(cast(pcnfoidetails_pcn_foi_full.vehicle_released_for_auction as string), 1, 19)  as pcn_vehicle_released_for_auction
+,substr(cast(pcnfoidetails_pcn_foi_full.warrant_issued as string), 1, 19)  as pcn_warrant_issued
+,substr(cast(pcnfoidetails_pcn_foi_full.warrant_redistributed as string), 1, 19)  as pcn_warrant_redistributed
+,substr(cast(pcnfoidetails_pcn_foi_full.warrant_request_granted as string), 1, 19)  as pcn_warrant_request_granted
+,substr(cast(pcnfoidetails_pcn_foi_full.ad_hoc_vq4_request as string), 1, 19)  as pcn_ad_hoc_vq4_request
+,substr(cast(pcnfoidetails_pcn_foi_full.paper_vq5_received as string), 1, 19)  as pcn_paper_vq5_received
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_extracted_for_buslane as string), 1, 19)  as pcn_pcn_extracted_for_buslane
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_extracted_for_pre_debt as string), 1, 19)  as pcn_pcn_extracted_for_pre_debt
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_extracted_for_collection as string), 1, 19)  as pcn_pcn_extracted_for_collection
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_extracted_for_drr as string), 1, 19)  as pcn_pcn_extracted_for_drr
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_extracted_for_cc as string), 1, 19)  as pcn_pcn_extracted_for_cc
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_extracted_for_nto as string), 1, 19)  as pcn_pcn_extracted_for_nto
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_extracted_for_print as string), 1, 19)  as pcn_pcn_extracted_for_print
+,substr(cast(pcnfoidetails_pcn_foi_full.warning_notice_extracted_for_print as string), 1, 19)  as pcn_warning_notice_extracted_for_print
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_extracted_for_ofr as string), 1, 19)  as pcn_pcn_extracted_for_ofr
+,substr(cast(pcnfoidetails_pcn_foi_full.pcn_extracted_for_warrant_request as string), 1, 19)  as pcn_pcn_extracted_for_warrant_request
+,substr(cast(pcnfoidetails_pcn_foi_full.pre_debt_new_debtor_details as string), 1, 19)  as pcn_pre_debt_new_debtor_details
+,substr(cast(pcnfoidetails_pcn_foi_full.importdattime as string), 1, 19)  as pcn_importdattime
+,substr(cast(pcnfoidetails_pcn_foi_full.importdatetime as string), 1, 19)  as pcn_importdatetime
+,substr(cast(pcnfoidetails_pcn_foi_full.import_year as string), 1, 04)  as pcn_import_year
+,substr(cast(pcnfoidetails_pcn_foi_full.import_month as string), 1, 02)  as pcn_import_month
 ,pcnfoidetails_pcn_foi_full.import_day as pcn_import_day
-,pcnfoidetails_pcn_foi_full.import_date as pcn_import_date
+,substr(cast(pcnfoidetails_pcn_foi_full.import_date as string), 1, 08)  as pcn_import_date
+
 from liberator_pcn_ic
 left join pcnfoidetails_pcn_foi_full on liberator_pcn_ic.ticketserialnumber = pcnfoidetails_pcn_foi_full.pcn and pcnfoidetails_pcn_foi_full.import_date = liberator_pcn_ic.import_date
-
 where liberator_pcn_ic.import_Date = (Select MAX(liberator_pcn_ic.import_date) from liberator_pcn_ic)
 AND length(liberator_pcn_ic.ticketserialnumber) = 10
 AND cast(substr(liberator_pcn_ic.date_received, 1, 10) as date)  > current_date  - interval '13' month  --Last 13 months from todays date
@@ -260,7 +255,7 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_correspondence_performance_records_with_pcn/",
+    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_correspondence_performance_records_with_pcn_gds/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],    
@@ -270,7 +265,7 @@ S3bucket_node3 = glueContext.getSink(
 )
 S3bucket_node3.setCatalogInfo(
     catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
-    catalogTableName="parking_correspondence_performance_records_with_pcn",
+    catalogTableName="parking_correspondence_performance_records_with_pcn_gds",
 )
 S3bucket_node3.setFormat("glueparquet")
 S3bucket_node3.writeFrame(ApplyMapping_node2)

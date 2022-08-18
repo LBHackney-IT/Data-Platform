@@ -937,3 +937,49 @@ module "Parking_Ringgo_Review-copy" {
     "--environment"         = var.environment
   }
 }
+# MRB 08-08-2022 Job created   
+module "Parking_Permit_Diesel_Tends_Bought_in_Month" {
+  source                     = "../modules/aws-glue-job"
+  is_live_environment        = local.is_live_environment
+  is_production_environment  = local.is_production_environment
+  department                 = module.department_parking_data_source
+  job_name                   = "${local.short_identifier_prefix}Parking_Permit_Diesel_Tends_Bought_in_Month"
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                = "parking_permit_diesel_tends_bought_in_month"
+  #  triggered_by_job           = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  job_description = "Monthly review of Permits bought in month, broken down by diesel or electric vehicles"
+  #  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  schedule                       = "cron(0 1 10 * ? *)"
+  number_of_workers_for_glue_job = 2
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "3.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
+}
+module "parking_correspondence_performance_records_with_pcn_gds" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn_gds"
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_correspondence_performance_records_with_pcn_gds"
+  glue_version                   = "3.0"
+  triggered_by_job               = module.parking_pcn_denormalisation.job_name
+  job_description                = "parking_correspondence_performance_records_with_pcn with no timestamp for GDS"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
+}

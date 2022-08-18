@@ -883,3 +883,70 @@ module "sandbox_tuomo_covid_locations" {
   enable_glue_trigger             = false
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
+
+module "housing_patches" {
+  count                           = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  is_production_environment       = local.is_production_environment
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
+  helper_module_key               = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = data.aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_housing_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone_data_source.bucket_id
+  google_sheets_document_id       = "1zQ99NFnueXlUm_VcLno2xZQYuDE1Wrll-SZxHALfF-M"
+  google_sheets_worksheet_name    = "Property Patch mapping"
+  department                      = module.department_housing_data_source
+  dataset_name                    = "property_patch_mapping"
+  enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
+}
+
+module "officer_patches" {
+  count                           = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  is_production_environment       = local.is_production_environment
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
+  helper_module_key               = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = data.aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_housing_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone_data_source.bucket_id
+  google_sheets_document_id       = "1zQ99NFnueXlUm_VcLno2xZQYuDE1Wrll-SZxHALfF-M"
+  google_sheets_worksheet_name    = "Officer - Patch mapping"
+  department                      = module.department_housing_data_source
+  dataset_name                    = "officer_patch_mapping"
+  enable_glue_trigger             = false
+  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
+}
+
+
+module "parking_spreadsheet_parking_ops_db_defects_mgt" {
+  count                           = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  is_production_environment       = local.is_production_environment
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
+  helper_module_key               = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                 = data.aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name      = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone_data_source.bucket_id
+  google_sheets_document_id       = "158a8akavRN3nuYm04tyUac-zVZAOjLiPU4O8tCrPYpw"
+  google_sheets_worksheet_name    = "dp_data_import"
+  department                      = module.department_parking_data_source
+  dataset_name                    = "parking_ops_db_defects_mgt"
+  google_sheet_import_schedule    = "cron(0 6 ? * * *)"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
+}
