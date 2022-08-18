@@ -165,8 +165,8 @@ exports.handler = async (events) => {
             const snapshotTime = exportTaskStatus.SnapshotTime;
             let is_backdated = false;
 
-            //Example: sql-to-parquet-21-07-01-override - back dated ingestion so use time from snapshot instead of today
-            let pattern = /^sql-to-parquet-\d\d-\d\d-\d\d-backdated$/;
+            //Example: sql-to-parquet-2021-07-01-override - back dated ingestion so use time from snapshot instead of today
+            let pattern = /^sql-to-parquet-\d\d\d\d-\d\d-\d\d-backdated$/;
             if (pattern.test(pathPrefix)) {
                 is_backdated = true;
             }

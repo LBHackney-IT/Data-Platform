@@ -108,6 +108,7 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
     content {
       actions = [
         "glue:StartWorkflowRun",
+        "glue:UpdateWorkflow",
       ]
       effect = "Allow"
       resources = [
