@@ -102,6 +102,20 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
     }
   }
 
+  dynamic "statement" {
+    for_each = var.backdated_workflow_arn == "" ? [] : [1]
+
+    content {
+      actions = [
+        "glue:StartWorkflowRun",
+      ]
+      effect = "Allow"
+      resources = [
+        var.backdated_workflow_arn
+      ]
+    }
+  }
+
   statement {
     actions = [
       "kms:GenerateDataKey*",
@@ -158,9 +172,10 @@ resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
 
   environment {
     variables = {
-      BUCKET_DESTINATION = var.zone_bucket_id,
-      SERVICE_AREA       = var.service_area
-      WORKFLOW_NAME      = var.workflow_name
+      BUCKET_DESTINATION      = var.zone_bucket_id,
+      SERVICE_AREA            = var.service_area
+      WORKFLOW_NAME           = var.workflow_name
+      BACKDATED_WORKFLOW_NAME = var.backdated_workflow_name
     }
   }
 

@@ -41,12 +41,19 @@ module "liberator_db_snapshot_to_s3" {
   rds_instance_ids               = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_id]
   workflow_name                  = aws_glue_workflow.parking_liberator_data.name
   workflow_arn                   = aws_glue_workflow.parking_liberator_data.arn
+  backdated_workflow_name        = aws_glue_workflow.parking_liberator_backdated_data.name
+  backdated_workflow_arn         = aws_glue_workflow.parking_liberator_backdated_data.arn
 }
 
 resource "aws_glue_workflow" "parking_liberator_data" {
   # This resource is modified outside of terraform by parking analysts.
   # Any change which forces the workflow to be recreated will lose their changes.
   name = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  tags = module.tags.values
+}
+
+resource "aws_glue_workflow" "parking_liberator_backdated_data" {
+  name = "${local.short_identifier_prefix}parking-liberator-backdated-data-workflow"
   tags = module.tags.values
 }
 

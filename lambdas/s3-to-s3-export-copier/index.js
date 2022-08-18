@@ -5,6 +5,7 @@ const AWS_REGION = "eu-west-2";
 const bucketDestination = process.env.BUCKET_DESTINATION;
 const targetServiceArea = process.env.SERVICE_AREA;
 const workflowName = process.env.WORKFLOW_NAME
+const backdatedWorkflowName = process.env.BACKDATED_WORKFLOW_NAME
 
 async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucketName, targetPath, snapshotTime, exportTaskIdentifier, is_backdated) {
     console.log("sourceBucketName", sourceBucketName);
@@ -89,6 +90,17 @@ async function startWorkflowRun(workflowName) {
     await glue.startWorkflowRun(params).promise();
 }
 
+async function startBackdatedWorkflowRun(workflowName) {
+    const glue = new AWS.Glue({apiVersion: '2017-03-31'});
+    const params = {
+        Name: workflowName
+    };
+    console.log("starting workflow run with params", params)
+
+    await glue.updateWorkflow(params).promise();
+    await glue.startWorkflowRun(params).promise();
+}
+
 exports.handler = async (events) => {
     const rdsClient = new AWS.RDS({region: AWS_REGION});
     const s3Client = new AWS.S3({region: AWS_REGION});
@@ -151,6 +163,10 @@ exports.handler = async (events) => {
 
             if (workflowName && !is_backdated) {
                 await startWorkflowRun(workflowName);
+            }
+
+            if (backdatedWorkflowName && is_backdated) {
+                await startBackdatedWorkflowRun(backdatedWorkflowName);
             }
         })
     )
