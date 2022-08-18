@@ -20,6 +20,7 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
     // plan, list through the source, if got continuation token, recursive
 
     let listResponse;
+
     do {
         const listObjectsParams = {
             Bucket: sourceBucketName,
@@ -29,19 +30,7 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
         console.log("continuation token", listResponse?.NextContinuationToken);
 
         listResponse = await s3Client.listObjectsV2(listObjectsParams).promise();
-
-        let day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
-        let month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
-        let year = snapshotTime.getFullYear();
-        let date = year + month + day;
-
-        if (is_backdated) {
-            let split = exportTaskIdentifier.split("-");
-            day = split[5]
-            month = split[4]
-            year = split[3]
-            date = year + month + day;
-        }
+        let {day, month, year, date} = getDateTime(snapshotTime, exportTaskIdentifier, is_backdated);
 
         console.log("list response contents", listResponse.Contents);
 
@@ -72,6 +61,22 @@ async function s3CopyFolder(s3Client, sourceBucketName, sourcePath, targetBucket
     } while (listResponse.IsTruncated && listResponse.NextContinuationToken)
 }
 
+function getDateTime(snapshotTime, exportTaskIdentifier, is_backdated) {
+    let day = (snapshotTime.getDate() < 10 ? '0' : '') + snapshotTime.getDate();
+    let month = ((snapshotTime.getMonth() + 1) < 10 ? '0' : '') + (snapshotTime.getMonth() + 1);
+    let year = snapshotTime.getFullYear();
+    let date = year + month + day;
+
+    if (is_backdated) {
+        let split = exportTaskIdentifier.split("-");
+        day = split[5]
+        month = split[4]
+        year = split[3]
+        date = year + month + day;
+    }
+    return {day, month, year, date};
+}
+
 function getParquetFileName(fileName) {
     if (!fileName.startsWith('p')) {
         const index = fileName.lastIndexOf('/');
@@ -90,15 +95,21 @@ async function startWorkflowRun(workflowName) {
     await glue.startWorkflowRun(params).promise();
 }
 
-async function startBackdatedWorkflowRun(workflowName) {
+async function startBackdatedWorkflowRun(workflowName,import_date) {
     const glue = new AWS.Glue({apiVersion: '2017-03-31'});
-    const params = {
+    const run_params = {
         Name: workflowName
     };
-    console.log("starting workflow run with params", params)
-
-    await glue.updateWorkflow(params).promise();
-    await glue.startWorkflowRun(params).promise();
+    const update_params = {
+        Name: workflowName,
+        DefaultRunProperties: {
+            "import_date" : import_date
+        }
+    };
+    console.log("updating workflow run with params", update_params)
+    await glue.updateWorkflow(update_params).promise();
+    console.log("starting workflow run with params", run_params)
+    await glue.startWorkflowRun(run_params).promise();
 }
 
 exports.handler = async (events) => {
@@ -166,7 +177,8 @@ exports.handler = async (events) => {
             }
 
             if (backdatedWorkflowName && is_backdated) {
-                await startBackdatedWorkflowRun(backdatedWorkflowName);
+                let {day, month, year, date} = getDateTime(snapshotTime, message.ExportTaskIdentifier, is_backdated);
+                await startBackdatedWorkflowRun(backdatedWorkflowName, date);
             }
         })
     )
