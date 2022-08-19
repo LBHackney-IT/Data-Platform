@@ -52,6 +52,7 @@ def get_glue_env_var(key, default=None):
     else:
         return default
 
+
 def get_glue_env_vars(*keys):
     """
     Retrieves values for the given keys passed in as job parameters.
@@ -62,6 +63,7 @@ def get_glue_env_vars(*keys):
     """
     vars = getResolvedOptions(sys.argv, [*keys])
     return (vars[key] for key in keys)
+
 
 def get_secret(secret_name, region_name):
     session = boto3.session.Session()
@@ -84,6 +86,10 @@ def get_secret(secret_name, region_name):
 def add_timestamp_column(data_frame):
     now = datetime.datetime.now()
     return data_frame.withColumn('import_timestamp', f.lit(str(now.timestamp())))
+
+
+def add_timestamp_column_from_date(data_frame, import_date_as_datetime):
+    return data_frame.withColumn('import_timestamp', f.lit(str(import_date_as_datetime.timestamp())))
 
 
 def add_import_time_columns(data_frame):
@@ -169,9 +175,9 @@ def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
             .select(max(to_date(concat(
             col("import_year_int"),
             when(col("import_month_int") < 10, concat(lit("0"), col("import_month_int")))
-            .otherwise(col("import_month_int")),
+                .otherwise(col("import_month_int")),
             when(col("import_day_int") < 10, concat(lit("0"), col("import_day_int")))
-            .otherwise(col("import_day_int"))),
+                .otherwise(col("import_day_int"))),
             format="yyyyMMdd")).alias("latest_partition_date")) \
             .select(year(col("latest_partition_date")).alias("latest_year_int"),
                     month(col("latest_partition_date")).alias("latest_month_int"),
@@ -220,12 +226,12 @@ def get_latest_snapshot_optimized(df: DataFrame) -> DataFrame:
             .withColumn("snapshot_month_int", col("snapshot_month").cast(IntegerType())) \
             .withColumn("snapshot_day_int", col("snapshot_day").cast(IntegerType())) \
             .select(max(to_date(concat(
-                col("snapshot_year_int"),
-                when(col("snapshot_month_int") < 10, concat(lit("0"), col("snapshot_month_int")))
+            col("snapshot_year_int"),
+            when(col("snapshot_month_int") < 10, concat(lit("0"), col("snapshot_month_int")))
                 .otherwise(col("snapshot_month_int")),
-                when(col("snapshot_day_int") < 10, concat(lit("0"), col("snapshot_day_int")))
+            when(col("snapshot_day_int") < 10, concat(lit("0"), col("snapshot_day_int")))
                 .otherwise(col("snapshot_day_int"))),
-                format="yyyyMMdd")).alias("latest_snapshot_date")) \
+            format="yyyyMMdd")).alias("latest_snapshot_date")) \
             .select(year(col("latest_snapshot_date")).alias("latest_year_int"),
                     month(col("latest_snapshot_date")).alias("latest_month_int"),
                     dayofmonth(col("latest_snapshot_date")).alias("latest_day_int"))
@@ -322,8 +328,8 @@ def rename_file(source_bucket, src_prefix, filename):
 
         ## Get a list of files with prefix (we know there will be only one file)
         response = client.list_objects(
-            Bucket = source_bucket,
-            Prefix = src_prefix
+            Bucket=source_bucket,
+            Prefix=src_prefix
         )
         name = response["Contents"][0]["Key"]
 
@@ -343,8 +349,8 @@ def rename_file(source_bucket, src_prefix, filename):
         client.delete_object(Bucket=source_bucket, Key=name)
 
     except Exception as error:
-            ## do nothing
-            print('Error Occured: rename_file', error)
+        ## do nothing
+        print('Error Occured: rename_file', error)
 
 
 def move_file(bucket, source_path, target_path, filename):
@@ -369,9 +375,8 @@ def move_file(bucket, source_path, target_path, filename):
         client.delete_object(Bucket=bucket, Key=source_key)
         print("File Moved to: ", target_key)
     except Exception as error:
-            ## do nothing
-            print('Error Occured: rename_file', error)
-
+        ## do nothing
+        print('Error Occured: rename_file', error)
 
 
 def working_days_diff(dataframe, id_column, date_from_column, date_to_column, result_column, bank_holiday_dataframe):
@@ -414,14 +419,13 @@ def working_days_diff(dataframe, id_column, date_from_column, date_to_column, re
     # Join result back to the full input table using the id column
     dataframe = dataframe.join(df_dates, id_column, 'left')
     return dataframe
-            
-            
+
+
 def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource('s3')
     folder_string = s3_bucket_target.replace('s3://', '')
     bucket_name = folderString.split('/')[0]
-    prefix = folder_string.replace(bucket_name+'/', '')+'/'
+    prefix = folder_string.replace(bucket_name + '/', '') + '/'
     bucket = s3.Bucket(bucket_name)
     bucket.objects.filter(Prefix=prefix).delete()
     return
-

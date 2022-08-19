@@ -55,6 +55,10 @@ resource "aws_glue_workflow" "parking_liberator_data" {
 resource "aws_glue_workflow" "parking_liberator_backdated_data" {
   name = "${local.short_identifier_prefix}parking-liberator-backdated-data-workflow"
   tags = module.tags.values
+
+  lifecycle {
+    ignore_changes = ["default_run_properties"]
+  }
 }
 
 # Lambda execution role
