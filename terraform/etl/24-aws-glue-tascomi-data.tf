@@ -269,13 +269,13 @@ module "tascomi_applications_to_trusted" {
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
-    "--job-bookmark-option"     = "job-bookmark-enable"
-    "--target_destination"        = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
-    "--enable-glue-datacatalog" = "true"
-    "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
-    "--source_catalog_table_applications"    = "applications"
-    "--source_catalog_table_application_types"   = "application_types"
-    "--source_catalog_table_ps_codes"   = "ps_development_codes"
+    "--job-bookmark-option"                    = "job-bookmark-enable"
+    "--target_destination"                     = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
+    "--enable-glue-datacatalog"                = "true"
+    "--source_catalog_database"                = aws_glue_catalog_database.refined_zone_tascomi.name
+    "--source_catalog_table_applications"      = "applications"
+    "--source_catalog_table_application_types" = "application_types"
+    "--source_catalog_table_ps_codes"          = "ps_development_codes"
   }
   script_name          = "tascomi_applications_trusted"
   triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
