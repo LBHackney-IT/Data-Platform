@@ -424,7 +424,7 @@ def working_days_diff(dataframe, id_column, date_from_column, date_to_column, re
 def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource('s3')
     folder_string = s3_bucket_target.replace('s3://', '')
-    bucket_name = folder_string.split('/')[0]
+    bucket_name = folderString.split('/')[0]
     prefix = folder_string.replace(bucket_name + '/', '') + '/'
     bucket = s3.Bucket(bucket_name)
     bucket.objects.filter(Prefix=prefix).delete()
