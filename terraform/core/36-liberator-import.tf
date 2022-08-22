@@ -10,14 +10,14 @@ module "liberator_data_storage" {
 }
 
 module "liberator_dump_to_rds_snapshot" {
-  count = local.is_production_or_development_environment ? 1 : 0
-
+  count                      = 1
   source                     = "../modules/sql-to-rds-snapshot"
   tags                       = module.tags.values
   project                    = var.project
   environment                = var.environment
   identifier_prefix          = local.identifier_prefix
   is_live_environment        = local.is_live_environment
+  is_production_environment  = local.is_production_environment
   instance_name              = "${local.short_identifier_prefix}liberator-to-rds-snapshot"
   watched_bucket_name        = module.liberator_data_storage.bucket_id
   watched_bucket_kms_key_arn = module.liberator_data_storage.kms_key_arn
@@ -26,8 +26,7 @@ module "liberator_dump_to_rds_snapshot" {
 }
 
 module "liberator_db_snapshot_to_s3" {
-  count = local.is_production_or_development_environment ? 1 : 0
-
+  count                          = 1
   source                         = "../modules/db-snapshot-to-s3"
   tags                           = module.tags.values
   project                        = var.project
