@@ -3,9 +3,9 @@ locals {
 }
 
 resource "aws_glue_trigger" "parking_liberator_backdated_data_workflow_trigger" {
-  name = "parking-liberator-backdated-workflow-trigger"
-  type = "ON_DEMAND"
-
+  name          = "parking-liberator-backdated-workflow-trigger"
+  type          = "ON_DEMAND"
+  tags          = module.tags.values
   workflow_name = local.backdated_workflow_name
 
   actions {
@@ -27,9 +27,9 @@ resource "aws_glue_crawler" "landing_zone_liberator_backdated" {
 }
 
 resource "aws_glue_trigger" "parking_liberator_backdated_data_job_trigger" {
-  name = "parking-liberator-backdated-copy-job-trigger"
-  type = "CONDITIONAL"
-
+  name          = "parking-liberator-backdated-copy-job-trigger"
+  type          = "CONDITIONAL"
+  tags          = module.tags.values
   workflow_name = local.backdated_workflow_name
 
   actions {
