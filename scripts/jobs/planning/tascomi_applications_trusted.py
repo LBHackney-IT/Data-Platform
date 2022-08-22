@@ -27,7 +27,7 @@ from pyspark.sql.functions import *
 import pyspark.sql.functions as f
 
 from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
-from scripts.helpers.helpers import create_pushdown_predicate, get_latest_snapshot_optimized, PARTITION_KEYS_SNAPSHOT, working_days_diff, clear_target_folder
+from scripts.helpers.helpers import create_pushdown_predicate, get_latest_rows_by_date, PARTITION_KEYS_SNAPSHOT, working_days_diff, clear_target_folder
 
 
 # Define the functions that will be used in your job (optional).
@@ -447,9 +447,7 @@ def main():
 
         # Data processing Starts
 
-        # If the source data IS partitionned by import_date, you have loaded several days but only need
-        # the latest version, use the get_latest_partitions() helper
-        applications_df = get_latest_snapshot_optimized(applications_df)
+        applications_df = get_latest_rows_by_date(applications_df, 'snapshot_date')
 
         # Drop and rename columns we know are not needed by Qlik
         applications_df = applications_df.drop(*columns_to_delete_from_apps_table) \
