@@ -30,6 +30,11 @@ variable "transit_gateway_cidr" {
   type        = string
 }
 
+variable "secondary_transit_gateway_cidr" {
+  description = "The secondary CIDR blocks for the VPC to attach to the Transit Gateway"
+  type        = list(string)
+}
+
 variable "transit_gateway_private_subnets" {
   description = "A list of private subnets to attach to the VPC and route traffic to the Transit Gateway"
   type        = list(string)

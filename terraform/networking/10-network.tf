@@ -3,15 +3,16 @@ module "core_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "2.70.0"
 
-  azs                  = var.transit_gateway_availability_zones
-  cidr                 = var.transit_gateway_cidr
-  create_igw           = false
-  enable_dns_hostnames = var.core_enable_dns_hostnames
-  enable_dns_support   = var.core_enable_dns_support
-  enable_nat_gateway   = false
-  name                 = local.identifier_prefix
-  private_subnets      = var.transit_gateway_private_subnets
-  single_nat_gateway   = false
+  azs                   = var.transit_gateway_availability_zones
+  cidr                  = var.transit_gateway_cidr
+  secondary_cidr_blocks = var.secondary_transit_gateway_cidr
+  create_igw            = false
+  enable_dns_hostnames  = var.core_enable_dns_hostnames
+  enable_dns_support    = var.core_enable_dns_support
+  enable_nat_gateway    = false
+  name                  = local.identifier_prefix
+  private_subnets       = var.transit_gateway_private_subnets
+  single_nat_gateway    = false
 
   enable_s3_endpoint = true
 
