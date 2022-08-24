@@ -25,78 +25,79 @@ module "vpc_endpoints" {
 
   endpoints = {
     s3 = {
-      service = "s3"
+      service      = "s3"
+      service_type = "Gateway"
     },
     ssm = {
       service             = "ssm"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     ssmmessages = {
       service             = "ssmmessages"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     lambda = {
       service             = "lambda"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     ecs = {
       service             = "ecs"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     ec2 = {
       service             = "ec2"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     ec2messages = {
       service             = "ec2messages"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     ecr_api = {
       service             = "ecr.api"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     ecr_dkr = {
       service             = "ecr.dkr"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     kms = {
       service             = "kms"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     secretsmanager = {
       service             = "secretsmanager"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     sqs = {
       service             = "sqs"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
     sns = {
       service             = "sns"
       private_dns_enabled = true
-      subnet_ids          = module.core_vpc.private_subnets
+      subnet_ids          = slice(module.core_vpc.private_subnets, 0, 3)
       security_group_ids  = [aws_security_group.service_endpoint.id]
     },
   }
@@ -107,9 +108,8 @@ module "vpc_endpoints" {
 resource "aws_vpc_endpoint_route_table_association" "private_s3" {
   count           = length(var.transit_gateway_private_subnets)
   vpc_endpoint_id = module.vpc_endpoints.endpoints["s3"].id
-  route_table_id  = element(tolist(module.vpc_endpoints.endpoints["s3"].route_table_ids), count.index)
+  route_table_id  = element(module.core_vpc.private_route_table_ids, count.index)
 }
-
 
 resource "aws_ssm_parameter" "vpc_id" {
   name  = "/${local.identifier_prefix}/vpc/vpc_id"

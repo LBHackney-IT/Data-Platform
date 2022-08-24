@@ -3,7 +3,7 @@ locals {
   vpc_attachments = {
     format("%s-hub-attachment", module.core_vpc.name) = {
       vpc_id     = module.core_vpc.vpc_id
-      subnet_ids = module.core_vpc.private_subnets
+      subnet_ids = slice(module.core_vpc.private_subnets, 0, 3)
     }
   }
 }
