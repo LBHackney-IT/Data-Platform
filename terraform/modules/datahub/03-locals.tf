@@ -27,7 +27,8 @@ locals {
       { name : "AUTH_OIDC_SCOPE", value : "openid profile email" },
       { name : "AUTH_OIDC_USER_NAME_CLAIM", value : "email" },
       { name : "AUTH_OIDC_USER_NAME_CLAIM_REGEX", value : "([^@]+)" },
-      { name : "DATAHUB_ANALYTICS_ENABLED", value : "false" }
+      { name : "DATAHUB_ANALYTICS_ENABLED", value : "false" },
+      { name : "AUTH_JAAS_ENABLED", value : "false" }
     ]
     secrets = [
       { name : "DATAHUB_SECRET", valueFrom : aws_ssm_parameter.datahub_password.arn },

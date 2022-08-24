@@ -157,3 +157,11 @@ resource "aws_s3_bucket_object" "copy_tables_landing_to_raw" {
   source      = "../../scripts/jobs/copy_tables_landing_to_raw.py"
   source_hash = filemd5("../../scripts/jobs/copy_tables_landing_to_raw.py")
 }
+
+resource "aws_s3_bucket_object" "copy_tables_landing_to_raw_backdated" {
+  bucket      = module.glue_scripts_data_source.bucket_id
+  key         = "scripts/copy_tables_landing_to_raw_backdated.py"
+  acl         = "private"
+  source      = "../../scripts/jobs/copy_tables_landing_to_raw_backdated.py"
+  source_hash = filemd5("../../scripts/jobs/copy_tables_landing_to_raw_backdated.py")
+}
