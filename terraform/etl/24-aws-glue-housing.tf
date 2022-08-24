@@ -28,7 +28,7 @@ module "mtfh_reshape_to_refined" {
 
 }
 
-module "rentsense_output {
+module "rentsense_output" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
