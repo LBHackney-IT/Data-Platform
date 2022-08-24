@@ -1,7 +1,7 @@
 # Core Infrastructure
 module "core_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.70.0"
+  version = "3.0.0"
 
   azs                   = var.transit_gateway_availability_zones
   cidr                  = var.transit_gateway_cidr
@@ -13,55 +13,103 @@ module "core_vpc" {
   name                  = local.identifier_prefix
   private_subnets       = var.transit_gateway_private_subnets
   single_nat_gateway    = false
+  tags                  = module.tags.values
+}
 
-  enable_s3_endpoint = true
+module "vpc_endpoints" {
+  source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+  version = "3.0.0"
 
-  enable_secretsmanager_endpoint              = true
-  secretsmanager_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
-  secretsmanager_endpoint_private_dns_enabled = true
+  vpc_id             = module.core_vpc.vpc_id
+  security_group_ids = [aws_security_group.service_endpoint.id]
 
-  enable_ssm_endpoint              = true
-  ssm_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
-  ssm_endpoint_private_dns_enabled = true
-
-  enable_ssmmessages_endpoint              = true
-  ssmmessages_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
-  ssmmessages_endpoint_private_dns_enabled = true
-
-  enable_ec2messages_endpoint              = true
-  ec2messages_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
-  ec2messages_endpoint_private_dns_enabled = true
-
-  enable_ecr_api_endpoint              = true
-  ecr_api_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
-  ecr_api_endpoint_private_dns_enabled = true
-
-  enable_ecr_dkr_endpoint              = true
-  ecr_dkr_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
-  ecr_dkr_endpoint_private_dns_enabled = true
-
-  enable_kms_endpoint              = true
-  kms_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
-  kms_endpoint_private_dns_enabled = true
-
-  enable_sqs_endpoint              = true
-  sqs_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
-  sqs_endpoint_private_dns_enabled = true
-
-  enable_lambda_endpoint              = true
-  lambda_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
-  lambda_endpoint_private_dns_enabled = true
-
-  enable_sns_endpoint              = true
-  sns_endpoint_security_group_ids  = [aws_security_group.service_endpoint.id]
-  sns_endpoint_private_dns_enabled = true
-
-  enable_ecs_endpoint                    = true
-  ecs_endpoint_security_group_ids        = [aws_security_group.service_endpoint.id]
-  ecs_agent_endpoint_private_dns_enabled = true
+  endpoints = {
+    s3 = {
+      service = "s3"
+    },
+    ssm = {
+      service             = "ssm"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    ssmmessages = {
+      service             = "ssmmessages"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    lambda = {
+      service             = "lambda"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    ecs = {
+      service             = "ecs"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    ec2 = {
+      service             = "ec2"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    ec2messages = {
+      service             = "ec2messages"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    ecr_api = {
+      service             = "ecr.api"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    ecr_dkr = {
+      service             = "ecr.dkr"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    kms = {
+      service             = "kms"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    secretsmanager = {
+      service             = "secretsmanager"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    sqs = {
+      service             = "sqs"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+    sns = {
+      service             = "sns"
+      private_dns_enabled = true
+      subnet_ids          = module.core_vpc.private_subnets
+      security_group_ids  = [aws_security_group.service_endpoint.id]
+    },
+  }
 
   tags = module.tags.values
 }
+
+resource "aws_vpc_endpoint_route_table_association" "private_s3" {
+  count           = length(var.transit_gateway_private_subnets)
+  vpc_endpoint_id = module.vpc_endpoints.endpoints["s3"].id
+  route_table_id  = element(tolist(module.vpc_endpoints.endpoints["s3"].route_table_ids), count.index)
+}
+
 
 resource "aws_ssm_parameter" "vpc_id" {
   name  = "/${local.identifier_prefix}/vpc/vpc_id"

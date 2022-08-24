@@ -1,5 +1,5 @@
 locals {
-  kafka_event_streaming_count = local.is_live_environment ? 1 : 0
+  kafka_event_streaming_count = local.is_live_environment ? 1 : 1
   deploy_kafka_test_lambda    = local.kafka_event_streaming_count > 0 && !local.is_production_environment
 }
 
