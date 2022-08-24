@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "task_role" {
       "s3:GetObjectVersionForReplication",
       "s3:GetObjectVersionAcl",
       "s3:GetObjectVersionTagging",
-      "s3:ListBucket"
+      "s3:ListBucket",
     ]
     resources = [
       module.raw_zone.bucket_arn,
