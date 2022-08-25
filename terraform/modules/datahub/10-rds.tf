@@ -13,6 +13,11 @@ resource "aws_db_instance" "datahub" {
   tags                   = var.tags
 }
 
+resource "aws_db_instance_automated_backups_replication" "datahub" {
+  source_db_instance_arn = aws_db_instance.datahub.arn
+  retention_period       = 14
+}
+
 resource "aws_db_subnet_group" "datahub" {
   tags       = var.tags
   name       = "${var.short_identifier_prefix}datahub"
