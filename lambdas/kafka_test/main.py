@@ -138,6 +138,7 @@ def read_message_from_topic(kafka_brokers, schema_registry_url, kafka_topic):
         SECURITY_PROTOCOL_KEY: SECURITY_PROTOCOL_VALUE,
         SCHEMA_REGISTRY_URL_KEY: schema_registry_url,
         CLIENT_ID_KEY: CLIENT_ID_VALUE,
+        GROUP_ID_KEY: CLIENT_ID_VALUE,
         'auto.offset.reset': 'earliest'
     }
 
