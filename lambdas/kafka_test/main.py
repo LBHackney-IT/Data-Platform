@@ -143,7 +143,7 @@ def read_message_from_topic(kafka_brokers, schema_registry_url, kafka_topic):
     }
 
     consumer = AvroConsumer(consumer_config)
-    consumer.subscribe(kafka_topic)
+    consumer.subscribe([kafka_topic])
 
     while True:
         try:
