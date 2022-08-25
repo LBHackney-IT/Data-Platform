@@ -1,21 +1,45 @@
 {
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "targetId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "targetType": "person",
-  "contactInformation": {
-    "contactType": "phone",
-    "subType": "correspondenceAddress",
-    "value": "string",
-    "description": "string",
-    "addressExtended": {
-      "uprn": "string",
-      "isOverseasAddress": true,
-      "overseasAddress": "string"
+  "Id": "8dd7af40-61ff-4d5f-8114-444828208555",
+  "EventType": "ContactDetailsUpdatedEvent",
+  "SourceDomain": "ContactDetails",
+  "SourceSystem": "ContactDetailsAPI",
+  "Version": "v1",
+  "CorrelationId": "990b02d8-f62d-4016-b60c-684b565a83bc",
+  "DateTime": 1660124562,
+  "User": {
+    "Name": "Contact Details Tester",
+    "Email": "contact_details_tester.test@test.co.uk"
+  },
+  "ContactDetails": {
+    "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "TargetId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "TargetType": "person",
+    "ContactInformation": {
+      "ContactType": "phone",
+      "SubType": "correspondenceAddress",
+      "Value": "string",
+      "Description": "string",
+      "AddressExtended": {
+        "Uprn": "string",
+        "IsOverseasAddress": true,
+        "OverseasAddress": "string",
+        "AddressLine1": "string",
+        "AddressLine2": "string",
+        "AddressLine3": "string",
+        "AddressLine4": "string",
+        "PostCode": "string"
+      }
+    },
+    "SourceServiceArea": {
+      "Area": "string",
+      "IsDefault": true
+    },
+    "RecordValidUntil": 1586649600,
+    "IsActive": true,
+    "CreatedBy": {
+      "CreatedAt": -2147483648,
+      "FullName": "string",
+      "EmailAddress": "string"
     }
-  },
-  "sourceServiceArea": {
-    "area": "string",
-    "isDefault": true
-  },
-  "recordValidUntil": "2022-08-15T08:51:47.008Z"
+  }
 }
