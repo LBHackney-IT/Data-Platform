@@ -10,6 +10,7 @@ from os import getenv
 from confluent_kafka import avro
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.avro import AvroProducer, AvroConsumer, SerializerError
+from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.cimpl import NewTopic, KafkaException
 
 BOOTSTRAP_SERVERS_KEY = "bootstrap.servers"
@@ -39,6 +40,9 @@ def lambda_handler(event, lambda_context):
         kafka_topic = event['topic']
         read_message_from_topic(kafka_brokers, schema_registry_url, kafka_topic)
 
+    if operation == "list-schema-registry-subjects":
+        list_schema_registry_subjects(schema_registry_url)
+
 
 def list_all_topics(kafka_brokers):
     print('Listing all available topics in the cluster:')
@@ -51,6 +55,17 @@ def list_all_topics(kafka_brokers):
     for topic in topics:
         print(topic)
     return topics
+
+
+def list_schema_registry_subjects(schema_registry_url):
+    print(f'Listing subjects from registry {schema_registry_url}')
+    schema_registry_client = SchemaRegistryClient({
+        'url': schema_registry_url
+    })
+
+    subjects = schema_registry_client.get_subjects()
+
+    print(f'Printing schema registry subjects: {subjects}')
 
 
 def delivery_report(err, msg):
