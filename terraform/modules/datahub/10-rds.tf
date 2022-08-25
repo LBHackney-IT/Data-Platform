@@ -11,8 +11,8 @@ resource "aws_db_instance" "datahub" {
   skip_final_snapshot     = false
   deletion_protection     = var.is_live_environment
   backup_retention_period = 14
-  backup_window           = "23:00-23:31"
-  maintenance_window      = "Mon:02:00-Mon:03:00"
+  backup_window           = "22:00-22:31"
+  maintenance_window      = "wed:23:13-wed:23:43"
   tags                    = var.tags
 }
 
