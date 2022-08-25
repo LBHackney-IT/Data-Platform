@@ -8,7 +8,7 @@ resource "aws_db_instance" "datahub" {
   password                = random_password.datahub_secret.result
   db_subnet_group_name    = aws_db_subnet_group.datahub.name
   vpc_security_group_ids  = [aws_security_group.datahub.id]
-  skip_final_snapshot     = true
+  skip_final_snapshot     = false
   deletion_protection     = var.is_live_environment
   backup_retention_period = 14
   backup_window           = "23:00-23:31"
