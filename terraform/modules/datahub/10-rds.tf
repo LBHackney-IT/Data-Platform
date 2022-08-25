@@ -1,21 +1,18 @@
 resource "aws_db_instance" "datahub" {
-  allocated_storage      = 15
-  engine                 = "mysql"
-  engine_version         = "5.7"
-  instance_class         = "db.t3.micro"
-  username               = "datahub"
-  identifier             = replace("${var.short_identifier_prefix}datahub", "-", "")
-  password               = random_password.datahub_secret.result
-  db_subnet_group_name   = aws_db_subnet_group.datahub.name
-  vpc_security_group_ids = [aws_security_group.datahub.id]
-  skip_final_snapshot    = true
-  deletion_protection    = var.is_live_environment
-  tags                   = var.tags
-}
-
-resource "aws_db_instance_automated_backups_replication" "datahub" {
-  source_db_instance_arn = aws_db_instance.datahub.arn
-  retention_period       = 14
+  allocated_storage       = 15
+  engine                  = "mysql"
+  engine_version          = "5.7"
+  instance_class          = "db.t3.micro"
+  username                = "datahub"
+  identifier              = replace("${var.short_identifier_prefix}datahub", "-", "")
+  password                = random_password.datahub_secret.result
+  db_subnet_group_name    = aws_db_subnet_group.datahub.name
+  vpc_security_group_ids  = [aws_security_group.datahub.id]
+  skip_final_snapshot     = true
+  deletion_protection     = var.is_live_environment
+  backup_retention_period = 14
+  backup_window           = "23:00-23:31"
+  tags                    = var.tags
 }
 
 resource "aws_db_subnet_group" "datahub" {
