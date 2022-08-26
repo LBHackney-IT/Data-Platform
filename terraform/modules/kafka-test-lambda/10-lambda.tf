@@ -112,7 +112,7 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 
 resource "null_resource" "run_install_requirements" {
   triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/kafka_test/*") : filesha1("${path.module}/${f}")]))
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/kafka_test/**") : filesha1("${path.module}/${f}")]))
   }
 
   provisioner "local-exec" {
