@@ -1,0 +1,4 @@
+{
+  "operation": "send-message-to-topic",
+  "topic": "tenure_api"
+}

@@ -32,3 +32,7 @@ ssh -i .ssh/id_rsa -L 9002:{datahub_frontend_load_balancer_dns_name}:9002 ec2-us
 ```shell
 aws-vault exec hackney-dataplatform-development -- aws ssm start-session --target {bastion_id} --document-name AWS-StartPortForwardingSession --parameters '{"portNumber":["9002"],"localPortNumber":["9002"]}'
 ```
+
+### Architecture
+
+![Datahub Architecture](./Datahub.png)

@@ -8,6 +8,11 @@ variable "is_live_environment" {
   type        = bool
 }
 
+variable "is_production_environment" {
+  description = "A flag indicting if we are running in a production environment for setting up automation"
+  type        = bool
+}
+
 variable "project" {
   description = "The project name."
   type        = string

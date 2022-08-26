@@ -32,7 +32,7 @@ resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" 
 
   predicate {
     conditions {
-      crawler_name = module.housing_income_collection_database_ingestion[0].crawler_name
+      crawler_name = local.is_live_environment ? module.housing_income_collection_database_ingestion[0].crawler_name : "dummy-development-crawler-name"
       crawl_state  = "SUCCEEDED"
     }
   }
@@ -52,12 +52,12 @@ module "ingest_housing_income_collection_database_to_housing_raw_zone" {
   environment                = var.environment
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   helper_module_key          = aws_s3_bucket_object.helpers.key
-  jdbc_connections           = [module.housing_income_collection_database_ingestion[0].jdbc_connection_name]
+  jdbc_connections           = local.is_live_environment ? [module.housing_income_collection_database_ingestion[0].jdbc_connection_name] : []
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
-    "--source_data_database"        = module.housing_income_collection_database_ingestion[0].ingestion_database_name
+    "--source_data_database"        = local.is_live_environment ? module.housing_income_collection_database_ingestion[0].ingestion_database_name : ""
     "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/housing/"
     "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/housing/ingestion-details/"
     "--table_filter_expression"     = local.table_filter_expressions_housing_income_collection

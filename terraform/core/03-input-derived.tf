@@ -15,14 +15,16 @@ module "tags" {
 }
 
 locals {
-  is_live_environment             = terraform.workspace == "default" ? true : false
-  is_production_environment       = var.environment == "prod"
-  team_snake                      = lower(replace(var.team, " ", "-"))
-  environment                     = lower(replace(local.is_live_environment ? var.environment : terraform.workspace, " ", "-"))
-  application_snake               = lower(replace(var.application, " ", "-"))
-  identifier_prefix               = lower("${local.application_snake}-${local.environment}")
-  short_identifier_prefix         = lower(replace(local.is_live_environment ? "" : "${terraform.workspace}-", " ", "-"))
-  google_group_admin_display_name = local.is_live_environment ? "saml-aws-data-platform-super-admins@hackney.gov.uk" : var.email_to_notify
+  is_live_environment                      = terraform.workspace == "default" ? true : false
+  is_development_environment               = terraform.workspace == "default" ? false : true
+  is_production_environment                = var.environment == "prod"
+  is_production_or_development_environment = local.is_production_environment || local.is_development_environment
+  team_snake                               = lower(replace(var.team, " ", "-"))
+  environment                              = lower(replace(local.is_live_environment ? var.environment : terraform.workspace, " ", "-"))
+  application_snake                        = lower(replace(var.application, " ", "-"))
+  identifier_prefix                        = lower("${local.application_snake}-${local.environment}")
+  short_identifier_prefix                  = lower(replace(local.is_live_environment ? "" : "${terraform.workspace}-", " ", "-"))
+  google_group_admin_display_name          = local.is_live_environment ? "saml-aws-data-platform-super-admins@hackney.gov.uk" : var.email_to_notify
 }
 
 data "aws_caller_identity" "data_platform" {}

@@ -172,7 +172,7 @@ jobs:
           AWS_PROFILE=deploy_role python ./scripts/configure_redshift.py "$terraform_outputs"
 
       - name: Build and Deploy SQL to Parquet Image to ECR
-        if: ${{ (inputs.build_path  == './terraform/core') && (success()) && (inputs.environment != 'stg') }}
+        if: ${{ (inputs.build_path  == './terraform/core') && (success()) }}
         run: |
           AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
 

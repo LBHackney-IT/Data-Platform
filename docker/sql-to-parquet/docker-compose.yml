@@ -2,4 +2,7 @@ version: "3.9"
 services:
   cmd:
     container_name: cmd-runner
+#    Use for testing https://hackney.atlassian.net/browse/DPP-194
+#    environment:
+#      - IMPORT_DATE_OVERRIDE=2022-06-01
     build: .

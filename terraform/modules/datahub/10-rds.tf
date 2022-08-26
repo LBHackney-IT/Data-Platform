@@ -1,15 +1,19 @@
 resource "aws_db_instance" "datahub" {
-  allocated_storage      = 15
-  engine                 = "mysql"
-  engine_version         = "5.7"
-  instance_class         = "db.t3.micro"
-  username               = "datahub"
-  identifier             = replace("${var.short_identifier_prefix}datahub", "-", "")
-  password               = random_password.datahub_secret.result
-  db_subnet_group_name   = aws_db_subnet_group.datahub.name
-  vpc_security_group_ids = [aws_security_group.datahub.id]
-  skip_final_snapshot    = true
-  //  storage_encrypted      = true
+  allocated_storage       = 15
+  engine                  = "mysql"
+  engine_version          = "5.7"
+  instance_class          = "db.t3.micro"
+  username                = "datahub"
+  identifier              = replace("${var.short_identifier_prefix}datahub", "-", "")
+  password                = random_password.datahub_secret.result
+  db_subnet_group_name    = aws_db_subnet_group.datahub.name
+  vpc_security_group_ids  = [aws_security_group.datahub.id]
+  skip_final_snapshot     = false
+  deletion_protection     = var.is_live_environment
+  backup_retention_period = 14
+  backup_window           = "22:00-22:31"
+  maintenance_window      = "Wed:23:13-Wed:23:43"
+  tags                    = var.tags
 }
 
 resource "aws_db_subnet_group" "datahub" {

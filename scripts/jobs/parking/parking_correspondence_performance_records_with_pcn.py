@@ -260,7 +260,7 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/test_parking_correspondence_performance_records_with_pcn/",
+    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_correspondence_performance_records_with_pcn/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],    

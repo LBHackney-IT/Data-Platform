@@ -1,5 +1,5 @@
 resource "aws_cloudtrail" "events" {
-  count = var.is_live_environment ? 1 : 0
+  count = var.is_production_environment ? 1 : 0
 
   name                          = var.identifier_prefix
   s3_bucket_name                = aws_s3_bucket.cloudtrail.id
