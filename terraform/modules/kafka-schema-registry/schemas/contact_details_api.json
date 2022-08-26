@@ -1,231 +1,224 @@
 {
-    "type": "record",
-    "name": "ContactDetailsAPIChangeEvent",
-    "fields": [
-      {
-        "name": "Id",
-        "type": [
-          "string",
-          "null"
-        ],
-        "logicalType": "uuid"
-      },
-      {
-        "name": "EventType",
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      {
-        "name": "SourceDomain",
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      {
-        "name": "SourceSystem",
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      {
-        "name": "Version",
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      {
-        "name": "CorrelationId",
-        "type": [
-          "string",
-          "null"
-        ],
-        "logicalType": "uuid"
-      },
-      {
-        "name": "DateTime",
-        "type": "int",
-        "logicalType": "date"
-      },
-      {
-        "name": "User",
-        "type": [
-          "null",
-          {
-            "type": "record",
-            "name": "User",
-            "fields": [
-              {
-                "name": "Name",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "Email",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "ContactDetail",
-        "type": {
+  "type": "record",
+  "name": "ContactDetailsAPIChangeEvent",
+  "fields": [
+    {
+      "name": "Id",
+      "type": ["string", "null"],
+      "logicalType": "uuid"
+    },
+    {
+      "name": "EventType",
+      "type": ["string", "null"]
+    },
+    {
+      "name": "SourceDomain",
+      "type": ["string", "null"]
+    },
+    {
+      "name": "SourceSystem",
+      "type": ["string", "null"]
+    },
+    {
+      "name": "Version",
+      "type": ["string", "null"]
+    },
+    {
+      "name": "CorrelationId",
+      "type": ["string", "null"],
+      "logicalType": "uuid"
+    },
+    {
+      "name": "DateTime",
+      "type": "int",
+      "logicalType": "date"
+    },
+    {
+      "name": "User",
+      "type": [
+        "null",
+        {
           "type": "record",
-          "name": "ContactDetailInformation",
+          "name": "User",
           "fields": [
             {
-              "name": "Id",
-              "type": [
-                "string",
-                "null"
-              ],
-              "logicalType": "uuid"
+              "name": "Name",
+              "type": ["string", "null"]
             },
             {
-              "name": "TargetId",
-              "type": [
-                "string",
-                "null"
-              ],
-              "logicalType": "uuid"
-            },
-            {
-              "name": "TargetType",
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            {
-              "name": "ContactInformation",
-              "type": {
-                "name": "ContactInformation",
-                "type": "record",
-                "fields": [
-                  {
-                    "name": "ContactType",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  {
-                    "name": "SubType",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  {
-                    "name": "Value",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  {
-                    "name": "Description",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  {
-                    "name": "AddressExtended",
-                    "type": {
-                      "name": "AddressExtended",
-                      "type": "record",
-                      "fields": [
-                        {
-                          "name": "Uprn",
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        {
-                          "name": "IsOverseasAddress",
-                          "type": "boolean"
-                        },
-                        {
-                          "name": "OverseasAddress",
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "name": "SourceServiceArea",
-              "type": {
-                "name": "SourceServiceArea",
-                "type": "record",
-                "fields": [
-                  {
-                    "name": "Area",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  {
-                    "name": "IsDefault",
-                    "type": "boolean"
-                  }
-                ]
-              }
-            },
-            {
-              "name": "RecordValidUntil",
-              "type": "int",
-              "logicalType": "date"
-            },
-            {
-              "name": "IsActive",
-              "type": "boolean"
-            },
-            {
-              "name": "CreatedBy",
-              "type": {
-                "name": "CreatedBy",
-                "type": "record",
-                "fields": [
-                  {
-                    "name": "CreatedAt",
-                    "type": "int",
-                    "logicalType": "date"
-                  },
-                  {
-                    "name": "FullName",
-                    "type": "string"
-                  },
-                  {
-                    "name": "EmailAddress",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  }
-                ]
-              }
+              "name": "Email",
+              "type": ["string", "null"]
             }
           ]
         }
+      ]
+    },
+    {
+      "name": "ContactDetails",
+      "default": null,
+      "aliases": ["ContactDetail"],
+      "type": {
+        "type": "record",
+        "name": "ContactDetailsInformation",
+        "default": null,
+        "fields": [
+          {
+            "name": "Id",
+            "type": ["string", "null"],
+            "logicalType": "uuid",
+            "default": ""
+          },
+          {
+            "name": "TargetId",
+            "type": ["string","null"],
+            "logicalType": "uuid",
+            "default": ""
+          },
+          {
+            "name": "TargetType",
+            "type": ["string","null"],
+            "default": ""
+          },
+          {
+            "name": "ContactInformation",
+            "default": null,
+            "type": {
+              "type": "record",
+              "name": "ContactInformation",
+              "fields": [
+                {
+                  "name": "ContactType",
+                  "type": ["string", "null"],
+                  "default": ""
+                },
+                {
+                  "name": "SubType",
+                  "type": ["string", "null"],
+                  "default": ""
+                },
+                {
+                  "name": "Value",
+                  "type": ["string", "null"],
+                  "default": ""
+                },
+                {
+                  "name": "Description",
+                  "type": ["string", "null"],
+                  "default": ""
+                },
+                {
+                  "name": "AddressExtended",
+                  "default": null,
+                  "type": {
+                    "name": "AddressExtended",
+                    "type": "record",
+                    "fields": [
+                      {
+                        "name": "Uprn",
+                        "type": ["string", "null"],
+                        "default": ""
+                      },
+                      {
+                        "name": "IsOverseasAddress",
+                        "type": "boolean",
+                        "default": false
+                      },
+                      {
+                        "name": "OverseasAddress",
+                        "type": ["string", "null"],
+                        "default": ""
+                      },
+                      {
+                        "name": "AddressLine1",
+                        "type": ["string", "null"],
+                        "default": ""
+                      },
+                      {
+                        "name": "AddressLine2",
+                        "type": ["string", "null"],
+                        "default": ""
+                      },
+                      {
+                        "name": "AddressLine3",
+                        "type": ["string", "null"],
+                        "default": ""
+                      },
+                      {
+                        "name": "AddressLine4",
+                        "type": ["string", "null"],
+                        "default": ""
+                      },
+                      {
+                        "name": "PostCode",
+                        "type": ["string", "null"],
+                        "default": ""
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "SourceServiceArea",
+            "default": null,
+            "type": {
+              "name": "SourceServiceArea",
+              "type": "record",
+              "fields": [
+                {
+                  "name": "Area",
+                  "type": ["string", "null"],
+                  "default": ""
+                },
+                {
+                  "name": "IsDefault",
+                  "type": "boolean",
+                  "default": false
+                }
+              ]
+            }
+          },
+          {
+            "name": "RecordValidUntil",
+            "type": "int",
+            "logicalType": "date",
+            "default": 0
+          },
+          {
+            "name": "IsActive",
+            "type": "boolean",
+            "default": false
+          },
+          {
+            "name": "CreatedBy",
+            "default": null,
+            "type": {
+              "type": "record",
+              "name": "CreatedBy",
+              "default": null,
+              "fields": [
+                {
+                  "name": "CreatedAt",
+                  "type": "int",
+                  "logicalType": "date",
+                  "default": 0
+                },
+                {
+                  "name": "FullName",
+                  "type": ["string", "null"],
+                  "default": ""
+                },
+                {
+                  "name": "EmailAddress",
+                  "type": ["string", "null"],
+                  "default": ""
+                }
+              ]
+            }
+          }
+        ]
       }
-    ]
+    }
+  ]
 }
