@@ -569,9 +569,9 @@ module "housing_rent_position" {
   spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
   identifier_prefix              = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
-  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
-  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
-  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  landing_zone_bucket_id         = module.raw_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.raw_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.raw_zone_data_source.bucket_arn
   google_drive_document_id       = "1ipYm_-LU28DbC_xIYxhvYCQQQKgWPoE9"
   glue_job_name                  = "housing rent position"
   output_folder_name             = "rent_statement"
