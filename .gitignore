@@ -34,3 +34,5 @@ dist/
 /build/
 /dist/
 /terraform/modules/copy-from-s3-to-s3/copy-from-s3-to-s3.zip
+/scripts/logs/
+/scripts/tests/test_person_matching.py
