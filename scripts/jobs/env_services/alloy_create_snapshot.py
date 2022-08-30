@@ -1,18 +1,18 @@
 import sys
-from awsglue.utils import getResolvedOptions
-from pyspark import SparkContext
-from pyspark.sql import SparkSession
+from datetime import datetime
+
+import pyspark.sql.functions as F
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
-import pyspark.sql.functions as F
+from awsglue.utils import getResolvedOptions
+from pyspark import SparkContext
+from pyspark.sql import SparkSession, Window
 from pyspark.sql.functions import col, max
-from pyspark.sql import Window
-from datetime import datetime
 from scripts.helpers.helpers import (
+    create_pushdown_predicate,
     get_glue_env_var,
     table_exists_in_catalog,
-    create_pushdown_predicate,
 )
 
 
