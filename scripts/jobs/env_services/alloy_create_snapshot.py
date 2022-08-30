@@ -1,6 +1,9 @@
+import json
 import sys
 from datetime import datetime
 
+import boto3
+import botocore
 import pyspark.sql.functions as F
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
@@ -115,6 +118,7 @@ def rename_columns(df, columns):
 
 if __name__ == "__main__":
     args = getResolvedOptions(sys.argv, ["JOB_NAME"])
+    s3 = boto3.resource("s3")
     sc = SparkContext.getOrCreate()
     glueContext = GlueContext(sc)
     spark = SparkSession(sc)
@@ -131,6 +135,7 @@ if __name__ == "__main__":
     increment_date_col = get_glue_env_var("increment_date_col", "")
     snapshot_date_col = get_glue_env_var("snapshot_date_col", "")
     s3_bucket_target = get_glue_env_var("s3_bucket_target", "")
+    s3_mapping_bucket = get_glue_env_var("s3_mapping_bucket", "")
 
     increment_table_name = f"{increment_table_prefix}{table_name}"
     snapshot_table_name = f"{snapshot_table_prefix}{table_name}"
