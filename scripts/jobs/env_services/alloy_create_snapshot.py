@@ -96,6 +96,23 @@ def set_increment_df(
     return df
 
 
+def rename_columns(df, columns):
+    """
+    Renames columns of a dataframe as described by a dictionary of "old_name": "new_name"
+    """
+    if isinstance(columns, dict):
+        return df.select(
+            *[
+                F.col(col_name).alias(columns.get(col_name, col_name))
+                for col_name in df.columns
+            ]
+        )
+    else:
+        raise ValueError(
+            "'columns' should be a dict, like {'old_name_1': 'new_name_1', 'old_name_2': 'new_name_2'}"
+        )
+
+
 if __name__ == "__main__":
     args = getResolvedOptions(sys.argv, ["JOB_NAME"])
     sc = SparkContext.getOrCreate()
@@ -117,6 +134,7 @@ if __name__ == "__main__":
 
     increment_table_name = f"{increment_table_prefix}{table_name}"
     snapshot_table_name = f"{snapshot_table_prefix}{table_name}"
+    mapping_file_key = "env-services/alloy/mapping-files/" + table_name + ".json"
 
     if not (
         table_exists_in_catalog(
@@ -160,6 +178,19 @@ if __name__ == "__main__":
         )
         snapshot_df = apply_increments(snapshot_df, increment_df, "item_id")
 
+    try:
+        s3.Object(s3_mapping_bucket, mapping_file_key).load()
+    except botocore.exceptions.ClientError as e:
+        if e.response["Error"]["Code"] == "404":
+            logger.info(f"No mapping file for {table_name} found, {e.response}")
+        else:
+            logger.info(f"Error retrieving mapping file {e.response}")
+    else:
+        obj = s3.Object(s3_mapping_bucket, mapping_file_key).get()
+        mapping = json.loads(obj["Body"].read())
+
+        snapshot_df = rename_columns(snapshot_df, mapping)
+
     PARTITION_KEYS = [
         "snapshot_year",
         "snapshot_month",
@@ -168,6 +199,7 @@ if __name__ == "__main__":
     ]
 
     resultDataFrame = DynamicFrame.fromDF(snapshot_df, glueContext, "resultDataFrame")
+
     target_destination = s3_bucket_target + snapshot_table_name
     parquetData = glueContext.write_dynamic_frame.from_options(
         frame=resultDataFrame,
