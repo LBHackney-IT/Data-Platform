@@ -8,10 +8,10 @@ The job can be run in local mode (i.e. on your local environment) and also on AW
 Usage:
 To run in local mode:
 set the mode to 'local' and provide the path od data set of your local machine
---mode=local --addresses_data_path=</path/to/gazetteer_address> --source_data_path=</path/to/source_address> \
+--execution_mode=local --addresses_data_path=</path/to/gazetteer_address> --source_data_path=</path/to/source_address> \
 --target_destination=</path/to/save/output> --match_to_property_shell=<property_name>
 e.g. use below to run on test data
---mode=local --addresses_data_path=test_data/levenshtein_address_matching/addresses/ \
+--execution_mode=local --addresses_data_path=test_data/levenshtein_address_matching/addresses/ \
 --source_data_path=test_data/levenshtein_address_matching/source/ \
 --target_destination=/tmp --match_to_property_shell=forbid
 
@@ -155,8 +155,8 @@ def match_addresses(source: DataFrame, addresses: DataFrame, logger) -> DataFram
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mode", default=DEFAULT_MODE_AWS, choices=[DEFAULT_MODE_AWS, LOCAL_MODE], type=str,
-                        required=False, metavar="set --mode=local to run locally")
+    parser.add_argument("--execution_mode", default=DEFAULT_MODE_AWS, choices=[DEFAULT_MODE_AWS, LOCAL_MODE], type=str,
+                        required=False, metavar="set --execution_mode=local to run locally")
     parser.add_argument(f"--addresses_data_path", type=str, required=False,
                         metavar=f"set --addresses_data_path=/path/to/directory/containing address data to run locally")
     parser.add_argument(f"--source_data_path", type=str, required=False,
@@ -190,7 +190,7 @@ def main():
                  source_catalog_database_glue_arg, source_catalog_table_glue_arg, target_destination_arg,
                  match_to_property_shell_arg]
     local_args, _ = parser.parse_known_args()
-    mode = local_args.mode
+    mode = local_args.execution_mode
 
     with ExecutionContextProvider(mode, glue_args, local_args) as execution_context:
         logger = execution_context.logger
