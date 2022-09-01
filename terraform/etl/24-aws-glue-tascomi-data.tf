@@ -266,6 +266,7 @@ module "tascomi_applications_to_trusted" {
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
   glue_job_worker_type       = "G.1X"
+  number_of_workers_for_glue_job  = 8
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
