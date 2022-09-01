@@ -31,6 +31,7 @@ if __name__ == "__main__":
     logger = glueContext.get_logger()
     job = Job(glueContext)
     today = date.today()
+    spark.conf.set("spark.sql.broadcastTimeout", 7200)
     
     # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
     logger.info(f'The job is starting. The source table is {source_catalog_database}')
@@ -371,27 +372,28 @@ if __name__ == "__main__":
          transformation_ctx = "sow2b_dbo_ssminitransaction_source")
     df10 = get_latest_partitions_optimized(df10)
     
-    patchofficer = glueContext.create_data_frame.from_catalog( 
-                 database = source_raw_database, 
-                 table_name = "officer_patch_mapping", 
-                 transformation_ctx = "officer_patch_mapping_source")
-    patchofficer = get_latest_partitions_optimized(patchofficer)
+    patch = glueContext.create_data_frame.from_catalog(
+        database=source_raw_database,
+        table_name="sow2b_dbo_uhproperty",
+        transformation_ctx="sow2b_dbo_uhproperty_source")
+    patch = get_latest_partitions_optimized(patch)
 
-    patchproperty= glueContext.create_data_frame.from_catalog( 
-                 database = source_raw_database, 
-                 table_name = "property_patch_mapping", 
-                 transformation_ctx = "officer_patch_mapping_source")
-    patchproperty = get_latest_partitions_optimized(patchproperty)
+    balance = glueContext.create_data_frame.from_catalog(
+        database=source_raw_database,
+        table_name="sow2b_dbo_calculatedcurrentbalance",
+        transformation_ctx="sow2b_dbo_calculatedcurrentbalance_source")
+    balance = get_latest_partitions_optimized(balance)
+    
+
     
 # clear the rentsense export bucket so that only one date is being moved in the S3 shift
     clear_target_folder(s3_bucket_target+'/export')
     
 # create the patch information
-    patch = patchproperty.join(patchofficer,patchproperty.patch ==  patchofficer.patch_name,"left")
-    
-    patch = patch.selectExpr("llpg_ref_uprn",
-                                 "officer_patch as HousingOfficerName",
-                                 "patch_name as Patch")
+    patch = patch.selectExpr("prop_ref",
+                             "arr_patch as Patch")
+                             
+    patch = patch.withColumn("prop_ref2",F.trim(F.col("prop_ref")))
     
     patch = patch.distinct()
  
@@ -406,7 +408,7 @@ if __name__ == "__main__":
     accounts.select(col("startOfTenureDate"),to_date(col("startOfTenureDate"),"yyyy-MM-dd").alias("date")) \
           .drop("startOfTenureDate").withColumnRenamed("date","startOfTenureDate")
           
-    accounts = accounts.join(patch,accounts.uprn ==  patch.llpg_ref_uprn,"left")
+    accounts = accounts.join(patch,accounts.property_reference ==  patch.prop_ref2,"left")
     
     #get the max date to remove dupes
     start_ten = accounts.selectExpr("paymentreference as AccountR",
@@ -631,15 +633,14 @@ if __name__ == "__main__":
     #Balances
     ten = accounts.select('uh_ten_ref','paymentreference')
     
-    bals = df7.withColumn("uh_ten_ref",F.trim(F.col("tag_ref")))\
-              .withColumn("BalanceDate",F.to_date(F.col("import_date"),"yyyyMMdd"))
+    bals =  balance.withColumn("BalanceDate",F.to_date(F.col("import_date"),"yyyyMMdd"))\
+                    .withColumn("paymentreference2",F.trim(F.col("RentAccount")))
+
+    balances = ten.join(bals,ten.paymentreference ==  bals.paymentreference2,"inner") 
     
-    balances = ten.join(bals,ten.uh_ten_ref ==  bals.uh_ten_ref,"left")
-        
     balances = balances. selectExpr("paymentreference as AccountReference",
-                                  "tag_ref",
-                                    "cur_bal as CurrentBalance",
-                                 "BalanceDate",
+                                    "CurrentBalance as CurrentBalance",
+                                    "BalanceDate",
                                    "import_date")
     
     balances = balances.distinct()
