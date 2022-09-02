@@ -14,7 +14,7 @@ module "housing_interim_finance_database_ingestion" {
 }
 
 locals {
-  table_filter_expressions_housing_interim_finance = local.is_live_environment ? "(^sow2b_dbo_matenancyagreement$|^sow2b_dbo_uharaction$|^sow2b_dbo_maproperty$|^sow2b_dbo_ssminitransaction$)" : ""
+  table_filter_expressions_housing_interim_finance = local.is_live_environment ? "(^sow2b_dbo_matenancyagreement$|^sow2b_dbo_uharaction$|^sow2b_dbo_maproperty$|^sow2b_dbo_ssminitransaction$|^sow2b_dbo_uhproperty$|^sow2b_dbo_calculatedcurrentbalance$)" : ""
 }
 
 resource "aws_glue_trigger" "housing_interim_finance_filter_ingestion_tables" {

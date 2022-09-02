@@ -86,7 +86,8 @@ data "aws_iam_policy_document" "task_role" {
       "s3:DeleteObject*",
       "s3:ReplicateObject",
       "s3:ReplicateTags",
-      "s3:ObjectOwnerOverrideToBucketOwner"
+      "s3:ObjectOwnerOverrideToBucketOwner",
+      "s3:ReplicateDelete",
     ]
     resources = [
       "arn:aws:s3:::dataplatform-stg-raw-zone*",
