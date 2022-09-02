@@ -44,7 +44,7 @@ module "rentsense_output" {
     "--s3_bucket"               ="dataplatform-stg-refined-zone"
     "--s3_bucket_target"        = "s3://${module.refined_zone_data_source.bucket_id}/housing/rentsense"  
     "--enable-glue-datacatalog" = "true"
-    "---source_raw_database" = module.department_housing_data_source.raw_zone_catalog_database_name
+    "--source_raw_database" = module.department_housing_data_source.raw_zone_catalog_database_name
     "--source_catalog_database" = module.department_housing_data_source.refined_zone_catalog_database_name
   }
   script_name          = "rentsense_to_refined"
