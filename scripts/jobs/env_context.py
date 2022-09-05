@@ -73,7 +73,7 @@ class ExecutionContextProvider:
             # Restart spark context
             sc.stop()
             sc = SparkContext.getOrCreate(conf=conf)
-            sc.setCheckpointDir("/tmp/dataplatform-tmp")
+#             sc.setCheckpointDir("/tmp/dataplatform-tmp")
         self.__glue_context = GlueContext(sc) if self.mode == DEFAULT_MODE_AWS else None
         self.__spark_session = self.__glue_context.spark_session if self.mode == DEFAULT_MODE_AWS else SparkSession \
             .builder \
