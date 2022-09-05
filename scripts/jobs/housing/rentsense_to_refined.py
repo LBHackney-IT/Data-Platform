@@ -513,7 +513,6 @@ if __name__ == "__main__":
                      "import_date")
                      
     # add additional columns; blank until data is made available
-    arr = arr.withColumn('AgreementAmount', lit(None).cast(FloatType()))
     arr = arr.withColumn('AgreementCode', lit(None).cast(StringType()))
 
     arr = arr.distinct()
