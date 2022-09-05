@@ -36,6 +36,7 @@ module "rentsense_output" {
   department                 = module.department_housing_data_source
   job_name                   = "${local.short_identifier_prefix}Rentsense outputs"
   glue_job_worker_type       = "Standard"
+  number_of_workers_for_glue_job  = 4
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
