@@ -374,9 +374,15 @@ if __name__ == "__main__":
     
     patch = glueContext.create_data_frame.from_catalog(
         database=source_raw_database,
-        table_name="sow2b_dbo_uhproperty",
-        transformation_ctx="sow2b_dbo_uhproperty_source")
+        table_name="property_rent_patches",
+        transformation_ctx="property_rent_patches_source")
     patch = get_latest_partitions_optimized(patch)
+    
+    patch_officer = glueContext.create_data_frame.from_catalog(
+        database=source_raw_database,
+        table_name="rent_officer_patch_mapping",
+        transformation_ctx="rent_officer_patch_mapping_source")
+    patch_officer  = get_latest_partitions_optimized(patch_officer )
 
     balance = glueContext.create_data_frame.from_catalog(
         database=source_raw_database,
@@ -390,10 +396,15 @@ if __name__ == "__main__":
     clear_target_folder(s3_bucket_target+'/export')
     
 # create the patch information
-    patch = patch.selectExpr("prop_ref",
-                             "arr_patch as Patch")
-                             
-    patch = patch.withColumn("prop_ref2",F.trim(F.col("prop_ref")))
+    patch_officer = patch_officer.withColumn("patch_number2",F.trim(F.col("patch_number")))
+    
+    patch = patch.withColumn("patch2",F.trim(F.col("patch")))\
+                 .withColumn("payref",F.trim(F.col("ref")))\
+    
+    patch = patch.join(patch_officer,patch.patch2 ==  patch_officer.patch_number2,"left")
+    patch = patch.selectExpr("payref",
+                             "patch2 as Patch",
+                             "officer_full_name as HousingOfficerName")
     
     patch = patch.distinct()
  
@@ -408,7 +419,7 @@ if __name__ == "__main__":
     accounts.select(col("startOfTenureDate"),to_date(col("startOfTenureDate"),"yyyy-MM-dd").alias("date")) \
           .drop("startOfTenureDate").withColumnRenamed("date","startOfTenureDate")
           
-    accounts = accounts.join(patch,accounts.property_reference ==  patch.prop_ref2,"left")
+    accounts = accounts.join(patch,accounts.paymentreference ==  patch.payref,"left")
     
     #get the max date to remove dupes
     start_ten = accounts.selectExpr("paymentreference as AccountR",
@@ -506,7 +517,7 @@ if __name__ == "__main__":
     arr = arr.withColumn('AgreementCode', lit(None).cast(StringType()))
 
     arr = arr.distinct()
-    arr = add_import_time_columns(Arr)
+    arr = add_import_time_columns(arr)
 
     dynamic_frame = DynamicFrame.fromDF(arr.repartition(1), glueContext, "target_data_to_write")
      
