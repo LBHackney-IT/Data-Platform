@@ -43,6 +43,7 @@ module "alloy_api_ingestion_raw_env_services" {
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--resource"                = local.alloy_query_names[count.index]
     "--alloy_download_bucket"   = "env-services/alloy/alloy_api_downloads/"
+    "--table_prefix"            = "alloy_api_response_"
   }
 }
 
