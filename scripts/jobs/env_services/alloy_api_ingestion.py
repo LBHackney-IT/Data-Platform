@@ -5,13 +5,14 @@ import sys
 import time
 import zipfile
 
-import boto3
 import requests
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from pyspark.sql import SparkSession, SQLContext
 from scripts.helpers.helpers import (
     PARTITION_KEYS,
     add_import_time_columns,
@@ -20,8 +21,6 @@ from scripts.helpers.helpers import (
     get_secret,
     table_exists_in_catalog,
 )
-from pyspark.context import SparkContext
-from pyspark.sql import SparkSession, SQLContext
 
 
 def get_last_import_date_time(glue_context, database, glue_catalogue_table_name):
