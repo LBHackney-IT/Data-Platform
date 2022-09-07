@@ -5,6 +5,7 @@ import sys
 import time
 import zipfile
 
+import boto3
 import requests
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
