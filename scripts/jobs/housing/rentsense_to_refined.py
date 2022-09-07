@@ -694,7 +694,7 @@ if __name__ == "__main__":
        
     actions = actions.filter((F.col("action_date")>date_sub(current_date(),365)) & (F.col("action_date")<current_date()))
     
-    actions = ten.join(actions,ten.uh_ten_ref ==  actions.uh_ten_ref1,"left")
+    actions = ten.join(actions,ten.uh_ten_ref ==  actions.uh_ten_ref1,"inner")
     
     actions = actions.withColumn("code_lookup",F.trim(F.col("action_code")))\
                      .replace(to_replace=mapAction, subset=['code_lookup'])
