@@ -43,6 +43,7 @@ module "alloy_api_ingestion_raw_env_services" {
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--resource"                = local.alloy_query_names[count.index]
     "--alloy_download_bucket"   = "env-services/alloy/alloy_api_downloads/"
+    "--table_prefix"            = "alloy_api_response_"
   }
 }
 
@@ -115,6 +116,7 @@ module "alloy_daily_snapshot_env_services" {
     "--increment_date_col"         = "import_datetime"
     "--snapshot_date_col"          = "snapshot_date"
     "--s3_bucket_target"           = "s3://${module.refined_zone_data_source.bucket_id}/env-services/alloy/snapshots/"
+    "--s3_mapping_bucket"          = "s3://${module.raw_zone_data_source.bucket_id}"
   }
 }
 
