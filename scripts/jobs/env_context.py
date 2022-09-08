@@ -59,25 +59,6 @@ class ExecutionContextProvider:
         glue_args.append(AWS_JOB_NAME)
         self.__args = getResolvedOptions(sys.argv, glue_args) if self.mode == DEFAULT_MODE_AWS else vars(local_args)
 
-#         sc = SparkContext()
-#         if self.mode == DEFAULT_MODE_AWS:
-#             conf = sc.getConf() \
-#                 .set("spark.sql.legacy.parquet.int96RebaseModeInRead", "LEGACY") \
-#                 .set("spark.sql.legacy.parquet.int96RebaseModeInWrite", "LEGACY") \
-#                 .set("spark.sql.legacy.parquet.datetimeRebaseModeInRead", "LEGACY") \
-#                 .set("spark.sql.legacy.parquet.datetimeRebaseModeInWrite", "LEGACY") \
-#                 .set("spark.sql.execution.arrow.pyspark.enabled", "true") \
-#                 .set("spark.sql.execution.arrow.pyspark.fallback.enabled", "true") \
-#                 .set("spark.sql.execution.arrow.maxRecordsPerBatch", "10000") \
-#                 .set("spark.sql.execution.arrow.pyspark.selfDestruct.enabled", "true")
-#             # Restart spark context
-#             sc.stop()
-#             sc = SparkContext.getOrCreate(conf=conf)
-#             sc.setCheckpointDir("s3://dataplatform-stg-glue-temp-storage/planning/checkpoint/")
-
-
-
-#         self.__glue_context = GlueContext(sc) if self.mode == DEFAULT_MODE_AWS else None
         self.__glue_context = GlueContext(SparkContext()) if self.mode == DEFAULT_MODE_AWS else None
         
         self.__spark_session = self.__glue_context.spark_session if self.mode == DEFAULT_MODE_AWS else SparkSession \
