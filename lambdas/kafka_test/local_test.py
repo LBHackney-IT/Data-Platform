@@ -153,4 +153,4 @@ def read_message_from_topic_using_schema(kafka_brokers, kafka_topic):
 #send_message_to_topic_using_schema(kafka_brokers, "tenure_api", schema_registry_url)
 
 #Read message from tenure topic
-read_message_from_topic_using_schema(kafka_brokers, "tenure_api")
+#read_message_from_topic_using_schema(kafka_brokers, "tenure_api")
