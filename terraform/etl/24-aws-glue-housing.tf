@@ -42,7 +42,7 @@ module "rentsense_output" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
-    "--s3_bucket"               ="dataplatform-stg-refined-zone"
+    "--s3_bucket"               = module.refined_zone_data_source.bucket_id
     "--s3_bucket_target"        = "s3://${module.refined_zone_data_source.bucket_id}/housing/rentsense"  
     "--enable-glue-datacatalog" = "true"
     "--source_raw_database" = module.department_housing_data_source.raw_zone_catalog_database_name
