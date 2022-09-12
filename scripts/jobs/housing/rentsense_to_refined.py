@@ -508,6 +508,7 @@ if __name__ == "__main__":
                     "AgreementStartDate",
                      "AgreementEndDate1 as AgreementEndDate",
                     "frequency as AgreementFrequency",
+                     "AgreementCode",
                     "initial_payment_date as FirstInstallmentDueDate",
                     "AgreementCreatedDate",
                     "Amount as AgreementAmount", 
