@@ -116,7 +116,7 @@ module "alloy_daily_snapshot_env_services" {
     "--increment_date_col"         = "import_datetime"
     "--snapshot_date_col"          = "snapshot_date"
     "--s3_bucket_target"           = "s3://${module.refined_zone_data_source.bucket_id}/env-services/alloy/snapshots/"
-    "--s3_mapping_bucket"          = "s3://${module.raw_zone_data_source.bucket_id}"
+    "--s3_mapping_bucket"          = module.raw_zone_data_source.bucket_id
   }
 }
 
