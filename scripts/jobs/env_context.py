@@ -1,9 +1,11 @@
 import logging
+import os
 import sys
+from logging.handlers import RotatingFileHandler
 from typing import List, Optional
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark import SparkContext
+from pyspark import SparkContext, SparkConf
 
 from awsglue.context import GlueContext
 from awsglue.job import Job
@@ -57,15 +59,38 @@ class ExecutionContextProvider:
         glue_args.append(AWS_JOB_NAME)
         self.__args = getResolvedOptions(sys.argv, glue_args) if self.mode == DEFAULT_MODE_AWS else vars(local_args)
 
-        self.__glue_context = GlueContext(SparkContext.getOrCreate()) if self.mode == DEFAULT_MODE_AWS else None
+        if self.mode == DEFAULT_MODE_AWS:
+            conf = SparkConf()
+            conf.set("spark.sql.legacy.parquet.int96RebaseModeInRead", "LEGACY") \
+                .set("spark.sql.legacy.parquet.int96RebaseModeInWrite", "LEGACY") \
+                .set("spark.sql.legacy.parquet.datetimeRebaseModeInRead", "LEGACY") \
+                .set("spark.sql.legacy.parquet.datetimeRebaseModeInWrite", "LEGACY") \
+                .set("spark.sql.execution.arrow.pyspark.enabled", "true") \
+                .set("spark.sql.execution.arrow.pyspark.fallback.enabled", "true") \
+                .set("spark.sql.execution.arrow.maxRecordsPerBatch", "10000") \
+                .set("spark.sql.execution.arrow.pyspark.selfDestruct.enabled", "true")
+            sc = SparkContext(conf=conf)
+            sc.setCheckpointDir("s3://dataplatform-stg-glue-temp-storage/planning/checkpoint/")
+        self.__glue_context = GlueContext(sc) if self.mode == DEFAULT_MODE_AWS else None
+        
         self.__spark_session = self.__glue_context.spark_session if self.mode == DEFAULT_MODE_AWS else SparkSession \
             .builder \
             .config("spark.sql.debug.maxToStringFields", "10000") \
             .config("spark.sql.parquet.int96RebaseModeInRead", "LEGACY") \
             .config("spark.sql.parquet.int96RebaseModeInWrite", "LEGACY") \
+            .config("spark.sql.parquet.datetimeRebaseModeInRead", "LEGACY") \
+            .config("spark.sql.parquet.datetimeRebaseModeInWrite", "LEGACY") \
+            .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
+            .config("spark.sql.execution.arrow.pyspark.fallback.enabled", "true") \
+            .config("spark.sql.execution.arrow.maxRecordsPerBatch", "10000") \
+            .config("spark.sql.execution.arrow.pyspark.selfDestruct.enabled", "true") \
+            .config("spark.sql.shuffle.partitions", "7") \
+            .config("spark.driver.memory", "12g") \
             .master("local[*]") \
             .appName("SparkLocal") \
             .getOrCreate()
+        if self.mode == LOCAL_MODE:
+            self.__spark_session.sparkContext.setCheckpointDir("/tmp/dataplatform-tmp")
         self.__job = Job(self.__glue_context) if self.mode == DEFAULT_MODE_AWS else None
         self.__logger = self.__glue_context.get_logger() if self.mode == DEFAULT_MODE_AWS else self.__get_local_logger()
 
@@ -167,12 +192,21 @@ class ExecutionContextProvider:
 
         Returns: logger
         """
+        # """
+        current_path = os.path.dirname(__file__)
+        root_path = current_path[:current_path.find("scripts")]
+        log_dir_path = os.path.join(root_path, "scripts", "logs")
+        os.makedirs(log_dir_path, exist_ok=True)
+
+        log_file_path = os.path.join(log_dir_path, "spark_local.log")
+        five_mb = 5 * 1024 * 1024
         logging.basicConfig(
             format="%(asctime)s %(levelname)7s %(module)20s.%(lineno)3d: %(message)s",
             datefmt="%y/%m/%d %H:%M:%S",
-            level=logging.INFO,
+            level=logging.ERROR,
             handlers=[
-                logging.FileHandler(filename="spark_local.log"),
+                # logging.handlers.RotatingFileHandler(filename=log_file_path, maxBytes=five_mb, backupCount=3),
+                RotatingFileHandler(filename=log_file_path, maxBytes=five_mb, backupCount=3),
                 logging.StreamHandler()
             ])
 

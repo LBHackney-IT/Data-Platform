@@ -12,6 +12,8 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from pyspark.sql import SparkSession, SQLContext
 from scripts.helpers.helpers import (
     PARTITION_KEYS,
     add_import_time_columns,
@@ -20,23 +22,21 @@ from scripts.helpers.helpers import (
     get_secret,
     table_exists_in_catalog,
 )
-from pyspark.context import SparkContext
-from pyspark.sql import SparkSession, SQLContext
 
 
-def get_last_import_date_time(glue_context, database, glue_catalogue_table_name):
+def get_last_import_date_time(glue_context, database, glue_catalog_table_name):
     """
     get last import date from aws table
     """
-    if not table_exists_in_catalog(glue_context, glue_catalogue_table_name, database):
+    if not table_exists_in_catalog(glue_context, glue_catalog_table_name, database):
         logger.info(
-            f"Couldn't find table {glue_catalogue_table_name} in database {database}."
+            f"Couldn't find table {glue_catalog_table_name} in database {database}."
         )
         return datetime.datetime(1970, 1, 1)
-    logger.info(f"found table for {glue_catalogue_table_name} in {database}")
+    logger.info(f"found table for {glue_catalog_table_name} in {database}")
     return (
         glue_context.sql(
-            f"SELECT max(import_datetime) as max_import_date_time FROM `{database}`.{glue_catalogue_table_name}"
+            f"SELECT max(import_datetime) as max_import_date_time FROM `{database}`.{glue_catalog_table_name}"
         )
         .take(1)[0]
         .max_import_date_time
@@ -107,12 +107,13 @@ if __name__ == "__main__":
     table_prefix = get_glue_env_var("table_prefix", "")
     aqs = get_glue_env_var("aqs", "")
 
-    glue_catalogue_table_name = table_prefix + resource
+    glue_catalog_table_name = table_prefix + resource
+    glue_catalog_table_name = glue_catalog_table_name.lower().replace(" ", "_")
     s3_target_url = "s3://" + bucket_target + "/" + s3_prefix + resource + "/"
     s3_download_url = "s3://" + bucket_target + "/" + alloy_download_bucket
 
     last_import_date_time = format_time(
-        get_last_import_date_time(glue_context, database, glue_catalogue_table_name)
+        get_last_import_date_time(glue_context, database, glue_catalog_table_name)
     )
 
     logger.info(f"last import date time: {last_import_date_time}")

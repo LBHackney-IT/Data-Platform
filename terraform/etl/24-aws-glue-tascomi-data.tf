@@ -228,9 +228,11 @@ module "tascomi_create_daily_snapshot" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
-
   department                 = module.department_planning_data_source
+    
   job_name                   = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
+  glue_job_worker_type       = "G.1X"
+  number_of_workers_for_glue_job  = 8
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
@@ -265,17 +267,18 @@ module "tascomi_applications_to_trusted" {
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
   glue_job_worker_type       = "G.1X"
+  number_of_workers_for_glue_job  = 8
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
-    "--job-bookmark-option"     = "job-bookmark-enable"
-    "--s3_bucket_target"        = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
-    "--enable-glue-datacatalog" = "true"
-    "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
-    "--source_catalog_table"    = "applications"
-    "--source_catalog_table2"   = "application_types"
-    "--source_catalog_table3"   = "ps_development_codes"
+    "--job-bookmark-option"                    = "job-bookmark-enable"
+    "--s3_bucket_target"                       = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
+    "--enable-glue-datacatalog"                = "true"
+    "--source_catalog_database"                = aws_glue_catalog_database.refined_zone_tascomi.name
+    "--source_catalog_table"                   = "applications"
+    "--source_catalog_table2"                  = "application_types"
+    "--source_catalog_table3"                  = "ps_development_codes"
   }
   script_name          = "tascomi_applications_trusted"
   triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name

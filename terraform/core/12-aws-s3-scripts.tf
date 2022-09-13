@@ -69,3 +69,11 @@ resource "aws_s3_bucket_object" "copy_json_data_landing_to_raw" {
   source      = "../../scripts/jobs/copy_json_data_landing_to_raw.py"
   source_hash = filemd5("../../scripts/jobs/copy_json_data_landing_to_raw.py")
 }
+  
+resource "aws_s3_bucket_object" "hackney_bank_holiday" {
+  bucket      = module.raw_zone.bucket_id
+  key         = "unrestricted/util/hackney_bank_holiday.csv"
+  acl         = "private"
+  source      = "../../scripts/jobs/planning/hackney_bank_holiday.csv"
+  source_hash = filemd5("../../scripts/jobs/planning/hackney_bank_holiday.csv")
+}

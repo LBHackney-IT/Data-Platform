@@ -31,6 +31,7 @@ if __name__ == "__main__":
     logger = glueContext.get_logger()
     job = Job(glueContext)
     today = date.today()
+    spark.conf.set("spark.sql.broadcastTimeout", 7200)
     
     # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
     logger.info(f'The job is starting. The source table is {source_catalog_database}')
@@ -371,27 +372,39 @@ if __name__ == "__main__":
          transformation_ctx = "sow2b_dbo_ssminitransaction_source")
     df10 = get_latest_partitions_optimized(df10)
     
-    patchofficer = glueContext.create_data_frame.from_catalog( 
-                 database = source_raw_database, 
-                 table_name = "officer_patch_mapping", 
-                 transformation_ctx = "officer_patch_mapping_source")
-    patchofficer = get_latest_partitions_optimized(patchofficer)
+    patch = glueContext.create_data_frame.from_catalog(
+        database=source_raw_database,
+        table_name="property_rent_patches",
+        transformation_ctx="property_rent_patches_source")
+    patch = get_latest_partitions_optimized(patch)
+    
+    patch_officer = glueContext.create_data_frame.from_catalog(
+        database=source_raw_database,
+        table_name="rent_officer_patch_mapping",
+        transformation_ctx="rent_officer_patch_mapping_source")
+    patch_officer  = get_latest_partitions_optimized(patch_officer )
 
-    patchproperty= glueContext.create_data_frame.from_catalog( 
-                 database = source_raw_database, 
-                 table_name = "property_patch_mapping", 
-                 transformation_ctx = "officer_patch_mapping_source")
-    patchproperty = get_latest_partitions_optimized(patchproperty)
+    balance = glueContext.create_data_frame.from_catalog(
+        database=source_raw_database,
+        table_name="sow2b_dbo_calculatedcurrentbalance",
+        transformation_ctx="sow2b_dbo_calculatedcurrentbalance_source")
+    balance = get_latest_partitions_optimized(balance)
+    
+
     
 # clear the rentsense export bucket so that only one date is being moved in the S3 shift
     clear_target_folder(s3_bucket_target+'/export')
     
 # create the patch information
-    patch = patchproperty.join(patchofficer,patchproperty.patch ==  patchofficer.patch_name,"left")
+    patch_officer = patch_officer.withColumn("patch_number2",F.trim(F.col("patch_number")))
     
-    patch = patch.selectExpr("llpg_ref_uprn",
-                                 "officer_patch as HousingOfficerName",
-                                 "patch_name as Patch")
+    patch = patch.withColumn("patch2",F.trim(F.col("patch")))\
+                 .withColumn("payref",F.trim(F.col("ref")))\
+    
+    patch = patch.join(patch_officer,patch.patch2 ==  patch_officer.patch_number2,"left")
+    patch = patch.selectExpr("payref",
+                             "patch2 as Patch",
+                             "officer_full_name as HousingOfficerName")
     
     patch = patch.distinct()
  
@@ -406,7 +419,7 @@ if __name__ == "__main__":
     accounts.select(col("startOfTenureDate"),to_date(col("startOfTenureDate"),"yyyy-MM-dd").alias("date")) \
           .drop("startOfTenureDate").withColumnRenamed("date","startOfTenureDate")
           
-    accounts = accounts.join(patch,accounts.uprn ==  patch.llpg_ref_uprn,"left")
+    accounts = accounts.join(patch,accounts.paymentreference ==  patch.payref,"left")
     
     #get the max date to remove dupes
     start_ten = accounts.selectExpr("paymentreference as AccountR",
@@ -488,23 +501,24 @@ if __name__ == "__main__":
     arr = arr.withColumn("AgreementStartDate",F.to_date(F.col("start_date"),"yyyy-MM-dd"))\
         .withColumn("AgreementEndDate1",F.to_date(F.col("AgreementEndDate"),"yyyy-MM-dd"))\
         .withColumn("AgreementCreatedDate",F.to_date(F.col("created_at"),"yyyy-MM-dd"))\
+        .withColumn("AgreementCode",F.when(F.col("court_case_id")>0,"N").otherwise("C"))\   
         .drop("AgreementEndDate")
 
     arr = arr.selectExpr("paymentreference as AccountReference",
                     "AgreementStartDate",
                      "AgreementEndDate1 as AgreementEndDate",
                     "frequency as AgreementFrequency",
+                     "AgreementCode",
                     "initial_payment_date as FirstInstallmentDueDate",
                     "AgreementCreatedDate",
                     "Amount as AgreementAmount", 
                      "import_date")
                      
     # add additional columns; blank until data is made available
-    arr = arr.withColumn('AgreementAmount', lit(None).cast(FloatType()))
     arr = arr.withColumn('AgreementCode', lit(None).cast(StringType()))
 
     arr = arr.distinct()
-    arr = add_import_time_columns(Arr)
+    arr = add_import_time_columns(arr)
 
     dynamic_frame = DynamicFrame.fromDF(arr.repartition(1), glueContext, "target_data_to_write")
      
@@ -631,15 +645,14 @@ if __name__ == "__main__":
     #Balances
     ten = accounts.select('uh_ten_ref','paymentreference')
     
-    bals = df7.withColumn("uh_ten_ref",F.trim(F.col("tag_ref")))\
-              .withColumn("BalanceDate",F.to_date(F.col("import_date"),"yyyyMMdd"))
+    bals =  balance.withColumn("BalanceDate",F.to_date(F.col("import_date"),"yyyyMMdd"))\
+                    .withColumn("paymentreference2",F.trim(F.col("RentAccount")))
+
+    balances = ten.join(bals,ten.paymentreference ==  bals.paymentreference2,"inner") 
     
-    balances = ten.join(bals,ten.uh_ten_ref ==  bals.uh_ten_ref,"left")
-        
     balances = balances. selectExpr("paymentreference as AccountReference",
-                                  "tag_ref",
-                                    "cur_bal as CurrentBalance",
-                                 "BalanceDate",
+                                    "CurrentBalance as CurrentBalance",
+                                    "BalanceDate",
                                    "import_date")
     
     balances = balances.distinct()
@@ -683,7 +696,7 @@ if __name__ == "__main__":
        
     actions = actions.filter((F.col("action_date")>date_sub(current_date(),365)) & (F.col("action_date")<current_date()))
     
-    actions = ten.join(actions,ten.uh_ten_ref ==  actions.uh_ten_ref1,"left")
+    actions = ten.join(actions,ten.uh_ten_ref ==  actions.uh_ten_ref1,"inner")
     
     actions = actions.withColumn("code_lookup",F.trim(F.col("action_code")))\
                      .replace(to_replace=mapAction, subset=['code_lookup'])
@@ -694,7 +707,6 @@ if __name__ == "__main__":
                                   "code_lookup as ActionDescription",
                                   "ActionDate",
                                   "action_no as ActionSeq",
-                                  "action_comment as Notes",
                                   "import_date")
                                   
     actions = add_import_time_columns(actions)

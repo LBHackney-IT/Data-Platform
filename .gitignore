@@ -36,3 +36,5 @@ dist/
 /terraform/modules/copy-from-s3-to-s3/copy-from-s3-to-s3.zip
 /terraform/modules/kafka-event-streaming/local-testing/list-topics.json
 /terraform/modules/kafka-event-streaming/local-testing/send-message-to-topic.json
+/scripts/logs/
+/scripts/tests/test_person_matching.py
