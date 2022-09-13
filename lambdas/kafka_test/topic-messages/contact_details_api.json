@@ -13,33 +13,33 @@
   "ContactDetails": {
     "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "TargetId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "TargetType": "person",
+    "TargetType": "Person",
     "ContactInformation": {
-      "ContactType": "phone",
-      "SubType": "correspondenceAddress",
-      "Value": "string",
-      "Description": "string",
+      "ContactType": "Phone",
+      "SubType": "Mobile",
+      "Value": "555 5555 5555",
+      "Description": "Main mobile number",
       "AddressExtended": {
-        "Uprn": "string",
+        "Uprn": "123456",
         "IsOverseasAddress": true,
-        "OverseasAddress": "string",
-        "AddressLine1": "string",
-        "AddressLine2": "string",
-        "AddressLine3": "string",
-        "AddressLine4": "string",
-        "PostCode": "string"
+        "OverseasAddress": "Overseas address",
+        "AddressLine1": "Address line 1",
+        "AddressLine2": "Address line 2",
+        "AddressLine3": "Address line 3",
+        "AddressLine4": "Address line 4",
+        "PostCode": "postcode"
       }
     },
     "SourceServiceArea": {
-      "Area": "string",
+      "Area": "Service Area",
       "IsDefault": true
     },
     "RecordValidUntil": 1586649600,
     "IsActive": true,
     "CreatedBy": {
       "CreatedAt": -2147483648,
-      "FullName": "string",
-      "EmailAddress": "string"
+      "FullName": "Test Officer",
+      "EmailAddress": "test.officer@test.com"
     }
   }
 }

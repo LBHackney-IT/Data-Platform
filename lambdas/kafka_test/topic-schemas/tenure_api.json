@@ -1,0 +1,438 @@
+{
+    "type": "record",
+    "name": "TenureAPIChangeEvent",
+    "fields": [
+      {
+        "name": "Id",
+        "type": ["string", "null"],
+        "logicalType": "uuid"
+      },
+      {
+        "name": "EventType",
+        "type": ["string", "null"]
+      },
+      {
+        "name": "SourceDomain",
+        "type": ["string", "null"]
+      },
+      {
+        "name": "SourceSystem",
+        "type": ["string", "null"]
+      },
+      {
+        "name": "Version",
+        "type": ["string", "null"]
+      },
+      {
+        "name": "CorrelationId",
+        "type": ["string", "null"],
+        "logicalType": "uuid"
+      },
+      {
+        "name": "DateTime",
+        "type": "int",
+        "logicalType": "date"
+      },
+      {
+        "name": "User",
+        "type": [
+          "null",
+          {
+            "type": "record",
+            "name": "User",
+            "fields": [
+              {
+                "name": "Name",
+                "type": ["string", "null"]
+              },
+              {
+                "name": "Email",
+                "type": ["string", "null"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Tenure",
+        "type": {
+          "type": "record",
+          "name": "TenureInformation",
+          "fields": [
+            {
+              "name": "Id",
+              "type": ["string", "null"],
+              "logicalType": "uuid"
+            },
+            {
+              "name": "PaymentReference",
+              "type": ["string", "null"]
+            },
+            {
+              "name": "HouseholdMembers",
+              "type": [
+                "null",
+                {
+                  "type": "array",
+                  "items": {
+                    "name": "HouseholdMember",
+                    "type": "record",
+                    "fields": [
+                      {
+                        "name": "Id",
+                        "type": ["string", "null"],
+                        "logicalType": "uuid"
+                      },
+                      {
+                        "name": "Type",
+                        "type": {
+                          "name": "HouseholdMembersType",
+                          "type": "enum",
+                          "symbols": [
+                            "Person",
+                            "Organisation"
+                          ]
+                        }
+                      },
+                      {
+                        "name": "FullName",
+                        "type": ["string", "null"]
+                      },
+                      {
+                        "name": "IsResponsible",
+                        "type": "boolean"
+                      },
+                      {
+                        "name": "DateOfBirth",
+                        "type": "int",
+                        "logicalType": "date"
+                      },
+                      {
+                        "name": "PersonTenureType",
+                        "type": {
+                          "name": "PersonTenureType",
+                          "type": "enum",
+                          "symbols": [
+                            "Tenant",
+                            "Leaseholder",
+                            "Freeholder",
+                            "HouseholdMember",
+                            "Occupant"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "TenuredAsset",
+              "type": [
+                "null",
+                {
+                  "type": "record",
+                  "name": "TenuredAsset",
+                  "fields": [
+                    {
+                      "name": "Id",
+                      "type": ["string", "null"],
+                      "logicalType": "uuid"
+                    },
+                    {
+                      "name": "Type",
+                      "type": [
+                        {
+                          "name": "TenuredAssetType",
+                          "type": "enum",
+                          "symbols": [
+                            "Block",
+                            "Concierge",
+                            "Dwelling",
+                            "LettableNonDwelling",
+                            "MediumRiseBlock",
+                            "NA",
+                            "TravellerSite"
+                          ]
+                        },
+                        "null"
+                      ]
+                    },
+                    {
+                      "name": "FullAddress",
+                      "type": ["string", "null"]
+                    },
+                    {
+                      "name": "Uprn",
+                      "type": ["string", "null"]
+                    },
+                    {
+                      "name": "PropertyReference",
+                      "type": ["string", "null"]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Charges",
+              "type": [
+                "null",
+                {
+                  "type": "record",
+                  "name": "Charges",
+                  "fields": [
+                    {
+                      "name": "Rent",
+                      "type": "float"
+                    },
+                    {
+                      "name": "CurrentBalance",
+                      "type": "float"
+                    },
+                    {
+                      "name": "BillingFrequency",
+                      "type": ["string", "null"]
+                    },
+                    {
+                      "name": "ServiceCharge",
+                      "type": "float"
+                    },
+                    {
+                      "name": "OtherCharges",
+                      "type": "float"
+                    },
+                    {
+                      "name": "CombinedServiceCharges",
+                      "type": "float"
+                    },
+                    {
+                      "name": "CombinedRentCharges",
+                      "type": "float"
+                    },
+                    {
+                      "name": "TenancyInsuranceCharge",
+                      "type": "float"
+                    },
+                    {
+                      "name": "OriginalRentCharge",
+                      "type": "float"
+                    },
+                    {
+                      "name": "OriginalServiceCharge",
+                      "type": "float"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "StartOfTenureDate",
+              "type": [
+                "int",
+                "null"
+              ],
+              "logicalType": "date"
+            },
+            {
+              "name": "EndOfTenureDate",
+              "type": [
+                "int",
+                "null"
+              ],
+              "logicalType": "date"
+            },
+            {
+              "name": "TenureType",
+              "type": [
+                "null",
+                {
+                  "type": "record",
+                  "name": "TenureType",
+                  "fields": [
+                    {
+                      "name": "Code",
+                      "type": ["string", "null"]
+                    },
+                    {
+                      "name": "Description",
+                      "type": ["string", "null"]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "IsTenanted",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            {
+              "name": "IsActive",
+              "type": "boolean"
+            },
+            {
+              "name": "Terminated",
+              "type": [
+                "null",
+                {
+                  "type": "record",
+                  "name": "Terminated",
+                  "fields": [
+                    {
+                      "name": "IsTerminated",
+                      "type": "boolean"
+                    },
+                    {
+                      "name": "ReasonForTermination",
+                      "type": ["string", "null"]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "SuccessionDate",
+              "type": [
+                "int",
+                "null"
+              ],
+              "logicalType": "date"
+            },
+            {
+              "name": "AgreementType",
+              "type": [
+                "null",
+                {
+                  "type": "record",
+                  "name": "AgreementType",
+                  "fields": [
+                    {
+                      "name": "Code",
+                      "type": ["string", "null"]
+                    },
+                    {
+                      "name": "Description",
+                      "type": ["string", "null"]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "EvictionDate",
+              "type": [
+                "int",
+                "null"
+              ],
+              "logicalType": "date"
+            },
+            {
+              "name": "PotentialEndDate",
+              "type": [
+                "int",
+                "null"
+              ],
+              "logicalType": "date"
+            },
+            {
+              "name": "Notices",
+              "type": [
+                "null",
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "record",
+                    "name": "Notices",
+                    "fields": [
+                      {
+                        "name": "Type",
+                        "type": ["string", "null"]
+                      },
+                      {
+                        "name": "ServedDate",
+                        "type": "int",
+                        "logicalType": "date"
+                      },
+                      {
+                        "name": "ExpiryDate",
+                        "type": "int",
+                        "logicalType": "date"
+                      },
+                      {
+                        "name": "EffectiveDate",
+                        "type": "int",
+                        "logicalType": "date"
+                      },
+                      {
+                        "name": "EndDate",
+                        "type": [
+                          "int",
+                          "null"
+                        ],
+                        "logicalType": "date"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "LegacyReferences",
+              "type": [
+                "null",
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "record",
+                    "name": "LegacyReferences",
+                    "fields": [
+                      {
+                        "name": "Name",
+                        "type": ["string", "null"]
+                      },
+                      {
+                        "name": "Value",
+                        "type": ["string", "null"]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "IsMutualExchange",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            {
+              "name": "InformHousingBenefitsForChanges",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            {
+              "name": "IsSublet",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            {
+              "name": "SubletEndDate",
+              "type": [
+                "int",
+                "null"
+              ],
+              "logicalType": "date"
+            }
+          ]
+        }
+      }
+    ]
+  }
