@@ -501,7 +501,7 @@ if __name__ == "__main__":
     arr = arr.withColumn("AgreementStartDate",F.to_date(F.col("start_date"),"yyyy-MM-dd"))\
         .withColumn("AgreementEndDate1",F.to_date(F.col("AgreementEndDate"),"yyyy-MM-dd"))\
         .withColumn("AgreementCreatedDate",F.to_date(F.col("created_at"),"yyyy-MM-dd"))\
-        .withColumn("AgreementCode",F.when(F.col("court_case_id")>0,"N").otherwise("C"))\   
+        .withColumn("AgreementCode",F.when(F.col("court_case_id")>0,"N").otherwise("C"))\
         .drop("AgreementEndDate")
 
     arr = arr.selectExpr("paymentreference as AccountReference",
@@ -514,9 +514,6 @@ if __name__ == "__main__":
                     "Amount as AgreementAmount", 
                      "import_date")
                      
-    # add additional columns; blank until data is made available
-    arr = arr.withColumn('AgreementCode', lit(None).cast(StringType()))
-
     arr = arr.distinct()
     arr = add_import_time_columns(arr)
 
