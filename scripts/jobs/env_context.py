@@ -70,7 +70,7 @@ class ExecutionContextProvider:
                 .set("spark.sql.execution.arrow.maxRecordsPerBatch", "10000") \
                 .set("spark.sql.execution.arrow.pyspark.selfDestruct.enabled", "true")
             sc = SparkContext(conf=conf)
-            sc.setCheckpointDir("s3://dataplatform-stg-glue-temp-storage/planning/checkpoint/")
+#             sc.setCheckpointDir("s3://dataplatform-stg-glue-temp-storage/planning/checkpoint/")
         self.__glue_context = GlueContext(sc) if self.mode == DEFAULT_MODE_AWS else None
         
         self.__spark_session = self.__glue_context.spark_session if self.mode == DEFAULT_MODE_AWS else SparkSession \
