@@ -436,7 +436,8 @@ if __name__ == "__main__":
                                   "'Hackney' as LocalAuthority",
                                    "HousingOfficerName",
                                   "Patch",
-                                  "import_date as import_date"
+                                  "import_date as import_date",
+                                  "uh_ten_ref as tenancy_ref"
                                     )
 
     accounts2 = accounts2.distinct()
@@ -451,7 +452,8 @@ if __name__ == "__main__":
                                   "LocalAuthority",
                                   "HousingOfficerName",
                                   "Patch",
-                                  "import_date as import_date"
+                                  "import_date as import_date",
+                                  "tenancy_ref"                               
                                     )
         
     accounts2 = accounts2.distinct()
@@ -512,7 +514,8 @@ if __name__ == "__main__":
                     "initial_payment_date as FirstInstallmentDueDate",
                     "AgreementCreatedDate",
                     "Amount as AgreementAmount", 
-                     "import_date")
+                    "uh_ten_ref as tenancy_ref",
+                    "import_date")
                      
     arr = arr.distinct()
     arr = add_import_time_columns(arr)
@@ -606,6 +609,7 @@ if __name__ == "__main__":
                 "PostCode",
                 "Email",
                 "PropertyType",
+                "uh_ten_ref as tenancy_ref",
                 "import_date")
                      
     tens = tens.distinct()
@@ -704,6 +708,7 @@ if __name__ == "__main__":
                                   "code_lookup as ActionDescription",
                                   "ActionDate",
                                   "action_no as ActionSeq",
+                                  "uh_ten_ref as tenancy_ref",
                                   "import_date")
                                   
     actions = add_import_time_columns(actions)
@@ -759,7 +764,8 @@ if __name__ == "__main__":
                               "trans_type as TransactionCode",
                               "real_value as TransactionAmount",
                               "code_lookup as TransactionDescription",
-                             "import_date"
+                              "uh_ten_ref as tenancy_ref",
+                              "import_date"
                                 )
     
     
