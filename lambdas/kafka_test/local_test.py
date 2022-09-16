@@ -1,45 +1,29 @@
-import sys
 import helpers
+import sys
 
 sys.path.append('./lib/')
 
-from dotenv import load_dotenv
-from os import getenv
-from confluent_kafka.admin import AdminClient
+from confluent_kafka import Consumer
 from confluent_kafka.avro import AvroProducer, AvroConsumer, SerializerError
+from confluent_kafka.admin import AdminClient
+from confluent_kafka.cimpl import NewTopic
 from confluent_kafka.cimpl import NewTopic, KafkaException
 
 BOOTSTRAP_SERVERS_KEY = "bootstrap.servers"
 SECURITY_PROTOCOL_KEY = "security.protocol"
-SECURITY_PROTOCOL_VALUE = "ssl"
-SCHEMA_REGISTRY_URL_KEY = "schema.registry.url"
+SECURITY_PROTOCOL_VALUE = "plaintext" #must be set to plaintext locally, otherwise ssl
 GROUP_ID_KEY = "group.id"
+CLIENT_ID_VALUE = "kafka-local-test"
 CLIENT_ID_KEY = "client.id"
-CLIENT_ID_VALUE = "kafka-test"
 AUTO_OFFSET_RESET_KEY = "auto.offset.reset"
 AUTO_OFFSET_RESET_VALUE = "earliest"
+SCHEMA_REGISTRY_URL_KEY = "schema.registry.url"
 
-def lambda_handler(event, lambda_context):
-    load_dotenv()
-    kafka_brokers = getenv("TARGET_KAFKA_BROKERS")
-    schema_registry_url = getenv("SCHEMA_REGISTRY_URL")
-    operation = event['operation']
-    print(f'Operation: {operation}')
+#broker config if using the provided Docker setup
+kafka_brokers = "localhost:19093, localhost:19092"
 
-    if operation == "list-all-topics":
-        list_all_topics(kafka_brokers)
-    
-    if operation == "create-topic":
-        kafka_topic = event['topic']
-        create_topic(kafka_brokers, kafka_topic)
-
-    if operation == "send-message-to-topic-using-schema":
-        kafka_topic = event['topic']
-        send_message_to_topic_using_schema(kafka_brokers, kafka_topic, schema_registry_url)
-    
-    if operation == "read-message-from-topic-using-schema":
-        kafka_topic = event['topic']
-        read_message_from_topic_using_schema(kafka_brokers, kafka_topic, schema_registry_url)
+#schema registry URL if using the provided Docker setup
+schema_registry_url = "http://localhost:8081"
 
 def list_all_topics(kafka_brokers):
     print('Listing all available topics in the cluster:')
@@ -66,7 +50,7 @@ def create_topic(kafka_brokers, kafka_topic):
         CLIENT_ID_KEY: CLIENT_ID_VALUE
     })
 
-    topic_list = [NewTopic(kafka_topic, num_partitions=1, replication_factor=2)] #set replication_factor to 2 on dev/test
+    topic_list = [NewTopic(kafka_topic, num_partitions=1, replication_factor=1)] #set replication_factor to 2 on dev/test
 
     try:
         result = admin.create_topics(topic_list, operation_timeout=30)
@@ -80,6 +64,30 @@ def create_topic(kafka_brokers, kafka_topic):
         raise e
     else:
         print(f"Successfully created topic - {kafka_topic}")
+
+def list_consumer_groups(kafka_brokers):
+    
+    admin = AdminClient({
+        BOOTSTRAP_SERVERS_KEY: kafka_brokers,
+        SECURITY_PROTOCOL_KEY: SECURITY_PROTOCOL_VALUE
+    })
+
+    groups = admin.list_groups()
+
+    for group in groups:
+        print(group)
+
+def get_consumer_group_details(kafka_brokers, group_name):
+    
+    admin = AdminClient({
+        BOOTSTRAP_SERVERS_KEY: kafka_brokers,
+        SECURITY_PROTOCOL_KEY: SECURITY_PROTOCOL_VALUE
+    })
+
+    groups = admin.list_groups(group=group_name,timeout=10)
+
+    for group in groups:
+        print(group)
 
 def send_message_to_topic_using_schema(kafka_brokers, kafka_topic, schema_registry_url):
 
@@ -97,7 +105,7 @@ def send_message_to_topic_using_schema(kafka_brokers, kafka_topic, schema_regist
     avro_producer.produce(topic=kafka_topic, value=message) 
     avro_producer.flush()
 
-def read_message_from_topic_using_schema(kafka_brokers, kafka_topic, schema_registry_url):
+def read_message_from_topic_using_schema(kafka_brokers, kafka_topic):
     print(f'Reading message from {kafka_topic} topic')
 
     consumer_config = {
@@ -130,4 +138,19 @@ def read_message_from_topic_using_schema(kafka_brokers, kafka_topic, schema_regi
             continue
 
         print('Received message: {}'.format(message.value()))
-    consumer.close()    
+    consumer.close()
+  
+#####################
+# for local testing #
+#####################
+#Send message to contact details topic
+#send_message_to_topic_using_schema(kafka_brokers, "contact_details_api", schema_registry_url)
+
+#Read message from contact details api topic
+#read_message_from_topic_using_schema(kafka_brokers, "contact_details_api")
+
+#Send message to tenure topic
+#send_message_to_topic_using_schema(kafka_brokers, "tenure_api", schema_registry_url)
+
+#Read message from tenure topic
+#read_message_from_topic_using_schema(kafka_brokers, "tenure_api")
