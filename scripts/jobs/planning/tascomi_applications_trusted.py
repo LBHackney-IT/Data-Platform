@@ -28,37 +28,11 @@ from pyspark.sql.functions import *
 import pyspark.sql.functions as f
 
 from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
-from scripts.helpers.helpers import PARTITION_KEYS_SNAPSHOT, working_days_diff, clear_target_folder
+from scripts.helpers.helpers import PARTITION_KEYS_SNAPSHOT, working_days_diff, clear_target_folder, get_latest_rows_by_date, create_pushdown_predicate
 
 
 # Define the functions that will be used in your job (optional).
 # For Production jobs, these functions should be tested via unit testing.
-
-def create_pushdown_predicate(partitionDateColumn, daysBuffer):
-    """
-    This method creates a pushdown predicate to pass when reading data and creating a DDF.
-    The partition date column will in most cases be 'import_date'.
-    The daysBuffer is the number of days we want to load before the current day.
-    If passing daysBuffer=0, we create no pushdown predicate and the whole dataset will be loaded.
-    """
-    if daysBuffer > 0:
-        push_down_predicate = f"{partitionDateColumn}>=date_format(date_sub(current_date, {daysBuffer}), 'yyyyMMdd')"
-    else:
-        push_down_predicate = ''
-    return push_down_predicate
-
-
-
-def get_latest_rows_by_date(df, column):
-    """
-    Filters dataframe to keep rows byt specifying a date column. E.g. to get the
-    latest snapshot_date, column='snapshot_date'
-    """
-    date_filter = df.select(max(column)).first()[0]
-    df = df.where(col(column) == date_filter)
-    return df
-
-
 
 columns_to_delete_from_apps_table = (
     'access_hardstand_existing',
