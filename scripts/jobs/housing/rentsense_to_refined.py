@@ -654,6 +654,7 @@ if __name__ == "__main__":
     balances = balances. selectExpr("paymentreference as AccountReference",
                                     "CurrentBalance as CurrentBalance",
                                     "BalanceDate",
+                                    "uh_ten_ref as tenancy_ref",
                                    "import_date")
     
     balances = balances.distinct()
