@@ -902,7 +902,7 @@ module "housing_patches" {
   google_sheets_worksheet_name    = "Property Patch mapping"
   department                      = module.department_housing_data_source
   dataset_name                    = "property_patch_mapping"
-  enable_glue_trigger             = false
+  google_sheet_import_schedule    = "cron(0 6 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -924,7 +924,7 @@ module "officer_patches" {
   google_sheets_worksheet_name    = "Officer - Patch mapping"
   department                      = module.department_housing_data_source
   dataset_name                    = "officer_patch_mapping"
-  enable_glue_trigger             = false
+  google_sheet_import_schedule    = "cron(0 6 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -969,7 +969,7 @@ module "housing_rent_patches" {
   google_sheets_worksheet_name    = "List of properties"
   department                      = module.department_housing_data_source
   dataset_name                    = "property_rent_patches"
-  enable_glue_trigger             = false
+  google_sheet_import_schedule    = "cron(0 6 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -991,6 +991,6 @@ module "rent_officer_patches" {
   google_sheets_worksheet_name    = "Patch List"
   department                      = module.department_housing_data_source
   dataset_name                    = "rent_officer_patch_mapping"
-  enable_glue_trigger             = false
+  google_sheet_import_schedule    = "cron(0 6 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
