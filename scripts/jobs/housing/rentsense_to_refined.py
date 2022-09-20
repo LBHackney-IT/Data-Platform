@@ -519,6 +519,7 @@ if __name__ == "__main__":
                      
     arr = arr.distinct()
     arr = add_import_time_columns(arr)
+    arr = arr.filter(col("AgreementEndDate").isNull())
 
     dynamic_frame = DynamicFrame.fromDF(arr.repartition(1), glueContext, "target_data_to_write")
      
