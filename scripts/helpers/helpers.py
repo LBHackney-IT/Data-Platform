@@ -412,10 +412,9 @@ def working_days_diff(dataframe, id_column, date_from_column, date_to_column, re
     df_exploded = df_exploded.filter(~f.dayofweek('exploded').isin([1, 7])) \
         .filter(~df_exploded.exploded.isin(bank_holiday_list))
 
-    # Re-group the exploded lines and count days, excluding the first day
+    # Re-group the exploded lines and count days, including the first day
     df_dates = df_exploded.groupBy(id_column).agg(
         f.count('exploded').alias(result_column))
-    df_dates = df_dates.withColumn(result_column, col(result_column) - 1)
     # Join result back to the full input table using the id column
     dataframe = dataframe.join(df_dates, id_column, 'left')
     return dataframe

@@ -279,6 +279,7 @@ module "tascomi_applications_to_trusted" {
     "--source_catalog_table"                   = "applications"
     "--source_catalog_table2"                  = "application_types"
     "--source_catalog_table3"                  = "ps_development_codes"
+    "--bank_holiday_list_path"                 = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/util/hackney_bank_holiday.csv"
   }
   script_name          = "tascomi_applications_trusted"
   triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
