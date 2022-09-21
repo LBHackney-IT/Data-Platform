@@ -493,6 +493,7 @@ if __name__ == "__main__":
     ten = accounts.select('uh_ten_ref','paymentreference')
     arr = df5.join(ten,df5.tenancy_ref ==  ten.uh_ten_ref,"inner")
     arr = arr.distinct()
+    arr = arr.where(col("current_state").isin({"live","breached"}))
     
     agg_end = df6.where(col("agreement_state").isin({"cancelled","completed"}))
     agg_end = agg_end.selectExpr("agreement_id",
@@ -519,6 +520,7 @@ if __name__ == "__main__":
                      
     arr = arr.distinct()
     arr = add_import_time_columns(arr)
+    arr = arr.filter(col("AgreementEndDate").isNull())
 
     dynamic_frame = DynamicFrame.fromDF(arr.repartition(1), glueContext, "target_data_to_write")
      
@@ -654,6 +656,7 @@ if __name__ == "__main__":
     balances = balances. selectExpr("paymentreference as AccountReference",
                                     "CurrentBalance as CurrentBalance",
                                     "BalanceDate",
+                                    "uh_ten_ref as tenancy_ref",
                                    "import_date")
     
     balances = balances.distinct()
