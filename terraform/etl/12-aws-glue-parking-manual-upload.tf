@@ -1,6 +1,10 @@
 resource "aws_glue_catalog_database" "parking_raw_zone_manual_catalog_database" {
   count = !local.is_production_environment ? 1 : 0
   name  = "${local.short_identifier_prefix}parking-raw-zone-manual"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 module "manually_uploaded_parking_data_to_raw" {

@@ -1,6 +1,10 @@
 // LIBERATOR LANDING ZONE
 resource "aws_glue_catalog_database" "landing_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-landing-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_glue_trigger" "landing_zone_liberator_crawler_trigger" {
@@ -113,11 +117,19 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw" {
 
 resource "aws_glue_catalog_database" "raw_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-raw-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 // LIBERATOR REFINED ZONE
 resource "aws_glue_catalog_database" "refined_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-refined-zone"
+  
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_glue_crawler" "refined_zone_parking_liberator_crawler" {
