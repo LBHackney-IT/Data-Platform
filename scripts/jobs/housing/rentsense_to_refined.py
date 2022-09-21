@@ -493,6 +493,7 @@ if __name__ == "__main__":
     ten = accounts.select('uh_ten_ref','paymentreference')
     arr = df5.join(ten,df5.tenancy_ref ==  ten.uh_ten_ref,"inner")
     arr = arr.distinct()
+    arr = arr.where(col("current_state").isin({"live","breached"}))
     
     agg_end = df6.where(col("agreement_state").isin({"cancelled","completed"}))
     agg_end = agg_end.selectExpr("agreement_id",
