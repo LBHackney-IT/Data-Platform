@@ -15,9 +15,9 @@ set the mode to 'local' and provide the path of data set of your local machine
 
 To run in AWS mode:
 No need to provide mode (or optionally set it to 'aws')
---source_catalog_table = <applications table>
---source_catalog_table2
---source_catalog_table3
+--source_catalog_table_applications = <applications table>
+--source_catalog_table_application_types
+--source_catalog_table_ps_codes
 --source_catalog_database
 --target_destination
 """
@@ -428,25 +428,25 @@ def main():
         bank_holiday_list_path = execution_context.get_input_args(bank_holiday_list_path_arg)
 
         applications_data_path_local = execution_context.get_input_args(applications_data_path_local_arg)
-        source_catalog_table = execution_context.get_input_args(source_catalog_table_applications_glue_arg)
+        source_catalog_table_appications = execution_context.get_input_args(source_catalog_table_applications_glue_arg)
 
         application_types_data_path_local = execution_context.get_input_args(application_types_data_path_local_arg)
-        source_catalog_table2 = execution_context.get_input_args(source_catalog_table_application_types_glue_arg)
+        source_catalog_table_application_types = execution_context.get_input_args(source_catalog_table_application_types_glue_arg)
 
         ps_development_codes_data_path_local = execution_context.get_input_args(
             ps_development_codes_data_path_local_arg)
-        source_catalog_table3 = execution_context.get_input_args(source_catalog_table_ps_codes_glue_arg)
+        source_catalog_table_ps_codes = execution_context.get_input_args(source_catalog_table_ps_codes_glue_arg)
         source_catalog_database = execution_context.get_input_args(source_catalog_database_glue_arg)
 
         # Log something. This will be output in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
-        logger.info(f'The job is starting. The source table is {source_catalog_database}.{source_catalog_table}')
+        logger.info(f'The job is starting. The source table is {source_catalog_database}.{source_catalog_table_applications}')
         logger.info(f'execution mode = {execution_mode}')
 
         # Load data from glue catalog
         applications_df = execution_context \
             .get_dataframe(local_path_parquet=applications_data_path_local,
                            name_space=source_catalog_database,
-                           table_name=source_catalog_table,
+                           table_name=source_catalog_table_applications,
                            push_down_predicate=create_pushdown_predicate('snapshot_date', 10))
 
         # Data processing Starts
@@ -496,7 +496,7 @@ def main():
         application_types_df = execution_context \
             .get_dataframe(local_path_parquet=application_types_data_path_local,
                            name_space=source_catalog_database,
-                           table_name=source_catalog_table2,
+                           table_name=source_catalog_table_application_types,
                            push_down_predicate=create_pushdown_predicate('snapshot_date', 3))
 
         application_types_df = get_latest_rows_by_date(application_types_df, 'snapshot_date')
@@ -510,7 +510,7 @@ def main():
         ps_codes_df = execution_context \
             .get_dataframe(local_path_parquet=ps_development_codes_data_path_local,
                            name_space=source_catalog_database,
-                           table_name=source_catalog_table3,
+                           table_name=source_catalog_table_ps_codes,
                            push_down_predicate=create_pushdown_predicate('snapshot_date', 3))
 
         ps_codes_df = get_latest_rows_by_date(ps_codes_df, 'snapshot_date')
