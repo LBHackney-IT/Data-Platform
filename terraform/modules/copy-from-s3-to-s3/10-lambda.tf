@@ -175,3 +175,24 @@ resource "aws_lambda_function_event_invoke_config" "copy_from_s3_to_s3_lambda" {
     aws_lambda_function.copy_from_s3_to_s3_lambda
   ]
 }
+
+resource "aws_cloudwatch_event_rule" "run_s3_copier_lambda" {
+  name_prefix         = "${var.lambda_name}-lambda-"
+  description         = "Runs on the following schedule: ${var.lambda_execution_cron_schedule}"
+  schedule_expression = var.lambda_execution_cron_schedule
+  is_enabled          = var.is_live_environment
+}
+
+resource "aws_cloudwatch_event_target" "run_s3_copier_lambda" {
+  rule      = aws_cloudwatch_event_rule.run_s3_copier_lambda.name
+  target_id = "${var.lambda_name}-"
+  arn       = aws_lambda_function.copy_from_s3_to_s3_lambda.arn
+}
+
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_s3_copier_lambda" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.copy_from_s3_to_s3_lambda.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.run_s3_copier_lambda.arn
+}
