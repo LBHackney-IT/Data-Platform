@@ -273,7 +273,7 @@ module "tascomi_applications_to_trusted" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"                    = "job-bookmark-enable"
-    "--target_location"                        = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
+    "--target_destination"                     = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
     "--enable-glue-datacatalog"                = "true"
     "--source_catalog_database"                = aws_glue_catalog_database.refined_zone_tascomi.name
     "--source_catalog_table_applications"      = "applications"
