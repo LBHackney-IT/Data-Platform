@@ -428,7 +428,7 @@ def main():
         bank_holiday_list_path = execution_context.get_input_args(bank_holiday_list_path_arg)
 
         applications_data_path_local = execution_context.get_input_args(applications_data_path_local_arg)
-        source_catalog_table_appications = execution_context.get_input_args(source_catalog_table_applications_glue_arg)
+        source_catalog_table_applications = execution_context.get_input_args(source_catalog_table_applications_glue_arg)
 
         application_types_data_path_local = execution_context.get_input_args(application_types_data_path_local_arg)
         source_catalog_table_application_types = execution_context.get_input_args(source_catalog_table_application_types_glue_arg)
