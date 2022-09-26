@@ -61,6 +61,7 @@ The SQL denormalises the Suspension data into a SINGLE row for each of the Suspe
 
 19/07/2021 - Create SQL
 20/08/2021 - changed because I did not have an HYS filter?
+26/09/2022 - Add an additional check for ONLY suspensions
 *************************************************************************************************************************/
 
 /************************************************************************************************************************
@@ -239,6 +240,7 @@ LEFT JOIN SusStatusExtnRej as I ON A.suspensions_reference   = I.permit_referece
 LEFT JOIN SusStatusSignUp as J ON A.suspensions_reference    = J.permit_referece     AND J.row_num = 1
 LEFT JOIN SusStatusAppRej as K ON A.suspensions_reference    = K.permit_referece     AND K.row_num = 1
 LEFT JOIN SusStatusCancelled as L ON A.suspensions_reference = L.permit_referece     AND L.row_num = 1
+WHERE lower(permit_type) = 'suspension'
 """
 ApplyMapping_node2 = sparkSqlQuery(
     glueContext,
