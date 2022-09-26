@@ -1,5 +1,9 @@
 resource "aws_glue_catalog_database" "ingestion_connection" {
   name = "${var.identifier_prefix}${var.name}"
+  
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 locals {

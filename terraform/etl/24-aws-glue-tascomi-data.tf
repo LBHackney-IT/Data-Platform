@@ -47,12 +47,24 @@ locals {
 # Database resources
 resource "aws_glue_catalog_database" "raw_zone_tascomi" {
   name = "${local.identifier_prefix}-tascomi-raw-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 resource "aws_glue_catalog_database" "refined_zone_tascomi" {
   name = "${local.identifier_prefix}-tascomi-refined-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 resource "aws_glue_catalog_database" "trusted_zone_tascomi" {
   name = "${local.identifier_prefix}-tascomi-trusted-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Columns type dictionary resources
