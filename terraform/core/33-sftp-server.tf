@@ -123,3 +123,4 @@ resource "aws_iam_role_policy_attachment" "file_transfer_can_write_logs" {
   policy_arn = aws_iam_policy.file_transfer_can_write_logs.arn
 }
 
+#dummy comment to trigger a plan
