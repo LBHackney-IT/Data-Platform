@@ -28,5 +28,4 @@ You can make changes to the lambda code then re apply the terraform to update th
 ```sh
 aws-vault exec hackney-dataplatform-development -- aws lambda invoke --function-name dataplatform-<your-workspace-name>-sftp-to-s3 out
 ```
-
-You can view the logs for the invocation in the cloudwatch log group `/aws/lambda/dataplatform-<your-workspace-name>-sftp-to-s3`.
+(You can view the logs for the invocation in the cloudwatch log group `/aws/lambda/dataplatform-<your-workspace-name>-sftp-to-s3`.)
