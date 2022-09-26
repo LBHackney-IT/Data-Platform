@@ -197,7 +197,7 @@ if __name__ == "__main__":
         .withColumnRenamed("id","person_id")\
         .withColumn("persontypes2",concat_ws(",",col("persontypes")))   
     
-    per =  per.withColumn("new_person_type", when(per.person_type.isNull() ,per.persontypes2)
+    per =  per.withColumn("new_person_type", when(per.person_type.isNull(), per.persontypes2)
                                  .otherwise(per.person_type))\
               .select("person_id",
                         "preferredTitle",
