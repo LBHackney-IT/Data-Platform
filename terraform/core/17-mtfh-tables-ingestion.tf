@@ -81,7 +81,7 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
         TableLevelConfiguration = 3
       }
       Partitions = { "AddOrUpdateBehavior" = "InheritFromTable" }
-      Tables = {"AddOrUpdateBehavior" = "MergeNewColumns" }
+      Tables     = { "AddOrUpdateBehavior" = "MergeNewColumns" }
     })
   }
 }
