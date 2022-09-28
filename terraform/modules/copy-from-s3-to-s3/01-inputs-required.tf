@@ -44,3 +44,8 @@ variable "lambda_name" {
   description = "The name to give the lambda"
   type        = string
 }
+
+variable "is_live_environment" {
+  description = "A flag indicting if we are running in a live environment for setting up automation"
+  type        = bool
+}

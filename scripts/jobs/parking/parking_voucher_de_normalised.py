@@ -61,6 +61,7 @@ This SQL creates a denormalised list of Vouchers
 
 23/03/2022 - Create Query
 13/04/2022 - Add Voucher Start and End figures
+26/09/2022 - Update to ensure that ONLY vouchers are obtained/displayed
 *********************************************************************************/
 WITH Voucher_Data as (
   SELECT * FROM liberator_permit_voucher
@@ -68,7 +69,8 @@ WITH Voucher_Data as (
 
 Permit_Voucher as (
    SELECT * FROM liberator_permit_fta  
-   WHERE import_Date = (Select MAX(import_date) from liberator_permit_fta)),
+   WHERE import_Date = (Select MAX(import_date) from liberator_permit_fta)
+   AND lower(permit_type) like '%voucher%'),
 
 E_Voucher_Sessions as (
    Select evoucherorderid, count(*) as NoofBookings, 

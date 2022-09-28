@@ -195,7 +195,11 @@ if __name__ == "__main__":
         .withColumn("tenure", col("combined_exploded.tenures"))\
         .withColumn("person_type", col("combined_exploded.persontypes")).drop("combined", "combined_exploded") \
         .withColumnRenamed("id","person_id")\
-        .select("person_id",
+        .withColumn("persontypes2",concat_ws(",",col("persontypes")))   
+    
+    per =  per.withColumn("new_person_type", when(per.person_type.isNull(), per.persontypes2)
+                                 .otherwise(per.person_type))\
+              .select("person_id",
                         "preferredTitle",
                         "firstName",
                         "middleName",
@@ -213,12 +217,14 @@ if __name__ == "__main__":
                         "tenure.assetId",   
                         "tenure.type",   
                         "tenure.assetFullAddress",
-                        "person_type",
+                ##      "person_type",
+                        "new_person_type as person_type",
                         "import_year",
                         "import_month",
                         "import_day",
                         "import_date")\
             .withColumnRenamed("id","tenancy_id")
+
     
     # Convert data frame to dynamic frame 
     dynamic_frame = DynamicFrame.fromDF(per.repartition(1), glueContext, "target_data_to_write")

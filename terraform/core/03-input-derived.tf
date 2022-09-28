@@ -49,4 +49,8 @@ data "aws_ssm_parameter" "aws_vpc_id" {
 // ==== LANDING ZONE ===========
 resource "aws_glue_catalog_database" "landing_zone_catalog_database" {
   name = "${local.identifier_prefix}-landing-zone-database"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
