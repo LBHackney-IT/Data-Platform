@@ -428,3 +428,30 @@ def clear_target_folder(s3_bucket_target):
     bucket = s3.Bucket(bucket_name)
     bucket.objects.filter(Prefix=prefix).delete()
     return
+
+def copy_file(source_bucket, source_path, source_filename,target_bucket,target_path, target_filename):
+    print("S3 Source Bucket: ", source_bucket)
+    print("Source Path: ", source_path)
+    print("Source File: ", source_filename)
+    print("S3 Target Bucket: ", target_bucket)
+    print("Target Path: ", target_path)
+    print("Target File: ", target_filename)
+    try:
+        client = boto3.client('s3')
+
+        source_key = source_path + source_filename
+        target_key = target_path + target_filename
+        ## Store Target File File Prefix, this is the new name of the file
+        target_source = {
+            'Bucket': source_bucket,
+            'Key': source_key
+        }
+
+        ### Now Copy the file with New Name
+        client.copy(CopySource=target_source, Bucket=target_bucket, Key=target_key)
+
+        
+        print("File Copied to: ", target_bucket+'/'+target_key)
+    except Exception as error:
+        ## do nothing
+        print('Error Occured: copy_file', error)
