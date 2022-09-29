@@ -1,9 +1,6 @@
-# Liberator SFTP server to S3
+# SFTP server to S3
 
-This lambda function streams a daily upload of liberator data from an SFTP server into the landing zone S3 bucket.
-
-See the corresponding [architecture decision record](http://playbook.hackney.gov.uk/Data-Platform-Playbook/architecture-decisions/0007-sftp-to-s3-lambda).
-
+This lambda function copies files matching a set pattern from SFTP server to Landing Zone S3 bucket.
 
 ## Development
 ### Deploy the lambda function in you development workspace
