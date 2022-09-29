@@ -27,3 +27,10 @@ aws-vault exec hackney-dataplatform-development -- aws lambda invoke --function-
 ```
 
 You can view the logs for the invocation in the cloudwatch log group `/aws/lambda/dataplatform-<your-workspace-name>-sftp-to-s3`.
+
+## Import date can be manually overridden when there's a need to run the Lambda manually to copy files for dates in the past. The following can be used as event JSON in Lambda test UI to fetch files for a specific date:
+`{
+    "DateToImport": "YYYY-MM-DD"
+}`
+
+Please note the date format.
