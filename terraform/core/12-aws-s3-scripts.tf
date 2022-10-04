@@ -77,3 +77,11 @@ resource "aws_s3_bucket_object" "hackney_bank_holiday" {
   source      = "../../scripts/jobs/planning/hackney_bank_holiday.csv"
   source_hash = filemd5("../../scripts/jobs/planning/hackney_bank_holiday.csv")
 }
+
+resource "aws_s3_bucket_object" "copy_ringgo_sftp_csv_data_to_raw" {
+  bucket      = module.glue_scripts.bucket_id
+  key         = "scripts/parking/parking_copy_ringgo_sftp_csv_data_to_raw.py"
+  acl         = "private"
+  source      = "../../scripts/jobs/parking/parking_copy_ringgo_sftp_csv_data_to_raw.py"
+  source_hash = filemd5("../../scripts/jobs/parking/parking_copy_ringgo_sftp_csv_data_to_raw.py")
+}
