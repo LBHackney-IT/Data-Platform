@@ -65,7 +65,7 @@ module "ringgo_sftp_data_to_raw" {
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   glue_role_arn              = aws_iam_role.glue_role.arn
-  script_s3_object_key = aws_s3_bucket_object.copy_ringgo_sftp_csv_data_to_raw.key
+  script_s3_object_key       = aws_s3_bucket_object.copy_manually_uploaded_csv_data_to_raw.key
 
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
