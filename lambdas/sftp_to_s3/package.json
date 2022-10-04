@@ -1,0 +1,17 @@
+{
+  "name": "sftp-to-s3",
+  "version": "1.0.0",
+  "description": "A function to stream files matching a set pattern from SFTP server to S3 bucket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.913.0",
+    "luxon": "^3.0.4",
+    "ssh2-sftp-client": "^9.0.4"
+  }
+}
