@@ -78,3 +78,11 @@ resource "aws_s3_bucket_object" "hackney_bank_holiday" {
   source_hash = filemd5("../../scripts/jobs/planning/hackney_bank_holiday.csv")
 }
 
+resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
+  bucket      = module.glue_scripts.bucket_id
+  key         = "scripts/copy_manually_uploaded_csv_data_to_raw.py"
+  acl         = "private"
+  source      = "../../scripts/jobs/copy_manually_uploaded_csv_data_to_raw.py"
+  source_hash = filemd5("../../scripts/jobs/copy_manually_uploaded_csv_data_to_raw.py")
+}
+
