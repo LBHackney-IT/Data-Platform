@@ -3,6 +3,7 @@ import sys
 
 import boto3
 import botocore
+import pyspark.sql.functions as F
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.transforms import *
