@@ -11,11 +11,11 @@ from pyspark.context import SparkContext
 from scripts.helpers.helpers import get_glue_env_var
 
 
-def get_table_names(glue_database, glue_table_prefix):
+def get_table_names(glue_database, glue_table_prefix, region_name="eu-west=2"):
     """
     Returns a list of tables from a glue catalog database that begin with a common prefix
     """
-    glue_client = boto3.client("glue", region_name="eu-west-2")
+    glue_client = boto3.client("glue", region_name=region_name)
     response = glue_client.get_tables(
         DatabaseName=glue_database, Expression=f"^{glue_table_prefix}*"
     )
