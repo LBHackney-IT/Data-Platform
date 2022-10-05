@@ -7,7 +7,7 @@ module "sftp_to_s3_ingestion" {
 
   identifier_prefix              = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
-  lambda_name                    = "ringgo-sftp-to-s3"
+  lambda_name                    = "sftp-to-s3"
   lambda_handler                 = "index.handler"
   runtime_language               = "nodejs14.x"
   secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
