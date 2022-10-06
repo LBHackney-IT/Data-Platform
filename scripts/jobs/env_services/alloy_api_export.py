@@ -40,7 +40,7 @@ def create_s3_key(s3_downloads_prefix, import_date, file):
     file_table_name = os.path.splitext(file_basename)
     file_table_name = re.sub(r"[^A-Za-z0-9]+", "_", file_table_name[0])
     file_table_name = file_table_name.lower()
-    raw_key = f"{s3_downloads_prefix}{file_table_name}/import_year={import_date.year}/import_month={import_date.month}/import_day={import_date.day}/{file_basename}"
+    raw_key = f"{s3_downloads_prefix}{file_table_name}/import_year={import_date: %Y}/import_month={import_date: %m}/import_day={import_date: %d}/import_date={import_date: %Y%m%d}/import{file_basename}"
     return raw_key
 
 
