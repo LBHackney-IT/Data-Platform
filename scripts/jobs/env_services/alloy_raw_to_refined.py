@@ -9,10 +9,10 @@ from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from scripts.helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import PARTITION_KEYS, get_glue_env_var
 
 
-def get_table_names(glue_database, glue_table_prefix, region_name="eu-west=2"):
+def get_table_names(glue_database, glue_table_prefix, region_name="eu-west-2"):
     """
     Returns a list of tables from a glue catalog database that begin with a common prefix
     """
@@ -58,11 +58,14 @@ if __name__ == "__main__":
     glue_database = get_glue_env_var("glue_database", "")
     glue_table_prefix = get_glue_env_var("glue_table_prefix", "")
     s3_raw_zone_bucket = get_glue_env_var("s3_raw_zone_bucket", "")
+    s3_refined_zone_bucket = get_glue_env_var("s3_refined_zone_bucket", "")
     s3_mapping_location = get_glue_env_var("s3_mapping_location", "")
     s3_downloads_prefix = get_glue_env_var("s3_downloads_prefix", "")
-    redshift_database = get_glue_env_var("redshift_database", "")
+    s3_target_prefix = get_glue_env_var("s3_target_prefix", "")
 
     table_names = get_table_names(glue_database, glue_table_prefix)
+
+    logger.info(f"found {len(table_names)}, creating trusted frames")
 
     for table in table_names:
         daily_df = glueContext.create_dynamic_frame.from_catalog(
@@ -85,11 +88,13 @@ if __name__ == "__main__":
             mapping = json.loads(obj["Body"].read())
             daily_df = rename_columns(daily_df, mapping)
 
-        glueContext.write_dynamic_frame.from_jdbc_conf(
+        target_path = f"s3://{s3_refined_zone_bucket}/{s3_target_prefix}{table}"
+        glueContext.write_dynamic_frame.from_options(
             frame=daily_df,
-            catalog_connection="redshift",
-            connection_options={"dbtable": table, "database": redshift_database},
-            redshift_tmp_dir="s3://redshift_tmp_dir_path",
+            connection_type="s3",
+            format="parquet",
+            connection_options={"path": target_path, "partitionKeys": PARTITION_KEYS},
+            transformation_ctx=f"write_{table}",
         )
 
     job.commit()
