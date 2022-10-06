@@ -198,32 +198,34 @@ if __name__ == "__main__":
         .withColumn("persontypes2",concat_ws(",",col("persontypes")))   
     
     per =  per.withColumn("new_person_type", when(per.person_type.isNull(), per.persontypes2)
-                                 .otherwise(per.person_type))\
-              .select("person_id",
-                        "preferredTitle",
-                        "firstName",
-                        "middleName",
-                        "surname",
-                        "dateOfBirth",
-                        "placeOfBirth",
-                        "isOrganisation",
-                        "reason",
-                        "tenure.id", ##needs to be renamed
-                        "tenure.uprn",
-                        "tenure.propertyReference",
-                        "tenure.paymentReference",
-                        "tenure.startDate",
-                        "tenure.endDate",   
-                        "tenure.assetId",   
-                        "tenure.type",   
-                        "tenure.assetFullAddress",
-                ##      "person_type",
-                        "new_person_type as person_type",
-                        "import_year",
-                        "import_month",
-                        "import_day",
-                        "import_date")\
-            .withColumnRenamed("id","tenancy_id")
+                                 .otherwise(per.person_type))
+    
+    per =  per.select("person_id",
+                    "preferredTitle",
+                    "firstName",
+                    "middleName",
+                    "surname",
+                    "dateOfBirth",
+                    "placeOfBirth",
+                    "isOrganisation",
+                    "reason",
+                    "tenure.id", ##needs to be renamed
+                    "tenure.uprn",
+                    "tenure.propertyReference",
+                    "tenure.paymentReference",
+                    "tenure.startDate",
+                    "tenure.endDate",   
+                    "tenure.assetId",   
+                    "tenure.type",   
+                    "tenure.assetFullAddress",
+            ##      "person_type",
+                    "new_person_type",
+                    "import_year",
+                    "import_month",
+                    "import_day",
+                    "import_date")\
+            .withColumnRenamed("id","tenancy_id")\
+            .withColumnRenamed("new_person_type","person_type")
 
     
     # Convert data frame to dynamic frame 
