@@ -9,7 +9,12 @@ from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from scripts.helpers.helpers import PARTITION_KEYS, get_glue_env_var
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    add_import_time_columns,
+    clean_column_names,
+    get_glue_env_var,
+)
 
 
 def get_table_names(glue_database, glue_table_prefix, region_name="eu-west-2"):
@@ -87,6 +92,9 @@ if __name__ == "__main__":
             obj = s3.Object(s3_mapping_location, mapping_file_key).get()
             mapping = json.loads(obj["Body"].read())
             daily_df = rename_columns(daily_df, mapping)
+
+        daily_df = clean_column_names(daily_df)
+        daily_df = add_import_time_columns(daily_df)
 
         target_path = f"s3://{s3_refined_zone_bucket}/{s3_target_prefix}{table}"
         glueContext.write_dynamic_frame.from_options(
