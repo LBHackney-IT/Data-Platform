@@ -90,7 +90,7 @@ module "alloy_raw_to_refined_env_services" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
-  count                     = local.is_production_environment ? length(local.alloy_queries) : 0
+  count                     = !local.is_production_environment ? length(local.alloy_queries) : 0
 
   job_description = "This job transforms the daily csv exports and saves them to the refined zone"
   department      = module.department_environmental_services_data_source
