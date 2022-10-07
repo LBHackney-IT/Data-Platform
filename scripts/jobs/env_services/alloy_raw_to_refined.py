@@ -62,10 +62,8 @@ if __name__ == "__main__":
 
     glue_database = get_glue_env_var("glue_database", "")
     glue_table_prefix = get_glue_env_var("glue_table_prefix", "")
-    s3_raw_zone_bucket = get_glue_env_var("s3_raw_zone_bucket", "")
     s3_refined_zone_bucket = get_glue_env_var("s3_refined_zone_bucket", "")
     s3_mapping_location = get_glue_env_var("s3_mapping_location", "")
-    s3_downloads_prefix = get_glue_env_var("s3_downloads_prefix", "")
     s3_target_prefix = get_glue_env_var("s3_target_prefix", "")
 
     table_names = get_table_names(glue_database, glue_table_prefix)
