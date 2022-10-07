@@ -1,7 +1,8 @@
 locals {
-  alloy_queries                     = local.is_live_environment ? fileset("${path.module}/../../scripts/jobs/env_services/aqs", "*json") : []
-  alloy_query_names                 = local.is_live_environment ? [for i in tolist(local.alloy_queries) : replace(trimsuffix(i, ".json"), "\\W", "_")] : []
-  alloy_queries_max_concurrent_runs = local.is_live_environment ? length(local.alloy_queries) : 1
+  # These values already exist in terraform\etl\25-aws-glue-job-env-services.tf
+  #alloy_queries                     = local.is_live_environment ? fileset("${path.module}/../../scripts/jobs/env_services/aqs", "*json") : []
+  #alloy_queries_max_concurrent_runs = local.is_live_environment ? length(local.alloy_queries) : 1
+  alloy_query_names_alphanumeric = local.is_live_environment ? [for i in tolist(local.alloy_queries) : replace(trimsuffix(i, ".json"), "\\W", "_")] : []
 }
 
 resource "aws_glue_trigger" "alloy_daily_export" {
@@ -9,7 +10,7 @@ resource "aws_glue_trigger" "alloy_daily_export" {
   tags    = module.tags.values
   enabled = local.is_production_environment
 
-  name     = "${local.short_identifier_prefix} ${local.alloy_query_names[count.index]} Alloy API Export Job"
+  name     = "${local.short_identifier_prefix} Alloy API Export Job Trigger ${local.alloy_query_names_alphanumeric[count.index]}"
   type     = "SCHEDULED"
   schedule = "cron(0 23 ? * MON-FRI *)"
 
@@ -26,7 +27,7 @@ module "alloy_api_export_raw_env_services" {
 
   job_description = "This job queries the Alloy API and saves the exported csvs to s3"
   department      = module.department_environmental_services_data_source
-  job_name        = "${local.short_identifier_prefix}_alloy_api_export_${local.alloy_query_names[count.index]}_env_services"
+  job_name        = "${local.short_identifier_prefix}_alloy_api_export_${local.alloy_query_names_alphanumeric[count.index]}_env_services"
 
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
@@ -39,7 +40,7 @@ module "alloy_api_export_raw_env_services" {
     "--secret_name"             = "${local.identifier_prefix}/env-services/alloy-api-key"
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--s3_raw_zone_bucket"      = module.raw_zone_data_source.bucket_id
-    "--s3_downloads_prefix"     = "env-services/alloy/alloy_api_downloads/${local.alloy_query_names[count.index]}/"
+    "--s3_downloads_prefix"     = "env-services/alloy/alloy_api_downloads/${local.alloy_query_names_alphanumeric[count.index]}/"
   }
 }
 
@@ -48,7 +49,7 @@ module "alloy_api_export_raw_env_services" {
 resource "aws_glue_trigger" "alloy_export_crawler" {
   count   = !local.is_production_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
-  name    = "${local.short_identifier_prefix} ${local.alloy_query_names[count.index]} Alloy Export Crawler"
+  name    = "${local.short_identifier_prefix} Alloy Export Crawler ${local.alloy_query_names_alphanumeric[count.index]}"
   type    = "CONDITIONAL"
   enabled = local.is_production_environment
 
@@ -69,13 +70,13 @@ resource "aws_glue_crawler" "alloy_export_crawler" {
   tags  = module.tags.values
 
   database_name = module.department_environmental_services_data_source.raw_zone_catalog_database_name
-  name          = "${local.short_identifier_prefix}Alloy Export Crawler ${local.alloy_query_names[count.index]}"
+  name          = "${local.short_identifier_prefix} Alloy Export Crawler ${local.alloy_query_names_alphanumeric[count.index]}"
   role          = module.department_environmental_services_data_source.glue_role_arn
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/env-services/alloy/alloy_api_downloads/${local.alloy_query_names[count.index]}/"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/env-services/alloy/alloy_api_downloads/${local.alloy_query_names_alphanumeric[count.index]}/"
   }
-  table_prefix = local.alloy_query_names[count.index]
+  table_prefix = local.alloy_query_names_alphanumeric[count.index]
 
   configuration = jsonencode({
     Version = 1.0
@@ -93,7 +94,7 @@ module "alloy_raw_to_refined_env_services" {
 
   job_description = "This job transforms the daily csv exports and saves them to the refined zone"
   department      = module.department_environmental_services_data_source
-  job_name        = "${local.short_identifier_prefix}_${local.alloy_query_names[count.index]}_alloy_daily_raw_to_refined_env_services"
+  job_name        = "${local.short_identifier_prefix}_${local.alloy_query_names_alphanumeric[count.index]}_alloy_daily_raw_to_refined_env_services"
 
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
@@ -104,21 +105,22 @@ module "alloy_raw_to_refined_env_services" {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
     "--glue_database"           = "env-services-raw-zone"
-    "--glue_table_prefix"       = local.alloy_query_names[count.index]
+    "--glue_table_prefix"       = local.alloy_query_names_alphanumeric[count.index]
     "--s3_refined_zone_bucket"  = "s3://${module.refined_zone_data_source.bucket_id}/env-services/alloy/snapshots/"
     "--s3_mapping_location"     = "s3://${module.raw_zone_data_source.bucket_id}env-services/alloy/mapping-files/"
+    "--s3_target_prefix"        = "env-services/alloy/${local.alloy_query_names_alphanumeric[count.index]}/"
   }
 }
 
-resource "aws_glue_trigger" "alloy_snapshot_crawler" {
+resource "aws_glue_trigger" "alloy_refined_crawler" {
   count   = !local.is_production_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
-  name    = "${local.short_identifier_prefix} ${local.alloy_query_names[count.index]} Alloy Snapshot Crawler"
+  name    = "${local.short_identifier_prefix} Alloy Refined Crawler ${local.alloy_query_names_alphanumeric[count.index]}"
   type    = "CONDITIONAL"
   enabled = local.is_production_environment
 
   actions {
-    crawler_name = aws_glue_crawler.alloy_snapshot[count.index].name
+    crawler_name = aws_glue_crawler.alloy_raw_to_refined_env_services[count.index].name
   }
 
   predicate {
@@ -129,19 +131,18 @@ resource "aws_glue_trigger" "alloy_snapshot_crawler" {
   }
 }
 
-resource "aws_glue_crawler" "alloy_snapshot" {
+resource "aws_glue_crawler" "alloy_refined" {
   count = !local.is_production_environment ? length(local.alloy_queries) : 0
   tags  = module.tags.values
 
   database_name = module.department_environmental_services_data_source.refined_zone_catalog_database_name
-  name          = "${local.short_identifier_prefix}Alloy Snapshot ${local.alloy_query_names[count.index]}"
+  name          = "${local.short_identifier_prefix} Alloy Refined Crawler ${local.alloy_query_names_alphanumeric[count.index]}"
   role          = module.department_environmental_services_data_source.glue_role_arn
 
   s3_target {
-    path = "s3://${module.refined_zone_data_source.bucket_id}/env-services/alloy/snapshots/"
+    path = "s3://${module.refined_zone_data_source.bucket_id}/env-services/alloy/${local.alloy_query_names_alphanumeric[count.index]}"
   }
-  table_prefix = "alloy_snapshot_"
-
+  able_prefix = "alloy_refined_"
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
