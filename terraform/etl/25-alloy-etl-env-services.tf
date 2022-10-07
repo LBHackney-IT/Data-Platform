@@ -54,7 +54,7 @@ resource "aws_glue_trigger" "alloy_export_crawler" {
   enabled = local.is_production_environment
 
   actions {
-    crawler_name = aws_glue_crawler.alloy_daily_table_ingestion[count.index].name
+    crawler_name = aws_glue_crawler.alloy_export_crawler[count.index].name
   }
 
   predicate {
@@ -120,12 +120,12 @@ resource "aws_glue_trigger" "alloy_refined_crawler" {
   enabled = local.is_production_environment
 
   actions {
-    crawler_name = aws_glue_crawler.alloy_raw_to_refined_env_services[count.index].name
+    crawler_name = aws_glue_crawler.alloy_refined[count.index].name
   }
 
   predicate {
     conditions {
-      job_name = module.alloy_daily_snapshot_env_services[count.index].job_name
+      job_name = module.alloy_raw_to_refined_env_services[count.index].job_name
       state    = "SUCCEEDED"
     }
   }
@@ -142,7 +142,7 @@ resource "aws_glue_crawler" "alloy_refined" {
   s3_target {
     path = "s3://${module.refined_zone_data_source.bucket_id}/env-services/alloy/${local.alloy_query_names_alphanumeric[count.index]}"
   }
-  able_prefix = "alloy_refined_"
+  table_prefix = "alloy_refined_"
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
