@@ -30,6 +30,14 @@ resource "aws_s3_bucket_object" "pydeequ" {
   source_hash = filemd5("../../external-lib/target/pydeequ-1.0.1.zip")
 }
 
+resource "aws_s3_bucket_object" "deeque_jar" {
+  bucket      = module.glue_scripts.bucket_id
+  key         = "jars/deequ-1.0.3.jar"
+  acl         = "private"
+  source      = "../../external-lib/target/deequ-1.0.3.jar"
+  source_hash = filemd5("../../external-lib/target/deequ-1.0.3.jar")
+}
+
 resource "aws_s3_bucket_object" "copy_tables_landing_to_raw" {
   bucket      = module.glue_scripts.bucket_id
   key         = "scripts/copy_tables_landing_to_raw.py"
@@ -61,3 +69,20 @@ resource "aws_s3_bucket_object" "copy_json_data_landing_to_raw" {
   source      = "../../scripts/jobs/copy_json_data_landing_to_raw.py"
   source_hash = filemd5("../../scripts/jobs/copy_json_data_landing_to_raw.py")
 }
+  
+resource "aws_s3_bucket_object" "hackney_bank_holiday" {
+  bucket      = module.raw_zone.bucket_id
+  key         = "unrestricted/util/hackney_bank_holiday.csv"
+  acl         = "private"
+  source      = "../../scripts/jobs/planning/hackney_bank_holiday.csv"
+  source_hash = filemd5("../../scripts/jobs/planning/hackney_bank_holiday.csv")
+}
+
+resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
+  bucket      = module.glue_scripts.bucket_id
+  key         = "scripts/copy_manually_uploaded_csv_data_to_raw.py"
+  acl         = "private"
+  source      = "../../scripts/jobs/copy_manually_uploaded_csv_data_to_raw.py"
+  source_hash = filemd5("../../scripts/jobs/copy_manually_uploaded_csv_data_to_raw.py")
+}
+

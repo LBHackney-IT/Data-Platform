@@ -173,7 +173,8 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.trusted_zone_bucket.kms_key_arn,
       var.athena_storage_bucket.kms_key_arn,
       var.glue_scripts_bucket.kms_key_arn,
-      var.spark_ui_output_storage_bucket.kms_key_arn
+      var.spark_ui_output_storage_bucket.kms_key_arn,
+      var.glue_temp_storage_bucket.kms_key_arn
     ]
   }
 
@@ -283,9 +284,13 @@ data "aws_iam_policy_document" "athena_can_write_to_s3" {
     sid    = "KmsKeyAthenaStorageAccess"
     effect = "Allow"
     actions = [
+      "kms:Encrypt",
       "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
       "kms:DescribeKey",
-      "kms:GenerateDataKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
     ]
     resources = [
       var.athena_storage_bucket.kms_key_arn,
@@ -296,10 +301,17 @@ data "aws_iam_policy_document" "athena_can_write_to_s3" {
     sid    = "AthenaStorageS3Write"
     effect = "Allow"
     actions = [
+      "s3:GetBucketLocation",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:AbortMultipartUpload",
       "s3:PutObject",
+      "s3:ListMultipartUploadParts"
     ]
     resources = [
       var.athena_storage_bucket.bucket_arn,
+      "${var.athena_storage_bucket.bucket_arn}/primary/*",
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
@@ -367,7 +379,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:CreateJob",
       "glue:CreateScript",
       "glue:CreateSession",
-      "glue:CreateTrigger",
       "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
       "glue:DeleteTrigger",
@@ -380,7 +391,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:StartExportLabelsTaskRun",
       "glue:StartImportLabelsTaskRun",
       "glue:StartJobRun",
-      "glue:StartTrigger",
       "glue:StartWorkflowRun",
       "glue:StopCrawler",
       "glue:StopCrawlerSchedule",
@@ -390,7 +400,10 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:UpdateDag",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
-      "glue:UpdateTrigger",
+      "glue:UpdateTable",
+      "glue:GetTableVersions",
+      "glue:GetTable",
+      "glue:GetTables",
       "glue:Query*",
     ]
     resources = ["*"]

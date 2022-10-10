@@ -52,6 +52,7 @@ def get_glue_env_var(key, default=None):
     else:
         return default
 
+
 def get_glue_env_vars(*keys):
     """
     Retrieves values for the given keys passed in as job parameters.
@@ -62,6 +63,7 @@ def get_glue_env_vars(*keys):
     """
     vars = getResolvedOptions(sys.argv, [*keys])
     return (vars[key] for key in keys)
+
 
 def get_secret(secret_name, region_name):
     session = boto3.session.Session()
@@ -84,6 +86,10 @@ def get_secret(secret_name, region_name):
 def add_timestamp_column(data_frame):
     now = datetime.datetime.now()
     return data_frame.withColumn('import_timestamp', f.lit(str(now.timestamp())))
+
+
+def add_timestamp_column_from_date(data_frame, import_date_as_datetime):
+    return data_frame.withColumn('import_timestamp', f.lit(str(import_date_as_datetime.timestamp())))
 
 
 def add_import_time_columns(data_frame):
@@ -169,9 +175,9 @@ def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
             .select(max(to_date(concat(
             col("import_year_int"),
             when(col("import_month_int") < 10, concat(lit("0"), col("import_month_int")))
-            .otherwise(col("import_month_int")),
+                .otherwise(col("import_month_int")),
             when(col("import_day_int") < 10, concat(lit("0"), col("import_day_int")))
-            .otherwise(col("import_day_int"))),
+                .otherwise(col("import_day_int"))),
             format="yyyyMMdd")).alias("latest_partition_date")) \
             .select(year(col("latest_partition_date")).alias("latest_year_int"),
                     month(col("latest_partition_date")).alias("latest_month_int"),
@@ -190,6 +196,59 @@ def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
                   (df.import_year == latest_partition["latest_year_int"]) &
                   (df.import_month == latest_partition["latest_month_int"]) &
                   (df.import_day == latest_partition["latest_day_int"])) \
+            .drop("latest_year_int", "latest_month_int", "latest_day_int")
+
+    return result
+
+
+def get_latest_snapshot_optimized(df: DataFrame) -> DataFrame:
+    """Filters the DataFrame based on the latest (most recent) snapshot_date partition. It uses snapshot_date if available else it uses
+    snapshot_year, snapshot_month, snapshot_day to calculate the latest partition.
+
+    Args:
+        df: Input DataFrame
+
+    Returns:
+        DataFrame belonging to the most recent partition.
+
+    """
+
+    if "snapshot_date" in df.columns:
+        latest_partition = df.select(max(col("snapshot_date")).alias("latest_snapshot_date"))
+        result = df \
+            .join(broadcast(latest_partition), (df["snapshot_date"] == latest_partition["latest_snapshot_date"])) \
+            .drop("latest_snapshot_date")
+    else:
+        # The below code is temporary fix till docker test environment is fixed, post which delete this and use the one
+        # below which is commented as of now.
+        latest_partition = df \
+            .withColumn("snapshot_year_int", col("snapshot_year").cast(IntegerType())) \
+            .withColumn("snapshot_month_int", col("snapshot_month").cast(IntegerType())) \
+            .withColumn("snapshot_day_int", col("snapshot_day").cast(IntegerType())) \
+            .select(max(to_date(concat(
+            col("snapshot_year_int"),
+            when(col("snapshot_month_int") < 10, concat(lit("0"), col("snapshot_month_int")))
+                .otherwise(col("snapshot_month_int")),
+            when(col("snapshot_day_int") < 10, concat(lit("0"), col("snapshot_day_int")))
+                .otherwise(col("snapshot_day_int"))),
+            format="yyyyMMdd")).alias("latest_snapshot_date")) \
+            .select(year(col("latest_snapshot_date")).alias("latest_year_int"),
+                    month(col("latest_snapshot_date")).alias("latest_month_int"),
+                    dayofmonth(col("latest_snapshot_date")).alias("latest_day_int"))
+
+        # Unblock the below code when the test environment of docker is fixed and delete the above one.
+        # latest_partition = df \
+        #    .select(max(to_date(concat(col("snapshot_year"), lit("-"), col("snapshot_month"), lit("-"), col("snapshot_day")),
+        #                         format="yyyy-L-d")).alias("latest_partition_date")) \
+        #     .select(year(col("latest_partition_date")).alias("latest_year"),
+        #             month(col("latest_partition_date")).alias("latest_month"),
+        #             dayofmonth(col("latest_partition_date")).alias("latest_day"))
+
+        result = df \
+            .join(broadcast(latest_partition),
+                  (df.snapshot_year == latest_partition["latest_year_int"]) &
+                  (df.snapshot_month == latest_partition["latest_month_int"]) &
+                  (df.snapshot_day == latest_partition["latest_day_int"])) \
             .drop("latest_year_int", "latest_month_int", "latest_day_int")
 
     return result
@@ -258,3 +317,141 @@ def get_latest_rows_by_date(df, column):
     date_filter = df.select(max(column)).first()[0]
     df = df.where(col(column) == date_filter)
     return df
+
+
+def rename_file(source_bucket, src_prefix, filename):
+    print("S3 Bucket: ", source_bucket)
+    print("Prefix: ", src_prefix)
+    print("Filename: ", filename)
+    try:
+        client = boto3.client('s3')
+
+        ## Get a list of files with prefix (we know there will be only one file)
+        response = client.list_objects(
+            Bucket=source_bucket,
+            Prefix=src_prefix
+        )
+        name = response["Contents"][0]["Key"]
+
+        print("Found File: ", name)
+
+        ## Store Target File File Prefix, this is the new name of the file
+        target_source = {'Bucket': source_bucket, 'Key': name}
+
+        target_key = src_prefix + filename
+
+        print("New Filename: ", target_key)
+
+        ### Now Copy the file with New Name
+        client.copy(CopySource=target_source, Bucket=source_bucket, Key=target_key)
+
+        ### Delete the old file
+        client.delete_object(Bucket=source_bucket, Key=name)
+
+    except Exception as error:
+        ## do nothing
+        print('Error Occured: rename_file', error)
+
+
+def move_file(bucket, source_path, target_path, filename):
+    print("S3 Bucket: ", bucket)
+    print("Source Path: ", source_path)
+    print("Target Path: ", target_path)
+    try:
+        client = boto3.client('s3')
+
+        source_key = source_path + filename
+        target_key = target_path + filename
+        ## Store Target File File Prefix, this is the new name of the file
+        target_source = {
+            'Bucket': bucket,
+            'Key': source_key
+        }
+
+        ### Now Copy the file with New Name
+        client.copy(CopySource=target_source, Bucket=bucket, Key=target_key)
+
+        ### Delete the old file
+        client.delete_object(Bucket=bucket, Key=source_key)
+        print("File Moved to: ", target_key)
+    except Exception as error:
+        ## do nothing
+        print('Error Occured: rename_file', error)
+
+
+def working_days_diff(dataframe, id_column, date_from_column, date_to_column, result_column, bank_holiday_dataframe):
+    """
+    This function calculates the number of working days between 2 dates.
+    The id_column in the source table must be UNIQUE.
+    The function requires a dataframe of bank holidays. You can find Hackney bank holidays
+    in csv format in data platform raw zone/unrestricted
+    and load it before calling the function using:
+    bank_holiday_dataframe = execution_context.spark_session.read.format("csv").option("header", "true").load(
+            "s3://dataplatform-stg-raw-zone/unrestricted/util/hackney_bank_holiday.csv")
+    Args:
+        dataframe: The input dataframe
+        id_column: The column from the input dataframe acting as a unique ID
+        date_from_column: the column from the input dataframe representing the starting date for the calculation
+        date_to_column: the column from the input dataframe representing the ending date for the calculation
+        result_column: the column that will be used to store the days count result
+        bank_holiday_dataframe: an external dataframe containing a list of bank holidays in date format stored in a column called 'date'
+
+    Returns: dataframe - the input dataframe with the result_column added and populated
+
+    """
+    # Prepare a working table containing only the required columns from the input table
+    df_dates = dataframe.select(id_column, date_from_column, date_to_column)
+
+    # Explode the table creating one row per day between date_from and date_to
+    df_exploded = df_dates.withColumn('exploded', f.explode(
+        f.sequence(f.to_date(date_from_column), f.to_date(date_to_column))))
+
+    # turn bank holidays into a list
+    bank_holiday_list = bank_holiday_dataframe.rdd.map(lambda x: x.date).collect()
+    # Filter out line that are bank weekends or bank holidays (filter is faster than left_anti join)
+    df_exploded = df_exploded.filter(~f.dayofweek('exploded').isin([1, 7])) \
+        .filter(~df_exploded.exploded.isin(bank_holiday_list))
+
+    # Re-group the exploded lines and count days, including the first day
+    df_dates = df_exploded.groupBy(id_column).agg(
+        f.count('exploded').alias(result_column))
+    # Join result back to the full input table using the id column
+    dataframe = dataframe.join(df_dates, id_column, 'left')
+    return dataframe
+
+
+def clear_target_folder(s3_bucket_target):
+    s3 = boto3.resource('s3')
+    folder_string = s3_bucket_target.replace('s3://', '')
+    bucket_name = folder_string.split('/')[0]
+    prefix = folder_string.replace(bucket_name + '/', '') + '/'
+    bucket = s3.Bucket(bucket_name)
+    bucket.objects.filter(Prefix=prefix).delete()
+    return
+
+def copy_file(source_bucket, source_path, source_filename,target_bucket,target_path, target_filename):
+    print("S3 Source Bucket: ", source_bucket)
+    print("Source Path: ", source_path)
+    print("Source File: ", source_filename)
+    print("S3 Target Bucket: ", target_bucket)
+    print("Target Path: ", target_path)
+    print("Target File: ", target_filename)
+    try:
+        client = boto3.client('s3')
+
+        source_key = source_path + source_filename
+        target_key = target_path + target_filename
+        ## Store Target File File Prefix, this is the new name of the file
+        target_source = {
+            'Bucket': source_bucket,
+            'Key': source_key
+        }
+
+        ### Now Copy the file with New Name
+        client.copy(CopySource=target_source, Bucket=target_bucket, Key=target_key)
+
+        
+        print("File Copied to: ", target_bucket+'/'+target_key)
+    except Exception as error:
+        ## do nothing
+        print('Error Occured: copy_file', error)

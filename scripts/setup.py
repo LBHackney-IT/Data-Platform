@@ -1,4 +1,4 @@
-from setuptools import setup 
+from setuptools import setup, find_packages
 
 setup(
     #this will be the package name you will see, e.g. the output of 'conda list' in anaconda prompt
@@ -12,8 +12,13 @@ setup(
 #     packages=[''], #have to import modules directly in code after installing this wheel, like import mod2 (respective file name in this case is mod2.py) - no direct use of distribution name while importing
   
     #can list down each package names - no need to keep __init__.py under packages / directories
-    packages=['helpers'], #importing is like: from package1 import mod2, or import package1.mod2 as m2
-  
+    # packages=['scripts.helpers'], #importing is like: from package1 import mod2, or import package1.mod2 as m2
+    #
+    # packages=find_packages(
+    #     where='.',
+    #     include=['scripts.helpers'],  # alternatively: `exclude=['additional*']`
+    # )
+
     #this approach automatically finds out all directories (packages) - those must contain a file named __init__.py (can be empty)
-    # packages=find_packages(), #include/exclude arguments take * as wildcard, . for any sub-package names
+    packages=find_packages(), #include/exclude arguments take * as wildcard, . for any sub-package names
 )

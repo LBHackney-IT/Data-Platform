@@ -15,7 +15,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from google.oauth2 import service_account
 
-from helpers.helpers import get_glue_env_var, normalize_column_name, get_secret, convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
+from scripts.helpers.helpers import get_glue_env_var, normalize_column_name, get_secret, convert_pandas_df_to_spark_dynamic_df, add_import_time_columns, PARTITION_KEYS
 
 sparkContext = SparkContext.getOrCreate()
 glueContext = GlueContext(sparkContext)

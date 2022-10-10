@@ -8,7 +8,7 @@ from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
 from pyspark.sql.functions import *
 import pyspark.sql.functions as F
-from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS,parse_json_into_dataframe, table_exists_in_catalog
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS,parse_json_into_dataframe, table_exists_in_catalog
 
 # Define the functions that will be used in your job (optional). For Production jobs, these functions should be tested via unit testing.
 def clear_target_folder(s3_bucket_target):
@@ -195,30 +195,38 @@ if __name__ == "__main__":
         .withColumn("tenure", col("combined_exploded.tenures"))\
         .withColumn("person_type", col("combined_exploded.persontypes")).drop("combined", "combined_exploded") \
         .withColumnRenamed("id","person_id")\
-        .select("person_id",
-                        "preferredTitle",
-                        "firstName",
-                        "middleName",
-                        "surname",
-                        "dateOfBirth",
-                        "placeOfBirth",
-                        "isOrganisation",
-                        "reason",
-                        "tenure.id", ##needs to be renamed
-                        "tenure.uprn",
-                        "tenure.propertyReference",
-                        "tenure.paymentReference",
-                        "tenure.startDate",
-                        "tenure.endDate",   
-                        "tenure.assetId",   
-                        "tenure.type",   
-                        "tenure.assetFullAddress",
-                        "person_type",
-                        "import_year",
-                        "import_month",
-                        "import_day",
-                        "import_date")\
-            .withColumnRenamed("id","tenancy_id")
+        .withColumn("persontypes2",concat_ws(",",col("persontypes")))   
+    
+    per =  per.withColumn("new_person_type", when(per.person_type.isNull(), per.persontypes2)
+                                 .otherwise(per.person_type))
+    
+    per =  per.select("person_id",
+                    "preferredTitle",
+                    "firstName",
+                    "middleName",
+                    "surname",
+                    "dateOfBirth",
+                    "placeOfBirth",
+                    "isOrganisation",
+                    "reason",
+                    "tenure.id", ##needs to be renamed
+                    "tenure.uprn",
+                    "tenure.propertyReference",
+                    "tenure.paymentReference",
+                    "tenure.startDate",
+                    "tenure.endDate",   
+                    "tenure.assetId",   
+                    "tenure.type",   
+                    "tenure.assetFullAddress",
+            ##      "person_type",
+                    "new_person_type",
+                    "import_year",
+                    "import_month",
+                    "import_day",
+                    "import_date")\
+            .withColumnRenamed("id","tenancy_id")\
+            .withColumnRenamed("new_person_type","person_type")
+
     
     # Convert data frame to dynamic frame 
     dynamic_frame = DynamicFrame.fromDF(per.repartition(1), glueContext, "target_data_to_write")

@@ -1,5 +1,10 @@
+locals {
+  kafka_event_streaming_count = local.is_live_environment ? 1 : 0
+  deploy_kafka_test_lambda    = local.kafka_event_streaming_count > 0 && !local.is_production_environment
+}
+
 module "kafka_event_streaming" {
-  count       = local.is_live_environment ? 1 : 0
+  count       = local.kafka_event_streaming_count
   source      = "../modules/kafka-event-streaming"
   tags        = module.tags.values
   environment = var.environment
@@ -20,4 +25,23 @@ module "kafka_event_streaming" {
     "arn:aws:iam::937934410339:role/mtfh-reporting-data-listener/development/mtfh-reporting-data-listener-lambdaExecutionRole",
     "arn:aws:iam::364864573329:role/mtfh-reporting-data-listener/development/mtfh-reporting-data-listener-lambdaExecutionRole"
   ]
+}
+
+module "kafka_test_lambda" {
+  count                          = local.deploy_kafka_test_lambda ? 1 : 0
+  source                         = "../modules/kafka-test-lambda"
+  lambda_name                    = "kafka-test"
+  tags                           = module.tags.values
+  vpc_id                         = data.aws_vpc.network.id
+  subnet_ids                     = data.aws_subnet_ids.network.ids
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
+  kafka_cluster_arn              = module.kafka_event_streaming[0].cluster_config.cluster_arn
+  kafka_cluster_kms_key_arn      = module.kafka_event_streaming[0].cluster_config.kms_key_arn
+  kafka_cluster_name             = module.kafka_event_streaming[0].cluster_config.cluster_name
+  kafka_security_group_id        = module.kafka_event_streaming[0].cluster_config.vpc_security_groups
+  lambda_environment_variables = {
+    "TARGET_KAFKA_BROKERS" = module.kafka_event_streaming[0].cluster_config.bootstrap_brokers_tls
+    "SCHEMA_REGISTRY_URL"  = module.kafka_event_streaming[0].schema_registry_url
+  }
 }

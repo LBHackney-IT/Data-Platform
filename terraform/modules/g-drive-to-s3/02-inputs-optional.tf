@@ -9,3 +9,9 @@ variable "workflow_arns" {
   type        = list(string)
   default     = []
 }
+
+variable "ingestion_schedule_enabled" {
+  description = "Flag to enable the cloud watch trigger to copy the data from g-drive to s3"
+  type        = bool
+  default     = true
+}

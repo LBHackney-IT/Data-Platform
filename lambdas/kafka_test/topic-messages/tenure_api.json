@@ -1,0 +1,85 @@
+{
+  "Id": "8dd7af40-61ff-4d5f-8114-444828208e45",
+  "EventType": "TenureUpdatedEvent",
+  "SourceDomain": "Tenure",
+  "SourceSystem": "TenureAPI",
+  "Version": "v1",
+  "CorrelationId": "990b02d8-f62d-4016-b60c-684b565a83bc",
+  "DateTime": 1660124562,
+  "User": {
+    "Name": "Tester Test",
+    "Email": "tester.test@test.gov.uk"
+  },
+  "Tenure": {
+    "Id": "b5702ead-79de-8b95-0c22-f4df3f28e251",
+    "PaymentReference": "9943015504",
+    "HouseholdMembers": [
+      {
+        "Id": "220c3b66-07d8-4577-d61c-5486595b4ac5",
+        "Type": "Person",
+        "FullName": "Tester",
+        "IsResponsible": true,
+        "DateOfBirth": -1506729600,
+        "PersonTenureType": "Tenant"
+      }
+    ],
+    "TenuredAsset": {
+      "Id": "2e99554c-b5ed-aefd-c003-1ca0b04d58f3",
+      "Type": "Dwelling",
+      "FullAddress": "Test address",
+      "Uprn": "122344567889",
+      "PropertyReference": "99001252"
+    },
+    "Charges": {
+      "Rent": 100.63,
+      "CurrentBalance": 562.48,
+      "BillingFrequency": "Weekly",
+      "ServiceCharge": 20.64,
+      "OtherCharges": 0.1,
+      "CombinedServiceCharges": 0.0,
+      "CombinedRentCharges": 0.0,
+      "TenancyInsuranceCharge": 0.0,
+      "OriginalRentCharge": 0.0,
+      "OriginalServiceCharge": 0.0
+    },
+    "StartOfTenureDate": 968630400,
+    "EndOfTenureDate": 1586649600,
+    "TenureType": {
+      "Code": "SEC",
+      "Description": "Secure"
+    },
+    "IsTenanted": null,
+    "IsActive": false,
+    "Terminated": {
+      "IsTerminated": false,
+      "ReasonForTermination": null
+    },
+    "SuccessionDate": -2147483648,
+    "AgreementType": null,
+    "EvictionDate": -2147483648,
+    "PotentialEndDate": -2147483648,
+    "Notices": [
+      {
+        "Type": null,
+        "ServedDate": -2147483648,
+        "ExpiryDate": -2147483648,
+        "EffectiveDate": -2147483648,
+        "EndDate": null
+      }
+    ],
+    "LegacyReferences": [
+      {
+        "Name": "uh_tag_ref",
+        "Value": "996293/01"
+      },
+      {
+        "Name": "u_saff_tenancy",
+        "Value": "01809754"
+      }
+    ],
+    "IsMutualExchange": false,
+    "InformHousingBenefitsForChanges": false,
+    "IsSublet": false,
+    "SubletEndDate": -2147483648
+  }
+}

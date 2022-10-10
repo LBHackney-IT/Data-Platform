@@ -2,7 +2,9 @@
 
 
 module "liberator_fpns_to_refined" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_env_enforcement_data_source
   job_name                   = "${local.short_identifier_prefix}liberator_fpns_refined"
@@ -31,7 +33,9 @@ module "liberator_fpns_to_refined" {
 }
 
 module "noisework_complaints_to_refined" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_env_enforcement_data_source
   job_name                   = "${local.short_identifier_prefix}noisework_complaints_to_refined"

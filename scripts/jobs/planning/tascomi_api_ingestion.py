@@ -14,7 +14,7 @@ from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from math import ceil
-from helpers.helpers import get_glue_env_var, get_secret, add_import_time_columns, PARTITION_KEYS, table_exists_in_catalog
+from scripts.helpers.helpers import get_glue_env_var, get_secret, add_import_time_columns, PARTITION_KEYS, table_exists_in_catalog
 import json
 from distutils.util import strtobool
 

@@ -68,3 +68,8 @@ variable "secrets_manager_kms_key" {
     arn    = string
   })
 }
+
+variable "ingestion_schedule" {
+  description = "cron expression that describes when the spreadsheet should be ingested onto the platform"
+  type        = string
+}

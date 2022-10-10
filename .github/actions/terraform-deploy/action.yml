@@ -71,18 +71,6 @@ inputs:
   branch:
     description: "Git branch being ran against"
     required: true
-  terraform_import:
-    description: "Terraform import statement"
-    default: ""
-    required: true
-  terraform_destroy:
-    description: 'Runs a Terraform destroy if the value is set to "destroy_me". Else does nothing'
-    default: ""
-    required: false
-  terraform_remove:
-    description: "Terraform state rm statement"
-    default: ""
-    required: false
 
 runs:
   using: "composite"
@@ -109,83 +97,25 @@ runs:
       shell: bash
       working-directory: "${{ inputs.build_path }}"
 
-    - name: Terraform Import
-      id: import
-      run: |
-        if [ "${{ inputs.terraform_import }}" != "" ]; then
-            ${{ github.action_path }}/../.helpers/box.sh "Running Terraform import"
-            if [ "${{ inputs.branch }}" == "main" ]; then
-              terraform import -var-file='../config/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' ${{ inputs.terraform_import }}
-            else
-              echo -e "Not on default branch branch, so skipping Terraform import."
-            fi
-        fi
-      shell: bash
-      working-directory: "${{ inputs.build_path }}"
-
-    - name: Terraform Remove
-      id: remove
-      run: |
-        if [ "${{ inputs.terraform_remove }}" != "" ]; then
-            ${{ github.action_path }}/../.helpers/box.sh "Running Terraform remove"
-            if [ "${{ inputs.branch }}" == "main" ]; then
-              terraform state rm ${{ inputs.terraform_remove }}
-            else
-              echo -e "Not on default branch branch, so skipping Terraform remove."
-            fi
-        fi
-      shell: bash
-      working-directory: "${{ inputs.build_path }}"
-
-    - name: Terraform Destroy
-      id: destroy
-      run: |
-        if [ "${{ inputs.terraform_destroy }}" == "destroy_me" ]; then
-            ${{ github.action_path }}/../.helpers/box.sh "Running Terraform destroy"
-            if [ "${{ inputs.branch }}" == "main" ]; then
-              terraform destroy -var-file='../config/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -var 'aws_housing_vpc_id=${{ inputs.aws_housing_vpc_id }}' -var 'aws_mosaic_vpc_id=${{ inputs.aws_mosaic_vpc_id }}' -var 'aws_dp_vpc_id=${{ inputs.aws_dp_vpc_id }}' -var 'copy_liberator_to_pre_prod_lambda_execution_role=${{ inputs.copy_liberator_to_pre_prod_lambda_execution_role }}' -var 'sync_production_to_pre_production_task_role=${{ inputs.sync_production_to_pre_production_task_role }}' -var 'pre_production_liberator_data_storage_kms_key_arn=${{ inputs.pre_production_liberator_data_storage_kms_key_arn }}' -auto-approve
-              ${{ github.action_path }}/../.helpers/success_destroy.sh
-              echo -e "Terraform run completed successfully."
-            else
-              echo -e "Not on default branch branch, so skipping Terraform destroy."
-            fi
-        fi
-      shell: bash
-      working-directory: "${{ inputs.build_path }}"
-
     - name: Terraform Plan
       id: plan
       run: |
-        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ]; then
-          ${{ github.action_path }}/../.helpers/box.sh "Running Terraform plan"
-          terraform plan -var-file='../config/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -var 'aws_housing_vpc_id=${{ inputs.aws_housing_vpc_id }}' -var 'aws_mosaic_vpc_id=${{ inputs.aws_mosaic_vpc_id }}' -var 'aws_dp_vpc_id=${{ inputs.aws_dp_vpc_id }}' -var 'copy_liberator_to_pre_prod_lambda_execution_role=${{ inputs.copy_liberator_to_pre_prod_lambda_execution_role }}' -var 'sync_production_to_pre_production_task_role=${{ inputs.sync_production_to_pre_production_task_role }}' -var 'pre_production_liberator_data_storage_kms_key_arn=${{ inputs.pre_production_liberator_data_storage_kms_key_arn }}' -input=false -out=plan.out
-          echo -e "\n"
-        fi
+        ${{ github.action_path }}/../.helpers/box.sh "Running Terraform plan"
+        terraform plan -var-file='../config/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -var 'aws_housing_vpc_id=${{ inputs.aws_housing_vpc_id }}' -var 'aws_mosaic_vpc_id=${{ inputs.aws_mosaic_vpc_id }}' -var 'aws_dp_vpc_id=${{ inputs.aws_dp_vpc_id }}' -var 'copy_liberator_to_pre_prod_lambda_execution_role=${{ inputs.copy_liberator_to_pre_prod_lambda_execution_role }}' -var 'sync_production_to_pre_production_task_role=${{ inputs.sync_production_to_pre_production_task_role }}' -var 'pre_production_liberator_data_storage_kms_key_arn=${{ inputs.pre_production_liberator_data_storage_kms_key_arn }}' -input=false -out=plan.out
+        echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}"
-
-#    - name: Terraform Compliance
-#      shell: bash
-#      working-directory: "${{ inputs.build_path }}"
-#      run: |
-#        sudo apt-get update
-#        sudo apt-get install pip
-#        pip install --upgrade orjson
-#        pip install terraform-compliance[faster_parsing]
-#        terraform-compliance -f ../compliance/ -p plan.out
 
     - name: Terraform Apply
       id: apply
       run: |
-        if [ "${{ inputs.terraform_destroy }}" != "destroy_me" ] && [ "${{ inputs.terraform_remove }}" == "" ]; then
-          if [ "${{ inputs.branch }}" == "main" ]; then
-            ${{ github.action_path }}/../.helpers/box.sh "Running Terraform apply"
-            terraform apply -auto-approve -input=false plan.out
-          else
-            echo -e "Not on main branch, so skipping Terraform apply."
-          fi
-          ${{ github.action_path }}/../.helpers/success.sh
-          echo -e "Terraform run completed successfully."
+        if [ "${{ inputs.branch }}" == "main" ]; then
+          ${{ github.action_path }}/../.helpers/box.sh "Running Terraform apply"
+          terraform apply -auto-approve -input=false plan.out
+        else
+          echo -e "Not on main branch, so skipping Terraform apply."
         fi
+        ${{ github.action_path }}/../.helpers/success.sh
+        echo -e "Terraform run completed successfully."
       shell: bash
       working-directory: "${{ inputs.build_path }}"

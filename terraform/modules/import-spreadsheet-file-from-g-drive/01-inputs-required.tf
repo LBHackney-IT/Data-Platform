@@ -113,3 +113,13 @@ variable "secrets_manager_kms_key" {
     arn    = string
   })
 }
+
+variable "is_production_environment" {
+  description = "A flag indicting if we are running in production for setting up automation"
+  type        = bool
+}
+
+variable "is_live_environment" {
+  description = "A flag indicting if we are running in a live environment for setting up automation"
+  type        = bool
+}

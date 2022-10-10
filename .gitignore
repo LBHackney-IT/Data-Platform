@@ -1,7 +1,7 @@
 .idea/
 .terraform*
 *.tfstate*
-lambdas/*/node_modules
+**/node_modules
 lambdas/*/lib
 lambdas/*/requirements.txt
 lambdas/*/key_file.json
@@ -24,3 +24,17 @@ notebook/aws-config/credentials
 **/*.log
 **/plan.out
 **/plan.out.json
+__pycache__/
+spark_events/
+build/
+dist/
+*.egg-info
+.pytest_cache
+.venv
+/build/
+/dist/
+/terraform/modules/copy-from-s3-to-s3/copy-from-s3-to-s3.zip
+/terraform/modules/kafka-event-streaming/local-testing/list-topics.json
+/terraform/modules/kafka-event-streaming/local-testing/send-message-to-topic.json
+/scripts/logs/
+/scripts/tests/test_person_matching.py

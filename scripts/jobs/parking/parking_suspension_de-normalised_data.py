@@ -6,7 +6,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
-from helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import get_glue_env_var
 environment = get_glue_env_var("environment")
 
 
@@ -61,6 +61,7 @@ The SQL denormalises the Suspension data into a SINGLE row for each of the Suspe
 
 19/07/2021 - Create SQL
 20/08/2021 - changed because I did not have an HYS filter?
+26/09/2022 - Add an additional check for ONLY suspensions
 *************************************************************************************************************************/
 
 /************************************************************************************************************************
@@ -71,9 +72,8 @@ SELECT
    permit_referece, 
    CAST(status_date as Timestamp) as status_date, 
    status, 
-   status_change_by, 
-   partition_4,
-   ROW_NUMBER() OVER ( PARTITION BY permit_referece ORDER BY permit_referece, status_date DESC, partition_4 DESC) row_num
+   status_change_by,
+   ROW_NUMBER() OVER ( PARTITION BY permit_referece ORDER BY permit_referece, status_date DESC) row_num
 FROM liberator_permit_status
 WHERE permit_referece like 'HYS%' AND 
       import_Date = (Select MAX(import_date) from liberator_permit_status)),
@@ -240,6 +240,7 @@ LEFT JOIN SusStatusExtnRej as I ON A.suspensions_reference   = I.permit_referece
 LEFT JOIN SusStatusSignUp as J ON A.suspensions_reference    = J.permit_referece     AND J.row_num = 1
 LEFT JOIN SusStatusAppRej as K ON A.suspensions_reference    = K.permit_referece     AND K.row_num = 1
 LEFT JOIN SusStatusCancelled as L ON A.suspensions_reference = L.permit_referece     AND L.row_num = 1
+WHERE lower(permit_type) = 'suspension'
 """
 ApplyMapping_node2 = sparkSqlQuery(
     glueContext,

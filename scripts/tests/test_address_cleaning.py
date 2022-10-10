@@ -1,5 +1,5 @@
-from jobs.address_cleaning import clean_addresses
-from tests.helpers import assertions, dummy_logger
+from scripts.jobs.address_cleaning import clean_addresses
+from scripts.tests.helpers import assertions, dummy_logger
 from pyspark.sql import Row
 import pytest
 

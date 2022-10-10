@@ -1,4 +1,4 @@
-from jobs.spark_example import only_hackney_addresses
+from scripts.jobs.spark_example import only_hackney_addresses
 from pyspark.sql import Row
 
 class TestSparkExample:

@@ -8,7 +8,7 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.functions import *
 import pyspark.sql.functions as F
-from helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS_SNAPSHOT
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS_SNAPSHOT
 
 def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource('s3')

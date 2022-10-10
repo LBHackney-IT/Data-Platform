@@ -75,6 +75,7 @@ jobs:
   deploy:
     name: Terraform Apply
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
@@ -113,10 +114,6 @@ jobs:
         working-directory: "./lambdas/rds-database-snapshot-replicator"
         run: npm install
 
-      - name: Install Dependencies for liberator-sftp-to-s3 Lambda
-        working-directory: "./lambdas/liberator-sftp-to-s3"
-        run: npm install
-
       - name: Install Dependencies for g-drive-to-s3 Lambda
         working-directory: "./lambdas/g_drive_to_s3"
         run: make install-requirements
@@ -126,8 +123,8 @@ jobs:
         run: make all
 
       - name: Package AWS Glue Job Helpers Module & Python modules
-        working-directory: "./scripts"
-        run: make all
+        working-directory: "."
+        run: make package-helpers
 
       - name: Setup deployment user profile
         run: |
@@ -164,34 +161,27 @@ jobs:
           sync_production_to_pre_production_task_role: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
           pre_production_liberator_data_storage_kms_key_arn: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
           branch: "main"
-          terraform_import: ${{ inputs.terraform_infra_import }}
-          terraform_remove: ${{ inputs.terraform_infra_remove }}
-          # DANGER ZONE
-          # In order to allow you to run a Terraform destroy (that will delete all AWS resources managed by Terraform,
-          # you can set terraform_destroy: 'destroy_me'. Not providing a value or any other value except 'destroy_me' will
-          # cause nothing to happen. The example here, with the value set to false is to ensure you've read this comment ;)
-          terraform_destroy: false
 
       - name: Configure Redshift users, external schemas and user permissions for external schema
         working-directory: "./terraform/etl"
-        if: ${{ inputs.build_path  == './terraform/etl' }}
+        if: ${{ (inputs.build_path  == './terraform/etl') && (success()) }}
         run: |
           terraform_outputs=$(terraform output -json)
-          cd ../../scripts
+          cd ../../
           source .venv/bin/activate
-          AWS_PROFILE=deploy_role python ./configure_redshift.py "$terraform_outputs"
+          AWS_PROFILE=deploy_role python ./scripts/configure_redshift.py "$terraform_outputs"
 
       - name: Build and Deploy SQL to Parquet Image to ECR
-        if: ${{ inputs.build_path  == './terraform/core' }}
+        if: ${{ (inputs.build_path  == './terraform/core') && (success()) }}
         run: |
           AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
 
       - name: Build and Deploy Production to Pre-Production sync Image to ECR
-        if: ${{ inputs.build_path  == './terraform/core' }}
+        if: ${{ (inputs.build_path  == './terraform/core') && (success())  }}
         run: |
           ENVIRONMENT=${{ inputs.environment }} AWS_PROFILE=deploy_role ./docker/production-to-pre-production/deploy.sh
 
       - name: Generate Self Signed certificate
-        if: ${{ inputs.build_path  == './terraform/core' }}
+        if: ${{ (inputs.build_path  == './terraform/core') && (success())  }}
         run: |
           AWS_DEFAULT_REGION=eu-west-2 AWS_PROFILE=deploy_role ./.github/generate-ssl-keys.sh

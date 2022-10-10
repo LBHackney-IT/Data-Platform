@@ -14,7 +14,7 @@ locals {
   } : {}
 }
 
-resource "aws_s3_object" "job_script" {
+resource "aws_s3_bucket_object" "job_script" {
   count = var.script_s3_object_key == null ? 1 : 0
 
   bucket      = local.scripts_bucket_id
@@ -25,7 +25,7 @@ resource "aws_s3_object" "job_script" {
 }
 
 locals {
-  object_key      = var.script_s3_object_key == null ? aws_s3_object.job_script[0].key : var.script_s3_object_key
+  object_key      = var.script_s3_object_key == null ? aws_s3_bucket_object.job_script[0].key : var.script_s3_object_key
   job_name_prefix = local.environment == "stg" ? "stg " : ""
 }
 
@@ -75,7 +75,7 @@ resource "aws_glue_trigger" "job_trigger" {
   type          = local.trigger_type
   workflow_name = var.workflow_name
   schedule      = var.schedule
-  enabled       = var.trigger_enabled
+  enabled       = var.trigger_enabled && (var.is_production_environment || !var.is_live_environment)
 
 
   dynamic "predicate" {

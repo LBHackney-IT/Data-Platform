@@ -1,6 +1,5 @@
 import sys
 
-
 sys.path.append('./lib/')
 
 import pybase64
@@ -77,8 +76,8 @@ def get_icaseworks_report_from(report_id, from_date, auth_headers, auth_payload)
 def write_dataframe_to_s3(s3_client, data, s3_bucket, output_folder, filename):
     filename = re.sub('[^a-zA-Z0-9]+', '-', filename).lower()
     current_date = datetime.datetime.now()
-    day = str(current_date.day) if current_date.day > 10 else '0' + str(current_date.day)
-    month = str(current_date.month) if current_date.month > 10 else '0' + str(current_date.month)
+    day = single_digit_to_zero_prefixed_string(current_date.day)
+    month = single_digit_to_zero_prefixed_string(current_date.month)
     year = str(current_date.year)
     date = year + month + day
     return s3_client.put_object(
@@ -99,7 +98,7 @@ def lambda_handler(event, lambda_context):
     load_dotenv()
     s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
     output_folder_name = getenv("OUTPUT_FOLDER")
-    glue_job_name = getenv("GLUE_JOB_NAME")
+    glue_trigger_name = getenv("TRIGGER_NAME")
     url = "https://hackney.icasework.com/token"
 
     headers = {
@@ -177,5 +176,11 @@ def lambda_handler(event, lambda_context):
 
     # Trigger glue job to copy from landing to raw and convert to parquet
     glue_client = boto3.client('glue')
-    job_run_id = glue_client.start_job_run(JobName=glue_job_name)
-    logger.info(f"Glue job run ID: {job_run_id}")
+    start_glue_trigger(glue_client, glue_trigger_name)
+
+def single_digit_to_zero_prefixed_string(value):
+    return str(value) if value > 9 else '0' + str(value)
+
+def start_glue_trigger(glue_client, trigger_name):
+    trigger_details = glue_client.start_trigger(Name=trigger_name)
+    logger.info(f"Started trigger: {trigger_details}")

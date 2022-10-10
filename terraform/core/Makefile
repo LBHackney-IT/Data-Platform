@@ -3,6 +3,9 @@
 init:
 	aws-vault exec hackney-dataplatform-development -- terraform init
 
+upgrade:
+	aws-vault exec hackney-dataplatform-development -- terraform init -upgrade
+
 plan:
 	aws-vault exec hackney-dataplatform-development -- terraform plan -var-file="../config/env.tfvars"
 

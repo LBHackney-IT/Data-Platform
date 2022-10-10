@@ -1,7 +1,7 @@
-from jobs.housing_repairs.elec_mech_fire_dpa import clean_mech_fire_data 
+from scripts.jobs.housing_repairs.elec_mech_fire_dpa import clean_mech_fire_data
 import datetime
 from pyspark.sql import Row
-from tests.helpers import assertions
+from scripts.tests.helpers import assertions
 
 class TestMechFireDpaCleaning:
     def test_date_conversion(self, spark):

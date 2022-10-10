@@ -47,12 +47,24 @@ locals {
 # Database resources
 resource "aws_glue_catalog_database" "raw_zone_tascomi" {
   name = "${local.identifier_prefix}-tascomi-raw-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 resource "aws_glue_catalog_database" "refined_zone_tascomi" {
   name = "${local.identifier_prefix}-tascomi-refined-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 resource "aws_glue_catalog_database" "trusted_zone_tascomi" {
   name = "${local.identifier_prefix}-tascomi-trusted-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Columns type dictionary resources
@@ -66,7 +78,9 @@ resource "aws_s3_bucket_object" "tascomi_column_type_dictionary" {
 
 # Ingestion
 module "ingest_tascomi_data" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department                      = module.department_planning_data_source
   number_of_workers_for_glue_job  = local.number_of_workers
@@ -95,8 +109,8 @@ resource "aws_glue_trigger" "tascomi_tables_daily_ingestion_triggers" {
 
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
-  schedule = "cron(0 3 * * ? *)"
-  enabled  = local.is_live_environment
+  schedule = "cron(0 2 * * ? *)"
+  enabled  = local.is_production_environment
 
   actions {
     job_name = module.ingest_tascomi_data.job_name
@@ -113,7 +127,7 @@ resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
   schedule = "cron(0 22 ? * SUN *)"
-  enabled  = local.is_live_environment
+  enabled  = local.is_production_environment
 
   actions {
     job_name = module.ingest_tascomi_data.job_name
@@ -147,7 +161,7 @@ resource "aws_glue_trigger" "tascomi_api_response_crawler_trigger" {
 
   name     = "${local.short_identifier_prefix}Tascomi API response crawler Trigger"
   type     = "SCHEDULED"
-  schedule = "cron(0 4,5 * * ? *)"
+  schedule = "cron(0 4 * * ? *)"
   enabled  = local.is_live_environment
 
   actions {
@@ -156,7 +170,9 @@ resource "aws_glue_trigger" "tascomi_api_response_crawler_trigger" {
 }
 
 module "tascomi_parse_tables_increments" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_parse_tables_increments_planning"
@@ -187,7 +203,9 @@ module "tascomi_parse_tables_increments" {
 }
 
 module "tascomi_recast_tables_increments" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_recast_tables_increments_planning"
@@ -219,10 +237,14 @@ module "tascomi_recast_tables_increments" {
 }
 
 module "tascomi_create_daily_snapshot" {
-  source = "../modules/aws-glue-job"
-
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
   department                 = module.department_planning_data_source
+    
   job_name                   = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
+  glue_job_worker_type       = "G.1X"
+  number_of_workers_for_glue_job  = 8
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
@@ -232,6 +254,7 @@ module "tascomi_create_daily_snapshot" {
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
     "--table_list"              = local.table_list
+    "--deequ_metrics_location"  = "s3://${module.refined_zone_data_source.bucket_id}/quality-metrics/department=planning/dataset=tascomi/deequ-metrics.json"
   }
   script_name          = "tascomi_create_daily_snapshot"
   triggered_by_crawler = module.tascomi_recast_tables_increments.crawler_name
@@ -249,22 +272,26 @@ module "tascomi_create_daily_snapshot" {
 }
 
 module "tascomi_applications_to_trusted" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
   glue_job_worker_type       = "G.1X"
+  number_of_workers_for_glue_job  = 8
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
-    "--job-bookmark-option"     = "job-bookmark-enable"
-    "--s3_bucket_target"        = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
-    "--enable-glue-datacatalog" = "true"
-    "--source_catalog_database" = aws_glue_catalog_database.refined_zone_tascomi.name
-    "--source_catalog_table"    = "applications"
-    "--source_catalog_table2"   = "application_types"
-    "--source_catalog_table3"   = "ps_development_codes"
+    "--job-bookmark-option"                    = "job-bookmark-enable"
+    "--target_destination"                     = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
+    "--enable-glue-datacatalog"                = "true"
+    "--source_catalog_database"                = aws_glue_catalog_database.refined_zone_tascomi.name
+    "--source_catalog_table_applications"      = "applications"
+    "--source_catalog_table_application_types" = "application_types"
+    "--source_catalog_table_ps_codes"          = "ps_development_codes"
+    "--bank_holiday_list_path"                 = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/util/hackney_bank_holiday.csv"
   }
   script_name          = "tascomi_applications_trusted"
   triggered_by_crawler = module.tascomi_create_daily_snapshot.crawler_name
@@ -278,7 +305,9 @@ module "tascomi_applications_to_trusted" {
 }
 
 module "tascomi_officers_teams_to_trusted" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_officers_trusted"
@@ -306,7 +335,9 @@ module "tascomi_officers_teams_to_trusted" {
 }
 
 module "tascomi_locations_to_trusted" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_locations_trusted"
@@ -334,7 +365,9 @@ module "tascomi_locations_to_trusted" {
 }
 
 module "tascomi_subsidiary_tables_to_trusted" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_subsidiary_tables_trusted"

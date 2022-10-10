@@ -1,0 +1,89 @@
+version: "3.2"
+
+services:
+  zoo:
+    image: confluentinc/cp-zookeeper:6.2.1
+    hostname: zoo
+    container_name: zoo
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_SERVERS: zoo:2888:3888
+      ZOOKEEPER_LOG4J_ROOT_LOGLEVEL: ERROR
+  kafka-1:
+    image: confluentinc/cp-kafka:6.2.1
+    hostname: kafka-1
+    user: "appuser:appuser"
+    container_name: kafka-1
+    ports:
+      - "19092:19092"
+      - "9999:9999"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka-1:9092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: ${DOCKER_HOST_IP:-127.0.0.1}
+      KAFKA_LOG4J_ROOT_LOGLEVEL: ERROR
+      KAFKA_SCHEMA_REGISTRY_URL: "schemaregistry:8081"
+    depends_on:
+      - zoo
+  kafka-2:
+    image: confluentinc/cp-kafka:6.2.1
+    hostname: kafka-2
+    user: "appuser:appuser"
+    container_name: kafka-2
+    ports:
+      - "19093:19093"
+      - "9998:9999"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka-2:9093,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:19093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo:2181"
+      KAFKA_BROKER_ID: 2
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: ${DOCKER_HOST_IP:-127.0.0.1}
+      KAFKA_LOG4J_ROOT_LOGLEVEL: ERROR
+      KAFKA_SCHEMA_REGISTRY_URL: "schemaregistry:8081"
+    depends_on:
+      - zoo
+  schemaregistry:
+    depends_on:
+      - kafka-1
+      - kafka-2
+    image: confluentinc/cp-schema-registry:5.3.0
+    container_name: schemaregistry
+    hostname: schemaregistry
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: "GET,POST,PUT,OPTIONS"
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: "*"
+      SCHEMA_REGISTRY_DEBUG: "true"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-2:9093,kafka-1:9092"
+      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: PLAINTEXT
+      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
+  schemaregistry-ui:
+    depends_on:
+       - schemaregistry
+    image:  landoop/schema-registry-ui
+    hostname: schemaregistry-ui
+    container_name: schemaregistry-ui
+    ports:
+      - "8000:8000"
+    environment:
+      SCHEMAREGISTRY_URL: "http://localhost:8081"
+      

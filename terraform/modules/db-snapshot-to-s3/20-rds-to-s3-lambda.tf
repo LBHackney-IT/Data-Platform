@@ -98,6 +98,18 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
       var.zone_kms_key_arn,
     ]
   }
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_kms_key.s3_to_s3_copier_kms_key.arn,
+      aws_kms_key.rds_snapshot_to_s3_kms_key.arn
+    ]
+  }
 }
 
 resource "aws_iam_policy" "rds_snapshot_to_s3_lambda" {
@@ -120,7 +132,7 @@ data "archive_file" "rds_snapshot_to_s3_lambda" {
   output_path = "../../lambdas/rds-database-snapshot-replicator.zip"
 }
 
-resource "aws_s3_object" "rds_snapshot_to_s3_lambda" {
+resource "aws_s3_bucket_object" "rds_snapshot_to_s3_lambda" {
   bucket      = var.lambda_artefact_storage_bucket
   key         = "rds-snapshot-to-s3.zip"
   source      = data.archive_file.rds_snapshot_to_s3_lambda.output_path
@@ -140,7 +152,7 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   runtime          = "nodejs14.x"
   function_name    = "${var.identifier_prefix}-rds-snapshot-to-s3"
   s3_bucket        = var.lambda_artefact_storage_bucket
-  s3_key           = aws_s3_object.rds_snapshot_to_s3_lambda.key
+  s3_key           = aws_s3_bucket_object.rds_snapshot_to_s3_lambda.key
   source_code_hash = data.archive_file.rds_snapshot_to_s3_lambda.output_base64sha256
   timeout          = local.lambda_timeout
 
@@ -154,7 +166,7 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   }
 
   depends_on = [
-    aws_s3_object.rds_snapshot_to_s3_lambda,
+    aws_s3_bucket_object.rds_snapshot_to_s3_lambda,
   ]
 }
 

@@ -1,0 +1,36 @@
+{
+    "aqs": {
+        "type": "Join",
+        "properties": {
+            "dodiCode": "designs_graffiti_5d76650afe2ad80cdc58a241",
+            "collectionCode": [
+                "Live"
+            ],
+            "attributes": [
+                "attributes_itemsTitle",
+                "attributes_itemsSubtitle",
+                "attributes_graffitiNearestAddress_6194e3f292a138015b8bd977",
+                "attributes_tasksStatus",
+                "attributes_tasksStartTime",
+                "attributes_tasksCompletionTime",
+                "attributes_graffitiAreaClearedm2_5d766663fe2ad80304c617b6",
+                "attributes_graffitiOffensive_5d766672fe2ad80cdc58a9c1",
+                "attributes_graffitiDescription_5d76669cfe2ad80304c617bc",
+                "attributes_graffitiFromFMS_6166a5fe13abdf015b8533bb",
+                "attributes_itemsGeometry",
+                "attributes_graffitiIncidentJobType_60c0c7bbb5ff77022a8f6427",
+                "attributes_tasksRaisedTime"
+            ],
+            "joinAttributes": [
+                "root.attributes_tasksStatus.attributes_taskStatusesStatus",
+                "root.attributes_tasksTeam.attributes_teamsTeamName",
+                "root.attributes_graffitiIncidentJobType_60c0c7bbb5ff77022a8f6427.attributes_incidentJobTypeIncidentJobType_60c0c718b5ff77022a8f6384"
+            ]
+        },
+        "children": []
+    },
+    "parameterValues": [],
+    "fileName": "Graffiti.csv",
+    "discriminator": "CsvExportWebRequestModel",
+    "exportHeaderType": "Name"
+}

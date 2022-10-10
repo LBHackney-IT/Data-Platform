@@ -42,3 +42,15 @@ variable "glue_role_arn" {
   type        = string
   default     = null
 }
+
+variable "ingestion_schedule" {
+  description = "cron expression that describes when the spreadsheet should be ingested onto the platform"
+  type        = string
+  default     = "cron(0 6 * * ? *)"
+}
+
+variable "enable_bookmarking" {
+  description = "Enable glue job bookmarking"
+  type        = bool
+  default     = false
+}

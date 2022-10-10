@@ -7,10 +7,12 @@ data "aws_ssm_parameter" "role_arn_to_access_housing_tables" {
 }
 
 module "ingest_mtfh_tables" {
-  source        = "../modules/aws-glue-job"
-  environment   = var.environment
-  tags          = module.tags.values
-  glue_role_arn = aws_iam_role.glue_role.arn
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
+  environment               = var.environment
+  tags                      = module.tags.values
+  glue_role_arn             = aws_iam_role.glue_role.arn
 
   job_name                       = "${local.short_identifier_prefix}Ingest MTFH tables"
   job_description                = "Ingest a snapshot of the tenures table from the Housing Dynamo DB instance"
@@ -45,7 +47,9 @@ module "ingest_mtfh_tables" {
 module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
   tags = module.tags.values
 
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   job_name                   = replace(lower("${local.short_identifier_prefix}Copy MTFH Dynamo DB tables to housing department raw zone"), "/[^a-zA-Z0-9]+/", "-")
   department                 = module.department_housing
@@ -76,6 +80,17 @@ module "copy_mtfh_dynamo_db_tables_to_raw_zone" {
       Grouping = {
         TableLevelConfiguration = 3
       }
+      CrawlerOutput = {
+        Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+        Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
     })
   }
+}
+
+resource "aws_ssm_parameter" "copy_mtfh_dynamo_db_tables_to_raw_zone_crawler_name" {
+  tags  = module.tags.values
+  name  = "/${local.identifier_prefix}/glue_crawler/housing/copy_mtfh_dynamo_db_tables_to_raw_zone_crawler_name"
+  type  = "String"
+  value = module.copy_mtfh_dynamo_db_tables_to_raw_zone.crawler_name
 }

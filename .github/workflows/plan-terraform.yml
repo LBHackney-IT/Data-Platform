@@ -1,0 +1,132 @@
+name: Test and Validate
+env:
+  aws_deploy_region: "eu-west-2"
+
+on:
+  workflow_call:
+    inputs:
+      automation_build_url:
+        default: "https://github.com/LBHackney-IT/data-platform/actions/workflows/data_platform_stg.yml"
+        required: false
+        type: string
+      environment:
+        default: "stg"
+        required: false
+        type: string
+      build_path:
+        required: true
+        type: string
+      terraform_state_s3_key_prefix:
+        required: true
+        type: string
+      terraform_state_file_name:
+        required: true
+        type: string
+    secrets:
+      google_project_id:
+        required: true
+      aws_deploy_account_id:
+        description: "ID of Account being deployed to"
+        required: true
+      INFRASTRUCTURE_PRIVATE_KEY:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_API_ACCOUNT_PROD:
+        required: true
+      AWS_MOSAIC_PROD_ACCOUNT_ID:
+        required: true
+      AWS_DATA_PLATFORM_ACCOUNT_ID:
+        required: true
+      AWS_HACKIT_ACCOUNT_ID:
+        required: true
+      AWS_ROLE_TO_ASSUME:
+        required: true
+      AWS_API_VPC_ID:
+        required: true
+      AWS_HOUSING_VPC_ID:
+        required: true
+      AWS_MOSAIC_VPC_ID:
+        required: true
+      AWS_DP_VPC_ID:
+        required: true
+      GOOGLE_CREDENTIALS:
+        required: true
+      COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE:
+        required: true
+      SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE:
+        required: true
+      PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN:
+        required: true
+
+jobs:
+  plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: terraform-compliance/github_action@main
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1.3.2
+        with:
+          terraform_version: 1.2.0
+
+      - name: Add a key to allow access to Infastructure
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          echo "${{ secrets.INFRASTRUCTURE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
+
+      - name: Set up Google Cloud Credentials
+        run: |
+          echo $GOOGLE_CREDENTIALS >> ./google_service_account_creds.json
+        shell: bash
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Download external dependencies
+        working-directory: "./external-lib"
+        run: make all
+
+      - name: Package AWS Glue Job Helpers Module & Python modules
+        working-directory: "."
+        run: make package-helpers
+
+      - name: Plan Terraform in ${{ inputs.build_path }}
+        uses: ./.github/actions/terraform-plan
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_deploy_region: ${{ env.aws_deploy_region }}
+          terraform_state_s3_key_prefix: ${{ inputs.terraform_state_s3_key_prefix }}
+          terraform_state_file_name: ${{ inputs.terraform_state_file_name }}
+          build_path: ${{ inputs.build_path }}
+          automation_build_url: ${{ inputs.automation_build_url }}
+          environment: ${{ inputs.environment }}
+          google_project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
+          aws_deploy_account_id: ${{ secrets.AWS_DEPLOY_ACCOUNT_ID }}
+          aws_api_account_id: ${{ secrets.AWS_API_ACCOUNT_PROD }}
+          aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
+          aws_data_platform_account_id: ${{ secrets.AWS_DATA_PLATFORM_ACCOUNT_ID }}
+          aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
+          aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
+          aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
+          aws_dp_vpc_id: ${{ secrets.AWS_DP_VPC_ID }}
+          aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
+          aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          copy_liberator_to_pre_prod_lambda_execution_role: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
+          sync_production_to_pre_production_task_role: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
+          pre_production_liberator_data_storage_kms_key_arn: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
+
+      - name: Terraform Compliance
+        if: ${{ (success()) && (inputs.build_path  != './terraform/etl') }}
+        id: terraform-compliance
+        working-directory: "${{ inputs.build_path }}"
+        shell: bash
+        run: terraform-compliance -p plan.out -f ../compliance/

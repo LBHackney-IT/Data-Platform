@@ -9,8 +9,8 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from pyspark.sql import SparkSession, Row
 
-from helpers.helpers import get_glue_env_var, add_import_time_columns, PARTITION_KEYS
-from helpers.database_ingestion_helpers import get_all_database_tables, update_table_ingestion_details
+from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, PARTITION_KEYS
+from scripts.helpers.database_ingestion_helpers import get_all_database_tables, update_table_ingestion_details
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 

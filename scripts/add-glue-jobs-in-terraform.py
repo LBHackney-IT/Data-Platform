@@ -47,7 +47,7 @@ def add_environment_variables_to_script(script_name):
     local_script_location = f"scripts/jobs/{directory_to_save_scripts}/{script_name}"
     lines = open(local_script_location, 'r').readlines()
     lines[7] = """
-from helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import get_glue_env_var
 environment = get_glue_env_var("environment")
 
 """

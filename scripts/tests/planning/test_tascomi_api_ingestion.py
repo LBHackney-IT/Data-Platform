@@ -1,5 +1,5 @@
 from freezegun import freeze_time
-from jobs.planning.tascomi_api_ingestion import get_days_since_last_import
+from scripts.jobs.planning.tascomi_api_ingestion import get_days_since_last_import
 
 class TestTascomiApiIngestion:
     def test_get_days_since_last_import_no_days(self):

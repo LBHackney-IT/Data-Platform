@@ -113,3 +113,13 @@ variable "spark_ui_output_storage_id" {
   description = "Id of S3 bucket containing Spark UI output logs"
   type        = string
 }
+
+variable "is_production_environment" {
+  description = "A flag indicting if we are running in production for setting up automation"
+  type        = bool
+}
+
+variable "is_live_environment" {
+  description = "A flag indicting if we are running in a live environment for setting up automation"
+  type        = bool
+}

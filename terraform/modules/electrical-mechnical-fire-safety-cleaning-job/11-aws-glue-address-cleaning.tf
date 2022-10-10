@@ -1,5 +1,7 @@
 module "housing_repairs_elec_mech_fire_address_cleaning" {
-  source = "../aws-glue-job"
+  source                    = "../aws-glue-job"
+  is_live_environment       = var.is_live_environment
+  is_production_environment = var.is_production_environment
 
   department        = var.department
   job_name          = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Address Cleaning"

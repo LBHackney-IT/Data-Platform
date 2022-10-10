@@ -5,10 +5,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
-
-from helpers.helpers import get_glue_env_var
-environment = get_glue_env_var("environment")
-
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -23,38 +20,43 @@ glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
+environment = get_glue_env_var("environment")
 
-# Script generated for node S3 bucket - liberator_permit_llpg
-S3bucketliberator_permit_llpg_node1 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-liberator-raw-zone",
-    table_name="liberator_permit_llpg",
-    transformation_ctx="S3bucketliberator_permit_llpg_node1",
-)
-
-# Script generated for node Amazon S3 - unrestricted_address_api_dbo_hackney_address
-AmazonS3unrestricted_address_api_dbo_hackney_address_node1639576017946 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-raw-zone-unrestricted-address-api",
-    table_name="unrestricted_address_api_dbo_hackney_address",
-    transformation_ctx="AmazonS3unrestricted_address_api_dbo_hackney_address_node1639576017946",
-)
-
-# Script generated for node Amazon S3 - parking_permit_denormalised_data
-AmazonS3parking_permit_denormalised_data_node1639576051598 = (
+# Script generated for node S3 bucket - refined - parking_permit_denormalised_data
+S3bucketrefinedparking_permit_denormalised_data_node1 = (
     glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-" + environment + "-liberator-refined-zone",
+        database="dataplatform-"+environment+"-liberator-refined-zone",
         table_name="parking_permit_denormalised_data",
-        transformation_ctx="AmazonS3parking_permit_denormalised_data_node1639576051598",
+        transformation_ctx="S3bucketrefinedparking_permit_denormalised_data_node1",
     )
 )
 
-# Script generated for node Amazon S3 - parking_raw_zone_ltn_london_fields
-AmazonS3parking_raw_zone_ltn_london_fields_node1640361298729 = glueContext.create_dynamic_frame.from_catalog(
-    database="parking-raw-zone",
-    table_name="ltn_london_fields",
-    transformation_ctx="AmazonS3parking_raw_zone_ltn_london_fields_node1640361298729",
+# Script generated for node Amazon S3 - raw - liberator_permit_llpg
+AmazonS3rawliberator_permit_llpg_node1657535904691 = (
+    glueContext.create_dynamic_frame.from_catalog(
+        database="dataplatform-"+environment+"-liberator-raw-zone",
+        table_name="liberator_permit_llpg",
+        transformation_ctx="AmazonS3rawliberator_permit_llpg_node1657535904691",
+    )
 )
 
-# Script generated for node ApplyMapping
+# Script generated for node Amazon S3 - unrestricted_address_api_dbo_hackney_address
+AmazonS3unrestricted_address_api_dbo_hackney_address_node1657535910004 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-"+environment+"-raw-zone-unrestricted-address-api",
+    table_name="unrestricted_address_api_dbo_hackney_address",
+    transformation_ctx="AmazonS3unrestricted_address_api_dbo_hackney_address_node1657535910004",
+)
+
+# Script generated for node Amazon S3 - parking raw - ltn_london_fields
+AmazonS3parkingrawltn_london_fields_node1657536241729 = (
+    glueContext.create_dynamic_frame.from_catalog(
+        database="parking-raw-zone",
+        table_name="ltn_london_fields",
+        transformation_ctx="AmazonS3parkingrawltn_london_fields_node1657536241729",
+    )
+)
+
+# Script generated for node Apply Mapping - New
 SqlQuery0 = """
 /*08/04/2022 - added ,case when latest_permit_status in('Approved','Renewed','Created','ORDER_APPROVED','PENDING_VRM_CHANGE','RENEW_EVID','PENDING_ADDR_CHANGE') and live_permit_flag = 1 then 1 else 0 end as live_flag */
 with street as (select  
@@ -218,32 +220,35 @@ left join ltn_london_fields on  ltn_london_fields.uprn = parking_permit_denormal
 
 
 where parking_permit_denormalised_data.import_date = (SELECT max(parking_permit_denormalised_data.import_date) FROM parking_permit_denormalised_data)
+
+
 """
-ApplyMapping_node2 = sparkSqlQuery(
+ApplyMappingNew_node1657710041310 = sparkSqlQuery(
     glueContext,
     query=SqlQuery0,
     mapping={
-        "liberator_permit_llpg": S3bucketliberator_permit_llpg_node1,
-        "unrestricted_address_api_dbo_hackney_address": AmazonS3unrestricted_address_api_dbo_hackney_address_node1639576017946,
-        "parking_permit_denormalised_data": AmazonS3parking_permit_denormalised_data_node1639576051598,
-        "ltn_london_fields": AmazonS3parking_raw_zone_ltn_london_fields_node1640361298729,
+        "parking_permit_denormalised_data": S3bucketrefinedparking_permit_denormalised_data_node1,
+        "liberator_permit_llpg": AmazonS3rawliberator_permit_llpg_node1657535904691,
+        "unrestricted_address_api_dbo_hackney_address": AmazonS3unrestricted_address_api_dbo_hackney_address_node1657535910004,
+        "ltn_london_fields": AmazonS3parkingrawltn_london_fields_node1657536241729,
     },
-    transformation_ctx="ApplyMapping_node2",
+    transformation_ctx="ApplyMappingNew_node1657710041310",
 )
 
-# Script generated for node S3 bucket - parking_permit_denormalised_gds_street_llpg
-S3bucketparking_permit_denormalised_gds_street_llpg_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_permit_denormalised_gds_street_llpg/",
+# Script generated for node Amazon S3
+AmazonS3_node1657709892303 = glueContext.getSink(
+    path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_permit_denormalised_gds_street_llpg/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],
+    compression="snappy",
     enableUpdateCatalog=True,
-    transformation_ctx="S3bucketparking_permit_denormalised_gds_street_llpg_node3",
+    transformation_ctx="AmazonS3_node1657709892303",
 )
-S3bucketparking_permit_denormalised_gds_street_llpg_node3.setCatalogInfo(
-    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
+AmazonS3_node1657709892303.setCatalogInfo(
+    catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",
     catalogTableName="parking_permit_denormalised_gds_street_llpg",
 )
-S3bucketparking_permit_denormalised_gds_street_llpg_node3.setFormat("glueparquet")
-S3bucketparking_permit_denormalised_gds_street_llpg_node3.writeFrame(ApplyMapping_node2)
+AmazonS3_node1657709892303.setFormat("glueparquet")
+AmazonS3_node1657709892303.writeFrame(ApplyMappingNew_node1657710041310)
 job.commit()

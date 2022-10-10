@@ -1,34 +1,40 @@
 locals {
   s3_target_bucket_name = module.landing_zone.bucket_id
   secret_name           = "icaseworks-key"
-  glue_job_name         = local.is_live_environment ? module.copy_icaseworks_data_landing_to_raw[0].job_name : ""
+  glue_trigger_name     = local.is_live_environment ? module.copy_icaseworks_data_landing_to_raw[0].trigger_name : ""
 }
 
 module "icaseworks_api_ingestion" {
-  count  = local.is_live_environment ? 1 : 0
-  source = "../modules/api-ingestion-lambda"
-  tags   = module.tags.values
+  count                     = local.is_live_environment ? 1 : 0
+  source                    = "../modules/api-ingestion-lambda"
+  tags                      = module.tags.values
+  is_production_environment = local.is_production_environment
+  is_live_environment       = local.is_live_environment
 
   identifier_prefix              = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   lambda_name                    = "icaseworks-api-ingestion"
+  lambda_handler                 = "main.lambda_handler"
+  runtime_language               = "python3.8"
   secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   s3_target_bucket_arn           = module.landing_zone.bucket_arn
   s3_target_bucket_name          = local.s3_target_bucket_name
   api_credentials_secret_name    = local.secret_name
-  glue_job_to_trigger            = local.glue_job_name
+  trigger_to_run                 = local.glue_trigger_name
   s3_target_bucket_kms_key_arn   = module.landing_zone.kms_key_arn
   ephemeral_storage              = 6144
   lambda_environment_variables = {
     "SECRET_NAME"           = local.secret_name
     "TARGET_S3_BUCKET_NAME" = local.s3_target_bucket_name
     "OUTPUT_FOLDER"         = "icaseworks"
-    "GLUE_JOB_NAME"         = local.glue_job_name
+    "TRIGGER_NAME"          = local.glue_trigger_name
   }
 }
 
 module "copy_icaseworks_data_landing_to_raw" {
-  source = "../modules/aws-glue-job"
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
 
   count = local.is_live_environment ? 1 : 0
 
@@ -41,7 +47,7 @@ module "copy_icaseworks_data_landing_to_raw" {
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   environment                = var.environment
-  trigger_enabled            = false
+  trigger_enabled            = local.is_production_environment
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--s3_bucket_target"    = "${module.raw_zone.bucket_id}/data-and-insight"

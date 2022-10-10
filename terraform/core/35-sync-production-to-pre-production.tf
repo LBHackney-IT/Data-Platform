@@ -10,6 +10,18 @@ data "aws_iam_policy_document" "ecs_assume_role" {
       type = "Service"
     }
   }
+
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "s3.amazonaws.com"
+      ]
+      type = "Service"
+    }
+  }
 }
 
 data "aws_iam_policy_document" "task_role" {
@@ -17,6 +29,10 @@ data "aws_iam_policy_document" "task_role" {
     effect = "Allow"
     actions = [
       "s3:GetObject*",
+      "s3:GetReplicationConfiguration",
+      "s3:GetObjectVersionForReplication",
+      "s3:GetObjectVersionAcl",
+      "s3:GetObjectVersionTagging",
       "s3:ListBucket",
     ]
     resources = [
@@ -67,12 +83,19 @@ data "aws_iam_policy_document" "task_role" {
     actions = [
       "s3:ListBucket",
       "s3:PutObject*",
-      "s3:DeleteObject*"
+      "s3:DeleteObject*",
+      "s3:ReplicateObject",
+      "s3:ReplicateTags",
+      "s3:ObjectOwnerOverrideToBucketOwner",
+      "s3:ReplicateDelete",
     ]
     resources = [
-      "arn:aws:s3:::dataplatform-stg-raw-zone-prod-copy*",
-      "arn:aws:s3:::dataplatform-stg-refined-zone-prod-copy*",
-      "arn:aws:s3:::dataplatform-stg-trusted-zone-prod-copy*"
+      "arn:aws:s3:::dataplatform-stg-raw-zone*",
+      "arn:aws:s3:::dataplatform-stg-refined-zone*",
+      "arn:aws:s3:::dataplatform-stg-trusted-zone*",
+      "arn:aws:s3:::dataplatform-stg-raw-zone/*",
+      "arn:aws:s3:::dataplatform-stg-refined-zone/*",
+      "arn:aws:s3:::dataplatform-stg-trusted-zone/*"
     ]
   }
 }
@@ -94,9 +117,9 @@ module "sync_production_to_pre_production" {
       environment_variables = [
         { name = "NUMBER_OF_DAYS_TO_RETAIN", value = "90" },
         { name = "S3_SYNC_SOURCE", value = module.raw_zone.bucket_id },
-        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-raw-zone-prod-copy" }
+        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-raw-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
     },
     {
       task_prefix = "refined-zone-"
@@ -105,9 +128,9 @@ module "sync_production_to_pre_production" {
       environment_variables = [
         { name = "NUMBER_OF_DAYS_TO_RETAIN", value = "90" },
         { name = "S3_SYNC_SOURCE", value = module.refined_zone.bucket_id },
-        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-refined-zone-prod-copy" }
+        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-refined-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
     },
     {
       task_prefix = "trusted-zone-"
@@ -116,9 +139,91 @@ module "sync_production_to_pre_production" {
       environment_variables = [
         { name = "NUMBER_OF_DAYS_TO_RETAIN", value = "90" },
         { name = "S3_SYNC_SOURCE", value = module.trusted_zone.bucket_id },
-        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-trusted-zone-prod-copy" }
+        { name = "S3_SYNC_TARGET", value = "dataplatform-stg-trusted-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 23 ? * * *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
     }
   ]
+}
+
+resource "aws_s3_bucket_replication_configuration" "raw_zone" {
+  count  = local.is_production_environment ? 1 : 0
+  role   = var.sync_production_to_pre_production_task_role
+  bucket = module.raw_zone.bucket_id
+
+  rule {
+    id     = "Production to pre-production raw zone replication"
+    status = "Enabled"
+
+    destination {
+      bucket  = "arn:aws:s3:::dataplatform-stg-raw-zone"
+      account = "120038763019"
+      access_control_translation {
+        owner = "Destination"
+      }
+      encryption_configuration {
+        replica_kms_key_id = "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0"
+      }
+    }
+
+    source_selection_criteria {
+      sse_kms_encrypted_objects {
+        status = "Enabled"
+      }
+    }
+  }
+}
+resource "aws_s3_bucket_replication_configuration" "refined_zone" {
+  count  = local.is_production_environment ? 1 : 0
+  role   = var.sync_production_to_pre_production_task_role
+  bucket = module.refined_zone.bucket_id
+
+  rule {
+    id     = "Production to pre-production refined zone replication"
+    status = "Enabled"
+
+    destination {
+      bucket  = "arn:aws:s3:::dataplatform-stg-refined-zone"
+      account = "120038763019"
+      access_control_translation {
+        owner = "Destination"
+      }
+      encryption_configuration {
+        replica_kms_key_id = "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21"
+      }
+    }
+
+    source_selection_criteria {
+      sse_kms_encrypted_objects {
+        status = "Enabled"
+      }
+    }
+  }
+}
+resource "aws_s3_bucket_replication_configuration" "trusted_zone" {
+  count  = local.is_production_environment ? 1 : 0
+  role   = var.sync_production_to_pre_production_task_role
+  bucket = module.trusted_zone.bucket_id
+
+  rule {
+    id     = "Production to pre-production trusted zone replication"
+    status = "Enabled"
+
+    destination {
+      bucket  = "arn:aws:s3:::dataplatform-stg-trusted-zone"
+      account = "120038763019"
+      access_control_translation {
+        owner = "Destination"
+      }
+      encryption_configuration {
+        replica_kms_key_id = "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"
+      }
+    }
+
+    source_selection_criteria {
+      sse_kms_encrypted_objects {
+        status = "Enabled"
+      }
+    }
+  }
 }

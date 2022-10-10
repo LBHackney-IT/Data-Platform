@@ -22,6 +22,18 @@ data "aws_iam_policy_document" "fargate_assume_role" {
       type = "Service"
     }
   }
+
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "s3.amazonaws.com"
+      ]
+      type = "Service"
+    }
+  }
 }
 
 resource "aws_iam_role" "task_role" {

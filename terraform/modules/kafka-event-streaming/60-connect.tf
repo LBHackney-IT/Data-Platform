@@ -5,20 +5,22 @@ resource "aws_mskconnect_custom_plugin" "avro_converter_s3_sink" {
   location {
     s3 {
       bucket_arn = module.kafka_dependency_storage.bucket_arn
-      file_key   = aws_s3_object.kafka_connector_s3.key
+      file_key   = aws_s3_bucket_object.kafka_connector_s3.key
     }
   }
 }
 
+
 locals {
   topics = [
-    "tenure_api"
+    "tenure_api",
+    "contact_details_api"
   ]
 }
 
 resource "aws_mskconnect_connector" "topics" {
   for_each    = toset(local.topics)
-  name        = replace(lower(each.value), "/[^a-zA-Z0-9]+/", "-")
+  name        = replace(lower("${var.short_identifier_prefix}${each.value}"), "/[^a-zA-Z0-9]+/", "-")
   description = "Kafka connector to write ${each.value} events to S3"
 
   kafkaconnect_version = "2.7.1"

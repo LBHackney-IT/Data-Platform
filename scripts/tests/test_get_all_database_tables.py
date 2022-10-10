@@ -3,7 +3,7 @@ import botocore.session
 from botocore.stub import Stubber
 from unittest.mock import Mock
 
-from helpers.database_ingestion_helpers import get_all_database_tables, get_filtered_tables
+from scripts.helpers.database_ingestion_helpers import get_all_database_tables, get_filtered_tables
 
 
 generic_get_tables_response_keys = {

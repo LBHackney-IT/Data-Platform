@@ -30,3 +30,8 @@ module "db_snapshot_to_s3" {
     aws = aws.aws_api_account
   }
 }
+
+moved {
+  from = module.db_snapshot_to_s3.module.rds_export_storage.aws_s3_bucket.bucket
+  to   = module.db_snapshot_to_s3[0].module.rds_export_storage.aws_s3_bucket.bucket
+}

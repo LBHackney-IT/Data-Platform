@@ -7,7 +7,7 @@ from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.functions import col, max
 from awsglue.job import Job
 
-from helpers.helpers import get_glue_env_var, PARTITION_KEYS
+from scripts.helpers.helpers import get_glue_env_var, PARTITION_KEYS
 
 glueContext = GlueContext(SparkContext.getOrCreate())
 job = Job(glueContext)

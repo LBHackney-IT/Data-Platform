@@ -6,6 +6,9 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
+from scripts.helpers.helpers import get_glue_env_var
+environment = get_glue_env_var("environment")
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -23,21 +26,21 @@ job.init(args["JOB_NAME"], args)
 
 # Script generated for node Amazon S3
 AmazonS3_node1628163161728 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_renewals",
     transformation_ctx="AmazonS3_node1628163161728",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1627053109317 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_fta",
     transformation_ctx="AmazonS3_node1627053109317",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1628163307688 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_vrm",
     transformation_ctx="AmazonS3_node1628163307688",
 )
@@ -51,28 +54,28 @@ AmazonS3_node1632754989503 = glueContext.create_dynamic_frame.from_catalog(
 
 # Script generated for node Amazon S3
 AmazonS3_node1628163374473 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_vrm_update",
     transformation_ctx="AmazonS3_node1628163374473",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1628173244776 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_address_update",
     transformation_ctx="AmazonS3_node1628173244776",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1628163229600 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_approval",
     transformation_ctx="AmazonS3_node1628163229600",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1634550538215 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-stg-liberator-raw-zone",
+    database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_llpg",
     transformation_ctx="AmazonS3_node1634550538215",
 )
@@ -578,7 +581,7 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-stg-refined-zone/parking/liberator/Parking_Permit_DeNormalised_Data/",
+    path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/Parking_Permit_DeNormalised_Data/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day"],
@@ -586,7 +589,7 @@ S3bucket_node3 = glueContext.getSink(
     transformation_ctx="S3bucket_node3",
 )
 S3bucket_node3.setCatalogInfo(
-    catalogDatabase="dataplatform-stg-liberator-refined-zone",
+    catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",
     catalogTableName="Parking_Permit_DeNormalised_Data",
 )
 S3bucket_node3.setFormat("glueparquet")

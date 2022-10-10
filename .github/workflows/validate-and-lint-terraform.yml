@@ -91,8 +91,8 @@ jobs:
         run: make all
 
       - name: Package AWS Glue Job Helpers Module & Python modules
-        working-directory: "./scripts"
-        run: make all
+        working-directory: "."
+        run: make package-helpers
 
       - name: Run `terraform validate` on ${{ inputs.build_path }}
         working-directory: ${{ inputs.build_path }}
@@ -121,7 +121,7 @@ jobs:
 
       - name: Install tflint
         run: |
-          curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip
+          curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/69867754 | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip
 
       - name: Configuring AWS credentials
         working-directory: ${{ inputs.build_path }}

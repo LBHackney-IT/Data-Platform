@@ -9,7 +9,7 @@ from pyspark.sql import functions as f
 from awsglue.dynamicframe import DynamicFrame
 import boto3
 
-from helpers.helpers import get_glue_env_var, add_import_time_columns, get_s3_subfolders, PARTITION_KEYS, clean_column_names
+from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, get_s3_subfolders, PARTITION_KEYS, clean_column_names
 
 s3_client = boto3.client('s3')
 sc = SparkContext()
