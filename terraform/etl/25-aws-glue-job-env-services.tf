@@ -88,8 +88,8 @@ resource "aws_glue_crawler" "alloy_daily_table_ingestion" {
 
     }
     CrawlerOutput = {
-      Partitions = { "AddOrUpdateBehavior" = InheritFromTable }
-      Tables     = { "AddOrUpdateBehavior" = MergeNewColumns }
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
     }
   })
 }
@@ -163,8 +163,8 @@ resource "aws_glue_crawler" "alloy_snapshot" {
       TableLevelConfiguration = 5
     }
     CrawlerOutput = {
-      Partitions = { "AddOrUpdateBehavior" = InheritFromTable }
-      Tables     = { "AddOrUpdateBehavior" = MergeNewColumns }
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
     }
   })
 }
