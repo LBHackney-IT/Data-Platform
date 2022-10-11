@@ -1,6 +1,6 @@
-{'csv_name': 'Dump Collection.csv',
-                                         'filename': 'Dump Collection/Dump Collection.csv',
-                                         'aqs': {
+{"csv_name": "Dump Collection.csv",
+ "filename": "Dump Collection/Dump Collection.csv",
+ "aqs": {
         "aqs": {
             "type": "Join",
             "properties": {
