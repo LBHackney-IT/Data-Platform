@@ -77,7 +77,7 @@ module "rentsense_output_test" {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket"               = module.refined_zone_data_source.bucket_id
     "--s3_bucket_target"        = "s3://${module.refined_zone_data_source.bucket_id}/housing/rentsense"  
-    "--s3_landing_bucket_target"  = "s3://{$module.landing_zone_data_source.bucket_id}/housing_export"  
+    "--s3_landing_bucket_target"  = "s3://${module.landing_zone_data_source.bucket_id}/housing_export"  
     "--s3_landing"        = "s3://${module.landing_zone_data_source.bucket_id}" 
     "--enable-glue-datacatalog" = "true"
     "--source_raw_database" = module.department_housing_data_source.raw_zone_catalog_database_name
