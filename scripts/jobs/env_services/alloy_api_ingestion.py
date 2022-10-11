@@ -167,7 +167,7 @@ if __name__ == "__main__":
                     Key=alloy_download_bucket + filename,
                 )
 
-        df = spark.read.options(header=True, inferSchema=True).csv(
+        df = spark.read.options(header=True, inferSchema=True, multiLine=True).csv(
             s3_download_url + filename
         )
         df = clean_column_names(df)
