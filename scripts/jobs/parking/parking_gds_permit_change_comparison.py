@@ -23,6 +23,7 @@ glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
+spark.conf.set("spark.sql.broadcastTimeout", 7200)
 
 # Script generated for node S3 - liberator_refined - parking_permit_denormalised_gds_street_llpg
 S3liberator_refinedparking_permit_denormalised_gds_street_llpg_node1 = glueContext.create_dynamic_frame.from_catalog(
