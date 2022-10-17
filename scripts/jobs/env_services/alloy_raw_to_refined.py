@@ -1,6 +1,7 @@
 import json
 import sys
 
+
 import boto3
 import botocore
 import pyspark.sql.functions as F
@@ -8,6 +9,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
+from awsglue.dynamicframe import DynamicFrame
 from pyspark.context import SparkContext
 from scripts.helpers.helpers import (
     PARTITION_KEYS,
@@ -63,6 +65,7 @@ if __name__ == "__main__":
     glue_database = get_glue_env_var("glue_database", "")
     glue_table_prefix = get_glue_env_var("glue_table_prefix", "")
     s3_refined_zone_bucket = get_glue_env_var("s3_refined_zone_bucket", "")
+    s3_mapping_bucket = get_glue_env_var("s3_mapping_bucket", "")
     s3_mapping_location = get_glue_env_var("s3_mapping_location", "")
     s3_target_prefix = get_glue_env_var("s3_target_prefix", "")
 
@@ -80,23 +83,27 @@ if __name__ == "__main__":
         mapping_file_key = f"{s3_mapping_location}{table}.json"
 
         try:
-            s3.Object(s3_mapping_location, mapping_file_key).load()
+            s3.Object(s3_mapping_bucket, mapping_file_key).load()
         except botocore.exceptions.ClientError as e:
             if e.response["Error"]["Code"] == "404":
                 logger.info(f"No mapping file for {table} found, {e.response}")
             else:
                 logger.info(f"Error retrieving mapping file {e.response}")
         else:
-            obj = s3.Object(s3_mapping_location, mapping_file_key).get()
+            obj = s3.Object(s3_mapping_bucket, mapping_file_key).get()
             mapping = json.loads(obj["Body"].read())
             daily_df = rename_columns(daily_df, mapping)
 
-        daily_df = clean_column_names(daily_df)
+        daily_df = clean_column_names(daily_df.toDF())
         daily_df = add_import_time_columns(daily_df)
 
+        outputDynamicFrame = DynamicFrame.fromDF(
+            daily_df, glueContext, "outputDynamicFrame"
+        )
+
         target_path = f"s3://{s3_refined_zone_bucket}/{s3_target_prefix}{table}"
-        glueContext.write_dynamic_frame.from_options(
-            frame=daily_df,
+        datasink = glueContext.write_dynamic_frame.from_options(
+            frame=outputDynamicFrame,
             connection_type="s3",
             format="parquet",
             connection_options={"path": target_path, "partitionKeys": PARTITION_KEYS},
