@@ -106,8 +106,9 @@ module "alloy_raw_to_refined_env_services" {
     "--enable-glue-datacatalog" = "true"
     "--glue_database"           = "env-services-raw-zone"
     "--glue_table_prefix"       = local.alloy_query_names_alphanumeric[count.index]
-    "--s3_refined_zone_bucket"  = "s3://${module.refined_zone_data_source.bucket_id}/env-services/alloy/snapshots/"
-    "--s3_mapping_location"     = "s3://${module.raw_zone_data_source.bucket_id}env-services/alloy/mapping-files/"
+    "--s3_refined_zone_bucket"  = module.refined_zone_data_source.bucket_id
+    "--s3_mapping_bucket"       = module.raw_zone_data_source.bucket_id
+    "--s3_mapping_location"     = "/env-services/alloy/mapping-files/"
     "--s3_target_prefix"        = "env-services/alloy/${local.alloy_query_names_alphanumeric[count.index]}/"
   }
 }
