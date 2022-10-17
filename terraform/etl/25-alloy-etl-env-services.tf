@@ -23,7 +23,7 @@ module "alloy_api_export_raw_env_services" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
-  count                     = !local.is_live_environment ? length(local.alloy_queries) : 0
+  count                     = local.is_live_environment ? length(local.alloy_queries) : 0
 
   job_description = "This job queries the Alloy API and saves the exported csvs to s3"
   department      = module.department_environmental_services_data_source
