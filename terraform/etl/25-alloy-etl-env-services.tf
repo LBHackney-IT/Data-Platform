@@ -76,7 +76,7 @@ resource "aws_glue_crawler" "alloy_export_crawler" {
   s3_target {
     path = "s3://${module.raw_zone_data_source.bucket_id}/env-services/alloy/alloy_api_downloads/${local.alloy_query_names_alphanumeric[count.index]}/"
   }
-  table_prefix = local.alloy_query_names_alphanumeric[count.index]
+  table_prefix = "${lower(local.alloy_query_names_alphanumeric[count.index])}_"
 
   configuration = jsonencode({
     Version = 1.0
@@ -105,7 +105,7 @@ module "alloy_raw_to_refined_env_services" {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
     "--glue_database"           = "env-services-raw-zone"
-    "--glue_table_prefix"       = local.alloy_query_names_alphanumeric[count.index]
+    "--glue_table_prefix"       = "${lower(local.alloy_query_names_alphanumeric[count.index])}_"
     "--s3_refined_zone_bucket"  = module.refined_zone_data_source.bucket_id
     "--s3_mapping_bucket"       = module.raw_zone_data_source.bucket_id
     "--s3_mapping_location"     = "/env-services/alloy/mapping-files/"
