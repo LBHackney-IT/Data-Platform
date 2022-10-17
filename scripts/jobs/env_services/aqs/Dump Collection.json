@@ -1,0 +1,43 @@
+{"csv_name": "Dump Collection.csv",
+ "filename": "Dump Collection/Dump Collection.csv",
+ "aqs": {
+        "aqs": {
+            "type": "Join",
+            "properties": {
+                "dodiCode": "designs_dumpCollection_5d774e80fe2ad80a285bae48",
+                "collectionCode": [
+                    "Live"
+                ],
+                "attributes": [
+                    "attributes_itemsTitle",
+                    "attributes_itemsSubtitle",
+                    "attributes_tasksDescription",
+                    "attributes_tasksStatus",
+                    "attributes_tasksStartTime",
+                    "attributes_tasksCompletionTime",
+                    "attributes_dumpCollectionQuantity_5d774ea4fe2ad80a285bae50",
+                    "attributes_dumpCollectionWasteType_5d774ebcfe2ad80a285bae55",
+                    "attributes_dumpCollectionDescription_5d774edafe2ad80a285bae5a",
+                    "attributes_dumpCollectionLandType_5d774f02fe2ad80a285bae64",
+                    "attributes_dumpCollectionFromFMS_6166a61434dd550159f72276",
+                    "attributes_itemsGeometry",
+                    "attributes_dumpCollectionNearestAddress_6202d0c54c5c560154682782",
+                    "attributes_tasksTeam",
+                    "attributes_tasksRaisedTime"
+                ],
+                "joinAttributes": [
+                    "root.attributes_tasksStatus.attributes_taskStatusesStatus",
+                    "root.attributes_tasksTeam.attributes_teamsTeamName",
+                    "root.attributes_dumpCollectionQuantity_5d774ea4fe2ad80a285bae50.attributes_loadQuantityLoadQuantity_5d766742fe2ad80cdc58aa74",
+                    "root.attributes_dumpCollectionWasteType_5d774ebcfe2ad80a285bae55.attributes_wasteTypeWasteType_5d766963fe2ad80cdc58af1a",
+                    "root.attributes_dumpCollectionLandType_5d774f02fe2ad80a285bae64.attributes_landTypeLandType_5d766bccfe2ad80304c624d5"
+                ]
+            },
+            "children": []
+        },
+        "parameterValues": [],
+        "fileName": "Dump Collection.csv",
+        "discriminator": "CsvExportWebRequestModel",
+        "exportHeaderType": "Name"
+    }
+}
