@@ -86,3 +86,10 @@ resource "aws_s3_bucket_object" "copy_manually_uploaded_csv_data_to_raw" {
   source_hash = filemd5("../../scripts/jobs/copy_manually_uploaded_csv_data_to_raw.py")
 }
 
+resource "aws_s3_bucket_object" "parking_copy_ringgo_sftp_data_to_raw" {
+  bucket      = module.glue_scripts.bucket_id
+  key         = "scripts/parking/parking_copy_ringgo_sftp_data_to_raw.py"
+  acl         = "private"
+  source      = "../../scripts/jobs/parking/parking_copy_ringgo_sftp_data_to_raw.py"
+  source_hash = filemd5("../../scripts/jobs/parking/parking_copy_ringgo_sftp_data_to_raw.py")
+}
