@@ -23,7 +23,7 @@ logger = glue_context.get_logger()
 def data_source_landing_to_raw(bucket_source, bucket_target, s3_prefix):
     logger.info("bucket_target" + bucket_target)
     logger.info("s3_prefix" + s3_prefix)
-    data_source = spark.read.option("multiline", "true").csv(bucket_source + "/" + s3_prefix)
+    data_source = spark.read.option("header", "true").csv(bucket_source + "/" + s3_prefix)
     latest_data = get_latest_partitions(data_source)
     logger.info(f"latest_data: {latest_data}")
 
