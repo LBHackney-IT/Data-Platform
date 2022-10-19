@@ -14,35 +14,68 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import IntegerType, StringType, FloatType
 from datetime import date
 import pyspark.sql.functions as F
-from scripts.helpers.helpers import move_file, rename_file, get_glue_env_var, get_latest_partitions_optimized , create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog,clear_target_folder,copy_file
+from scripts.helpers.helpers import move_file, rename_file,  get_latest_partitions_optimized , create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog,clear_target_folder,copy_file
 
 
 # The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":
     
     # read job parameters
-    args = getResolvedOptions(sys.argv, ['JOB_NAME'])
-    source_catalog_database = get_glue_env_var('source_catalog_database', '')
-    s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
-    source_raw_database = get_glue_env_var('source_raw_database', '')
-    s3_bucket = get_glue_env_var('s3_bucket','')
-    s3_landing = get_glue_env_var('s3_landing','')
-    s3_landing_bucket_target = get_glue_env_var('s3_landing_bucket_target','')
+    args = getResolvedOptions(sys.argv, ['JOB_NAME', 's3_bucket', 's3_bucket_target','source_raw_database','s3_landing','s3_export_bucket_target','source_catalog_database'])
+    
+    source_catalog_database = args["source_catalog_database"]
+    s3_bucket = args["s3_bucket"]
+    s3_bucket_target = args["s3_bucket_target"] 
+    source_raw_database = args["source_raw_database"] 
+    s3_landing = args["s3_landing"] 
+    s3_export_bucket_target = args["s3_export_bucket_target"] 
+    
     today = date.today()
     target_path = f"housing_export/rentsense/%s" % today.strftime("%Y%m%d")
     s3 = boto3.client("s3")
-  
- 
+
     # start the Spark session and the logger
     glueContext = GlueContext(SparkContext.getOrCreate()) 
-    spark= glueContext.spark_session
+    spark = glueContext.spark_session
     logger = glueContext.get_logger()
     job = Job(glueContext)
     spark.conf.set("spark.sql.broadcastTimeout", 7200)
     
-    # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
-    logger.info(f'The job is starting. The source table is {source_catalog_database}')
+    logger.info(f'args: {args}')
+
+
+    logger.info(f'source_catalog_database is {source_catalog_database}')
+    logger.info(f's3_export_bucket_target is {s3_export_bucket_target}.')
     
+    # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
+    logger.info(f'The job is starting. The source table is {source_catalog_database}, the landing zone target it {s3_export_bucket_target} and landing zone is {s3_landing}. S3 bucket target is {s3_bucket_target}')
+    
+
+    # clear the rentsense export bucket so that only one date is being moved in the S3 shift
+    exist = s3.list_objects_v2(Bucket = s3_landing ,Prefix ='housing_export/rentsense/')  # list the files
+  
+    if 'Contents' in exist: 
+        clear_target_folder(s3_export_bucket_target)
+        logger.info(f"Deleted landing zone target area")
+    else:
+        logger.info(f"Couldn't find data to delete")
+
+    # clear the refined zones
+    exist2 = s3.list_objects_v2(Bucket = s3_bucket ,Prefix ='housing/rentsense/export/')  # list the files
+    if 'Contents' in exist2: 
+        clear_target_folder(s3_bucket_target+'/export')
+        logger.info(f"Deleted refined export zone target area")
+    else:
+        logger.info(f"Couldn't find data in refined export zone to delete")
+        
+    exist3 = s3.list_objects_v2(Bucket = s3_bucket ,Prefix ='housing/rentsense/gzip/')  # list the files
+    if 'Contents' in exist3: 
+        clear_target_folder(s3_bucket_target+'/gzip')
+        logger.info(f"Deleted refined gzip zone target area")
+    else:
+        logger.info(f"Couldn't find data in refined gzip zone to delete")
+        
+
     #Mapping tables
 
     mapTransactions =  {
@@ -399,18 +432,6 @@ if __name__ == "__main__":
     patch_officer  = get_latest_partitions_optimized(patch_officer )
 
     
-
-    
-# clear the rentsense export bucket so that only one date is being moved in the S3 shift
-    exist = s3.list_objects_v2(Bucket = s3_landing ,Prefix ='housing_export/rentsense/')  # list the files
-    
-    if 'Contents' in exist: 
-        clear_target_folder(s3_landing_bucket_target+'/rentsense')
-    else:
-        logger.info(f"Couldn't find data to delete")
-
-
-    
 # create the patch information
     patch_officer = patch_officer.withColumn("patch_number2",F.trim(F.col("patch_number")))
     
@@ -450,7 +471,7 @@ if __name__ == "__main__":
                                   "tenure_code as TenureTypeCode",
                                   "endoftenuredate as TenancyEndDate",
                                   "'Hackney' as LocalAuthority",
-                                   "HousingOfficerName",
+                                  "HousingOfficerName",
                                   "Patch",
                                   "import_date as import_date",
                                   "uh_ten_ref as tenancy_ref"
@@ -460,7 +481,7 @@ if __name__ == "__main__":
         
     accounts2 = accounts2.join(df_agg,accounts2.AccountReference ==  df_agg.AccountR,"left")
         
-    accounts2 = accounts2.selectExpr("AccountReference",
+    accounts2 = accounts2.selectExpr("AccountReference as AccountReferenceNEW",
                                   "TenureType",
                                   "TenureTypeCode",
                                   "max_date as TenancyStartDate",
@@ -469,9 +490,12 @@ if __name__ == "__main__":
                                   "HousingOfficerName",
                                   "Patch",
                                   "import_date as import_date",
-                                  "tenancy_ref"                               
+                                  "tenancy_ref as AccountReferenceUH"                               
                                     )
-        
+    
+    accounts2 = accounts2.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
+                         .drop('AccountReferenceNEW', 'AccountReferenceUH')
+    
     accounts2 = accounts2.distinct()
     accounts2 = add_import_time_columns(accounts2)
 
@@ -525,7 +549,7 @@ if __name__ == "__main__":
         .withColumn("AgreementCode",F.when(F.col("court_case_id")>0,"C").otherwise("N"))\
         .drop("AgreementEndDate")
 
-    arr = arr.selectExpr("paymentreference as AccountReference",
+    arr = arr.selectExpr("paymentreference as AccountReferenceNEW",
                     "AgreementStartDate",
                      "AgreementEndDate1 as AgreementEndDate",
                     "frequency as AgreementFrequency",
@@ -533,8 +557,11 @@ if __name__ == "__main__":
                     "initial_payment_date as FirstInstallmentDueDate",
                     "AgreementCreatedDate",
                     "Amount as AgreementAmount", 
-                    "uh_ten_ref as tenancy_ref",
+                    "uh_ten_ref as AccountReferenceUH",
                     "import_date")
+                    
+    arr = arr.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
+             .drop('AccountReferenceNEW', 'AccountReferenceUH')
                      
     arr = arr.distinct()
     arr = add_import_time_columns(arr)
@@ -615,7 +642,7 @@ if __name__ == "__main__":
     
     tens = tens.join(email,tens.person_id == email.pid3,"left")    
     
-    tens = tens.selectExpr("paymentreference as AccountReference",
+    tens = tens.selectExpr("paymentreference as AccountReferenceNEW",
                 "Title",
                 "TenantFirstName",
                 "TenantSurName",
@@ -627,8 +654,11 @@ if __name__ == "__main__":
                 "PostCode",
                 "Email",
                 "PropertyType",
-                "uh_ten_ref as tenancy_ref",
+                "uh_ten_ref as AccountReferenceUH",
                 "import_date")
+                
+    tens = tens.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
+               .drop('AccountReferenceNEW', 'AccountReferenceUH')
                      
     tens = tens.distinct()
     
@@ -668,11 +698,14 @@ if __name__ == "__main__":
 
     balances = ten.join(bals,ten.paymentreference ==  bals.paymentreference2,"inner") 
     
-    balances = balances. selectExpr("paymentreference as AccountReference",
+    balances = balances. selectExpr("paymentreference as AccountReferenceNEW",
                                     "CurrentBalance as CurrentBalance",
                                     "BalanceDate",
-                                    "uh_ten_ref as tenancy_ref",
+                                    "uh_ten_ref as AccountReferenceUH",
                                   "import_date")
+
+    balances = balances.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
+                       .drop('AccountReferenceNEW', 'AccountReferenceUH')
     
     balances = balances.distinct()
     
@@ -719,14 +752,17 @@ if __name__ == "__main__":
     actions = actions.withColumn("code_lookup",F.trim(F.col("action_code")))\
                      .replace(to_replace=mapAction, subset=['code_lookup'])
                      
-    actions = actions. selectExpr("paymentreference as AccountReference",
+    actions = actions. selectExpr("paymentreference as AccountReferenceNEW",
                                   "tag_ref",
                                   "action_code as ActionCode",
                                   "code_lookup as ActionDescription",
                                   "ActionDate",
                                   "action_no as ActionSeq",
-                                  "uh_ten_ref as tenancy_ref",
+                                  "uh_ten_ref as AccountReferenceUH",
                                   "import_date")
+
+    actions = actions.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
+                       .drop('AccountReferenceNEW', 'AccountReferenceUH')
                                   
     actions = add_import_time_columns(actions)
     
@@ -773,17 +809,19 @@ if __name__ == "__main__":
     
     trans =  ten.join(trans,ten.uh_ten_ref ==  trans.uh_ten_ref1,"inner")
     
-    trans = trans.selectExpr("paymentreference as AccountReference",
+    trans = trans.selectExpr("paymentreference as AccountReferenceNEW",
                              "TransactionID",
                               "post_date as TransactionDate",
                              "post_date as TransactionPostDate",
                               "trans_type as TransactionCode",
                               "real_value as TransactionAmount",
                               "code_lookup as TransactionDescription",
-                              "uh_ten_ref as tenancy_ref",
+                              "uh_ten_ref as AccountReferenceUH",
                               "import_date"
                                 )
-    
+
+    trans = trans.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
+                       .drop('AccountReferenceNEW', 'AccountReferenceUH')
     
     trans = trans.distinct()
     
