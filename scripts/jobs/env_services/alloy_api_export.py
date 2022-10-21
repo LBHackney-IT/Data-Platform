@@ -80,6 +80,7 @@ if __name__ == "__main__":
     url = f"https://api.{region}.alloyapp.io/api/task/{task_id}?token={api_key}"
     task_status = ""
     file_id = ""
+    count_status = 0
 
     while task_status != "Complete":
         time.sleep(60)
@@ -87,6 +88,12 @@ if __name__ == "__main__":
 
         response = api_response_json(response)
         task_status = response["task"]["status"]
+
+        if response.status_code != 200:
+            count_status += 1
+
+        if count_status > 4:
+            break
 
     else:
         url = f"https://api.{region}.alloyapp.io/api/export/{task_id}/file?token={api_key}"
