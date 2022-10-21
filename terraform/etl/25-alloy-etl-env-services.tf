@@ -37,6 +37,7 @@ module "alloy_api_export_raw_env_services" {
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
+    "--enable-job-insights"     = "true"
     "--secret_name"             = "${local.identifier_prefix}/env-services/alloy-api-key"
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--s3_raw_zone_bucket"      = module.raw_zone_data_source.bucket_id
@@ -104,6 +105,7 @@ module "alloy_raw_to_refined_env_services" {
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
+    "--enable-job-insights"     = "true"
     "--glue_database"           = "env-services-raw-zone"
     "--glue_table_prefix"       = "${lower(local.alloy_query_names_alphanumeric[count.index])}_"
     "--s3_refined_zone_bucket"  = module.refined_zone_data_source.bucket_id
