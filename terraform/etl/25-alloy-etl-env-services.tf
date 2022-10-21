@@ -2,7 +2,7 @@ locals {
   # These values already exist in terraform\etl\25-aws-glue-job-env-services.tf
   #alloy_queries                     = local.is_live_environment ? fileset("${path.module}/../../scripts/jobs/env_services/aqs", "*json") : []
   #alloy_queries_max_concurrent_runs = local.is_live_environment ? length(local.alloy_queries) : 1
-  alloy_query_names_alphanumeric = local.is_live_environment ? [for i in tolist(local.alloy_queries) : replace(i, "\\W", "_")] : []
+  alloy_query_names_alphanumeric = local.is_live_environment ? [for i in tolist(trim_suffix(local.alloy_queries, "*.json")) : replace(i, "\\W", "_")] : []
 }
 
 resource "aws_glue_trigger" "alloy_daily_export" {
