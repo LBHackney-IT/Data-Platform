@@ -6,8 +6,6 @@ import pandas as pd
 import requests
 import json
 
-import datetime
-
 from datetime import date
 from dateutil.relativedelta import *
 
@@ -17,6 +15,11 @@ import logging
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
 
 def get_auth_token(client_id, client_secret, scope):
     url = "https://emea.newvoicemedia.com/Auth/connect/token"
@@ -89,7 +92,7 @@ def get_days_data(date_to_call, api_to_call, table_to_call, auth_token):
     data_successfully_called = False
 
     while data_successfully_called == False:
-        print(f'Will call API using dates {start_date} to {end_date}')
+        print(f'Will call API {table_to_call} using dates {start_date} to {end_date}')
         page = 1
 
         json_responses = [
@@ -100,7 +103,7 @@ def get_days_data(date_to_call, api_to_call, table_to_call, auth_token):
         vonage_request = vonage_api_request(api_to_call, table_to_call, page, limit, start_date, end_date, auth_token)
         # print(vonage_request.content)
 
-        data = vonage_request.content
+        data = vonage_request.json()
 
         # print(f'Data being appended is of type {type(data)}')
         json_responses.append(data)
@@ -117,7 +120,7 @@ def get_days_data(date_to_call, api_to_call, table_to_call, auth_token):
             vonage_request = vonage_api_request(api_to_call, table_to_call, page, limit, start_date, end_date,
                                                 auth_token)
 
-            data = vonage_request.content
+            data = vonage_request.json()
             # print(f'Data being appended is of type {type(data)}')
             json_responses.append(data)
 
@@ -125,54 +128,102 @@ def get_days_data(date_to_call, api_to_call, table_to_call, auth_token):
         # for each page, 1 item in the list
         if len(json_responses) == max_pages:
             data_successfully_called = True
-            return json_responses # Returns all of the responses for the day, as a LIST
+            return json_responses  # Returns all of the responses for the day, as a LIST
         else:
             print(
                 f'Amount of pages in List ({len(json_responses)}) does not match the amount of pages ({max_pages}). Will try again')
 
 
 def create_list_of_call_dates(start_date, end_date):
-
     start_call_date = date.fromisoformat(start_date)
-    print(f'Date Start {str(start_call_date)}')
+    # print(f'Date Start {str(start_call_date)}')
 
     end_call_date = date.fromisoformat(end_date)
-    print(f'Date End {str(end_call_date)}')
+    # print(f'Date End {str(end_call_date)}')
 
     date_counter = start_call_date
     between_dates = []
     while date_counter < end_call_date:
-        print(f'Date Added {str(date_counter)}')
+        # print(f'Date Added {str(date_counter)}')
         between_dates.append(str(date_counter))
         date_counter = date_counter + relativedelta(days=+1)
     return between_dates
     # read the dates as actual dates
 
-def output_to_landing_zone(output_item):
-    print(f'Item of type {type(output_item)}')
-    print(f'Item Length {len(output_item)}')
+def single_digit_to_zero_prefixed_string(value):
+    return str(value) if value > 9 else '0' + str(value)
+def output_to_landing_zone(data, day_of_item, output_folder):
 
-def loop_through_dates(call_dates,auth_token):
-    days_data = get_days_data(date_to_call, api_to_call, table_to_call, auth_token)
+    meta = data['meta']
+    page = single_digit_to_zero_prefixed_string(meta['page'])
+    print(f'Day: {day_of_item} - Meta: {meta} - Page: {page}')
 
-def lambda_handler():
+    date_of_item = date.fromisoformat(day_of_item)
+
+    day = single_digit_to_zero_prefixed_string(date_of_item.day)
+    month = single_digit_to_zero_prefixed_string(date_of_item.month)
+    year = str(date_of_item.year)
+
+    # output code
+
+
+def loop_through_dates(call_dates, api_to_call, table_to_call, auth_token):
+    # api_to_call,table_to_call,auth_token <--- args to add later
+    # Loop through the list of dates and make a dictionary of data. labeled by date
+    compiled_data = {}
+    for day_date in call_dates:
+        days_data = get_days_data(day_date, api_to_call, table_to_call, auth_token)  # real code
+        # days_data = f'Response for Day: {day_date}' # test code
+        compiled_data[day_date] = days_data
+
+    return compiled_data
+
+
+def retrieve_credentials_from_secrets_manager(secrets_manager_client, secret_name):
+    response = secrets_manager_client.get_secret_value(
+        SecretId=secret_name,
+    )
+    return response
+
+
+def find_latest_file():
+    # script to find the latest file in s3
+    latest_file_date = "2022-10-19"
+    return latest_file_date
+
+
+def export_data_dictionary(data_dict, table_to_call,output_location):
+    looped_count = 0
+    for day in data_dict:
+        list_count = 0
+        count_of_data = len(data_dict[day])
+        while list_count < count_of_data:
+            output_to_landing_zone(data_dict[day][list_count], day, output_location)
+            list_count = list_count + 1
+            looped_count = looped_count + 1
+
+    print(f'Output to Landing Zone has been run {looped_count} times')
+
+
+def lambda_handler(client_id, client_secret):
+
+    ######################## Script Starts Here #############################
     print("Get Auth Token")
 
+    scope = "stats"
     auth_token = get_auth_token(client_id, client_secret, scope)
 
-    date_to_call = "2022-10-06"
-    end_call_date = str(date.today())
-    dates_to_call = create_list_of_call_dates(date_to_call,end_call_date)
-
-    print(dates_to_call)
-
     api_to_call = "stats"
-    table_to_call = "interactions"
-    # days_data = get_days_data(date_to_call, api_to_call, table_to_call, auth_token)
+    table_to_call = "interactions"  # define in terraform
 
-    # print(f'Items in list of data {len(days_data)}')
-    #
-    # for item in days_data:
-    #     output_to_landing_zone(item)
+    start_date = find_latest_file()
+    end_call_date = str(date.today())
+    dates_to_call = create_list_of_call_dates(start_date, end_call_date)
 
-lambda_handler()
+    print(f'dates_to_call = {dates_to_call}')
+
+    called_data = loop_through_dates(dates_to_call, api_to_call, table_to_call, auth_token)
+
+    output_location = "/vonage_data/"
+
+    export_data_dictionary(called_data,table_to_call,output_location)
