@@ -23,12 +23,20 @@ if __name__ == "__main__":
     # read job parameters
     args = getResolvedOptions(sys.argv, ['JOB_NAME', 's3_bucket', 's3_bucket_target','source_raw_database','s3_landing','s3_export_bucket_target','source_catalog_database'])
     
+    # source_catalog_database = get_glue_env_var('source_catalog_database', '')
+    # s3_bucket = get_glue_env_var('s3_bucket','')
+    # s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
+    # source_raw_database = get_glue_env_var('source_raw_database', '')
+    # s3_landing = get_glue_env_var('s3_landing','')
+    # s3_export_bucket_target = get_glue_env_var('s3_export_bucket_target','')
+    
     source_catalog_database = args["source_catalog_database"]
     s3_bucket = args["s3_bucket"]
     s3_bucket_target = args["s3_bucket_target"] 
     source_raw_database = args["source_raw_database"] 
     s3_landing = args["s3_landing"] 
-    s3_export_bucket_target = args["s3_export_bucket_target"] 
+    #s3_export_bucket_target = args["s3_export_bucket_target"] 
+    s3_export_bucket_target = 's3://'+s3_landing+'/housing_export/rentsense'
     
     today = date.today()
     target_path = f"housing_export/rentsense/%s" % today.strftime("%Y%m%d")
@@ -48,7 +56,7 @@ if __name__ == "__main__":
     logger.info(f's3_export_bucket_target is {s3_export_bucket_target}.')
     
     # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
-    logger.info(f'The job is starting. The source table is {source_catalog_database}, the landing zone target it {s3_export_bucket_target} and landing zone is {s3_landing}. S3 bucket target is {s3_bucket_target}')
+    logger.info(f'The job is starting. The source table is {source_catalog_database}, the landing zone target it {s3_export_bucket_target} and landing zone is {s3_landing}.')
     
 
     # clear the rentsense export bucket so that only one date is being moved in the S3 shift
@@ -658,7 +666,7 @@ if __name__ == "__main__":
                 "import_date")
                 
     tens = tens.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
-               .drop('AccountReferenceNEW', 'AccountReferenceUH')
+              .drop('AccountReferenceNEW', 'AccountReferenceUH')
                      
     tens = tens.distinct()
     
@@ -705,7 +713,7 @@ if __name__ == "__main__":
                                   "import_date")
 
     balances = balances.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
-                       .drop('AccountReferenceNEW', 'AccountReferenceUH')
+                      .drop('AccountReferenceNEW', 'AccountReferenceUH')
     
     balances = balances.distinct()
     
@@ -762,7 +770,7 @@ if __name__ == "__main__":
                                   "import_date")
 
     actions = actions.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
-                       .drop('AccountReferenceNEW', 'AccountReferenceUH')
+                      .drop('AccountReferenceNEW', 'AccountReferenceUH')
                                   
     actions = add_import_time_columns(actions)
     
@@ -821,7 +829,7 @@ if __name__ == "__main__":
                                 )
 
     trans = trans.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
-                       .drop('AccountReferenceNEW', 'AccountReferenceUH')
+                      .drop('AccountReferenceNEW', 'AccountReferenceUH')
     
     trans = trans.distinct()
     
