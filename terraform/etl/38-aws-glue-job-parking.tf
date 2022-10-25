@@ -1030,3 +1030,26 @@ module "parking_foi_pcn_gds_daily_summary_records" {
   }
 }
 
+module "parking_pcn_daily_print_monitoring" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_pcn_daily_print_monitoring"
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_pcn_daily_print_monitoring"
+  glue_version                   = "2.0"
+  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  job_description                = "Takes data from Liberator raw zone for PCN print monitoring for the previous day of the import_date"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  glue_job_timeout               = 240
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
+}
