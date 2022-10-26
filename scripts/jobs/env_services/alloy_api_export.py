@@ -10,11 +10,18 @@ from datetime import date
 import boto3
 import requests
 from awsglue.context import GlueContext
+from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from scripts.helpers.helpers import get_glue_env_var, get_secret
+from scripts.helpers.helpers import (
+    get_glue_env_var,
+    get_secret,
+    PARTITION_KEYS,
+    add_import_time_columns,
+    clean_column_names,
+)
 
 
 def api_response_json(response):
@@ -32,7 +39,7 @@ def api_response_json(response):
     return json.loads(response.text)
 
 
-def create_s3_key(s3_downloads_prefix, import_date, file):
+def create_s3_key(s3_prefix, import_date, file):
     """
     creates the key argument for saving output files to s3
     """
@@ -61,6 +68,8 @@ if __name__ == "__main__":
     aqs = get_glue_env_var("aqs", "")
     s3_raw_zone_bucket = get_glue_env_var("s3_raw_zone_bucket", "")
     s3_downloads_prefix = get_glue_env_var("s3_downloads_prefix", "")
+    s3_refined_zone_bucket = get_glue_env_var("s3_refined_zone_bucket", "")
+    s3_target_prefix = get_glue_env_var("s3_target_prefix", "")
 
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
     region = "uk"
@@ -102,16 +111,44 @@ if __name__ == "__main__":
         import_date = date.today()
 
         with io.BytesIO(r.content) as z:
-            zip = zipfile.ZipFile(z, mode="r")
-            file_list = zip.namelist()
+            zip_download = zipfile.ZipFile(z, mode="r")
+            file_list = zip_download.namelist()
 
             for file in file_list:
                 raw_key = create_s3_key(s3_downloads_prefix, import_date, file)
+                table_tuple = os.path.splitext(file)
+                table = table_tuple[0]
 
                 s3.meta.client.upload_fileobj(
-                    zip.open(file),
-                    Bucket=s3_raw_zone_bucket,
-                    Key=raw_key,
+                    zip_download.open(file), Bucket=s3_raw_zone_bucket, Key=raw_key,
                 )
+
+            daily_dyf = glueContext.create_dynamic_frame.from_options(
+                connection_type="s3",
+                connection_options={"paths": [f"s3://{s3_raw_zone_bucket}/{raw_key}"]},
+                format="csv",
+                format_options={"withHeader": True, "multiLine": True},
+                transformation_ctx="daily_dyf",
+            )
+
+            daily_df = daily_dyf.toDF()
+
+            daily_df = clean_column_names(daily_df)
+            daily_df = add_import_time_columns(daily_df)
+
+            outputDynamicFrame = DynamicFrame.fromDF(
+                daily_df, glueContext, "outputDynamicFrame"
+            )
+
+            target_path = f"s3://{s3_refined_zone_bucket}/{s3_target_prefix}{table}"
+            result_dyf = glueContext.write_dynamic_frame.from_options(
+                frame=outputDynamicFrame,
+                connection_type="s3",
+                connection_options={
+                    "paths": target_path,
+                    "partitionKeys": PARTITION_KEYS,
+                },
+                transformation_ctx=f"write_{table}",
+            )
 
     job.commit()
