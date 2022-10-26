@@ -39,8 +39,12 @@ module "alloy_api_export_raw_env_services" {
     "--enable-glue-datacatalog" = "true"
     "--secret_name"             = "${local.identifier_prefix}/env-services/alloy-api-key"
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
-    "--s3_raw_zone_bucket"      = module.raw_zone_data_source.bucket_id
     "--s3_downloads_prefix"     = "env-services/alloy/alloy_api_downloads/${local.alloy_query_names_alphanumeric[count.index]}/"
+    "--s3_mapping_prefix"       = "env-services/alloy/mapping-files/"
+    "--s3_raw_zone_bucket"      = module.raw_zone_data_source.bucket_id
+    "--s3_refined_zone_bucket"  = module.refined_zone_data_source.bucket_id
+    "--s3_target_prefix"        = "env-services/alloy/${local.alloy_query_names_alphanumeric[count.index]}/"
+
   }
 }
 
@@ -86,32 +90,6 @@ resource "aws_glue_crawler" "alloy_export_crawler" {
   })
 }
 
-module "alloy_raw_to_refined_env_services" {
-  source                    = "../modules/aws-glue-job"
-  is_live_environment       = local.is_live_environment
-  is_production_environment = local.is_production_environment
-  count                     = local.is_live_environment ? length(local.alloy_queries) : 0
-
-  job_description = "This job transforms the daily csv exports and saves them to the refined zone"
-  department      = module.department_environmental_services_data_source
-  job_name        = "${local.short_identifier_prefix}_${local.alloy_query_names_alphanumeric[count.index]}_alloy_daily_raw_to_refined_env_services"
-
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
-  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
-  triggered_by_crawler       = aws_glue_crawler.alloy_export_crawler[count.index].name
-  script_name                = "alloy_raw_to_refined"
-  job_parameters = {
-    "--job-bookmark-option"     = "job-bookmark-enable"
-    "--enable-glue-datacatalog" = "true"
-    "--glue_database"           = "env-services-raw-zone"
-    "--glue_table_prefix"       = "${lower(local.alloy_query_names_alphanumeric[count.index])}_"
-    "--s3_refined_zone_bucket"  = module.refined_zone_data_source.bucket_id
-    "--s3_mapping_bucket"       = module.raw_zone_data_source.bucket_id
-    "--s3_mapping_location"     = "/env-services/alloy/mapping-files/"
-    "--s3_target_prefix"        = "env-services/alloy/${local.alloy_query_names_alphanumeric[count.index]}/"
-  }
-}
 
 resource "aws_glue_trigger" "alloy_refined_crawler" {
   count   = local.is_live_environment ? length(local.alloy_queries) : 0
@@ -126,7 +104,7 @@ resource "aws_glue_trigger" "alloy_refined_crawler" {
 
   predicate {
     conditions {
-      job_name = module.alloy_raw_to_refined_env_services[count.index].job_name
+      job_name = module.alloy_api_export_raw_env_services[count.index].job_name
       state    = "SUCCEEDED"
     }
   }
