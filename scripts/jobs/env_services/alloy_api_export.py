@@ -89,7 +89,7 @@ if __name__ == "__main__":
     s3_downloads_prefix = get_glue_env_var("s3_downloads_prefix", "")
     s3_refined_zone_bucket = get_glue_env_var("s3_refined_zone_bucket", "")
     s3_target_prefix = get_glue_env_var("s3_target_prefix", "")
-    s3_mapping_location = get_glue_env_var("s3_mapping_location", "")
+    s3_mapping_prefix = get_glue_env_var("s3_mapping_prefix", "")
 
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
     region = "uk"
@@ -153,10 +153,10 @@ if __name__ == "__main__":
                     transformation_ctx="daily_dyf",
                 )
 
-                mapping_file_key = f"{s3_mapping_location}{table_name}.json"
+                mapping_file_key = f"{s3_mapping_prefix}{table_name}.json"
 
                 try:
-                    s3.Object(s3_mapping_location, mapping_file_key).load()
+                    s3.Object(s3_raw_zone_bucket, mapping_file_key).load()
                 except botocore.exceptions.ClientError as e:
                     if e.response["Error"]["Code"] == "404":
                         logger.info(
@@ -165,9 +165,9 @@ if __name__ == "__main__":
                     else:
                         logger.info(f"Error retrieving mapping file {e.response}")
                 else:
-                    obj = s3.Object(s3_mapping_location, mapping_file_key).get()
+                    obj = s3.Object(s3_raw_zone_bucket, mapping_file_key).get()
                     mapping = json.loads(obj["Body"].read())
-                    daily_df = rename_columns(daily_df, mapping)
+                    daily_dyf = rename_columns(daily_dyf, mapping)
 
                 daily_df = daily_dyf.toDF()
 
@@ -181,11 +181,12 @@ if __name__ == "__main__":
                 target_path = (
                     f"s3://{s3_refined_zone_bucket}/{s3_target_prefix}{table_name}"
                 )
-                result_dyf = glueContext.write_dynamic_frame.from_options(
+                datasink = glueContext.write_dynamic_frame.from_options(
                     frame=outputDynamicFrame,
                     connection_type="s3",
+                    format="parquet",
                     connection_options={
-                        "paths": target_path,
+                        "path": target_path,
                         "partitionKeys": PARTITION_KEYS,
                     },
                     transformation_ctx=f"write_{table_name}",
