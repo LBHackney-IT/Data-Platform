@@ -13,7 +13,7 @@ module "google_sheet_import" {
   spark_ui_output_storage_id = var.spark_ui_output_storage_id
 
   job_parameters = {
-    "--additional-python-modules" = "gspread==3.7.0, google-auth==1.27.1, pyspark==3.1.1"
+    "--additional-python-modules" = "gspread==3.7.0, google-auth==2.13.0, pyspark==3.1.1"
     "--document_key"              = var.google_sheets_document_id
     "--worksheet_name"            = var.google_sheets_worksheet_name
     "--header_row_number"         = var.google_sheet_header_row_number
