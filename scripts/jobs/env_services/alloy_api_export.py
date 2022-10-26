@@ -8,7 +8,9 @@ import zipfile
 from datetime import date
 
 import boto3
+import botocore
 import requests
+import pyspark.sql.functions as F
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
@@ -51,6 +53,23 @@ def create_s3_key(s3_prefix, import_date, file):
     return raw_key
 
 
+def rename_columns(df, columns):
+    """
+    Renames columns of a dataframe as described by a dictionary of "old_name": "new_name"
+    """
+    if isinstance(columns, dict):
+        return df.select(
+            *[
+                F.col(col_name).alias(columns.get(col_name, col_name))
+                for col_name in df.columns
+            ]
+        )
+    else:
+        raise ValueError(
+            "'columns' should be a dict, like {'old_name_1': 'new_name_1', 'old_name_2': 'new_name_2'}"
+        )
+
+
 if __name__ == "__main__":
     sc = SparkContext.getOrCreate()
     glueContext = GlueContext(sc)
@@ -70,6 +89,7 @@ if __name__ == "__main__":
     s3_downloads_prefix = get_glue_env_var("s3_downloads_prefix", "")
     s3_refined_zone_bucket = get_glue_env_var("s3_refined_zone_bucket", "")
     s3_target_prefix = get_glue_env_var("s3_target_prefix", "")
+    s3_mapping_location = get_glue_env_var("s3_mapping_location", "")
 
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
     region = "uk"
@@ -117,38 +137,58 @@ if __name__ == "__main__":
             for file in file_list:
                 raw_key = create_s3_key(s3_downloads_prefix, import_date, file)
                 table_tuple = os.path.splitext(file)
-                table = table_tuple[0]
+                table_name = table_tuple[0]
 
                 s3.meta.client.upload_fileobj(
                     zip_download.open(file), Bucket=s3_raw_zone_bucket, Key=raw_key,
                 )
 
-            daily_dyf = glueContext.create_dynamic_frame.from_options(
-                connection_type="s3",
-                connection_options={"paths": [f"s3://{s3_raw_zone_bucket}/{raw_key}"]},
-                format="csv",
-                format_options={"withHeader": True, "multiLine": True},
-                transformation_ctx="daily_dyf",
-            )
+                daily_dyf = glueContext.create_dynamic_frame.from_options(
+                    connection_type="s3",
+                    connection_options={
+                        "paths": [f"s3://{s3_raw_zone_bucket}/{raw_key}"]
+                    },
+                    format="csv",
+                    format_options={"withHeader": True, "multiLine": True},
+                    transformation_ctx="daily_dyf",
+                )
 
-            daily_df = daily_dyf.toDF()
+                mapping_file_key = f"{s3_mapping_location}{table_name}.json"
 
-            daily_df = clean_column_names(daily_df)
-            daily_df = add_import_time_columns(daily_df)
+                try:
+                    s3.Object(s3_mapping_location, mapping_file_key).load()
+                except botocore.exceptions.ClientError as e:
+                    if e.response["Error"]["Code"] == "404":
+                        logger.info(
+                            f"No mapping file for {table_name} found, {e.response}"
+                        )
+                    else:
+                        logger.info(f"Error retrieving mapping file {e.response}")
+                else:
+                    obj = s3.Object(s3_mapping_location, mapping_file_key).get()
+                    mapping = json.loads(obj["Body"].read())
+                    daily_df = rename_columns(daily_df, mapping)
 
-            outputDynamicFrame = DynamicFrame.fromDF(
-                daily_df, glueContext, "outputDynamicFrame"
-            )
+                daily_df = daily_dyf.toDF()
 
-            target_path = f"s3://{s3_refined_zone_bucket}/{s3_target_prefix}{table}"
-            result_dyf = glueContext.write_dynamic_frame.from_options(
-                frame=outputDynamicFrame,
-                connection_type="s3",
-                connection_options={
-                    "paths": target_path,
-                    "partitionKeys": PARTITION_KEYS,
-                },
-                transformation_ctx=f"write_{table}",
-            )
+                daily_df = clean_column_names(daily_df)
+                daily_df = add_import_time_columns(daily_df)
+
+                outputDynamicFrame = DynamicFrame.fromDF(
+                    daily_df, glueContext, "outputDynamicFrame"
+                )
+
+                target_path = (
+                    f"s3://{s3_refined_zone_bucket}/{s3_target_prefix}{table_name}"
+                )
+                result_dyf = glueContext.write_dynamic_frame.from_options(
+                    frame=outputDynamicFrame,
+                    connection_type="s3",
+                    connection_options={
+                        "paths": target_path,
+                        "partitionKeys": PARTITION_KEYS,
+                    },
+                    transformation_ctx=f"write_{table_name}",
+                )
 
     job.commit()
