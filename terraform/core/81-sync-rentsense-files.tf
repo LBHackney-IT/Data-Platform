@@ -6,6 +6,7 @@ module "copy_from_s3_to_s3" {
 
   lambda_name                    = "rentsense-s3-to-s3-export-copy"
   identifier_prefix              = local.identifier_prefix
+  short_identifier_prefix        = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage
   origin_bucket                  = module.refined_zone
   origin_path                    = "housing/rentsense/export/"
@@ -18,4 +19,3 @@ module "copy_from_s3_to_s3" {
   target_path = var.rentsense_target_path
   assume_role = "arn:aws:iam::971933469343:role/customer-midas-roles-pluto-HackneyMidasRole-1M6PTJ5VS8104"
 }
-#
