@@ -2,8 +2,9 @@ module "copy_from_s3_to_s3" {
   source = "../modules/copy-from-s3-to-s3"
   tags   = module.tags.values
 
-  is_live_environment = local.is_live_environment
-
+  is_live_environment            = local.is_live_environment
+  environment                    = local.environment
+  is_production_environment      = local.is_production_environment
   lambda_name                    = "rentsense-s3-to-s3-export-copy"
   identifier_prefix              = local.identifier_prefix
   short_identifier_prefix        = local.short_identifier_prefix

@@ -193,7 +193,7 @@ resource "aws_cloudwatch_event_rule" "run_s3_copier_lambda_on_glue_job_success" 
         "SUCCEEDED"
       ],
       "jobName": [
-          "${var.short_identifier_prefix}Rentsense outputs"
+          "${var.is_production_environment ? "" : var.environment}${var.is_live_environment && !var.is_production_environment ? " " : "-"}Rentsense outputs"
       ]
     }
   }
