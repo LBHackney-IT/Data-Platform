@@ -21,7 +21,7 @@ from scripts.helpers.helpers import move_file, rename_file,  get_latest_partitio
 if __name__ == "__main__":
     
     # read job parameters
-    args = getResolvedOptions(sys.argv, ['JOB_NAME', 's3_bucket', 's3_bucket_target','source_raw_database','s3_landing','s3_export_bucket_target','source_catalog_database'])
+    args = getResolvedOptions(sys.argv, ['JOB_NAME', 's3_bucket', 's3_bucket_target','source_raw_database','s3_landing','source_catalog_database'])
     
     # source_catalog_database = get_glue_env_var('source_catalog_database', '')
     # s3_bucket = get_glue_env_var('s3_bucket','')
