@@ -61,7 +61,7 @@ module "recycling_geolive_database_ingestion" {
 }
 
 module "recycling_boundaries_geolive_ingestion_job" {
-  count                     = local.is_live_environment ? 1 : 0
+  count                     = !local.is_production_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
@@ -108,7 +108,7 @@ module "health_geolive_database_ingestion" {
 }
   
 module "health_boundaries_geolive_ingestion_job" {
-  count                     = local.is_live_environment ? 1 : 0
+  count                     = !local.is_production_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
