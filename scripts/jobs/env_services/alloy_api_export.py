@@ -117,7 +117,6 @@ if __name__ == "__main__":
             file_list = zip.namelist()
 
             for file in file_list:
-                table_name = file
                 raw_key = create_s3_key(
                     s3_downloads_prefix, import_date, file, prefix_to_remove
                 )
