@@ -46,7 +46,7 @@ def create_s3_key(s3_downloads_prefix, import_date, file, prefix_to_remove=None)
         if not file_table_name.startswith(pre):
             pass
         else:
-            file_table_name = file_table_name[len(pre) :]
+            file_table_name = file_table_name[len(pre):]
 
     file_table_name = re.sub(r"[^A-Za-z0-9]+", "_", file_table_name)
 
