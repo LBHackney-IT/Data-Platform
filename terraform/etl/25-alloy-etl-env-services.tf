@@ -143,7 +143,7 @@ resource "aws_glue_crawler" "alloy_refined" {
   s3_target {
     path = "s3://${module.refined_zone_data_source.bucket_id}/env-services/alloy/${local.alloy_query_names_alphanumeric[count.index]}"
   }
-  table_prefix = "alloy_refined_"
+  table_prefix = "alloy_"
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
