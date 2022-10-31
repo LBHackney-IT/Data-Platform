@@ -84,8 +84,8 @@ resource "aws_glue_crawler" "alloy_export_crawler" {
       TableLevelConfiguration = 6
     }
     CrawlerOutput = {
-      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
-      Tables     = { AddOrUpdateBehavior = "LOG" }
+      Partitions = { UpdateBehavior = "InheritFromTable" }
+      Tables     = { UpdateBehavior = "LOG" }
     }
   })
 }
@@ -154,8 +154,8 @@ resource "aws_glue_crawler" "alloy_refined" {
       TableLevelConfiguration = 5
     }
     CrawlerOutput = {
-      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
-      Tables     = { AddOrUpdateBehavior = "LOG" }
+      Partitions = { UpdateBehavior = "InheritFromTable" }
+      Tables     = { UpdateBehavior = "LOG" }
     }
   })
 }
