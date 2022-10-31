@@ -153,5 +153,9 @@ resource "aws_glue_crawler" "alloy_refined" {
     Grouping = {
       TableLevelConfiguration = 5
     }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "LOG" }
+    }
   })
 }
