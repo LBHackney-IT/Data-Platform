@@ -12,7 +12,7 @@ resource "aws_glue_trigger" "alloy_daily_export" {
 
   name     = "${local.short_identifier_prefix} Alloy API Export Job Trigger ${local.alloy_query_names_alphanumeric[count.index]}"
   type     = "SCHEDULED"
-  schedule = "cron(0 23 ? * MON-FRI *)"
+  schedule = "cron(0 3 ? * MON-FRI *)"
 
   actions {
     job_name = module.alloy_api_export_raw_env_services[count.index].job_name
