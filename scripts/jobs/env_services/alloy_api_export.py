@@ -58,7 +58,6 @@ if __name__ == "__main__":
     sc = SparkContext.getOrCreate()
     glueContext = GlueContext(sc)
     spark = glueContext.spark_session
-    job = Job(glueContext)
 
     args = getResolvedOptions(sys.argv, ["JOB_NAME"])
     job = Job(glueContext)
