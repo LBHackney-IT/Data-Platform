@@ -83,6 +83,10 @@ resource "aws_glue_crawler" "alloy_export_crawler" {
     Grouping = {
       TableLevelConfiguration = 6
     }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "LOG" }
+    }
   })
 }
 
