@@ -89,7 +89,7 @@ resource "aws_glue_crawler" "alloy_export_crawler" {
     }
     }
   )
-  schema_change_policy = {
+  schema_change_policy {
     update_behavior = "LOG"
   }
 }
