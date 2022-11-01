@@ -59,9 +59,9 @@ module "rentsense_output" {
 
 module "rentsense_output_to_landing" {
   source                    = "../modules/aws-glue-job"
+  count = local.is_live_environment ? 1 : 0
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
-
   glue_scripts_bucket_id     = module.glue_scripts_data_source.bucket_id
   glue_temp_bucket_id        = module.glue_temp_storage_data_source.bucket_id
   glue_role_arn              = data.aws_iam_role.glue_role.arn
