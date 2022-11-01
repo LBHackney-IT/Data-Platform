@@ -30,7 +30,6 @@ module "mtfh_reshape_to_refined" {
 
 module "rentsense_output" {
   source                    = "../modules/aws-glue-job"
-  is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
   department                 = module.department_housing_data_source
@@ -58,7 +57,7 @@ module "rentsense_output" {
 }
     
 
-module "rentsense_output_test" {
+module "rentsense_output_to_landing" {
   source                    = "../modules/aws-glue-job"
   count                      = !local.is_production_environment ? 1 : 0
   is_live_environment       = local.is_live_environment
