@@ -1,55 +1,5 @@
 """
-This job tries to find and predict the same (or similar) person in a given dataset. Therefore, this job tries to help
-remove duplicate information present in the dataset. The difference can be subtle that makes the problem difficult to
-address. Few such examples are:
-
-1. Slight difference in spelling of the name of the person in multiple records (e.g. John in some places while Jon at
-   other places for the same person)
-2. Using initials for e.g. Alexander Graham Bell in some places and A. G. Bell in other places
-3. Some records missing vital information like title, date of birth etc. while other do not.
-
-This situation is present in many of the dataset and this job is an attempt to address such problems at scale tries to
-link all record of the same person
-.
-The job can be run in local mode (i.e. on your local environment) and also on AWS (see Usage below).
-
-Usage:
-To run in local mode:
-set the mode to 'local' and provide the path od data set of your local machine
---execution_mode=local
---person_reshape_data_path="<path/to/local/data>"
---assets_reshape_data_path="<path/to/local/data>"
---tenure_reshape_data_path="<path/to/local/data>"
---council_tax_account_data_path="<path/to/local/data>"
---council_tax_liability_person_data_path="<path/to/local/data>"
---council_tax_non_liability_person_data_path="<path/to/local/data>"
---council_tax_occupation_data_path="<path/to/local/data>"
---council_tax_property_data_path="<path/to/local/data>"
---housing_benefit_member_data_path="<path/to/local/data>"
---housing_benefit_household_data_path="<path/to/local/data>"
---housing_benefit_rent_assessment_data_path="<path/to/local/data>"
---housing_benefit_tax_calc_stmt_data_path="<path/to/local/data>"
---parking_permit_data_path="<path/to/local/data>"
---output_path="<path/to/local/data>"
-
-To run in AWS mode:
-No need to provide mode (or optionally set it to 'aws')
---person_reshape_data_path=s3://<path/to/data>
---assets_reshape_data_path=s3://<path/to/data>
---tenure_reshape_data_path=s3://<path/to/data>
---council_tax_account_data_path=s3://<path/to/data>
---council_tax_liability_person_data_path=s3://<path/to/data>
---council_tax_non_liability_person_data_path=s3://<path/to/data>
---council_tax_occupation_data_path=s3://<path/to/data>
---council_tax_property_data_path=s3://<path/to/data>
---housing_benefit_member_data_path=s3://<path/to/data>
---housing_benefit_household_data_path=s3://<path/to/data>
---housing_benefit_rent_assessment_data_path=s3://<path/to/data>
---housing_benefit_tax_calc_stmt_data_path=s3://<path/to/data>
---parking_permit_data_path="s3://<path/to/data>
---output_path=s3://<path/to/output_location>
---additional-python-modules=abydos==0.5.0
---TempDir = s3://<<path/to/spark_tmp/>
+Functions and objects relating to the person matching process.
 """
 
 
@@ -783,8 +733,8 @@ def standardize_parking_permit_data(parking_permit_cleaned: DataFrame) -> DataFr
 
 
 def remove_deceased(df: DataFrame) -> DataFrame:
-    """Remove deceased person from the DataFrame. For the data sources we have cleansed this information that was present
-    along with other details of the person for e.g. if the person name is given Executors of Mr. Abc Pqr Xyz then
+    """Remove deceased person from the DataFrame. For the data sources we have cleansed this information that was
+    present along with other details of the person for e.g. if the person name is given Executors of Mr. Abc Pqr Xyz then
     title is Executors of Mr. while first name is Abc, middle name Pqr and Xyz as last name. Deceased information
     is available in title column. If you have used different method or strategy for cleaning or extracting the name,
     please create your own method for this functionality.
@@ -990,12 +940,14 @@ def evaluation_for_various_metrics(predictions: DataFrame):
     return accuracy, precision_non_match, precision_match, recall_non_match, recall_match
 
 
-def train_model(df: DataFrame, model_path: str) -> None:
+def train_model(df: DataFrame, model_path: str, test_model: bool, save_model: bool) -> None:
     """Trains the model
 
     Args:
         df: DataFrame containing data. This includes both test and train
         model_path: Path where trained model is saved.
+        test_model: Boolean to specify whether model should be tested with test data.
+        save_model: Boolean to specify whether model should be saved to S3.
 
     Returns:
         Nothing. This function doesn't return anything
@@ -1062,7 +1014,9 @@ def train_model(df: DataFrame, model_path: str) -> None:
         .head()["threshold"]
     print(f"Best threshold: {best_threshold}")
     cv_model.bestModel.stages[-1].setThreshold(best_threshold)
-    cv_model.write().overwrite().save(model_path)
+
+    if save_model:
+        cv_model.write().save(model_path)
 
     train_prediction = cv_model.transform(train)
     print(f"Training ROC AUC train score after fine-tuning...: {evaluator.evaluate(train_prediction):.5f}")
@@ -1074,25 +1028,26 @@ def train_model(df: DataFrame, model_path: str) -> None:
     print(f"Training Recall    after fine-tuning..(non-match): {recall_non_match:.5f}")
     print(f"Training Recall    after fine-tuning......(match): {recall_match:.5f}")
 
-    print("Only evaluate once in the end, so keep it commented for most of the time.")
-    test_prediction = cv_model.transform(test)
-    test_prediction.show()
-    print(f'Write predictions to csv...')
-    test_prediction.printSchema()
-    test_prediction_for_export = test_prediction.withColumn('probability', vector_to_array(col('probability')))\
-        .withColumn('probability_str', concat_ws('probability'))\
-        .drop('uprn_vec', 'title_vec', 'date_of_birth_vec', 'features', 'rawPrediction', 'uprn_indexed',
-              'title_indexed', 'date_of_birth_indexed', 'probability')
-    test_prediction_for_export.write.csv(header=True, path=f"{model_path}/test_predictions")
+    if test_model:
+        print("Only evaluate once in the end, so keep it commented for most of the time.")
+        test_prediction = cv_model.transform(test)
+        test_prediction.show()
+        print(f'Write predictions to csv...')
+        test_prediction.printSchema()
+        test_prediction_for_export = test_prediction.withColumn('probability', vector_to_array(col('probability')))\
+            .withColumn('probability_str', concat_ws('probability'))\
+            .drop('uprn_vec', 'title_vec', 'date_of_birth_vec', 'features', 'rawPrediction', 'uprn_indexed',
+                  'title_indexed', 'date_of_birth_indexed', 'probability')
+        test_prediction_for_export.write.csv(header=True, path=f"{model_path}/test_predictions")
 
-    accuracy, precision_non_match, precision_match, recall_non_match, recall_match = evaluation_for_various_metrics(
-        test_prediction)
-    print(f"Test ROC AUC..............: {evaluator.evaluate(test_prediction):.5f}")
-    print(f"Test Accuracy.............: {accuracy:.5f}")
-    print(f"Test Precision (non-match): {precision_non_match:.5f}")
-    print(f"Test Precision.....(match): {precision_match:.5f}")
-    print(f"Test Recall....(non-match): {recall_non_match:.5f}")
-    print(f"Test Recall........(match): {recall_match:.5f}")
+        accuracy, precision_non_match, precision_match, recall_non_match, recall_match = evaluation_for_various_metrics(
+            test_prediction)
+        print(f"Test ROC AUC..............: {evaluator.evaluate(test_prediction):.5f}")
+        print(f"Test Accuracy.............: {accuracy:.5f}")
+        print(f"Test Precision (non-match): {precision_non_match:.5f}")
+        print(f"Test Precision.....(match): {precision_match:.5f}")
+        print(f"Test Recall....(non-match): {recall_non_match:.5f}")
+        print(f"Test Recall........(match): {recall_match:.5f}")
 
 
 def predict(features_df: DataFrame, model_path: str) -> DataFrame:
