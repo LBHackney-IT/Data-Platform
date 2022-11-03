@@ -66,6 +66,6 @@ module "env_services_geospatial_enrichment" {
 
   crawler_details = {
     database_name      = module.department_environmental_services_data_source.refined_zone_catalog_database_name
-    s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/env-services/spatially_enriched"
+    s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/env-services/spatially-enriched"
   }
 }
