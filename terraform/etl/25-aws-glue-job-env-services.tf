@@ -5,7 +5,7 @@ locals {
 }
 
 resource "aws_glue_trigger" "alloy_daily_table_ingestion" {
-  count   = !local.is_production_environment ? length(local.alloy_queries) : 0
+  count   = !local.is_live_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
   enabled = local.is_production_environment
 

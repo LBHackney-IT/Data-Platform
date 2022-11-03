@@ -61,14 +61,15 @@ class ExecutionContextProvider:
 
         if self.mode == DEFAULT_MODE_AWS:
             conf = SparkConf()
-            conf.set("spark.sql.legacy.parquet.int96RebaseModeInRead", "LEGACY") \
-                .set("spark.sql.legacy.parquet.int96RebaseModeInWrite", "LEGACY") \
-                .set("spark.sql.legacy.parquet.datetimeRebaseModeInRead", "LEGACY") \
-                .set("spark.sql.legacy.parquet.datetimeRebaseModeInWrite", "LEGACY") \
-                .set("spark.sql.execution.arrow.pyspark.enabled", "true") \
-                .set("spark.sql.execution.arrow.pyspark.fallback.enabled", "true") \
-                .set("spark.sql.execution.arrow.maxRecordsPerBatch", "10000") \
-                .set("spark.sql.execution.arrow.pyspark.selfDestruct.enabled", "true")
+            conf.set("spark.sql.legacy.parquet.int96RebaseModeInRead", "LEGACY")\
+                .set("spark.sql.legacy.parquet.int96RebaseModeInWrite", "LEGACY")\
+                .set("spark.sql.legacy.parquet.datetimeRebaseModeInRead", "LEGACY")\
+                .set("spark.sql.legacy.parquet.datetimeRebaseModeInWrite", "LEGACY")\
+                .set("spark.sql.execution.arrow.pyspark.enabled", "true")\
+                .set("spark.sql.execution.arrow.pyspark.fallback.enabled", "true")\
+                .set("spark.sql.execution.arrow.maxRecordsPerBatch", "10000")\
+                .set("spark.sql.execution.arrow.pyspark.selfDestruct.enabled", "true")\
+                .set("mapred.output.committer.class", "org.apache.hadoop.mapred.DirectFileOutputCommitter")
             sc = SparkContext(conf=conf)
 #             sc.setCheckpointDir("s3://dataplatform-stg-glue-temp-storage/planning/checkpoint/")
         self.__glue_context = GlueContext(sc) if self.mode == DEFAULT_MODE_AWS else None

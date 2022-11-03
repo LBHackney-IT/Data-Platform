@@ -2,7 +2,7 @@ locals {
   # These values already exist in terraform\etl\25-aws-glue-job-env-services.tf
   #alloy_queries                     = local.is_live_environment ? fileset("${path.module}/../../scripts/jobs/env_services/aqs", "*json") : []
   #alloy_queries_max_concurrent_runs = local.is_live_environment ? length(local.alloy_queries) : 1
-  alloy_query_names_alphanumeric = local.is_live_environment ? [for i in tolist(local.alloy_queries) : replace(i, "\\W", "_")] : []
+  alloy_query_names_alphanumeric = local.is_live_environment ? [for i in local.alloy_query_names : replace(i, "\\W", "_")] : []
 }
 
 resource "aws_glue_trigger" "alloy_daily_export" {
@@ -12,7 +12,7 @@ resource "aws_glue_trigger" "alloy_daily_export" {
 
   name     = "${local.short_identifier_prefix} Alloy API Export Job Trigger ${local.alloy_query_names_alphanumeric[count.index]}"
   type     = "SCHEDULED"
-  schedule = "cron(0 23 ? * MON-FRI *)"
+  schedule = "cron(0 3 ? * MON-FRI *)"
 
   actions {
     job_name = module.alloy_api_export_raw_env_services[count.index].job_name
@@ -41,6 +41,7 @@ module "alloy_api_export_raw_env_services" {
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--s3_raw_zone_bucket"      = module.raw_zone_data_source.bucket_id
     "--s3_downloads_prefix"     = "env-services/alloy/alloy_api_downloads/${local.alloy_query_names_alphanumeric[count.index]}/"
+    "--prefix_to_remove"        = "joineddesign_"
   }
 }
 
@@ -83,7 +84,14 @@ resource "aws_glue_crawler" "alloy_export_crawler" {
     Grouping = {
       TableLevelConfiguration = 6
     }
-  })
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+    }
+    }
+  )
+  schema_change_policy {
+    update_behavior = "LOG"
+  }
 }
 
 module "alloy_raw_to_refined_env_services" {
@@ -143,11 +151,16 @@ resource "aws_glue_crawler" "alloy_refined" {
   s3_target {
     path = "s3://${module.refined_zone_data_source.bucket_id}/env-services/alloy/${local.alloy_query_names_alphanumeric[count.index]}"
   }
-  table_prefix = "alloy_refined_"
+  table_prefix = "alloy_"
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
       TableLevelConfiguration = 5
     }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
   })
+
 }
