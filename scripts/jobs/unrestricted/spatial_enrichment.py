@@ -41,10 +41,10 @@ def create_geom_and_extra_coords(pandas_df, target_crs, logger):
     # if all 4 columns are already here and populated, just create geom in the wished target CRS
     if set(['latitude','longitude','eastings','northings']).issubset(pandas_df.columns):
         logger.info('4 cols present')
-        if (target_crs == '27700'):
+        if target_crs == '27700':
             geopandas_df = geopandas.GeoDataFrame(point_df, crs="epsg:27700", geometry=geopandas.points_from_xy(pandas_df.eastings, pandas_df.northings))
             logger.info('geodataframe created in 27700')
-        elif (target_crs == '4326'):
+        elif target_crs == '4326':
             geopandas_df = geopandas.GeoDataFrame(point_df, crs="epsg:4326", geometry=geopandas.points_from_xy(pandas_df.longitude, pandas_df.latitude))
             logger.info('geodataframe created in 4326')
         return geopandas_df
@@ -55,9 +55,9 @@ def create_geom_and_extra_coords(pandas_df, target_crs, logger):
         geopandas_df['eastings'] = geopandas_df['geometry'].x
         geopandas_df['northings'] = geopandas_df['geometry'].y
         logger.info('BNG columns generated from lat lon')
-        if (target_crs == '27700'):
+        if target_crs == '27700':
             return geopandas_df
-        elif (target_crs == '4326'):
+        elif target_crs == '4326':
             geopandas_df = geopandas_df.to_crs("epsg:4326")
             return geopandas_df
     # otherwise, if we only have eastings northings, create geom and generate lat/lon
@@ -67,12 +67,11 @@ def create_geom_and_extra_coords(pandas_df, target_crs, logger):
         geopandas_df['longitude'] = geopandas_df['geometry'].x
         geopandas_df['latitude'] = geopandas_df['geometry'].y
         logger.info('lat lon columns generated from BNG')
-        if (target_crs == '4326'):
+        if target_crs == '4326':
             return geopandas_df
-        elif (target_crs == '27700'):
+        elif target_crs == '27700':
             geopandas_df = geopandas_df.to_crs("epsg:27700")
             return geopandas_df
-    logger.info('returned NOTHING!!!')
 
 
 '''Same method as above, but with more variables for column names and coordinate reference system, so it doesn't assume anything on the input table'''
@@ -212,7 +211,7 @@ if __name__ == "__main__":
             else:
                 logger.info(f"Couldn't decode geomatry column {geom_column_name} for {table_name} in database {database_name}, moving onto next table.")
                 continue
-            if (source_crs != '27700'):
+            if source_crs != '27700':
                 enrich_geo_df = enrich_geo_df.to_crs("epsg:27700")
         # Scenario 2: there is no geom column but 2 coords columns    
         elif geom_format == "coords":
