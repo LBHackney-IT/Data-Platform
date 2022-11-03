@@ -1,0 +1,18 @@
+[{
+     "gully_cleanse": {
+         "database_name":"env-services-raw-zone",
+         "table_name":"alloy_api_response_gully_cleanse",
+         "geom_column":"root_attributes_tasksassignabletasks_designs_gullies_attributes_itemsgeometry",
+         "geom_format": "wkt",
+         "source_crs": "epsg:4326",
+         "enrich_with":["ward", "lsoa"]
+     },
+     "fly_tip_job": {
+         "database_name":"env-services-raw-zone",
+         "table_name":"alloy_api_response_flytipjobs",
+         "geom_column":"attributes_itemsgeometry",
+         "geom_format": "wkt",
+         "source_crs": "epsg:4326",
+         "enrich_with":["ward", "lsoa"]
+     }
+ }]
