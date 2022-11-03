@@ -1,0 +1,5 @@
+[{
+    "ward":{"geography_title":"ward", "database_name":"unrestricted-raw-zone", "table_name":"geolive_boundaries_hackney_ward", "columns_to_append":[{"column_name":"name", "column_alias":"ward_name"},{"column_name":"census_code", "column_alias":"ward_ons_code"}]},
+    "lsoa":{"geography_title":"lsoa", "database_name":"unrestricted-raw-zone", "table_name":"geolive_boundaries_hackney_lsoa_2011", "columns_to_append":[{"column_name":"lsoa_name", "column_alias":"lsoa_name"},{"column_name":"code", "column_alias":"lsoa_ons_code"}]},
+    "msoa":{"geography_title":"msoa", "database_name":"unrestricted-raw-zone", "table_name":"geolive_boundaries_hackney_msoa_2011", "columns_to_append":[{"column_name":"msoa11nm", "column_alias":"msoa_name"},{"column_name":"msoa11cd", "column_alias":"msoa_ons_code"}]}
+}]
