@@ -657,7 +657,7 @@ module "parking_eta_decision_records_20221005" {
   }
 }
 
-    module "pcn_permits_nlpg_llpg_matching_via_athena_6mths_20221102" {
+  module "pcn_permits_nlpg_llpg_matching_via_athena_6m_20221102" {
   count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
@@ -679,7 +679,7 @@ module "parking_eta_decision_records_20221005" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1KHxm_TGZqwRHKSGxIEhgolX0Mva_29Y1"
-  glue_job_name                  = "pcn_permits_nlpg_llpg_matching_via_athena_6mths_20221102"
+  glue_job_name                  = "pcn_permits_nlpg_llpg_matching_via_athena_6m_20221102"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "pcn_permits_nlpg_llpg_matching_via_athena/20221102 - PCN Permits VRM NLPG LLPG matching - Last 6 months.csv UTF8"
@@ -688,11 +688,11 @@ module "parking_eta_decision_records_20221005" {
   worksheets = {
     sheet1 : {
       header_row_number = 0
-      worksheet_name    = "pcn_permits_nlpg_llpg_matching_via_athena_6mths_20221102"
+      worksheet_name    = "pcn_permits_nlpg_llpg_matching_via_athena_6m_20221102"
     }
   }
 }
-    module "pcn_permits_nlpg_llpg_matching_via_athena_3mths_20221102" {
+    module "pcn_permits_nlpg_llpg_matching_via_athena_3m_20221102" {
   count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
@@ -714,7 +714,7 @@ module "parking_eta_decision_records_20221005" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1KPRDOR9aDVlTht6dlh4vS3KaRAIfbXod"
-  glue_job_name                  = "pcn_permits_nlpg_llpg_matching_via_athena_3mths_20221102"
+  glue_job_name                  = "pcn_permits_nlpg_llpg_matching_via_athena_3m_20221102"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "pcn_permits_nlpg_llpg_matching_via_athena/20221102 - PCN Permits VRM NLPG LLPG matching - Last 3 months UTF8"
@@ -723,7 +723,7 @@ module "parking_eta_decision_records_20221005" {
   worksheets = {
     sheet1 : {
       header_row_number = 0
-      worksheet_name    = "pcn_permits_nlpg_llpg_matching_via_athena_3mths_20221102"
+      worksheet_name    = "pcn_permits_nlpg_llpg_matching_via_athena_3m_20221102"
     }
   }
 }
