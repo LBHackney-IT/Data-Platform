@@ -76,7 +76,7 @@ resource "aws_glue_crawler" "alloy_export_crawler" {
   role          = module.department_environmental_services_data_source.glue_role_arn
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/env-services/alloy/alloy_api_downloads/${local.alloy_query_names_alphanumeric[count.index]}/"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/env-services/alloy/parquet_files/${local.alloy_query_names_alphanumeric[count.index]}/"
   }
   table_prefix = "${lower(local.alloy_query_names_alphanumeric[count.index])}_"
 
