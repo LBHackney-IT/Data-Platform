@@ -6,7 +6,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
 environment = get_glue_env_var("environment")
 
 
@@ -29,6 +29,7 @@ AmazonS3_node1628173244776 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="pcnfoidetails_pcn_foi_full",
     transformation_ctx="AmazonS3_node1628173244776",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node ApplyMapping
