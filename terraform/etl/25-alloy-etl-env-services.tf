@@ -41,6 +41,7 @@ module "alloy_api_export_raw_env_services" {
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--s3_raw_zone_bucket"      = module.raw_zone_data_source.bucket_id
     "--s3_downloads_prefix"     = "env-services/alloy/alloy_api_downloads/${local.alloy_query_names_alphanumeric[count.index]}/"
+    "--s3_parquet_prefix"       = "env-services/alloy/parquet_files/${local.alloy_query_names_alphanumeric[count.index]}/"
     "--prefix_to_remove"        = "joineddesign_"
   }
 }
