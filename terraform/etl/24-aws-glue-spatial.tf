@@ -42,8 +42,8 @@ resource "aws_s3_bucket_object" "env_services_spatial_enrichment_dictionary" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/env-services/spatial-enrichment-dictionary.json"
   acl         = "private"
-  source      = "../../scripts/jobs/env-services/spatial-enrichment-dictionary.json"
-  source_hash = filemd5("../../scripts/jobs/env-services/spatial-enrichment-dictionary.json")
+  source      = "../../scripts/jobs/env_services/spatial-enrichment-dictionary.json"
+  source_hash = filemd5("../../scripts/jobs/env_services/spatial-enrichment-dictionary.json")
 }
 
 module "env_services_geospatial_enrichment" {
