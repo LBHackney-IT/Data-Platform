@@ -176,8 +176,6 @@ def get_latest_partition_date_from_s3(database_name: StringType, table_name: Str
                 partition_value_list.append(found.group(1))
     if partition_value_list:
         return max(partition_value_list)
-    else:
-        return f'No partition found for {partition_key}'
 
 
 def get_latest_partitions(dfa):
