@@ -6,7 +6,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
 environment = get_glue_env_var("environment")
 
 
@@ -30,6 +30,7 @@ AmazonS3Liberator_pcn_ic_node1631812698045 = (
         database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_pcn_ic",
         transformation_ctx="AmazonS3Liberator_pcn_ic_node1631812698045",
+        push_down_predicate=create_pushdown_predicate("import_date",1)
     )
 )
 
@@ -39,6 +40,7 @@ S3bucketpcnfoidetails_pcn_foi_full_node1 = (
         database="dataplatform-" + environment + "-liberator-refined-zone",
         table_name="pcnfoidetails_pcn_foi_full",
         transformation_ctx="S3bucketpcnfoidetails_pcn_foi_full_node1",
+        push_down_predicate=create_pushdown_predicate("import_date",1)
     )
 )
 
@@ -48,6 +50,7 @@ AmazonS3liberator_pcn_tickets_node1637153316033 = (
         database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_pcn_tickets",
         transformation_ctx="AmazonS3liberator_pcn_tickets_node1637153316033",
+        push_down_predicate=create_pushdown_predicate("import_date",1)
     )
 )
 
@@ -56,6 +59,7 @@ AmazonS3liberatorrawzoneliberator_pcn_audit_node1638297295740 = glueContext.crea
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_pcn_audit",
     transformation_ctx="AmazonS3liberatorrawzoneliberator_pcn_audit_node1638297295740",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node Amazon S3 - parking raw - eta_decision_records
