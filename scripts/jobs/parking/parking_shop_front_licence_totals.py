@@ -5,7 +5,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS, create_pushdown_predicate
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -34,6 +34,7 @@ AmazonS3_node1638358321513 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_licence_licence_full",
     transformation_ctx="AmazonS3_node1638358321513",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node ApplyMapping
