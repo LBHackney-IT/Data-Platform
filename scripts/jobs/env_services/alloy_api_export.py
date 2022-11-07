@@ -39,7 +39,9 @@ def api_response_json(response):
     return json.loads(response.text)
 
 
-def create_s3_key(s3_prefix, file, prefix_to_remove=None, import_date=False):
+def create_s3_key(
+    s3_prefix, file, prefix_to_remove=None, import_date=False, include_file_name=False
+):
     """
     creates the key argument for saving output files to s3
     """
@@ -60,8 +62,10 @@ def create_s3_key(s3_prefix, file, prefix_to_remove=None, import_date=False):
 
     file_table_name = re.sub(r"[^A-Za-z0-9]+", "_", file_table_name)
 
-    if import_date:
-        s3_key = f"{s3_prefix}{file_table_name}/import_year={import_date: %Y}/import_month={import_date: %m}/import_day={import_date: %d}/import_date={import_date: %Y%m%d}/import{file_basename}"
+    if import_date and include_file_name:
+        s3_key = f"{s3_prefix}{file_table_name}/import_year={import_date:%Y}/import_month={import_date:%m}/import_day={import_date:%d}/import_date={import_date:%Y%m%d}/{file_basename}"
+    elif import_date:
+        s3_key = f"{s3_prefix}{file_table_name}/import_year={import_date:%Y}/import_month={import_date:%m}/import_day={import_date:%d}/import_date={import_date:%Y%m%d}/"
     else:
         s3_key = f"{s3_prefix}{file_table_name}/"
 
