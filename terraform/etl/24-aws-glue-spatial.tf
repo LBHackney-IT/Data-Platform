@@ -29,6 +29,7 @@ module "llpg_raw_to_trusted" {
 
 # Dictionary resources for spatial enrichment
 resource "aws_s3_bucket_object" "geography_tables_dictionary" {
+  count       = !local.is_production_environment ? 1 : 0
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/unrestricted/geography_tables_dict.json"
   acl         = "private"
@@ -37,6 +38,7 @@ resource "aws_s3_bucket_object" "geography_tables_dictionary" {
 }
     
 resource "aws_s3_bucket_object" "env_services_spatial_enrichment_dictionary" {
+  count       = !local.is_production_environment ? 1 : 0
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/env-services/spatial-enrichment-dictionary.json"
   acl         = "private"
