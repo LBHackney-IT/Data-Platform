@@ -48,7 +48,9 @@ def create_s3_key(s3_prefix, file, prefix_to_remove=None, import_date=False):
     file_table_name = file_table_name[0]
     file_table_name = file_table_name.lower()
 
-    if not prefix_to_remove == None:
+    if prefix_to_remove == None:
+        pass
+    else:
         pre = prefix_to_remove.lower()
 
         if not file_table_name.startswith(pre):
@@ -144,15 +146,18 @@ if __name__ == "__main__":
                     .option("multiline", "true")
                     .csv(f"s3://{s3_raw_zone_bucket}/{raw_key}")
                 )
+
                 df = clean_column_names(df)
                 df = add_import_time_columns(df)
 
                 s3_parquet_key = create_s3_key(
                     s3_parquet_prefix, file, prefix_to_remove
                 )
+
                 df = (
                     df.write.partitionBy(PARTITION_KEYS)
                     .mode("append")
                     .parquet(f"s3://{s3_raw_zone_bucket}/{s3_parquet_key}")
                 )
+
     job.commit()
