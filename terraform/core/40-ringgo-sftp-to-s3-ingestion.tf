@@ -26,6 +26,7 @@ module "sftp_to_s3_ingestion" {
     "S3_BUCKET"                   = module.landing_zone.bucket_id
     "S3_TARGET_FOLDER"            = "ringgo/sftp/input"
   }
+  lambda_execution_cron_schedule  = "cron(0 21 * * ? *)"
 }  
 
 data "aws_secretsmanager_secret" "sftp_server_credentials" {
