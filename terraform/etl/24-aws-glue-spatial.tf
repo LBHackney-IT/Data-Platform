@@ -28,21 +28,21 @@ module "llpg_raw_to_trusted" {
 }
 
 # Dictionary resources for spatial enrichment
-#resource "aws_s3_bucket_object" "geography_tables_dictionary" {
-#  bucket      = module.glue_scripts_data_source.bucket_id
-#  key         = "scripts/unrestricted/geography_tables_dict.json"
-#  acl         = "private"
-#  source      = "../../scripts/jobs/unrestricted/geography-tables-dictionary.json"
-#  source_hash = filemd5("../../scripts/jobs/unrestricted/geography-tables-dictionary.json")
-#}
+resource "aws_s3_bucket_object" "geography_tables_dictionary" {
+  bucket      = module.glue_scripts_data_source.bucket_id
+  key         = "scripts/unrestricted/geography_tables_dict.json"
+  acl         = "private"
+  source      = "../../scripts/jobs/unrestricted/geography-tables-dictionary.json"
+  source_hash = filemd5("../../scripts/jobs/unrestricted/geography-tables-dictionary.json")
+}
     
-#resource "aws_s3_bucket_object" "env_services_spatial_enrichment_dictionary" {
-#  bucket      = module.glue_scripts_data_source.bucket_id
-#  key         = "scripts/env-services/spatial-enrichment-dictionary.json"
-#  acl         = "private"
-#  source      = "../../scripts/jobs/env-services/spatial-enrichment-dictionary.json"
-#  source_hash = filemd5("../../scripts/jobs/env-services/spatial-enrichment-dictionary.json")
-#}
+resource "aws_s3_bucket_object" "env_services_spatial_enrichment_dictionary" {
+  bucket      = module.glue_scripts_data_source.bucket_id
+  key         = "scripts/env-services/spatial-enrichment-dictionary.json"
+  acl         = "private"
+  source      = "../../scripts/jobs/env-services/spatial-enrichment-dictionary.json"
+  source_hash = filemd5("../../scripts/jobs/env-services/spatial-enrichment-dictionary.json")
+}
 
 module "env_services_geospatial_enrichment" {
   source                    = "../modules/aws-glue-job"
@@ -58,10 +58,10 @@ module "env_services_geospatial_enrichment" {
   job_parameters = {
     "--job-bookmark-option"        = "job-bookmark-enable"
     "--additional-python-modules"  = "rtree,geopandas"
-    #"--geography_tables_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.geography_tables_dictionary.key}"
-    #"--tables_to_enrich_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.env_services_spatial_enrichment_dictionary.key}"
-    "--geography_tables_dict_path" = "s3://dataplatform-stg-glue-scripts/scripts/geospatial/geography_tables_dict.json"
-    "--tables_to_enrich_dict_path" = "s3://dataplatform-stg-glue-scripts/scripts/env-services/spatial_enrichment_dict.json"
+    "--geography_tables_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.geography_tables_dictionary.key}"
+    "--tables_to_enrich_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.env_services_spatial_enrichment_dictionary.key}"
+    #"--geography_tables_dict_path" = "s3://dataplatform-stg-glue-scripts/scripts/geospatial/geography_tables_dict.json"
+    #"--tables_to_enrich_dict_path" = "s3://dataplatform-stg-glue-scripts/scripts/env-services/spatial_enrichment_dict.json"
     "--target_location"            = "s3://${module.refined_zone_data_source.bucket_id}/env-services/spatially-enriched/"
   }
   script_name          = "spatial_enrichment"
