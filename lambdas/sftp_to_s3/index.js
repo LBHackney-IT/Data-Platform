@@ -24,9 +24,10 @@ let month;
 let day;
 let date;
 
-async function getImportDate(manualOverrideDateString)
+async function getImportFilenamePattern(manualOverrideDateString)
 {
   let dateToImport = new Date();
+  dateToImport.setDate(dateToImport.getDate() - 1);
 
   if(manualOverrideDateString)
   {
@@ -135,7 +136,7 @@ exports.handler = async (event) => {
  
   console.log(`Manual override date: ${manualOverrideDateString}`);
  
-  getImportDate(manualOverrideDateString);
+  getImportFilenamePattern(manualOverrideDateString);
  
   const sftp = new sftpClient();
 
