@@ -48,6 +48,7 @@ module "env_services_geospatial_enrichment" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
+  count                     = !local.is_production_environment ? 1 : 0
 
   department                 = module.department_environmental_services_data_source
   job_name                   = "${local.short_identifier_prefix}env_services_geospatial_enrichment"
