@@ -1,3 +1,4 @@
+import datetime
 import json
 import sys
 
@@ -5,17 +6,13 @@ import boto3
 import botocore
 import pyspark.sql.functions as F
 from awsglue.context import GlueContext
+from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
-from awsglue.dynamicframe import DynamicFrame
 from pyspark.context import SparkContext
-from scripts.helpers.helpers import (
-    PARTITION_KEYS,
-    add_import_time_columns,
-    clean_column_names,
-    get_glue_env_var,
-)
+
+from scripts.helpers.helpers import clean_column_names, get_glue_env_var
 
 
 def get_table_names(glue_database, glue_table_prefix, region_name="eu-west-2"):
@@ -48,6 +45,23 @@ def rename_columns(df, columns):
         )
 
 
+def add_refined_date_cols(daily_df):
+    now = datetime.datetime.now()
+    refined_year = str(now.year)
+    refined_month = str(now.month).zfill(2)
+    refined_day = str(now.day).zfill(2)
+    refined_date = refined_year + refined_month + refined_day
+
+    daily_df_with_refined_cols = (
+        daily_df.withColumn("refined_year", F.lit(refined_year))
+        .withColumn("refined_month", F.lit(refined_month))
+        .withColumn("refined_day", F.lit(refined_day))
+        .withColumn("refined_date", F.lit(refined_date))
+    )
+
+    return daily_df_with_refined_cols
+
+
 if __name__ == "__main__":
     args = getResolvedOptions(sys.argv, ["JOB_NAME"])
     sc = SparkContext()
@@ -73,6 +87,7 @@ if __name__ == "__main__":
     logger.info(f"found {len(table_names)}, creating trusted frames")
 
     for table in table_names:
+        logger.info(f"creating dyf for {table}")
         daily_df = glueContext.create_dynamic_frame.from_catalog(
             database=glue_database,
             table_name=table,
@@ -94,10 +109,11 @@ if __name__ == "__main__":
             daily_df = rename_columns(daily_df, mapping)
 
         daily_df = clean_column_names(daily_df.toDF())
-        daily_df = add_import_time_columns(daily_df)
+
+        daily_df_with_refined_cols = add_refined_date_cols(daily_df)
 
         outputDynamicFrame = DynamicFrame.fromDF(
-            daily_df, glueContext, "outputDynamicFrame"
+            daily_df_with_refined_cols, glueContext, "outputDynamicFrame"
         )
 
         target_path = f"s3://{s3_refined_zone_bucket}/{s3_target_prefix}{table}"
@@ -105,7 +121,15 @@ if __name__ == "__main__":
             frame=outputDynamicFrame,
             connection_type="s3",
             format="parquet",
-            connection_options={"path": target_path, "partitionKeys": PARTITION_KEYS},
+            connection_options={
+                "path": target_path,
+                "partitionKeys": [
+                    "refined_year",
+                    "refined_month",
+                    "refined_day",
+                    "refined_date",
+                ],
+            },
             transformation_ctx=f"write_{table}",
         )
 
