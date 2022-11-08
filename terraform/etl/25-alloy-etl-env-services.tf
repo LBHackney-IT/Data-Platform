@@ -8,7 +8,7 @@ locals {
 resource "aws_glue_trigger" "alloy_daily_export" {
   count   = local.is_live_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
-  enabled = local.is_live_environment
+  enabled = local.is_production_environment
 
   name     = "${local.short_identifier_prefix} Alloy API Export Job Trigger ${local.alloy_query_names_alphanumeric[count.index]}"
   type     = "SCHEDULED"
