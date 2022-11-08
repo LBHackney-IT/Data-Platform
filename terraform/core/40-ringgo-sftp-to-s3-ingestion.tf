@@ -1,5 +1,5 @@
 locals {
-  glue_trigger_name     = local.is_live_environment ? module.ringgo_sftp_data_to_raw[0].trigger_name : ""
+  ringgo_copy_glue_job__trigger_name     = local.is_live_environment ? module.ringgo_sftp_data_to_raw[0].trigger_name : ""
 }
 
 module "sftp_to_s3_ingestion" {
@@ -31,7 +31,7 @@ module "sftp_to_s3_ingestion" {
     "S3_TARGET_FOLDER"            = "ringgo/sftp/input"
   }
   lambda_execution_cron_schedule  = "cron(0 21 * * ? *)"
-  trigger_to_run                  = local.glue_trigger_name
+  trigger_to_run                  = local.ringgo_copy_glue_job__trigger_name
 }  
 
 data "aws_secretsmanager_secret" "sftp_server_credentials" {
