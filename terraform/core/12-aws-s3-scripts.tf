@@ -93,11 +93,3 @@ resource "aws_s3_bucket_object" "parking_copy_ringgo_sftp_data_to_raw" {
   source      = "../../scripts/jobs/parking/parking_copy_ringgo_sftp_data_to_raw.py"
   source_hash = filemd5("../../scripts/jobs/parking/parking_copy_ringgo_sftp_data_to_raw.py")
 }
-
-resource "aws_s3_bucket_object" "spatial_enrichment" {
-  bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/unrestricted/spatial_enrichment.py"
-  acl         = "private"
-  source      = "../../scripts/jobs/unrestricted/spatial_enrichment.py"
-  source_hash = filemd5("../../scripts/jobs/unrestricted/spatial_enrichment.py")
-}
