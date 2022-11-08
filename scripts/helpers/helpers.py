@@ -3,6 +3,7 @@ import re
 import sys
 import unicodedata
 
+import builtins
 import boto3
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as f, DataFrame
@@ -174,7 +175,7 @@ def get_latest_partition_date_from_s3(database_name: StringType, table_name: Str
             if found:
                 partition_value_list.append(found.group(1))
     if partition_value_list:
-        return max(partition_value_list)
+        return builtins.max(partition_value_list)
 
 
 def get_latest_partitions(dfa):
