@@ -138,6 +138,46 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
     return set(folders)
 
 
+def get_latest_partition_date_from_s3(database_name: StringType, table_name: StringType, partition_key: StringType) -> StringType:
+    """Browses S3 partitions for a given Glue database table and returns the latest partition value for the given
+    partition key. This works for date partitions formatted like '2022' or '20221225'  This value can then be used in a pushdown predicate.
+    
+    Args:
+        database_name: name of the database where the table resides in the Glue catalogue
+        table_name: name of the table in the Glue catalogue
+        partition_key: name of the relevant partition key, e.g. import_date or snapshot_date
+        
+    Returns:
+        A string representing the latest partition value, e.g '20221103'
+    """
+    client = boto3.client('glue', region_name='eu-west-2')
+    paginator = client.get_paginator('get_partitions')
+    response_iterator = paginator.paginate(
+        DatabaseName=database_name,
+        TableName=table_name,
+        Segment={
+            'SegmentNumber': 0,
+            'TotalSegments': 1
+        },
+        ExcludeColumnSchema=True,
+        PaginationConfig={
+            'MaxItems': 100000,
+            'PageSize': 100,
+            'StartingToken': ''
+        }
+    )
+    partition_value_list = []
+    for response in response_iterator:
+        for partition in response['Partitions']:
+            location = partition['StorageDescriptor']['Location']
+            regex_group = '(\d{8})'
+            found = re.search(f'{partition_key}={regex_group}', location)
+            if found:
+                partition_value_list.append(found.group(1))
+    if partition_value_list:
+        return max(partition_value_list)
+
+
 def get_latest_partitions(dfa):
     dfa = dfa.where(f.col('import_year') == dfa.select(
         f.max('import_year')).first()[0])
@@ -299,6 +339,23 @@ def create_pushdown_predicate(partitionDateColumn, daysBuffer):
     else:
         push_down_predicate = ''
     return push_down_predicate
+
+
+def create_pushdown_predicate_for_latest_available_partition(database_name: StringType, table_name: StringType, partition_key: StringType) -> StringType:
+    """Creates an expression to use in a pushdown predicate filtering by date the data to load from S3. The
+    date is the latest date for which a partition exists. This date value is fetched from S3 using boto3 and the function
+    get_latest_partition_date_from_s3 
+    
+    Args:
+        database_name: name of the database where the table resides in the Glue catalogue
+        table_name: name of the table in the Glue catalogue
+        partition_key: name of the relevant partition key, e.g. import_date or snapshot_date
+        
+    Returns:
+        A string representing a pushdown predicate expression, e.g 'import_date=20221103'
+    """
+    date = get_latest_partition_date_from_s3(database_name, table_name, partition_key)
+    return f'{partition_key}={date}'
 
 
 def check_if_dataframe_empty(df):
