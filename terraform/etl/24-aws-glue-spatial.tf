@@ -27,6 +27,15 @@ module "llpg_raw_to_trusted" {
 
 }
 
+# Script for spatial enrichment
+resource "aws_s3_bucket_object" "spatial_enrichment" {
+  bucket      = module.glue_scripts_data_source.bucket_id
+  key         = "scripts/unrestricted/spatial_enrichment.py"
+  acl         = "private"
+  source      = "../../scripts/jobs/unrestricted/spatial_enrichment.py"
+  source_hash = filemd5("../../scripts/jobs/unrestricted/spatial_enrichment.py")
+}
+    
 # Dictionary resources for spatial enrichment
 resource "aws_s3_bucket_object" "geography_tables_dictionary" {
   bucket      = module.glue_scripts_data_source.bucket_id
