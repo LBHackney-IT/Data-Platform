@@ -51,6 +51,7 @@ module "env_services_geospatial_enrichment" {
 
   department                 = module.department_environmental_services_data_source
   job_name                   = "${local.short_identifier_prefix}env_services_geospatial_enrichment"
+  script_s3_object_key       = aws_s3_bucket_object.spatial_enrichment.key
   glue_job_worker_type       = "G.1X"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
@@ -64,8 +65,6 @@ module "env_services_geospatial_enrichment" {
     #"--tables_to_enrich_dict_path" = "s3://dataplatform-stg-glue-scripts/scripts/env-services/spatial_enrichment_dict.json"
     "--target_location"            = "s3://${module.refined_zone_data_source.bucket_id}/env-services/spatially-enriched/"
   }
-  script_name          = "spatial_enrichment"
-
   crawler_details = {
     database_name      = module.department_environmental_services_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/env-services/spatially-enriched"
