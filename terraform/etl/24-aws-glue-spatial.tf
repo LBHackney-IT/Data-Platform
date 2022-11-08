@@ -61,8 +61,6 @@ module "env_services_geospatial_enrichment" {
     "--additional-python-modules"  = "rtree,geopandas"
     "--geography_tables_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.geography_tables_dictionary.key}"
     "--tables_to_enrich_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.env_services_spatial_enrichment_dictionary.key}"
-    #"--geography_tables_dict_path" = "s3://dataplatform-stg-glue-scripts/scripts/geospatial/geography_tables_dict.json"
-    #"--tables_to_enrich_dict_path" = "s3://dataplatform-stg-glue-scripts/scripts/env-services/spatial_enrichment_dict.json"
     "--target_location"            = "s3://${module.refined_zone_data_source.bucket_id}/env-services/spatially-enriched/"
   }
   crawler_details = {
