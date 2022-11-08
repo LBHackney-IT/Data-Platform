@@ -1011,7 +1011,7 @@ module "parking_spreadsheet_eta_decisions_gds_qlik_data_load" {
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1M-kXwuwnYAnd2VEAcnmBR5SRPK49ooJBwXXbVIUkr3I"
-  google_sheets_worksheet_name    = "dp_data_import"
+  google_sheets_worksheet_name    = "records"
   department                      = module.department_parking_data_source
   dataset_name                    = "parking_eta_decisions_gds_qlik_data_load"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
