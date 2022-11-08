@@ -159,7 +159,6 @@ def get_latest_partition_date_from_s3(database_name: StringType, table_name: Str
             'SegmentNumber': 0,
             'TotalSegments': 1
         },
-        ExcludeColumnSchema=True,
         PaginationConfig={
             'MaxItems': 100000,
             'PageSize': 100,
