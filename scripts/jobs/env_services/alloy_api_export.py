@@ -136,7 +136,11 @@ if __name__ == "__main__":
 
             for file in file_list:
                 raw_key = create_s3_key(
-                    s3_downloads_prefix, file, prefix_to_remove, import_date
+                    s3_downloads_prefix,
+                    file,
+                    prefix_to_remove,
+                    import_date,
+                    include_file_name=True,
                 )
 
                 s3.meta.client.upload_fileobj(
