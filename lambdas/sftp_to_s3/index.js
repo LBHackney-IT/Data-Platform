@@ -10,6 +10,7 @@ const s3TargetFolder = process.env.S3_TARGET_FOLDER;
 let sftpFilePath = process.env.SFTP_TARGET_FILE_PATH; 
 let sftpSourceFilePrefix = process.env.SFTP_SOURCE_FILE_PREFIX;
 const sftpSourceFileExtension = process.env.SFTP_SOURCE_FILE_EXTENSION;
+const trigger_to_run = process.env.TRIGGER_NAME;
 
 const config = {
   host: process.env.SFTP_HOST,
@@ -160,6 +161,15 @@ exports.handler = async (event) => {
     }
 
     await Promise.all(findFilesResponse.fileNames.map(file => streamFileFromSftpToS3(sftp, file)));
+
+    //start trigger
+    const glue = new AWS.Glue({apiVersion: '2017-03-31'});
+    const params = {
+      Name: trigger_to_run
+    };
+    console.log("Starting trigger with params", params)
+
+    await glue.startTrigger(params).promise();
 
     console.log("Success!");
     return { success: true, message: `Successfully uploaded ${findFilesResponse.fileNames.length} file(s) to s3` };
