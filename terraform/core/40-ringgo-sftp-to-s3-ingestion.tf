@@ -29,6 +29,7 @@ module "sftp_to_s3_ingestion" {
     "SFTP_SOURCE_FILE_EXTENSION"  = "csv"
     "S3_BUCKET"                   = module.landing_zone.bucket_id
     "S3_TARGET_FOLDER"            = "ringgo/sftp/input"
+    "TRIGGER_NAME"                =  local.ringgo_copy_glue_job__trigger_name
   }
   lambda_execution_cron_schedule  = "cron(0 21 * * ? *)"
   trigger_to_run                  = local.ringgo_copy_glue_job__trigger_name
