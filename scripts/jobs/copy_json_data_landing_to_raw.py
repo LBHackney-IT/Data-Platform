@@ -11,7 +11,7 @@ import boto3
 import pyspark.sql.functions as F
 
 from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, get_s3_subfolders, PARTITION_KEYS, \
-    clean_column_names, get_latest_partitions
+    clean_column_names, get_latest_partition_date_from_s3
 
 s3_client = boto3.client('s3')
 sc = SparkContext.getOrCreate()
