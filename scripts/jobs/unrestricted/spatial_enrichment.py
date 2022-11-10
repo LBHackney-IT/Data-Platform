@@ -148,7 +148,7 @@ def convert_coordinate_columns_to_double(spark_point_df, x_column, y_column):
 if __name__ == "__main__":
 
     args = getResolvedOptions(sys.argv,
-                              ['TempDir', 'JOB_NAME', 'tables_to_enrich_dict_path', 'geography_tables_dict_path'])
+                              ['TempDir', 'JOB_NAME', 'tables_to_enrich_dict_path', 'geography_tables_dict_path', 'target_location'])
 
     sc = SparkContext()
     glueContext = GlueContext(sc)
@@ -278,12 +278,12 @@ if __name__ == "__main__":
         dynamic_frame = DynamicFrame.fromDF(spark_point_df, glueContext, "target_data_to_write")
 
         # Write the data to S3
-        logger.info(f'Now writing  {table_name} enriched records inside {enrich_table["target_location"] + table_name}')
+        logger.info(f'Now writing  {table_name} enriched records inside {args["target_location"] + table_name}')
         parquet_data = glueContext.write_dynamic_frame.from_options(
             frame=dynamic_frame,
             connection_type="s3",
             format="parquet",
-            connection_options={"path": enrich_table["target_location"] + table_name, "partitionKeys": PARTITION_KEYS},
+            connection_options={"path": args["target_location"] + table_name, "partitionKeys": PARTITION_KEYS},
             transformation_ctx=f'target_data_to_write_{table_name}')
 
     job.commit()
