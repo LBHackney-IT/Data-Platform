@@ -10,6 +10,7 @@ from pyspark.sql.functions import *
 import pyspark.sql.functions as F
 from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS,parse_json_into_dataframe, table_exists_in_catalog
 
+# no change
 # Define the functions that will be used in your job (optional). For Production jobs, these functions should be tested via unit testing.
 def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource('s3')
