@@ -8,6 +8,7 @@ from pyspark.sql.functions import col, lit, when, concat
 from pyspark.sql.types import IntegerType
 from pyspark.sql import SparkSession
 import boto3
+import pyspark.sql.functions as F
 
 from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, get_s3_subfolders, PARTITION_KEYS, \
     clean_column_names, get_latest_partitions
@@ -24,10 +25,12 @@ def data_source_landing_to_raw(bucket_source, bucket_target, s3_prefix):
     logger.info("bucket_target" + bucket_target)
     logger.info("s3_prefix" + s3_prefix)
     data_source = spark.read.option("multiline", "true").json(bucket_source + "/" + s3_prefix)
-    latest_data = get_latest_partitions(data_source)
-    logger.info(f"latest_data: {latest_data}")
-
     logger.info(f"Retrieved data source from s3 path {bucket_source}/{s3_prefix}")
+    
+    latest_import = get_latest_partition_date_from_s3('data-and-insight-raw-zone','icaseworks','import_date')
+    logger.info(f"latest_data on raw: {latest_import}")
+    
+    latest_data = data_source.filter(F.col("import_date")>latest_import)
 
     data_frame = clean_column_names(latest_data)
     logger.info("Using Columns: " + str(data_frame.columns))
