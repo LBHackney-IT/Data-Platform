@@ -8,7 +8,7 @@ locals {
 resource "aws_glue_trigger" "alloy_daily_export" {
   count   = local.is_live_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
-  enabled = local.is_live_environment
+  enabled = local.is_production_environment
 
   name     = "${local.short_identifier_prefix} Alloy API Export Job Trigger ${local.alloy_query_names_alphanumeric[count.index]}"
   type     = "SCHEDULED"
@@ -41,6 +41,7 @@ module "alloy_api_export_raw_env_services" {
     "--aqs"                     = file("${path.module}/../../scripts/jobs/env_services/aqs/${tolist(local.alloy_queries)[count.index]}")
     "--s3_raw_zone_bucket"      = module.raw_zone_data_source.bucket_id
     "--s3_downloads_prefix"     = "env-services/alloy/alloy_api_downloads/${local.alloy_query_names_alphanumeric[count.index]}/"
+    "--s3_parquet_prefix"       = "env-services/alloy/parquet_files/${local.alloy_query_names_alphanumeric[count.index]}/"
     "--prefix_to_remove"        = "joineddesign_"
   }
 }
@@ -75,7 +76,7 @@ resource "aws_glue_crawler" "alloy_export_crawler" {
   role          = module.department_environmental_services_data_source.glue_role_arn
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/env-services/alloy/alloy_api_downloads/${local.alloy_query_names_alphanumeric[count.index]}/"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/env-services/alloy/parquet_files/${local.alloy_query_names_alphanumeric[count.index]}/"
   }
   table_prefix = "${lower(local.alloy_query_names_alphanumeric[count.index])}_"
 
