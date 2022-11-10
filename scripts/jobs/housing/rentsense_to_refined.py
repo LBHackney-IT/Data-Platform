@@ -15,6 +15,7 @@ from datetime import date
 import pyspark.sql.functions as F
 from scripts.helpers.helpers import move_file, rename_file, get_glue_env_var, get_latest_partitions_optimized , create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog,clear_target_folder
 
+# no change
 # The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":
     
