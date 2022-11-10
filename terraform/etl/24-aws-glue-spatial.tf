@@ -67,6 +67,7 @@ module "env_services_geospatial_enrichment" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"        = "job-bookmark-enable"
+    "--enable-glue-datacatalog"    = "true"
     "--additional-python-modules"  = "rtree,geopandas"
     "--geography_tables_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.geography_tables_dictionary.key}"
     "--tables_to_enrich_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.env_services_spatial_enrichment_dictionary.key}"
