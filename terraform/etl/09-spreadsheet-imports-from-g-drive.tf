@@ -652,7 +652,7 @@ module "parking_eta_decision_records_20221005" {
   worksheets = {
     sheet1 : {
       header_row_number = 0
-      worksheet_name    = "eta_decision_records_20221005"
+      worksheet_name    = "eta_decision_records"
     }
   }
 }
