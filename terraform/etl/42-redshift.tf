@@ -15,6 +15,9 @@ module "redshift" {
   refined_zone_kms_key_arn = module.refined_zone_data_source.kms_key_arn
   trusted_zone_kms_key_arn = module.trusted_zone_data_source.kms_key_arn
   secrets_manager_key      = data.aws_kms_key.secrets_manager_key.arn
+  redshift_cidr_ingress_rules_for_bi_tools = var.redshift_cidr_ingress_rules_for_bi_tools
+  #redshift_cidr_ingress_rules_for_qlik = var.redshift_cidr_ingress_rules_for_qlik
+  #redshift_sg_ingress_rules_for_qlik = var.redshift_sg_ingress_rules_for_qlik
 }
 
 // Configuration of redshift external schemas, users & granting permissions

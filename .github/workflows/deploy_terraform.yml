@@ -70,6 +70,8 @@ on:
         required: true
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN:
         required: true
+      REDSHIFT_CIDR_INGRESS_RULES_FOR_BI_TOOLS:
+        required: true
 
 jobs:
   deploy:
@@ -160,6 +162,7 @@ jobs:
           copy_liberator_to_pre_prod_lambda_execution_role: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
           sync_production_to_pre_production_task_role: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
           pre_production_liberator_data_storage_kms_key_arn: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
+          redshift_cidr_ingress_rules_for_bi_tools: ${{ secrets.REDSHIFT_CIDR_INGRESS_RULES_FOR_BI_TOOLS }}
           branch: "main"
 
       - name: Configure Redshift users, external schemas and user permissions for external schema

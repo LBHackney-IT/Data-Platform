@@ -129,12 +129,36 @@ resource "aws_security_group" "redshift_cluster_security_group" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allows inbound traffic from BI tools using PostgreSQL protocol"
+    description = "Allows inbound traffic when running queries from the console"
     from_port   = 5439
     to_port     = 5439
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    self        = true
   }
+
+  ingress {
+    description = "Allows inbound traffic from external BI tools using PostgreSQL protocol"
+    from_port = 5439
+    to_port = 5439
+    protocol = "tcp"
+    cidr_blocks = var.redshift_cidr_ingress_rules_for_bi_tools
+  }
+
+  # ingress {
+  #   description = "Allows inbound traffic from Qlik prod EC2 instance based on cidr"
+  #   from_port = 5439
+  #   to_port = 5439
+  #   protocol = "tcp"
+  #   cidr_blocks = var.redshift_cidr_ingress_rules_for_qlik
+  # }
+
+  # ingress {
+  #   description = "Allows inbound traffic from Qlik prod EC2 instance based on security group"
+  #   from_port = 5439
+  #   to_port = 5439
+  #   protocol = "tcp"
+  #   security_groups = var.redshift_sg_ingress_rules_for_qlik
+  # }
 
   egress {
     description      = "Allows all outbound traffic"

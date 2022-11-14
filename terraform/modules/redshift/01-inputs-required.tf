@@ -62,3 +62,21 @@ variable "secrets_manager_key" {
   description = "ARN of secrets manager KMS key"
   type        = string
 }
+
+variable "redshift_cidr_ingress_rules_for_bi_tools" {
+  description = "Array of CIDR based ingress rules for Redshift security group allowing access from BI tools"
+  type        = list
+  sensitive   = true
+}
+
+# variable "redshift_cidr_ingress_rules_for_qlik" {
+#   description = "Array of CIDR based ingress rules for Redshift security group allowing access from Qlik EC2 instance"
+#   type        = list
+#   sensitive   = true
+# }
+
+# variable "redshift_sg_ingress_rules_for_qlik" {
+#   description = "Array of security group based ingress rules for Redshift security group allowing access from Qlik EC2 instance"
+#   type        = list
+#   sensitive   = true
+# }
