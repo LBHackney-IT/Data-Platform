@@ -71,6 +71,7 @@ variable "redshift_cidr_ingress_rules_for_bi_tools" {
   sensitive   = true
 }
 
+#TODO: add these after initial workflow testing
 # variable "redshift_cidr_ingress_rules_for_qlik" {
 #   description = "Array of CIDR based ingress rules for Redshift security group allowing access from Qlik EC2 instance"
 #   type        = list

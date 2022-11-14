@@ -69,3 +69,23 @@ variable "rentsense_target_path" {
   description = "The S3 path to target when copying rentsense data"
   type        = string
 }
+
+variable "redshift_cidr_ingress_rules_for_bi_tools" {
+  description = "Array of CIDR based ingress rules for Redshift security group allowing access from BI tools"
+  type        = list
+  sensitive   = true
+}
+
+#TODO: add these after initial workflow testing
+# variable "redshift_cidr_ingress_rules_for_qlik" {
+#   description = "Array of CIDR based ingress rules for Redshift security group allowing access from Qlik EC2 instance"
+#   type        = list
+#   sensitive   = true
+# }
+
+# variable "redshift_sg_ingress_rules_for_qlik" {
+#   description = "Array of security group based ingress rules for Redshift security group allowing access from Qlik EC2 instance"
+#   type        = list
+#   sensitive   = true
+# }
+
