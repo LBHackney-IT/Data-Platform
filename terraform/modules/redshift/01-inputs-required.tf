@@ -65,7 +65,7 @@ variable "secrets_manager_key" {
 
 variable "redshift_cidr_ingress_rules_for_bi_tools" {
   description = "Array of CIDR based ingress rules for Redshift security group allowing access from BI tools"
-  type        = list
+  type        = string
   sensitive   = true
 }
 
