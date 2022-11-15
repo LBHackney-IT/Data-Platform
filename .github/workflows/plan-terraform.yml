@@ -67,6 +67,9 @@ jobs:
   plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      REDSHIFT_CIDR_INGRESS_RULES_FOR_BI_TOOLS: ${{ secrets.REDSHIFT_CIDR_INGRESS_RULES_FOR_BI_TOOLS }}
     steps:
       - uses: terraform-compliance/github_action@main
 
