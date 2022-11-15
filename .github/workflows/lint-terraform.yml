@@ -67,9 +67,6 @@ jobs:
   lint:
     name: Terraform Lint
     runs-on: ubuntu-latest
-    #environment: ${{ inputs.environment }}
-    #env:
-    #  REDSHIFT_CIDR_INGRESS_RULES_FOR_BI_TOOLS: ${{ secrets.REDSHIFT_CIDR_INGRESS_RULES_FOR_BI_TOOLS }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
