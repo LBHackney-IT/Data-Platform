@@ -141,7 +141,7 @@ resource "aws_security_group" "redshift_cluster_security_group" {
     from_port = 5439
     to_port = 5439
     protocol = "tcp"
-    cidr_blocks = var.redshift_cidr_ingress_rules_for_bi_tools
+    cidr_blocks = [var.redshift_cidr_ingress_rules_for_bi_tools]
   }
 
   # ingress {
