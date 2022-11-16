@@ -732,6 +732,96 @@ def standardize_parking_permit_data(parking_permit_cleaned: DataFrame) -> DataFr
     return parking_permit
 
 
+def prepare_clean_schools_admissions_data(spark: SparkSession, schools_admissions_data_path: str) -> DataFrame:
+    """A function to prepare and clean schools admissions data. This function is specific to this particular data source.
+    For a new data source please add a new function.
+
+    Args:
+        spark: SparkSession
+        schools_admissions_data_path: Path of the S3 (or local) folder containing parking permit data.
+
+    Returns:
+        A DataFrame after preparing data from multiple sources and cleaning it.
+
+    """
+
+#    schools_admissions_cleaned = spark.read.parquet(schools_admissions_data_path) \
+    schools_admissions_cleaned = spark.read.csv(schools_admissions_data_path, header=True)\
+        .withColumn("source", lit("schools_admission")) \
+        .withColumn("source_id", col("STUD_ID")) \
+        .withColumn("title", col("APPL_TITLE"))\
+        .withColumn("extracted_name",
+                    extract_name_udf(concat_ws(" ", col("APPL_TITLE"), col("APPL_FORENAME"), col("APPL_SURNAME"))))\
+        .withColumn("date_of_birth", lit(""))\
+        .withColumnRenamed("POSTCODE", "post_code")\
+        .withColumnRenamed("EMAIL_ADDRESS", "email")\
+        .withColumnRenamed("UPRN", "uprn")\
+        .withColumnRenamed("HOUSE_NAME", "address_line_1")\
+        .withColumnRenamed("APARTMENT", "address_line_2")\
+        .withColumnRenamed("HOUSE_NO", "address_line_3")\
+        .withColumnRenamed("ADDRESS1", "address_line_4")\
+        .select(col("source"), col("source_id"),
+                col("extracted_name.*"),
+                col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+                col("address_line_1"), col("address_line_2"), col("address_line_3"), col("address_line_4"))
+
+    return schools_admissions_cleaned
+
+
+def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -> DataFrame:
+    """Standardize schools admissions data. This function convert all the custom names (coming from their respective sources
+    to standard names that will be used by various other functions like feature engineering etc.)
+    The DataFrame returned will have the following columns:
+
+    * source: Source of the data like parking, tax etc. Should be of type string and cannot be blank.
+    * source_id: Unique ID for reach record. It's ok to have same person with different source_id. Should be of type
+    string and cannot be blank.
+    * uprn: UPRN of the address. Should be of type string and can be blank.
+    * title: Title of the person. Should be of type string and can be blank.
+    * first_name: First name of the person. Should be of type string and can be blank.
+    * last_name: Last name of the person. Should be of type string and can be blank.
+    * name: Concatenation of first and last name after sorting alphabetically of the person. Should be of type
+    string and can be blank.
+    * date_of_birth: Date of birth of the person. Should be of type Date and can be blank.
+    * post_code: Postal code of the address. Should be of type string and can be blank.
+    * address_line_1: First line of the address. Should be of type string and can be blank.
+    * address_line_2: Second line of the address. Should be of type string and can be blank.
+    * address_line_3: Third line of the address. Should be of type string and can be blank.
+    * address_line_4: Fourth line of the address. Should be of type string and can be blank.
+    * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
+    Should be of type string and can be blank.
+
+    Args:
+        schools_admissions_cleaned: parking permit DataFrame after preparing and cleaning it.
+
+    Returns:
+        A schools admissions DataFrame with all the standard column listed above.
+
+    """
+    schools_admissions = schools_admissions_cleaned \
+        .withColumn("source_id", col("source_id")) \
+        .withColumn("title", categorise_title(lower(trim(col("title"))))) \
+        .withColumn("first_name", standardize_name(trim(col("first_name")))) \
+        .withColumn("last_name", standardize_name(trim(col("last_name")))) \
+        .withColumn("name", standardize_full_name(trim(col("first_name")), trim(col("middle_name")),
+                                                  trim(col("last_name"))))\
+        .withColumn("post_code", lower(trim(col("post_code")))) \
+        .withColumn("address_line_1", standardize_address_line(trim(col("address_line_1")))) \
+        .withColumn("address_line_2", standardize_address_line(trim(col("address_line_2"))))\
+        .withColumn("address_line_3", standardize_address_line(trim(col("address_line_3")))) \
+        .withColumn("address_line_4", standardize_address_line(trim(col("address_line_4")))) \
+        .withColumn("full_address1", full_address(trim(col("address_line_1")), trim(col("address_line_2")),
+                                                  trim(col("address_line_3")),
+                                                  trim(col("address_line_4")))) \
+        .withColumn("full_address", regexp_replace(col("full_address1"), r"\s+", " "))\
+        .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"),
+                col("last_name"), col("name"), col("date_of_birth"), col("post_code"), col("address_line_1"),
+                col("address_line_2"), col("address_line_3"), col("address_line_4"),
+                col("full_address"))
+
+    return schools_admissions
+
+
 def remove_deceased(df: DataFrame) -> DataFrame:
     """Remove deceased person from the DataFrame. For the data sources we have cleansed this information that was
     present along with other details of the person for e.g. if the person name is given Executors of Mr. Abc Pqr Xyz then
