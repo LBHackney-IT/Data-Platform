@@ -647,7 +647,7 @@ module "parking_eta_decision_records" {
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "eta_decision_records/20221005 - ETA_Decisions - GDS or Qlik data Load - records -v2 UTF8"
-  ingestion_schedule             = "cron(0 11 * * ? *)"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = false
   worksheets = {
     sheet1 : {
