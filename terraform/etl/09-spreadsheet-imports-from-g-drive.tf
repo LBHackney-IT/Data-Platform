@@ -621,7 +621,7 @@ module "parking_permits_consultation_survey_20221005" {
     }
   }
 }
-module "parking_eta_decision_records_20221005" {
+module "parking_eta_decision_records" {
   count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
@@ -642,11 +642,11 @@ module "parking_eta_decision_records_20221005" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1IDTG0z8XnWspL5SfID2GPVM1vofz3m4q"
-  glue_job_name                  = "parking_eta_decision_records_20221005"
+  google_drive_document_id       = "1LN3htVTYZw6PKv2gBnHmbsNhSysCTRuS"
+  glue_job_name                  = "parking_eta_decision_records"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "eta_decision_records/20221005 - ETA_Decisions - GDS or Qlik data Load - records UTF8.csv"
+  input_file_name                = "eta_decision_records/20221005 - ETA_Decisions - GDS or Qlik data Load - records -v2 UTF8"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = false
   worksheets = {
