@@ -1027,7 +1027,11 @@ module "dp_success_measures_auto_data" {
   glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
   helper_module_key               = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                 = data.aws_s3_bucket_object.pydeequ.key
-  glue_catalog_database_name      = module.department_data_and_insight_data_source.raw_zone_catalog_database_name
+  glue_catalog_database_name      = module.department_data_and_insight_data_source.raw_zone_catalog_database_name 
+  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1T3EyKOoFbaWSx6Gsp-mOJc9DSB-EsaKitqitLxCAY50"
   google_sheets_worksheet_name    = "Automated Data"
   department                      = module.department_data_and_insight_data_source
@@ -1046,6 +1050,7 @@ module "correspondence_performance_officer_qa_name_link_lookup" {
   glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
   helper_module_key               = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                 = data.aws_s3_bucket_object.pydeequ.key
+  glue_catalog_database_name = module.department_parking_data_source.raw_zone_catalog_database_name  
   glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
