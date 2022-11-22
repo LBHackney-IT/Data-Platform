@@ -86,7 +86,40 @@ upper(audit_message) LIKE 'PCN EXTRACTED FOR OFR%'
 )
 )
 
-SELECT *
+SELECT 
+case
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR PRINT%' and tickettype like 'CCTV Bus Lane' then 'BLPCN'
+when upper(pcn_audit.audit_message) LIKE 'BUSLANE PCN EXTRACTED FOR ENFORCEMENT NOTICE%' and tickettype like 'CCTV Bus Lane' then 'EN'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR CC%' and tickettype like 'CCTV Bus Lane' then 'BL CC'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR OFR%' and tickettype like 'CCTV Bus Lane' then 'BL OFR'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR PRINT%' and tickettype like 'CCTV Moving traffic' then 'MT PCN'
+when upper(pcn_audit.audit_message) LIKE 'WARNING NOTICE EXTRACTED FOR PRINT%' and tickettype like 'CCTV Moving traffic' then 'MT W'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR CC%' and tickettype like 'CCTV Moving traffic' then 'MT CC'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR OFR%' and tickettype like 'CCTV Moving traffic' then 'MT OFR'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR PRINT%' and tickettype like 'CCTV static' then 'ST PCN'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR CC%' and tickettype like 'CCTV static' then 'ST CC'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR OFR%' and tickettype like 'CCTV static' then 'ST OFR'
+when upper(pcn_audit.audit_message) LIKE 'WARNING NOTICE EXTRACTED FOR PRINT%' and tickettype like 'CCTV static' then 'ST W'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR NTO%' and tickettype like 'hht' then 'NTO'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR CC%' and tickettype like 'hht' then 'CC'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR OFR%' and tickettype like 'hht' then 'OFR'
+when upper(pcn_audit.audit_message) LIKE 'PCN EXTRACTED FOR PRINT%' and tickettype like 'hht' then 'HHT PCN'
+when upper(pcn_audit.audit_message) LIKE 'PCN PRINTED%' and tickettype like 'CCTV Bus Lane' then 'BLPCN'
+when upper(pcn_audit.audit_message) LIKE 'EN PRINTED %' and tickettype like 'CCTV Bus Lane' then 'EN'
+when upper(pcn_audit.audit_message) LIKE 'CC PRINTED %' and tickettype like 'CCTV Bus Lane' then 'BL CC'
+when upper(pcn_audit.audit_message) LIKE 'OFR PRINTED%' and tickettype like 'CCTV Bus Lane' then 'BL OFR'
+when upper(pcn_audit.audit_message) LIKE 'PCN PRINTED%' and tickettype like 'CCTV Moving traffic' then 'MT PCN'
+when upper(pcn_audit.audit_message) LIKE 'CC PRINTED %' and tickettype like 'CCTV Moving traffic' then 'MT CC'
+when upper(pcn_audit.audit_message) LIKE 'OFR PRINTED%' and tickettype like 'CCTV Moving traffic' then 'MT OFR'
+when upper(pcn_audit.audit_message) LIKE 'PCN PRINTED%' and tickettype like 'CCTV static' then 'ST PCN'
+when upper(pcn_audit.audit_message) LIKE 'CC PRINTED %' and tickettype like 'CCTV static' then 'ST CC'
+when upper(pcn_audit.audit_message) LIKE 'OFR PRINTED%' and tickettype like 'CCTV static' then 'ST OFR'
+when upper(pcn_audit.audit_message) LIKE 'NTO PRINTED%' and tickettype like 'hht' then 'NTO'
+when upper(pcn_audit.audit_message) LIKE 'CC PRINTED %' and tickettype like 'hht' then 'CC'
+when upper(pcn_audit.audit_message) LIKE 'OFR PRINTED%' and tickettype like 'hht' then 'OFR'
+when upper(pcn_audit.audit_message) LIKE 'HHTPCN PRINTED%' and tickettype like 'hht' then 'HHT PCN'
+else upper(pcn_audit.audit_message) end as print_file_type
+,*
 FROM pcn_audit 
 left join liberator_pcn_tickets on pcna_ticket_ref = ticketserialnumber and pcna_import_date = liberator_pcn_tickets.import_date
 
