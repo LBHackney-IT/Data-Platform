@@ -14,7 +14,7 @@ class TestVonageApiIngestion(TestCase):
         input_start_date = "2021-10-03"
         input_end_date = "2021-10-05"
 
-        expected = ["2021-10-03","2021-10-04"]
+        expected = ["2021-10-04"]
 
         actual = create_list_of_call_dates(input_start_date,input_end_date)
 

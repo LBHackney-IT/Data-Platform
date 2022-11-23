@@ -2,7 +2,6 @@ import sys
 
 sys.path.append('./lib/')
 
-import pandas as pd
 import requests
 import json
 
@@ -13,13 +12,25 @@ import time
 
 import logging
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+import boto3
+from dotenv import load_dotenv
+from os import getenv
+
+import re
+
+import api_helper
+
+# from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+
+# from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
 
 def get_auth_token(client_id, client_secret, scope):
     url = "https://emea.newvoicemedia.com/Auth/connect/token"
@@ -108,10 +119,7 @@ def get_days_data(date_to_call, api_to_call, table_to_call, auth_token):
         # print(f'Data being appended is of type {type(data)}')
         json_responses.append(data)
 
-        # read metadata
-        df_meta = pd.json_normalize(json.loads(vonage_request.content))
-
-        max_pages = df_meta['meta.pageCount'][0]
+        max_pages = data['meta']['pageCount']
         print(f'Max Pages: {max_pages}')
 
         while page < max_pages:
@@ -136,6 +144,8 @@ def get_days_data(date_to_call, api_to_call, table_to_call, auth_token):
 
 def create_list_of_call_dates(start_date, end_date):
     start_call_date = date.fromisoformat(start_date)
+
+    start_call_date = start_call_date + relativedelta(days=+1)
     # print(f'Date Start {str(start_call_date)}')
 
     end_call_date = date.fromisoformat(end_date)
@@ -150,13 +160,15 @@ def create_list_of_call_dates(start_date, end_date):
     return between_dates
     # read the dates as actual dates
 
+
 def single_digit_to_zero_prefixed_string(value):
     return str(value) if value > 9 else '0' + str(value)
-def output_to_landing_zone(data, day_of_item, output_folder):
 
+def output_to_landing_zone(data, day_of_item, output_folder,s3_client,s3_bucket):
     meta = data['meta']
     page = single_digit_to_zero_prefixed_string(meta['page'])
-    print(f'Day: {day_of_item} - Meta: {meta} - Page: {page}')
+    max_pages = single_digit_to_zero_prefixed_string(meta['pageCount'])
+    print(f'Day: {day_of_item} - Meta: {meta} - Page: {page} - MaxPages: {max_pages}')
 
     date_of_item = date.fromisoformat(day_of_item)
 
@@ -164,11 +176,23 @@ def output_to_landing_zone(data, day_of_item, output_folder):
     month = single_digit_to_zero_prefixed_string(date_of_item.month)
     year = str(date_of_item.year)
 
-    # output code
+    filename = f'{day_of_item}_page_{page}_of_{max_pages}'
+
+    print(f'Begin output to S3: Filename:{filename} - Date: {date_of_item} - Page: {page}')
+
+    print(f'Day: {day}')
+    print(f'Month: {month}')
+    print(f'Year: {year}')
+
+    print(f"Outputting File to: {output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={date_of_item}/{filename}.json")
+    return s3_client.put_object(
+        Bucket=s3_bucket,
+        Body=str(data),
+        Key=f"{output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={date_of_item}/{filename}.json"
+    )
 
 
 def loop_through_dates(call_dates, api_to_call, table_to_call, auth_token):
-    # api_to_call,table_to_call,auth_token <--- args to add later
     # Loop through the list of dates and make a dictionary of data. labeled by date
     compiled_data = {}
     for day_date in call_dates:
@@ -185,27 +209,42 @@ def retrieve_credentials_from_secrets_manager(secrets_manager_client, secret_nam
     )
     return response
 
-
-def find_latest_file():
-    # script to find the latest file in s3
-    latest_file_date = "2022-10-19"
-    return latest_file_date
-
-
-def export_data_dictionary(data_dict, table_to_call,output_location):
+def export_data_dictionary(data_dict, output_location,s3_client,s3_bucket):
     looped_count = 0
+    # print(f'Output Folder: {output_location}')
+    # print(f'S3 Bucket: {s3_bucket}')
     for day in data_dict:
         list_count = 0
         count_of_data = len(data_dict[day])
         while list_count < count_of_data:
-            output_to_landing_zone(data_dict[day][list_count], day, output_location)
+            output_to_landing_zone(data_dict[day][list_count], day, output_location,s3_client,s3_bucket)
             list_count = list_count + 1
             looped_count = looped_count + 1
 
-    print(f'Output to Landing Zone has been run {looped_count} times')
 
+def lambda_handler(event, lambda_context):
 
-def lambda_handler(client_id, client_secret):
+    #######=============== GET S3 VARIABLES ###############################
+    print(f'Getting S3 Variables')
+    load_dotenv()
+
+    s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
+    output_folder_name = getenv("OUTPUT_FOLDER")
+    glue_trigger_name = getenv("TRIGGER_NAME")
+
+    ######################## GET SECRET VALUES ##############################
+    print(f'Getting Secrets Variables')
+    secret_name = getenv("SECRET_NAME")
+
+    secrets_manager_client = boto3.client('secretsmanager')
+
+    api_credentials_response = retrieve_credentials_from_secrets_manager(secrets_manager_client, secret_name)
+    api_credentials = json.loads(api_credentials_response['SecretString'])
+
+    client_id = api_credentials.get("api_key")
+    print(f'Client_id: {client_id}')
+    client_secret = api_credentials.get("secret")
+    print(f'Client_secret: {client_secret}')
 
     ######################## Script Starts Here #############################
     print("Get Auth Token")
@@ -216,7 +255,9 @@ def lambda_handler(client_id, client_secret):
     api_to_call = "stats"
     table_to_call = "interactions"  # define in terraform
 
-    start_date = find_latest_file()
+    s3_client = boto3.client('s3')
+
+    start_date = api_helper.get_latest_data_date(s3_client,s3_bucket,output_folder_name)
     end_call_date = str(date.today())
     dates_to_call = create_list_of_call_dates(start_date, end_call_date)
 
@@ -224,6 +265,9 @@ def lambda_handler(client_id, client_secret):
 
     called_data = loop_through_dates(dates_to_call, api_to_call, table_to_call, auth_token)
 
-    output_location = "/vonage_data/"
+    output_location = output_folder_name
+    # print(f'Output_location = {output_location}')
 
-    export_data_dictionary(called_data,table_to_call,output_location)
+    export_data_dictionary(called_data, output_location,s3_client,s3_bucket)
+
+    # check if it all outputted properly
