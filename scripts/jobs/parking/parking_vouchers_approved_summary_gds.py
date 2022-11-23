@@ -225,6 +225,7 @@ end as zone_name
 	(liberator_permit_renewals.renewal_payment_status = 'Renewed' or liberator_permit_renewals.renewal_payment_status = 'Approved' or liberator_permit_renewals.renewal_payment_status = 'ORDER_APPROVED' or liberator_permit_renewals.renewal_payment_status = 'PENDING_VRM_CHANGE' or liberator_permit_renewals.renewal_payment_status = 'Created' or liberator_permit_renewals.renewal_payment_status = 'PENDING_ADDR_CHANGE' or liberator_permit_renewals.renewal_payment_status = 'PAYMENT_RECEIVED')
  , 1, 0)) as approved_status_flag
  
+,liberator_permit_fta.permit_type as voucher_period
 ,substr(liberator_permit_fta.permit_reference,1,3) as PermitType
 ,case
  when substr(liberator_permit_fta.permit_reference,1,3) = 'HYA' then 'All zone'
@@ -471,6 +472,7 @@ else 'NONE' end
 	(liberator_permit_renewals.renewal_payment_status = 'Renewed' or liberator_permit_renewals.renewal_payment_status = 'Approved' or liberator_permit_renewals.renewal_payment_status = 'ORDER_APPROVED' or liberator_permit_renewals.renewal_payment_status = 'PENDING_VRM_CHANGE' or liberator_permit_renewals.renewal_payment_status = 'Created' or liberator_permit_renewals.renewal_payment_status = 'PENDING_ADDR_CHANGE' or liberator_permit_renewals.renewal_payment_status = 'PAYMENT_RECEIVED')
  , 1, 0)) 
 
+,liberator_permit_fta.permit_type --as voucher_period
  ,substr(liberator_permit_fta.permit_reference,1,3)
  ,case
  when substr(liberator_permit_fta.permit_reference,1,3) = 'HYA' then 'All zone'
