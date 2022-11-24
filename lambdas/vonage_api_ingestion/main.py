@@ -231,6 +231,8 @@ def lambda_handler(event, lambda_context):
     s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
     output_folder_name = getenv("OUTPUT_FOLDER")
     glue_trigger_name = getenv("TRIGGER_NAME")
+    api_to_call = getenv("API_TO_CALL")
+    table_to_call = getenv("TABLE_TO_CALL")  # define in terraform
 
     ######################## GET SECRET VALUES ##############################
     print(f'Getting Secrets Variables')
@@ -251,9 +253,6 @@ def lambda_handler(event, lambda_context):
 
     scope = "stats"
     auth_token = get_auth_token(client_id, client_secret, scope)
-
-    api_to_call = "stats"
-    table_to_call = "interactions"  # define in terraform
 
     s3_client = boto3.client('s3')
 
