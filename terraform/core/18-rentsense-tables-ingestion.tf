@@ -21,7 +21,7 @@ module "ingest_mtfh_rentsense_tables" {
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   schedule                       = "cron(30 5 ? * MON-FRI *)"
   job_parameters = {
-    "--table_names"       = "Persons,ContactDetails,Assets", # This is a comma delimited list of Dynamo DB table names to be imported
+    "--table_names"       = "Persons,ContactDetails,Assets,Accounts,ActivityHistory,EqualityInformation,HousingRegister,HousingRepairsOnline,PatchesAndAreas,Processes", # This is a comma delimited list of Dynamo DB table names to be imported
     "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
     "--s3_target"         = "s3://${module.landing_zone.bucket_id}/mtfh/"
     "--number_of_workers" = local.number_of_workers_for_mtfh_ingestion
