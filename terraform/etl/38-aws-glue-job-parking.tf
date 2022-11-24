@@ -1090,7 +1090,7 @@ module "parking_defect_met_fail" {
   script_name                    = "parking_defect_met_fail"
   glue_version                   = "3.0"
   #triggered_by_job              = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn"
-  triggered_by_crawler           = module.parking_spreadsheet_parking_ops_db_defects_mgt[0].crawler_name.value
+  triggered_by_crawler           = module.parking_spreadsheet_parking_ops_db_defects_mgt[0].crawler_name
   job_description                = "To collect and format the Ops Defect Data."
   trigger_enabled                = local.is_production_environment
   glue_job_timeout               = 10
