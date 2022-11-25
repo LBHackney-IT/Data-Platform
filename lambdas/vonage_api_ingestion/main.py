@@ -16,11 +16,7 @@ import boto3
 from dotenv import load_dotenv
 from os import getenv
 
-import re
-
 import api_helper
-
-# from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
 
 
 logger = logging.getLogger()
@@ -261,12 +257,13 @@ def lambda_handler(event, lambda_context):
     dates_to_call = create_list_of_call_dates(start_date, end_call_date)
 
     print(f'dates_to_call = {dates_to_call}')
+    if(len(dates_to_call) > 0):
+        print(f'There are dates to call')
+        called_data = loop_through_dates(dates_to_call, api_to_call, table_to_call, auth_token)
 
-    called_data = loop_through_dates(dates_to_call, api_to_call, table_to_call, auth_token)
+        output_location = output_folder_name
+        # print(f'Output_location = {output_location}')
 
-    output_location = output_folder_name
-    # print(f'Output_location = {output_location}')
-
-    export_data_dictionary(called_data, output_location,s3_client,s3_bucket)
-
-    # check if it all outputted properly
+        export_data_dictionary(called_data, output_location,s3_client,s3_bucket)
+    else:
+        print(f'No Dates')
