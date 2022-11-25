@@ -5,7 +5,6 @@ s3_bucket = 'dataplatform-stg-landing-zone'
 output_folder_name = 'huu_test'
 glue_trigger_name = "TRIGGER_NAME"
 
-DATE_STRING = "2022-11-23" # The lambda will need to calculate
 API_TO_CALL = "stats"
 TABLE_TO_CALL = "interactions"
 
@@ -16,7 +15,6 @@ os.environ["OUTPUT_FOLDER"] = output_folder_name
 os.environ["TRIGGER_NAME"] = glue_trigger_name
 os.environ["SECRET_NAME"] = secret_name
 
-os.environ["DATE_STRING"] = DATE_STRING
 os.environ["API_TO_CALL"] = API_TO_CALL
 os.environ["TABLE_TO_CALL"] = TABLE_TO_CALL
 

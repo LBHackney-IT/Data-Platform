@@ -7,6 +7,7 @@ import botocore.session
 from botocore.stub import Stubber
 from datetime import datetime
 from  lambdas.vonage_api_ingestion.main import create_list_of_call_dates
+from  lambdas.vonage_api_ingestion.api_helper import get_latest_value
 
 class TestVonageApiIngestion(TestCase):
 
@@ -24,7 +25,7 @@ class TestVonageApiIngestion(TestCase):
         input_start_date = "2021-01-01"
         input_end_date = "2021-02-01"
 
-        expected = ["2021-01-01", "2021-01-02",
+        expected = ["2021-01-02",
                     "2021-01-03",
                     "2021-01-04",
                     "2021-01-05",
@@ -60,15 +61,12 @@ class TestVonageApiIngestion(TestCase):
 
         self.assertEqual(expected, actual, f"expected: {expected} but got: {actual}")
 
-    def test_loop_through_dates(self):
-        # needs to loop through the list of dates, then make a dictionary which contains
-        # date of data || List of all the responses for that date ||
-        input_start_date = "2021-10-03"
-        input_end_date = "2021-10-05"
+    def test_get_latest_value(self):
+        # Test for get latest year
 
-        expected = {"2021-10-03":["response","response"],
-                    "2021-10-04": ["response","response","response"]}
+        test_value = [{'Prefix': 'huu_test/import_year=2020/import_month=10/import_day=2057/'}, {'Prefix': 'huu_test/import_year=2020/import_month=10/import_day=1991/'}, {'Prefix': 'huu_test/import_year=2020/import_month=10/import_day=1995/'}]
+        target = "2057"
+        actual = get_latest_value(test_value)
 
-        actual = create_list_of_call_dates(input_start_date,input_end_date)
-
-        self.assertEqual(expected, actual, f"expected: {expected} but got: {actual}")
+        assert target == actual, f'Test Failed. Should be {target} instead of {actual}'
+        print(f'Test passed with Value "{target}"')
