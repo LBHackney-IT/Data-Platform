@@ -31,14 +31,6 @@
          "source_crs": "epsg:4326",
          "enrich_with":["ward", "lsoa", "recycling_estate", "street_cleaning_area"]
      },
-     "gully_cleanse_5": {
-         "database_name":"env-services-refined-zone",
-         "table_name":"alloy_gully_cleanse_gullies_5",
-         "geom_column":"geometry",
-         "geom_format": "wkt",
-         "source_crs": "epsg:4326",
-         "enrich_with":["ward", "lsoa", "recycling_estate", "street_cleaning_area"]
-     },
      "gully_cleanse": {
          "database_name":"env-services-refined-zone",
          "table_name":"alloy_gully_cleanse_gully_cleanse",
