@@ -9,3 +9,9 @@ variable "create_workflow" {
   type        = bool
   default     = true
 }
+
+variable "job_schedule" {
+  description = "Used to set the schedule for the ingestion job"
+  type        = string
+  default     = "cron(15 0 ? * MON,TUE,WED,THU,FRI *)"
+}

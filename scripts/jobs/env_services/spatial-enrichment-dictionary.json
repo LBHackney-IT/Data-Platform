@@ -1,0 +1,42 @@
+[{
+     "fix_my_street_defect": {
+         "database_name":"env-services-refined-zone",
+         "table_name":"alloy_fix_my_street_defect_fix_my_street_defect",
+         "geom_column":"geometry",
+         "geom_format": "wkt",
+         "source_crs": "epsg:4326",
+         "enrich_with":["ward", "lsoa", "recycling_estate", "street_cleaning_area"]
+     },
+     "alloy_flytipjobs": {
+         "database_name":"env-services-refined-zone",
+         "table_name":"alloy_flytipjobs_dump_collection",
+         "geom_column":"geometry",
+         "geom_format": "wkt",
+         "source_crs": "epsg:4326",
+         "enrich_with":["ward", "lsoa", "recycling_estate", "street_cleaning_area"]
+     },
+     "alloy_graffiti": {
+         "database_name":"env-services-refined-zone",
+         "table_name":"alloy_graffiti_graffiti",
+         "geom_column":"geometry",
+         "geom_format": "wkt",
+         "source_crs": "epsg:4326",
+         "enrich_with":["ward", "lsoa", "recycling_estate", "street_cleaning_area"]
+     },
+     "gully_cleanse_5": {
+         "database_name":"env-services-refined-zone",
+         "table_name":"alloy_gully_cleanse_gullies_5",
+         "geom_column":"geometry",
+         "geom_format": "wkt",
+         "source_crs": "epsg:4326",
+         "enrich_with":["ward", "lsoa", "recycling_estate", "street_cleaning_area"]
+     },
+     "gully_cleanse": {
+         "database_name":"env-services-refined-zone",
+         "table_name":"alloy_gully_cleanse_gully_cleanse",
+         "geom_column":"geometry",
+         "geom_format": "wkt",
+         "source_crs": "epsg:4326",
+         "enrich_with":["ward", "lsoa", "recycling_estate", "street_cleaning_area"]
+     }
+ }]
