@@ -4,8 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-botocore = "*"
-lambdas = "*"
 python-dotenv = "*"
 python-dateutil = "*"
 requests = "*"
