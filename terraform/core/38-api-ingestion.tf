@@ -32,7 +32,7 @@ module "icaseworks_api_ingestion" {
 }
 
 module "vonage_api_ingestion" {
-  count                     = local.is_live_environment ? 0 : 1 # If local = Live . then use 0 else 1
+  count                     = local.is_live_environment && !local.is_production_environment ? 1 : 0 # If local = Live . then use 0 else 1
   source                    = "../modules/api-ingestion-lambda"
   tags                      = module.tags.values # Do not change
   is_production_environment = local.is_production_environment # Do not change
