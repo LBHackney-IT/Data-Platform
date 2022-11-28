@@ -6,8 +6,8 @@ import requests
 import botocore.session
 from botocore.stub import Stubber
 from datetime import datetime
-from  lambdas.vonage_api_ingestion.main import create_list_of_call_dates
-from  lambdas.vonage_api_ingestion.api_helper import get_latest_value
+from  vonage_api_ingestion.main import create_list_of_call_dates
+from  vonage_api_ingestion.api_helper import get_latest_value
 
 class TestVonageApiIngestion(TestCase):
 
