@@ -21,7 +21,7 @@ module "ingest_mtfh_rentsense_tables" {
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   schedule                       = "cron(30 5 ? * MON-FRI *)"
   job_parameters = {
-    "--table_names"       = "Persons,ContactDetails,Assets,Accounts,ActivityHistory,EqualityInformation,HousingRegister,HousingRepairsOnline,PatchesAndAreas,Processes", # This is a comma delimited list of Dynamo DB table names to be imported
+    "--table_names"       = "Persons,ContactDetails,Assets,Accounts,EqualityInformation,HousingRegister,HousingRepairsOnline,PatchesAndAreas,Processes", # This is a comma delimited list of Dynamo DB table names to be imported
     "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
     "--s3_target"         = "s3://${module.landing_zone.bucket_id}/mtfh/"
     "--number_of_workers" = local.number_of_workers_for_mtfh_ingestion
@@ -60,7 +60,7 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
   triggered_by_crawler       = module.ingest_mtfh_rentsense_tables.crawler_name
   job_parameters = {
     "--s3_bucket_target"          = module.raw_zone.bucket_id
-    "--table_filter_expression"   = "(^mtfh_assets|^mtfh_persons|^mtfh_contactdetails)"
+    "--table_filter_expression"   = "(^mtfh_assets|^mtfh_persons|^mtfh_contactdetails|^mtfh_accounts|^mtfh_equalityinformation|^mtfh_housingregister|^mtfh_housingrepairsonline|^mtfh_patchesandareas|^mtfh_processes)"
     "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_catalog_database.name
     "--enable-glue-datacatalog"   = "true"
     "--job-bookmark-option"       = "job-bookmark-enable"
