@@ -40,7 +40,7 @@ resource "aws_glue_trigger" "ingestion_crawler" {
 
   name          = "${var.identifier_prefix}${var.name}"
   type          = "SCHEDULED"
-  schedule      = "cron(15 0 ? * MON,TUE,WED,THU,FRI *)"
+  schedule      = var.job_schedule
   workflow_name = local.workflow_name
 
   actions {
