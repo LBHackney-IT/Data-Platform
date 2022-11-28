@@ -16,9 +16,6 @@ import boto3
 from dotenv import load_dotenv
 from os import getenv
 
-import api_helper
-
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
