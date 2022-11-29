@@ -131,3 +131,33 @@ resource "aws_kms_alias" "key_alias" {
   name          = lower("alias/${var.identifier_prefix}-ebs-qlik-sense")
   target_key_id = aws_kms_key.key.key_id
 }
+
+locals {
+  ec2_tags = {
+    BackupPolicy = title(var.environment)
+  }
+}
+
+#pre-prod Qlik sense instance, restored from backup AMI
+resource "aws_instance" "instance_from_backup_ami_pre_prod" {
+  count                       = local.is_production_environment ? 0 : 1
+  ami                         = "ami-07826e3240d293d50" #AMI of a backup on pre-prod to restore
+
+  subnet_id                   = var.vpc_subnet_ids[1] #check this
+  vpc_security_group_ids      = [aws_security_group.qlik_sense.id] #add in the existing security group
+
+  private_dns_name_options {
+    enable_resource_name_dns_a_record = true
+  }
+
+  iam_instance_profile = aws_iam_instance_profile.qlik_sense.id
+  disable_api_termination = true
+  key_name = aws_key_pair.qlik_sense_server_key.key_name 
+  ebs_optimized = true
+  tags = merge(var.tags, local.ec2_tags)
+
+  associate_public_ip_address = false #ensure no public ip assigned
+  #check these
+  #availability_zone = "eu-west-2a"
+  #monitoring = true
+}
