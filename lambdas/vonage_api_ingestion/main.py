@@ -364,7 +364,6 @@ def lambda_handler(event, lambda_context):
         called_data = loop_through_dates(dates_to_call, api_to_call, table_to_call, auth_token)
 
         output_location = output_folder_name
-        # print(f'Output_location = {output_location}')
 
         export_data_dictionary(called_data, output_location,s3_client,s3_bucket)
     else:

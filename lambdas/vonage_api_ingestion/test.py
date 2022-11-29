@@ -59,13 +59,3 @@ class TestVonageApiIngestion(TestCase):
         actual = create_list_of_call_dates(input_start_date,input_end_date)
 
         self.assertEqual(expected, actual, f"expected: {expected} but got: {actual}")
-    #
-    # def test_get_latest_value(self):
-    #     # Test for get latest year
-    #
-    #     test_value = [{'Prefix': 'huu_test/import_year=2020/import_month=10/import_day=2057/'}, {'Prefix': 'huu_test/import_year=2020/import_month=10/import_day=1991/'}, {'Prefix': 'huu_test/import_year=2020/import_month=10/import_day=1995/'}]
-    #     target = "2057"
-    #     actual = get_latest_value(test_value)
-    #
-    #     assert target == actual, f'Test Failed. Should be {target} instead of {actual}'
-    #     print(f'Test passed with Value "{target}"')
