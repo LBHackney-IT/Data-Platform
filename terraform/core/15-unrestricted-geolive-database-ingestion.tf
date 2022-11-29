@@ -11,6 +11,7 @@ module "boundaries_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "boundaries"
+  job_schedule                = "cron(0 2 ? * MON *)"
 }
 
 module "boundaries_geolive_ingestion_job" {
@@ -58,6 +59,7 @@ module "recycling_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "recycling"
+  job_schedule                = "cron(10 2 ? * MON *)"
 }
 
 module "recycling_boundaries_geolive_ingestion_job" {
@@ -105,6 +107,7 @@ module "health_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "health"
+  job_schedule                = "cron(20 2 ? * MON *)"
 }
   
 module "health_boundaries_geolive_ingestion_job" {
@@ -152,6 +155,7 @@ module "education_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "education"
+  job_schedule                = "cron(30 2 ? * MON *)"
 }
 
 module "education_boundaries_geolive_ingestion_job" {
@@ -199,6 +203,7 @@ module "housing_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "housing"
+  job_schedule                = "cron(40 2 ? * MON *)"
 }
 
 module "housing_boundaries_geolive_ingestion_job" {
