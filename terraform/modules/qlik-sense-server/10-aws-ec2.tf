@@ -142,6 +142,7 @@ locals {
 resource "aws_instance" "instance_from_backup_ami_pre_prod" {
   count                       = local.is_production_environment ? 0 : 1
   ami                         = "ami-07826e3240d293d50" #AMI of a backup on pre-prod to restore
+  instance_type               = "m5.2xlarge" 
 
   subnet_id                   = var.vpc_subnet_ids[1] #check this
   vpc_security_group_ids      = [aws_security_group.qlik_sense.id] #add in the existing security group
