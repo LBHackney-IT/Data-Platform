@@ -11,6 +11,7 @@ module "boundaries_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "boundaries"
+  job_schedule                = "cron(0 2 ? * MON *)"
 }
 
 module "boundaries_geolive_ingestion_job" {
@@ -58,10 +59,11 @@ module "recycling_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "recycling"
+  job_schedule                = "cron(10 2 ? * MON *)"
 }
 
 module "recycling_boundaries_geolive_ingestion_job" {
-  count                     = !local.is_production_environment ? 1 : 0
+  count                     = local.is_production_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
@@ -105,10 +107,11 @@ module "health_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "health"
+  job_schedule                = "cron(20 2 ? * MON *)"
 }
   
 module "health_boundaries_geolive_ingestion_job" {
-  count                     = !local.is_production_environment ? 1 : 0
+  count                     = local.is_production_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
@@ -152,10 +155,11 @@ module "education_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "education"
+  job_schedule                = "cron(30 2 ? * MON *)"
 }
 
 module "education_boundaries_geolive_ingestion_job" {
-  count                     = !local.is_production_environment ? 1 : 0
+  count                     = local.is_production_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
@@ -199,10 +203,11 @@ module "housing_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "housing"
+  job_schedule                = "cron(40 2 ? * MON *)"
 }
 
 module "housing_boundaries_geolive_ingestion_job" {
-  count                     = !local.is_production_environment ? 1 : 0
+  count                     = local.is_production_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment

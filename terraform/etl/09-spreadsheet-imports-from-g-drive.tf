@@ -480,41 +480,6 @@ module "Voucher_Import" {
     }
   }
 }
-module "parking_permits_consultation_survey_20220801" {
-  count                          = local.is_live_environment ? 1 : 0
-  source                         = "../modules/import-spreadsheet-file-from-g-drive"
-  is_production_environment      = local.is_production_environment
-  is_live_environment            = local.is_live_environment
-  department                     = module.department_parking_data_source
-  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
-  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
-  glue_role_arn                  = data.aws_iam_role.glue_role.arn
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
-  jars_key                       = data.aws_s3_bucket_object.jars.key
-  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
-  identifier_prefix              = local.short_identifier_prefix
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
-  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
-  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
-  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1FJUrwqxR_BWJdXIn0u6jYMixXIczCyQF"
-  glue_job_name                  = "Parking Permit Survey Consultation Hub - 20220801"
-  output_folder_name             = "g-drive"
-  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Parking Permit Survey Consultation Hub/Permits Consultation Survey - export-2022-08-01-11-04-48 UTF-8.csv"
-  ingestion_schedule             = "cron(0 21 * * ? *)"
-  enable_bookmarking             = false
-  worksheets = {
-    sheet1 : {
-      header_row_number = 0
-      worksheet_name    = "Parking Permit Survey Consultation Hub"
-    }
-  }
-}
 module "Permit_Diesel_Electric_Forecast" {
   count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
@@ -617,7 +582,7 @@ module "parking_permits_consultation_hub_survey" {
   worksheets = {
     sheet1 : {
       header_row_number = 0
-      worksheet_name    = "parking_permit_survey_consultation_hub"
+      worksheet_name    = "Parking Permit Survey Consultation Hub"
     }
   }
 }
@@ -656,8 +621,7 @@ module "parking_eta_decision_records" {
     }
   }
 }
-
-  module "PCN_Perm_VRM_NLPG_LLPG_match-Last3mths20221102" {
+module "pcn_permits_nlpg_llpg_matching_via_athena" {
   count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
   is_production_environment      = local.is_production_environment
@@ -678,155 +642,11 @@ module "parking_eta_decision_records" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1NhQG_vg1OhRlMmrgzMbRK1ViSq3cCEA1"
-  glue_job_name                  = "PCN_Perm_VRM_NLPG_LLPG_match-Last3mths20221102"
+  google_drive_document_id       = "1OOIBcNE4Sk5c6u7zLDDAcwi72b6tHpn-"
+  glue_job_name                  = "pcn_permits_nlpg_llpg_matching_via_athena"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "pcn_permits_nlpg_llpg_matching_via_athena/20221102-PCNPermVRMNLPGLLPGmatch-Last3mthsdddUTF8.csv"
-  ingestion_schedule             = "cron(0 21 * * ? *)"
-  enable_bookmarking             = false
-  worksheets = {
-    sheet1 : {
-      header_row_number = 0
-      worksheet_name    = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
-    }
-  }
-}
-    
-  module "PCN_Perm_VRM_NLPG_LLPG_match-Last6mths20221102" {
-  count                          = local.is_live_environment ? 1 : 0
-  source                         = "../modules/import-spreadsheet-file-from-g-drive"
-  is_production_environment      = local.is_production_environment
-  is_live_environment            = local.is_live_environment
-  department                     = module.department_parking_data_source
-  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
-  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
-  glue_role_arn                  = data.aws_iam_role.glue_role.arn
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
-  jars_key                       = data.aws_s3_bucket_object.jars.key
-  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
-  identifier_prefix              = local.short_identifier_prefix
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
-  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
-  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
-  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1NPz4yH5oZlykKLxkkaV4-jwH9D6VFx3p"
-  glue_job_name                  = "PCN_Perm_VRM_NLPG_LLPG_match-Last6mths20221102"
-  output_folder_name             = "g-drive"
-  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "pcn_permits_nlpg_llpg_matching_via_athena/20221102-PCNPermVRMNLPGLLPGmatch-Last6mthsdddUTF8.csv"
-  ingestion_schedule             = "cron(0 21 * * ? *)"
-  enable_bookmarking             = false
-  worksheets = {
-    sheet1 : {
-      header_row_number = 0
-      worksheet_name    = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
-    }
-  }
-}
-    
-  module "PCN_Perm_VRM_NLPG_LLPG_match-Last3mths20221123" {
-  count                          = local.is_live_environment ? 1 : 0
-  source                         = "../modules/import-spreadsheet-file-from-g-drive"
-  is_production_environment      = local.is_production_environment
-  is_live_environment            = local.is_live_environment
-  department                     = module.department_parking_data_source
-  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
-  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
-  glue_role_arn                  = data.aws_iam_role.glue_role.arn
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
-  jars_key                       = data.aws_s3_bucket_object.jars.key
-  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
-  identifier_prefix              = local.short_identifier_prefix
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
-  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
-  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
-  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1NN7bXH88W3fCsb-T8StdFFG_5jCYmE3N"
-  glue_job_name                  = "PCN_Perm_VRM_NLPG_LLPG_match-Last3mths20221123"
-  output_folder_name             = "g-drive"
-  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "pcn_permits_nlpg_llpg_matching_via_athena/20221123-PCNPermVRMNLPGLLPGmatch-Last3mthsdddUTF8.csv"
-  ingestion_schedule             = "cron(0 21 * * ? *)"
-  enable_bookmarking             = false
-  worksheets = {
-    sheet1 : {
-      header_row_number = 0
-      worksheet_name    = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
-    }
-  }
-}
-    
-  module "PCN_Perm_VRM_NLPG_LLPG_match-Last3mths20221121" {
-  count                          = local.is_live_environment ? 1 : 0
-  source                         = "../modules/import-spreadsheet-file-from-g-drive"
-  is_production_environment      = local.is_production_environment
-  is_live_environment            = local.is_live_environment
-  department                     = module.department_parking_data_source
-  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
-  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
-  glue_role_arn                  = data.aws_iam_role.glue_role.arn
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
-  jars_key                       = data.aws_s3_bucket_object.jars.key
-  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
-  identifier_prefix              = local.short_identifier_prefix
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
-  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
-  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
-  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1NMQoSfRCwAox5GJuhuBAnctlv2XohIRR"
-  glue_job_name                  = "PCN_Perm_VRM_NLPG_LLPG_match-Last3mths20221121"
-  output_folder_name             = "g-drive"
-  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "pcn_permits_nlpg_llpg_matching_via_athena/20221121-PCNPermVRMNLPGLLPGmatch-Last3mthsdddUTF8.csv"
-  ingestion_schedule             = "cron(0 21 * * ? *)"
-  enable_bookmarking             = false
-  worksheets = {
-    sheet1 : {
-      header_row_number = 0
-      worksheet_name    = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
-    }
-  }
-}
-    
-  module "PCN_Perm_VRM_NLPG_LLPG_match-Last3mths20221118" {
-  count                          = local.is_live_environment ? 1 : 0
-  source                         = "../modules/import-spreadsheet-file-from-g-drive"
-  is_production_environment      = local.is_production_environment
-  is_live_environment            = local.is_live_environment
-  department                     = module.department_parking_data_source
-  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
-  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
-  glue_role_arn                  = data.aws_iam_role.glue_role.arn
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
-  jars_key                       = data.aws_s3_bucket_object.jars.key
-  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
-  identifier_prefix              = local.short_identifier_prefix
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
-  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
-  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
-  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1NGe9Uflhs-FeTM-rUl7rl57agMQQvjif"
-  glue_job_name                  = "PCN_Perm_VRM_NLPG_LLPG_match-Last3mths20221118"
-  output_folder_name             = "g-drive"
-  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "pcn_permits_nlpg_llpg_matching_via_athena/20221118-PCNPermVRMNLPGLLPGmatch-Last3mthsdddUTF8.csv"
+  input_file_name                = "pcn_permits_nlpg_llpg_matching_via_athena/20221125to02-PCNPermVRMNLPGLLPGmatch-mergedddUTF8.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = false
   worksheets = {
