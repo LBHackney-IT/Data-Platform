@@ -140,7 +140,7 @@ locals {
 
 #pre-prod Qlik sense instance, restored from backup AMI
 resource "aws_instance" "instance_from_backup_ami_pre_prod" {
-  count                       = var.is_live_environmet && !var.is_production_environment ? 1 : 0
+  count                       = var.is_live_environment && !var.is_production_environment ? 1 : 0
   ami                         = "ami-07826e3240d293d50" #AMI of a backup on pre-prod to restore
   instance_type               = "m5.2xlarge" 
 
