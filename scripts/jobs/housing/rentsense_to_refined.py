@@ -470,7 +470,7 @@ if __name__ == "__main__":
     
     accounts2 = accounts2.join(case_priorities,accounts2.tenancy_ref ==  case_priorities.tenancy_ref2,"left")
         
-    accounts2 = accounts2.selectExpr("AccountReference as AccountReferenceNEW",
+    accounts2 = accounts2.selectExpr("AccountReference as AccountReference",
                                   "TenureType",
                                   "TenureTypeCode",
                                   "max_date as TenancyStartDate",
