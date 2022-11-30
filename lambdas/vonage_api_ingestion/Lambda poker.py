@@ -2,7 +2,7 @@ import os
 import main
 
 s3_bucket = 'dataplatform-stg-landing-zone'
-output_folder_name = 'huu_test'
+output_folder_name = 'vonage'
 glue_trigger_name = "TRIGGER_NAME"
 
 API_TO_CALL = "stats"
