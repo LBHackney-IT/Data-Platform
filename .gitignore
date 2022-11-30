@@ -38,3 +38,4 @@ dist/
 /terraform/modules/kafka-event-streaming/local-testing/send-message-to-topic.json
 /scripts/logs/
 /scripts/tests/test_person_matching.py
+/lambdas/vonage_api_ingestion/messbook.py
