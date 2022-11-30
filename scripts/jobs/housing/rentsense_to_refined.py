@@ -390,11 +390,6 @@ if __name__ == "__main__":
         transformation_ctx="sow2b_dbo_calculatedcurrentbalance_source")
     balance = get_latest_partitions_optimized(balance)
     
-    case_priorities = glueContext.create_data_frame.from_catalog(
-        database=source_raw_database,
-        table_name="housingfinancedbproduction_case_priorities",
-        transformation_ctx="housingfinancedbproduction_case_priorities_source")
-    case_priorities  = get_latest_partitions_optimized(case_priorities)
 
     
 # clear the rentsense export bucket so that only one date is being moved in the S3 shift
@@ -423,8 +418,6 @@ if __name__ == "__main__":
     accounts = accounts_s.union(accounts_int)
     accounts.select(col("startOfTenureDate"),to_date(col("startOfTenureDate"),"yyyy-MM-dd").alias("date")) \
           .drop("startOfTenureDate").withColumnRenamed("date","startOfTenureDate")
-  
-    accounts =  accounts.drop("uh_ten_ref")
           
     accounts = accounts.join(patch,accounts.paymentreference ==  patch.payref,"left")
     
@@ -435,13 +428,6 @@ if __name__ == "__main__":
     df_agg = (start_ten
         .groupBy("AccountR")
         .agg(F.max("TenancyDate").alias("max_date")))
-        
-        #payref to tenancy ref
-    
-    p_ref= df7.selectExpr("trim(u_saff_rentacc) as pay_ref",
-                        "trim(tag_ref) as uh_ten_ref")
-
-    accounts = accounts.join(p_ref,accounts.paymentreference ==  p_ref.pay_ref,"left")
 
     accounts2 = accounts.selectExpr("paymentreference as AccountReference",
                                   "description as TenureType",
@@ -457,20 +443,8 @@ if __name__ == "__main__":
     accounts2 = accounts2.distinct()
         
     accounts2 = accounts2.join(df_agg,accounts2.AccountReference ==  df_agg.AccountR,"left")
-    
-     # add the breathing space details
-    
-    case_priorities = case_priorities.filter(F.col("is_paused_until")>today)
-    
-    #filter("is_paused_until>now()")
-    
-    case_priorities = case_priorities.withColumn('BreathingSpace', lit(1))\
-                   .drop("import_date")\
-                   .withColumnRenamed("tenancy_ref","tenancy_ref2")
-    
-    accounts2 = accounts2.join(case_priorities,accounts2.tenancy_ref ==  case_priorities.tenancy_ref2,"left")
         
-    accounts2 = accounts2.selectExpr("AccountReference as AccountReferenceNEW",
+    accounts2 = accounts2.selectExpr("AccountReference",
                                   "TenureType",
                                   "TenureTypeCode",
                                   "max_date as TenancyStartDate",
@@ -479,8 +453,7 @@ if __name__ == "__main__":
                                   "HousingOfficerName",
                                   "Patch",
                                   "import_date as import_date",
-                                  "tenancy_ref as AccountReferenceUH",
-                                  "BreathingSpace"
+                                  "tenancy_ref"                               
                                     )
         
     accounts2 = accounts2.distinct()
@@ -515,7 +488,6 @@ if __name__ == "__main__":
     #move_file("dataplatform-stg-refined-zone", "housing/rentsense/gzip/accounts/", target_path, f"rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"))
     move_file(s3_bucket, "housing/rentsense/gzip/accounts/", target_path, f"rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"))
 
-
     #Arrangements
 
     ten = accounts.select('uh_ten_ref','paymentreference')
@@ -532,7 +504,7 @@ if __name__ == "__main__":
     arr = arr.withColumn("AgreementStartDate",F.to_date(F.col("start_date"),"yyyy-MM-dd"))\
         .withColumn("AgreementEndDate1",F.to_date(F.col("AgreementEndDate"),"yyyy-MM-dd"))\
         .withColumn("AgreementCreatedDate",F.to_date(F.col("created_at"),"yyyy-MM-dd"))\
-        .withColumn("AgreementCode",F.when(F.col("court_case_id")>0,"C").otherwise("N"))\
+        .withColumn("AgreementCode",F.when(F.col("court_case_id")>0,"N").otherwise("C"))\
         .drop("AgreementEndDate")
 
     arr = arr.selectExpr("paymentreference as AccountReference",
@@ -583,8 +555,8 @@ if __name__ == "__main__":
 
     asset= df3.selectExpr("asset_id",
                       "addressLine1 as Address1",
-                      "addressLine2 as Address2",
-                      "addressLine3 as Address3",
+                       "addressLine2 as Address2",
+                       "addressLine3 as Address3",
                       "postCode as PostCode",
                       "assetType as PropertyType"
                      ) 
@@ -600,14 +572,14 @@ if __name__ == "__main__":
     #create contact methods
 
     mob = df4.filter((df4.contacttype =="phone")&(df4.subtype == "mobile")).selectExpr("person_id as pid1",
-                                                                          "value as MobileNumber")
+                                                                           "value as MobileNumber")
     #get one record
     mob = (mob
         .groupBy("pid1")
         .agg(F.max("MobileNumber").alias("MobileNumber")))
 
     lline = df4.filter((df4.contacttype =="phone")&(df4.subtype == "landline")).selectExpr("person_id  as pid2",
-                                                                              "value as TelephoneNumber")
+                                                                               "value as TelephoneNumber")
 
     lline = (lline
         .groupBy("pid2")
@@ -629,13 +601,11 @@ if __name__ == "__main__":
     
     tens = tens.selectExpr("paymentreference as AccountReference",
                 "Title",
-                "case when length(TenantFirstName)=0 then '.' else TenantFirstName end as TenantFirstName",
-                "case when length(TenantSurName)=0 then '.' else TenantSurName end as TenantSurName",
-          #     "TenantSurName",
-                "left(MobileNumber,200) as MobileNumber",
-                "left(TelephoneNumber,200) as TelephoneNumber",
-                "case when length(Address1)=0 then '.' else Address1 end as Address1",
-          #     "Address1",
+                "TenantFirstName",
+                "TenantSurName",
+                "MobileNumber",
+                "TelephoneNumber",
+                "Address1",
                 "Address2",
                 "Address3",
                 "PostCode",
@@ -645,8 +615,6 @@ if __name__ == "__main__":
                 "import_date")
                      
     tens = tens.distinct()
-    
-    tens = tens.fillna({'TenantFirstName':'.', 'TenantSurName':'.','Address1':'.'})
     
     tens = add_import_time_columns(tens)
 
@@ -689,7 +657,7 @@ if __name__ == "__main__":
                                     "CurrentBalance as CurrentBalance",
                                     "BalanceDate",
                                     "uh_ten_ref as tenancy_ref",
-                                  "import_date")
+                                   "import_date")
     
     balances = balances.distinct()
     
@@ -730,7 +698,7 @@ if __name__ == "__main__":
     actions = df9.withColumn("uh_ten_ref1",F.trim(F.col("tag_ref")))\
                   .withColumn("ActionDate",F.to_date(F.col("action_date"),"yyyy-MM-dd"))
        
-    actions = actions.filter((F.col("action_date")>date_sub(current_date(),180)) & (F.col("action_date")<current_date()))
+    actions = actions.filter((F.col("action_date")>date_sub(current_date(),365)) & (F.col("action_date")<current_date()))
     
     actions = ten.join(actions,ten.uh_ten_ref ==  actions.uh_ten_ref1,"inner")
     
@@ -782,11 +750,11 @@ if __name__ == "__main__":
     
     ten = accounts.select('uh_ten_ref','paymentreference')
        
-    df11 = df10.filter((F.col("post_date")>date_sub(current_date(),180)) & (F.col("post_date")<current_date()))
+    df11 = df10.filter((F.col("post_date")>date_sub(current_date(),365)) & (F.col("post_date")<current_date()))
    
     df11 =  df11.withColumn("TransactionID",F.monotonically_increasing_id())\
-              .withColumn("code_lookup",F.trim(F.col("trans_type")))\
-              .replace(to_replace=mapTransactions, subset=['code_lookup'])
+               .withColumn("code_lookup",F.trim(F.col("trans_type")))\
+               .replace(to_replace=mapTransactions, subset=['code_lookup'])
 
     trans = df11.withColumn("uh_ten_ref1",F.trim(F.col("tag_ref")))
     
