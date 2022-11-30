@@ -2,7 +2,6 @@
 Functions and objects relating to the person matching process.
 """
 
-
 import re
 
 import pandas as pd
@@ -18,10 +17,9 @@ from pyspark.ml.functions import vector_to_array
 from pyspark.ml.tuning import ParamGridBuilder, CrossValidator, CrossValidatorModel
 from pyspark.sql import DataFrame, SparkSession, Column
 from pyspark.sql.functions import to_date, col, lit, broadcast, udf, when, substring, lower, concat_ws, soundex, \
-    regexp_replace, trim, sort_array, split, array_join, struct
+    regexp_replace, trim, split, struct, arrays_zip, array, array_sort
 from pyspark.sql.pandas.functions import pandas_udf
 from pyspark.sql.types import StructType, StructField, StringType, DateType, BooleanType, DoubleType
-
 
 extracted_name_schema = StructType([
     StructField("entity_type", StringType(), True),
@@ -164,7 +162,6 @@ def categorise_title(title: Column) -> Column:
 
     Returns:
         Column have one of the above category
-
     """
     category_master = title.contains("master")  # Priority 1
     category_ms = title.contains("ms")  # Priority 2
@@ -212,18 +209,15 @@ def standardize_name(name: Column) -> Column:
 
     Returns:
         Column after applying the rules
-
     """
     return when(name.isNull(), lit("")) \
         .otherwise(
-        lower(trim(regexp_replace(regexp_replace(regexp_replace(name, "0", "O"), "1", "L"), "^[\\&*./\\\]+", ""))))
+        lower(trim(regexp_replace(regexp_replace(regexp_replace(name, "0", "O"), "1", "L"), r"^[\\&*./\\\]+", ""))))
 
 
 def standardize_full_name(first_name: Column, middle_name: Column, last_name: Column) -> Column:
-    """A Dataframe helper function to sort person's name. This will help to deal with out-of-order names. For example if
-    the original name 'Alexander Graham Bell' is mistakenly recorded as 'Graham Alexander Bell' in one system and as
-    'Bell Alexander Graham' in another system, this function will convert both the names as 'Alexander Bell Graham'.
-    This will make our model more robust for out-of-order names.
+    """A Dataframe helper function to sort person's name. This will help to create a full name composed of first_name,
+    middle_name and last_name with any surplus whitespace removed.
 
     Args:
         first_name: Column name containing the first name.
@@ -231,9 +225,9 @@ def standardize_full_name(first_name: Column, middle_name: Column, last_name: Co
         last_name: Column name containing the last name.
 
     Returns:
-        A single name with parts of the name alphabetically sorted.
+        A single name with composed of first_name, middle_name and last_name.
     """
-    return trim(array_join(sort_array(split(concat_ws(" ", first_name, middle_name, last_name), " ")), " ", ""))
+    return regexp_replace(trim(concat_ws(" ", first_name, middle_name, last_name)), r"\s+", " ")
 
 
 def standardize_address_line(address_line: Column) -> Column:
@@ -243,7 +237,6 @@ def standardize_address_line(address_line: Column) -> Column:
         address_line: Columns containing data
     Returns:
         Column after converting Null or None to empty string.
-
     """
     return when(address_line.isNull(), lit("")).otherwise(trim(lower(address_line)))
 
@@ -254,11 +247,8 @@ def full_address(address_line_1: Column, address_line_2: Column, address_line_3:
     address is:
 
     100 House Number        (Line 1)
-
     Nice Street             (Line 2)
-
     Some Council            (Line 3)
-
     London                  (Line 4)
 
     This will be turned into: 100 House Number Nice Street Some Council London
@@ -271,7 +261,6 @@ def full_address(address_line_1: Column, address_line_2: Column, address_line_3:
 
     Returns:
         Full address after joining all the lines.
-
     """
     return trim(concat_ws(" ", address_line_1, address_line_2, address_line_3, address_line_4))
 
@@ -289,7 +278,6 @@ def prepare_clean_housing_data(spark: SparkSession, person_reshape_data_path: st
 
     Returns:
         A DataFrame after preparing data from multiple sources and cleaning it.
-
     """
     person_reshape = spark.read.parquet(person_reshape_data_path)
     assets_reshape = spark.read.parquet(assets_reshape_data_path)
@@ -359,7 +347,6 @@ def standardize_housing_data(housing_cleaned: DataFrame) -> DataFrame:
 
     Returns:
         A housing DataFrame with all the standard columns listed above.
-
     """
     housing = housing_cleaned \
         .filter(col("entity_type") == "Person") \
@@ -440,15 +427,16 @@ def prepare_clean_council_tax_data(spark: SparkSession, council_tax_account_data
             (12, 'CTax Payer'),
             (-1, '(DATA ERROR)')]).toDF("liability_id", "liability_type"))
 
-    council_tax_lead_person = council_tax_account \
-        .join(liable_types, col("lead_liab_pos") == col("liability_id")) \
-        .withColumn("source", lit("council_tax")) \
-        .withColumn("sub_source", lit("lead")) \
-        .withColumn("position", lit(0)) \
-        .withColumnRenamed("lead_liab_name", "name") \
-        .withColumn("extracted_name", extract_name_udf(col("name"))) \
-        .select(col("source"), col("account_ref"), col("party_ref"), col("liability_type"), col("sub_source"),
-                col("position"), col("extracted_name.*"), col("name"))
+    council_tax_lead_person = (council_tax_account
+                               .join(liable_types, col("lead_liab_pos") == col("liability_id"))
+                               .withColumn("source", lit("council_tax"))
+                               .withColumn("sub_source", lit("lead"))
+                               .withColumn("position", lit(0))
+                               .withColumnRenamed("lead_liab_name", "name")
+                               .withColumn("extracted_name", extract_name_udf(col("name")))
+                               .select(col("source"), col("account_ref"), col("party_ref"), col("liability_type"),
+                                       col("sub_source"),
+                                       col("position"), col("extracted_name.*"), col("name")))
 
     council_tax_liable_person = council_tax_liability_person \
         .join(liable_types, col("liab_pos") == col("liability_id")) \
@@ -505,8 +493,8 @@ def standardize_council_tax_data(council_tax_cleaned: DataFrame) -> DataFrame:
 
     Returns:
         A council tax DataFrame with all the standard columns listed above.
-
     """
+
     council_tax = council_tax_cleaned \
         .filter(col("entity_type") == "Person") \
         .drop(col("entity_type")) \
@@ -550,7 +538,6 @@ def prepare_clean_housing_benefit_data(spark: SparkSession, housing_benefit_memb
 
     Returns:
         A DataFrame after preparing data from multiple sources and cleaning it.
-
     """
     housing_benefit_member = spark.read.parquet(housing_benefit_member_data_path) \
         .withColumn("claim_house_id", concat_ws("-", col("claim_id"), col("house_id"))) \
@@ -623,7 +610,6 @@ def standardize_housing_benefit_data(housing_benefit_cleaned: DataFrame) -> Data
 
     Returns:
         A housing benefit DataFrame with all the standard column listed above.
-
     """
     housing_benefit = housing_benefit_cleaned \
         .filter(col("entity_type") == "Person") \
@@ -659,7 +645,6 @@ def prepare_clean_parking_permit_data(spark: SparkSession, parking_permit_data_p
 
     Returns:
         A DataFrame after preparing data from multiple sources and cleaning it.
-
     """
 
     parking_permit_cleaned = spark.read.parquet(parking_permit_data_path) \
@@ -733,44 +718,92 @@ def standardize_parking_permit_data(parking_permit_cleaned: DataFrame) -> DataFr
 
 
 def prepare_clean_schools_admissions_data(spark: SparkSession, schools_admissions_data_path: str) -> DataFrame:
-    """A function to prepare and clean schools admissions data. This function is specific to this particular data source.
-    For a new data source please add a new function.
+    """A function to prepare and clean schools admissions data. Splits ou middle name from first name. Sorts address
+    columns so that they are consistent with other datasets.
 
     Args:
         spark: SparkSession
-        schools_admissions_data_path: Path of the S3 (or local) folder containing parking permit data.
+        schools_admissions_data_path: Path of the S3 (or local) folder containing school admissions data.
 
     Returns:
         A DataFrame after preparing data from multiple sources and cleaning it.
-
     """
 
-#    schools_admissions_cleaned = spark.read.parquet(schools_admissions_data_path) \
-    schools_admissions_cleaned = spark.read.csv(schools_admissions_data_path, header=True)\
+    schools_admissions_cleaned = spark.read.parquet(schools_admissions_data_path)
+
+    address_cols = ["address_line_1", "address_line_2", "address_line_3", "address_line_4"]
+
+    schools_admissions_cleaned = schools_admissions_cleaned \
         .withColumn("source", lit("schools_admission")) \
-        .withColumn("source_id", col("STUD_ID")) \
-        .withColumn("title", col("APPL_TITLE"))\
-        .withColumn("extracted_name",
-                    extract_name_udf(concat_ws(" ", col("APPL_TITLE"), col("APPL_FORENAME"), col("APPL_SURNAME"))))\
-        .withColumn("date_of_birth", lit(""))\
-        .withColumnRenamed("POSTCODE", "post_code")\
-        .withColumnRenamed("EMAIL_ADDRESS", "email")\
-        .withColumnRenamed("UPRN", "uprn")\
-        .withColumnRenamed("HOUSE_NAME", "address_line_1")\
-        .withColumnRenamed("APARTMENT", "address_line_2")\
-        .withColumnRenamed("HOUSE_NO", "address_line_3")\
-        .withColumnRenamed("ADDRESS1", "address_line_4")\
-        .select(col("source"), col("source_id"),
-                col("extracted_name.*"),
-                col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
-                col("address_line_1"), col("address_line_2"), col("address_line_3"), col("address_line_4"))
+        .withColumn("source_id", col("Child ID ")) \
+        .withColumn("title", col("Title")) \
+        .withColumn("first_name", split(schools_admissions_cleaned["Contact Forename"], ' ').getItem(0)) \
+        .withColumn("middle_name", split(schools_admissions_cleaned["Contact Forename"], ' ').getItem(1)) \
+        .withColumn("last_name", col("Contact Surname")) \
+        .withColumn("name", regexp_replace(concat_ws(" ", col("first_name"), col("middle_name"),
+                                                     col("last_name")), r"\s+", " ")) \
+        .withColumn("date_of_birth", lit("")) \
+        .withColumnRenamed("First Line", "address_line_1") \
+        .withColumnRenamed("Second Line", "address_line_2") \
+        .withColumnRenamed("Third Line", "address_line_3") \
+        .withColumnRenamed("Town", "address_line_4") \
+        .withColumnRenamed("Post Code", "post_code") \
+        .withColumnRenamed("Email", "email") \
+        .withColumnRenamed("UPRN", "uprn") \
+        .select(col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+                col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+                col("address_line_1"), col("address_line_2"), col("address_line_3"),
+                col("address_line_4"))
+
+    # create a zip of address line arrays, sorted in the order of not null (False), column order
+    schools_admissions_cleaned = schools_admissions_cleaned.select(
+        col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+        col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+        col("address_line_1"), col("address_line_2"), col("address_line_3"),
+        col("address_line_4"),
+        array_sort(
+            arrays_zip(
+                array([col(c).isNull() for c in address_cols]),
+                array([lit(i) for i in range(4)]),
+                array([col(c) for c in address_cols])
+            )
+        ).alias('address_sorted'))
+
+    # disaggregate address_sorted arrays into columns
+    schools_admissions_cleaned = schools_admissions_cleaned.select(
+        col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+        col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+        *[col("address_sorted")[i]['2'].alias(address_cols[i]) for i in range(4)])
+
+    # rejig address lines
+    schools_admissions_cleaned = schools_admissions_cleaned \
+        .withColumn("address_line_1", when(col("address_line_1").rlike(r"\d+$")
+                                           & col("address_line_2").rlike(r"^[A-Za-z]"),
+                                           concat_ws(" ", col("address_line_1"), col("address_line_2")))
+                    .otherwise(col("address_line_1"))) \
+        .withColumn("address_line_2", when(col("address_line_1").contains(col("address_line_2")),
+                                           col("address_line_3"))
+                    .otherwise(concat_ws(" ", col("address_line_2"), col("address_line_3")))) \
+        .withColumn("address_line_2", when(col("address_line_2").rlike(r"\d+$"),
+                                           concat_ws(" ", col("address_line_2"), col("address_line_4")))
+                    .otherwise(col("address_line_2"))) \
+        .withColumn("address_line_3", when(col("address_line_2").contains(col("address_line_3")), lit("london"))) \
+        .withColumn("address_line_2", when(col("address_line_2").isNull(), lit("hackney"))
+                    .otherwise(col("address_line_2"))) \
+        .withColumn("address_line_3", when(col("address_line_3").isNull(), lit("london"))
+                    .otherwise(col("address_line_3"))) \
+        .withColumn("address_line_4", lit("")) \
+        .select(col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+                col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+                col("address_line_1"), col("address_line_2"), col("address_line_3"),
+                col("address_line_4"))
 
     return schools_admissions_cleaned
 
 
 def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -> DataFrame:
-    """Standardize schools admissions data. This function convert all the custom names (coming from their respective sources
-    to standard names that will be used by various other functions like feature engineering etc.)
+    """Standardize schools admissions data. This function convert all the custom names (coming from their respective
+    sources to standard names that will be used by various other functions like feature engineering etc.)
     The DataFrame returned will have the following columns:
 
     * source: Source of the data like parking, tax etc. Should be of type string and cannot be blank.
@@ -779,17 +812,21 @@ def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -
     * uprn: UPRN of the address. Should be of type string and can be blank.
     * title: Title of the person. Should be of type string and can be blank.
     * first_name: First name of the person. Should be of type string and can be blank.
+    * middle_name: Middle name of the person. Should be of type string and can be blank.
     * last_name: Last name of the person. Should be of type string and can be blank.
     * name: Concatenation of first and last name after sorting alphabetically of the person. Should be of type
     string and can be blank.
     * date_of_birth: Date of birth of the person. Should be of type Date and can be blank.
     * post_code: Postal code of the address. Should be of type string and can be blank.
-    * address_line_1: First line of the address. Should be of type string and can be blank.
-    * address_line_2: Second line of the address. Should be of type string and can be blank.
+    * address_line_1: First line of the address. Should be of type string and can be blank. If this is empty then check
+    if other address lines contain a value, and shift if necessary.
+    * address_line_2: Second line of the address. Should be of type string and can be blank. If this is empty then check
+    if other address lines contain a value, and shift if necessary.
     * address_line_3: Third line of the address. Should be of type string and can be blank.
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
     * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
     Should be of type string and can be blank.
+
 
     Args:
         schools_admissions_cleaned: parking permit DataFrame after preparing and cleaning it.
@@ -802,19 +839,19 @@ def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -
         .withColumn("source_id", col("source_id")) \
         .withColumn("title", categorise_title(lower(trim(col("title"))))) \
         .withColumn("first_name", standardize_name(trim(col("first_name")))) \
+        .withColumn("middle_name", standardize_name(trim(col("middle_name")))) \
         .withColumn("last_name", standardize_name(trim(col("last_name")))) \
-        .withColumn("name", standardize_full_name(trim(col("first_name")), trim(col("middle_name")),
-                                                  trim(col("last_name"))))\
+        .withColumn("name", standardize_name(trim(col("name")))) \
         .withColumn("post_code", lower(trim(col("post_code")))) \
         .withColumn("address_line_1", standardize_address_line(trim(col("address_line_1")))) \
-        .withColumn("address_line_2", standardize_address_line(trim(col("address_line_2"))))\
+        .withColumn("address_line_2", standardize_address_line(trim(col("address_line_2")))) \
         .withColumn("address_line_3", standardize_address_line(trim(col("address_line_3")))) \
         .withColumn("address_line_4", standardize_address_line(trim(col("address_line_4")))) \
         .withColumn("full_address1", full_address(trim(col("address_line_1")), trim(col("address_line_2")),
                                                   trim(col("address_line_3")),
                                                   trim(col("address_line_4")))) \
-        .withColumn("full_address", regexp_replace(col("full_address1"), r"\s+", " "))\
-        .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"),
+        .withColumn("full_address", regexp_replace(col("full_address1"), r"\s+", " ")) \
+        .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"), col("middle_name"),
                 col("last_name"), col("name"), col("date_of_birth"), col("post_code"), col("address_line_1"),
                 col("address_line_2"), col("address_line_3"), col("address_line_4"),
                 col("full_address"))
@@ -824,8 +861,8 @@ def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -
 
 def remove_deceased(df: DataFrame) -> DataFrame:
     """Remove deceased person from the DataFrame. For the data sources we have cleansed this information that was
-    present along with other details of the person for e.g. if the person name is given Executors of Mr. Abc Pqr Xyz then
-    title is Executors of Mr. while first name is Abc, middle name Pqr and Xyz as last name. Deceased information
+    present along with other details of the person for e.g. if the person name is given Executors of Mr. Abc Pqr Xyz
+    then title is Executors of Mr. while first name is Abc, middle name Pqr and Xyz as last name. Deceased information
     is available in title column. If you have used different method or strategy for cleaning or extracting the name,
     please create your own method for this functionality.
 
@@ -834,17 +871,16 @@ def remove_deceased(df: DataFrame) -> DataFrame:
 
     Returns:
         A DataFrame after removing all the deceased persons.
-
     """
-    deceased_filter_cond = lower(col("title")).contains("(deceased)") | \
-                           lower(col("title")).contains("executor") | \
-                           lower(col("title")).contains("exor") | \
-                           lower(col("title")).contains("rep") | \
-                           lower(col("title")).contains(" of") | \
-                           lower(col("title")).contains("of ") | \
-                           lower(col("title")).contains("the") | \
-                           lower(col("title")).contains("pe") | \
-                           lower(col("title")).contains("other")
+    deceased_filter_cond = (lower(col("title")).contains("(deceased)") |
+                            lower(col("title")).contains("executor") |
+                            lower(col("title")).contains("exor") |
+                            lower(col("title")).contains("rep") |
+                            lower(col("title")).contains(" of") |
+                            lower(col("title")).contains("of ") |
+                            lower(col("title")).contains("the") |
+                            lower(col("title")).contains("pe") |
+                            lower(col("title")).contains("other"))
 
     return df.filter(~deceased_filter_cond)
 
@@ -890,7 +926,6 @@ def automatically_label_data(df: DataFrame) -> DataFrame:
 
     Returns:
         A DataFrame with column auto_labels.
-
     """
     return df.withColumn("auto_labels",
                          when((col("a_source_id") == col("b_source_id")) | (
@@ -954,7 +989,7 @@ def generate_features(input_df: pd.DataFrame) -> pd.DataFrame:
         lambda x: similarity_algo.sim(x["a_full_address"], x["b_full_address"]), axis=1)
 
     return input_df.drop([
-        "a_first_name", "b_first_name", "a_middle_name", "b_middle_name", "a_last_name", "b_last_name",
+        "a_first_name", "b_first_name", "a_last_name", "b_last_name",
         "a_name", "b_name",
         "a_address_line_1", "b_address_line_1", "a_address_line_2", "b_address_line_2",
         "a_full_address", "b_full_address"], axis=1)
@@ -1041,7 +1076,6 @@ def train_model(df: DataFrame, model_path: str, test_model: bool, save_model: bo
 
     Returns:
         Nothing. This function doesn't return anything
-
     """
     # Python unpacking (e.g. a,b = ["a", "b"]) removes the type information, therefore extracting from list
     train_test = df.randomSplit([0.8, 0.2], seed=42)
@@ -1106,7 +1140,7 @@ def train_model(df: DataFrame, model_path: str, test_model: bool, save_model: bo
     cv_model.bestModel.stages[-1].setThreshold(best_threshold)
 
     if save_model:
-        cv_model.write().save(model_path)
+        cv_model.write().overwrite().save(model_path)
 
     train_prediction = cv_model.transform(train)
     print(f"Training ROC AUC train score after fine-tuning...: {evaluator.evaluate(train_prediction):.5f}")
@@ -1124,8 +1158,8 @@ def train_model(df: DataFrame, model_path: str, test_model: bool, save_model: bo
         test_prediction.show()
         print(f'Write predictions to csv...')
         test_prediction.printSchema()
-        test_prediction_for_export = test_prediction.withColumn('probability', vector_to_array(col('probability')))\
-            .withColumn('probability_str', concat_ws('probability'))\
+        test_prediction_for_export = test_prediction.withColumn('probability', vector_to_array(col('probability'))) \
+            .withColumn('probability_str', concat_ws('probability')) \
             .drop('uprn_vec', 'title_vec', 'date_of_birth_vec', 'features', 'rawPrediction', 'uprn_indexed',
                   'title_indexed', 'date_of_birth_indexed', 'probability')
         test_prediction_for_export.write.csv(header=True, path=f"{model_path}/test_predictions")
@@ -1151,7 +1185,6 @@ def predict(features_df: DataFrame, model_path: str) -> DataFrame:
 
     Returns:
         Returns DataFrame with prediction.
-
     """
     cv_model: CrossValidatorModel = CrossValidatorModel.load(model_path)
     predictions = cv_model.transform(features_df).withColumn("predicted_label",
@@ -1238,7 +1271,6 @@ def match_persons(model_path: str, standard_df: DataFrame) -> DataFrame:
         A DataFrame similar to standardised DataFrame containing peron matched determined by the column "matching_id"
 
     Raises: AssertionError is mandatory columns are missing.
-
     """
     mandatory_columns = ["source", "source_id", "uprn", "title", "first_name", "middle_name", "last_name", "name",
                          "date_of_birth", "post_code", "address_line_1", "address_line_2", "address_line_3",
@@ -1251,5 +1283,5 @@ def match_persons(model_path: str, standard_df: DataFrame) -> DataFrame:
     possible_matches = generate_possible_matches(standard_df)
     features_df = feature_engineering(possible_matches)
     predictions = predict(features_df, model_path)
-    result = link_all_matched_persons(standard_df, predictions)
-    return result
+    # result = link_all_matched_persons(standard_df, predictions)
+    return predictions
