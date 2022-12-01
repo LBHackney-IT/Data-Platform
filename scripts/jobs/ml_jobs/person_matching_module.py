@@ -212,7 +212,7 @@ def standardize_name(name: Column) -> Column:
     """
     return when(name.isNull(), lit("")) \
         .otherwise(
-        lower(trim(regexp_replace(regexp_replace(regexp_replace(name, "0", "O"), "1", "L"), r"^[\\&*./\\\]+", ""))))
+        lower(trim(regexp_replace(regexp_replace(regexp_replace(name, "0", "O"), "1", "L"), "^[\\&*./\\\]+", ""))))
 
 
 def standardize_full_name(first_name: Column, middle_name: Column, last_name: Column) -> Column:
