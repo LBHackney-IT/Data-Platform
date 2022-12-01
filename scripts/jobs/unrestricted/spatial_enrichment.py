@@ -189,8 +189,9 @@ if __name__ == "__main__":
         for column_to_append in geography_table["columns_to_append"]:
             geography_df = geography_df.withColumnRenamed(column_to_append["column_name"],
                                                           column_to_append["column_alias"])
-        # Convert to a geo dataframe, assuming the geometry is encoded in WKB (it is the case in postgis)
+        # Convert to a geo dataframe, assuming the geometry is encoded in WKB (it is the case in postgis), discarding null geometries
         geography_df = geography_df.toPandas()
+        geography_df = geography_df[geography_df.geom.notnull()]
         boundary_geometry = geography_df['geom'].apply(shapely.wkb.loads, args=(True,))
         geography_df = geography_df.drop(columns=['geom'])
         geography_geo_df = geopandas.GeoDataFrame(geography_df, crs="epsg:27700", geometry=boundary_geometry)
