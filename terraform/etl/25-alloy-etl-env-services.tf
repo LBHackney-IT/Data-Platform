@@ -17,6 +17,10 @@ resource "aws_glue_trigger" "alloy_daily_export" {
   actions {
     job_name = module.alloy_api_export_raw_env_services[count.index].job_name
   }
+
+  timeouts {
+    delete = "15m"
+  }
 }
 
 module "alloy_api_export_raw_env_services" {
@@ -64,6 +68,10 @@ resource "aws_glue_trigger" "alloy_export_crawler" {
       job_name = module.alloy_api_export_raw_env_services[count.index].job_name
       state    = "SUCCEEDED"
     }
+  }
+
+  timeouts {
+    delete = "15m"
   }
 }
 
@@ -138,6 +146,10 @@ resource "aws_glue_trigger" "alloy_refined_crawler" {
       job_name = module.alloy_raw_to_refined_env_services[count.index].job_name
       state    = "SUCCEEDED"
     }
+  }
+
+  timeouts {
+    delete = "15m"
   }
 }
 
