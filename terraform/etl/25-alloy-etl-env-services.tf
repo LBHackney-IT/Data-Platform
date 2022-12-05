@@ -92,6 +92,7 @@ resource "aws_glue_crawler" "alloy_export_crawler" {
     Version = 1.0
     Grouping = {
       TableLevelConfiguration = 6
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
     }
     CrawlerOutput = {
       Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
@@ -125,7 +126,7 @@ module "alloy_raw_to_refined_env_services" {
     "--glue_table_prefix"       = "${lower(local.alloy_query_names_alphanumeric[count.index])}_"
     "--s3_refined_zone_bucket"  = module.refined_zone_data_source.bucket_id
     "--s3_mapping_bucket"       = module.raw_zone_data_source.bucket_id
-    "--s3_mapping_location"     = "/env-services/alloy/mapping-files/"
+    "--s3_mapping_location"     = "env-services/alloy/mapping-files/"
     "--s3_target_prefix"        = "env-services/alloy/${local.alloy_query_names_alphanumeric[count.index]}/"
   }
 }
@@ -169,6 +170,7 @@ resource "aws_glue_crawler" "alloy_refined" {
     Version = 1.0
     Grouping = {
       TableLevelConfiguration = 5
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
     }
     CrawlerOutput = {
       Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
