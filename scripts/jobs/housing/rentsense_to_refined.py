@@ -480,7 +480,8 @@ if __name__ == "__main__":
                                   "Patch",
                                   "import_date as import_date",
                                   "tenancy_ref as AccountReferenceUH",
-                                  "BreathingSpace"
+                                  "Case when BreathingSpace=1 then 'TRUE' else 'FALSE' end as BreathingSpace",
+                                  "is_paused_until as BreathingSpaceEndDate"
                                     )
         
     accounts2 = accounts2.distinct()
