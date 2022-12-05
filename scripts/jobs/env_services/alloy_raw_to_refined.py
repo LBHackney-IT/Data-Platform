@@ -96,6 +96,8 @@ if __name__ == "__main__":
 
         mapping_file_key = f"{s3_mapping_location}{table}.json"
 
+        daily_df = daily_df.toDF()
+
         try:
             s3.Object(s3_mapping_bucket, mapping_file_key).load()
         except botocore.exceptions.ClientError as e:
@@ -108,7 +110,7 @@ if __name__ == "__main__":
             mapping = json.loads(obj["Body"].read())
             daily_df = rename_columns(daily_df, mapping)
 
-        daily_df = clean_column_names(daily_df.toDF())
+        daily_df = clean_column_names(daily_df)
 
         daily_df_with_refined_cols = add_refined_date_cols(daily_df)
 
