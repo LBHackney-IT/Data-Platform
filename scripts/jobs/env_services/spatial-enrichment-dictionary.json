@@ -2,6 +2,8 @@
      "fix_my_street_defect": {
          "database_name":"env-services-refined-zone",
          "table_name":"alloy_fix_my_street_defect_fix_my_street_defect",
+	    "partition_keys":["refined_year","refined_month","refined_day","refined_date"],
+	    "date_partition_name":"refined_date",
          "geom_column":"geometry",
          "geom_format": "wkt",
          "source_crs": "epsg:4326",
@@ -10,6 +12,8 @@
      "alloy_flytipjobs": {
          "database_name":"env-services-refined-zone",
          "table_name":"alloy_flytipjobs_dump_collection",
+	    "partition_keys":["refined_year","refined_month","refined_day","refined_date"],
+	    "date_partition_name":"refined_date",
          "geom_column":"geometry",
          "geom_format": "wkt",
          "source_crs": "epsg:4326",
@@ -18,6 +22,8 @@
      "alloy_graffiti": {
          "database_name":"env-services-refined-zone",
          "table_name":"alloy_graffiti_graffiti",
+	    "partition_keys":["refined_year","refined_month","refined_day","refined_date"],
+	    "date_partition_name":"refined_date",
          "geom_column":"geometry",
          "geom_format": "wkt",
          "source_crs": "epsg:4326",
@@ -26,6 +32,8 @@
      "gully_cleanse_5": {
          "database_name":"env-services-refined-zone",
          "table_name":"alloy_gully_cleanse_gullies_5",
+	    "partition_keys":["refined_year","refined_month","refined_day","refined_date"],
+	    "date_partition_name":"refined_date",
          "geom_column":"geometry",
          "geom_format": "wkt",
          "source_crs": "epsg:4326",
@@ -34,6 +42,8 @@
      "gully_cleanse": {
          "database_name":"env-services-refined-zone",
          "table_name":"alloy_gully_cleanse_gully_cleanse",
+	    "partition_keys":["refined_year","refined_month","refined_day","refined_date"],
+	    "date_partition_name":"refined_date",
          "geom_column":"geometry",
          "geom_format": "wkt",
          "source_crs": "epsg:4326",
