@@ -1,5 +1,5 @@
 from unittest import TestCase, mock
-from main import lambda_handler, format_message
+from lambda_alarms_handler.main import lambda_handler, format_message
 import os
 import botocore.session
 from botocore.stub import Stubber
@@ -75,7 +75,7 @@ class TestLambdaAlarmsHandler(TestCase):
         self.assertEqual(expected_message, formatted_message)
 
     @mock.patch.dict(os.environ, mock_env_vars)
-    @mock.patch('main.urllib3.PoolManager', spec=True)
+    @mock.patch('lambda_alarms_handler.main.urllib3.PoolManager', spec=True)
     def test_calls_poolmanager_on_urllib3_with_correct_params(self, mock_urllib_poolmanager):
         expected_headers = {'Content-Type': 'application/json; charset=UTF-8'}
         mock_pool_manager = mock_urllib_poolmanager.return_value
