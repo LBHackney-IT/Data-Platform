@@ -11,7 +11,7 @@ module "housing_interim_finance_database_ingestion" {
   database_secret_name        = "database-credentials/SOW2b-housing-interim-finance"
   identifier_prefix           = local.short_identifier_prefix
   create_workflow             = false
-  job_schedule                = "cron(30 5 ? * MON-FRI *)" 
+  job_schedule                = "cron(30 6 ? * MON-FRI *)" 
 }
 
 locals {

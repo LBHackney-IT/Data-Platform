@@ -46,19 +46,19 @@ def create_geom_and_extra_coords(pandas_df, target_crs, logger):
     if {'latitude', 'longitude', 'eastings', 'northings'}.issubset(pandas_df.columns):
         logger.info('4 cols present')
         if target_crs == '27700':
-            geopandas_df = geopandas.GeoDataFrame(point_df, crs="epsg:27700",
+            geopandas_df = geopandas.GeoDataFrame(pandas_df, crs="epsg:27700",
                                                   geometry=geopandas.points_from_xy(pandas_df.eastings,
                                                                                     pandas_df.northings))
             logger.info('geodataframe created in 27700')
         elif target_crs == '4326':
-            geopandas_df = geopandas.GeoDataFrame(point_df, crs="epsg:4326",
+            geopandas_df = geopandas.GeoDataFrame(pandas_df, crs="epsg:4326",
                                                   geometry=geopandas.points_from_xy(pandas_df.longitude,
                                                                                     pandas_df.latitude))
             logger.info('geodataframe created in 4326')
         return geopandas_df
     # otherwise, if we only have lat lon, create geom and generate eastings/northings
     if {'latitude', 'longitude'}.issubset(pandas_df.columns):
-        geopandas_df = geopandas.GeoDataFrame(point_df, crs="epsg:4326",
+        geopandas_df = geopandas.GeoDataFrame(pandas_df, crs="epsg:4326",
                                               geometry=geopandas.points_from_xy(pandas_df.longitude,
                                                                                 pandas_df.latitude))
         geopandas_df = geopandas_df.to_crs("EPSG:27700")
@@ -72,7 +72,7 @@ def create_geom_and_extra_coords(pandas_df, target_crs, logger):
             return geopandas_df
     # otherwise, if we only have eastings northings, create geom and generate lat/lon
     if {'eastings', 'northings'}.issubset(pandas_df.columns):
-        geopandas_df = geopandas.GeoDataFrame(point_df, crs="epsg:27700",
+        geopandas_df = geopandas.GeoDataFrame(pandas_df, crs="epsg:27700",
                                               geometry=geopandas.points_from_xy(pandas_df.eastings,
                                                                                 pandas_df.northings))
         geopandas_df = geopandas_df.to_crs("epsg:4326")
@@ -97,7 +97,7 @@ def create_geom_and_extra_coords(pandas_df, source_crs, target_crs, x_column, y_
         logger.info(f'Target CRS: {target_crs} not supported')
         return f'Target CRS: {target_crs} is not supported for spatial enrichment'
     # Create geom column from coordinates
-    geopandas_df = geopandas.GeoDataFrame(point_df, crs=source_crs,
+    geopandas_df = geopandas.GeoDataFrame(pandas_df, crs=source_crs,
                                           geometry=geopandas.points_from_xy(pandas_df[x_column], pandas_df[y_column]))
     # If data is not in lat/lon, create lat/lon columns for use in Qlik
     if source_crs != 'epsg:4326':
@@ -189,8 +189,9 @@ if __name__ == "__main__":
         for column_to_append in geography_table["columns_to_append"]:
             geography_df = geography_df.withColumnRenamed(column_to_append["column_name"],
                                                           column_to_append["column_alias"])
-        # Convert to a geo dataframe, assuming the geometry is encoded in WKB (it is the case in postgis)
+        # Convert to a geo dataframe, assuming the geometry is encoded in WKB (it is the case in postgis), discarding null geometries
         geography_df = geography_df.toPandas()
+        geography_df = geography_df[geography_df.geom.notnull()]
         boundary_geometry = geography_df['geom'].apply(shapely.wkb.loads, args=(True,))
         geography_df = geography_df.drop(columns=['geom'])
         geography_geo_df = geopandas.GeoDataFrame(geography_df, crs="epsg:27700", geometry=boundary_geometry)
@@ -208,17 +209,15 @@ if __name__ == "__main__":
             continue
         # Load the table
         logger.info(f"Now enriching {table_name} in database {database_name}")
-        point_data_source = glueContext.create_dynamic_frame.from_catalog(
+        table_to_enrich_source = glueContext.create_dynamic_frame.from_catalog(
             name_space=database_name,
             table_name=table_name
         )
-        point_df = point_data_source.toDF()
-        if point_df.rdd.isEmpty():
+        table_to_enrich_df = table_to_enrich_source.toDF()
+        if table_to_enrich_df.rdd.isEmpty():
             logger.info(f"No data found for {table_name}, moving onto next table to enrich.")
             continue
-        point_df = get_latest_partitions(point_df)
-        point_df = point_df.toPandas()
-        logger.info(f"Points dataset column types before enrichment:\n{point_df.dtypes}")
+        table_to_enrich_df = get_latest_partitions(table_to_enrich_df)
 
         # Prepare the spatial dataframe
         geom_format = enrich_table["geom_format"]
@@ -227,6 +226,13 @@ if __name__ == "__main__":
         if "geom_column" in enrich_table:
             geom_column_name = enrich_table["geom_column"]
             logger.info(f"geom column name:{geom_column_name}")
+            # if the geom column is called geometry, rename it to avoid a clash with Geopandas later
+            if enrich_table["geom_column"] == "geometry":
+                table_to_enrich_df = table_to_enrich_df.withColumnRenamed("geometry", "geom")
+                geom_column_name = "geom"
+            # create subdataframe with only the geom column, then convert it to pandas
+            point_df = table_to_enrich_df.select(geom_column_name).distinct()
+            point_df = point_df.toPandas()
             if geom_format == "wkt":
                 enrich_geo_df = geopandas.GeoDataFrame(point_df, crs=source_crs,
                                                        geometry=point_df[geom_column_name].apply(wkt_loads))
@@ -244,6 +250,9 @@ if __name__ == "__main__":
         elif geom_format == "coords":
             x_column = enrich_table["x_column"]
             y_column = enrich_table["y_column"]
+            # create subdataframe with only the geom columns, then convert it to pandas
+            point_df = table_to_enrich_df.select(x_column, y_column).distinct()
+            point_df = point_df.toPandas()
             enrich_geo_df = create_geom_and_extra_coords(point_df, source_crs, 'epsg:27700', x_column, y_column, logger)
         else:
             logger.info(f"Cannot handle geom format: {geom_format}")
@@ -273,9 +282,20 @@ if __name__ == "__main__":
         # Convert coordinates columns to double (Pandas make them decimal when calculating them)
         if geom_format == "coords":
             spark_point_df = convert_coordinate_columns_to_double(spark_point_df, x_column, y_column)
-
+        
+        # joins back the dataframe with only enriched geom to the initial dataframe with all the columns
+        # Scenario 1: there was a geom column: join on this column
+        if "geom_column" in enrich_table:
+            table_to_enrich_df = table_to_enrich_df.join(spark_point_df, geom_column_name, "left")
+            # if the geometry column has been renamed earlier to avoid a clash, rename it back to 'geometry'
+            if enrich_table["geom_column"] == "geometry":
+                table_to_enrich_df = table_to_enrich_df.withColumnRenamed("geom", "geometry")
+        # Scenario 2: there were 2 coordinate columns: join on these 2 columns
+        elif geom_format == "coords":
+            table_to_enrich_df = table_to_enrich_df.join(spark_point_df, [enrich_table["x_column"],enrich_table["y_column"]], "left")
+            
         # Convert data frame to dynamic frame
-        dynamic_frame = DynamicFrame.fromDF(spark_point_df, glueContext, "target_data_to_write")
+        dynamic_frame = DynamicFrame.fromDF(table_to_enrich_df, glueContext, "target_data_to_write")
 
         # Write the data to S3
         logger.info(f'Now writing  {table_name} enriched records inside {args["target_location"] + table_name}')

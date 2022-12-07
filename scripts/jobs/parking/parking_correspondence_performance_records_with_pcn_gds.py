@@ -41,7 +41,62 @@ SqlQuery0 = """
 /* 
 Correspondence Performance records last 13 months with PCN FOI records
 16/06/2022 - Created 
+30/11/2022 - with totals for Month and response dates for each officer
+
 */
+With officer_total_rep_dates as(
+select
+liberator_pcn_ic.Response_written_by as tot_rep_Response_written_by
+,substr(liberator_pcn_ic.response_generated_at, 1, 10) as tot_rep_response_date
+,concat(substr(Cast(liberator_pcn_ic.response_generated_at as varchar(10)),1, 7), '-01') as tot_rep_monthYear_response
+,concat(liberator_pcn_ic.Response_written_by,substr(liberator_pcn_ic.response_generated_at, 1, 10) ) as tot_rep_unique_link
+
+,count (distinct substr(liberator_pcn_ic.response_generated_at, 1, 10)) as tot_rep_total_dates
+,count (*) as tot_rep_records
+
+
+from liberator_pcn_ic
+left join pcnfoidetails_pcn_foi_full on liberator_pcn_ic.ticketserialnumber = pcnfoidetails_pcn_foi_full.pcn and pcnfoidetails_pcn_foi_full.import_date = liberator_pcn_ic.import_date
+
+where liberator_pcn_ic.import_Date = (Select MAX(liberator_pcn_ic.import_date) from liberator_pcn_ic)
+AND length(liberator_pcn_ic.ticketserialnumber) = 10
+AND cast(substr(liberator_pcn_ic.date_received, 1, 10) as date)  > current_date  - interval '13' month  --Last 13 months from todays date
+
+group by
+liberator_pcn_ic.Response_written_by --as tot_rep_Response_written_by
+,substr(liberator_pcn_ic.response_generated_at, 1, 10) --as tot_rep_response_date
+,concat(substr(Cast(liberator_pcn_ic.response_generated_at as varchar(10)),1, 7), '-01') --as tot_rep_monthYear_response
+,concat(liberator_pcn_ic.Response_written_by,substr(liberator_pcn_ic.response_generated_at, 1, 10) ) --as tot_rep_unique_link
+
+)
+, total_response_month as (
+select
+liberator_pcn_ic.Response_written_by as mth_tot_rep_Response_written_by
+,concat(substr(Cast(liberator_pcn_ic.response_generated_at as varchar(10)),1, 7), '-01') as mth_tot_rep_monthYear_response
+,concat(liberator_pcn_ic.Response_written_by,concat(substr(Cast(liberator_pcn_ic.response_generated_at as varchar(10)),1, 7), '-01') ) as mth_tot_rep_unique_link
+
+,count (distinct substr(liberator_pcn_ic.response_generated_at, 1, 10)) as mth_tot_rep_total_dates
+,count (*) as mth_tot_rep_records
+
+
+from liberator_pcn_ic
+left join pcnfoidetails_pcn_foi_full on liberator_pcn_ic.ticketserialnumber = pcnfoidetails_pcn_foi_full.pcn and pcnfoidetails_pcn_foi_full.import_date = liberator_pcn_ic.import_date
+
+where liberator_pcn_ic.import_Date = (Select MAX(liberator_pcn_ic.import_date) from liberator_pcn_ic)
+AND length(liberator_pcn_ic.ticketserialnumber) = 10
+AND cast(substr(liberator_pcn_ic.date_received, 1, 10) as date)  > current_date  - interval '13' month  --Last 13 months from todays date
+
+
+group by
+liberator_pcn_ic.Response_written_by --as mth_tot_rep_Response_written_by
+,concat(substr(Cast(liberator_pcn_ic.response_generated_at as varchar(10)),1, 7), '-01') --as mth_tot_rep_monthYear_response
+,concat(liberator_pcn_ic.Response_written_by,concat(substr(Cast(liberator_pcn_ic.response_generated_at as varchar(10)),1, 7), '-01') ) --as mth_tot_rep_unique_link
+order by 
+concat(substr(Cast(liberator_pcn_ic.response_generated_at as varchar(10)),1, 7), '-01') desc --as mth_tot_rep_monthYear_response
+
+)
+
+
 Select  
 case
 when liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = '' then 'Unassigned'
@@ -54,6 +109,7 @@ cast(Case when  liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenas
 cast(Case when liberator_pcn_ic.whenassigned != '' AND liberator_pcn_ic.response_generated_at = '' then  current_timestamp - cast( liberator_pcn_ic.whenassigned as timestamp) end as string) as assigned_in_progress_time,
 cast(Case when liberator_pcn_ic.whenassigned != '' AND liberator_pcn_ic.response_generated_at != '' then  cast( liberator_pcn_ic.Response_generated_at as timestamp) - cast( liberator_pcn_ic.whenassigned as timestamp) end as string) as assigned_response_time,
 cast(Case when liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.response_generated_at != '' then cast( liberator_pcn_ic.Response_generated_at as timestamp) - cast( liberator_pcn_ic.date_received as timestamp) end as string) as response_time,
+
 /*unassigned days*/
 cast(Case when  liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = '' then datediff(current_timestamp, cast(substr(liberator_pcn_ic.date_received, 1, 10) as date)  )  end as string) as unassigned_days,
 Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = '' and (datediff( current_timestamp, cast(substr(liberator_pcn_ic.date_received, 1, 10) as date) )) <= 5 Then '5 or Less days'
@@ -64,6 +120,7 @@ When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = ''
 end as unassigned_days_group
 ,Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = '' and (datediff( current_timestamp, cast(substr(liberator_pcn_ic.date_received, 1, 10) as date) )) <= 56 Then 1  ELSE 0 END as unassigned_days_kpiTotFiftySixLess
 ,Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = '' and (datediff( current_timestamp, cast(substr(liberator_pcn_ic.date_received, 1, 10) as date) )) <= 14 Then 1  ELSE 0 END as unassigned_days_kpiTotFourteenLess,
+
 /*Days to assign*/
 cast(Case when  liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned != '' then  datediff( cast(substr( liberator_pcn_ic.whenassigned, 1, 10) as date), cast(substr(liberator_pcn_ic.date_received, 1, 10) as date)) end as string) as Days_to_assign,
 Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned != '' and  (datediff( cast(substr( liberator_pcn_ic.whenassigned, 1, 10) as date), cast(substr(liberator_pcn_ic.date_received, 1, 10) as date))) <= 5 Then '5 or Less days'
@@ -107,6 +164,7 @@ When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.response_generate
 end as ResponseDays_group
 ,Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.response_generated_at != '' and  (datediff( cast(substr(liberator_pcn_ic.response_generated_at, 1, 10) as date), cast(substr(liberator_pcn_ic.date_received, 1, 10) as date))) <= 56 Then 1  ELSE 0 END as ResponseDays_kpiTotFiftySixLess
 ,Case When liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.response_generated_at != '' and  (datediff( cast(substr(liberator_pcn_ic.response_generated_at, 1, 10) as date), cast(substr(liberator_pcn_ic.date_received, 1, 10) as date))) <= 14 Then 1  ELSE 0 END as ResponseDays_kpiTotFourteenLess,
+
 Response_generated_at
 ,Date_Received
 ,concat(substr(Cast(liberator_pcn_ic.date_received as varchar(10)),1, 7), '-01') as MonthYear  
@@ -128,6 +186,7 @@ Response_generated_at
 ,substr(cast(liberator_pcn_ic.import_month as string), 1, 02) as import_month
 ,liberator_pcn_ic.import_day
 ,substr(cast(liberator_pcn_ic.import_date as string), 1, 08) as import_date
+
 /*pcn data*/
 ,pcnfoidetails_pcn_foi_full.pcn as pcn_pcn
 ,substr(cast(pcnfoidetails_pcn_foi_full.pcnissuedate as string), 1, 10)  as pcn_pcnissuedate
@@ -237,8 +296,26 @@ Response_generated_at
 ,pcnfoidetails_pcn_foi_full.import_day as pcn_import_day
 ,substr(cast(pcnfoidetails_pcn_foi_full.import_date as string), 1, 08)  as pcn_import_date
 
+
+,concat(liberator_pcn_ic.Response_written_by,substr(liberator_pcn_ic.response_generated_at, 1, 10) ) as link_officer_total_rep_dates
+,concat(liberator_pcn_ic.Response_written_by,concat(substr(Cast(liberator_pcn_ic.response_generated_at as varchar(10)),1, 7), '-01') ) as link_month_total
+
+,total_response_month.mth_tot_rep_monthYear_response
+,total_response_month.mth_tot_rep_total_dates
+,total_response_month.mth_tot_rep_records
+
+
+,officer_total_rep_dates.tot_rep_response_date
+,officer_total_rep_dates.tot_rep_total_dates
+,officer_total_rep_dates.tot_rep_records
+
 from liberator_pcn_ic
 left join pcnfoidetails_pcn_foi_full on liberator_pcn_ic.ticketserialnumber = pcnfoidetails_pcn_foi_full.pcn and pcnfoidetails_pcn_foi_full.import_date = liberator_pcn_ic.import_date
+
+left join officer_total_rep_dates on concat(liberator_pcn_ic.Response_written_by,substr(liberator_pcn_ic.response_generated_at, 1, 10) ) = officer_total_rep_dates.tot_rep_unique_link
+
+left join total_response_month on concat(liberator_pcn_ic.Response_written_by,concat(substr(Cast(liberator_pcn_ic.response_generated_at as varchar(10)),1, 7), '-01') ) = total_response_month.mth_tot_rep_unique_link
+
 where liberator_pcn_ic.import_Date = (Select MAX(liberator_pcn_ic.import_date) from liberator_pcn_ic)
 AND length(liberator_pcn_ic.ticketserialnumber) = 10
 AND cast(substr(liberator_pcn_ic.date_received, 1, 10) as date)  > current_date  - interval '13' month  --Last 13 months from todays date
