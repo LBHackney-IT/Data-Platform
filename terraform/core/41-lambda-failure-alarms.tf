@@ -4,6 +4,10 @@ module "ringgo_sftp_ingestion_lambda_alarm" {
     tags                = module.tags.values
     identifier_prefix   = local.short_identifier_prefix
     lambda_name         = "${local.short_identifier_prefix}sftp-to-s3"
+
+    depends_on = [  
+        module.lambda_alarms_handler
+    ]
 }
 
 module "icaseworks_api_ingestion_lambda_alarm" {
@@ -12,4 +16,8 @@ module "icaseworks_api_ingestion_lambda_alarm" {
     tags                = module.tags.values
     identifier_prefix   = local.short_identifier_prefix
     lambda_name         = "${local.short_identifier_prefix}icaseworks-api-ingestion"
+
+    depends_on = [  
+        module.lambda_alarms_handler
+    ]
 }
