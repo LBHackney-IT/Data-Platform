@@ -69,7 +69,7 @@ on:
 jobs:
   deploy:
     name: Terraform Apply
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout Source
