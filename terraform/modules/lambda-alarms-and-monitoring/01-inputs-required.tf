@@ -22,3 +22,13 @@ variable "environment" {
   description = "Environment e.g. Dev, Stg, Prod, Mgmt."
   type        = string
 }
+
+variable "alarms_handler_lambda_name" {
+  description = "Name of the alarms handler lambda"
+  type        = string
+}
+
+variable "alarms_handler_lambda_arn" {
+  description = "ARN of the alarms handler lambda"
+  type        = string
+}

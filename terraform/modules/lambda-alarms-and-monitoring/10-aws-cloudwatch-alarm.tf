@@ -1,11 +1,7 @@
-data "aws_cloudwatch_log_group" "lambda_log_group" {
-  name = "/aws/lambda/${var.lambda_name}"
-}
-
 resource "aws_cloudwatch_log_metric_filter" "metric_filter" {
   name           = "${var.lambda_name}-lambda-errors"
   pattern        = "ERROR"
-  log_group_name = data.aws_cloudwatch_log_group.lambda_log_group.name
+  log_group_name = "/aws/lambda/${var.alarms_handler_lambda_name}"
 
   metric_transformation {
     name          = "${var.lambda_name}-lambda-errors"
