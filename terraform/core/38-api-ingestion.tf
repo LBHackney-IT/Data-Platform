@@ -48,6 +48,7 @@ module "vonage_api_ingestion" {
   s3_target_bucket_name          = local.s3_target_bucket_name
   api_credentials_secret_name    = "vonage-key"
   s3_target_bucket_kms_key_arn   = module.landing_zone.kms_key_arn
+  lambda_memory_size = 1024
   lambda_environment_variables = {
     "SECRET_NAME"           = "vonage-key"
     "TARGET_S3_BUCKET_NAME" = local.s3_target_bucket_name
