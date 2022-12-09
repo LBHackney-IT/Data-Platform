@@ -212,7 +212,8 @@ if __name__ == "__main__":
         table_to_enrich_source = glueContext.create_dynamic_frame.from_catalog(
             name_space=database_name,
             table_name=table_name,
-            push_down_predicate = create_pushdown_predicate_for_latest_available_partition(enrich_table["database_name"],enrich_table["table_name"],enrich_table["date_partition_name"])
+            push_down_predicate = create_pushdown_predicate_for_latest_available_partition(enrich_table["database_name"],enrich_table["table_name"],enrich_table["date_partition_name"]),
+            transformation_ctx = f"datasource_{table_name}"
         )
         table_to_enrich_df = table_to_enrich_source.toDF()
         if table_to_enrich_df.rdd.isEmpty():
