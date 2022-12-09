@@ -1,5 +1,9 @@
+locals {
+  ringgo_copy_glue_job__trigger_name     = local.is_live_environment ? module.ringgo_sftp_data_to_raw[0].trigger_name : ""
+}
+
 module "sftp_to_s3_ingestion" {
-  count                     = local.is_production_environment ? 0 : 1
+  count                     = local.is_live_environment ? 1 : 0
   source                    = "../modules/api-ingestion-lambda"
   tags                      = module.tags.values
   is_production_environment = local.is_production_environment
@@ -25,7 +29,10 @@ module "sftp_to_s3_ingestion" {
     "SFTP_SOURCE_FILE_EXTENSION"  = "csv"
     "S3_BUCKET"                   = module.landing_zone.bucket_id
     "S3_TARGET_FOLDER"            = "ringgo/sftp/input"
+    "TRIGGER_NAME"                =  local.ringgo_copy_glue_job__trigger_name
   }
+  lambda_execution_cron_schedule  = "cron(0 21 * * ? *)"
+  trigger_to_run                  = local.ringgo_copy_glue_job__trigger_name
 }  
 
 data "aws_secretsmanager_secret" "sftp_server_credentials" {
@@ -44,7 +51,7 @@ locals {
 }
 
 resource "aws_glue_catalog_database" "parking_ringgo_sftp_catalog_database" {
-  count = !local.is_production_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
   name  = "${local.short_identifier_prefix}parking-ringgo-sftp-raw-zone"
   
   lifecycle {
@@ -54,7 +61,7 @@ resource "aws_glue_catalog_database" "parking_ringgo_sftp_catalog_database" {
 
 module "ringgo_sftp_data_to_raw" {
   source = "../modules/aws-glue-job"
-  count                      = !local.is_production_environment ? 1 : 0
+  count                      = local.is_live_environment ? 1 : 0
   is_production_environment  = local.is_production_environment
   is_live_environment        = local.is_live_environment
   job_name                   = "${local.short_identifier_prefix}Parking copy RingGo SFTP data to raw"
@@ -75,7 +82,7 @@ module "ringgo_sftp_data_to_raw" {
     "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
   
-  trigger_enabled      = false
+  trigger_enabled      = local.is_production_environment
   
   crawler_details = {
     database_name      = aws_glue_catalog_database.parking_ringgo_sftp_catalog_database[0].name

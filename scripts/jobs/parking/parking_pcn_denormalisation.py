@@ -6,7 +6,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
 environment = get_glue_env_var("environment")
 
 
@@ -30,6 +30,7 @@ liberator_pcn_payments_node1624544303612 = (
         database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_pcn_payments",
         transformation_ctx="liberator_pcn_payments_node1624544303612",
+        push_down_predicate=create_pushdown_predicate("import_date",1)
     )
 )
 
@@ -45,6 +46,7 @@ liberator_pcn_bailiff_node1624546972989 = glueContext.create_dynamic_frame.from_
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_pcn_bailiff",
     transformation_ctx="liberator_pcn_bailiff_node1624546972989",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node Amazon S3
@@ -52,6 +54,7 @@ AmazonS3_node1632316748934 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_pcn_ic",
     transformation_ctx="AmazonS3_node1632316748934",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node liberator_pcn_tickets
@@ -59,6 +62,7 @@ liberator_pcn_tickets_node1624456646816 = glueContext.create_dynamic_frame.from_
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_pcn_tickets",
     transformation_ctx="liberator_pcn_tickets_node1624456646816",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node Amazon S3
@@ -66,6 +70,7 @@ AmazonS3_node1625039493203 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="pcnfoidetails_pcn_event_log",
     transformation_ctx="AmazonS3_node1625039493203",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node liberator_pcn_warrant_redistribution
@@ -74,6 +79,7 @@ liberator_pcn_warrant_redistribution_node1624611344521 = (
         database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_pcn_warrant_redistribution",
         transformation_ctx="liberator_pcn_warrant_redistribution_node1624611344521",
+        push_down_predicate=create_pushdown_predicate("import_date",1)
     )
 )
 
@@ -82,6 +88,7 @@ liberator_pcn_appeals_node1624617107363 = glueContext.create_dynamic_frame.from_
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_pcn_appeals",
     transformation_ctx="liberator_pcn_appeals_node1624617107363",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node ApplyMapping

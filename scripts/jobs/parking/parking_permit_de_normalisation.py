@@ -6,7 +6,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
 environment = get_glue_env_var("environment")
 
 
@@ -29,6 +29,7 @@ AmazonS3_node1628163161728 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_renewals",
     transformation_ctx="AmazonS3_node1628163161728",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node Amazon S3
@@ -36,6 +37,7 @@ AmazonS3_node1627053109317 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_fta",
     transformation_ctx="AmazonS3_node1627053109317",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node Amazon S3
@@ -43,6 +45,7 @@ AmazonS3_node1628163307688 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_vrm",
     transformation_ctx="AmazonS3_node1628163307688",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node Amazon S3
@@ -64,6 +67,7 @@ AmazonS3_node1628173244776 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_address_update",
     transformation_ctx="AmazonS3_node1628173244776",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node Amazon S3
@@ -71,6 +75,7 @@ AmazonS3_node1628163229600 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_approval",
     transformation_ctx="AmazonS3_node1628163229600",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node Amazon S3
@@ -78,6 +83,7 @@ AmazonS3_node1634550538215 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_llpg",
     transformation_ctx="AmazonS3_node1634550538215",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
 # Script generated for node ApplyMapping

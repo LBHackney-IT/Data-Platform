@@ -31,6 +31,34 @@ module "icaseworks_api_ingestion" {
   }
 }
 
+module "vonage_api_ingestion" {
+  count                     = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  source                    = "../modules/api-ingestion-lambda"
+  tags                      = module.tags.values
+  is_production_environment = local.is_production_environment
+  is_live_environment       = local.is_live_environment
+
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
+  lambda_name                    = "vonage-api-ingestion"
+  lambda_handler                 = "main.lambda_handler"
+  runtime_language               = "python3.8"
+  secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
+  s3_target_bucket_arn           = module.landing_zone.bucket_arn
+  s3_target_bucket_name          = local.s3_target_bucket_name
+  api_credentials_secret_name    = "vonage-key"
+  s3_target_bucket_kms_key_arn   = module.landing_zone.kms_key_arn
+  lambda_memory_size = 1024
+  lambda_environment_variables = {
+    "SECRET_NAME"           = "vonage-key"
+    "TARGET_S3_BUCKET_NAME" = local.s3_target_bucket_name
+    "OUTPUT_FOLDER"         = "vonage"
+    "TRIGGER_NAME" = "TRIGGER_NAME"
+    "API_TO_CALL" = "stats"
+    "TABLE_TO_CALL" = "interactions"
+  }
+}
+
 module "copy_icaseworks_data_landing_to_raw" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
