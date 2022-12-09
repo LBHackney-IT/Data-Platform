@@ -65,6 +65,7 @@ module "env_services_geospatial_enrichment" {
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  schedule = "cron(30 4 ? * MON-FRI *)"
   job_parameters = {
     "--job-bookmark-option"        = "job-bookmark-enable"
     "--enable-glue-datacatalog"    = "true"
