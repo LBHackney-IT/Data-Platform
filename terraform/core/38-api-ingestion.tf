@@ -2,6 +2,8 @@ locals {
   s3_target_bucket_name = module.landing_zone.bucket_id
   secret_name           = "icaseworks-key"
   glue_trigger_name     = local.is_live_environment ? module.copy_icaseworks_data_landing_to_raw[0].trigger_name : ""
+  vonage_glue_trigger_name     = local.is_live_environment ? module.copy_vonage_data_landing_to_raw[0].trigger_name : ""
+
 }
 
 module "icaseworks_api_ingestion" {
@@ -48,13 +50,12 @@ module "vonage_api_ingestion" {
   s3_target_bucket_name          = local.s3_target_bucket_name
   api_credentials_secret_name    = "vonage-key"
   s3_target_bucket_kms_key_arn   = module.landing_zone.kms_key_arn
-  glue_trigger_name     = local.is_live_environment ? module.copy_vonage_data_landing_to_raw[0].trigger_name : ""
   lambda_memory_size = 1024
   lambda_environment_variables = {
     "SECRET_NAME"           = "vonage-key"
     "TARGET_S3_BUCKET_NAME" = local.s3_target_bucket_name
     "OUTPUT_FOLDER"         = "vonage"
-    "TRIGGER_NAME" = glue_trigger_name
+    "TRIGGER_NAME" = local.vonage_glue_trigger_name
     "API_TO_CALL" = "stats"
     "TABLE_TO_CALL" = "interactions"
   }
