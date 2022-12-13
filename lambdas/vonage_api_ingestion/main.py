@@ -41,7 +41,10 @@ def get_auth_token(client_id, client_secret, scope):
     print(f"Auth Token status Code = {r.status_code}")
     auth_token = json.loads(r.text)
 
-    return auth_token
+    if(r.status_code == "200"):
+        return auth_token
+    else:
+        raise(f"Auth Token status Code = {r.content}")
 
 
 def vonage_api_request(api_to_call, table_to_call, page, limit, start_time, end_time, auth_token):
@@ -438,3 +441,11 @@ def lambda_handler(event, lambda_context):
         export_data_dictionary(called_data, output_location,s3_client,s3_bucket)
     else:
         print(f'No Dates')
+
+    glue_client = boto3.client('glue')
+    start_glue_trigger(glue_client, glue_trigger_name)
+
+def start_glue_trigger(glue_client, trigger_name):
+    trigger_details = glue_client.start_trigger(Name=trigger_name)
+    logger.info(f"Started trigger: {trigger_details}")
+

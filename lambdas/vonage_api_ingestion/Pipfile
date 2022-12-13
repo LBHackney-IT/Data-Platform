@@ -10,6 +10,7 @@ requests = "*"
 
 [dev-packages]
 boto3 = "*"
+botocore = "*"
 
 [requires]
 python_version = "3"
