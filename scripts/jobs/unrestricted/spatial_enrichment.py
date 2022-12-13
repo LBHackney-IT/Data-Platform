@@ -6,7 +6,7 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 
 from pyspark.sql.types import DoubleType
-from scripts.helpers.helpers import get_latest_partitions, table_exists_in_catalog, PARTITION_KEYS
+from scripts.helpers.helpers import table_exists_in_catalog, create_pushdown_predicate_for_latest_available_partition
 
 import sys
 
@@ -174,10 +174,10 @@ if __name__ == "__main__":
         logger.info(f'loading geography: {geography_table["table_name"]}')
         geography_data_source = glueContext.create_dynamic_frame.from_catalog(
             name_space=geography_table["database_name"],
-            table_name=geography_table["table_name"]
+            table_name=geography_table["table_name"],
+            push_down_predicate = create_pushdown_predicate_for_latest_available_partition(geography_table["database_name"],geography_table["table_name"],'import_date')
         )
         geography_df = geography_data_source.toDF()
-        geography_df = get_latest_partitions(geography_df)
 
         # Only keep the columns used for enrichment + the geometry
         columns_to_keep_list = []
@@ -211,13 +211,14 @@ if __name__ == "__main__":
         logger.info(f"Now enriching {table_name} in database {database_name}")
         table_to_enrich_source = glueContext.create_dynamic_frame.from_catalog(
             name_space=database_name,
-            table_name=table_name
+            table_name=table_name,
+            push_down_predicate = create_pushdown_predicate_for_latest_available_partition(enrich_table["database_name"],enrich_table["table_name"],enrich_table["date_partition_name"]),
+            transformation_ctx = f"datasource_{table_name}"
         )
         table_to_enrich_df = table_to_enrich_source.toDF()
         if table_to_enrich_df.rdd.isEmpty():
             logger.info(f"No data found for {table_name}, moving onto next table to enrich.")
             continue
-        table_to_enrich_df = get_latest_partitions(table_to_enrich_df)
 
         # Prepare the spatial dataframe
         geom_format = enrich_table["geom_format"]
@@ -231,8 +232,10 @@ if __name__ == "__main__":
                 table_to_enrich_df = table_to_enrich_df.withColumnRenamed("geometry", "geom")
                 geom_column_name = "geom"
             # create subdataframe with only the geom column, then convert it to pandas
-            point_df = table_to_enrich_df.select(geom_column_name).distinct()
+            point_df = table_to_enrich_df.select(geom_column_name).dropna().distinct()
             point_df = point_df.toPandas()
+            # fill empty geom values so the conversion to spark (string) works later
+            # point_df[geom_column_name] = point_df[geom_column_name].fillna('')
             if geom_format == "wkt":
                 enrich_geo_df = geopandas.GeoDataFrame(point_df, crs=source_crs,
                                                        geometry=point_df[geom_column_name].apply(wkt_loads))
@@ -251,8 +254,9 @@ if __name__ == "__main__":
             x_column = enrich_table["x_column"]
             y_column = enrich_table["y_column"]
             # create subdataframe with only the geom columns, then convert it to pandas
-            point_df = table_to_enrich_df.select(x_column, y_column).distinct()
+            point_df = table_to_enrich_df.select(x_column, y_column).dropna().distinct()
             point_df = point_df.toPandas()
+            # point_df = point_df.astype({x_column:'float64', y_column:'float64'})
             enrich_geo_df = create_geom_and_extra_coords(point_df, source_crs, 'epsg:27700', x_column, y_column, logger)
         else:
             logger.info(f"Cannot handle geom format: {geom_format}")
@@ -273,26 +277,26 @@ if __name__ == "__main__":
         enrich_pd_df = enrich_pd_df.drop(columns=['geometry'])
         logger.info(f"column types in the joint dataframe:\n{enrich_pd_df.dtypes}")
 
-        # deal with nan
+        # deal with nan for non geom columns
         enrich_pd_df = deal_with_nan_columns(enrich_pd_df, geography_tables_dict)
 
         # back from pandas to spark
-        spark_point_df = spark.createDataFrame(enrich_pd_df)
+        enrich_spark_df = spark.createDataFrame(enrich_pd_df)
 
         # Convert coordinates columns to double (Pandas make them decimal when calculating them)
         if geom_format == "coords":
-            spark_point_df = convert_coordinate_columns_to_double(spark_point_df, x_column, y_column)
+            enrich_spark_df = convert_coordinate_columns_to_double(enrich_spark_df, x_column, y_column)
         
         # joins back the dataframe with only enriched geom to the initial dataframe with all the columns
         # Scenario 1: there was a geom column: join on this column
         if "geom_column" in enrich_table:
-            table_to_enrich_df = table_to_enrich_df.join(spark_point_df, geom_column_name, "left")
+            table_to_enrich_df = table_to_enrich_df.join(enrich_spark_df, geom_column_name, "left")
             # if the geometry column has been renamed earlier to avoid a clash, rename it back to 'geometry'
             if enrich_table["geom_column"] == "geometry":
                 table_to_enrich_df = table_to_enrich_df.withColumnRenamed("geom", "geometry")
         # Scenario 2: there were 2 coordinate columns: join on these 2 columns
         elif geom_format == "coords":
-            table_to_enrich_df = table_to_enrich_df.join(spark_point_df, [enrich_table["x_column"],enrich_table["y_column"]], "left")
+            table_to_enrich_df = table_to_enrich_df.join(enrich_spark_df, [enrich_table["x_column"],enrich_table["y_column"]], "left")
             
         # Convert data frame to dynamic frame
         dynamic_frame = DynamicFrame.fromDF(table_to_enrich_df, glueContext, "target_data_to_write")
@@ -303,7 +307,7 @@ if __name__ == "__main__":
             frame=dynamic_frame,
             connection_type="s3",
             format="parquet",
-            connection_options={"path": args["target_location"] + table_name, "partitionKeys": PARTITION_KEYS},
+            connection_options={"path": args["target_location"] + table_name, "partitionKeys": enrich_table["partition_keys"]},
             transformation_ctx=f'target_data_to_write_{table_name}')
 
     job.commit()
