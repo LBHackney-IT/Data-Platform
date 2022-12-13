@@ -49,6 +49,11 @@ module "rentsense_output" {
   }
   script_name          = "rentsense_to_refined"
   triggered_by_crawler = module.mtfh_reshape_to_refined.crawler_name
+  glue_crawler_excluded_blobs = ["*.json",
+    "*.txt",
+    "*.zip",
+    "*.xlsx",
+    "*.csv"]
   crawler_details = {
     database_name      = module.department_housing_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/housing/rentsense"
