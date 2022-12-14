@@ -53,11 +53,12 @@ module "rentsense_output" {
     "*.txt",
     "*.zip",
     "*.xlsx",
-    "*.csv"]
+    "**/*.csv"]
   crawler_details = {
     database_name      = module.department_housing_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/housing/rentsense"
   }
 
 }
-    
+
+
