@@ -41,10 +41,10 @@ def get_auth_token(client_id, client_secret, scope):
     print(f"Auth Token status Code = {r.status_code}")
     auth_token = json.loads(r.text)
 
-    if(r.status_code == "200"):
+    if(r.status_code == 200):
         return auth_token
     else:
-        raise(f"Auth Token status Code = {r.content}")
+        raise ValueError(f"Auth Token status Code = {r.content}")
 
 
 def vonage_api_request(api_to_call, table_to_call, page, limit, start_time, end_time, auth_token):
