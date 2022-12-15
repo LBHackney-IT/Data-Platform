@@ -1,0 +1,22 @@
+module "dynamodb_table" {
+  source = "../modules/dynamodb"
+  count  = !local.is_live_environment ? 1 : 0
+
+  name         = "glue-watermarks"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "jobName"
+  range_key    = "runId"
+  table_class  = "STANDARD"
+  tags         = module.tags.values
+
+  attributes = [
+    {
+      name = "jobName"
+      type = "S"
+    },
+    {
+      name = "runId"
+      type = "S"
+    }
+  ]
+}
