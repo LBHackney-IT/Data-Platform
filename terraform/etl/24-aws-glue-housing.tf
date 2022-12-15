@@ -48,7 +48,7 @@ module "rentsense_output" {
     "--source_catalog_database" = module.department_housing_data_source.refined_zone_catalog_database_name
   }
   script_name          = "rentsense_to_refined"
-  triggered_by_crawler = module.mtfh_reshape_to_refined.crawler_name
+  triggered_by_crawler = module.ingest_housing_income_collection_database_to_housing_raw_zone.crawler_name
   glue_crawler_excluded_blobs = ["*.json",
     "*.txt",
     "*.zip",
