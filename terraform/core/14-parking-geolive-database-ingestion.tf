@@ -11,7 +11,7 @@ module "parking_geolive_database_ingestion" {
   schema_name                 = "parking"
   database_secret_name        = "database-credentials/geolive-parking"
   identifier_prefix           = local.short_identifier_prefix
-  job_schedule                = "cron(0 2 ? * MON *)"
+  job_schedule                = "cron(0 3 ? * MON *)"
 }
 
 module "parking_geolive_ingestion_job" {
