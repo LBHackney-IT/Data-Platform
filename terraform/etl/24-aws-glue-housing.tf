@@ -28,6 +28,12 @@ module "mtfh_reshape_to_refined" {
 
 }
 
+
+data "aws_ssm_parameter" "copy_rentsense_output_crawler" {
+  name = "/${local.identifier_prefix}/glue_crawler/housing/ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name"
+}
+
+
 module "rentsense_output" {
   source                    = "../modules/aws-glue-job"
   is_production_environment = local.is_production_environment
@@ -48,7 +54,7 @@ module "rentsense_output" {
     "--source_catalog_database" = module.department_housing_data_source.refined_zone_catalog_database_name
   }
   script_name          = "rentsense_to_refined"
-  triggered_by_crawler = module.ingest_housing_income_collection_database_to_housing_raw_zone.crawler_name
+  triggered_by_crawler = data.aws_ssm_parameter.copy_rentsense_output_crawler.value
   glue_crawler_excluded_blobs = ["*.json",
     "*.txt",
     "*.zip",
