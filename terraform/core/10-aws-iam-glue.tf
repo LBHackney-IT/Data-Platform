@@ -225,48 +225,4 @@ resource "aws_iam_role_policy_attachment" "attach_can_assume_all_roles_to_glue_r
   policy_arn = aws_iam_policy.can_assume_all_roles.arn
 }
 
-resource "aws_iam_policy" "glue_access_to_watermarks_table" {
-  tags = module.tags.values
 
-  name   = "${local.identifier_prefix}-glue-can-access-wartermarks-table"
-  policy = data.aws_iam_policy_document.glue_access_to_watermarks_table.json
-}
-
-resource "aws_iam_role_policy_attachment" "attach_glue_access_to_watermarks_table_policy_to_glue_role" {
-  role       = aws_iam_role.glue_role.name
-  policy_arn = aws_iam_policy.glue_access_to_watermarks_table.arn
-}
-
-data "aws_iam_policy_document" "glue_access_to_watermarks_table" {
-
-  statement {
-    sid    = "ListAndDescribe"
-    effect = "Allow"
-    actions = [
-      "dynamodb:List*",
-      "dynamodb:DescribeReservedCapacity*",
-      "dynamodb:DescribeLimits",
-      "dynamodb:DescribeTimeToLive"
-    ]
-    resources = ["*"]
-  }
-  statement {
-    sid    = "SpecificTable"
-    effect = "Allow"
-    actions = [
-      "dynamodb:BatchGet*",
-      "dynamodb:DescribeStream",
-      "dynamodb:DescribeTable",
-      "dynamodb:Get*",
-      "dynamodb:Query",
-      "dynamodb:Scan",
-      "dynamodb:BatchWrite*",
-      "dynamodb:CreateTable",
-      #"dynamodb:Delete*",
-      "dynamodb:Update*",
-      "dynamodb:PutItem"
-    ]
-    resources = ["arn:aws:dynamodb:*:*:table/glue-watermarks"]
-  }
-
-}
