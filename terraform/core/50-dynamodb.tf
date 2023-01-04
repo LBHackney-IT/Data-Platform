@@ -1,6 +1,6 @@
 module "dynamodb_table" {
   source = "../modules/dynamodb"
-  count  = !local.is_live_environment ? 1 : 0
+  count  = local.is_live_environment ? 1 : 0
 
   name         = "glue-watermarks"
   billing_mode = "PAY_PER_REQUEST"
