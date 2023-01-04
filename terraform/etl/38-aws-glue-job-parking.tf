@@ -1110,7 +1110,7 @@ module "parking_match_pcn_permit_vrm_llpg_nlpg_postcodes" {
   helper_module_key              = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_match_pcn_permit_vrm_llpg_nlpg_postcodes"
+  script_name                    = "parking_match_pcn_permit_vrm_with_address_match_llpg_nlpg_postcodes"
   triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
   job_description                = "PCNs VRM match to Permits VRM with match to LLPG and NLPG for Registered and Current addresses Post Code for the last 13 months of pcn issue date as at run date
 With post code match  regexp_extract"
