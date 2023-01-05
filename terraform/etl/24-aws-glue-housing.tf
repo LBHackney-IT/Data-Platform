@@ -49,11 +49,12 @@ module "rentsense_output" {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket"               = module.refined_zone_data_source.bucket_id
     "--s3_bucket_target"        = "s3://${module.refined_zone_data_source.bucket_id}/housing/rentsense"  
+    "--s3_landing"        = module.landing_zone_data_source.bucket_id
     "--enable-glue-datacatalog" = "true"
     "--source_raw_database" = module.department_housing_data_source.raw_zone_catalog_database_name
     "--source_catalog_database" = module.department_housing_data_source.refined_zone_catalog_database_name
   }
-  script_name          = "rentsense_to_refined"
+  script_name          = "rentsense_to_refined_and_landing"
   triggered_by_crawler = data.aws_ssm_parameter.copy_rentsense_output_crawler.value
   glue_crawler_excluded_blobs = ["*.json",
     "*.txt",
@@ -66,5 +67,5 @@ module "rentsense_output" {
   }
 
 }
-
+      
 
