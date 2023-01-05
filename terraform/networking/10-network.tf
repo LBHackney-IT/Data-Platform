@@ -82,18 +82,18 @@ resource "aws_security_group" "service_endpoint" {
   })
 }
 
-# resource "aws_security_group_rule" "ingress_https" {
-#   security_group_id = aws_security_group.service_endpoint.id
-#   type              = "ingress"
+resource "aws_security_group_rule" "ingress_https" {
+  security_group_id = aws_security_group.service_endpoint.id
+  type              = "ingress"
 
-#   cidr_blocks = ["0.0.0.0/0"]
-#   description = ""
+  cidr_blocks = ["0.0.0.0/0"]
+  description = ""
 
-#   from_port = "443"
-#   to_port   = "443"
-#   protocol  = "TCP"
-# }
-
+  from_port = "443"
+  to_port   = "443"
+  protocol  = "TCP"
+}
+#trigger plan after manual console rule change
 resource "aws_security_group_rule" "ingress_http" {
   security_group_id = aws_security_group.service_endpoint.id
   type              = "ingress"
@@ -105,7 +105,7 @@ resource "aws_security_group_rule" "ingress_http" {
   to_port   = "80"
   protocol  = "TCP"
 }
-# trigger workflow for a test plan
+
 # Resource -  VPC Routes
 resource "aws_route" "hub_tgw_routes" {
   count = length(module.core_vpc.private_route_table_ids)
