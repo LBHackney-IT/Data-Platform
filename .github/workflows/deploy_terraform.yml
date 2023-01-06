@@ -180,8 +180,4 @@ jobs:
         if: ${{ (inputs.build_path  == './terraform/core') && (success())  }}
         run: |
           ENVIRONMENT=${{ inputs.environment }} AWS_PROFILE=deploy_role ./docker/production-to-pre-production/deploy.sh
-
-      # - name: Generate Self Signed certificate
-      #   if: ${{ (inputs.build_path  == './terraform/core') && (success())  }}
-      #   run: |
-      #     AWS_DEFAULT_REGION=eu-west-2 AWS_PROFILE=deploy_role ./.github/generate-ssl-keys.sh
+          
