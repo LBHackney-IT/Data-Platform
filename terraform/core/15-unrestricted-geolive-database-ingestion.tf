@@ -11,7 +11,7 @@ module "boundaries_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "boundaries"
-  job_schedule                = "cron(0 2 ? * MON *)"
+  job_schedule                = "cron(50 1 ? * MON *)"
 }
 
 module "boundaries_geolive_ingestion_job" {
