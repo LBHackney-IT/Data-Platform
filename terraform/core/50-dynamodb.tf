@@ -9,7 +9,7 @@ module "dynamodb_table" {
   table_class                    = "STANDARD"
   point_in_time_recovery_enabled = true
   tags = {
-    BackupPolicy = "Dev"
+    "BackupPolicy" = var.environment == "prod" ? "Prod" : null
   }
 
   attributes = [
