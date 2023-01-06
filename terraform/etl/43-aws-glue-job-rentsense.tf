@@ -3,7 +3,7 @@ data "aws_ssm_parameter" "copy_rentsense_output_crawler" {
 }
 
 
-module "rentsense_output" {
+module "rentsense_output_to_landing" {
   source                    = "../modules/aws-glue-job"
   is_production_environment = local.is_production_environment
   is_live_environment       = local.is_live_environment
