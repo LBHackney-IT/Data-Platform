@@ -8,7 +8,9 @@ module "dynamodb_table" {
   range_key                      = "runId"
   table_class                    = "STANDARD"
   point_in_time_recovery_enabled = true
-  tags                           = module.tags.values
+  tags = {
+    BackupPolicy = "Dev"
+  }
 
   attributes = [
     {
@@ -20,4 +22,8 @@ module "dynamodb_table" {
       type = "S"
     }
   ]
+
+  point_in_time_recovery {
+    enabled = true
+  }
 }
