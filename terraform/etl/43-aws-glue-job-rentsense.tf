@@ -8,6 +8,9 @@ module "rentsense_output" {
   is_production_environment = local.is_production_environment
   is_live_environment       = local.is_live_environment
   job_name                   = "${local.short_identifier_prefix}Rentsense outputs"
+  glue_scripts_bucket_id     = module.glue_scripts_data_source.bucket_id
+  glue_temp_bucket_id        = module.glue_temp_storage_data_source.bucket_id
+  glue_role_arn              = data.aws_iam_role.glue_role.arn
   glue_job_worker_type       = "G.1X"
   number_of_workers_for_glue_job  = 8
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
