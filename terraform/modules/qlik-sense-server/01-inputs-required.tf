@@ -37,3 +37,8 @@ variable "environment" {
   description = "Enviroment e.g. dev, stg, prod, mgmt."
   type        = string
 }
+
+variable "is_production_environment" {
+  description = "A flag indicting if we are running in production"
+  type        = bool
+}
