@@ -531,7 +531,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/accounts', "partitionKeys": PARTITION_KEYS},   
         #connection_options={"path": s3_bucket_target+'/accounts', "partitionKeys": ['import_date']},    
         transformation_ctx="target_data_to_write")
@@ -598,7 +598,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/arrangements', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
@@ -701,7 +701,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/tenants', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
         
@@ -747,7 +747,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/balances', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
     
@@ -802,7 +802,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/actions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
     
@@ -864,7 +864,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/transactions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
