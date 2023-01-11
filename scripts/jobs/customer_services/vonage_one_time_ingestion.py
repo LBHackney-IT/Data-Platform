@@ -15,6 +15,7 @@ import logging
 import boto3
 from dotenv import load_dotenv
 from os import getenv
+from pyspark.context import SparkContext
 
 import re
 
@@ -387,11 +388,12 @@ def list_s3_files_in_folder_using_client(s3_client,bucket,directory):
     return files
 
 
-def lambda_handler(event, lambda_context):
+def __main__():
 
     #######=========== Glue Job Boilerplate ==================#############
 
     args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+    sc = SparkContext.getOrCreate()
     glue_context = GlueContext(sc)
     logger = glue_context.get_logger()
     job = Job(glue_context)
@@ -431,7 +433,7 @@ def lambda_handler(event, lambda_context):
 
     if files_in_subfolder == None:
         print("No Files Found. Will use 2020-01-01 as start date")
-        start_date = "2021-09-01"
+        start_date = "2023-01-01"
     else:
         start_date = get_latest_data_date(s3_client, s3_bucket, output_folder_name)
 
@@ -452,11 +454,4 @@ def lambda_handler(event, lambda_context):
         export_data_dictionary(called_data, output_location,s3_client,s3_bucket)
     else:
         print(f'No Dates')
-
-    glue_client = boto3.client('glue')
-    start_glue_trigger(glue_client, glue_trigger_name)
-
-def start_glue_trigger(glue_client, trigger_name):
-    trigger_details = glue_client.start_trigger(Name=trigger_name)
-    logger.info(f"Started trigger: {trigger_details}")
 
