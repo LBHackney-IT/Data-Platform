@@ -42,3 +42,8 @@ variable "is_production_environment" {
   description = "A flag indicting if we are running in production"
   type        = bool
 }
+
+variable "is_live_environment" {
+  description = "A flag indicting if we are running in a live environment"
+  type        = bool
+}
