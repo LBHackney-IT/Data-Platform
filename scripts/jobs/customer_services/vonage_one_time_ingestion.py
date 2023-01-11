@@ -388,7 +388,7 @@ def list_s3_files_in_folder_using_client(s3_client,bucket,directory):
     return files
 
 
-def __main__():
+def main():
 
     #######=========== Glue Job Boilerplate ==================#############
 
@@ -455,3 +455,5 @@ def __main__():
     else:
         print(f'No Dates')
 
+if __name__ == "__main__":
+    main()
