@@ -11,4 +11,6 @@ module "qlik_server" {
   short_identifier_prefix   = local.short_identifier_prefix
   environment               = var.environment
   is_production_environment = local.is_production_environment
+  is_live_environment       = local.is_live_environment
+  secrets_manager_kms_key   = aws_kms_key.secrets_manager_key
 }

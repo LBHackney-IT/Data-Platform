@@ -42,3 +42,16 @@ variable "is_production_environment" {
   description = "A flag indicting if we are running in production"
   type        = bool
 }
+
+variable "is_live_environment" {
+  description = "A flag indicting if we are running in a live environment"
+  type        = bool
+}
+
+variable "secrets_manager_kms_key" {
+  description = "The KMS Key Id to be used to encrypt the secret in secrets manager"
+  type = object({
+    key_id = string
+    arn    = string
+  })
+}
