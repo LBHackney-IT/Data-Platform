@@ -18,19 +18,24 @@ resource "aws_ami_launch_permission" "ami_permissions_for_pre_prod" {
   account_id    = data.aws_secretsmanager_secret_version.pre_production_account_id[0].secret_string
 }
 
-#manually populated in secrets manager on pre-prod
-data "aws_secretsmanager_secret" "production_account_qlik_ec2_ebs_encryption_key_arn" {
-  count = !var.is_production_environment && var.is_live_environment ? 1 : 0
-  name  = "${var.identifier_prefix}-manual-production-account-qlik-ec2-ebs-encryption-key-arn"
+#value manually managed in secrets manager on pre-prod
+resource "aws_secretsmanager_secret" "production_account_qlik_ec2_ebs_encryption_key_arn" {
+  tags        = var.tags
+  count       = !var.is_production_environment && var.is_live_environment ? 1 : 0
+  name_prefix = "${var.identifier_prefix}-manually-managed-value-production-account-qlik-ec2-ebs-encryption-key-arn"
+  kms_key_id  = var.secrets_manager_kms_key.key_id
+  description = "Qlik EC2 ESB volume's encryption key arn on production account. This secret value is managed manually."
 }
 
-data "aws_secretsmanager_secret_version" "production_account_qlik_ec2_ebs_encryption_key_arn" {
-  count     = !var.is_production_environment && var.is_live_environment ? 1 : 0
-  secret_id = data.aws_secretsmanager_secret.production_account_qlik_ec2_ebs_encryption_key_arn[0].id
+resource "aws_secretsmanager_secret_version" "production_account_qlik_ec2_ebs_encryption_key_arn" {
+  count         = !var.is_production_environment && var.is_live_environment ? 1 : 0
+  secret_id     = aws_secretsmanager_secret.production_account_qlik_ec2_ebs_encryption_key_arn[0].id
+  secret_string = "" #value managed manually
 }
 
 data "aws_iam_policy_document" "qlik_sense_shared_prod_key_policy" {
     count = !var.is_production_environment && var.is_live_environment ? 1 : 0
+    
     statement {
       sid     = "AllowQlikEC2RoleAccessToTheSharedProdKey"
       effect  = "Allow"
@@ -43,7 +48,7 @@ data "aws_iam_policy_document" "qlik_sense_shared_prod_key_policy" {
         "kms:DescribeKey"
       ]
 
-      resources = sensitive([data.aws_secretsmanager_secret_version.production_account_qlik_ec2_ebs_encryption_key_arn[0].secret_string])
+      resources = [aws_secretsmanager_secret_version.production_account_qlik_ec2_ebs_encryption_key_arn[0].secret_string]
     }
 }
 
