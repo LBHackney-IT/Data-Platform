@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "qlik_sense_shared_prod_key_policy" {
         "kms:DescribeKey"
       ]
 
-      resources = [data.aws_secretsmanager_secret_version.production_account_qlik_ec2_ebs_encryption_key_arn[0].secret_string]
+      resources = sensitive([data.aws_secretsmanager_secret_version.production_account_qlik_ec2_ebs_encryption_key_arn[0].secret_string])
     }
 }
 
