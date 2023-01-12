@@ -33,6 +33,16 @@ resource "aws_secretsmanager_secret_version" "production_account_qlik_ec2_ebs_en
   secret_string = "TODO" #value managed manually
 }
 
+data "aws_secretsmanager_secret" "production_account_qlik_ec2_ebs_encryption_key_arn" {
+  count         = !var.is_production_environment && var.is_live_environment ? 1 : 0
+  name          = aws_secretsmanager_secret.production_account_qlik_ec2_ebs_encryption_key_arn[0].arn
+}
+
+data "aws_secretsmanager_secret_version" "production_account_qlik_ec2_ebs_encryption_key_arn" {
+  count         = !var.is_production_environment && var.is_live_environment ? 1 : 0
+  secret_id     = data.aws_secretsmanager_secret.production_account_qlik_ec2_ebs_encryption_key_arn[0].id
+}
+
 resource "aws_iam_policy" "qlik_sense_preprod_can_access_shared_prod_key" {
   count     = !var.is_production_environment && var.is_live_environment ? 1 : 0
   tags      = var.tags
@@ -52,7 +62,7 @@ resource "aws_iam_policy" "qlik_sense_preprod_can_access_shared_prod_key" {
             "kms:DescribeKey"
           ]
           Effect   = "Allow"
-          Resource = [aws_secretsmanager_secret_version.production_account_qlik_ec2_ebs_encryption_key_arn[0].secret_string]
+          Resource = [data.aws_secretsmanager_secret_version.production_account_qlik_ec2_ebs_encryption_key_arn[0].secret_string]
         }
       ]
   })
