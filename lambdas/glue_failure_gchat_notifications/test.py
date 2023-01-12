@@ -5,7 +5,7 @@ from unittest import TestCase, mock
 
 import botocore.session
 from botocore.stub import Stubber
-from glue_alarms_handler.main import format_message, lambda_handler
+from glue_failure_gchat_notifications.main import format_message, lambda_handler
 
 
 class TestGlueAlarmsHandler(TestCase):
@@ -65,7 +65,7 @@ class TestGlueAlarmsHandler(TestCase):
         self.secretsmanager_client_stubber.activate()
 
         lambda_handler(
-            self.cloudwatch_event, secretsmanager_client=self.secretsmanager_client
+            self.cloudwatch_event, secretsManagerClient=self.secretsmanager_client
         )
 
         self.secretsmanager_client_stubber.assert_no_pending_responses()
@@ -96,12 +96,12 @@ class TestGlueAlarmsHandler(TestCase):
         self.secretsmanager_client_stubber.activate()
 
         lambda_handler(
-            event=self.sns_event, secretsManagerClient=self.secretsmanager_client
+            event=self.cloudwatch_event, secretsManagerClient=self.secretsmanager_client
         )
 
         mock_pool_manager.request.assert_called_once_with(
             "POST",
             self.secret,
-            body=dumps(format_message(self.sns_event)),
+            body=dumps(format_message(self.cloudwatch_event)),
             headers=expected_headers,
         )
