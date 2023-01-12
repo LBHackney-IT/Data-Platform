@@ -30,5 +30,5 @@ resource "aws_secretsmanager_secret" "production_account_qlik_ec2_ebs_encryption
 resource "aws_secretsmanager_secret_version" "production_account_qlik_ec2_ebs_encryption_key_arn" {
   count         = !var.is_production_environment && var.is_live_environment ? 1 : 0
   secret_id     = aws_secretsmanager_secret.production_account_qlik_ec2_ebs_encryption_key_arn[0].id
-  secret_string = "" #value managed manually
+  secret_string = "TODO" #value managed manually
 }
