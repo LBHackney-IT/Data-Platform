@@ -1,6 +1,9 @@
 locals {
-  lambda_timeout = 900
+  lambda_timeout                                   = 900
+  glue_job_failure_gchat_notifications_secret_name = "${local.short_identifier_prefix}gchat-glue-failure-webhook-admin"
 }
+
+data "aws_caller_identity" "current" {}
 
 data "archive_file" "glue_job_failure_notification_lambda" {
   type        = "zip"
@@ -210,4 +213,117 @@ resource "aws_sns_topic_subscription" "admin_failure_notifications" {
   endpoint  = local.google_group_admin_display_name
   protocol  = "email"
   topic_arn = aws_sns_topic.admin_failure_notifications.arn
+}
+
+# Reources for glue job failure gchat notifications
+
+data "archive_file" "glue_job_failure_gchat_notification_lambda" {
+  type        = "zip"
+  source_dir  = "../../lambdas/glue_failure_gchat_notifications"
+  output_path = "../../lambdas/glue_failure_gchat_notifications.zip"
+}
+
+resource "aws_s3_bucket_object" "glue_job_failure_gchat_notification_lambda" {
+  bucket      = module.lambda_artefact_storage.bucket_id
+  key         = "glue_failure_gchat_notifications.zip"
+  source      = data.archive_file.glue_job_failure_gchat_notification_lambda.output_path
+  acl         = "private"
+  source_hash = data.archive_file.glue_job_failure_gchat_notification_lambda.output_md5
+}
+
+data "aws_iam_policy_document" "glue_failure_gchat_notification_lambda_assume_role" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "lambda.amazonaws.com"
+      ]
+      type = "Service"
+    }
+  }
+}
+
+resource "aws_iam_role" "glue_failure_gchat_notification_lambda" {
+  tags = module.tags.values
+
+  name               = lower("${local.short_identifier_prefix}glue-failure-gchat-notification-lambda")
+  assume_role_policy = data.aws_iam_policy_document.glue_failure_gchat_notification_lambda_assume_role.json
+}
+
+data "aws_iam_policy_document" "glue_failure_gchat_notification_lambda" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:logs:*:*:*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "secretsmanager:GetSecretValue"
+    ]
+    resources = [
+      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:${local.glue_job_failure_gchat_notifications_secret_name}*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "glue_failure_gchat_notification_lambda" {
+  tags = module.tags.values
+
+  name   = lower("${local.short_identifier_prefix}glue-failure-gchat-notification-lambda")
+  policy = data.aws_iam_policy_document.glue_failure_gchat_notification_lambda.json
+}
+
+resource "aws_iam_role_policy_attachment" "glue_failure_gchat_notification_lambda" {
+  role       = aws_iam_role.glue_failure_gchat_notification_lambda.name
+  policy_arn = aws_iam_policy.glue_failure_gchat_notification_lambda.arn
+}
+
+resource "aws_lambda_function" "glue_failure_gchat_notification_lambda" {
+  tags = module.tags.values
+
+  role             = aws_iam_role.glue_failure_gchat_notification_lambda.arn
+  handler          = "main.lambda_handler"
+  runtime          = "python3.8"
+  function_name    = "${local.short_identifier_prefix}glue-failure-gchat-notification"
+  s3_bucket        = module.lambda_artefact_storage.bucket_id
+  s3_key           = aws_s3_bucket_object.glue_job_failure_gchat_notification_lambda.key
+  source_code_hash = data.archive_file.glue_job_failure_gchat_notification_lambda.output_base64sha256
+  timeout          = local.lambda_timeout
+
+  environment {
+    variables = {
+      SECRET_NAME = local.glue_job_failure_gchat_notifications_secret_name
+    }
+  }
+}
+resource "aws_cloudwatch_event_target" "glue_job_failure_gchat_lambda_trigger" {
+  rule = aws_cloudwatch_event_rule.glue_failure_notification_event_rule.name
+  arn  = aws_lambda_function.glue_failure_notification_lambda.arn
+}
+
+resource "aws_lambda_permission" "allow_cloudwatch_gchat_glue_notifications" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.glue_failure_gchat_notification_lambda.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.glue_failure_notification_event_rule.arn
 }
