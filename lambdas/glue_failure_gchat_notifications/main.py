@@ -24,7 +24,7 @@ def format_message(event) -> dict:
 
 def lambda_handler(event=None, lambda_context=None, secretsManagerClient=None):
     secret_name = getenv("SECRET_NAME")
-    secrets_manager_client = boto3.client("secretsmanager")
+    secrets_manager_client = secretsManagerClient or boto3.client("secretsmanager")
 
     secret = secrets_manager_client.get_secret_value(SecretId=secret_name)
 
