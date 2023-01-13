@@ -926,6 +926,7 @@ module "parking_spreadsheet_parking_ops_db_defects_mgt" {
   dataset_name                    = "parking_ops_db_defects_mgt"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
+  create_workflow                 = false
 }
 
 module "housing_rent_patches" {
