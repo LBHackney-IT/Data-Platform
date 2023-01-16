@@ -1,5 +1,5 @@
 locals {
-    backup_ami_id = "ami-050960cc7acbe15d9"
+    backup_ami_id = "ami-0b2e39229446d572c"
 }
 
 data "aws_secretsmanager_secret" "pre_production_account_id" {
