@@ -104,7 +104,7 @@ resource "aws_instance" "qlik_sense_pre_prod_instance" {
   ami                       = local.backup_ami_id
   instance_type             = "c5.4xlarge"
   subnet_id                 = data.aws_secretsmanager_secret_version.subnet_value_for_qlik_sense_pre_prod_instance[0].secret_string
-  vpc_security_group_ids    = [aws_security_group.qlik_sense.id]
+  #vpc_security_group_ids    = [aws_security_group.qlik_sense.id]
   
   private_dns_name_options {
     enable_resource_name_dns_a_record = true
