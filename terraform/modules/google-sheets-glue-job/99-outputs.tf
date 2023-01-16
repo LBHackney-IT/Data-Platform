@@ -10,5 +10,5 @@ output "crawler_name" {
 
 output "workflow_name" {
   description = "Workflow name"
-  value       = aws_glue_workflow.workflow[0].name
+  value       = var.create_workflow ? aws_glue_workflow.workflow[0].name : null
 }
