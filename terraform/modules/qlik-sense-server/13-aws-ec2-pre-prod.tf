@@ -119,7 +119,7 @@ resource "aws_instance" "qlik_sense_pre_prod_instance" {
   root_block_device {
     encrypted               = true
     delete_on_termination   = false
-    kms_key_id              = aws_kms_key.key
+    kms_key_id              = aws_kms_key.key.id
     tags                    = merge(var.tags, local.ec2_tags)
   }
 
