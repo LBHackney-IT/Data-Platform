@@ -12,7 +12,6 @@ resource "aws_ami_launch_permission" "ami_permissions_for_pre_prod_for_test_inst
   account_id    = data.aws_secretsmanager_secret_version.pre_production_account_id[0].secret_string
 }
 
-#enable once above permissions have been deployed to prod
 # resource "aws_instance" "test_windows_restore_from_prod_to_pre_prod" {
 #   count                     = !var.is_production_environment && var.is_live_environment ? 1 : 0
 #   ami                       = local.test_instance_backup_ami_id
@@ -33,7 +32,7 @@ resource "aws_ami_launch_permission" "ami_permissions_for_pre_prod_for_test_inst
 #   root_block_device {
 #     encrypted               = true
 #     delete_on_termination   = true
-#     kms_key_id              = aws_kms_key.key.id
+#     kms_key_id              = aws_kms_key.key.arn
 #     tags                    = merge(var.tags, local.win_pre_prod_test_restore_ec2_tags)
 #   }
 # }
