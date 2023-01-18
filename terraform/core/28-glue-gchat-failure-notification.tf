@@ -15,7 +15,7 @@ locals {
 }
 
 module "glue-failure-alert-notifications" {
-  count                          = !local.is_live_environment ? 1 : 0
+  count                          = local.is_production_environment ? 1 : 0
   source                         = "../modules/glue-failure-alert-notifications"
   tags                           = module.tags.values
   identifier_prefix              = local.short_identifier_prefix
