@@ -77,11 +77,10 @@ resource "aws_s3_bucket_object" "lambda" {
 }
 
 resource "aws_lambda_function" "lambda" {
-  function_name = lower("${var.identifier_prefix}${var.lambda_name}")
-  role          = aws_iam_role.lambda.arn
-  handler       = "main.handler"
-  runtime       = "python3.8"
-  #filename          = data.archive_file.lambda.output_path
+  function_name     = lower("${var.identifier_prefix}${var.lambda_name}")
+  role              = aws_iam_role.lambda.arn
+  handler           = "main.handler"
+  runtime           = "python3.8"
   source_code_hash  = filebase64sha256(data.archive_file.lambda.output_path)
   s3_bucket         = var.lambda_artefact_storage_bucket
   s3_key            = "${local.lambda_name_underscore}.zip"
