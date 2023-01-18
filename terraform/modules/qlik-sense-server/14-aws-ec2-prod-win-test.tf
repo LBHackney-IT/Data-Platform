@@ -36,13 +36,7 @@ resource "aws_instance" "test_windows_prod_instance" {
   root_block_device {
     encrypted               = true
     delete_on_termination   = true
-    kms_key_id              = aws_kms_key.key.id
+    kms_key_id              = aws_kms_key.key.arn
     tags                    = merge(var.tags, local.win_prod_test_ec2_tags)
-  }
-
-  lifecycle {
-      ignore_changes = [
-        root_block_device[0].kms_key_id,
-      ]
   }
 }
