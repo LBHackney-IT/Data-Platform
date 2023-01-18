@@ -98,4 +98,3 @@ data "aws_secretsmanager_secret_version" "subnet_value_for_qlik_sense_pre_prod_i
   count     = !var.is_production_environment && var.is_live_environment ? 1 : 0
   secret_id = data.aws_secretsmanager_secret.subnet_value_for_qlik_sense_pre_prod_instance[0].id
 }
-
