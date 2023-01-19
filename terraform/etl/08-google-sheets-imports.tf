@@ -19,6 +19,7 @@ module "repairs_dlo" {
   department                      = module.department_housing_repairs_data_source
   dataset_name                    = "repairs-dlo"
   enable_glue_trigger             = false
+  create_workflow                 = true
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -43,6 +44,7 @@ module "repairs_herts_heritage" {
   department                      = module.department_housing_repairs_data_source
   dataset_name                    = "repairs-herts-heritage"
   enable_glue_trigger             = false
+  create_workflow                 = true
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -67,6 +69,7 @@ module "repairs_avonline" {
   department                      = module.department_housing_repairs_data_source
   dataset_name                    = "repairs-avonline"
   enable_glue_trigger             = false
+  create_workflow                 = true
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -91,6 +94,7 @@ module "repairs_alpha_track" {
   department                      = module.department_housing_repairs_data_source
   dataset_name                    = "repairs-alpha-track"
   enable_glue_trigger             = false
+  create_workflow                 = true
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -115,6 +119,7 @@ module "repairs_stannah" {
   department                      = module.department_housing_repairs_data_source
   dataset_name                    = "repairs-stannah"
   enable_glue_trigger             = false
+  create_workflow                 = true
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -139,6 +144,7 @@ module "repairs_purdy" {
   department                      = module.department_housing_repairs_data_source
   dataset_name                    = "repairs-purdy"
   enable_glue_trigger             = false
+  create_workflow                 = true
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -163,6 +169,7 @@ module "repairs_axis" {
   department                      = module.department_housing_repairs_data_source
   dataset_name                    = "repairs-axis"
   enable_glue_trigger             = false
+  create_workflow                 = true
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -298,7 +305,6 @@ module "parking_spreadsheet_parking_ops_db_defects_mgt" {
   dataset_name                    = "parking_ops_db_defects_mgt"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
-  create_workflow                 = false
 }
 
 module "housing_rent_patches" {
