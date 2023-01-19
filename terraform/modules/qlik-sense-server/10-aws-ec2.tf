@@ -101,6 +101,17 @@ resource "aws_security_group" "qlik_sense" {
   })
 }
 
+#manually added/managed value
+data "aws_secretsmanager_secret" "central_backup_role_arn" {
+  count = var.is_production_environment ? 1 : 0
+  name  = "${var.identifier_prefix}-manually-managed-value-central-backup-role-arn"
+}
+
+data "aws_secretsmanager_secret_version" "central_backup_role_arn" {
+  count     = var.is_production_environment ? 1 : 0
+  secret_id = data.aws_secretsmanager_secret.central_backup_role_arn[0].id
+}
+
 data "aws_iam_policy_document" "key_policy" {
   statement {
     effect = "Allow"
@@ -141,6 +152,35 @@ data "aws_iam_policy_document" "key_policy" {
       ]
     }
   }
+
+  dynamic statement {
+    for_each = var.is_production_environment ? [1] : [] 
+    
+    content {
+      sid =  "AllowCentralBackupVaultAccessToThisKey"
+      effect = "Allow"
+      
+      principals {
+        type = "AWS"
+        identifiers = [data.aws_secretsmanager_secret_version.central_backup_role_arn[0].secret_string]
+      }
+
+      actions = [
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:Encrypt",
+        "kms:DescribeKey",
+        "kms:Decrypt",
+        "kms:RetireGrant",
+        "kms:CreateGrant"
+      ]
+
+      resources = [
+        "*"
+      ]
+    }
+  }
+  
 }
 
 resource "aws_kms_key" "key" {
