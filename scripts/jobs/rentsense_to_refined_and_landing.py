@@ -507,7 +507,7 @@ if __name__ == "__main__":
     
     accounts2 = accounts2.join(case_priorities,accounts2.tenancy_ref ==  case_priorities.tenancy_ref2,"left")
         
-    accounts2 = accounts2.selectExpr("AccountReference as AccountReference",
+    accounts2 = accounts2.selectExpr("AccountReference as PaymentReference",
                                   "TenureType",
                                   "TenureTypeCode",
                                   "max_date as TenancyStartDate",
@@ -516,7 +516,7 @@ if __name__ == "__main__":
                                   "HousingOfficerName",
                                   "Patch",
                                   "import_date as import_date",
-                                  "tenancy_ref as AccountReferenceUH",
+                                  "tenancy_ref as AccountReference",
                                   "Case when BreathingSpace=1 then 'TRUE' else 'FALSE' end as BreathingSpace",
                                   "is_paused_until as BreathingSpaceEndDate"
                                     )
@@ -531,7 +531,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/accounts', "partitionKeys": PARTITION_KEYS},   
         #connection_options={"path": s3_bucket_target+'/accounts', "partitionKeys": ['import_date']},    
         transformation_ctx="target_data_to_write")
@@ -576,7 +576,7 @@ if __name__ == "__main__":
         .withColumn("AgreementCode",F.when(F.col("court_case_id")>0,"C").otherwise("N"))\
         .drop("AgreementEndDate")
 
-    arr = arr.selectExpr("paymentreference as AccountReference",
+    arr = arr.selectExpr("paymentreference as PaymentReference ",
                     "AgreementStartDate",
                      "AgreementEndDate1 as AgreementEndDate",
                     "frequency as AgreementFrequency",
@@ -584,7 +584,7 @@ if __name__ == "__main__":
                     "initial_payment_date as FirstInstallmentDueDate",
                     "AgreementCreatedDate",
                     "Amount as AgreementAmount", 
-                    "uh_ten_ref as tenancy_ref",
+                    "uh_ten_ref as AccountReference",
                     "import_date")
                      
     arr = arr.distinct()
@@ -598,7 +598,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/arrangements', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
@@ -671,7 +671,7 @@ if __name__ == "__main__":
     
     tens = tens.join(email,tens.person_id == email.pid3,"left")    
     
-    tens = tens.selectExpr("paymentreference as AccountReference",
+    tens = tens.selectExpr("paymentreference as PaymentReference",
                 "Title",
                 "case when length(TenantFirstName)=0 then '.' else TenantFirstName end as TenantFirstName",
                 "case when length(TenantSurName)=0 then '.' else TenantSurName end as TenantSurName",
@@ -685,7 +685,7 @@ if __name__ == "__main__":
                 "PostCode",
                 "Email",
                 "PropertyType",
-                "uh_ten_ref as tenancy_ref",
+                "uh_ten_ref as AccountReference",
                 "import_date")
                      
     tens = tens.distinct()
@@ -701,7 +701,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/tenants', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
         
@@ -731,10 +731,10 @@ if __name__ == "__main__":
 
     balances = ten.join(bals,ten.paymentreference ==  bals.paymentreference2,"inner") 
     
-    balances = balances. selectExpr("paymentreference as AccountReference",
+    balances = balances. selectExpr("paymentreference as PaymentReference",
                                     "CurrentBalance as CurrentBalance",
                                     "BalanceDate",
-                                    "uh_ten_ref as tenancy_ref",
+                                    "uh_ten_ref as AccountReference",
                                   "import_date")
     
     balances = balances.distinct()
@@ -747,7 +747,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/balances', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
     
@@ -785,13 +785,13 @@ if __name__ == "__main__":
     actions = actions.withColumn("code_lookup",F.trim(F.col("action_code")))\
                      .replace(to_replace=mapAction, subset=['code_lookup'])
                      
-    actions = actions. selectExpr("paymentreference as AccountReference",
+    actions = actions. selectExpr("paymentreference as PaymentReference",
                                   "tag_ref",
                                   "action_code as ActionCode",
                                   "code_lookup as ActionDescription",
                                   "ActionDate",
                                   "action_no as ActionSeq",
-                                  "uh_ten_ref as tenancy_ref",
+                                  "uh_ten_ref as AccountReference",
                                   "import_date")
                                   
     actions = add_import_time_columns(actions)
@@ -802,7 +802,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/actions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
     
@@ -842,14 +842,14 @@ if __name__ == "__main__":
     
     trans =  ten.join(trans,ten.uh_ten_ref ==  trans.uh_ten_ref1,"inner")
     
-    trans = trans.selectExpr("paymentreference as AccountReference",
+    trans = trans.selectExpr("paymentreference as PaymentReference",
                              "TransactionID",
                               "post_date as TransactionDate",
                              "post_date as TransactionPostDate",
                               "trans_type as TransactionCode",
                               "real_value as TransactionAmount",
                               "code_lookup as TransactionDescription",
-                              "uh_ten_ref as tenancy_ref",
+                              "uh_ten_ref as AccountReference",
                               "import_date"
                                 )
     
@@ -864,7 +864,7 @@ if __name__ == "__main__":
     parquet_data = glueContext.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
-        format="csv", format_options={"separator": ","},
+        format="parquet",
         connection_options={"path": s3_bucket_target+'/transactions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
