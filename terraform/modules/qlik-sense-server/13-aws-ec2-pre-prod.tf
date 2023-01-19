@@ -1,5 +1,9 @@
 locals {
-  backup_ami_id = "ami-0b2e39229446d572c"
+    backup_ami_id = "ami-0b2e39229446d572c"
+    ec2_tags = {
+        BackupPolicy  = title(var.environment)
+        Name          = "${var.identifier_prefix}-qlik-sense-restore"
+    }
 }
 
 data "aws_secretsmanager_secret" "pre_production_account_id" {
@@ -82,4 +86,15 @@ data "aws_secretsmanager_secret" "qlik_sense_ec2_role_arn_on_pre_prod_account" {
 data "aws_secretsmanager_secret_version" "qlik_sense_ec2_role_arn_on_pre_prod_account" {
   count     = var.is_production_environment ? 1 : 0
   secret_id = data.aws_secretsmanager_secret.qlik_sense_ec2_role_arn_on_pre_prod_account[0].id
+}
+
+#manually added/managed value
+data "aws_secretsmanager_secret" "subnet_value_for_qlik_sense_pre_prod_instance" {
+  count = !var.is_production_environment && var.is_live_environment ? 1 : 0
+  name  = "${var.identifier_prefix}-manually-managed-value-subnet-value-for-qlik-sense-restore-pre-prod-instance"
+}
+
+data "aws_secretsmanager_secret_version" "subnet_value_for_qlik_sense_pre_prod_instance" {
+  count     = !var.is_production_environment && var.is_live_environment ? 1 : 0
+  secret_id = data.aws_secretsmanager_secret.subnet_value_for_qlik_sense_pre_prod_instance[0].id
 }
