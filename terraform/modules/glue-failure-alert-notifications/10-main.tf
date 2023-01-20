@@ -113,9 +113,3 @@ resource "aws_cloudwatch_event_target" "lambda" {
   target_id = "Invoke${var.lambda_name}Lambda"
   arn       = aws_lambda_function.lambda.arn
 }
-
-resource "aws_kms_key" "name" {
-  description = "KMS key for ${var.secret_name}"
-  tags        = var.tags
-}
-
