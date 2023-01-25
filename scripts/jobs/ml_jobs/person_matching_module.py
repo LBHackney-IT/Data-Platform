@@ -265,28 +265,28 @@ def full_address(address_line_1: Column, address_line_2: Column, address_line_3:
     return trim(concat_ws(" ", address_line_1, address_line_2, address_line_3, address_line_4))
 
 
-def prepare_clean_housing_data(spark: SparkSession, person_reshape_data_path: str, assets_reshape_data_path: str,
-                               tenure_reshape_data_path: str) -> DataFrame:
-    """A function to prepare and clean housing data. Data comes from multiple sources. This function is specific to this
-    particular data source. For a new data source please add a new function.
-
+def prepare_clean_housing_data(person_reshape: DataFrame, assets_reshape: DataFrame,
+                               tenure_reshape: DataFrame) -> DataFrame:
+    """A function to prepare and clean housing data.
     Args:
-        spark: SparkSession
-        person_reshape_data_path: Path of the S3 (or local) folder containing person reshape data
-        assets_reshape_data_path: Path of the S3 (or local) folder containing assets reshape data
-        tenure_reshape_data_path: Path of the S3 (or local) folder containing tenure reshape data
-
+        person_reshape: Dataframe containing person reshape data
+        assets_reshape: Dataframe containing assets reshape data
+        tenure_reshape: Dataframe containing tenure reshape data
     Returns:
-        A DataFrame after preparing data from multiple sources and cleaning it.
+        A prepared and cleaned dataframe containing housing tenancy data.
     """
-    person_reshape = spark.read.parquet(person_reshape_data_path)
-    assets_reshape = spark.read.parquet(assets_reshape_data_path)
-    tenure_reshape = spark.read.parquet(tenure_reshape_data_path)
+    # print(tenure_reshape.show())
+    tenure_reshape = tenure_reshape.filter(tenure_reshape["isterminated"] is False)
+
+    assets_reshape = assets_reshape.filter(assets_reshape['assettype'] == 'Dwelling')
+
+    person_reshape = person_reshape.filter(
+        (person_reshape["type"].isin(["Secure", "Introductory", "Mense Profit Ac", "Leasehold (RTB)"]))
+        & (person_reshape["enddate"].isNull()))
 
     housing = person_reshape \
         .join(assets_reshape, person_reshape["assetid"] == assets_reshape["asset_id"], how="left") \
         .join(tenure_reshape, person_reshape["person_id"] == tenure_reshape["person_id"], how="left") \
-        .filter(person_reshape["type"].isin(["Secure", "Introductory", "Mense Profit Ac", "Leasehold (RTB)"])) \
         .withColumn("source", lit("housing")) \
         .withColumn("extracted_name", extract_name_udf(col("member_fullname"))) \
         .withColumn("entity_type",
@@ -295,7 +295,8 @@ def prepare_clean_housing_data(spark: SparkSession, person_reshape_data_path: st
                     .otherwise(lit("Unknown"))) \
         .withColumn("title",
                     when((col("extracted_name.title").isNull()) |
-                         (lower(col("extracted_name.title")) == lower(col("preferredTitle"))), col("preferredTitle"))
+                         (lower(col("extracted_name.title")) == lower(col("preferredTitle"))),
+                         col("preferredTitle"))
                     .otherwise(concat_ws(" ", col("preferredTitle"), col("extracted_name.title")))) \
         .withColumn("first_name", col("extracted_name.first_name")) \
         .withColumn("middle_name", col("extracted_name.middle_name")) \
@@ -310,10 +311,11 @@ def prepare_clean_housing_data(spark: SparkSession, person_reshape_data_path: st
         .withColumnRenamed("addressline3", "address_line_3") \
         .withColumnRenamed("addressline4", "address_line_4") \
         .withColumnRenamed("placeOfBirth", "place_of_birth") \
-        .select(col("source"), person_reshape["person_id"], person_reshape["uprn"], col("entity_type"), col("title"),
+        .select(col("source"), person_reshape["person_id"], person_reshape["uprn"], col("entity_type"),
+                col("title"),
                 col("first_name"), col("middle_name"), col("last_name"), col("date_of_birth"),
                 col("post_code"), col("address_line_1"), col("address_line_2"), col("address_line_3"),
-                col("address_line_4"))
+                col("address_line_4"), person_reshape["type"])
 
     return housing
 
@@ -322,29 +324,25 @@ def standardize_housing_data(housing_cleaned: DataFrame) -> DataFrame:
     """Standardize housing data. This function convert all the custom names (coming from their respective sources to
     standard names that will be used by various other functions like feature engineering etc.)
     The DataFrame returned will have the following columns:
-
     * source: Source of the data like parking, tax etc. Should be of type string and cannot be blank.
-    * source_id: Unique ID for reach record. It's ok to have same person with different source_id.
-    Should be of type string and cannot be blank.
+    * source_id: Unique ID for reach record. It's ok to have same person with different source_id. Should be of type string and cannot be blank.
     * uprn: UPRN of the address. Should be of type string and can be blank.
     * title: Title of the person. Should be of type string and can be blank.
     * first_name: First name of the person. Should be of type string and can be blank.
     * middle_name: Middle name of the person. Should be of type string and can be blank.
     * last_name: Last name of the person. Should be of type string and can be blank.
-    * name: Concatenation of first, middle and last name after sorting alphabetically of the person.
-    Should be of type string and can be blank.
+    * name: Concatenation of first, middle and last name after sorting alphabetically of the person. Should be of type string and can be blank.
     * date_of_birth: Date of birth of the person. Should be of type Date and can be blank.
     * post_code: Postal code of the address. Should be of type string and can be blank.
     * address_line_1: First line of the address. Should be of type string and can be blank.
     * address_line_2: Second line of the address. Should be of type string and can be blank.
     * address_line_3: Third line of the address. Should be of type string and can be blank.
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
-    * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
-    Should be of type string and can be blank.
-
+    * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order. Should be of type string and can be blank.
+    * source_filter: A field containing more information on the datasource such as tenancy type; this allows the user to filter the dataset to only
+    include records for certain tenancy types.
     Args:
         housing_cleaned: housing DataFrame after preparing and cleaning it.
-
     Returns:
         A housing DataFrame with all the standard columns listed above.
     """
@@ -352,6 +350,7 @@ def standardize_housing_data(housing_cleaned: DataFrame) -> DataFrame:
         .filter(col("entity_type") == "Person") \
         .drop(col("entity_type")) \
         .withColumnRenamed("person_id", "source_id") \
+        .withColumnRenamed("type", "source_filter") \
         .withColumn("title", categorise_title(lower(col("title")))) \
         .withColumn("first_name", standardize_name(col("first_name"))) \
         .withColumn("middle_name", standardize_name(col("middle_name"))) \
@@ -366,39 +365,31 @@ def standardize_housing_data(housing_cleaned: DataFrame) -> DataFrame:
                                                  col("address_line_4"))) \
         .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"), col("middle_name"),
                 col("last_name"), col("name"), col("date_of_birth"), col("post_code"), col("address_line_1"),
-                col("address_line_2"), col("address_line_3"), col("address_line_4"), col("full_address")) \
+                col("address_line_2"), col("address_line_3"), col("address_line_4"), col("full_address"),
+                col("source_filter")) \
         .dropDuplicates(["source_id", "uprn", "date_of_birth"])
 
     return housing
 
 
-def prepare_clean_council_tax_data(spark: SparkSession, council_tax_account_data_path: str,
-                                   council_tax_liability_person_data_path: str,
-                                   council_tax_non_liability_person_data_path: str,
-                                   council_tax_occupation_data_path: str,
-                                   council_tax_property_data_path: str) -> DataFrame:
-    """A function to prepare and clean council tax data. Data comes from multiple sources. This function is specific to
-    this particular data source. For a new data source please add a new function.
-
+def prepare_clean_council_tax_data(spark: SparkSession, council_tax_account: DataFrame,
+                                   council_tax_liability_person: DataFrame,
+                                   council_tax_non_liability_person: DataFrame,
+                                   council_tax_occupation: DataFrame,
+                                   council_tax_property: DataFrame) -> DataFrame:
+    """A function to prepare and clean council tax data.
     Args:
-        spark: SparkSession
-        council_tax_account_data_path: Path of the S3 (or local) folder containing council tax account data
-        council_tax_liability_person_data_path: Path of the S3 (or local) folder containing council tax liability data
-        council_tax_non_liability_person_data_path: Path of the S3 (or local) folder containing council tax
-        non-liability data
-        council_tax_occupation_data_path: Path of the S3 (or local) folder containing council tax occupation data
-        council_tax_property_data_path: Path of the S3 (or local) folder containing council tax property data
-
+        spark: SparkSession,
+        council_tax_account: DataFrame,
+        council_tax_liability_person: DataFrame,
+        council_tax_non_liability_person: DataFrame,
+        council_tax_occupation: DataFrame,
+        council_tax_property: DataFrame
     Returns:
-        A DataFrame after preparing data from multiple sources and cleaning it.
-
+        A DataFrame after preparing and cleaning data from multiple council tax tables.
     """
-    council_tax_account = spark.read.parquet(council_tax_account_data_path)
-    council_tax_liability_person = spark.read.parquet(council_tax_liability_person_data_path)
-    council_tax_non_liability_person = spark.read.parquet(council_tax_non_liability_person_data_path)
-    council_tax_occupation = spark.read.parquet(council_tax_occupation_data_path) \
-        .filter((col("live_ind") == 1) & (col("vacation_date") > col("import_datetime")))
-    council_tax_property = spark.read.parquet(council_tax_property_data_path)
+    council_tax_occupation = council_tax_occupation.filter(
+        (col("live_ind") == 1) & (col("vacation_date") > col("import_datetime")))
 
     council_tax_property_occupancy = council_tax_occupation \
         .join(council_tax_property, "property_ref") \
@@ -459,7 +450,8 @@ def prepare_clean_council_tax_data(spark: SparkSession, council_tax_account_data
                 col("position"), col("extracted_name.*"), col("name"))
 
     council_tax_person = council_tax_lead_person.union(council_tax_liable_person).union(council_tax_non_liable_person) \
-        .join(council_tax_property_occupancy, "account_ref")
+        .join(council_tax_property_occupancy, "account_ref") \
+        .withColumn("source_filter", lit("council_tax"))
 
     return council_tax_person
 
@@ -468,7 +460,6 @@ def standardize_council_tax_data(council_tax_cleaned: DataFrame) -> DataFrame:
     """Standardize council tax data. This function convert all the custom names (coming from their respective sources to
     standard names that will be used by various other functions like feature engineering etc.)
     The DataFrame returned will have the following columns:
-
     * source: Source of the data like parking, tax etc. Should be of type string and cannot be blank.
     * source_id: Unique ID for reach record. It's ok to have same person with different source_id.
     Should be of type string and cannot be blank.
@@ -487,14 +478,14 @@ def standardize_council_tax_data(council_tax_cleaned: DataFrame) -> DataFrame:
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
     * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
     Should be of type string and can be blank.
+    * source_filter: Field to contain additional information on council tax (only contains holding string for now).
+    Should be of type string and can be blank.
 
     Args:
         council_tax_cleaned: council tax DataFrame after preparing and cleaning it.
-
     Returns:
         A council tax DataFrame with all the standard columns listed above.
     """
-
     council_tax = council_tax_cleaned \
         .filter(col("entity_type") == "Person") \
         .drop(col("entity_type")) \
@@ -514,32 +505,28 @@ def standardize_council_tax_data(council_tax_cleaned: DataFrame) -> DataFrame:
                                                  col("address_line_4"))) \
         .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"), col("middle_name"),
                 col("last_name"), col("name"), col("date_of_birth"), col("post_code"), col("address_line_1"),
-                col("address_line_2"), col("address_line_3"), col("address_line_4"), col("full_address")) \
+                col("address_line_2"), col("address_line_3"), col("address_line_4"), col("full_address"),
+                col("source_filter")) \
         .dropDuplicates(["source_id", "uprn"])
 
     return council_tax
 
 
-def prepare_clean_housing_benefit_data(spark: SparkSession, housing_benefit_member_data_path: str,
-                                       housing_benefit_household_data_path: str,
-                                       housing_benefit_rent_assessment_data_path: str,
-                                       housing_benefit_tax_calc_stmt_data_path: str) -> DataFrame:
+def prepare_clean_housing_benefit_data(hb_member_df: DataFrame,
+                                       hb_household_df: DataFrame,
+                                       hb_rent_assessment_df: DataFrame,
+                                       hb_tax_calc_stmt_df: DataFrame) -> DataFrame:
     """A function to prepare and clean housing benefit data. Data comes from multiple sources. This function is specific
     to this particular data source. For a new data source please add a new function.
-
     Args:
-        spark: SparkSession
-        housing_benefit_member_data_path: Path of the S3 (or local) folder containing housing benefit member data
-        housing_benefit_household_data_path: Path of the S3 (or local) folder containing housing benefit household data
-        housing_benefit_rent_assessment_data_path: Path of the S3 (or local) folder containing housing benefit rent
-        assessment data
-        housing_benefit_tax_calc_stmt_data_path: Path of the S3 (or local) folder containing housing benefit tax
-        calculation statement data
-
+        hb_member_df: DataFrame,
+        hb_household_df: DataFrame,
+        hb_rent_assessment_df: DataFrame,
+        hb_tax_calc_stmt_df: DataFrame
     Returns:
-        A DataFrame after preparing data from multiple sources and cleaning it.
+        A DataFrame after preparing and cleaning housing benefit data from multiple tables.
     """
-    housing_benefit_member = spark.read.parquet(housing_benefit_member_data_path) \
+    housing_benefit_member = hb_member_df \
         .withColumn("claim_house_id", concat_ws("-", col("claim_id"), col("house_id"))) \
         .withColumn("claim_person_ref", concat_ws("-", col("claim_id"), col("house_id"), col("member_id"))) \
         .withColumn("gender", when(col("gender") == 2, "F").when(col("gender") == 1, "M").otherwise("O")) \
@@ -549,7 +536,7 @@ def prepare_clean_housing_benefit_data(spark: SparkSession, housing_benefit_memb
         .select(col("source"), col("claim_person_ref"), col("claim_house_id"), col("extracted_name.*"),
                 col("date_of_birth"), col("gender"))
 
-    housing_benefit_household = spark.read.parquet(housing_benefit_household_data_path) \
+    housing_benefit_household = hb_household_df \
         .withColumn("claim_house_id", concat_ws("-", col("claim_id"), col("house_id"))) \
         .withColumnRenamed("addr1", "address_line_1") \
         .withColumnRenamed("addr2", "address_line_2") \
@@ -559,13 +546,14 @@ def prepare_clean_housing_benefit_data(spark: SparkSession, housing_benefit_memb
         .select(col("claim_id"), col("claim_house_id"), col("address_line_1"), col("address_line_2"),
                 col("address_line_3"), col("address_line_4"), col("post_code"), col("uprn"))
 
-    housing_benefit_rent_assessment = spark \
-        .read.parquet(housing_benefit_rent_assessment_data_path) \
+    housing_benefit_rent_assessment = hb_rent_assessment_df \
         .filter((col("from_date") < col("import_datetime")) & (col("to_date") > col("import_datetime"))) \
         .select(col("claim_id"))
-    housing_benefit_tax_calc_stmt = spark.read.parquet(housing_benefit_tax_calc_stmt_data_path) \
+
+    housing_benefit_tax_calc_stmt = hb_tax_calc_stmt_df \
         .filter((col("from_date") < col("import_datetime")) & (col("to_date") > col("import_datetime"))) \
         .select(col("claim_id"))
+
     housing_benefit_rent_tax = housing_benefit_rent_assessment.union(housing_benefit_tax_calc_stmt)
 
     housing_benefit_household_claims = housing_benefit_household \
@@ -573,10 +561,11 @@ def prepare_clean_housing_benefit_data(spark: SparkSession, housing_benefit_memb
 
     housing_benefit_cleaned = housing_benefit_member.join(housing_benefit_household_claims, ["claim_house_id"]) \
         .withColumn("source", lit("housing_benefit")) \
+        .withColumn("source_filter", lit("housing_benefit")) \
         .select(col("source"), col("claim_person_ref"), col("uprn"), col("entity_type"), col("title"),
                 col("first_name"), col("middle_name"), col("last_name"), col("date_of_birth"), col("gender"),
                 col("post_code"), col("address_line_1"), col("address_line_2"), col("address_line_3"),
-                col("address_line_4"))
+                col("address_line_4"), col("source_filter"))
 
     return housing_benefit_cleaned
 
@@ -585,7 +574,6 @@ def standardize_housing_benefit_data(housing_benefit_cleaned: DataFrame) -> Data
     """Standardize housing benefit data. This function convert all the custom names (coming from their respective
     sources to standard names that will be used by various other functions like feature engineering etc.)
     The DataFrame returned will have the following columns:
-
     * source: Source of the data like parking, tax etc. Should be of type string and cannot be blank.
     * source_id: Unique ID for reach record. It's ok to have same person with different source_id. Should be of type
     string and cannot be blank.
@@ -604,12 +592,12 @@ def standardize_housing_benefit_data(housing_benefit_cleaned: DataFrame) -> Data
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
     * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
     Should be of type string and can be blank.
-
+    * source_filter: Field to contain additional information on housing benefit (only contains holding string for now).
+    Should be of type string and can be blank.
     Args:
         housing_benefit_cleaned: housing benefit DataFrame after preparing and cleaning it.
-
     Returns:
-        A housing benefit DataFrame with all the standard column listed above.
+        A housing benefit DataFrame with all the standard columns listed above.
     """
     housing_benefit = housing_benefit_cleaned \
         .filter(col("entity_type") == "Person") \
@@ -629,36 +617,35 @@ def standardize_housing_benefit_data(housing_benefit_cleaned: DataFrame) -> Data
                                                  col("address_line_4"))) \
         .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"), col("middle_name"),
                 col("last_name"), col("name"), col("date_of_birth"), col("post_code"), col("address_line_1"),
-                col("address_line_2"), col("address_line_3"), col("address_line_4"), col("full_address")) \
+                col("address_line_2"), col("address_line_3"), col("address_line_4"), col("full_address"),
+                col("source_filter")) \
         .dropDuplicates(["source_id", "first_name", "last_name", "date_of_birth", "post_code"])
 
     return housing_benefit
 
 
-def prepare_clean_parking_permit_data(spark: SparkSession, parking_permit_data_path: str) -> DataFrame:
+def prepare_clean_parking_permit_data(parking_permit_df: DataFrame) -> DataFrame:
     """A function to prepare and clean parking permit data. This function is specific to this particular data source.
     For a new data source please add a new function.
-
     Args:
-        spark: SparkSession
-        parking_permit_data_path: Path of the S3 (or local) folder containing parking permit data.
-
+        parking_permit_df: DataFrame containing parking permit data.
     Returns:
-        A DataFrame after preparing data from multiple sources and cleaning it.
+        A DataFrame after preparing and cleaning parking permit data.
     """
 
-    parking_permit_cleaned = spark.read.parquet(parking_permit_data_path) \
+    parking_permit_cleaned = parking_permit_df\
         .withColumn("source", lit("parking_permit")) \
+        .withColumn("source_filter", lit("live parking permit")) \
         .withColumn("extracted_name",
                     extract_name_udf(concat_ws(" ", col("forename_of_applicant"), col("surname_of_applicant")))) \
         .withColumn("date_of_birth", to_date(col("date_of_birth_of_applicant"), format="yyyy-MM-dd")) \
         .withColumnRenamed("postcode", "post_code") \
         .withColumnRenamed("email_address_of_applicant", "email") \
-        .filter(col("permit_type").isin(["Residents", "Estate Resident"])) \
+        .filter((col("permit_type").isin(["Residents", "Estate Resident"])) & (col("live_permit_flag") == 1)) \
         .select(col("source"), col("permit_reference"),
                 col("extracted_name.*"),
                 col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
-                col("address_line_1"), col("address_line_2"), col("address_line_3"))
+                col("address_line_1"), col("address_line_2"), col("address_line_3"), col("source_filter"))
 
     return parking_permit_cleaned
 
@@ -667,7 +654,6 @@ def standardize_parking_permit_data(parking_permit_cleaned: DataFrame) -> DataFr
     """Standardize parking permit data. This function convert all the custom names (coming from their respective sources
     to standard names that will be used by various other functions like feature engineering etc.)
     The DataFrame returned will have the following columns:
-
     * source: Source of the data like parking, tax etc. Should be of type string and cannot be blank.
     * source_id: Unique ID for reach record. It's ok to have same person with different source_id. Should be of type
     string and cannot be blank.
@@ -686,13 +672,12 @@ def standardize_parking_permit_data(parking_permit_cleaned: DataFrame) -> DataFr
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
     * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
     Should be of type string and can be blank.
-
+    * source_filter: Field to contain additional informaion on parking permits (only contains holding string for now).
+    Should be of type string and can be blank.
     Args:
         parking_permit_cleaned: parking permit DataFrame after preparing and cleaning it.
-
     Returns:
-        A parking permit DataFrame with all the standard column listed above.
-
+        A parking permit DataFrame with all the standard columns listed above.
     """
     parking_permit = parking_permit_cleaned \
         .filter(col("entity_type") == "Person") \
@@ -712,7 +697,7 @@ def standardize_parking_permit_data(parking_permit_cleaned: DataFrame) -> DataFr
                                                  col("address_line_4"))) \
         .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"), col("middle_name"),
                 col("last_name"), col("name"), col("date_of_birth"), col("post_code"), col("address_line_1"),
-                col("address_line_2"), col("address_line_3"), col("address_line_4"), col("full_address"))
+                col("address_line_2"), col("address_line_3"), col("address_line_4"), col("full_address"), col("source_filter"))
 
     return parking_permit
 
