@@ -5,7 +5,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS, create_pushdown_predicate_for_latest_available_partition
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS, create_pushdown_predicate_for_max_date_partition_value
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -28,7 +28,7 @@ AmazonS3_node1658997944648 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
     table_name="parking_parking_ops_db_defects_mgt",
     transformation_ctx="AmazonS3_node1658997944648",
-    push_down_predicate=create_pushdown_predicate_for_latest_available_partition("parking-raw-zone", "parking_parking_ops_db_defects_mgt", "import_date")
+    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("parking-raw-zone", "parking_parking_ops_db_defects_mgt", "import_date")
     )
 
 # Script generated for node SQL
