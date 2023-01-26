@@ -6,7 +6,7 @@ module "ingest_vonage_data" {
 
   count                     = local.is_live_environment && !local.is_production_environment ? 1 : 0
 
-  department                      = "data_and_insight"
+  department                      = module.department_data_and_insight
   number_of_workers_for_glue_job  = 2
   max_concurrent_runs_of_glue_job = 1
   job_name                        = "${local.short_identifier_prefix}vonage_one_time_ingestion_customer_services"
