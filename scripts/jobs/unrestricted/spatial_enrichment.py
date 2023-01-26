@@ -6,7 +6,7 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 
 from pyspark.sql.types import DoubleType
-from scripts.helpers.helpers import table_exists_in_catalog, create_pushdown_predicate_for_latest_available_partition
+from scripts.helpers.helpers import table_exists_in_catalog, create_pushdown_predicate_for_max_date_partition_value
 
 import sys
 
@@ -175,7 +175,7 @@ if __name__ == "__main__":
         geography_data_source = glueContext.create_dynamic_frame.from_catalog(
             name_space=geography_table["database_name"],
             table_name=geography_table["table_name"],
-            push_down_predicate = create_pushdown_predicate_for_latest_available_partition(geography_table["database_name"],geography_table["table_name"],'import_date')
+            push_down_predicate = create_pushdown_predicate_for_max_date_partition_value(geography_table["database_name"], geography_table["table_name"], 'import_date')
         )
         geography_df = geography_data_source.toDF()
 
@@ -212,7 +212,7 @@ if __name__ == "__main__":
         table_to_enrich_source = glueContext.create_dynamic_frame.from_catalog(
             name_space=database_name,
             table_name=table_name,
-            push_down_predicate = create_pushdown_predicate_for_latest_available_partition(enrich_table["database_name"],enrich_table["table_name"],enrich_table["date_partition_name"]),
+            push_down_predicate = create_pushdown_predicate_for_max_date_partition_value(enrich_table["database_name"], enrich_table["table_name"], enrich_table["date_partition_name"]),
             transformation_ctx = f"datasource_{table_name}"
         )
         table_to_enrich_df = table_to_enrich_source.toDF()
