@@ -1,5 +1,5 @@
 locals {
-    backup_ami_id = "ami-0b2e39229446d572c"
+    #backup_ami_id = "ami-0b2e39229446d572c"
     ec2_tags = {
         BackupPolicy  = title(var.environment)
         Name          = "${var.identifier_prefix}-qlik-sense-restore"
@@ -16,11 +16,11 @@ data "aws_secretsmanager_secret_version" "pre_production_account_id" {
   secret_id     = data.aws_secretsmanager_secret.pre_production_account_id[0].id
 }
 
-resource "aws_ami_launch_permission" "ami_permissions_for_pre_prod" {
-  count         = var.is_production_environment ? 1 : 0
-  image_id      = local.backup_ami_id
-  account_id    = data.aws_secretsmanager_secret_version.pre_production_account_id[0].secret_string
-}
+# resource "aws_ami_launch_permission" "ami_permissions_for_pre_prod" {
+#   count         = var.is_production_environment ? 1 : 0
+#   image_id      = local.backup_ami_id
+#   account_id    = data.aws_secretsmanager_secret_version.pre_production_account_id[0].secret_string
+# }
 
 #value manually managed in secrets manager on pre-prod
 resource "aws_secretsmanager_secret" "production_account_qlik_ec2_ebs_encryption_key_arn" {
