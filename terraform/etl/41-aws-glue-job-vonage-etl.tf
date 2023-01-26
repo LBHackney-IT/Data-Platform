@@ -13,8 +13,8 @@ module "ingest_vonage_data" {
   helper_module_key               = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                 = data.aws_s3_bucket_object.pydeequ.key
   job_parameters = {
-    "--s3_bucket"                 = 'dataplatform-stg-landing-zone'
-    "--output_folder_name"        = 'vonage'
+    "--s3_bucket"                 = "dataplatform-stg-landing-zone"
+    "--output_folder_name"        = "vonage"
     "--secret_name"               = "vonage-key"
     "--api_to_call"               = "stats"
     "--table_to_call"             = "interactions"
