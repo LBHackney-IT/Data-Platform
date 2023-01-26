@@ -10,6 +10,7 @@ module "mtfh_reshape_to_refined" {
   department                 = module.department_housing_data_source
   job_name                   = "${local.short_identifier_prefix}MTFH reshape to refined"
   glue_job_worker_type       = "Standard"
+  glue_version               = "4.0"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
