@@ -13,6 +13,7 @@ module "rentsense_output_to_landing_S3" {
   glue_role_arn              = data.aws_iam_role.glue_role.arn
   glue_job_worker_type       = "G.1X"
   number_of_workers_for_glue_job  = 8
+  glue_version               = "4.0"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
@@ -31,10 +32,17 @@ module "rentsense_output_to_landing_S3" {
     "*.txt",
     "*.zip",
     "*.xlsx",
-    "**/*.csv"]
+    "**/*.csv",
+    "**.csv.gz"]
   crawler_details = {
     database_name      = module.department_housing_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/housing/rentsense"
+    configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+  })
   }
 
 }
