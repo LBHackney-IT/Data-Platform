@@ -139,7 +139,7 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
     return set(folders)
 
 
-def get_latest_partition_date_from_s3(database_name: StringType, table_name: StringType, partition_key: StringType) -> StringType:
+def get_max_date_partition_value_from_glue_catalogue(database_name: StringType, table_name: StringType, partition_key: StringType) -> StringType:
     """Browses S3 partitions for a given Glue database table and returns the latest partition value for the given
     partition key. This works for date partitions formatted like '2022' or '20221225'  This value can then be used in a pushdown predicate.
     
@@ -341,10 +341,12 @@ def create_pushdown_predicate(partitionDateColumn, daysBuffer):
     return push_down_predicate
 
 
-def create_pushdown_predicate_for_latest_available_partition(database_name: StringType, table_name: StringType, partition_key: StringType) -> StringType:
-    """Creates an expression to use in a pushdown predicate filtering by date the data to load from S3. The
-    date is the latest date for which a partition exists. This date value is fetched from S3 using boto3 and the function
-    get_latest_partition_date_from_s3 
+def create_pushdown_predicate_for_max_date_partition_value(database_name: str, table_name: str, partition_key: str) -> str:
+    """Creates an expression to use in a pushdown predicate filtering by date the data to load from S3. The date is
+    the maximum date for which a partition exists. This date value is fetched from the Glue catalogue using boto3 and
+    the function get_max_date_partition_value_from_glue_catalogue. The partition key used (i.e. import_date) must
+    have values in the following format: yyyymmdd. The max of these values will be picked. NB: This function doesn't
+    consider the creation timestamp (date when the partition was created), only the partition value.
     
     Args:
         database_name: name of the database where the table resides in the Glue catalogue
@@ -354,7 +356,7 @@ def create_pushdown_predicate_for_latest_available_partition(database_name: Stri
     Returns:
         A string representing a pushdown predicate expression, e.g 'import_date=20221103'
     """
-    date = get_latest_partition_date_from_s3(database_name, table_name, partition_key)
+    date = get_max_date_partition_value_from_glue_catalogue(database_name, table_name, partition_key)
     return f'{partition_key}={date}'
 
 
