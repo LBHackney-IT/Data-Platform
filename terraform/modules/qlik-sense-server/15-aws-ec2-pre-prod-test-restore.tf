@@ -1,16 +1,16 @@
 locals {
-    #test_instance_backup_ami_id = "ami-0513e39717f73ef78"
+    test_instance_backup_ami_id = "ami-05d61c0ddcbe01eb9"
     win_pre_prod_test_restore_ec2_tags = {
         Name = "${var.identifier_prefix}-manual-windows-test-restore-from-prod"
     }
 }
 
 #share the backup AMI from prod
-# resource "aws_ami_launch_permission" "ami_permissions_for_pre_prod_for_test_instance" {
-#   count         = var.is_production_environment ? 1 : 0
-#   image_id      = local.test_instance_backup_ami_id
-#   account_id    = data.aws_secretsmanager_secret_version.pre_production_account_id[0].secret_string
-# }
+resource "aws_ami_launch_permission" "ami_permissions_for_pre_prod_for_test_instance" {
+  count         = var.is_production_environment ? 1 : 0
+  image_id      = local.test_instance_backup_ami_id
+  account_id    = data.aws_secretsmanager_secret_version.pre_production_account_id[0].secret_string
+}
 
 # resource "aws_instance" "test_windows_restore_from_prod_to_pre_prod" {
 #   count                     = !var.is_production_environment && var.is_live_environment ? 1 : 0
