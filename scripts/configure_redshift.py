@@ -101,6 +101,33 @@ def create_schemas(redshift, schemas: dict) -> None:
     redshift.execute_batch_queries(create_schema_queries)
     print(f"Created schemas")
 
+def get_role_names_from_configuration(roles_config: list) -> str:
+    return ','.join(f"'{(x['role_name'])}'" for x in roles_config)
+
+def get_roles_to_be_added(existing_roles: list, roles_in_config: str) -> list:
+    existing_role_names = [(f"'{x[0]['stringValue']}'") for x in existing_roles]
+    
+    difference = list(set(roles_in_config.split(',')).difference(existing_role_names))
+
+    return list(x.strip('\'') for x in difference)
+
+def create_roles(redshift, roles_in_config: json) -> None:
+    roles_list = get_role_names_from_configuration(roles_in_config)
+    
+    query_id = redshift.execute_query(f"select role_name from svv_roles where role_name in({roles_list});")
+    existing_roles = redshift.get_results(query_id)
+
+    new_roles = get_roles_to_be_added(existing_roles, roles_list)
+
+    if len(new_roles) == 0:
+        print("No roles to be added")
+        return
+    
+    create_role_queries = [f"CREATE ROLE {role}" for role in new_roles]
+
+    redshift.execute_batch_queries(create_role_queries)
+
+    print(f"Added following roles: {new_roles}")
 
 def get_users(redshift) -> list:
     get_users_query = "select usename from pg_user_info"
@@ -166,10 +193,30 @@ def grant_permissions_to_users(redshift, users: list) -> None:
         print(f"Add permissions for user {username}")
     return
 
+def grant_permissions_to_roles(redshift: Redshift, roles_configuration) -> None:
+    role_names = []
 
-def main() -> None:
+    for role in roles_configuration:
+        role_name = role["role_name"]
+        grant_temp_permissions = f"grant temp on database {redshift.database_name} to role {role_name};"
+        redshift.execute_query(grant_temp_permissions)
+
+        grant_schema_permissions = [f"grant usage on schema {schema} to role {role_name};" for schema in 
+                                      role["schemas_to_grant_access_to"]]
+        
+        grant_table_permissions = [f"grant select on all tables in schema {schema} to role {role_name};" for schema in 
+                                     role["schemas_to_grant_access_to"]]
+
+        redshift.execute_batch_queries(grant_schema_permissions)
+        redshift.execute_batch_queries(grant_table_permissions)
+        role_names.append(role_name)
+    
+    print(f"Granted permissions for roles: {', '.join(role_names)}")
+
+
+def main(terraform_output = None, redshift_instance = None) -> None:
     secrets_manager: BaseClient = boto3.client('secretsmanager')
-    terraform_outputs_json = sys.argv[1]
+    terraform_outputs_json = terraform_output or sys.argv[1]
 
     terraform_outputs = json.loads(terraform_outputs_json)
 
@@ -178,7 +225,7 @@ def main() -> None:
 
     redshift_client = boto3.client('redshift-data')
 
-    redshift = Redshift(
+    redshift = redshift_instance or Redshift(
         cluster_id=cluster_id,
         redshift_client=redshift_client,
         redshift_role=redshift_iam_role,
@@ -190,5 +237,18 @@ def main() -> None:
     configure_users(redshift, secrets_manager, terraform_outputs['redshift_users']['value'])
     grant_permissions_to_users(redshift, terraform_outputs['redshift_users']['value'])
 
+    #handle roles configuration
+    roles_configuration_exists = False
+    
+    try:
+        roles_configuration = terraform_outputs['redshift_roles']['value']        
+        roles_configuration_exists = True   
+    except KeyError:
+        print("No role configuration found") 
 
-main()
+    if roles_configuration_exists:
+        create_roles(redshift, roles_configuration)    
+        grant_permissions_to_roles(redshift, roles_configuration)
+
+if __name__ == '__main__':
+    main()
