@@ -111,7 +111,7 @@ def get_roles_to_be_added(existing_roles: list, roles_in_config: str) -> list:
 
     return list(x.strip('\'') for x in difference)
 
-def create_roles(redshift, roles_in_config: json) -> None:
+def create_roles(redshift: Redshift, roles_in_config: json) -> None:
     roles_list = get_role_names_from_configuration(roles_in_config)
     
     query_id = redshift.execute_query(f"select role_name from svv_roles where role_name in({roles_list});")
@@ -177,7 +177,7 @@ def configure_users(redshift, secrets_manager: BaseClient, users: list) -> None:
     create_users(redshift, new_users_with_password)
 
 
-def grant_permissions_to_users(redshift, users: list) -> None:
+def grant_permissions_to_users(redshift: Redshift, users: list) -> None:
     for user in users:
         username = user["user_name"]
         grant_temp_permissions = f"GRANT temp ON DATABASE {redshift.database_name} TO {username};"
@@ -193,7 +193,7 @@ def grant_permissions_to_users(redshift, users: list) -> None:
         print(f"Add permissions for user {username}")
     return
 
-def grant_permissions_to_roles(redshift: Redshift, roles_configuration) -> None:
+def grant_permissions_to_roles(redshift: Redshift, roles_configuration: list) -> None:
     role_names = []
 
     for role in roles_configuration:
