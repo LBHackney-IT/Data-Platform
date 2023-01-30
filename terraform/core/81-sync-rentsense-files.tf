@@ -1,5 +1,5 @@
 module "copy_from_s3_to_s3" {
-  count   = local.is_production_environment ? 1 : 0
+  count   = local.is_live_environment ? 1 : 0
 
   source  = "../modules/copy-from-s3-to-s3"
   tags    = module.tags.values
@@ -23,4 +23,3 @@ module "copy_from_s3_to_s3" {
   target_path = var.rentsense_target_path
   assume_role = "arn:aws:iam::971933469343:role/customer-midas-roles-pluto-HackneyMidasRole-1M6PTJ5VS8104"
 }
-#
