@@ -28,7 +28,7 @@ from pyspark.sql.functions import *
 import pyspark.sql.functions as f
 
 from scripts.jobs.env_context import ExecutionContextProvider, DEFAULT_MODE_AWS, LOCAL_MODE
-from scripts.helpers.helpers import PARTITION_KEYS_SNAPSHOT, working_days_diff, clear_target_folder, get_latest_rows_by_date, create_pushdown_predicate
+from scripts.helpers.helpers import PARTITION_KEYS_SNAPSHOT, working_days_diff, clear_target_folder, get_latest_rows_by_date, create_pushdown_predicate, create_pushdown_predicate_for_max_date_partition_value
 
 
 # Define the functions that will be used in your job (optional).
@@ -447,7 +447,7 @@ def main():
             .get_dataframe(local_path_parquet=applications_data_path_local,
                            name_space=source_catalog_database,
                            table_name=source_catalog_table_applications,
-                           push_down_predicate=create_pushdown_predicate('snapshot_date', 10))
+                           push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(source_catalog_database, source_catalog_table_applications, 'snapshot_date'))
 
         # Data processing Starts
 
@@ -497,9 +497,7 @@ def main():
             .get_dataframe(local_path_parquet=application_types_data_path_local,
                            name_space=source_catalog_database,
                            table_name=source_catalog_table_application_types,
-                           push_down_predicate=create_pushdown_predicate('snapshot_date', 3))
-
-        application_types_df = get_latest_rows_by_date(application_types_df, 'snapshot_date')
+                           push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(source_catalog_database, source_catalog_table_application_types, 'snapshot_date'))
 
         # Rename and remove Columns
         application_types_df = application_types_df.withColumnRenamed("name", "application_type") \
@@ -511,9 +509,7 @@ def main():
             .get_dataframe(local_path_parquet=ps_development_codes_data_path_local,
                            name_space=source_catalog_database,
                            table_name=source_catalog_table_ps_codes,
-                           push_down_predicate=create_pushdown_predicate('snapshot_date', 3))
-
-        ps_codes_df = get_latest_rows_by_date(ps_codes_df, 'snapshot_date')
+                           push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(source_catalog_database, source_catalog_table_ps_codes, 'snapshot_date'))
 
         # Rename and remove Columns, apply Dev Type mapping
         ps_codes_df = ps_codes_df.withColumnRenamed("id", "ps_id") \
