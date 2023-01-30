@@ -23,7 +23,7 @@ def wkt_loads(x):
         return None
 
 
-'''Function not used at the moment. It assumes the input dataframe has columns named (lat, lon) or (latitude, 
+'''This function is not used at the moment. It assumes the input dataframe has columns named (lat, lon) or (latitude, 
 longitude) or (easting, northing) or (eastings, northings). Turns the dataframe containing points into a geopandas 
 dataframe and generate other coords columns so we always have latitude/longitude and eastings/northings '''
 

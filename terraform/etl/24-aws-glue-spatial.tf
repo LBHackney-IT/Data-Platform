@@ -53,6 +53,7 @@ resource "aws_s3_bucket_object" "env_services_spatial_enrichment_dictionary" {
   source_hash = filemd5("../../scripts/jobs/env_services/spatial-enrichment-dictionary.json")
 }
 
+# Job using the script and dictionary above for the environmental services dept 
 module "env_services_geospatial_enrichment" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
