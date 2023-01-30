@@ -11,7 +11,7 @@ import boto3
 import pyspark.sql.functions as F
 
 from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, get_s3_subfolders, PARTITION_KEYS, \
-    clean_column_names, get_latest_partition_date_from_s3
+    clean_column_names, get_max_date_partition_value_from_glue_catalogue
 
 s3_client = boto3.client('s3')
 sc = SparkContext.getOrCreate()
@@ -27,7 +27,7 @@ def data_source_landing_to_raw(bucket_source, bucket_target, s3_prefix):
     data_source = spark.read.option("multiline", "true").json(bucket_source + "/" + s3_prefix)
     logger.info(f"Retrieved data source from s3 path {bucket_source}/{s3_prefix}")
     
-    latest_import = get_latest_partition_date_from_s3('data-and-insight-raw-zone','icaseworks','import_date')
+    latest_import = get_max_date_partition_value_from_glue_catalogue('data-and-insight-raw-zone', 'icaseworks', 'import_date')
     logger.info(f"latest_data on raw: {latest_import}")
     
     latest_data = data_source.filter(F.col("import_date")>latest_import)

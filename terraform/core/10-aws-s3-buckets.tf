@@ -100,13 +100,8 @@ module "spark_ui_output_storage" {
   bucket_identifier = "spark-ui-output-storage"
 }
 
-# This is a public bucket, used by the playbook documentation,
-# "Connecting to the redshift cluster from Google Data Studio"
-#
-# See more info within /.github/generate-ssl-keys.sh
-#
-# A public bucket makes following this guide easier, furthermore
-# the generated certificate/private key isn't special/used for auth.
+# This bucket is used for storing certificates used in Looker Studio connections.
+# The generated certificate/private key isn't special/used for auth.
 resource "aws_s3_bucket" "ssl_connection_resources" {
   count = local.is_live_environment ? 1 : 0
 
@@ -122,5 +117,5 @@ resource "aws_s3_bucket_acl" "ssl_connection_resources" {
   count = local.is_live_environment ? 1 : 0
 
   bucket = aws_s3_bucket.ssl_connection_resources[0].id
-  acl    = "public-read"
+  acl    = "private"
 }

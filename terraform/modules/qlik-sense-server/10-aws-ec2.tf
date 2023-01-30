@@ -101,6 +101,27 @@ resource "aws_security_group" "qlik_sense" {
   })
 }
 
+#manually added/managed value
+data "aws_secretsmanager_secret" "central_backup_role_arn" {
+  count = var.is_production_environment ? 1 : 0
+  name  = "${var.identifier_prefix}-manually-managed-value-central-backup-role-arn"
+}
+
+data "aws_secretsmanager_secret_version" "central_backup_role_arn" {
+  count     = var.is_production_environment ? 1 : 0
+  secret_id = data.aws_secretsmanager_secret.central_backup_role_arn[0].id
+}
+
+data "aws_secretsmanager_secret" "pre_prod_deployment_role_arn" {
+  count = var.is_production_environment ? 1 : 0
+  name  = "${var.identifier_prefix}-manually-managed-value-pre-prod-deployment-role-arn"
+}
+
+data "aws_secretsmanager_secret_version" "pre_prod_deployment_role_arn" {
+  count     = var.is_production_environment ? 1 : 0
+  secret_id = data.aws_secretsmanager_secret.pre_prod_deployment_role_arn[0].id
+}
+
 data "aws_iam_policy_document" "key_policy" {
   statement {
     effect = "Allow"
@@ -115,6 +136,87 @@ data "aws_iam_policy_document" "key_policy" {
       identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
     }
   }
+
+  dynamic statement {
+    for_each = var.is_production_environment ? [1] : [] 
+    
+    content {
+      sid =  "AllowPreProdEC2RoleAccessToThisKey"
+      effect = "Allow"
+      
+      principals {
+        type = "AWS"
+        identifiers = [data.aws_secretsmanager_secret_version.qlik_sense_ec2_role_arn_on_pre_prod_account[0].secret_string]
+      }
+
+      actions = [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ]
+
+      resources = [
+        "*"
+      ]
+    }
+  }
+
+  dynamic statement {
+    for_each = var.is_production_environment ? [1] : [] 
+    
+    content {
+      sid =  "AllowCentralBackupVaultAccessToThisKey"
+      effect = "Allow"
+      
+      principals {
+        type = "AWS"
+        identifiers = [data.aws_secretsmanager_secret_version.central_backup_role_arn[0].secret_string]
+      }
+
+      actions = [
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:Encrypt",
+        "kms:DescribeKey",
+        "kms:Decrypt",
+        "kms:RetireGrant",
+        "kms:CreateGrant"
+      ]
+
+      resources = [
+        "*"
+      ]
+    }
+  }
+
+  dynamic statement {
+    for_each = var.is_production_environment ? [1] : [] 
+    
+    content {
+      sid =  "AllowPreProdDeploymentRoleAccessToThisKey"
+      effect = "Allow"
+      
+      principals {
+        type = "AWS"
+        identifiers = [data.aws_secretsmanager_secret_version.pre_prod_deployment_role_arn[0].secret_string]
+      }
+
+      actions = [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ]
+
+      resources = [
+        "*"
+      ]
+    }
+  }
+  
 }
 
 resource "aws_kms_key" "key" {
