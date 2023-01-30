@@ -11,9 +11,10 @@ module "ingest_mtfh_rentsense_tables" {
   glue_role_arn             = aws_iam_role.glue_role.arn
 
   job_name                       = "${local.short_identifier_prefix}Ingest MTFH Rentsense tables"
-  job_description                = "Ingest Persons,ContactDetails,Assets for Rentsense from the Housing Dynamo DB instances"
+  job_description                = "Ingest all tables from MTFH for Rentsense from the Housing Dynamo DB instances"
   script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
   helper_module_key              = aws_s3_bucket_object.helpers.key
+  glue_version                   = "4.0" 
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
