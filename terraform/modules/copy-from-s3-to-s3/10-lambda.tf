@@ -193,13 +193,13 @@ resource "aws_cloudwatch_event_rule" "run_s3_copier_lambda_on_glue_job_success" 
         "SUCCEEDED"
       ],
       "jobName": [
-          "${var.is_production_environment ? "" : var.environment}${var.is_live_environment && !var.is_production_environment ? " " : ""}${!var.is_live_environment ? "-" : ""}Rentsense outputs"
+          "${var.is_production_environment ? "" : var.environment}${var.is_live_environment && !var.is_production_environment ? " " : ""}${!var.is_live_environment ? "-" : ""}Rentsense outputs to landing S3"
       ]
     }
   }
   EOF
 
-  is_enabled = var.is_live_environment
+  is_enabled = var.is_production_environment
 }
 
 resource "aws_cloudwatch_event_target" "run_s3_copier_lambda" {
