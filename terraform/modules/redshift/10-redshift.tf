@@ -123,19 +123,6 @@ resource "aws_redshift_subnet_group" "redshift" {
 
 }
 
-resource "aws_secretsmanager_secret" "redshift_ingress_rules" {
-  tags = var.tags
-
-  name_prefix ="${var.identifier_prefix}-redshift-ingress-rules"
-  description = "Redshift ingress rules"
-  kms_key_id = var.secrets_manager_key
-}
-
-resource "aws_secretsmanager_secret_version" "redshift_ingress_rules" {
-  secret_id = aws_secretsmanager_secret.redshift_ingress_rules.id
-  secret_string = "{\"cidr_blocks\" : [],\"security_groups\" : []}"
-}
-
 data "aws_secretsmanager_secret" "redshift_ingress_rules" {
     arn = aws_secretsmanager_secret.redshift_ingress_rules.arn
 }
@@ -147,7 +134,6 @@ data "aws_secretsmanager_secret_version" "redshift_ingress_rules"{
 locals {
   redshift_ingress_rules = jsondecode(data.aws_secretsmanager_secret_version.redshift_ingress_rules.secret_string)
 }
-
 
 resource "aws_security_group" "redshift_cluster_security_group" {
   name        = "${var.identifier_prefix}-redshift"
