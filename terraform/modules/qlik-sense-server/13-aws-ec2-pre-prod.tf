@@ -78,16 +78,6 @@ resource "aws_iam_role_policy_attachment" "qlik_sense_prod_key_policy" {
   policy_arn    = aws_iam_policy.qlik_sense_preprod_can_access_shared_prod_key[0].arn
 }
 
-data "aws_secretsmanager_secret" "qlik_sense_ec2_role_arn_on_pre_prod_account" {
-  count = var.is_production_environment ? 1 : 0
-  name  = "${var.identifier_prefix}-manually-managed-value-qlik-sense-ec2-role-arn-on-pre-prod-account"
-}
-
-data "aws_secretsmanager_secret_version" "qlik_sense_ec2_role_arn_on_pre_prod_account" {
-  count     = var.is_production_environment ? 1 : 0
-  secret_id = data.aws_secretsmanager_secret.qlik_sense_ec2_role_arn_on_pre_prod_account[0].id
-}
-
 #manually added/managed value
 data "aws_secretsmanager_secret" "subnet_value_for_qlik_sense_pre_prod_instance" {
   count = !var.is_production_environment && var.is_live_environment ? 1 : 0
