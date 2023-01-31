@@ -27,3 +27,8 @@ variable "sheets_credentials_name" {
   default     = null
 }
 
+variable "create_workflow" {
+  description = "Flag to indicate whether to create workflow"
+  type        = bool
+  default     = false
+}
