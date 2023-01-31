@@ -43,7 +43,7 @@ class TestGlueAlarmsHandler(TestCase):
             "region": "test-region-2",
             "resources": [],
             "detail": {
-                "jobName": "test_job_name",
+                "jobName": "test job name",
                 "severity": "ERROR",
                 "state": "FAILED",
                 "jobRunId": "test_run_id123",
@@ -73,9 +73,10 @@ class TestGlueAlarmsHandler(TestCase):
     def test_format_message_returns_correct_message(self):
         expected_message = {
             "text": (
-                "2023-01-11T13:51:06Z Glue failure detected for job: test_job_name run"
-                " id: test_run_id123 Error message: An error occurred while running the"
-                " job."
+                "2023-01-11T13:51:06Z \nGlue failure detected for job: *test job name*"
+                " \nrun:"
+                " https://test-region-2.console.aws.amazon.com/gluestudio/home?region=test-region-2#/job/test%20job%20name/run/test_run_id123"
+                " \nError message: An error occurred while running the job."
             )
         }
         actual_message = format_message(self.cloudwatch_event)
