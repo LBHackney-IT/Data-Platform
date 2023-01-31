@@ -73,7 +73,7 @@ class TestGlueAlarmsHandler(TestCase):
     def test_format_message_returns_correct_message(self):
         expected_message = {
             "text": (
-                "2023-01-11T13:51:06Z \nGlue failure detected for job: *test_job_name*"
+                "2023-01-11T13:51:06Z \nGlue failure detected for job: *test job name*"
                 " \nrun:"
                 " https://test-region-2.console.aws.amazon.com/gluestudio/home?region=test-region-2#/job/test%20job%20name/run/test_run_id123"
                 " \nError message: An error occurred while running the job."
