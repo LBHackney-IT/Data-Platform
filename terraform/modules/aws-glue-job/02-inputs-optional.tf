@@ -204,3 +204,9 @@ variable "glue_version" {
     error_message = "Glue version supplied is not valid, must be \"1.0\", \"2.0\", \"3.0\" or \"4.0\"."
   }
 }
+
+variable "max_retries" {
+  description = "Maximum number of times to retry this job if it fails"
+  type        = number
+  default     = 0
+}

@@ -35,6 +35,7 @@ resource "aws_glue_job" "job" {
   name              = "${local.job_name_prefix}${var.job_name}"
   number_of_workers = var.number_of_workers_for_glue_job
   worker_type       = var.glue_job_worker_type
+  max_retries       = var.max_retries
   role_arn          = local.glue_role_arn
   timeout           = var.glue_job_timeout
   connections       = var.jdbc_connections

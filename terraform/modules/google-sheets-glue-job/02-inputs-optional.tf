@@ -32,3 +32,9 @@ variable "create_workflow" {
   type        = bool
   default     = false
 }
+
+variable "max_retries" {
+  description = "Maximum number of times to retry this job if it fails"
+  type        = number
+  default     = 2
+}
