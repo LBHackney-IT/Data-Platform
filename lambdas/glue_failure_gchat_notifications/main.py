@@ -1,6 +1,7 @@
 import json
 import logging
 from os import getenv
+from urllib.parse import quote
 
 import boto3
 import urllib3
@@ -12,12 +13,15 @@ logger.setLevel(logging.INFO)
 def format_message(event) -> dict:
     timestamp = event["time"]
     job_name = event["detail"]["jobName"]
+    job_name_parsed = quote(job_name)
     job_run_id = event["detail"]["jobRunId"]
     error_message = event["detail"]["message"]
+    region = event["region"]
     return {
         "text": (
-            f"{timestamp} Glue failure detected for job: {job_name} run id:"
-            f" {job_run_id} Error message: {error_message}"
+            f"{timestamp} \nGlue failure detected for job: *{job_name}* \nrun:"
+            f" https://{region}.console.aws.amazon.com/gluestudio/home?region={region}#/job/{job_name_parsed}/run/{job_run_id} \nError"
+            f" message: {error_message}"
         )
     }
 
