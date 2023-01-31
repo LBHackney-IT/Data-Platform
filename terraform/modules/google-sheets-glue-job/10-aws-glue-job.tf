@@ -22,6 +22,7 @@ module "google_sheet_import" {
   }
   workflow_name   = var.create_workflow ? aws_glue_workflow.workflow[0].name : null
   schedule        = var.google_sheet_import_schedule
+  max_retries     = var.max_retries
   trigger_enabled = (var.is_live_environment && var.enable_glue_trigger)
   crawler_details = {
     database_name      = var.glue_catalog_database_name
@@ -38,5 +39,5 @@ module "google_sheet_import" {
 
 resource "aws_glue_workflow" "workflow" {
   count = var.create_workflow ? 1 : 0
-  name = "${var.identifier_prefix}${local.import_name}"
+  name  = "${var.identifier_prefix}${local.import_name}"
 }
