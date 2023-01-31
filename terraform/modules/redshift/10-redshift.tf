@@ -124,7 +124,7 @@ resource "aws_redshift_subnet_group" "redshift" {
 }
 
 data "aws_secretsmanager_secret" "redshift_ingress_rules" {
-    arn = aws_secretsmanager_secret.redshift_ingress_rules.arn
+    name = "${var.identifier_prefix}-manually-managed-value-redshift-ingress-rules"
 }
 
 data "aws_secretsmanager_secret_version" "redshift_ingress_rules"{
