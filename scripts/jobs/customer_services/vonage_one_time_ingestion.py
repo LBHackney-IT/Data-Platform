@@ -13,8 +13,6 @@ import time
 import logging
 
 import boto3
-from dotenv import load_dotenv
-from os import getenv
 from pyspark.context import SparkContext
 
 import re
