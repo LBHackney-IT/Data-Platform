@@ -13,6 +13,7 @@ module "rentsense_output_to_landing_S3" {
   glue_role_arn              = data.aws_iam_role.glue_role.arn
   glue_job_worker_type       = "G.1X"
   number_of_workers_for_glue_job  = 8
+  max_retries                 = 3
   glue_version               = "4.0"
   helper_module_key          = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
