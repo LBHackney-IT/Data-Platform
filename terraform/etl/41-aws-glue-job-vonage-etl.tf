@@ -6,7 +6,7 @@ module "ingest_vonage_data" {
 
   count                     = local.is_live_environment && !local.is_production_environment ? 1 : 0
 
-  department                      = module.department_data_and_insight_data_source
+  department                      = module.department_customer_services_data_source
   number_of_workers_for_glue_job  = 2
   max_concurrent_runs_of_glue_job = 1
   job_name                        = "${local.short_identifier_prefix}vonage_one_time_ingestion_customer_services"
@@ -14,8 +14,8 @@ module "ingest_vonage_data" {
   pydeequ_zip_key                 = data.aws_s3_bucket_object.pydeequ.key
   job_parameters = {
     "--s3_bucket"                 = "dataplatform-stg-landing-zone"
-    "--output_folder_name"        = "data-and-insight/vonage"
-    "--secret_name"               = "/data-and-insight/vonage-key"
+    "--output_folder_name"        = "customer-services/manual/vonage"
+    "--secret_name"               = "/customer-services/vonage-key"
     "--api_to_call"               = "stats"
     "--table_to_call"             = "interactions"
     "--number_of_workers"         = 2
