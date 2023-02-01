@@ -430,7 +430,7 @@ def main():
     files_in_subfolder = list_subfolders_in_directory(s3_client, s3_bucket, output_folder_name)
 
     if files_in_subfolder == None:
-        print("No Files Found. Will use 2020-01-01 as start date")
+        print("No Files Found. Will use 2021-09-01 as start date")
         start_date = "2021-09-01"
     else:
         start_date = get_latest_data_date(s3_client, s3_bucket, output_folder_name)
