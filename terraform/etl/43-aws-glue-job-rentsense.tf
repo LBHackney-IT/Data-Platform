@@ -1,8 +1,7 @@
 data "aws_ssm_parameter" "copy_mtfh_reshape_to_refined_crawler {
   name = "/${local.identifier_prefix}/glue_crawler/housing/mtfh_reshape_to_refined_crawler_name"
-}
-
-
+  }
+ 
 module "rentsense_output_to_landing_S3" {
   source                    = "../modules/aws-glue-job"
   is_production_environment = local.is_production_environment
