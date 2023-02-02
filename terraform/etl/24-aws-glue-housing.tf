@@ -3,6 +3,7 @@ data "aws_ssm_parameter" "copy_mtfh_dynamo_db_rentsense_tables_to_raw_zone_crawl
 }
 
 module "mtfh_reshape_to_refined" {
+  count                     = local.is_live_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment

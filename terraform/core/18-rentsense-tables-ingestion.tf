@@ -3,6 +3,7 @@ locals {
 }
 
 module "ingest_mtfh_rentsense_tables" {
+  count                     = local.is_live_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
@@ -14,7 +15,7 @@ module "ingest_mtfh_rentsense_tables" {
   job_description                = "Ingest all tables from MTFH for Rentsense from the Housing Dynamo DB instances"
   script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
   helper_module_key              = aws_s3_bucket_object.helpers.key
-  glue_version                   = "4.0" 
+  glue_version                   = "4.0"
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
@@ -78,12 +79,12 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
         TableLevelConfiguration = 3
       }
       CrawlerOutput = {
-      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+        Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
       }
     })
   }
 }
-      
+
 resource "aws_ssm_parameter" "copy_mtfh_dynamo_db_rentsense_tables_to_raw_zone_crawler_name" {
   tags  = module.tags.values
   name  = "/${local.identifier_prefix}/glue_crawler/housing/copy_mtfh_dynamo_db_rentsense_tables_to_raw_zone_crawler_name"

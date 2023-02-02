@@ -11,7 +11,7 @@ module "housing_interim_finance_database_ingestion" {
   database_secret_name        = "database-credentials/SOW2b-housing-interim-finance"
   identifier_prefix           = local.short_identifier_prefix
   create_workflow             = false
-  job_schedule                = "cron(30 6 ? * MON-FRI *)" 
+  job_schedule                = "cron(30 6 ? * MON-FRI *)"
 }
 
 locals {
@@ -40,7 +40,8 @@ resource "aws_glue_trigger" "housing_interim_finance_filter_ingestion_tables" {
 }
 
 module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
-  tags = module.tags.values
+  count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
 
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
@@ -74,7 +75,7 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
     })
   }
 }
-    
+
 resource "aws_ssm_parameter" "ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name" {
   tags  = module.tags.values
   name  = "/${local.identifier_prefix}/glue_crawler/housing/ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name"

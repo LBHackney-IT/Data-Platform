@@ -39,7 +39,8 @@ resource "aws_glue_trigger" "housing_income_collection_filter_ingestion_tables" 
 }
 
 module "ingest_housing_income_collection_database_to_housing_raw_zone" {
-  tags = module.tags.values
+  count = local.is_live_environment ? 1 : 0
+  tags  = module.tags.values
 
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment

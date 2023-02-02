@@ -35,7 +35,7 @@ resource "aws_s3_bucket_object" "spatial_enrichment" {
   source      = "../../scripts/jobs/unrestricted/spatial_enrichment.py"
   source_hash = filemd5("../../scripts/jobs/unrestricted/spatial_enrichment.py")
 }
-    
+
 # Dictionary resources for spatial enrichment
 resource "aws_s3_bucket_object" "geography_tables_dictionary" {
   bucket      = module.glue_scripts_data_source.bucket_id
@@ -44,7 +44,7 @@ resource "aws_s3_bucket_object" "geography_tables_dictionary" {
   source      = "../../scripts/jobs/unrestricted/geography-tables-dictionary.json"
   source_hash = filemd5("../../scripts/jobs/unrestricted/geography-tables-dictionary.json")
 }
-    
+
 resource "aws_s3_bucket_object" "env_services_spatial_enrichment_dictionary" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/env-services/spatial-enrichment-dictionary.json"
@@ -55,6 +55,7 @@ resource "aws_s3_bucket_object" "env_services_spatial_enrichment_dictionary" {
 
 # Job using the script and dictionary above for the environmental services dept 
 module "env_services_geospatial_enrichment" {
+  count                     = local.is_live_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
