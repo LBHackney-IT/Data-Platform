@@ -28,3 +28,11 @@ module "mtfh_reshape_to_refined" {
   }
 
 }
+    
+     
+resource "aws_ssm_parameter" "mtfh_reshape_to_refined_crawler_name" {
+  tags  = module.tags.values
+  name  = "/${local.identifier_prefix}/glue_crawler/housing/mtfh_reshape_to_refined_crawler_name"
+  type  = "String"
+  value = module.mtfh_reshape_to_refined.crawler_name
+}
