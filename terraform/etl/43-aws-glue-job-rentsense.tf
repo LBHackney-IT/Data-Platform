@@ -1,4 +1,4 @@
-data "aws_ssm_parameter" "copy_mtfh_reshape_to_refined_crawler {
+data "aws_ssm_parameter" "copy_mtfh_reshape_to_refined_crawler" {
   name = "/${local.identifier_prefix}/glue_crawler/housing/mtfh_reshape_to_refined_crawler_name"
   }
  
