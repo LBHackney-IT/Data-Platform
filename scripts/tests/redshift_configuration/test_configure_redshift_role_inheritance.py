@@ -65,3 +65,11 @@ class TestConfigureRoleInheritance():
         configure_role_inheritance(redshift_mock, terraform_output_with_one_role_config_json)
 
         spy.assert_not_called()
+    
+    @pytest.mark.configure_role_inheritance
+    def test_configure_role_inheritance_outputs_message_when_role_inheritance_is_added(self, redshift_mock, terraform_output_json, capfd):
+        configure_role_inheritance(redshift_mock, terraform_output_json)
+
+        readout = capfd.readouterr()
+
+        assert readout.out == "Applied role grants for role role_two\n"

@@ -221,6 +221,7 @@ def configure_role_inheritance(redshift: Redshift, roles_configuration: json):
             grant_role_inheritance = [f"grant role {role_to_inherit_from} to role {role_name};" for role_to_inherit_from in
                                         role["roles_to_inherit_permissions_from"]]
             redshift.execute_batch_queries(grant_role_inheritance)
+            print(f"Applied role grants for role {role_name}")
 
 def main(terraform_output = None, redshift_instance = None) -> None:
     secrets_manager: BaseClient = boto3.client('secretsmanager')
