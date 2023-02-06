@@ -16,6 +16,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "create_roles: mark tests for create roles function")
     config.addinivalue_line("markers", "get_role_names: mark tests for get role names function")
     config.addinivalue_line("markers", "get_roles: mark tests for get roles function")
+    config.addinivalue_line("markers", "configure_role_inheritance: mark tests for configure role inheritance function")
 
 @pytest.fixture(scope='session')
 def terraform_output():
@@ -44,6 +45,9 @@ def terraform_output():
                     },
                     {
                         "role_name": "role_two",
+                        "roles_to_inherit_permissions_from": [
+                            "role_one"
+                        ],
                         "schemas_to_grant_access_to": [
                             "schema_four",
                             "schema_five",
