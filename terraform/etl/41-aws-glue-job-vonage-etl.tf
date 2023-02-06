@@ -4,7 +4,7 @@ module "ingest_vonage_data" {
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
-  count                     = local.is_live_environment ? 1 : 0
+  count                     = local.is_live_environment && !local.is_production_environment ? 1 : 0
 
   department                      = module.department_customer_services_data_source
   number_of_workers_for_glue_job  = 12
