@@ -243,7 +243,6 @@ def main():
 
         logger.info(f'Starting to union dataframes...')
         standard_df = housing.union(council_tax).union(housing_benefit).union(parking_permit).coalesce(10)
-        standard_df = housing.union(council_tax).coalesce(10)
         standard_df = add_import_time_columns(standard_df)
         logger.info(f'Standard df created.')
 
