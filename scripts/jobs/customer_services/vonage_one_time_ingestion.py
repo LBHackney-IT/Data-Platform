@@ -440,9 +440,9 @@ def main():
     print(f'Calling API from dates: {start_date} to {end_call_date}')
     dates_to_call = create_list_of_call_dates(start_date, end_call_date)
 
-    if(len(dates_to_call) > 180):
-        print(f'{len(dates_to_call)} Dates to Call. Trimming to a 60 Dates')
-        dates_to_call = dates_to_call[:60]
+    if(len(dates_to_call) > 30):
+        print(f'{len(dates_to_call)} Dates to Call. Trimming to a 30 Dates')
+        dates_to_call = dates_to_call[:30]
 
     if(len(dates_to_call) > 0):
         called_data = loop_through_dates(dates_to_call, api_to_call, table_to_call, auth_token)
