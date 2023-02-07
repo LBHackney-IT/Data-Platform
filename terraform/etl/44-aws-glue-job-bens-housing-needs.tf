@@ -26,7 +26,7 @@ module "rentsense_output_to_landing_S3" {
     "--source_catalog_database" = module.department_bens_housing_needs_data_source.refined_zone_catalog_database_name
     "--source_catalog_database2" = module.department_unrestricted_data_source.refined_zone_catalog_database_name
   }
-  script_name          = "Housing Register to refined and trusted"
+  script_name          = "housing_register_to_refined_and_trusted"
   triggered_by_crawler = data.aws_ssm_parameter.copy_mtfh_reshape_to_refined_crawler.value
   }
 
