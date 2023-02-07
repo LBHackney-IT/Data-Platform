@@ -45,6 +45,10 @@ class TestCreateRedshiftRoles():
     def grant_permissions_to_users(self, mocker):
         return mocker.patch('scripts.configure_redshift.configure_users')
 
+    @pytest.fixture(scope="function", autouse=True)
+    def revoke_role_grants(self, mocker):
+        return mocker.patch('scripts.configure_redshift.revoke_role_grants')
+
     #main
     @pytest.mark.main
     def test_main_skips_create_roles_if_role_configuration_not_present(self, terraform_output_without_roles_config, redshift_mock, create_roles_mock):
