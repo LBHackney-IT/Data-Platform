@@ -307,7 +307,7 @@ if __name__ == "__main__":
                                    )
 
     # store out the data - main applicant
-    clear_target_folder(s3_target_refined+'/housing_register_main_applicant')
+    #clear_target_folder(s3_target_refined+'/housing_register_main_applicant')
     
     dynamic_frame = DynamicFrame.fromDF(member_detail_final.repartition(1), glueContext, "target_data_to_write")
     
@@ -328,7 +328,7 @@ if __name__ == "__main__":
     S3bucket_node3.writeFrame(dynamic_frame)
     
         # store out the data - other members
-    clear_target_folder(s3_target_refined+'/housing_register_other_members')
+    #clear_target_folder(s3_target_refined+'/housing_register_other_members')
     
     dynamic_frame = DynamicFrame.fromDF(other_member_remove_nulls.repartition(1), glueContext, "target_data_to_write")
     
