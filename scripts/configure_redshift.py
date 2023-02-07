@@ -213,6 +213,15 @@ def grant_permissions_to_roles(redshift: Redshift, roles_configuration: list) ->
     
     print(f"Granted permissions for roles: {', '.join(role_names)}")
 
+def configure_role_inheritance(redshift: Redshift, roles_configuration: json):
+    for role in roles_configuration:
+        role_name = role["role_name"]
+        
+        if "roles_to_inherit_permissions_from" in role and len(role["roles_to_inherit_permissions_from"]) > 0:
+            grant_role_inheritance = [f"grant role {role_to_inherit_from} to role {role_name};" for role_to_inherit_from in
+                                        role["roles_to_inherit_permissions_from"]]
+            redshift.execute_batch_queries(grant_role_inheritance)
+            print(f"Applied role grants for role {role_name}")
 
 def main(terraform_output = None, redshift_instance = None) -> None:
     secrets_manager: BaseClient = boto3.client('secretsmanager')
@@ -249,6 +258,7 @@ def main(terraform_output = None, redshift_instance = None) -> None:
     if roles_configuration_exists:
         create_roles(redshift, roles_configuration)    
         grant_permissions_to_roles(redshift, roles_configuration)
+        configure_role_inheritance(redshift, roles_configuration)
 
 if __name__ == '__main__':
     main()

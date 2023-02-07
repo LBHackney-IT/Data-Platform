@@ -1,5 +1,5 @@
-import pytest
-from scripts.configure_redshift import Redshift, main
+import pytest, json
+from scripts.configure_redshift import Redshift, main, grant_permissions_to_roles
 from unittest.mock import call
 
 class TestConfigureRolePermissions():
@@ -35,6 +35,10 @@ class TestConfigureRolePermissions():
     @pytest.fixture(scope="function", autouse=True)
     def grant_permissions_to_users(self, mocker):
         return mocker.patch('scripts.configure_redshift.grant_permissions_to_users')
+
+    @pytest.fixture(scope="session")
+    def terraform_output_json(self, terraform_output):
+        return json.loads(terraform_output)['redshift_roles']['value'] 
 
     #main
     @pytest.mark.main
@@ -112,8 +116,8 @@ class TestConfigureRolePermissions():
         redshift_mock.assert_has_calls(expected_calls, any_order=False)
 
     @pytest.mark.grant_permissions_to_roles
-    def test_graant_permissions_to_roles_outputs_message_when_roles_were_created(self, redshift_mock, terraform_output, capfd):
-        main(terraform_output, redshift_mock)
+    def test_graant_permissions_to_roles_outputs_message_when_roles_were_created(self, redshift_mock, terraform_output_json, capfd):
+        grant_permissions_to_roles(redshift_mock, terraform_output_json)
 
         readout = capfd.readouterr()
 
