@@ -223,6 +223,25 @@ def configure_role_inheritance(redshift: Redshift, roles_configuration: json):
             redshift.execute_batch_queries(grant_role_inheritance)
             print(f"Applied role grants for role {role_name}")
 
+def revoke_role_grants(redshift, roles_configuration):
+    for role in roles_configuration:
+        role_name = role["role_name"]
+        
+        if "roles_to_inherit_permissions_from" in role and len(role["roles_to_inherit_permissions_from"]) > 0:
+            current_role_grants_in_configuration = [role for role in role["roles_to_inherit_permissions_from"]]
+
+            query_id = redshift.execute_query(f"select granted_role_name from svv_role_grants where role_name = '{role_name}';")
+            current_role_grants = redshift.get_results(query_id)
+            existing_role_names = [(f"'{role[0]['stringValue']}'") for role in current_role_grants]
+            formatted_role_names = (list(role_name.strip('\'') for role_name in existing_role_names))
+
+            role_grants_to_revoke = [role for role in current_role_grants_in_configuration + formatted_role_names if role not in current_role_grants_in_configuration]
+
+            if len(role_grants_to_revoke) > 0:
+                 revoke_role_grants = [f"revoke role {role} from role {role_name};" for role in role_grants_to_revoke]
+                 redshift.execute_batch_queries(revoke_role_grants)
+                 print(f"Revoked role grants: {revoke_role_grants}")
+
 def main(terraform_output = None, redshift_instance = None) -> None:
     secrets_manager: BaseClient = boto3.client('secretsmanager')
     terraform_outputs_json = terraform_output or sys.argv[1]
@@ -259,6 +278,7 @@ def main(terraform_output = None, redshift_instance = None) -> None:
         create_roles(redshift, roles_configuration)    
         grant_permissions_to_roles(redshift, roles_configuration)
         configure_role_inheritance(redshift, roles_configuration)
+        revoke_role_grants(redshift, roles_configuration)
 
 if __name__ == '__main__':
     main()

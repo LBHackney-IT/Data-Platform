@@ -1,4 +1,5 @@
-import pytest, json
+import pytest
+import json
 from scripts.configure_redshift import Redshift, revoke_role_grants
 from unittest import mock
 
