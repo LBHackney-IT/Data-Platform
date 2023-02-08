@@ -1,6 +1,4 @@
 module "copy_from_s3_to_s3" {
-  count   = local.is_live_environment ? 1 : 0
-
   source  = "../modules/copy-from-s3-to-s3"
   tags    = module.tags.values
 
