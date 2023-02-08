@@ -9,3 +9,4 @@ variable "lambda_execution_cron_schedule" {
   type        = string
   default     = "cron(0 9 * * ? *)"
 }
+

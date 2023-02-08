@@ -49,3 +49,19 @@ variable "is_live_environment" {
   description = "A flag indicting if we are running in a live environment for setting up automation"
   type        = bool
 }
+
+variable "short_identifier_prefix" {
+  description = "Environment based identifier prefix"
+  type        = string
+}
+
+variable "environment" {
+  description = "Name of the current environment"
+  type        = string
+}
+
+variable "is_production_environment" {
+  description = "A flag indicating if we are running in production environment"
+  type        = string
+}
+
