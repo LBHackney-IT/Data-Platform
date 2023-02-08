@@ -39,6 +39,10 @@ class TestConfigureRoleInheritance():
     @pytest.fixture(scope="session")
     def terraform_output_with_one_role_config_json(self, terraform_output_with_one_role):
         return json.loads(terraform_output_with_one_role)['redshift_roles']['value'] 
+    
+    @pytest.fixture(scope="function", autouse=True)
+    def revoke_role_grants(self, mocker):
+        return mocker.patch('scripts.configure_redshift.revoke_role_grants')
 
     @pytest.mark.main
     def test_main_calls_configure_role_inheritance_when_role_configuration_is_present(self, redshift_mock, terraform_output, configure_role_inheritance_mock):
