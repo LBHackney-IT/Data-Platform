@@ -39,6 +39,10 @@ class TestConfigureRolePermissions():
     @pytest.fixture(scope="session")
     def terraform_output_json(self, terraform_output):
         return json.loads(terraform_output)['redshift_roles']['value'] 
+    
+    @pytest.fixture(scope="function", autouse=True)
+    def revoke_role_grants(self, mocker):
+        return mocker.patch('scripts.configure_redshift.revoke_role_grants')
 
     #main
     @pytest.mark.main

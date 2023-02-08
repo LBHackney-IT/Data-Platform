@@ -17,7 +17,8 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "get_role_names: mark tests for get role names function")
     config.addinivalue_line("markers", "get_roles: mark tests for get roles function")
     config.addinivalue_line("markers", "configure_role_inheritance: mark tests for configure role inheritance function")
-
+    config.addinivalue_line("markers", "revoke_role_grants: mark tests for revoke role grants function")
+    
 @pytest.fixture(scope='session')
 def terraform_output():
   return """{
