@@ -32,7 +32,7 @@ module "icaseworks_api_ingestion" {
 }
 
 module "vonage_api_ingestion" {
-  count                     = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count                     = local.is_live_environment ? 1 : 0
   source                    = "../modules/api-ingestion-lambda"
   tags                      = module.tags.values
   is_production_environment = local.is_production_environment
@@ -46,13 +46,13 @@ module "vonage_api_ingestion" {
   secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   s3_target_bucket_arn           = module.landing_zone.bucket_arn
   s3_target_bucket_name          = local.s3_target_bucket_name
-  api_credentials_secret_name    = "vonage-key"
+  api_credentials_secret_name    = "/customer-services/vonage-key"
   s3_target_bucket_kms_key_arn   = module.landing_zone.kms_key_arn
   lambda_memory_size = 1024
   lambda_environment_variables = {
-    "SECRET_NAME"           = "vonage-key"
+    "SECRET_NAME"           = "/customer-services/vonage-key"
     "TARGET_S3_BUCKET_NAME" = local.s3_target_bucket_name
-    "OUTPUT_FOLDER"         = "vonage"
+    "OUTPUT_FOLDER"         = "customer-services/manual/vonage"
     "TRIGGER_NAME" = "TRIGGER_NAME"
     "API_TO_CALL" = "stats"
     "TABLE_TO_CALL" = "interactions"

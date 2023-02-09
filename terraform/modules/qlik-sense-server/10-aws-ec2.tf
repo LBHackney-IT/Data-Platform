@@ -131,32 +131,6 @@ data "aws_iam_policy_document" "key_policy" {
     for_each = var.is_production_environment ? [1] : [] 
     
     content {
-      sid =  "AllowPreProdEC2RoleAccessToThisKey"
-      effect = "Allow"
-      
-      principals {
-        type = "AWS"
-        identifiers = [data.aws_secretsmanager_secret_version.qlik_sense_ec2_role_arn_on_pre_prod_account[0].secret_string]
-      }
-
-      actions = [
-        "kms:Encrypt",
-        "kms:Decrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*",
-        "kms:DescribeKey"
-      ]
-
-      resources = [
-        "*"
-      ]
-    }
-  }
-
-  dynamic statement {
-    for_each = var.is_production_environment ? [1] : [] 
-    
-    content {
       sid =  "AllowCentralBackupVaultAccessToThisKey"
       effect = "Allow"
       
@@ -180,7 +154,6 @@ data "aws_iam_policy_document" "key_policy" {
       ]
     }
   }
-  
 }
 
 resource "aws_kms_key" "key" {

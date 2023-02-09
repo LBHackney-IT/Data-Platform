@@ -32,3 +32,14 @@ variable "create_workflow" {
   type        = bool
   default     = false
 }
+
+variable "max_retries" {
+  description = "Maximum number of times to retry this job if it fails"
+  type        = number
+  default     = 2
+
+  validation {
+    condition     = var.max_retries >= 0 && var.max_retries <= 3
+    error_message = "Maximum number of retries must be between 0 and 3."
+  }
+}

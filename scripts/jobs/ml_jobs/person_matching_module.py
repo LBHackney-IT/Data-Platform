@@ -276,7 +276,7 @@ def prepare_clean_housing_data(person_reshape: DataFrame, assets_reshape: DataFr
         A prepared and cleaned dataframe containing housing tenancy data.
     """
     # print(tenure_reshape.show())
-    tenure_reshape = tenure_reshape.filter(tenure_reshape["isterminated"] is False)
+    tenure_reshape = tenure_reshape.filter(tenure_reshape["isterminated"] == False)
 
     assets_reshape = assets_reshape.filter(assets_reshape['assettype'] == 'Dwelling')
 
