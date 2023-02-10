@@ -3,11 +3,9 @@ import re
 import sys
 import unicodedata
 
-import builtins
 import boto3
 from awsglue.utils import getResolvedOptions
-from pyspark.sql import functions as f, DataFrame
-from pyspark.sql.functions import col, from_json, to_date, concat, when, lit, year, month, dayofmonth, broadcast, max
+from pyspark.sql import functions as F, DataFrame
 from pyspark.sql.types import StringType, StructType, IntegerType
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
@@ -86,11 +84,11 @@ def get_secret(secret_name, region_name):
 
 def add_timestamp_column(data_frame):
     now = datetime.datetime.now()
-    return data_frame.withColumn('import_timestamp', f.lit(str(now.timestamp())))
+    return data_frame.withColumn('import_timestamp', F.lit(str(now.timestamp())))
 
 
 def add_timestamp_column_from_date(data_frame, import_date_as_datetime):
-    return data_frame.withColumn('import_timestamp', f.lit(str(import_date_as_datetime.timestamp())))
+    return data_frame.withColumn('import_timestamp', F.lit(str(import_date_as_datetime.timestamp())))
 
 
 def add_import_time_columns(data_frame):
@@ -101,13 +99,13 @@ def add_import_time_columns(data_frame):
     importDate = importYear + importMonth + importDay
 
     data_frame = data_frame.withColumn(
-        'import_datetime', f.current_timestamp())
+        'import_datetime', F.current_timestamp())
     data_frame = data_frame.withColumn(
-        'import_timestamp', f.lit(str(now.timestamp())))
-    data_frame = data_frame.withColumn('import_year', f.lit(importYear))
-    data_frame = data_frame.withColumn('import_month', f.lit(importMonth))
-    data_frame = data_frame.withColumn('import_day', f.lit(importDay))
-    data_frame = data_frame.withColumn('import_date', f.lit(importDate))
+        'import_timestamp', F.lit(str(now.timestamp())))
+    data_frame = data_frame.withColumn('import_year', F.lit(importYear))
+    data_frame = data_frame.withColumn('import_month', F.lit(importMonth))
+    data_frame = data_frame.withColumn('import_day', F.lit(importDay))
+    data_frame = data_frame.withColumn('import_date', F.lit(importDate))
     return data_frame
 
 
@@ -139,7 +137,8 @@ def get_s3_subfolders(s3_client, bucket_name, prefix):
     return set(folders)
 
 
-def get_max_date_partition_value_from_glue_catalogue(database_name: StringType, table_name: StringType, partition_key: StringType) -> StringType:
+def get_max_date_partition_value_from_glue_catalogue(database_name: StringType, table_name: StringType,
+                                                     partition_key: StringType) -> StringType:
     """Browses S3 partitions for a given Glue database table and returns the latest partition value for the given
     partition key. This works for date partitions formatted like '2022' or '20221225'  This value can then be used in a pushdown predicate.
     
@@ -175,16 +174,16 @@ def get_max_date_partition_value_from_glue_catalogue(database_name: StringType, 
             if found:
                 partition_value_list.append(found.group(1))
     if partition_value_list:
-        return builtins.max(partition_value_list)
+        return max(partition_value_list)
 
 
 def get_latest_partitions(dfa):
-    dfa = dfa.where(f.col('import_year') == dfa.select(
-        f.max('import_year')).first()[0])
-    dfa = dfa.where(f.col('import_month') == dfa.select(
-        f.max('import_month')).first()[0])
-    dfa = dfa.where(f.col('import_day') == dfa.select(
-        f.max('import_day')).first()[0])
+    dfa = dfa.where(F.col('import_year') == dfa.select(
+        F.max('import_year')).first()[0])
+    dfa = dfa.where(F.col('import_month') == dfa.select(
+        F.max('import_month')).first()[0])
+    dfa = dfa.where(F.col('import_day') == dfa.select(
+        F.max('import_day')).first()[0])
     return dfa
 
 
@@ -201,38 +200,38 @@ def get_latest_partitions_optimized(df: DataFrame) -> DataFrame:
     """
 
     if "import_date" in df.columns:
-        latest_partition = df.select(max(col("import_date")).alias("latest_import_date"))
+        latest_partition = df.select(F.max(F.col("import_date")).alias("latest_import_date"))
         result = df \
-            .join(broadcast(latest_partition), (df["import_date"] == latest_partition["latest_import_date"])) \
+            .join(F.broadcast(latest_partition), (df["import_date"] == latest_partition["latest_import_date"])) \
             .drop("latest_import_date")
     else:
         # The below code is temporary fix till docker test environment is fixed, post which delete this and use the one
         # below which is commented as of now.
         latest_partition = df \
-            .withColumn("import_year_int", col("import_year").cast(IntegerType())) \
-            .withColumn("import_month_int", col("import_month").cast(IntegerType())) \
-            .withColumn("import_day_int", col("import_day").cast(IntegerType())) \
-            .select(max(to_date(concat(
-            col("import_year_int"),
-            when(col("import_month_int") < 10, concat(lit("0"), col("import_month_int")))
-                .otherwise(col("import_month_int")),
-            when(col("import_day_int") < 10, concat(lit("0"), col("import_day_int")))
-                .otherwise(col("import_day_int"))),
+            .withColumn("import_year_int", F.col("import_year").cast(IntegerType())) \
+            .withColumn("import_month_int", F.col("import_month").cast(IntegerType())) \
+            .withColumn("import_day_int", F.col("import_day").cast(IntegerType())) \
+            .select(F.max(F.to_date(F.concat(
+            F.col("import_year_int"),
+            F.when(F.col("import_month_int") < 10, F.concat(F.lit("0"), F.col("import_month_int")))
+            .otherwise(F.col("import_month_int")),
+            F.when(F.col("import_day_int") < 10, F.concat(F.lit("0"), F.col("import_day_int")))
+            .otherwise(F.col("import_day_int"))),
             format="yyyyMMdd")).alias("latest_partition_date")) \
-            .select(year(col("latest_partition_date")).alias("latest_year_int"),
-                    month(col("latest_partition_date")).alias("latest_month_int"),
-                    dayofmonth(col("latest_partition_date")).alias("latest_day_int"))
+            .select(F.year(F.col("latest_partition_date")).alias("latest_year_int"),
+                    F.month(F.col("latest_partition_date")).alias("latest_month_int"),
+                    F.dayofmonth(F.col("latest_partition_date")).alias("latest_day_int"))
 
         # Unblock the below code when the test environment of docker is fixed and delete the above one.
         # latest_partition = df \
-        #    .select(max(to_date(concat(col("import_year"), lit("-"), col("import_month"), lit("-"), col("import_day")),
+        #    .select(F.max(F.to_date(F.concat(F.col("import_year"), F.lit("-"), F.col("import_month"), F.lit("-"), F.col("import_day")),
         #                         format="yyyy-L-d")).alias("latest_partition_date")) \
-        #     .select(year(col("latest_partition_date")).alias("latest_year"),
-        #             month(col("latest_partition_date")).alias("latest_month"),
-        #             dayofmonth(col("latest_partition_date")).alias("latest_day"))
+        #     .select(F.year(F.col("latest_partition_date")).alias("latest_year"),
+        #             F.month(F.col("latest_partition_date")).alias("latest_month"),
+        #             F.dayofmonth(F.col("latest_partition_date")).alias("latest_day"))
 
         result = df \
-            .join(broadcast(latest_partition),
+            .join(F.broadcast(latest_partition),
                   (df.import_year == latest_partition["latest_year_int"]) &
                   (df.import_month == latest_partition["latest_month_int"]) &
                   (df.import_day == latest_partition["latest_day_int"])) \
@@ -254,38 +253,38 @@ def get_latest_snapshot_optimized(df: DataFrame) -> DataFrame:
     """
 
     if "snapshot_date" in df.columns:
-        latest_partition = df.select(max(col("snapshot_date")).alias("latest_snapshot_date"))
+        latest_partition = df.select(F.max(F.col("snapshot_date")).alias("latest_snapshot_date"))
         result = df \
-            .join(broadcast(latest_partition), (df["snapshot_date"] == latest_partition["latest_snapshot_date"])) \
+            .join(F.broadcast(latest_partition), (df["snapshot_date"] == latest_partition["latest_snapshot_date"])) \
             .drop("latest_snapshot_date")
     else:
         # The below code is temporary fix till docker test environment is fixed, post which delete this and use the one
         # below which is commented as of now.
         latest_partition = df \
-            .withColumn("snapshot_year_int", col("snapshot_year").cast(IntegerType())) \
-            .withColumn("snapshot_month_int", col("snapshot_month").cast(IntegerType())) \
-            .withColumn("snapshot_day_int", col("snapshot_day").cast(IntegerType())) \
-            .select(max(to_date(concat(
-            col("snapshot_year_int"),
-            when(col("snapshot_month_int") < 10, concat(lit("0"), col("snapshot_month_int")))
-                .otherwise(col("snapshot_month_int")),
-            when(col("snapshot_day_int") < 10, concat(lit("0"), col("snapshot_day_int")))
-                .otherwise(col("snapshot_day_int"))),
-            format="yyyyMMdd")).alias("latest_snapshot_date")) \
-            .select(year(col("latest_snapshot_date")).alias("latest_year_int"),
-                    month(col("latest_snapshot_date")).alias("latest_month_int"),
-                    dayofmonth(col("latest_snapshot_date")).alias("latest_day_int"))
+            .withColumn("snapshot_year_int", F.col("snapshot_year").cast(IntegerType())) \
+            .withColumn("snapshot_month_int", F.col("snapshot_month").cast(IntegerType())) \
+            .withColumn("snapshot_day_int", F.col("snapshot_day").cast(IntegerType())) \
+            .select(F.max(F.to_date(F.concat(
+                F.col("snapshot_year_int"),
+                F.when(F.col("snapshot_month_int") < 10, F.concat(F.lit("0"), F.col("snapshot_month_int")))
+                .otherwise(F.col("snapshot_month_int")),
+                F.when(F.col("snapshot_day_int") < 10, F.concat(F.lit("0"), F.col("snapshot_day_int")))
+                .otherwise(F.col("snapshot_day_int"))),
+                format="yyyyMMdd")).alias("latest_snapshot_date")) \
+            .select(F.year(F.col("latest_snapshot_date")).alias("latest_year_int"),
+                    F.month(F.col("latest_snapshot_date")).alias("latest_month_int"),
+                    F.dayofmonth(F.col("latest_snapshot_date")).alias("latest_day_int"))
 
         # Unblock the below code when the test environment of docker is fixed and delete the above one.
         # latest_partition = df \
-        #    .select(max(to_date(concat(col("snapshot_year"), lit("-"), col("snapshot_month"), lit("-"), col("snapshot_day")),
+        #    .select(F.max(F.to_date(F.concat(F.col("snapshot_year"), F.lit("-"), F.col("snapshot_month"), F.lit("-"), F.col("snapshot_day")),
         #                         format="yyyy-L-d")).alias("latest_partition_date")) \
-        #     .select(year(col("latest_partition_date")).alias("latest_year"),
-        #             month(col("latest_partition_date")).alias("latest_month"),
-        #             dayofmonth(col("latest_partition_date")).alias("latest_day"))
+        #     .select(year(F.col("latest_partition_date")).alias("latest_year"),
+        #             F.month(F.col("latest_partition_date")).alias("latest_month"),
+        #             F.dayofmonth(F.col("latest_partition_date")).alias("latest_day"))
 
         result = df \
-            .join(broadcast(latest_partition),
+            .join(F.broadcast(latest_partition),
                   (df.snapshot_year == latest_partition["latest_year_int"]) &
                   (df.snapshot_month == latest_partition["latest_month_int"]) &
                   (df.snapshot_day == latest_partition["latest_day_int"])) \
@@ -315,7 +314,7 @@ def parse_json_into_dataframe(spark, column, dataframe):
     for i in schema_cols:
         schema.add(i, StringType(), True)
     # create df with all expanded JSON columns as well as original columns. A new 'json' column also created.
-    dataframe = dataframe.withColumn("json", from_json(col(column), schema)).select("json.*", '*')
+    dataframe = dataframe.withColumn("json", F.from_json(F.col(column), schema)).select("json.*", '*')
     # drop columns no longer needed
     dataframe = dataframe.drop(column, 'json')
     return dataframe
@@ -341,7 +340,8 @@ def create_pushdown_predicate(partitionDateColumn, daysBuffer):
     return push_down_predicate
 
 
-def create_pushdown_predicate_for_max_date_partition_value(database_name: str, table_name: str, partition_key: str) -> str:
+def create_pushdown_predicate_for_max_date_partition_value(database_name: str, table_name: str,
+                                                           partition_key: str) -> str:
     """Creates an expression to use in a pushdown predicate filtering by date the data to load from S3. The date is
     the maximum date for which a partition exists. This date value is fetched from the Glue catalogue using boto3 and
     the function get_max_date_partition_value_from_glue_catalogue. The partition key used (i.e. import_date) must
@@ -436,8 +436,8 @@ def get_latest_rows_by_date(df, column):
     Filters dataframe to keep rows byt specifying a date column. E.g. to get the
     latest snapshot_date, column='snapshot_date'
     """
-    date_filter = df.select(max(column)).first()[0]
-    df = df.where(col(column) == date_filter)
+    date_filter = df.select(F.max(column)).first()[0]
+    df = df.where(F.col(column) == date_filter)
     return df
 
 
@@ -525,18 +525,18 @@ def working_days_diff(dataframe, id_column, date_from_column, date_to_column, re
     df_dates = dataframe.select(id_column, date_from_column, date_to_column)
 
     # Explode the table creating one row per day between date_from and date_to
-    df_exploded = df_dates.withColumn('exploded', f.explode(
-        f.sequence(f.to_date(date_from_column), f.to_date(date_to_column))))
+    df_exploded = df_dates.withColumn('exploded', F.explode(
+        F.sequence(F.to_date(date_from_column), F.to_date(date_to_column))))
 
     # turn bank holidays into a list
     bank_holiday_list = bank_holiday_dataframe.rdd.map(lambda x: x.date).collect()
     # Filter out line that are bank weekends or bank holidays (filter is faster than left_anti join)
-    df_exploded = df_exploded.filter(~f.dayofweek('exploded').isin([1, 7])) \
+    df_exploded = df_exploded.filter(~F.dayofweek('exploded').isin([1, 7])) \
         .filter(~df_exploded.exploded.isin(bank_holiday_list))
 
     # Re-group the exploded lines and count days, including the first day
     df_dates = df_exploded.groupBy(id_column).agg(
-        f.count('exploded').alias(result_column))
+        F.count('exploded').alias(result_column))
     # Join result back to the full input table using the id column
     dataframe = dataframe.join(df_dates, id_column, 'left')
     return dataframe
@@ -551,7 +551,8 @@ def clear_target_folder(s3_bucket_target):
     bucket.objects.filter(Prefix=prefix).delete()
     return
 
-def copy_file(source_bucket, source_path, source_filename,target_bucket,target_path, target_filename):
+
+def copy_file(source_bucket, source_path, source_filename, target_bucket, target_path, target_filename):
     print("S3 Source Bucket: ", source_bucket)
     print("Source Path: ", source_path)
     print("Source File: ", source_filename)
@@ -572,8 +573,7 @@ def copy_file(source_bucket, source_path, source_filename,target_bucket,target_p
         ### Now Copy the file with New Name
         client.copy(CopySource=target_source, Bucket=target_bucket, Key=target_key)
 
-        
-        print("File Copied to: ", target_bucket+'/'+target_key)
+        print("File Copied to: ", target_bucket + '/' + target_key)
     except Exception as error:
         ## do nothing
         print('Error Occured: copy_file', error)

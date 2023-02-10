@@ -277,8 +277,8 @@ def main(terraform_output = None, redshift_instance = None) -> None:
     if roles_configuration_exists:
         create_roles(redshift, roles_configuration)    
         grant_permissions_to_roles(redshift, roles_configuration)
-        configure_role_inheritance(redshift, roles_configuration)
-        revoke_role_grants(redshift, roles_configuration)
+        #configure_role_inheritance(redshift, roles_configuration)
+        #revoke_role_grants(redshift, roles_configuration)
 
 if __name__ == '__main__':
     main()
