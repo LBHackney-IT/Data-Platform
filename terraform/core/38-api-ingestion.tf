@@ -115,14 +115,14 @@ module "copy_vonage_data_landing_to_raw" {
   trigger_enabled            = local.is_production_environment
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
-    "--s3_bucket_target"    = "${module.raw_zone.bucket_id}/customer-services"
-    "--s3_bucket_source"    = module.landing_zone.bucket_id
-    "--s3_prefix"           = "manual/vonage/"
+    "--s3_bucket_target"    = "${module.raw_zone.bucket_id}/customer-services/"
+    "--s3_bucket_source"    = "${module.landing_zone.bucket_id}/customer-services/manual/"
+    "--s3_prefix"           = "vonage/"
     "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
   crawler_details = {
     database_name      = module.department_customer_services.raw_zone_catalog_database_name
-    s3_target_location = "s3://${module.raw_zone.bucket_id}/customer-services/manual/vonage/"
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/customer-services/vonage/"
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
