@@ -69,6 +69,14 @@ resource "aws_s3_bucket_object" "copy_json_data_landing_to_raw" {
   source      = "../../scripts/jobs/copy_json_data_landing_to_raw.py"
   source_hash = filemd5("../../scripts/jobs/copy_json_data_landing_to_raw.py")
 }
+
+resource "aws_s3_bucket_object" "vonage_landing_to_raw" {
+  bucket      = module.glue_scripts.bucket_id
+  key         = "scripts/vonage_landing_to_raw.py"
+  acl         = "private"
+  source      = "../../scripts/jobs/vonage_landing_to_raw.py"
+  source_hash = filemd5("../../scripts/jobs/vonage_landing_to_raw.py")
+}
   
 resource "aws_s3_bucket_object" "hackney_bank_holiday" {
   bucket      = module.raw_zone.bucket_id
