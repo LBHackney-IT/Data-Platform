@@ -56,22 +56,22 @@ class TestConfigureRedshift():
         main(terraform_output, redshift_mock)
         assert grant_permissions_to_roles_mock.call_count == 1
 
-    # @pytest.mark.main
-    # def test_main_calls_configure_role_inheritance_when_role_configuration_is_present(self, redshift_mock, terraform_output, configure_role_inheritance_mock):
-    #     main(terraform_output, redshift_mock)
-    #     assert configure_role_inheritance_mock.call_count == 1
+    @pytest.mark.main
+    def test_main_calls_configure_role_inheritance_when_role_configuration_is_present(self, redshift_mock, terraform_output, configure_role_inheritance_mock):
+        main(terraform_output, redshift_mock)
+        assert configure_role_inheritance_mock.call_count == 1
 
-    # @pytest.mark.main
-    # def test_main_skips_call_configure_role_inhertance_when_role_configuration_is_not_present(self, redshift_mock, terraform_output_without_roles_config, configure_role_inheritance_mock):
-    #     main(terraform_output_without_roles_config, redshift_mock)
-    #     assert configure_role_inheritance_mock.call_count == 0
+    @pytest.mark.main
+    def test_main_skips_call_configure_role_inhertance_when_role_configuration_is_not_present(self, redshift_mock, terraform_output_without_roles_config, configure_role_inheritance_mock):
+        main(terraform_output_without_roles_config, redshift_mock)
+        assert configure_role_inheritance_mock.call_count == 0
     
-    # @pytest.mark.main
-    # def test_main_skips_revoke_role_grants_when_role_configuration_is_present(self, redshift_mock, terraform_output_without_roles_config, revoke_role_grants_mock):
-    #     main(terraform_output_without_roles_config, redshift_mock)
-    #     assert revoke_role_grants_mock.call_count == 0
+    @pytest.mark.main
+    def test_main_skips_revoke_role_grants_when_role_configuration_is_present(self, redshift_mock, terraform_output_without_roles_config, revoke_role_grants_mock):
+        main(terraform_output_without_roles_config, redshift_mock)
+        assert revoke_role_grants_mock.call_count == 0
 
-    # @pytest.mark.main
-    # def test_main_calls_revoke_role_grants_when_role_configuration_is_present(self, redshift_mock, terraform_output, revoke_role_grants_mock):
-    #     main(terraform_output, redshift_mock)
-    #     assert revoke_role_grants_mock.call_count == 1
+    @pytest.mark.main
+    def test_main_calls_revoke_role_grants_when_role_configuration_is_present(self, redshift_mock, terraform_output, revoke_role_grants_mock):
+        main(terraform_output, redshift_mock)
+        assert revoke_role_grants_mock.call_count == 1
