@@ -75,7 +75,7 @@ resource "aws_s3_bucket_object" "vonage_landing_to_raw" {
   key         = "scripts/vonage_landing_to_raw.py"
   acl         = "private"
   source      = "../../scripts/jobs/customer-services/vonage_landing_to_raw.py"
-  source_hash = filemd5("../../scripts/jobs/customer-services/vonage_landing_to_raw.py")
+  source_hash = filemd5("../../scripts/jobs/customer_services/vonage_landing_to_raw.py")
 }
   
 resource "aws_s3_bucket_object" "hackney_bank_holiday" {
