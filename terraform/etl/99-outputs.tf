@@ -15,3 +15,8 @@ output "redshift_users" {
   value     = local.redshift_users
   sensitive = true
 }
+
+output "redshift_roles" {
+  value     = local.redshift_roles
+  sensitive = true
+}
