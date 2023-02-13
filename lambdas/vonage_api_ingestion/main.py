@@ -190,7 +190,7 @@ def output_to_landing_zone(data, day_of_item, output_folder,s3_client,s3_bucket)
         return s3_client.put_object(
             Bucket=s3_bucket,
             Body=str(data),
-            Key=f"{output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={todays_date}/{filename}.json"
+            Key=f"{output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={year}{month}{day}/{filename}.json"
         )
     else:
         print('No Pages, will not output to S3')
