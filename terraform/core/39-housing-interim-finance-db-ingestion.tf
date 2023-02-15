@@ -71,6 +71,9 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
       Grouping = {
         TableLevelConfiguration = 3
       }
+      CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      }
     })
   }
 }
