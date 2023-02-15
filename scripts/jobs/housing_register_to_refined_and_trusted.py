@@ -91,8 +91,8 @@ if __name__ == "__main__":
     df8 = df7.select("application_reference_overall", "question", f.regexp_replace("answer", "[^0-9a-zA-Z_\-]+", "")
                      .alias('answer_clean'))
 
-    pivot_df = df8.groupBy("application_reference_overall").pivot("question").agg(max("answer_clean")) \
-        .withColumnRenamed("application_reference_overall", "application_reference_overall1")
+    pivot_df = df8.groupBy("application_reference_overall").pivot("question").agg(f.max("answer_clean")) \
+                  .withColumnRenamed("application_reference_overall", "application_reference_overall1")
 
     # join back to the main df
     member_detail = df4.join(pivot_df,
@@ -108,16 +108,16 @@ if __name__ == "__main__":
         .withColumnRenamed("count", "recs")
 
     llpg_distinct_max = llpg_distinct_group.groupBy("postcode").max() \
-        .withColumnRenamed("max(recs)", "max") \
+        .withColumnRenamed("max(recs)", "max1") \
         .withColumnRenamed("postcode", "postcode1")
 
     llpg_match = llpg_distinct_max.join(llpg_distinct_group,
                                         (llpg_distinct_max.postcode1 == llpg_distinct_group.postcode) & (
-                                                llpg_distinct_max.max == llpg_distinct_group.recs), "left") \
-        .drop("postcode1", "max", "recs")
+                                                llpg_distinct_max.max1 == llpg_distinct_group.recs), "left") \
+        .drop("postcode1", "max1", "recs")
 
     # sift the dupes
-    windowSpec = Window.partitionBy("postcode").orderBy("monotonically_increasing_id")
+    window_spec = Window.partitionBy("postcode").orderBy("monotonically_increasing_id")
 
     # Person details
     llpg_mono = llpg_match.withColumn("mono_id", f.monotonically_increasing_id()) \
@@ -174,7 +174,7 @@ if __name__ == "__main__":
 
     # Medical Need
     member_person_mono = members_meds_explode.withColumn("monotonically_increasing_id", f.monotonically_increasing_id())
-    member_person_id = member_person_mono.withColumn("app_person_id", f.row_number().over(windowSpec))
+    member_person_id = member_person_mono.withColumn("app_person_id", f.row_number().over(window_spec))
 
     # split values into named columns for person
     member_med_need = member_person_id.select("application_reference_overall",
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     # Address
     member_person_mono = members_address_explode.withColumn("monotonically_increasing_id",
                                                             f.monotonically_increasing_id())
-    member_person_id = member_person_mono.withColumn("app_person_id", f.row_number().over(windowSpec))
+    member_person_id = member_person_mono.withColumn("app_person_id", f.row_number().over(window_spec))
     member_address = member_person_id.select("application_reference_overall",
                                              "app_person_id",
                                              "col.*") \
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     # Member contacts
     member_person_mono = members_contact_explode.withColumn("monotonically_increasing_id",
                                                             f.monotonically_increasing_id())
-    member_person_id = member_person_mono.withColumn("app_person_id", f.row_number().over(windowSpec))
+    member_person_id = member_person_mono.withColumn("app_person_id", f.row_number().over(window_spec))
     member_contacts = member_person_id.select("application_reference_overall",
                                               "app_person_id",
                                               "col.*") \
