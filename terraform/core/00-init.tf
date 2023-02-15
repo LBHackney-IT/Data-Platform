@@ -1,3 +1,7 @@
+locals {
+  deployment_role_name = local.is_live_environment ? var.aws_deploy_iam_role_name : "development_deploy"
+}
+
 # Core Infrastructure
 provider "aws" {
   region = var.aws_deploy_region
@@ -17,7 +21,7 @@ provider "aws" {
   region = var.aws_deploy_region
   
   assume_role {
-    role_arn     = local.is_live_environment ? "arn:aws:iam::${var.aws_api_account_id}:role/${var.aws_deploy_iam_role_name}" : "arn:aws:iam::${var.aws_api_account_id}:role/${var.aws_dev_deploy_iam_role_name}"
+    role_arn     = "arn:aws:iam::${var.aws_api_account_id}:role/${local.deployment_role_name}"
     session_name = "Terraform"
   }
 }
