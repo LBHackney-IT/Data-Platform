@@ -186,11 +186,11 @@ def output_to_landing_zone(data, day_of_item, output_folder,s3_client,s3_bucket)
         print(f'Month: {month}')
         print(f'Year: {year}')
 
-        print(f"Outputting File to: {output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={todays_date}/{filename}.json")
+        print(f"Outputting File to: {output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={year}{month}{day}/{filename}.json")
         return s3_client.put_object(
             Bucket=s3_bucket,
             Body=str(data),
-            Key=f"{output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={todays_date}/{filename}.json"
+            Key=f"{output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={year}{month}{day}/{filename}.json"
         )
     else:
         print('No Pages, will not output to S3')
@@ -352,8 +352,7 @@ def get_latest_data_date(s3_client,bucket,folder_name):
     # print(f'The Latest Day is {latest_day}')
 
     date_path = f'{daily_path}import_day={latest_day}/'
-    date_subfolders = list_subfolders_in_directory(s3_client, bucket, date_path)
-    latest_date = get_latest_yyyy_mm_dd(date_subfolders)
+    latest_date = f'{latest_year}{latest_month}{latest_day}'
     print(f'The Latest Import Date is {latest_date}')
 
     file_path = f'{date_path}import_date={latest_date}/'
