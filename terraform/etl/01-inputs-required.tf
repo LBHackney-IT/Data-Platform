@@ -20,6 +20,11 @@ variable "aws_deploy_iam_role_name" {
   type        = string
 }
 
+variable "aws_dev_deploy_iam_role_name" {
+  description = "AWS IAM role name to assume for deployment in development environment"
+  type        = string
+}
+
 variable "aws_api_account_id" {
   description = "AWS api account id"
   type        = string
