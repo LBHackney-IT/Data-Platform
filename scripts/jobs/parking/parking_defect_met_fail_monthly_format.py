@@ -5,7 +5,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS, create_pushdown_predicate_for_max_date_partition_value
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -20,15 +20,14 @@ glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
-
 environment = get_glue_env_var("environment")
 
-# Script generated for node Amazon S3
-AmazonS3_node1658997944648 = glueContext.create_dynamic_frame.from_catalog(
+# Script generated for node parking_raw_zone - parking_parking_ops_db_defects_mgt
+parking_raw_zoneparking_parking_ops_db_defects_mgt_node1658997944648 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
+    push_down_predicate="  to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
     table_name="parking_parking_ops_db_defects_mgt",
-    transformation_ctx="AmazonS3_node1658997944648",
-    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("parking-raw-zone", "parking_parking_ops_db_defects_mgt", "import_date")
+    transformation_ctx="parking_raw_zoneparking_parking_ops_db_defects_mgt_node1658997944648",
 )
 
 # Script generated for node SQL
@@ -236,22 +235,24 @@ FROM Format_Report
 SQL_node1658765472050 = sparkSqlQuery(
     glueContext,
     query=SqlQuery0,
-    mapping={"parking_parking_ops_db_defects_mgt": AmazonS3_node1658997944648},
+    mapping={
+        "parking_parking_ops_db_defects_mgt": parking_raw_zoneparking_parking_ops_db_defects_mgt_node1658997944648
+    },
     transformation_ctx="SQL_node1658765472050",
 )
 
 # Script generated for node Amazon S3
 AmazonS3_node1658765590649 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Defect_MET_FAIL_Monthly_Format/",
+    path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/Parking_Defect_MET_FAIL_Monthly_Format/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=PARTITION_KEYS,
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
     compression="snappy",
     enableUpdateCatalog=True,
     transformation_ctx="AmazonS3_node1658765590649",
 )
 AmazonS3_node1658765590649.setCatalogInfo(
-    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
+    catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",
     catalogTableName="Parking_Defect_MET_FAIL_Monthly_Format",
 )
 AmazonS3_node1658765590649.setFormat("glueparquet")
