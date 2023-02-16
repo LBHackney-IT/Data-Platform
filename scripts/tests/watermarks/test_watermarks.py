@@ -4,43 +4,9 @@ from botocore.stub import Stubber
 
 from scripts.helpers.watermarks import Watermarks
 
-dynamodb = botocore.session.get_session
-stubber.add_response(
-    "query",
-    {
-        "Items": [
-            {
-                "jobName": {"S": "job-1"},
-                "runId": {"S": "run-1"},
-                "watermarks": {"M": {"watermark-1": {"S": "value-1"}}},
-            },
-            {
-                "jobName": {"S": "job-1"},
-                "runId": {"S": "run-2"},
-                "watermarks": {"M": {"watermark-1": {"S": "value-2"}}},
-            },
-            {
-                "jobName": {"S": "job-1"},
-                "runId": {"S": "run-3"},
-                "watermarks": {"M": {"watermark-1": {"S": "value-3"}}},
-            },
-        ],
-        "Count": 3,
-        "ScannedCount": 3,
-    },
-    expected_params={
-        "TableName": "table-1",
-        "KeyConditionExpression": "jobName = :jobName",
-        "ExpressionAttributeValues": {":jobName": {"S": "job-1"}},
-    },
+dynamodb = botocore.session.get_session().create_client(
+    "dynamodb", region_name="eu-west-2"
 )
-stubber.activate()
-
-watermarks = Watermarks("table-1", dynamodb_client=dynamodb)
-run_id = watermarks.get_most_recent_run_id("job-1")
-assert run_id == "run-3"
-
-stubber.assert_no_pending_responses()().create_client("dynamodb", "eu-west-2")
 stubber = Stubber(dynamodb)
 
 
