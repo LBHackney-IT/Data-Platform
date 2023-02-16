@@ -23,7 +23,7 @@ module "housing_register_to_refined_and_trusted" {
     "--s3_target_trusted"        = "s3://${module.trusted_zone_data_source.bucket_id}/bens-housing-needs/housing-register"
     "--enable-glue-datacatalog"  = "true"
     "--source_catalog_database"  = module.department_housing_data_source.raw_zone_catalog_database_name
-    "--source_catalog_database2" = module.department_unrestricted_data_source.refined_zone_catalog_database_name
+    "--source_catalog_database2" = module.department_unrestricted_data_source.trusted_zone_catalog_database_name
   }
   script_name          = "housing_register_to_refined_and_trusted"
   triggered_by_crawler = data.aws_ssm_parameter.copy_mtfh_reshape_to_refined_crawler_for_HR.value
