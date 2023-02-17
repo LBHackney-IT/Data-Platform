@@ -98,6 +98,7 @@ resource "aws_alb_listener" "qlik_sense_http" {
       port        = "443"
       protocol    = "HTTPS"
       status_code = "HTTP_301"
+      path        = "/saml/hub"
     }
   }
 }
