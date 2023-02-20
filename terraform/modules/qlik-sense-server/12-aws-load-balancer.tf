@@ -57,12 +57,12 @@ resource "aws_alb_target_group" "qlik-sense" {
 
   health_check {
     protocol = "HTTPS"
-    path     = "/saml/hub/"
+    path     = "/hub/"
     matcher  = "302"
   }
 
   stickiness {
-    type = "lb_cookie"
+    type = "app_cookie"
   }
 }
 
