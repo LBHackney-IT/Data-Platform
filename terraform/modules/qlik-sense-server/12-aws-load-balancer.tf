@@ -62,7 +62,7 @@ resource "aws_alb_target_group" "qlik-sense" {
   }
 
   stickiness {
-    type = "lb_cookie"
+    type = "app_cookie"
   }
 }
 
