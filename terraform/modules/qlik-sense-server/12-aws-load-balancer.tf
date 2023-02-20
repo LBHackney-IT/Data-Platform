@@ -57,7 +57,7 @@ resource "aws_alb_target_group" "qlik-sense" {
 
   health_check {
     protocol = "HTTPS"
-    path     = "/saml/hub/"
+    path     = "/hub/"
     matcher  = "302"
   }
 
