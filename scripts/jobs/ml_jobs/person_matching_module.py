@@ -702,28 +702,25 @@ def standardize_parking_permit_data(parking_permit_cleaned: DataFrame) -> DataFr
     return parking_permit
 
 
-def prepare_clean_schools_admissions_data(spark: SparkSession, schools_admissions_data_path: str) -> DataFrame:
+def prepare_clean_schools_admissions_data(schools_admissions_df: DataFrame) -> DataFrame:
     """A function to prepare and clean schools admissions data. Splits ou middle name from first name. Sorts address
     columns so that they are consistent with other datasets.
 
     Args:
-        spark: SparkSession
-        schools_admissions_data_path: Path of the S3 (or local) folder containing school admissions data.
+        schools_admissions_df: Dataframe containing school admissions data.
 
     Returns:
         A DataFrame after preparing data from multiple sources and cleaning it.
     """
 
-    schools_admissions_cleaned = spark.read.parquet(schools_admissions_data_path)
-
     address_cols = ["address_line_1", "address_line_2", "address_line_3", "address_line_4"]
 
-    schools_admissions_cleaned = schools_admissions_cleaned \
+    schools_admissions_cleaned = schools_admissions_df \
         .withColumn("source", lit("schools_admission")) \
         .withColumn("source_id", col("Child ID ")) \
         .withColumn("title", col("Title")) \
-        .withColumn("first_name", split(schools_admissions_cleaned["Contact Forename"], ' ').getItem(0)) \
-        .withColumn("middle_name", split(schools_admissions_cleaned["Contact Forename"], ' ').getItem(1)) \
+        .withColumn("first_name", split(schools_admissions_df["Contact Forename"], ' ').getItem(0)) \
+        .withColumn("middle_name", split(schools_admissions_df["Contact Forename"], ' ').getItem(1)) \
         .withColumn("last_name", col("Contact Surname")) \
         .withColumn("name", regexp_replace(concat_ws(" ", col("first_name"), col("middle_name"),
                                                      col("last_name")), r"\s+", " ")) \
