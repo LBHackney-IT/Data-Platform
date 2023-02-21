@@ -223,7 +223,7 @@ if __name__ == "__main__":
     member_person_final = member_person_final.join(member_contacts,
                                                    member_person_final.member_id == member_contacts.member_id3,
                                                    "left")\
-        .drop("member_id3", "member_id2", "member_id1")
+        .drop("member_id3", "member_id2", "member_id1","questions")
 
     # get the partition fields
     partitions = df3.selectExpr("application_reference_overall as application_reference_overall1",
