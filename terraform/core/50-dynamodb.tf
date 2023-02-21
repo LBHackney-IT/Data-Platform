@@ -1,4 +1,4 @@
-data "aws_caller_identity" "current" {}
+
 
 module "dynamodb_table" {
   source = "../modules/dynamodb"
@@ -25,29 +25,8 @@ module "dynamodb_table" {
   ]
 
   server_side_encryption_enabled     = true
-  server_side_encryption_kms_key_arn = aws_kms_key.watermarks_dynamo_db.arn
+  server_side_encryption_kms_key_arn = aws_kms_key.dynamodb.arn
 }
 
-resource "aws_kms_key" "watermarks_dynamo_db" {
-  description = "KMS key for watermarks dynamodb"
-  policy      = data.aws_iam_policy_document.watermarks_key_policy.json
-  tags        = module.tags.values
-}
 
-data "aws_iam_policy_document" "watermarks_key_policy" {
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "kms:*"
-    ]
-    resources = [
-      "*"
-    ]
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-    }
-  }
-}
 

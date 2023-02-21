@@ -17,3 +17,8 @@ output "dynamodb_table_stream_label" {
   description = "A timestamp, in ISO 8601 format of the Table Stream. Only available when var.stream_enabled is true"
   value       = var.stream_enabled ? try(aws_dynamodb_table.this[0].stream_label, aws_dynamodb_table.autoscaled[0].stream_label, "") : null
 }
+
+output "aws_kms_key_dynamodb" {
+  description = "The ARN of the AWS KMS Key used for server side encryption of a DynamoDB table"
+  value       = aws_kms_key.dynamodb.arn
+}
