@@ -11,6 +11,7 @@ resource "aws_s3_bucket_acl" "qlik_alb_logs" {
 }
 
 resource "aws_s3_bucket_public_access_block" "qlik_alb_logs_public_access" {
+  count  = var.is_live_environment ? 1 : 0
   bucket = aws_s3_bucket.qlik_alb_logs[0].id
 
   block_public_acls       = true
@@ -113,7 +114,7 @@ data "aws_iam_policy_document" "write_access_for_aws_loggers" {
   }
 }
 
-resource "aws_s3_bucket_policy" "write_access_aws_for_loggers" {
+resource "aws_s3_bucket_policy" "write_access_for_aws_loggers" {
   count  = var.is_live_environment ? 1 : 0
 
   bucket = aws_s3_bucket.qlik_alb_logs[0].id
@@ -121,6 +122,7 @@ resource "aws_s3_bucket_policy" "write_access_aws_for_loggers" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "s3_lifecycle" {
+  count  = var.is_live_environment ? 1 : 0
   bucket = aws_s3_bucket.qlik_alb_logs[0].id
 
   rule {
