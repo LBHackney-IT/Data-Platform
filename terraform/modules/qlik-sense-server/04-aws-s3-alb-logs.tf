@@ -118,7 +118,7 @@ resource "aws_s3_bucket_policy" "write_access_for_aws_loggers" {
   count  = var.is_live_environment ? 1 : 0
 
   bucket = aws_s3_bucket.qlik_alb_logs[0].id
-  policy = data.aws_iam_policy_document.write_access_aws_for_loggers[0].json
+  policy = data.aws_iam_policy_document.write_access_for_aws_loggers[0].json
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "s3_lifecycle" {
