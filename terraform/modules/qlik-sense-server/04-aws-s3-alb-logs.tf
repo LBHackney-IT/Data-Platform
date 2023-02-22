@@ -37,7 +37,7 @@ resource "aws_s3_bucket_versioning" "qlik_alb_logs_versioning" {
   bucket = aws_s3_bucket.qlik_alb_logs[0].id
 
   versioning_configuration {
-    status = "Disabled"
+    status = "Enabled"
   }
 }
 
