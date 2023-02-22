@@ -1,10 +1,12 @@
 Feature: S3
 
   @exclude_aws_s3_bucket.ssl_connection_resources\[0\]
+  @exclude_aws_s3_bucket.qlik_alb_logs\[0\]
   Scenario: Data must be encrypted at rest for buckets created using server_side_encryption_configuration property within bucket resource
     Given I have aws_s3_bucket defined
     Then it must have server_side_encryption_configuration
 
+  @exclude_aws_s3_bucket.ssl_connection_resources\[0\]
   @exclude_module.athena_storage.aws_s3_bucket.bucket
   @exclude_module.glue_scripts.aws_s3_bucket.bucket
   @exclude_module.glue_temp_storage.aws_s3_bucket.bucket
@@ -17,6 +19,10 @@ Feature: S3
   @exclude_module.refined_zone.aws_s3_bucket.bucket
   @exclude_module.spark_ui_output_storage.aws_s3_bucket.bucket
   @exclude_module.trusted_zone.aws_s3_bucket.bucket
+  @exclude_module.kafka_dependency_storage.aws_s3_bucket.bucket
+  @exclude_module.rds_export_storage.aws_s3_bucket.bucket
+  @exclude_aws_s3_bucket.cloudtrail
+
   Scenario: Data must be encrypted at rest for buckets created using separate server side configuration resource
     Given I have aws_s3_bucket defined
     Then it must have aws_s3_bucket_server_side_encryption_configuration
