@@ -112,6 +112,27 @@ data "aws_iam_policy_document" "write_access_for_aws_loggers" {
       identifiers = ["arn:aws:iam::652711504416:root"]
     }
   }
+
+  statement {
+    sid    = "HTTPSOnly"
+    effect = "Deny"
+
+    resources = [aws_s3_bucket.qlik_alb_logs[0].arn,
+                "${aws_s3_bucket.qlik_alb_logs[0].arn}/*"]
+
+    actions = ["s3:*"]
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "write_access_for_aws_loggers" {
