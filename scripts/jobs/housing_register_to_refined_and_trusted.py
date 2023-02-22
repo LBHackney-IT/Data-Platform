@@ -244,7 +244,7 @@ if __name__ == "__main__":
         .withColumnRenamed("application_reference_overall", "application_reference_overall1")
 
     member_detail_final1 = member_detail_final.join(member_summary,
-                                                    member_detail.application_reference_overall == member_summary.application_reference_overall1,
+                                                    member_detail_final.application_reference_overall == member_summary.application_reference_overall1,
                                                     "left") \
         .drop("application_reference_overall1") \
         .withColumnRenamed("date_submitted", "Date_submitted") \
