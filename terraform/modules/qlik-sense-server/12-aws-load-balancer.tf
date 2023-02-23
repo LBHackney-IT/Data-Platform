@@ -85,6 +85,11 @@ resource "aws_alb" "qlik_sense" {
   lifecycle {
     prevent_destroy = true
   }
+
+  access_logs {
+    bucket  = aws_s3_bucket.qlik_alb_logs[0].id
+    enabled = true
+  }
 }
 
 resource "aws_alb_listener" "qlik_sense_http" {
