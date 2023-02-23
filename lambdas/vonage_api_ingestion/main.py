@@ -3,8 +3,7 @@ sys.path.append('./lib/')
 
 import requests
 import json
-from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 from dateutil.relativedelta import *
 import time
 import logging
