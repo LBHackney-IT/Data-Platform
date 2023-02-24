@@ -6,6 +6,8 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from scripts.helpers.helpers import create_pushdown_predicate_for_max_date_partition_value
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -25,37 +27,37 @@ environment = get_glue_env_var("environment")
 # Script generated for node Amazon S3 - parking_permit_denormalised_gds_street_llpg
 AmazonS3parking_permit_denormalised_gds_street_llpg_node1650475071787 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-liberator-refined-zone",
-    push_down_predicate="  to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
     table_name="parking_permit_denormalised_gds_street_llpg",
     transformation_ctx="AmazonS3parking_permit_denormalised_gds_street_llpg_node1650475071787",
-)
-
-# Script generated for node Amazon S3 - pcnfoidetails_pcn_foi_full
-AmazonS3pcnfoidetails_pcn_foi_full_node1650477300290 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-"+environment+"-liberator-refined-zone",
-    push_down_predicate="  to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
-    table_name="pcnfoidetails_pcn_foi_full",
-    transformation_ctx="AmazonS3pcnfoidetails_pcn_foi_full_node1650477300290",
+    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("dataplatform-"+environment+"-liberator-refined-zone", "parking_permit_denormalised_gds_street_llpg", "import_date")
 )
 
 # Script generated for node S3 bucket - unrestricted_address_api_dbo_national_address
 S3bucketunrestricted_address_api_dbo_national_address_node1 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-raw-zone-unrestricted-address-api",
-    push_down_predicate="  to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 30)",
     table_name="unrestricted_address_api_dbo_national_address",
     transformation_ctx="S3bucketunrestricted_address_api_dbo_national_address_node1",
+    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("dataplatform-"+environment+"-raw-zone-unrestricted-address-api", "unrestricted_address_api_dbo_national_address", "import_date")
+)
+
+# Script generated for node Amazon S3 - pcnfoidetails_pcn_foi_full
+AmazonS3pcnfoidetails_pcn_foi_full_node1650477300290 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-"+environment+"-liberator-refined-zone",
+    table_name="pcnfoidetails_pcn_foi_full",
+    transformation_ctx="AmazonS3pcnfoidetails_pcn_foi_full_node1650477300290",
+    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("dataplatform-"+environment+"-liberator-refined-zone", "pcnfoidetails_pcn_foi_full", "import_date")
 )
 
 # Script generated for node Amazon S3 - unrestricted_address_api_dbo_hackney_address
 AmazonS3unrestricted_address_api_dbo_hackney_address_node1650475065696 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-raw-zone-unrestricted-address-api",
-    push_down_predicate="  to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 30)",
     table_name="unrestricted_address_api_dbo_hackney_address",
     transformation_ctx="AmazonS3unrestricted_address_api_dbo_hackney_address_node1650475065696",
+    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("dataplatform-"+environment+"-raw-zone-unrestricted-address-api", "unrestricted_address_api_dbo_hackney_address", "import_date")
 )
 
 # Script generated for node ApplyMapping
-SqlQuery0 = """
+SqlQuery13 = """
 /*PCNs VRM match to Permits VRM with match to LLPG and NLPG for Registered and Current addresses Post Code last 13 months of pcn issue date
 tables:
 unrestricted_address_api_dbo_national_address
@@ -70,66 +72,27 @@ pcnfoidetails_pcn_foi_full
 19/12/2022 - changed no space from regexp_replace to replace for postcode joins and matching
 */
 
-With nlpg_pc_summ_reg as (/*Summary Post Codes National Gazetteer - NLPG*/
-    select row_number() over (partition by postcode_nospace order by postcode_nospace desc ) as nlpg_rn_reg ,gazetteer as nlpg_gazetteer_reg /*,locality as nlpg_locality_reg ,ward as nlpg_ward_reg ,town as nlpg_town_reg*/ ,postcode as nlpg_postcode_reg ,postcode_nospace as nlpg_postcode_nospace_reg
+With nlpg_pc_summ as (/*Summary Post Codes National Gazetteer - NLPG*/
+    select row_number() over (partition by postcode_nospace order by postcode_nospace desc ) as nlpg_rn ,gazetteer as nlpg_gazetteer /*,locality as nlpg_locality_reg ,ward as nlpg_ward_reg ,town as nlpg_town_reg*/ ,postcode as nlpg_postcode ,postcode_nospace as nlpg_postcode_nospace
         ,case
         when upper(town) like 'LONDON%' and upper(locality) ='HACKNEY' and ward !='' then concat(ward, ' - ',locality, ' - ',town)
         when upper(town) like 'LONDON%' and locality !='' then concat(locality, ' - ',town)
         when upper(town) like 'LONDON%' and locality ='' and ward !='' then concat(ward, ' - ',town) 
-        else town end as nlpg_area_reg 
-    /*,count(*) as nlpg_num_records_reg*/ FROM unrestricted_address_api_dbo_national_address where unrestricted_address_api_dbo_national_address.import_date = (SELECT max(unrestricted_address_api_dbo_national_address.import_date) FROM unrestricted_address_api_dbo_national_address) and lpi_logical_status like 'Approved Preferred'
+        else town end as nlpg_area 
+    /*,count(*) as nlpg_num_records_reg*/ FROM unrestricted_address_api_dbo_national_address where lpi_logical_status like 'Approved Preferred'
     group by gazetteer, locality ,ward ,town ,postcode ,postcode_nospace
 )
-,nlpg_pc_summ_curr as (/*Summary Post Codes National Gazetteer - NLPG*/
-    select  row_number() over (partition by postcode_nospace order by postcode_nospace desc ) as nlpg_rn_curr ,gazetteer as nlpg_gazetteer_curr /*,locality as nlpg_locality_curr ,ward as nlpg_ward_curr ,town as nlpg_town_curr*/ ,postcode as nlpg_postcode_curr ,postcode_nospace as nlpg_postcode_nospace_curr
+, llpg_pc_summ as (/*Summary Post Codes Hackney Gazetteer - LLPG*/
+    select row_number() over (partition by replace(postcode_nospace,' ','') order by replace(postcode_nospace,' ','') desc ) as llpg_rn ,gazetteer as llpg_gazetteer /*,locality as llpg_locality_reg ,ward as llpg_ward_reg ,town as llpg_town_reg*/ ,postcode as llpg_postcode ,replace(postcode_nospace,' ','') as llpg_postcode_nospace
     ,case
         when upper(town) like 'LONDON%' and upper(locality) ='HACKNEY' and ward !='' then concat(ward, ' - ',locality, ' - ',town)
         when upper(town) like 'LONDON%' and locality !='' then concat(locality, ' - ',town)
         when upper(town) like 'LONDON%' and locality ='' and ward !='' then concat(ward, ' - ',town) 
-        else town end as nlpg_area_curr
-    /*,count(*) as nlpg_num_records_curr*/ FROM unrestricted_address_api_dbo_national_address where unrestricted_address_api_dbo_national_address.import_date = (SELECT max(unrestricted_address_api_dbo_national_address.import_date) FROM unrestricted_address_api_dbo_national_address) and lpi_logical_status like 'Approved Preferred'
-    group by gazetteer, locality ,ward ,town ,postcode ,postcode_nospace 
-)
-,nlpg_pc_summ_per as (/*Summary Post Codes National Gazetteer - NLPG*/
-    select row_number() over (partition by postcode_nospace order by postcode_nospace desc ) as nlpg_rn_per ,gazetteer as nlpg_gazetteer_per/*,locality as nlpg_locality_per ,ward as nlpg_ward_per ,town as nlpg_town_per*/ ,postcode as nlpg_postcode_per ,postcode_nospace as nlpg_postcode_nospace_per
-            ,case
-        when upper(town) like 'LONDON%' and upper(locality) ='HACKNEY' and ward !='' then concat(ward, ' - ',locality, ' - ',town)
-        when upper(town) like 'LONDON%' and locality !='' then concat(locality, ' - ',town)
-        when upper(town) like 'LONDON%' and locality ='' and ward !='' then concat(ward, ' - ',town) 
-        else town end as nlpg_area_per
-    /*,count(*) as nlpg_num_records_per*/ FROM unrestricted_address_api_dbo_national_address where unrestricted_address_api_dbo_national_address.import_date = (SELECT max(unrestricted_address_api_dbo_national_address.import_date) FROM unrestricted_address_api_dbo_national_address) and lpi_logical_status like 'Approved Preferred'
-    group by gazetteer, locality ,ward ,town ,postcode ,postcode_nospace 
-)
-, llpg_pc_summ_reg as (/*Summary Post Codes Hackney Gazetteer - LLPG*/
-    select row_number() over (partition by replace(postcode_nospace,' ','') order by replace(postcode_nospace,' ','') desc ) as llpg_rn_reg ,gazetteer as llpg_gazetteer_reg /*,locality as llpg_locality_reg ,ward as llpg_ward_reg ,town as llpg_town_reg*/ ,postcode as llpg_postcode_reg ,replace(postcode_nospace,' ','') as llpg_postcode_nospace_reg
-    ,case
-        when upper(town) like 'LONDON%' and upper(locality) ='HACKNEY' and ward !='' then concat(ward, ' - ',locality, ' - ',town)
-        when upper(town) like 'LONDON%' and locality !='' then concat(locality, ' - ',town)
-        when upper(town) like 'LONDON%' and locality ='' and ward !='' then concat(ward, ' - ',town) 
-        else town end as llpg_area_reg
-    /*,count(*) as llpg_num_records_reg*/ FROM unrestricted_address_api_dbo_hackney_address where unrestricted_address_api_dbo_hackney_address.import_date = (SELECT max(unrestricted_address_api_dbo_hackney_address.import_date) FROM unrestricted_address_api_dbo_hackney_address) and lpi_logical_status like 'Approved Preferred'
+        else town end as llpg_area
+    /*,count(*) as llpg_num_records_reg*/ FROM unrestricted_address_api_dbo_hackney_address where lpi_logical_status like 'Approved Preferred'
     group by gazetteer, locality ,ward ,town ,postcode ,replace(postcode_nospace,' ','')
 )
-, llpg_pc_summ_curr as (/*Summary Post Codes Hackney Gazetteer - LLPG*/
-    select row_number() over (partition by replace(postcode_nospace,' ','') order by replace(postcode_nospace,' ','') desc ) as llpg_rn_curr ,gazetteer as llpg_gazetteer_curr /*,locality as llpg_locality_curr ,ward as llpg_ward_curr ,town as llpg_town_curr*/ ,postcode as llpg_postcode_curr ,replace(postcode_nospace,' ','') as llpg_postcode_nospace_curr
-    ,case
-        when upper(town) like 'LONDON%' and upper(locality) ='HACKNEY' and ward !='' then concat(ward, ' - ',locality, ' - ',town)
-        when upper(town) like 'LONDON%' and locality !='' then concat(locality, ' - ',town)
-        when upper(town) like 'LONDON%' and locality ='' and ward !='' then concat(ward, ' - ',town) 
-        else town end as llpg_area_curr
-    /*,count(*) as llpg_num_records_curr*/ FROM unrestricted_address_api_dbo_hackney_address where unrestricted_address_api_dbo_hackney_address.import_date = (SELECT max(unrestricted_address_api_dbo_hackney_address.import_date) FROM unrestricted_address_api_dbo_hackney_address) and lpi_logical_status like 'Approved Preferred'
-    group by gazetteer, locality ,ward ,town ,postcode ,replace(postcode_nospace,' ','')
-)
-, llpg_pc_summ_per as (/*Summary Post Codes Hackney Gazetteer - LLPG*/
-    select row_number() over (partition by replace(postcode_nospace,' ','') order by replace(postcode_nospace,' ','') desc ) as llpg_rn_per ,gazetteer as llpg_gazetteer_per /*,locality as llpg_locality_per ,ward as llpg_ward_per ,town as llpg_town_per*/ ,postcode as llpg_postcode_per ,replace(postcode_nospace,' ','') as llpg_postcode_nospace_per
-    ,case
-        when upper(town) like 'LONDON%' and upper(locality) ='HACKNEY' and ward !='' then concat(ward, ' - ',locality, ' - ',town)
-        when upper(town) like 'LONDON%' and locality !='' then concat(locality, ' - ',town)
-        when upper(town) like 'LONDON%' and locality ='' and ward !='' then concat(ward, ' - ',town) 
-        else town end as llpg_area_per
-    /*,count(*) as llpg_num_records_per*/ FROM unrestricted_address_api_dbo_hackney_address where unrestricted_address_api_dbo_hackney_address.import_date = (SELECT max(unrestricted_address_api_dbo_hackney_address.import_date) FROM unrestricted_address_api_dbo_hackney_address) and lpi_logical_status like 'Approved Preferred'
-    group by gazetteer, locality ,ward ,town ,postcode ,replace(postcode_nospace,' ','')
-)
+
 
 
 ,permit as (/*all permit records with llpg*/
@@ -213,7 +176,7 @@ With nlpg_pc_summ_reg as (/*Summary Post Codes National Gazetteer - NLPG*/
      ,import_month as per_import_month
      ,import_day as per_import_day
      ,import_date as per_import_date
-     FROM parking_permit_denormalised_gds_street_llpg where import_date = (SELECT max(import_date) FROM parking_permit_denormalised_gds_street_llpg) 
+     FROM parking_permit_denormalised_gds_street_llpg 
 )
 , pcn as  (
 Select/*Registered extracted post codes*/
@@ -422,7 +385,7 @@ when /*193*/ position(' ' in substr(current_ticket_address, -9, 9)) = 1 and leng
 
 else  substr(current_ticket_address, -9, 9) end )
 ,' ','') as curr_add_extracted_post_code_no_space_v1
-,* FROM pcnfoidetails_pcn_foi_full where import_date = (SELECT max(import_date) FROM pcnfoidetails_pcn_foi_full)
+,* FROM pcnfoidetails_pcn_foi_full
 )
 
 select
@@ -460,7 +423,7 @@ then 1 end as open_reg_add_link_permit_diff
 
 /*PCN with non llpg registered address linked to Permit with address*/
 ,case when
-(/*reg add not in llpg*/case when llpg_postcode_nospace_reg is not null or llpg_postcode_nospace_reg not like '' or llpg_postcode_nospace_reg not like ' ' then 1 else 0 end)=0
+(/*reg add not in llpg*/case when llpg_reg.llpg_postcode_nospace is not null or llpg_reg.llpg_postcode_nospace not like '' or llpg_reg.llpg_postcode_nospace not like ' ' then 1 else 0 end)=0
 and (/*has reg address*/case when reg_add_extracted_post_code_no_space like 'NoAddress' then 1 else 0 end)=0
 and (/*Has permit*/case when per_permit_reference is not null or per_permit_reference like '' or per_permit_reference like ' '  /*some permits no address*/ then 1 else 0 end)=1
 and (/*no permit postcode*/case when per_postcode_ns is null or per_postcode_ns like '' or per_postcode_ns like ' ' then 1 else 0 end) =0
@@ -468,7 +431,7 @@ then 1 end as reg_add_not_llpg_link_permit
 
 /*PCN with non llpg registered address linked to Permit with address not cancelled or close*/
 ,case when
-(/*reg add not in llpg*/case when llpg_postcode_nospace_reg is not null or llpg_postcode_nospace_reg not like '' or llpg_postcode_nospace_reg not like ' ' then 1 else 0 end)=0
+(/*reg add not in llpg*/case when llpg_reg.llpg_postcode_nospace is not null or llpg_reg.llpg_postcode_nospace not like '' or llpg_reg.llpg_postcode_nospace not like ' ' then 1 else 0 end)=0
 and (/*has reg address*/case when reg_add_extracted_post_code_no_space like 'NoAddress' then 1 else 0 end)=0
 and (/*Has permit*/case when per_permit_reference is not null or per_permit_reference like '' or per_permit_reference like ' '  /*some permits no address*/ then 1 else 0 end)=1
 and (/*no permit postcode*/case when per_postcode_ns is null or per_postcode_ns like '' or per_postcode_ns like ' ' then 1 else 0 end) =0
@@ -478,7 +441,7 @@ then 1 end as open_reg_add_not_llpg_link_permit
 
 /*PCN with non llpg current address linked to Permit with address*/
 ,case when
-(/*curr add not in llpg*/case when llpg_postcode_nospace_curr is not null or llpg_postcode_nospace_curr not like '' or llpg_postcode_nospace_curr not like ' ' then 1 else 0 end)=0
+(/*curr add not in llpg*/case when llpg_curr.llpg_postcode_nospace is not null or llpg_curr.llpg_postcode_nospace not like '' or llpg_curr.llpg_postcode_nospace not like ' ' then 1 else 0 end)=0
 and (/*has curr address*/case when curr_add_extracted_post_code_no_space like 'NoAddress' then 1 else 0 end)=0
 and (/*Has permit*/case when per_permit_reference is not null or per_permit_reference like '' or per_permit_reference like ' '  /*some permits no address*/ then 1 else 0 end)=1
 and (/*no permit postcode*/case when per_postcode_ns is null or per_postcode_ns like '' or per_postcode_ns like ' ' then 1 else 0 end) =0
@@ -486,7 +449,7 @@ then 1  end as curr_add_not_llpg_link_permit
 
 /*PCN with non llpg current address linked to Permit with address not cancelled or close*/
 ,case when
-(/*curr add not in llpg*/case when llpg_postcode_nospace_curr is not null or llpg_postcode_nospace_curr not like '' or llpg_postcode_nospace_curr not like ' ' then 1 else 0 end)=0
+(/*curr add not in llpg*/case when llpg_curr.llpg_postcode_nospace is not null or llpg_curr.llpg_postcode_nospace not like '' or llpg_curr.llpg_postcode_nospace not like ' ' then 1 else 0 end)=0
 and (/*has curr address*/case when curr_add_extracted_post_code_no_space like 'NoAddress' then 1 else 0 end)=0
 and (/*Has permit*/case when per_permit_reference is not null or per_permit_reference like '' or per_permit_reference like ' '  /*some permits no address*/ then 1 else 0 end)=1
 and (/*no permit postcode*/case when per_postcode_ns is null or per_postcode_ns like '' or per_postcode_ns like ' ' then 1 else 0 end) =0
@@ -495,9 +458,9 @@ and pcn_casecloseddate is null
 then 1  end as open_curr_add_not_llpg_link_permit
 
 /*In LLPG or not*/
-,case when llpg_postcode_nospace_reg is not null or llpg_postcode_nospace_reg not like '' or llpg_postcode_nospace_reg not like ' ' then 1 else 0 end as post_code_in_llpg_reg
-,case when llpg_postcode_nospace_curr is not null or llpg_postcode_nospace_curr not like '' or llpg_postcode_nospace_curr not like ' ' then 1 else 0 end as post_code_in_llpg_curr
-,case when llpg_postcode_nospace_per is not null or llpg_postcode_nospace_per not like '' or llpg_postcode_nospace_per not like ' ' then 1 else 0 end as post_code_in_llpg_per
+,case when llpg_reg.llpg_postcode_nospace is not null or llpg_reg.llpg_postcode_nospace not like '' or llpg_reg.llpg_postcode_nospace not like ' ' then 1 else 0 end as post_code_in_llpg_reg
+,case when llpg_curr.llpg_postcode_nospace is not null or llpg_curr.llpg_postcode_nospace not like '' or llpg_curr.llpg_postcode_nospace not like ' ' then 1 else 0 end as post_code_in_llpg_curr
+,case when llpg_per.llpg_postcode_nospace is not null or llpg_per.llpg_postcode_nospace not like '' or llpg_per.llpg_postcode_nospace not like ' ' then 1 else 0 end as post_code_in_llpg_per
 /*pcn postcode different from permit postcode*/
 ,case when (per_postcode_ns is not null or per_postcode_ns not like '' or per_postcode_ns not like ' ') and reg_add_extracted_post_code_no_space is not null and reg_add_extracted_post_code_no_space = per_postcode_ns then 0 else 1 end as diff_reg_pc_per_pc
 ,case when (per_postcode_ns is not null or per_postcode_ns not like '' or per_postcode_ns not like ' ')  and curr_add_extracted_post_code_no_space is not null and curr_add_extracted_post_code_no_space = per_postcode_ns then 0 else 1 end as diff_curr_pc_per_pc
@@ -518,11 +481,11 @@ then 1  end as open_curr_add_not_llpg_link_permit
 ,case when reg_add_extracted_post_code_no_space like 'NoPostCode' and curr_add_extracted_post_code_no_space like 'NoPostCode' then 1 else 0 end as pcn_both_no_postcode
 
 /*pcn postcodes different to permit llpg postcode*/
-,case when llpg_postcode_nospace_per is not null and reg_add_extracted_post_code_no_space is not null and per_permit_type not like 'All Zone' and (reg_add_extracted_post_code_no_space = llpg_postcode_nospace_per) then 0 else 1 end as diff_reg_pc_llpg_per_pc
-,case when llpg_postcode_nospace_per is not null and curr_add_extracted_post_code_no_space is not null and per_permit_type not like 'All Zone' and  (curr_add_extracted_post_code_no_space = llpg_postcode_nospace_per) then 0 else 1 end as diff_curr_pc_llpg_per_pc
+,case when llpg_per.llpg_postcode_nospace is not null and reg_add_extracted_post_code_no_space is not null and per_permit_type not like 'All Zone' and (reg_add_extracted_post_code_no_space = llpg_per.llpg_postcode_nospace) then 0 else 1 end as diff_reg_pc_llpg_per_pc
+,case when llpg_per.llpg_postcode_nospace is not null and curr_add_extracted_post_code_no_space is not null and per_permit_type not like 'All Zone' and  (curr_add_extracted_post_code_no_space = llpg_per.llpg_postcode_nospace) then 0 else 1 end as diff_curr_pc_llpg_per_pc
 ,case when 
-    (llpg_postcode_nospace_per is not null and reg_add_extracted_post_code_no_space is not null and per_permit_type not like 'All Zone' and (reg_add_extracted_post_code_no_space = llpg_postcode_nospace_per)) 
-    or (llpg_postcode_nospace_per is not null and curr_add_extracted_post_code_no_space is not null and per_permit_type not like 'All Zone' and  (curr_add_extracted_post_code_no_space = llpg_postcode_nospace_per)) 
+    (llpg_per.llpg_postcode_nospace is not null and reg_add_extracted_post_code_no_space is not null and per_permit_type not like 'All Zone' and (reg_add_extracted_post_code_no_space = llpg_per.llpg_postcode_nospace)) 
+    or (llpg_per.llpg_postcode_nospace is not null and curr_add_extracted_post_code_no_space is not null and per_permit_type not like 'All Zone' and  (curr_add_extracted_post_code_no_space = llpg_per.llpg_postcode_nospace)) 
     then 0 else 1 end as diff_pcn_pc_llpg_per_pc
 /*Permit linked to pcn record*/
 ,case when per_permit_reference is not null or per_permit_reference like '' or per_permit_reference like ' '  /*some permits no address*/ then 1 else 0 end as has_permit
@@ -534,19 +497,19 @@ then 1  end as open_curr_add_not_llpg_link_permit
 ,* -- pcn.*, permit.*
 FROM pcn
 left join permit on permit.per_vrm = pcn.vrm and (case when pcn.pcnissuedate >= permit.per_start_date and pcn.pcnissuedate <= permit.per_end_date then 1 else 0 end)=1
-left join nlpg_pc_summ_reg on upper(replace(nlpg_pc_summ_reg.nlpg_postcode_nospace_reg,' ','')) = upper(pcn.reg_add_extracted_post_code_no_space) and nlpg_rn_reg = 1
-left join nlpg_pc_summ_curr on upper(replace(nlpg_pc_summ_curr.nlpg_postcode_nospace_curr,' ','')) = upper(pcn.curr_add_extracted_post_code_no_space) and nlpg_rn_curr = 1
-left join nlpg_pc_summ_per on upper(replace(nlpg_pc_summ_per.nlpg_postcode_nospace_per,' ','')) = upper(replace(permit.per_postcode,' ','')) and nlpg_rn_per = 1
+left join nlpg_pc_summ nlpg_reg on upper(replace(nlpg_reg.nlpg_postcode_nospace,' ','')) = upper(pcn.reg_add_extracted_post_code_no_space) and nlpg_reg.nlpg_rn = 1
+left join nlpg_pc_summ nlpg_curr on upper(replace(nlpg_curr.nlpg_postcode_nospace,' ','')) = upper(pcn.curr_add_extracted_post_code_no_space) and nlpg_curr.nlpg_rn = 1
+left join nlpg_pc_summ nlpg_per on upper(replace(nlpg_per.nlpg_postcode_nospace,' ','')) = upper(replace(permit.per_postcode,' ','')) and nlpg_per.nlpg_rn = 1
 
-left join llpg_pc_summ_reg on upper(replace(llpg_pc_summ_reg.llpg_postcode_nospace_reg,' ','')) = upper(pcn.reg_add_extracted_post_code_no_space) and llpg_rn_reg  = 1
-left join llpg_pc_summ_curr on upper(replace(llpg_pc_summ_curr.llpg_postcode_nospace_curr,' ','')) = upper(pcn.curr_add_extracted_post_code_no_space) and llpg_rn_curr  = 1
-left join llpg_pc_summ_per on upper(replace(llpg_pc_summ_per.llpg_postcode_nospace_per,' ','')) = upper(replace(permit.per_postcode,' ','')) and llpg_rn_per  = 1
+left join llpg_pc_summ llpg_reg on upper(replace(llpg_reg.llpg_postcode_nospace,' ','')) = upper(pcn.reg_add_extracted_post_code_no_space) and llpg_reg.llpg_rn  = 1
+left join llpg_pc_summ llpg_curr on upper(replace(llpg_curr.llpg_postcode_nospace,' ','')) = upper(pcn.curr_add_extracted_post_code_no_space) and llpg_curr.llpg_rn  = 1
+left join llpg_pc_summ llpg_per on upper(replace(llpg_per.llpg_postcode_nospace,' ','')) = upper(replace(permit.per_postcode,' ','')) and llpg_per.llpg_rn  = 1
 
 where pcn.pcnissuedate > current_date - interval '13' month  --Last 13 months from todays date
 """
 ApplyMapping_node2 = sparkSqlQuery(
     glueContext,
-    query=SqlQuery0,
+    query=SqlQuery13,
     mapping={
         "unrestricted_address_api_dbo_national_address": S3bucketunrestricted_address_api_dbo_national_address_node1,
         "unrestricted_address_api_dbo_hackney_address": AmazonS3unrestricted_address_api_dbo_hackney_address_node1650475065696,
@@ -572,3 +535,4 @@ S3bucket_node3.setCatalogInfo(
 S3bucket_node3.setFormat("glueparquet")
 S3bucket_node3.writeFrame(ApplyMapping_node2)
 job.commit()
+
