@@ -1101,3 +1101,24 @@ module "parking_defect_met_fail" {
     "--environment"         = var.environment
   }
 }
+module "parking_match_pcn_permit_vrm_llpg_nlpg_postcodes" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_match_pcn_permit_vrm_llpg_nlpg_postcodes"
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_match_pcn_permit_vrm_with_address_match_llpg_nlpg_postcodes"
+  triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
+  job_description                = "PCNs VRM match to Permits VRM with match to LLPG and NLPG for Registered and Current addresses Post Code for the last 13 months of pcn issue date as at run date with post code match regexp_extract"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
+}
