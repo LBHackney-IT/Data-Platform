@@ -70,6 +70,7 @@ pcnfoidetails_pcn_foi_full
 08/12/2022 - simpler postcode extracter - regexp_extract(registered_keeper_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})') 
 09/12/2022 - updated postcode extracter to case statement to flag those with no addresses
 19/12/2022 - changed no space from regexp_replace to replace for postcode joins and matching
+24/02/2023 - optimised query to alias NLPG and LLPG in joins and add additional fields 
 */
 
 With nlpg_pc_summ as (/*Summary Post Codes National Gazetteer - NLPG*/
@@ -98,26 +99,48 @@ With nlpg_pc_summ as (/*Summary Post Codes National Gazetteer - NLPG*/
 ,permit as (/*all permit records with llpg*/
      select replace(postcode,' ','') as per_postcode_ns
      ,sr_usrn as per_sr_usrn
-     ,sr_address1 as per_sr_address1
-     ,sr_address2 as per_sr_address2
-     ,street_description as per_street_description
+     ,replace(sr_address1, ',', '') as per_sr_address1
+     ,replace(sr_address2, ',', '') as per_sr_address2
+     ,replace(street_description, ',', '') as per_street_description
      ,sr_ward_code as per_sr_ward_code
      ,sr_ward_name as per_sr_ward_name
      ,property_shell as per_property_shell
      ,blpu_class as per_blpu_class
-     ,usage_primary as per_usage_primary
-     ,usage_description as per_usage_description
-     ,street as per_street
-     ,add_type as per_add_type
+     ,replace(usage_primary, ',', '') as per_usage_primary
+     ,replace(usage_description, ',', '') as per_usage_description
+     ,replace(street, ',', '') as per_street
+     ,replace(add_type, ',', '') as per_add_type
      ,add_class as per_add_class
      ,zone_name as per_zone_name
-     ,permit_summary as per_permit_summary
-     ,permit_full_address as per_permit_full_address
-     ,full_address as per_full_address
-     ,permit_full_address_type as per_permit_full_address_type
-     ,full_address_type as per_full_address_type
---     ,live_flag as per_live_flag
-     ,case when latest_permit_status in('Approved','Renewed','Created','ORDER_APPROVED','PENDING_VRM_CHANGE','RENEW_EVID','PENDING_ADDR_CHANGE') and live_permit_flag = 1 then 1 else 0 end as per_live_flag 
+     ,replace(case 
+
+when address_line_2 ='' and business_name ='' and hasc_organisation_name ='' and  doctors_surgery_name ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant ,' - ',address_line_1,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when business_name !='' and hasc_organisation_name !='' and address_line_2 ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant ,' - ',business_name,' - ',hasc_organisation_name,' - ',address_line_1,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when business_name !='' and doctors_surgery_name !='' and address_line_2 ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant ,' - ',business_name,' - ',doctors_surgery_name,' - ',address_line_1,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when business_name !='' and address_line_2 ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant,' - ',business_name,' - ',address_line_1,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when hasc_organisation_name !='' and address_line_2 ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant ,' - ',hasc_organisation_name,' - ',address_line_1,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when doctors_surgery_name !='' and address_line_2 ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant,' - ',doctors_surgery_name,' - ',address_line_1,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+
+when address_line_3 =''and business_name ='' and hasc_organisation_name ='' and  doctors_surgery_name ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant,' - ',address_line_1,' ',address_line_2,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when business_name !='' and hasc_organisation_name !='' and address_line_3 ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant ,' - ',business_name,' - ',hasc_organisation_name,' - ',address_line_1,', ',address_line_2,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when business_name !='' and doctors_surgery_name !='' and address_line_3 ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant ,' - ',business_name,' - ',doctors_surgery_name,' - ',address_line_1,', ',address_line_2,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when business_name !='' and address_line_3 ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant,' - ',business_name,' - ',address_line_1,' ',address_line_2,', ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when hasc_organisation_name !='' and address_line_3 ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant ,' - ',hasc_organisation_name,' - ',address_line_1,' ',address_line_2,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when doctors_surgery_name !='' and address_line_3 ='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant,' - ',doctors_surgery_name,' - ',address_line_1,' ',address_line_2,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+
+
+when business_name !='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant,' - ',business_name,' - ',address_line_1,' ',address_line_2,' ',address_line_3,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+when hasc_organisation_name !='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant,' - ',hasc_organisation_name,' - ',address_line_1,' ',address_line_2,' ',address_line_3,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant) 
+when doctors_surgery_name !='' then concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant,' - ',doctors_surgery_name,' - ',address_line_1,' ',address_line_2,' ',address_line_3,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant)
+
+else concat(permit_reference,' - ',forename_of_applicant,' ',surname_of_applicant,' - ',address_line_1,' ',address_line_2,' ',address_line_3,' ',parking_permit_denormalised_gds_street_llpg.postcode,' - ',email_address_of_applicant) 
+end, ',', '') as per_permit_contact_summary
+     ,replace(permit_summary, ',', '') as per_permit_summary
+     ,replace(permit_full_address, ',', '') as per_permit_full_address
+     ,replace(full_address, ',', '') as per_full_address
+     ,replace(permit_full_address_type, ',', '') as per_permit_full_address_type
+     ,replace(full_address_type, ',', '') as per_full_address_type
+     ,live_flag as per_live_flag
      ,flag_lp_est_bb_zero as per_flag_lp_est_bb_zero
      ,flag_lp_bb_onst as per_flag_lp_bb_onst
      ,flag_lp_est as per_flag_lp_est
@@ -148,12 +171,12 @@ With nlpg_pc_summ as (/*Summary Post Codes National Gazetteer - NLPG*/
      ,payment_location as per_payment_location
      ,permit_type as per_permit_type
      ,business_name as per_business_name
-     ,hasc_organisation_name as per_hasc_organisation_name
-     ,doctors_surgery_name as per_doctors_surgery_name
+     ,replace(hasc_organisation_name, ',', '') as per_hasc_organisation_name
+     ,replace(doctors_surgery_name, ',', '') as per_doctors_surgery_name
      ,uprn as per_uprn
-     ,address_line_1 as per_address_line_1
-     ,address_line_2 as per_address_line_2
-     ,address_line_3 as per_address_line_3
+     ,replace(address_line_1, ',', '') as per_address_line_1
+     ,replace(address_line_2, ',', '') as per_address_line_2
+     ,replace(address_line_3, ',', '') as per_address_line_3
      ,postcode as per_postcode
      ,cpz as per_cpz
      ,cpz_name as per_cpz_name
@@ -388,7 +411,158 @@ else  substr(current_ticket_address, -9, 9) end )
 ,* FROM pcnfoidetails_pcn_foi_full
 )
 
-select
+/*.....................................................................................................................*/
+select distinct
+Case
+when cast(pcnissuedate as varchar(10)) like '2028-03-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2028-02-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2028-01-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2027-12-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2027-11-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2027-10-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2027-09-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2027-08-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2027-07-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2027-06-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2027-05-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2027-04-%'  THEN '2027'
+when cast(pcnissuedate as varchar(10)) like '2027-03-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2027-02-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2027-01-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2026-12-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2026-11-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2026-10-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2026-09-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2026-08-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2026-07-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2026-06-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2026-05-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2026-04-%'  THEN '2026'
+when cast(pcnissuedate as varchar(10)) like '2026-03-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2026-02-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2026-01-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2025-12-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2025-11-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2025-10-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2025-09-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2025-08-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2025-07-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2025-06-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2025-05-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2025-04-%'  THEN '2025'
+when cast(pcnissuedate as varchar(10)) like '2025-03-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2025-02-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2025-01-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2024-12-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2024-11-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2024-10-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2024-09-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2024-08-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2024-07-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2024-06-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2024-05-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2024-04-%'  THEN '2024'
+when cast(pcnissuedate as varchar(10)) like '2024-03-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2024-02-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2024-01-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2023-12-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2023-11-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2023-10-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2023-09-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2023-08-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2023-07-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2023-06-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2023-05-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2023-04-%'  THEN '2023'
+when cast(pcnissuedate as varchar(10)) like '2023-03-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2023-02-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2023-01-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2022-12-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2022-11-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2022-10-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2022-09-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2022-08-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2022-07-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2022-06-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2022-05-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2022-04-%'  THEN '2022'
+when cast(pcnissuedate as varchar(10)) like '2022-03-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2022-02-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2022-01-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2021-12-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2021-11-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2021-10-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2021-09-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2021-08-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2021-07-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2021-06-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2021-05-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2021-04-%'  THEN '2021'
+when cast(pcnissuedate as varchar(10)) like '2021-03-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2021-02-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2021-01-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2020-12-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2020-11-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2020-10-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2020-09-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2020-08-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2020-07-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2020-06-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2020-05-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2020-04-%'  THEN '2020'
+when cast(pcnissuedate as varchar(10)) like '2020-03-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2020-02-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2020-01-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2019-12-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2019-11-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2019-10-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2019-09-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2019-08-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2019-07-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2019-06-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2019-05-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2019-04-%'  THEN '2019'
+when cast(pcnissuedate as varchar(10)) like '2019-03-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2019-02-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2019-01-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2018-12-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2018-11-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2018-10-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2018-09-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2018-08-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2018-07-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2018-06-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2018-05-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2018-04-%'  THEN '2018'
+when cast(pcnissuedate as varchar(10)) like '2018-03-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2018-02-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2018-01-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2017-12-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2017-11-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2017-10-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2017-09-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2017-08-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2017-07-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2017-06-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2017-05-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2017-04-%'  THEN '2017'
+when cast(pcnissuedate as varchar(10)) like '2017-03-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2017-02-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2017-01-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2016-12-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2016-11-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2016-10-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2016-09-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2016-08-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2016-07-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2016-06-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2016-05-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2016-04-%'  THEN '2016'
+when cast(pcnissuedate as varchar(10)) like '2016-03-%'  THEN '2015'
+when cast(pcnissuedate as varchar(10)) like '2016-02-%'  THEN '2015'
+else '1900'
+end as fy,
+
 /*PCN with no address linked to Permit with address*/
 case when
 (/*no address*/case when reg_add_extracted_post_code_no_space like 'NoAddress' and curr_add_extracted_post_code_no_space like 'NoAddress' then 1 else 0 end)=1
@@ -494,7 +668,132 @@ then 1  end as open_curr_add_not_llpg_link_permit
 ,case when (per_permit_reference is not null or per_permit_reference like '' or per_permit_reference like ' '  /*some permits no address*/) and per_postcode_ns is null or per_postcode_ns like '' or per_postcode_ns like ' ' then 1 else 0 end as permit_no_address
 , replace(registered_keeper_address, ',', '') as reg_add_no_comma
 , replace(current_ticket_address, ',', '') as curr_add_no_comma
-,* -- pcn.*, permit.*
+,replace(whereonlocation, ',', '') as whereonlocation_no_comma
+
+,case when replace(registered_keeper_address, ',', '') != 'Redacted. Cancellation due to vehicle mismatch SA99' and ( replace(registered_keeper_address, ',', '') in ('ONTO HOLDINGS LIMITED 05012- UNIT 3 HERMES COURT HERMES CLOSE WARWICK CV34 6NJ', 
+'CONTRACT VEHICLESLTD 049293 PO BOX 875 LEEDS LS1 9RX', 
+'VOLKSWAGEN GROUP LEASING C/O 012683 C/O VWFS (UK) LTD BRUNSWICK COURT YEOMANS DRIVE BLAKELANDS MILTON KEYNES MK14 5LR', 
+'OGILVIE FLEET LTD 04197- C/O OGILVIE FLEET LTD OGILVIE HOUSE 200 GLASGOW RD STIRLING FK7 8ES', 
+'NATALIA MOSCHOU 05074- C/O LEX AUTOLEASE LTD HEATHSIDE PARK HEATHSIDE PARK ROAD STOCKPORT SK3 0RB', 
+'VOLKSWAGEN GROUP LEASING C/O 049566 C/O EVENTECH LTD UNIT A BULLS BRIDGE CENTRE NORTH HYDE HAYES UB3 4QR', 
+'LEX AUTOLEASE LIMITED 05074- C/O LEX AUTOLEASE LIMITED HEATHSIDE PARK HEATHSIDE PARK ROAD STOCKPORT SK3 0RB', 
+'MSL VEHICLE SOLUTIONS LTD 049797 1 LAKESIDE CHEADLE SK8 3GW', 
+'LAND ROVER CONTRACT HIRE 05074- C/O LEX AUTOLEASE LIMITED HEATHSIDE PARK HEATHSIDE PARK ROAD STOCKPORT SK3 0RB', 
+'PCO RENTALS LTD 050374 7TH FLOOR HYDE HOUSE EDGWARE ROAD LONDON NW9 6LH', 
+'ALPHABET (GB) LTD 037886 PO BOX 1295 BOONGATE PETERBOROUGH PETERBOROUGH PE1 9QW', 
+'LEX AUTOLEASE LIMITED 05074- HEATHSIDE PARK HEATHSIDE PARK ROAD STOCKPORT SK3 0RB', 
+'REFLEX VEHICLE HIRE LTD 045901 22 BELTON ROAD WEST LOUGHBOROUGH LE11 5TR', 
+'PSD VEHICLE RENTAL 555 PRESCOTT ROAD ST HELENS WA10 3BZ', 
+'LEASEPLAN UK LIMITED 021490 C/O LEASEPLAN UK LTD 165 BATH ROAD SLOUGH SL1 4AA', 
+'AMI VEHICLE LEASING LTD 04555- 16-20 MILLERS YARD PARLIAMENT SQUARE HERTFORD SG14 1EZ', 
+'PENDRAGON VEHICLE MANAGEMENT LTD 032177 PENDRAGON HOUSE SIR FRANK WHITTLE ROAD DERBY DE21 4AZ', 
+'LEASEPLAN UK LTD 021490 C/O LEASEPLAN UK LTD 165 BATH ROAD SLOUGH SL1 4AA', 
+'CAR CASTLE LTD 145A PLASHET ROAD LONDON E13 0RA', 
+'FREE2MOVE LEASE 048847 C/O FREE2MOVE LEASE PO BOX 17263 SOLIHULL B93 3JB', 
+'VOLKSWAGEN FINANCIAL SERVICES(UK)LTD 012683 C/O VWFS (UK) LTD BRUNSWICK COURT YEOMANS DRIVE BLAKELANDS MILTON KEYNES MK14 5LR', 
+'VITUS VEHICLE HIRE LTD FLAT 9 SEBASTIAN HOUSE HOXTON STREET LONDON N1 6QH', 
+'ZENITH VEHICLE CONTRACTS LTD 037783 C/O ZENITH VEH CONTRACTS LTD NUMBER ONE GT EXHIBITION WAY KIRKSTALL FO LEEDS LS5 3BF', 
+'ZENITH VEHICLE CONTRACTS LIMITED 037783 NUMBER ONE GREAT EXHIBITION WAY KIRKSTALL FORGE LEEDS LS5 3BF', 
+'MARSHALL LEASING LTD C/O FOXTONS GROUP PLC 97 VICTORIA ROAD LONDON NW10 6DJ', 
+'LEASEPLAN UK LTD 021490 165 BATH ROAD SLOUGH SL1 4AA', 
+'KJ PCO RENTALS LTD UNIT A4 BOUNDS GREEN INDUSTRIAL ESTATE RINGWAY LONDON N11 2UD', 
+'CONTRACT VEHICLES LTD 049293 PO BOX 875 LEEDS LS1 9RX', 
+'REFLEX VEHICLE HIRE LIMITED 22 BELTON ROAD WEST LOUGHBOROUGH LE11 5TR', 
+'LEX AUTOLEASE LTD 05074- HEATHSIDE PARK HEATHSIDE PARK ROAD STOCKPORT SK3 0RB', 
+'SPLEND LTD 050532 C/O SPLEND LTD 393 EDGWARE ROAD CRICKLEWOOD LONDON NW2 6LN', 
+'AVT LTD ALL VEHICLE TYPES 83 HAWTHORNE CLOSE LONDON N1 4AW', 
+'SAFE & SOUND VEHICLE SYSTEMS 41 KENT CLOSE PUDSEY LS28 9EY', 
+'L & F PLANT HIRE LTD 15 WHARF ROAD ENFIELD EN3 4TA', 
+'ENTERPRISE RENT A CAR UK LTD 046103 C/O ENTERPRISE RENTACAR UK LTD PO BOX 77 ALDERSHOT GU11 9DY', 
+'SPRINTSHIFT COMMERCIAL VEHICLE HIRE 17 OUTRAM ROAD BROADWAY INDUSTRIAL ESTATE DUKINFIELD SK16 4XE', 
+'WESTGATE VEHICLE HIRE LTD SUITE 40 UNIMIX HOUSE ABBEY ROAD LONDON NW10 7TR', 
+'SPARK VEHICLE REPAIR 118 WARHAM ROAD LONDON N4 1AU', 
+'TOOMEY LEASING GROUP LTD 045688 SERVICE HOUSE WEST MAYNE BASILDON SS15 6RW', 
+'MG VEHICLE HIRE LTD FLAT 2 79 PARK ROAD LONDON E10 7BZ', 
+'LEASYS UK LTD 045135 C/O HUDSON KAPEL LTD PO BOX 1413 COOMBELANDS PARK BEDFORD MK44 1ZY', 
+'OGILVIE FLEET LTD 04197- OGILVIE HOUSE 200 GLASGOW RD STIRLING FK7 8ES', 
+'MOBILITY VEHICLE HIRE 238 BIRMINGHAM ROAD GREAT BARR BIRMINGHAM B43 7AH', 
+'SUNBLET RENTALS LTD 049293 C/O CONTRACT VEHICLES LTD PO BOX 875 LEEDS LS1 9RX', 
+'MAXXIS CAR LTD 162 A CHIGWELL ROAD WOODFORD LONDON E18 1HA', 
+'ARVAL MID-TERM RENTAL 02644- C/O ARVAL UK LTD WINDMILL HILL SWINDON SN5 6PE', 
+'RAPID VEHICLE MANAGEMENT 160 LONDON ROAD SEVENOAKS TN13 1BT', 
+'GLYN HOPKIN VEHICLE RENTAL LTD 279-289 LONDON ROAD - - ROMFORD RM7 9NP', 
+'ISMAAEL CAR RENTAL LTD 36 CAVELL ROAD LONDON N17 7BJ', 
+'CONTRACT VEHICLES LTD 049293 C/O CONTRACT VEHICLES LTD PO BOX 875 LEEDS LS1 9RX', 
+'ENTERPRISE RENTACAR UK LTD 046103 C/O ENTERPRISE RENTACAR UK LTD PO BOX 77 ALDERSHOT GU11 9DY', 
+'PENDRAGON VEHICLE MANAGEMENT LIMITED 032177 PENDRAGON HOUSE SIR FRANK WHITTLE ROAD DERBY DE21 4AZ', 
+'CHS VEHICLES LTD 126 GELDERD CLOSE LEEDS LS12 6DS', 
+'AK VEHICLE MANAGEMENT LTD 41 BLOCK A THE VISTA CENTRE SALISBURY ROAD HOUNSLOW TW4 6JQ', 
+'IMPERIAL VEHICLE HIRE LTD 050465 GROUND FLOOR SUITE B PEACOCK HOUSE NORTHBRIDGE ROAD BERKHAMSTED HP4 1EH', 
+'MITSUBISHI HC CAPITAL UK PLC 048781 HAKUBA HOUSE WHITE HORSE BUSINESS PARK TROWBRIDGE BA14 0FL', 
+'GLYN HOPKIN VEHICLE RENTAL LTD 279-289 LONDON ROAD ROMFORD RM7 9NP', 
+'EXCLUSIVE VEHICLE CONTRACTS LT D 5 AMPTHILL BUSINESS PARK STATION ROAD AMPTHILL BEDFORD MK45 2QW', 
+'AMT VEHICLE RENTAL LTD ATHLON MOBILITY SVCS UK LTD C/O AMT VEHICLE RENTAL LTD 174 ARMLEY ROAD LEEDS LS12 2QH', 
+'SMART VEHICLE RENTAL LTD 366 LORDSHIP LANE LONDON N17 7QX', 
+'ZENITH VEHICLE CONTRACTS LTD 037783 NUMBER ONE GREAT EXHIBITION WA LEEDS LS5 3BF', 
+'SMART VEHICLE RENTAL LIMITED 366 LORDSHIP LANE LONDON N17 7QX', 
+'VAUXHALL FINANCE PLC C/O ABRIDGE VEHICLE MANAGEMENT LTD 9 BLENHEIM COURT BROOK WAY LEATHERHEAD KT22 7NA', 
+'RAPID VEHICLE MANAGEMENT LTD 160 LONDON ROAD SEVENOAKS TN13 1BT', 
+'ZENITH VEHICLE CONTRACTS 037783 C/O ZENITH VEH CONTRACTS LTD NUMBER ONE GT EXHIBITION WAY KIRKSTALL FO LEEDS LS5 3BF', 
+'PRIME ECO CARS LTD 9 MALDEN ROAD LONDON NW5 3HS', 
+'CLOSE BROTHERS VEHICLE HIRE LOWS LANE STANTON BY DALE ILKESTON DE7 4QU', 
+'MARSHALL LEASING LTD C/O FOXTONS LTD 97 VICTORIA ROAD LONDON NW10 6DJ', 
+'TRUCKPOINT VEHICLE HIRE LTD 69 BOROUGH ROAD LONDON SE1 1DN', 
+'MERIDIAN VEHICLE SOLUTIONS LTD 048288 UNIT 21 MCDONALD BUSINESS PARK MCDONALD WAY HEMEL HEMPSTEAD HP2 7EB', 
+'ANNIE MCDONAGH 044441 VEHICLE KEEPER 6 CENTENARY PARK OMAGH BT78 5HH', 
+'FIRST VEHICLE MANAGMENTLTD WOODVILLE SOUTH STREET BOUGHTON-UNDER-BLEAN FAVERSHAM ME13 9NS', 
+'BUSSEY VEHICLE LEASING FIRST FLOOR 95 WHIFFLER ROAD NORWICH NR3 2AW', 
+'ABRIDGE VEHICLE MANAGEMENT LTD 048641 C/O ABRIDGE VEH MANAGEMENT LTD 9 BLENHEIM COURT BROOK WAY LEATHERHEAD KT22 7NA', 
+'ACROBAT VEHICLE RENTAL LTD UNION LANE KINGSCLERE NEWBURY RG20 4ST', 
+'NORTHGATE VEHICLE HIRE LTD 046541 C/O GOODE DURRANT ADMIN LTD PO BOX 287 DARLINGTON DL1 9LW', 
+'ARI FLEET LEASING UK LTD 042560 C/O ARI FLEET UK LTD METHUEN PARK CHIPPENHAM SN14 0GX', 
+'GAP VEHICLE HIRE LTD 050271 C/O GAP VEHICLE HIRE LTD 13 SYMINGTON DRIVE CLYDEBANK BUSINESS PARK CLYDEBANK G81 2LD', 
+'ZENITH VEHICLE CONTRACTS LTD 037783 C/O ZENITH VEH CONTRACTS LTD NUMBER ONE GT EXHIBITION WAY KIRKSTALL FORGE LEEDS LS5 3BF', 
+'GAP VEHICLE HIRE LTD 050271 13 SYMINGTON DRIVE CLYDEBANK BUSINESS PARK CLYDEBANK G81 2LD', 
+'VOLKSWAGEN GROUP LEASING 012683 C/O VWFS (UK) LTD BRUNSWICK COURT YEOMANS DRIVE BLAKELANDS MILTON KEYNES MK14 5LR', 
+'RIVUS FLEET SOLUTIONS LTD 033029 2620 KINGS COURT THE CRESCENT BIRMINGHAM BUSINESS PARK BIRMINGHAM B37 7YE', 
+'ALD AUTOMOTIVE LTD 036705 C/O ALD AUTOMOTIVE LIMITED OAKWOOD DRIVE EMERSONS GREEN BRISTOL BS16 7LB', 
+'ALD AUTOMOTIVE LTD 036705 OAKWOOD DRIVE EMERSONS GREEN BRISTOL BS16 7LB', 
+'ENTERPRISE RENTACAR UK LTD 046103 PO BOX 77 ALDERSHOT GU11 9DY', 
+'LOOKERS LEASING LIMITED 04233- C/O LOOKERS LEASING LIMITED LOOKERS HOUSE CARDALE PARK BECKWITH HEAD ROA HARROGATE HG3 1RY', 
+'THE AUTOMOBILE ASSOCIATION DEVELOPMENTS LTD 033029 C/O RIVUS FLEET SOLUTIONS LTD 2620 KINGS COURT THE CRESCENT BIRMINGHAM BUSINESS PARK BIRMINGHAM B37 7YE', 
+'MARSHALL LEASING LTD 032931 C/O MARSHALL LEASING LTD BRIDGE HOUSE ORCHARD LANE HUNTINGDON PE29 3QT', 
+'EVENTECH LTD UNIT A BULLS BRIDGE CENTRE NORTH HYDE GARDENS HAYES UB3 4QR', 
+'VWFS (UK) LTD 012683 BRUNSWICK COURT YEOMANS DRIVE BLAKELANDS MILTON KEYNES MK14 5LR', 
+'ALD AUTOMOTIVE LIMITED 036705 OAKWOOD DRIVE EMERSONS GREEN BRISTOL BS16 7LB', 
+'ALD AUTOMOTIVE LTD 036705 OAKWOOD PARK LODGE CAUSEWAY BRISTOL BS16 3JA', 
+'MARHSALL LEASING LTD C/O FOXTONS GROUP PLC 97 VICTORIA ROAD LONDON NW10 6DJ', 
+'RA CAR RENTAL LTD 75 LEYTON PARK ROAD LONDON E10 5RL', 
+'SHAHI CARS LIMITED SUITE 114 116 BALLARDS LANE LONDON N3 2DN', 
+'ARROW CAR HIRE UK LONDON LTD 57 HALLSVILE ROAD LONDON E16 1EE'
+) ) then 1 end as rental_lease_reg_add 
+,case 
+when replace(registered_keeper_address, ',', '') != 'Redacted. Cancellation due to vehicle mismatch SA99'
+and (upper(replace(registered_keeper_address, ',', '')) like '%RENTAL%' 
+or upper(replace(registered_keeper_address, ',', ''))  like '%LEASING%' 
+or upper(replace(registered_keeper_address, ',', ''))  like '%LEASE%' 
+or upper(replace(registered_keeper_address, ',', ''))  like '%HIRE%' 
+or  upper(replace(registered_keeper_address, ',', ''))  like '%RENTACAR%'  
+or  upper(replace(registered_keeper_address, ',', ''))  like '%VEHICLE%') then 1  end as flag_vehicle_rental_hire_lease_reg_add
+,case 
+when replace(registered_keeper_address, ',', '') != 'Redacted. Cancellation due to vehicle mismatch SA99'
+and (upper(replace(registered_keeper_address, ',', '')) like '%LIMITED%' 
+or upper(replace(registered_keeper_address, ',', ''))  like '%LTD%' 
+or upper(replace(registered_keeper_address, ',', ''))  like '%PO BOX%' 
+or upper(replace(registered_keeper_address, ',', ''))  like '%C/O%' 
+) then 1  end as flag_vehicle_company_reg_add
+,pcn.*, permit.*--, nlpg_reg.*, nlpg_curr.*,nlpg_per.*, llpg_reg.*, llpg_curr.*,llpg_per.*
+--*,
+--output from NLPG --nlpg_rn, nlpg_gazetteer, nlpg_postcode, nlpg_postcode_nospace, nlpg_area
+--output from llpg --llpg_rn, llpg_gazetteer, llpg_postcode, llpg_postcode_nospace, llpg_area
+
+, nlpg_reg.nlpg_gazetteer as nlpg_gazetteer_reg ,nlpg_reg.nlpg_postcode as nlpg_postcode_reg ,nlpg_reg.nlpg_postcode_nospace as nlpg_postcode_nospace_reg ,nlpg_reg.nlpg_area as nlpg_area_reg 
+,nlpg_curr.nlpg_gazetteer as nlpg_gazetteer_curr ,nlpg_curr.nlpg_postcode as nlpg_postcode_curr ,nlpg_curr.nlpg_postcode_nospace as nlpg_postcode_nospace_curr ,nlpg_curr.nlpg_area as nlpg_area_curr
+,nlpg_per.nlpg_gazetteer as nlpg_gazetteer_per ,nlpg_per.nlpg_postcode as nlpg_postcode_per ,nlpg_per.nlpg_postcode_nospace as nlpg_postcode_nospace_per ,nlpg_per.nlpg_area as nlpg_area_per
+,llpg_reg.llpg_gazetteer as llpg_gazetteer_reg ,llpg_reg.llpg_postcode as llpg_postcode_reg ,llpg_reg.llpg_postcode_nospace as llpg_postcode_nospace_reg ,llpg_reg.llpg_area as llpg_area_reg
+,llpg_curr.llpg_gazetteer as llpg_gazetteer_curr ,llpg_curr.llpg_postcode as llpg_postcode_curr ,llpg_curr.llpg_postcode_nospace as llpg_postcode_nospace_curr ,llpg_curr.llpg_area as llpg_area_curr
+,llpg_per.llpg_gazetteer as llpg_gazetteer_per ,llpg_per.llpg_postcode as llpg_postcode_per ,llpg_per.llpg_postcode_nospace as llpg_postcode_nospace_per ,llpg_per.llpg_area as llpg_area_per
+
 FROM pcn
 left join permit on permit.per_vrm = pcn.vrm and (case when pcn.pcnissuedate >= permit.per_start_date and pcn.pcnissuedate <= permit.per_end_date then 1 else 0 end)=1
 left join nlpg_pc_summ nlpg_reg on upper(replace(nlpg_reg.nlpg_postcode_nospace,' ','')) = upper(pcn.reg_add_extracted_post_code_no_space) and nlpg_reg.nlpg_rn = 1
