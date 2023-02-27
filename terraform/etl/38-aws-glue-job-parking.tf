@@ -1116,7 +1116,7 @@ module "parking_match_pcn_permit_vrm_llpg_nlpg_postcodes" {
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
-  glue_version                   = "2.0"
+  glue_version                   = "4.0"
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
