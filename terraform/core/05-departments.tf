@@ -386,3 +386,71 @@ module "department_housing" {
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-housing@hackney.gov.uk"
 }
+
+module "department_children_and_education" {
+  providers = {
+    aws                    = aws
+    aws.aws_hackit_account = aws.aws_hackit_account
+  }
+
+  source                               = "../modules/department"
+  tags                                 = module.tags.values
+  is_live_environment                  = local.is_live_environment
+  environment                          = var.environment
+  application                          = local.application_snake
+  short_identifier_prefix              = local.short_identifier_prefix
+  identifier_prefix                    = local.identifier_prefix
+  name                                 = "Children and Edu"
+  landing_zone_bucket                  = module.landing_zone
+  raw_zone_bucket                      = module.raw_zone
+  refined_zone_bucket                  = module.refined_zone
+  trusted_zone_bucket                  = module.trusted_zone
+  athena_storage_bucket                = module.athena_storage
+  glue_scripts_bucket                  = module.glue_scripts
+  glue_temp_storage_bucket             = module.glue_temp_storage
+  spark_ui_output_storage_bucket       = module.spark_ui_output_storage
+  secrets_manager_kms_key              = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses                = var.redshift_public_ips
+  redshift_port                        = var.redshift_port
+  sso_instance_arn                     = local.sso_instance_arn
+  identity_store_id                    = local.identity_store_id
+  google_group_admin_display_name      = local.google_group_admin_display_name
+  google_group_display_name            = "saml-aws-data-platform-collaborator-children-and-family-services@hackney.gov.uk"
+  notebook_instance = {
+    github_repository = aws_sagemaker_code_repository.data_platform.code_repository_name
+    extra_python_libs = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.pydeequ.key}"
+    extra_jars        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.jars.key}"
+  }
+}
+    
+module "department_customer_services" {
+  providers = {
+    aws                    = aws
+    aws.aws_hackit_account = aws.aws_hackit_account
+  }
+
+  source                               = "../modules/department"
+  tags                                 = module.tags.values
+  is_live_environment                  = local.is_live_environment
+  environment                          = var.environment
+  application                          = local.application_snake
+  short_identifier_prefix              = local.short_identifier_prefix
+  identifier_prefix                    = local.identifier_prefix
+  name                                 = "Customer Services"
+  landing_zone_bucket                  = module.landing_zone
+  raw_zone_bucket                      = module.raw_zone
+  refined_zone_bucket                  = module.refined_zone
+  trusted_zone_bucket                  = module.trusted_zone
+  athena_storage_bucket                = module.athena_storage
+  glue_scripts_bucket                  = module.glue_scripts
+  glue_temp_storage_bucket             = module.glue_temp_storage
+  spark_ui_output_storage_bucket       = module.spark_ui_output_storage
+  secrets_manager_kms_key              = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses                = var.redshift_public_ips
+  redshift_port                        = var.redshift_port
+  sso_instance_arn                     = local.sso_instance_arn
+  identity_store_id                    = local.identity_store_id
+  google_group_admin_display_name      = local.google_group_admin_display_name
+  google_group_display_name            = "saml-aws-data-platform-collaborator-customer-services@hackney.gov.uk"
+
+}

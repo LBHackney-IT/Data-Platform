@@ -176,15 +176,34 @@ resource "aws_lambda_function_event_invoke_config" "copy_from_s3_to_s3_lambda" {
   ]
 }
 
-resource "aws_cloudwatch_event_rule" "run_s3_copier_lambda" {
-  name_prefix         = "${var.lambda_name}-lambda-"
-  description         = "Runs on the following schedule: ${var.lambda_execution_cron_schedule}"
-  schedule_expression = var.lambda_execution_cron_schedule
-  is_enabled          = var.is_live_environment
+resource "aws_cloudwatch_event_rule" "run_s3_copier_lambda_on_glue_job_success" {
+  name_prefix = "${var.lambda_name}-lambda-"
+  description = "Runs when RentSense outputs Glue job succeeds"
+
+  event_pattern = <<EOF
+  {
+    "source": [
+      "aws.glue"
+    ],
+    "detail-type":[
+      "Glue Job State Change"
+    ],
+    "detail": {
+      "state": [
+        "SUCCEEDED"
+      ],
+      "jobName": [
+          "${var.is_live_environment ? "" : var.short_identifier_prefix}Rentsense outputs to landing S3"
+      ]
+    }
+  }
+  EOF
+
+  is_enabled = var.is_live_environment
 }
 
 resource "aws_cloudwatch_event_target" "run_s3_copier_lambda" {
-  rule      = aws_cloudwatch_event_rule.run_s3_copier_lambda.name
+  rule      = aws_cloudwatch_event_rule.run_s3_copier_lambda_on_glue_job_success.name
   target_id = "${var.lambda_name}-"
   arn       = aws_lambda_function.copy_from_s3_to_s3_lambda.arn
 }
@@ -194,5 +213,5 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_s3_copier_lambda" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.copy_from_s3_to_s3_lambda.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.run_s3_copier_lambda.arn
+  source_arn    = aws_cloudwatch_event_rule.run_s3_copier_lambda_on_glue_job_success.arn
 }

@@ -2,7 +2,6 @@ import sys
 import boto3
 import io
 import zipfile
-import os
 from pyspark.sql import Window
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
@@ -16,29 +15,22 @@ from datetime import date
 import pyspark.sql.functions as F
 from scripts.helpers.helpers import move_file, rename_file,  get_latest_partitions_optimized , create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog,clear_target_folder,copy_file
 
-
 # The block below is the actual job. It is ignored when running tests locally.
 if __name__ == "__main__":
     
     # read job parameters
+    
     args = getResolvedOptions(sys.argv, ['JOB_NAME', 's3_bucket', 's3_bucket_target','source_raw_database','s3_landing','source_catalog_database'])
-    
-    # source_catalog_database = get_glue_env_var('source_catalog_database', '')
-    # s3_bucket = get_glue_env_var('s3_bucket','')
-    # s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
-    # source_raw_database = get_glue_env_var('source_raw_database', '')
-    # s3_landing = get_glue_env_var('s3_landing','')
-    # s3_export_bucket_target = get_glue_env_var('s3_export_bucket_target','')
-    
     source_catalog_database = args["source_catalog_database"]
     s3_bucket = args["s3_bucket"]
     s3_bucket_target = args["s3_bucket_target"] 
     source_raw_database = args["source_raw_database"] 
     s3_landing = args["s3_landing"] 
-    #s3_export_bucket_target = args["s3_export_bucket_target"] 
     s3_export_bucket_target = 's3://'+s3_landing+'/housing_export/rentsense'
     
     today = date.today()
+    export_target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
+    export_target_source = f"housing/rentsense/export/%s" % today.strftime("%Y%m%d")
     target_path = f"housing_export/rentsense/%s" % today.strftime("%Y%m%d")
     s3 = boto3.client("s3")
 
@@ -54,6 +46,7 @@ if __name__ == "__main__":
 
     logger.info(f'source_catalog_database is {source_catalog_database}')
     logger.info(f's3_export_bucket_target is {s3_export_bucket_target}.')
+    logger.info(f'export target path is {export_target_path}.')
     
     # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
     logger.info(f'The job is starting. The source table is {source_catalog_database}, the landing zone target it {s3_export_bucket_target} and landing zone is {s3_landing}.')
@@ -82,8 +75,7 @@ if __name__ == "__main__":
         logger.info(f"Deleted refined gzip zone target area")
     else:
         logger.info(f"Couldn't find data in refined gzip zone to delete")
-        
-
+ 
     #Mapping tables
 
     mapTransactions =  {
@@ -420,13 +412,6 @@ if __name__ == "__main__":
          transformation_ctx = "sow2b_dbo_ssminitransaction_source")
     df10 = get_latest_partitions_optimized(df10)
     
-    
-    balance = glueContext.create_data_frame.from_catalog(
-        database=source_raw_database,
-        table_name="sow2b_dbo_calculatedcurrentbalance",
-        transformation_ctx="sow2b_dbo_calculatedcurrentbalance_source")
-    balance = get_latest_partitions_optimized(balance)
-    
     patch = glueContext.create_data_frame.from_catalog(
         database=source_raw_database,
         table_name="property_rent_patches",
@@ -439,7 +424,19 @@ if __name__ == "__main__":
         transformation_ctx="rent_officer_patch_mapping_source")
     patch_officer  = get_latest_partitions_optimized(patch_officer )
 
+    balance = glueContext.create_data_frame.from_catalog(
+        database=source_raw_database,
+        table_name="sow2b_dbo_calculatedcurrentbalance",
+        transformation_ctx="sow2b_dbo_calculatedcurrentbalance_source")
+    balance = get_latest_partitions_optimized(balance)
     
+    case_priorities = glueContext.create_data_frame.from_catalog(
+        database=source_raw_database,
+        table_name="housingfinancedbproduction_case_priorities",
+        transformation_ctx="housingfinancedbproduction_case_priorities_source")
+    case_priorities  = get_latest_partitions_optimized(case_priorities)
+
+
 # create the patch information
     patch_officer = patch_officer.withColumn("patch_number2",F.trim(F.col("patch_number")))
     
@@ -463,6 +460,8 @@ if __name__ == "__main__":
     accounts = accounts_s.union(accounts_int)
     accounts.select(col("startOfTenureDate"),to_date(col("startOfTenureDate"),"yyyy-MM-dd").alias("date")) \
           .drop("startOfTenureDate").withColumnRenamed("date","startOfTenureDate")
+  
+    accounts =  accounts.drop("uh_ten_ref")
           
     accounts = accounts.join(patch,accounts.paymentreference ==  patch.payref,"left")
     
@@ -473,6 +472,13 @@ if __name__ == "__main__":
     df_agg = (start_ten
         .groupBy("AccountR")
         .agg(F.max("TenancyDate").alias("max_date")))
+        
+        #payref to tenancy ref
+    
+    p_ref= df7.selectExpr("trim(u_saff_rentacc) as pay_ref",
+                        "trim(tag_ref) as uh_ten_ref")
+
+    accounts = accounts.join(p_ref,accounts.paymentreference ==  p_ref.pay_ref,"left")
 
     accounts2 = accounts.selectExpr("paymentreference as AccountReference",
                                   "description as TenureType",
@@ -488,8 +494,20 @@ if __name__ == "__main__":
     accounts2 = accounts2.distinct()
         
     accounts2 = accounts2.join(df_agg,accounts2.AccountReference ==  df_agg.AccountR,"left")
+    
+     # add the breathing space details
+    
+    case_priorities = case_priorities.filter(F.col("is_paused_until")>today)
+    
+    #filter("is_paused_until>now()")
+    
+    case_priorities = case_priorities.withColumn('BreathingSpace', lit(1))\
+                  .drop("import_date")\
+                  .withColumnRenamed("tenancy_ref","tenancy_ref2")
+    
+    accounts2 = accounts2.join(case_priorities,accounts2.tenancy_ref ==  case_priorities.tenancy_ref2,"left")
         
-    accounts2 = accounts2.selectExpr("AccountReference as AccountReferenceNEW",
+    accounts2 = accounts2.selectExpr("AccountReference as PaymentReference",
                                   "TenureType",
                                   "TenureTypeCode",
                                   "max_date as TenancyStartDate",
@@ -498,12 +516,11 @@ if __name__ == "__main__":
                                   "HousingOfficerName",
                                   "Patch",
                                   "import_date as import_date",
-                                  "tenancy_ref as AccountReferenceUH"                               
+                                  "tenancy_ref as AccountReference",
+                                  "Case when BreathingSpace=1 then 'TRUE' else 'FALSE' end as BreathingSpace",
+                                  "is_paused_until as BreathingSpaceEndDate"
                                     )
-    
-    accounts2 = accounts2.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
-                         .drop('AccountReferenceNEW', 'AccountReferenceUH')
-    
+        
     accounts2 = accounts2.distinct()
     accounts2 = add_import_time_columns(accounts2)
 
@@ -516,6 +533,7 @@ if __name__ == "__main__":
         connection_type="s3",
         format="parquet",
         connection_options={"path": s3_bucket_target+'/accounts', "partitionKeys": PARTITION_KEYS},   
+        #connection_options={"path": s3_bucket_target+'/accounts', "partitionKeys": ['import_date']},    
         transformation_ctx="target_data_to_write")
 
     dynamic_frame = DropFields.apply(dynamic_frame,paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month','import_day'])
@@ -526,15 +544,16 @@ if __name__ == "__main__":
         format="csv", format_options={"separator": ","},
         connection_options={"path": s3_bucket_target+'/gzip/accounts', "compression": "gzip","partitionKeys": ['import_date']},
         transformation_ctx="target_data_to_write")
-    
-    
-   
+        
     filename = f"/rent.accounts%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/accounts", filename)
     
-    #copy file to export folder
-    copy_file(s3_bucket,"housing/rentsense/gzip/accounts",filename,s3_landing,target_path, filename)
-
+    # #move file to export folder
+    
+    move_file(s3_bucket, "housing/rentsense/gzip/accounts/", export_target_path, f"rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"))
+    
+    #     #copy file to landing folder
+    copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
 
 
 
@@ -557,7 +576,7 @@ if __name__ == "__main__":
         .withColumn("AgreementCode",F.when(F.col("court_case_id")>0,"C").otherwise("N"))\
         .drop("AgreementEndDate")
 
-    arr = arr.selectExpr("paymentreference as AccountReferenceNEW",
+    arr = arr.selectExpr("paymentreference as PaymentReference ",
                     "AgreementStartDate",
                      "AgreementEndDate1 as AgreementEndDate",
                     "frequency as AgreementFrequency",
@@ -565,11 +584,8 @@ if __name__ == "__main__":
                     "initial_payment_date as FirstInstallmentDueDate",
                     "AgreementCreatedDate",
                     "Amount as AgreementAmount", 
-                    "uh_ten_ref as AccountReferenceUH",
+                    "uh_ten_ref as AccountReference",
                     "import_date")
-                    
-    arr = arr.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
-             .drop('AccountReferenceNEW', 'AccountReferenceUH')
                      
     arr = arr.distinct()
     arr = add_import_time_columns(arr)
@@ -594,13 +610,18 @@ if __name__ == "__main__":
         format="csv", format_options={"separator": ","},
         connection_options={"path": s3_bucket_target+'/gzip/arrangements', "compression": "gzip","partitionKeys": ['import_date']},
         transformation_ctx="target_data_to_write")
-        
+
     filename = f"/rent.arrangements%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/arrangements", filename)
     
-    #copy file to export folder
-    copy_file(s3_bucket,"housing/rentsense/gzip/arrangements",filename,s3_landing,target_path, filename)
+    #move file to export folder
+    move_file(s3_bucket, "housing/rentsense/gzip/arrangements/", export_target_path, f"rent.arrangements%s.csv.gz" % today.strftime("%Y%m%d"))
     
+     #copy file to landing folder
+    copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
+    
+
+
     #Tenants
     tens = accounts.filter("member_is_responsible like true")
 
@@ -650,25 +671,26 @@ if __name__ == "__main__":
     
     tens = tens.join(email,tens.person_id == email.pid3,"left")    
     
-    tens = tens.selectExpr("paymentreference as AccountReferenceNEW",
+    tens = tens.selectExpr("paymentreference as PaymentReference",
                 "Title",
-                "TenantFirstName",
-                "TenantSurName",
-                "MobileNumber",
-                "TelephoneNumber",
-                "Address1",
+                "case when length(TenantFirstName)=0 then '.' else TenantFirstName end as TenantFirstName",
+                "case when length(TenantSurName)=0 then '.' else TenantSurName end as TenantSurName",
+          #     "TenantSurName",
+                "left(MobileNumber,200) as MobileNumber",
+                "left(TelephoneNumber,200) as TelephoneNumber",
+                "case when length(Address1)=0 then '.' else Address1 end as Address1",
+          #     "Address1",
                 "Address2",
                 "Address3",
                 "PostCode",
                 "Email",
                 "PropertyType",
-                "uh_ten_ref as AccountReferenceUH",
+                "uh_ten_ref as AccountReference",
                 "import_date")
-                
-    tens = tens.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
-              .drop('AccountReferenceNEW', 'AccountReferenceUH')
                      
     tens = tens.distinct()
+    
+    tens = tens.fillna({'TenantFirstName':'.', 'TenantSurName':'.','Address1':'.'})
     
     tens = add_import_time_columns(tens)
 
@@ -695,8 +717,11 @@ if __name__ == "__main__":
     filename = f"/rent.tenants%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/tenants", filename)
     
-    #copy file to export folder
-    copy_file(s3_bucket,"housing/rentsense/gzip/tenants",filename,s3_landing,target_path, filename)
+    #move file to export folder
+    move_file(s3_bucket, "housing/rentsense/gzip/tenants/", export_target_path, f"rent.tenants%s.csv.gz" % today.strftime("%Y%m%d"))
+    
+     #copy file to landing folder
+    copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
     
     #Balances
     ten = accounts.select('uh_ten_ref','paymentreference')
@@ -706,14 +731,11 @@ if __name__ == "__main__":
 
     balances = ten.join(bals,ten.paymentreference ==  bals.paymentreference2,"inner") 
     
-    balances = balances. selectExpr("paymentreference as AccountReferenceNEW",
+    balances = balances. selectExpr("paymentreference as PaymentReference",
                                     "CurrentBalance as CurrentBalance",
                                     "BalanceDate",
-                                    "uh_ten_ref as AccountReferenceUH",
+                                    "uh_ten_ref as AccountReference",
                                   "import_date")
-
-    balances = balances.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
-                      .drop('AccountReferenceNEW', 'AccountReferenceUH')
     
     balances = balances.distinct()
     
@@ -742,10 +764,13 @@ if __name__ == "__main__":
     filename = f"/rent.balances%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/balances", filename)
     
-    #copy file to export folder
-    copy_file(s3_bucket,"housing/rentsense/gzip/balances",filename,s3_landing,target_path, filename)
-    
+    #move file to export folder
 
+    move_file(s3_bucket, "housing/rentsense/gzip/balances/", export_target_path, f"rent.balances%s.csv.gz" % today.strftime("%Y%m%d"))
+    
+     #copy file to landing folder
+    copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
+    
     #Actions
 
     ten = accounts.select('uh_ten_ref','paymentreference')
@@ -753,24 +778,21 @@ if __name__ == "__main__":
     actions = df9.withColumn("uh_ten_ref1",F.trim(F.col("tag_ref")))\
                   .withColumn("ActionDate",F.to_date(F.col("action_date"),"yyyy-MM-dd"))
        
-    actions = actions.filter((F.col("action_date")>date_sub(current_date(),365)) & (F.col("action_date")<current_date()))
+    actions = actions.filter((F.col("action_date")>date_sub(current_date(),180)) & (F.col("action_date")<current_date()))
     
     actions = ten.join(actions,ten.uh_ten_ref ==  actions.uh_ten_ref1,"inner")
     
     actions = actions.withColumn("code_lookup",F.trim(F.col("action_code")))\
                      .replace(to_replace=mapAction, subset=['code_lookup'])
                      
-    actions = actions. selectExpr("paymentreference as AccountReferenceNEW",
+    actions = actions. selectExpr("paymentreference as PaymentReference",
                                   "tag_ref",
                                   "action_code as ActionCode",
                                   "code_lookup as ActionDescription",
                                   "ActionDate",
                                   "action_no as ActionSeq",
-                                  "uh_ten_ref as AccountReferenceUH",
+                                  "uh_ten_ref as AccountReference",
                                   "import_date")
-
-    actions = actions.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
-                      .drop('AccountReferenceNEW', 'AccountReferenceUH')
                                   
     actions = add_import_time_columns(actions)
     
@@ -797,8 +819,11 @@ if __name__ == "__main__":
     filename = f"/rent.actions%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/actions", filename)
     
-    #copy file to export folder
-    copy_file(s3_bucket,"housing/rentsense/gzip/actions",filename,s3_landing,target_path, filename)
+    #move file to export folder
+    move_file(s3_bucket, "housing/rentsense/gzip/actions/", export_target_path, f"rent.actions%s.csv.gz" % today.strftime("%Y%m%d"))
+    
+     #copy file to landing folder
+    copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
     
 
     
@@ -807,7 +832,7 @@ if __name__ == "__main__":
     
     ten = accounts.select('uh_ten_ref','paymentreference')
        
-    df11 = df10.filter((F.col("post_date")>date_sub(current_date(),365)) & (F.col("post_date")<current_date()))
+    df11 = df10.filter((F.col("post_date")>date_sub(current_date(),180)) & (F.col("post_date")<current_date()))
    
     df11 =  df11.withColumn("TransactionID",F.monotonically_increasing_id())\
               .withColumn("code_lookup",F.trim(F.col("trans_type")))\
@@ -817,19 +842,17 @@ if __name__ == "__main__":
     
     trans =  ten.join(trans,ten.uh_ten_ref ==  trans.uh_ten_ref1,"inner")
     
-    trans = trans.selectExpr("paymentreference as AccountReferenceNEW",
+    trans = trans.selectExpr("paymentreference as PaymentReference",
                              "TransactionID",
                               "post_date as TransactionDate",
                              "post_date as TransactionPostDate",
                               "trans_type as TransactionCode",
                               "real_value as TransactionAmount",
                               "code_lookup as TransactionDescription",
-                              "uh_ten_ref as AccountReferenceUH",
+                              "uh_ten_ref as AccountReference",
                               "import_date"
                                 )
-
-    trans = trans.withColumn('AccountReference',F.when((F.col('AccountReferenceUH').isNull()=='TRUE') | (F.length(F.trim(F.col('AccountReferenceUH')))==0),F.col('AccountReferenceNEW')).otherwise(F.col('AccountReferenceUH')))\
-                      .drop('AccountReferenceNEW', 'AccountReferenceUH')
+    
     
     trans = trans.distinct()
     
@@ -858,8 +881,20 @@ if __name__ == "__main__":
     filename = f"/rent.transactions%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/transactions", filename)
     
-    #copy file to export folder
-    copy_file(s3_bucket,"housing/rentsense/gzip/transactions",filename,s3_landing,target_path, filename)
+    
+     #move file to export folder
+    move_file(s3_bucket, "housing/rentsense/gzip/transactions/", export_target_path, f"rent.transactions%s.csv.gz" % today.strftime("%Y%m%d"))
+    
+     #copy file to landing folder
+    copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
+    
+    ##Clear the refined folder so there are no files
+    # exist2 = s3.list_objects_v2(Bucket = s3_bucket ,Prefix ='housing/rentsense/export/')  # list the files
+    # if 'Contents' in exist2: 
+    #     clear_target_folder(s3_bucket_target+'/export')
+    #     logger.info(f"Deleted refined export zone target area")
+    # else:
+    #     logger.info(f"Couldn't find data in refined export zone to delete")
        
     job.commit()
 

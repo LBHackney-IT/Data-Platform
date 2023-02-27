@@ -1,4 +1,5 @@
 module "etl_ctax_live_properties" {
+  count                          = local.is_live_environment && !local.is_production_environment ? 1 : 0
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment

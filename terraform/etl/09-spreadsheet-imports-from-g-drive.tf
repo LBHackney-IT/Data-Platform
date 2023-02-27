@@ -159,41 +159,6 @@ module "env_enforcement_fix_my_street_noise" {
   }
 }
 
-module "env_enforcement_cc_tv" {
-  count = local.is_live_environment ? 1 : 0
-
-  source                         = "../modules/import-spreadsheet-file-from-g-drive"
-  is_production_environment      = local.is_production_environment
-  is_live_environment            = local.is_live_environment
-  department                     = module.department_env_enforcement_data_source
-  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
-  glue_catalog_database_name     = module.department_env_enforcement_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
-  glue_role_arn                  = data.aws_iam_role.glue_role.arn
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
-  jars_key                       = data.aws_s3_bucket_object.jars.key
-  spreadsheet_import_script_key  = aws_s3_bucket_object.spreadsheet_import_script.key
-  identifier_prefix              = local.short_identifier_prefix
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
-  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
-  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
-  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "13uiSwGDj-EPTVTUJtJgqbz2UabyRuFmw"
-  glue_job_name                  = "CCTV"
-  output_folder_name             = "cc-tv"
-  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "cctv.xlsx"
-  worksheets = {
-    sheet1 : {
-      header_row_number = 1
-      worksheet_name    = "Sheet1"
-    }
-  }
-}
-
 module "data_and_insight_hb_combined" {
   count = local.is_live_environment ? 1 : 0
 
@@ -250,11 +215,11 @@ module "Cash_Collection_Date" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1LKFJP3qwRGqmSDhnKbX_3ATcW16WqK7f"
+  google_drive_document_id       = "1rNa6WmLSHUZryGCqxfo7bSC5rZXbxEpG"
   glue_job_name                  = "Cash Collection Date"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Cash_Collection/Cash collection Nov 2022.csv"
+  input_file_name                = "Cash_Collection/Cash Collection Jan 2023.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -286,11 +251,11 @@ module "Cedar_Backing_Data" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "16B0eCTRHstfEi7aR6pEq2S4ztJWw7Kcu"
+  google_drive_document_id       = "1hdrfl9r7p4XBpILmbTxGDtdWeQ76esUD"
   glue_job_name                  = "Cedar Backing Data"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Cedar_Backing_Data/Cedar_Backing_nov_2022.csv"
+  input_file_name                = "Cedar_Backing_Data/Cedar_Backing_jan_2023.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -322,11 +287,11 @@ module "Cedar_Parking_Payments" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1W6OelDJWxUKx3z_zvQw2XtDy_MjaL4me"
+  google_drive_document_id       = "1DVIpS3FkMnZD5YUtmp8omYLxpBvp5tvO"
   glue_job_name                  = "Cedar Parking Payments"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Cedar_Parking_Payments/Cedar_Parking_Payments_nov_2022.csv"
+  input_file_name                = "Cedar_Parking_Payments/Cedar_Parking_Payments_jan_2023.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -358,11 +323,11 @@ module "Citypay_Import" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1pRXZDmc-MMrD3XCCZq8WesZC0G7OK49-"
+  google_drive_document_id       = "12G4z4ltXJbaLZyErNh9b6X9msdZYy0cj"
   glue_job_name                  = "Citypay Import"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "CityPay_Payments/citypay_import_nov_2022.csv"
+  input_file_name                = "CityPay_Payments/citypay_import_jan_2023.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -394,11 +359,11 @@ module "Ringgo_Daily_Transactions" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1kd9FYKxYacs_0bZ9g3zMzFqfb6XsR7r9"
+  google_drive_document_id       = "1PLvnrNzxvrG7DHzaJLpB_rRur80iMFG0"
   glue_job_name                  = "Ringgo Daily Transactions"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Ringgo_Daily/Ringgo_Daily_Nov_2022.csv"
+  input_file_name                = "Ringgo_Daily/Ringgo_Daily_Jan_2023.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {

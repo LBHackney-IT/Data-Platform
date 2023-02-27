@@ -236,4 +236,190 @@ locals {
       ], local.unrestricted_schemas)
     }
   ]
+  unrestricted_data_role_name = "public_ro"
+
+  redshift_roles = [
+    {
+      role_name = local.unrestricted_data_role_name
+      schemas_to_grant_access_to = local.unrestricted_schemas
+    },
+    {
+      role_name = "${module.department_housing_repairs_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_housing_repairs_data_source.trusted_zone_catalog_database_name, "-", "_")
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ]
+    },
+    {
+      role_name  = "${module.department_parking_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_parking_data_source.raw_zone_catalog_database_name, "-", "_"),
+        "parking_raw_zone_liberator",
+        "liberator_raw_zone",
+        replace(module.department_parking_data_source.refined_zone_catalog_database_name, "-", "_"),
+        "parking_refined_zone_liberator",
+        "liberator_refined_zone",
+        replace(module.department_parking_data_source.trusted_zone_catalog_database_name, "-", "_")
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ]
+    },
+    {
+      role_name  = "${module.department_finance_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_finance_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_finance_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_finance_data_source.trusted_zone_catalog_database_name, "-", "_")
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ] 
+    },
+    {
+      role_name  = "${module.department_data_and_insight_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_housing_repairs_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        "parking_raw_zone_liberator",
+        "parking_refined_zone_liberator",
+
+        replace(module.department_parking_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_parking_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_parking_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_finance_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_finance_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_finance_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_data_and_insight_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_data_and_insight_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_data_and_insight_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_env_enforcement_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_env_enforcement_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_env_enforcement_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_planning_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_planning_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_planning_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_sandbox_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_sandbox_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_sandbox_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_benefits_and_housing_needs_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_benefits_and_housing_needs_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_benefits_and_housing_needs_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_revenues_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_revenues_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_revenues_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_environmental_services_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_environmental_services_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_environmental_services_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_housing_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_housing_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_")
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name,
+        "${module.department_housing_repairs_data_source.identifier_snake_case}_ro",
+        "${module.department_parking_data_source.identifier_snake_case}_ro",
+        "${module.department_finance_data_source.identifier_snake_case}_ro",
+        "${module.department_env_enforcement_data_source.identifier_snake_case}_ro",
+        "${module.department_planning_data_source.identifier_snake_case}_ro",
+        "${module.department_sandbox_data_source.identifier_snake_case}_ro",
+        "${module.department_benefits_and_housing_needs_data_source.identifier_snake_case}_ro",
+        "${module.department_revenues_data_source.identifier_snake_case}_ro",
+        "${module.department_environmental_services_data_source.identifier_snake_case}_ro",
+        "${module.department_housing_data_source.identifier_snake_case}_ro"
+      ] 
+    },
+    {
+      role_name  = "${module.department_env_enforcement_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_env_enforcement_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_env_enforcement_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_env_enforcement_data_source.trusted_zone_catalog_database_name, "-", "_")
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ] 
+    },
+    {
+      role_name  = "${module.department_planning_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_planning_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_planning_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_planning_data_source.trusted_zone_catalog_database_name, "-", "_")
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ] 
+    },
+    {
+      role_name  = "${module.department_sandbox_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_sandbox_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_sandbox_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_sandbox_data_source.trusted_zone_catalog_database_name, "-", "_")
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ] 
+    },
+    {
+      role_name  = "${module.department_benefits_and_housing_needs_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_benefits_and_housing_needs_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_benefits_and_housing_needs_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_benefits_and_housing_needs_data_source.trusted_zone_catalog_database_name, "-", "_")
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ] 
+    },
+    {
+      role_name  = "${module.department_revenues_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_revenues_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_revenues_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_revenues_data_source.trusted_zone_catalog_database_name, "-", "_")
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ] 
+    },
+    {
+      role_name  = "${module.department_environmental_services_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_environmental_services_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_environmental_services_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_environmental_services_data_source.trusted_zone_catalog_database_name, "-", "_"),
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ] 
+    },
+    {
+      role_name  = "${module.department_housing_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_housing_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_housing_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_"),
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ] 
+    }
+  ]
 }
