@@ -12,15 +12,15 @@ import json
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from pyspark.sql.functions import lit
 
-from scripts.helpers.helpers import PARTITION_KEYS
+from scripts.helpers.helpers import PARTITION_KEYS, get_glue_env_var
 
 # Base Loads
 
 s3_client = boto3.client('s3')
 
-landing_zone_bucket = "dataplatform-stg-landing-zone"
-raw_zone_bucket = "dataplatform-stg-raw-zone"
-prefix = "customer-services/manual/vonage"
+landing_zone_bucket = get_glue_env_var('landing_zone_bucket', '')
+raw_zone_bucket = get_glue_env_var('raw_zone_bucket', '')
+prefix = get_glue_env_var('s3_prefix', '')
 
 sc = SparkContext.getOrCreate()
 spark = SparkSession.builder.getOrCreate()
@@ -91,7 +91,7 @@ def get_latest_value(list_of_import_years: list) -> str:
         return largest_value
 
 
-def get_latest_raw_zone_partition_date(s3, bucket, prefix):
+def get_latest_raw_zone_partition_date(s3_client, bucket, prefix):
     # Get Year
     folder_path = f'{prefix}/'
 
