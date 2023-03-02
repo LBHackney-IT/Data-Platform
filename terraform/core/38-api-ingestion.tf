@@ -122,7 +122,7 @@ module "copy_vonage_data_landing_to_raw" {
   }
   crawler_details = {
     database_name      = module.department_customer_services.raw_zone_catalog_database_name
-    s3_target_location = "s3://${module.raw_zone.bucket_id}/customer-services/vonage/"
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/customer-services/manual/vonage/"
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
