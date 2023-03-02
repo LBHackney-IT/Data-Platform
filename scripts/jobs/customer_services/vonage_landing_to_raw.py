@@ -20,7 +20,8 @@ s3_client = boto3.client('s3')
 
 landing_zone_bucket = get_glue_env_var('landing_zone_bucket', '')
 raw_zone_bucket = get_glue_env_var('raw_zone_bucket', '')
-prefix = get_glue_env_var('s3_prefix', '')
+landing_prefix = get_glue_env_var('landing_zone_prefix', '')
+raw_prefix = get_glue_env_var('raw_zone_prefix', '')
 
 sc = SparkContext.getOrCreate()
 spark = SparkSession.builder.getOrCreate()
@@ -187,15 +188,11 @@ def read_vonage_filepath(s3_client, bucket, key):
     return spark_df
 
 
-latest_raw_date = get_latest_raw_zone_partition_date(s3_client, raw_zone_bucket, prefix)
+latest_raw_date = get_latest_raw_zone_partition_date(s3_client, raw_zone_bucket, raw_prefix)
 
-list_of_landing_zone_files = get_landing_zone_dates(s3_client, landing_zone_bucket, prefix, latest_raw_date)
+list_of_landing_zone_files = get_landing_zone_dates(s3_client, landing_zone_bucket, landing_prefix, latest_raw_date)
 
 if (len(list_of_landing_zone_files) > 0):
-
-    latest_raw_date = get_latest_raw_zone_partition_date(s3_client, raw_zone_bucket, prefix)
-
-    list_of_landing_zone_files = get_landing_zone_dates(s3_client, landing_zone_bucket, prefix, latest_raw_date)
 
     file_number = 0
     full_spark_df = read_vonage_filepath(s3_client, landing_zone_bucket, list_of_landing_zone_files[file_number])
@@ -211,7 +208,7 @@ if (len(list_of_landing_zone_files) > 0):
 
         file_number = file_number + 1
 
-    write_location = "s3://" + raw_zone_bucket + "/" + prefix
+    write_location = "s3://" + raw_zone_bucket + "/" + raw_prefix
     print(f'Write Location: {write_location}')
     full_spark_df.write.partitionBy(*PARTITION_KEYS).parquet(write_location)
 else:
