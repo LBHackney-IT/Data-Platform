@@ -7,7 +7,7 @@ start_time = datetime.now()
 print(f'Start: {start_time}')
 
 s3_bucket = 'dataplatform-stg-landing-zone'
-output_folder_name = 'vonage'
+output_folder_name = 'customer-services/manual/vonage'
 glue_trigger_name = "TRIGGER_NAME"
 
 API_TO_CALL = "stats"

@@ -57,12 +57,13 @@ resource "aws_alb_target_group" "qlik-sense" {
 
   health_check {
     protocol = "HTTPS"
-    path     = "/saml/hub/"
+    path     = "/hub/"
     matcher  = "302"
   }
 
   stickiness {
-    type = "lb_cookie"
+    type        = "app_cookie"
+    cookie_name = "X-Qlik-saml"
   }
 }
 
@@ -84,6 +85,11 @@ resource "aws_alb" "qlik_sense" {
   lifecycle {
     prevent_destroy = true
   }
+
+  access_logs {
+    bucket  = aws_s3_bucket.qlik_alb_logs[0].id
+    enabled = true
+  }
 }
 
 resource "aws_alb_listener" "qlik_sense_http" {
@@ -98,6 +104,7 @@ resource "aws_alb_listener" "qlik_sense_http" {
       port        = "443"
       protocol    = "HTTPS"
       status_code = "HTTP_301"
+      path        = "/saml/hub"
     }
   }
 }

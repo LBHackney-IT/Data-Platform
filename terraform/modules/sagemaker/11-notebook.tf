@@ -12,12 +12,13 @@ locals {
 
 resource "aws_sagemaker_notebook_instance_lifecycle_configuration" "sagemaker_lifecycle" {
   name = "${var.identifier_prefix}sagemaker-lifecycle-configuration-${var.instance_name}"
-  on_start = base64encode(templatefile("${path.module}/scripts/notebook-start-up.sh",
-    {
-      "glueendpointconfig" : jsonencode(local.glue_dev_endpoint_config),
-      "sparkmagicconfig" : file("${path.module}/spark-magic-config.json")
-    }
-  ))
+  # on_start = base64encode(templatefile("${path.module}/scripts/notebook-start-up.sh",
+  #   {
+  #     "glueendpointconfig" : jsonencode(local.glue_dev_endpoint_config),
+  #     "sparkmagicconfig" : file("${path.module}/spark-magic-config.json")
+  #   }
+  # ))
+  on_start  = base64encode("echo startup_script_temporarily_disabled")
 }
 
 resource "aws_sagemaker_notebook_instance" "nb" {
