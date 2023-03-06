@@ -2,7 +2,7 @@
 
 module "dynamodb_table" {
   source = "../modules/dynamodb"
-  count  = !local.is_live_environment ? 1 : 0
+  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
 
   name                           = "glue-watermarks"
   identifier_prefix              = local.short_identifier_prefix
