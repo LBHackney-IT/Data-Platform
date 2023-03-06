@@ -153,7 +153,7 @@ resource "aws_dynamodb_table" "autoscaled" {
 
   server_side_encryption {
     enabled     = var.server_side_encryption_enabled
-    kms_key_arn = var.server_side_encryption_kms_key_arn
+    kms_key_arn = aws_kms_key.dynamodb.arn
   }
 
   tags = merge(
@@ -173,3 +173,7 @@ resource "aws_dynamodb_table" "autoscaled" {
     ignore_changes = [read_capacity, write_capacity]
   }
 }
+
+
+
+

@@ -24,8 +24,7 @@ module "dynamodb_table" {
     }
   ]
 
-  server_side_encryption_enabled     = true
-  server_side_encryption_kms_key_arn = aws_kms_key.dynamodb.arn
+  server_side_encryption_enabled = true
 }
 
 
