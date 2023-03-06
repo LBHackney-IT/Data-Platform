@@ -1,18 +1,25 @@
+import logging
+import typing as t
+
 import boto3
 from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
 from botocore.client import ClientError
 
+logger = logging.getLogger(__name__)
+
 
 class Watermarks:
     """
-    Encapsulates an Amazon DynamoDB table that stores watermarks or state checkpoints for AWS Glue jobs.
+    Encapsulates an Amazon DynamoDB table that stores watermarks or state
+    checkpoints for AWS Glue jobs.
     """
 
     def __init__(self, table_name: str, dynamodb_client=None) -> None:
         """Initializes the Watermarks object.
 
         :param table_name: The name of the DynamoDB table.
-        :param dynamodb_client: The DynamoDB client to use. If not provided, a new client will be created.
+        :param dynamodb_client: The DynamoDB client to use. If not provided, a
+        new client will be created.
         """
         self.table_name = table_name
         self.dynamodb_client = dynamodb_client or boto3.client("dynamodb")
@@ -28,13 +35,6 @@ class Watermarks:
             if e.response["Error"]["Code"] == "ResourceNotFoundException":
                 return False
             raise e
-
-    def create_watermark_item(
-        self, job_id: str, run_id: str, key: str = "watermarks", **kwargs
-    ) -> dict:
-        """Creates a watermark item for the given job and run id."""
-        item = {"jobName": job_id, "runId": run_id, key: kwargs}
-        return item
 
     def add_watermark(self, watermark_item: dict) -> None:
         """Adds a watermark item to the DynamoDB table."""
@@ -74,16 +74,18 @@ class Watermarks:
             raise e
         return response["Items"][0]["runId"]["S"]
 
-    def get_watermark(self, job_id: str, run_id: str = None) -> dict:
+    def get_watermark(self, job_id: str, run_id: t.Optional[str] = None) -> dict:
         """Gets the watermark item for the given job and run id."""
         if run_id is None:
             run_id = self.get_most_recent_run_id(job_id)
         try:
             response = self.dynamodb_client.get_item(
                 TableName=self.table_name,
-                Key={"jobName": job_id, "runId": run_id},
+                Key={"jobName": {"S": job_id}, "runId": {"S": run_id}},
             )
-            response = self.deserializer.deserialize(response)
+            deserialized_response = {
+                k: self.deserializer.deserialize(v) for k, v in response["Item"].items()
+            }
         except ClientError as e:
             logger.error(
                 "Could not get watermark item from DynamoDB table %s. Error code:"
@@ -93,9 +95,19 @@ class Watermarks:
                 e.response["Error"]["Message"],
             )
             raise e
-        return response["Item"]
+        return deserialized_response
 
-    def get_watermark_value(self, job_id: str, key: str, run_id: str = None) -> str:
+    def get_watermark_values(
+        self, job_id: str, run_id: t.Optional[str] = None, key: str = "watermarks"
+    ) -> str:
         """Gets the value of a watermark for the given job and run id."""
         watermark = self.get_watermark(job_id, run_id)
-        return watermark[key]["S"]
+        return watermark[key]
+
+    @staticmethod
+    def create_watermark_item(
+        job_id: str, run_id: str, key: str = "watermarks", **kwargs
+    ) -> dict:
+        """Creates a watermark item for the given job and run id."""
+        item = {"jobName": job_id, "runId": run_id, key: kwargs}
+        return item
