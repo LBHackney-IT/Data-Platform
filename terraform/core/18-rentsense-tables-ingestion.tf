@@ -14,8 +14,8 @@ module "ingest_mtfh_rentsense_tables" {
   job_description                = "Ingest all tables from MTFH for Rentsense from the Housing Dynamo DB instances"
   script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
   helper_module_key              = aws_s3_bucket_object.helpers.key
-  glue_version                   = "4.0" 
-  glue_job_timeout                   = "180"
+  glue_version                   = "4.0"
+  glue_job_timeout               = "180"
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
@@ -40,6 +40,37 @@ module "ingest_mtfh_rentsense_tables" {
       }
     })
   }
+}
+
+module "test_ingest_mtfh_contracts_table" {
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
+  environment               = var.environment
+  tags                      = module.tags.values
+  glue_role_arn             = aws_iam_role.glue_role.arn
+
+  count = local.is_live_environment && !local.is_production_environment ? 1 : 0
+
+  job_name                       = "${local.short_identifier_prefix}Test Ingest MTFH Contracts tables"
+  job_description                = "Ingest Contracts table from MTFH for Rentsense from the Housing Dynamo DB instances"
+  script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
+  helper_module_key              = aws_s3_bucket_object.helpers.key
+  glue_version                   = "4.0"
+  glue_job_timeout               = "180"
+  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
+  number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
+  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
+  glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
+  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  #schedule                       = "cron(30 5 ? * MON-FRI *)"
+  job_parameters = {
+    "--table_names"       = "Contracts" # This is a comma delimited list of Dynamo DB table names to be imported
+    "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
+    "--s3_target"         = "s3://${module.landing_zone.bucket_id}/mtfh contracts test/"
+    "--number_of_workers" = local.number_of_workers_for_mtfh_ingestion
+  }
+
 }
 
 module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
@@ -79,12 +110,12 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
         TableLevelConfiguration = 3
       }
       CrawlerOutput = {
-      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+        Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
       }
     })
   }
 }
-      
+
 resource "aws_ssm_parameter" "copy_mtfh_dynamo_db_rentsense_tables_to_raw_zone_crawler_name" {
   tags  = module.tags.values
   name  = "/${local.identifier_prefix}/glue_crawler/housing/copy_mtfh_dynamo_db_rentsense_tables_to_raw_zone_crawler_name"

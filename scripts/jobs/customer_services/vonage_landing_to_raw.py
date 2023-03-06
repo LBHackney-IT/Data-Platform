@@ -1,19 +1,28 @@
-import sys
-from awsglue.transforms import *
-from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
-from awsglue.job import Job
-from pyspark.sql.functions import col, lit, when, concat
-from pyspark.sql.types import IntegerType
-from pyspark.sql import SparkSession
-import boto3
-import pyspark.sql.functions as F
 
-from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, get_s3_subfolders, PARTITION_KEYS, \
-    clean_column_names, get_max_date_partition_value_from_glue_catalogue
+from pyspark.sql import SparkSession
+
+
+import boto3
+import re
+import pandas as pd
+import json
+
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+from pyspark.sql.functions import lit
+
+from scripts.helpers.helpers import PARTITION_KEYS, get_glue_env_var
+
+# Base Loads
 
 s3_client = boto3.client('s3')
+
+landing_zone_bucket = get_glue_env_var('landing_zone_bucket', '')
+raw_zone_bucket = get_glue_env_var('raw_zone_bucket', '')
+landing_prefix = get_glue_env_var('landing_zone_prefix', '')
+raw_prefix = get_glue_env_var('raw_zone_prefix', '')
+
 sc = SparkContext.getOrCreate()
 spark = SparkSession.builder.getOrCreate()
 glue_context = GlueContext(sc)
@@ -21,40 +30,186 @@ glue_context = GlueContext(sc)
 logger = glue_context.get_logger()
 
 
-def data_source_landing_to_raw(bucket_source, bucket_target, s3_prefix):
-    logger.info("bucket_target" + bucket_target)
-    logger.info("s3_prefix" + s3_prefix)
-    data_source = spark.read.option("multiline", "true").json(bucket_source + "/" + s3_prefix)
-    logger.info(f"Retrieved data source from s3 path {bucket_source}/{s3_prefix}")
+# Get the Raw Zone latest Partition
+def list_subfolders_in_directory(s3_client, bucket, directory):
+    response = s3_client.list_objects_v2(
+        Bucket=bucket,
+        Prefix=directory,
+        Delimiter="/")
 
-    latest_import = get_max_date_partition_value_from_glue_catalogue('customer-services-raw-zone', 'vonage',
-                                                                     'import_date')
-    logger.info(f"latest_data on raw: {latest_import}")
-
-    latest_data = data_source.filter(F.col("import_date") > latest_import)
-
-    data_frame = clean_column_names(latest_data)
-    logger.info("Using Columns: " + str(data_frame.columns))
-
-    date_partition_formatted = data_frame.withColumn("import_month", col("import_month").cast(IntegerType())) \
-        .withColumn("import_day", col("import_day").cast(IntegerType())) \
-        .withColumn("import_month", when(col("import_month") < 10, concat(lit("0"), col("import_month"))).otherwise(
-        col("import_month"))) \
-        .withColumn("import_day",
-                    when(col("import_day") < 10, concat(lit("0"), col("import_day"))).otherwise(col("import_day")))
-
-    date_partition_formatted.write.mode("append").partitionBy(*PARTITION_KEYS).parquet(bucket_target + "/" + s3_prefix)
+    subfolders = response.get('CommonPrefixes')
+    return subfolders
 
 
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+def get_latest_file(list_of_import_years: list) -> str:
+    list_of_raw_dates = []
 
-job = Job(glue_context)
-job.init(args['JOB_NAME'], args)
+    if len(list_of_import_years) == 0:
+        return None
+    else:
+        for subfolder in list_of_import_years:
+            path_dictionary = dict(subfolder)
 
-s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
-s3_prefix = get_glue_env_var('s3_prefix', '')
-s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
+            importstring = path_dictionary["Key"]
 
-data_source_landing_to_raw("s3://" + s3_bucket_source, "s3://" + s3_bucket_target, s3_prefix)
+            importstring = re.sub(string=importstring,
+                                  pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}\/",
+                                  repl="")
 
-job.commit()
+            importstring = re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}", importstring).group()
+
+
+            list_of_raw_dates.append(importstring)
+
+        list_of_raw_dates = sorted(list_of_raw_dates, key=lambda date: datetime.strptime(date, "%Y-%m-%d"),
+                                   reverse=True)
+
+        largest_value = list_of_raw_dates[0]
+        return largest_value
+
+
+def get_latest_value(list_of_import_years: list) -> str:
+    list_of_raw_dates = []
+
+    if len(list_of_import_years) == 0:
+        return None
+    else:
+        for subfolder in list_of_import_years:
+            path_dictionary = dict(subfolder)
+
+            importstring = path_dictionary["Prefix"]
+
+            importstring = re.search("[0-9]*\/$", importstring).group()
+
+            importstring = re.sub(string=importstring,
+                                  pattern="[^0-9.]".format(),
+                                  repl="")
+            list_of_raw_dates.append(importstring)
+
+        list_of_raw_dates = sorted(list_of_raw_dates, key=int, reverse=True)
+
+        largest_value = list_of_raw_dates[0]
+        return largest_value
+
+
+def get_latest_raw_zone_partition_date(s3_client, bucket, prefix):
+    # Get Year
+    folder_path = f'{prefix}/'
+
+    year_subfolders = list_subfolders_in_directory(s3_client, bucket, folder_path)
+
+    if year_subfolders == None:
+        print(f'No Files Found in Raw Zone. Will pull all Data')
+        latest_date = 0
+    else:
+        latest_year = get_latest_value(year_subfolders)
+        print(f'The Latest Year is {latest_year}')
+
+        # Get Month
+        monthly_path = f'{folder_path}import_year={latest_year}/'
+        monthly_subfolders = list_subfolders_in_directory(s3_client, bucket, monthly_path)
+        latest_month = get_latest_value(monthly_subfolders)
+
+        daily_path = f'{monthly_path}import_month={latest_month}/'
+        daily_subfolders = list_subfolders_in_directory(s3_client, bucket, daily_path)
+        latest_day = get_latest_value(daily_subfolders)
+
+        latest_date = f'{latest_year}{latest_month}{latest_day}'
+        print(f'The Raw Import Date is {latest_date}')
+
+    return latest_date
+
+
+def find_importdate(importstring):
+    import_date = re.search("[0-9]{8}", importstring).group()
+    return import_date
+
+
+def get_landing_zone_dates(s3_client, bucket, prefix, date_to_filter_by):
+    print(f'Bucket: {bucket}')
+    print(f'Prefix: {prefix}')
+
+    response = s3_client.list_objects_v2(
+        Bucket=bucket,
+        Prefix=prefix)
+
+    random_dict = []
+
+    for obj in response['Contents']:
+        import_date = find_importdate(obj['Key'])
+        if int(import_date) > int(date_to_filter_by):
+            random_dict.append(obj['Key'])
+        else:
+            continue
+
+    return random_dict
+
+
+def read_vonage_filepath(s3_client, bucket, key):
+    data = s3_client.get_object(Bucket=bucket, Key=key)
+    contents = data['Body'].read()
+
+    content_string = contents.decode()
+
+    json_dict = json.loads(content_string)
+
+    pandas_df = pd.DataFrame.from_dict(json_dict['items'])
+
+    schema = StructType([
+        StructField("categorizedAt", StringType(), True),
+        StructField("channels", StringType(), True),
+        StructField("connectFrom", StringType(), True),
+        StructField("connectTo", StringType(), True),
+        StructField("conversationGuid", StringType(), True),
+        StructField("direction", StringType(), True),
+        StructField("duration", IntegerType(), True),
+        StructField("guid", StringType(), True),
+        StructField("interactionPlanMapping", StringType(), True),
+        StructField("medium", StringType(), True),
+        StructField("mediumManager", StringType(), True),
+        StructField("serviceName", StringType(), True),
+        StructField("start", StringType(), True),
+        StructField("status", StringType(), True)])
+
+    spark_df = spark.createDataFrame(pandas_df, schema=schema)
+
+    # Find Import Date from the Key
+    key_import_date = find_importdate(key)
+
+    import_day = key_import_date[6:]
+    import_month = key_import_date[4:6]
+    import_year = key_import_date[:4]
+
+    spark_df = spark_df.withColumn("import_date", lit(key_import_date))
+    spark_df = spark_df.withColumn("import_day", lit(import_day))
+    spark_df = spark_df.withColumn("import_month", lit(import_month))
+    spark_df = spark_df.withColumn("import_year", lit(import_year))
+
+    return spark_df
+
+
+latest_raw_date = get_latest_raw_zone_partition_date(s3_client, raw_zone_bucket, raw_prefix)
+
+list_of_landing_zone_files = get_landing_zone_dates(s3_client, landing_zone_bucket, landing_prefix, latest_raw_date)
+
+if (len(list_of_landing_zone_files) > 0):
+
+    file_number = 0
+    full_spark_df = read_vonage_filepath(s3_client, landing_zone_bucket, list_of_landing_zone_files[file_number])
+    print(f'list_of_landing_zone_files has {len(list_of_landing_zone_files)} files')
+
+    file_number = file_number + 1
+
+    while file_number < len(list_of_landing_zone_files):
+
+        current_spark_df = read_vonage_filepath(s3_client, landing_zone_bucket, list_of_landing_zone_files[file_number])
+
+        full_spark_df = full_spark_df.union(current_spark_df)
+
+        file_number = file_number + 1
+
+    write_location = "s3://" + raw_zone_bucket + "/" + raw_prefix
+    print(f'Write Location: {write_location}')
+    full_spark_df.write.partitionBy(*PARTITION_KEYS).parquet(write_location)
+else:
+    print('Up to date')
