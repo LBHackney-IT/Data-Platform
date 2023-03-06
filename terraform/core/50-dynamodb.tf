@@ -1,6 +1,6 @@
 
 
-module "dynamodb_table" {
+module "watermarks_dynamodb_table" {
   source = "../modules/dynamodb"
   count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
 
