@@ -74,34 +74,48 @@ class TestWatermarks:
         watermarks = Watermarks("test_table", dynamodb_client=dynamodb)
 
         assert watermarks.create_watermark_item(
-            "test_job", "test_run_id", rows="500"
+            "test_job", "test_run_id", rows="500", date="2020-01-01"
         ) == {
             "jobName": "test_job",
             "runId": "test_run_id",
-            "watermarks": {"rows": "500"},
+            "watermarks": {"rows": "500", "date": "2020-01-01"},
         }
 
-    def test_get_watermark_value(self):
+    def test_get_watermark(self):
         stubber.add_response(
-            "query",
+            "get_item",
             {
-                "Items": [
-                    {
-                        "jobName": {"S": "test_job"},
-                        "runId": {"S": "test_run_id"},
-                        "watermarks": {"M": {"key": {"S": "value"}}},
-                    }
-                ],
-                "Count": 1,
-                "ScannedCount": 1,
-                "LastEvaluatedKey": {
+                "Item": {
                     "jobName": {"S": "test_job"},
                     "runId": {"S": "test_run_id"},
-                },
+                    "watermarks": {"M": {"key": {"S": "value"}}},
+                }
             },
         )
         stubber.activate()
         watermarks = Watermarks("test_table", dynamodb_client=dynamodb)
-        assert (
-            watermarks.get_watermark_value("test_job", "key", "test_run_id") == "value"
+        assert watermarks.get_watermark("test_job", "test_run_id") == {
+            "jobName": "test_job",
+            "runId": "test_run_id",
+            "watermarks": {"key": "value"},
+        }
+
+    def test_get_watermark_values(self):
+        stubber.add_response(
+            "get_item",
+            {
+                "Item": {
+                    "jobName": {"S": "test_job"},
+                    "runId": {"S": "test_run_id"},
+                    "watermarks": {
+                        "M": {"key": {"S": "value"}, "key2": {"S": "value2"}}
+                    },
+                }
+            },
         )
+        stubber.activate()
+        watermarks = Watermarks("test_table", dynamodb_client=dynamodb)
+        assert watermarks.get_watermark_values("test_job", "test_run_id") == {
+            "key": "value",
+            "key2": "value2",
+        }
