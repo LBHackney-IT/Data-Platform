@@ -87,7 +87,7 @@ resource "aws_dynamodb_table" "this" {
 resource "aws_dynamodb_table" "autoscaled" {
   count = var.create_table && var.autoscaling_enabled ? 1 : 0
 
-  name             = var.name
+  name             = lower("${var.identifier_prefix}${var.name}")
   billing_mode     = var.billing_mode
   hash_key         = var.hash_key
   range_key        = var.range_key
