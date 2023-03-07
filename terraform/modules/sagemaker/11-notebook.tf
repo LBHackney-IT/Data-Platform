@@ -31,7 +31,7 @@ resource "aws_sagemaker_notebook_instance" "nb" {
   kms_key_id              = aws_kms_key.kms_key.key_id
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 
   tags = merge({
