@@ -1,32 +1,18 @@
 import sys
-
 sys.path.append('./lib/')
 
 import requests
 import json
-
-from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 from dateutil.relativedelta import *
-
 import time
 import logging
-
 import boto3
-from pyspark.context import SparkContext
 
 import re
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
-######## Glue Job Imports
-
-from awsglue.utils import getResolvedOptions
-from awsglue.context import GlueContext
-from awsglue.dynamicframe import DynamicFrame
-from awsglue.job import Job
-from scripts.helpers.helpers import get_glue_env_var, get_secret, add_import_time_columns, PARTITION_KEYS, table_exists_in_catalog
 
 def get_auth_token(client_id, client_secret, scope):
     url = "https://emea.newvoicemedia.com/Auth/connect/token"
@@ -45,10 +31,7 @@ def get_auth_token(client_id, client_secret, scope):
     print(f"Auth Token status Code = {r.status_code}")
     auth_token = json.loads(r.text)
 
-    if(r.status_code == 200):
-        return auth_token
-    else:
-        r.raise_for_status()
+    return auth_token
 
 
 def vonage_api_request(api_to_call, table_to_call, page, limit, start_time, end_time, auth_token):
@@ -117,14 +100,10 @@ def get_days_data(date_to_call, api_to_call, table_to_call, auth_token):
 
         print(f'Calling Page {page}')
         vonage_request = vonage_api_request(api_to_call, table_to_call, page, limit, start_date, end_date, auth_token)
-        # print(vonage_request.content)
 
-        data = vonage_request.json()
+        json_responses.append(vonage_request)
 
-        # print(f'Data being appended is of type {type(data)}')
-        json_responses.append(data)
-
-        max_pages = data['meta']['pageCount']
+        max_pages = vonage_request.json()['meta']['pageCount']
         print(f'Max Pages: {max_pages}')
         if max_pages == 0:
             print(f'No Pages for {start_date}')
@@ -136,9 +115,7 @@ def get_days_data(date_to_call, api_to_call, table_to_call, auth_token):
                 vonage_request = vonage_api_request(api_to_call, table_to_call, page, limit, start_date, end_date,
                                                     auth_token)
 
-                data = vonage_request.json()
-                # print(f'Data being appended is of type {type(data)}')
-                json_responses.append(data)
+                json_responses.append(vonage_request)
 
             # checks if the correct amount of items in the list is returned
             # for each page, 1 item in the list
@@ -154,26 +131,24 @@ def create_list_of_call_dates(start_date, end_date):
     start_call_date = date.fromisoformat(start_date)
 
     start_call_date = start_call_date + relativedelta(days=+1)
-    # print(f'Date Start {str(start_call_date)}')
 
     end_call_date = date.fromisoformat(end_date)
-    # print(f'Date End {str(end_call_date)}')
 
     date_counter = start_call_date
     between_dates = []
     while date_counter < end_call_date:
-        # print(f'Date Added {str(date_counter)}')
         between_dates.append(str(date_counter))
         date_counter = date_counter + relativedelta(days=+1)
     return between_dates
-    # read the dates as actual dates
 
 
 def single_digit_to_zero_prefixed_string(value):
     return str(value) if value > 9 else '0' + str(value)
 
-def output_to_landing_zone(data, day_of_item, output_folder,s3_client,s3_bucket):
-    meta = data['meta']
+
+def output_to_landing_zone(data, day_of_item, output_folder, s3_client, s3_bucket):
+    json_data = data.json()
+    meta = json_data['meta']
     page = single_digit_to_zero_prefixed_string(meta['page'])
     max_pages = single_digit_to_zero_prefixed_string(meta['pageCount'])
     if (int(max_pages) > 0):
@@ -193,10 +168,11 @@ def output_to_landing_zone(data, day_of_item, output_folder,s3_client,s3_bucket)
         print(f'Month: {month}')
         print(f'Year: {year}')
 
-        print(f"Outputting File to: {output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={year}{month}{day}/{filename}.json")
+        print(
+            f"Outputting File to: {output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={year}{month}{day}/{filename}.json")
         return s3_client.put_object(
             Bucket=s3_bucket,
-            Body=str(data),
+            Body=data.content,
             Key=f"{output_folder}/import_year={year}/import_month={month}/import_day={day}/import_date={year}{month}{day}/{filename}.json"
         )
     else:
@@ -208,7 +184,6 @@ def loop_through_dates(call_dates, api_to_call, table_to_call, auth_token):
     compiled_data = {}
     for day_date in call_dates:
         days_data = get_days_data(day_date, api_to_call, table_to_call, auth_token)  # real code
-        # days_data = f'Response for Day: {day_date}' # test code
         compiled_data[day_date] = days_data
 
     return compiled_data
@@ -220,19 +195,20 @@ def retrieve_credentials_from_secrets_manager(secrets_manager_client, secret_nam
     )
     return response
 
-def export_data_dictionary(data_dict, output_location,s3_client,s3_bucket):
+
+def export_data_dictionary(data_dict, output_location, s3_client, s3_bucket):
     looped_count = 0
-    # print(f'Output Folder: {output_location}')
-    # print(f'S3 Bucket: {s3_bucket}')
+
     for day in data_dict:
         list_count = 0
         count_of_data = len(data_dict[day])
         while list_count < count_of_data:
-            output_to_landing_zone(data_dict[day][list_count], day, output_location,s3_client,s3_bucket)
+            output_to_landing_zone(data_dict[day][list_count], day, output_location, s3_client, s3_bucket)
             list_count = list_count + 1
             looped_count = looped_count + 1
 
-def list_subfolders_in_directory(s3_client,bucket,directory):
+
+def list_subfolders_in_directory(s3_client, bucket, directory):
     response = s3_client.list_objects_v2(
         Bucket=bucket,
         Prefix=directory,
@@ -241,122 +217,94 @@ def list_subfolders_in_directory(s3_client,bucket,directory):
     subfolders = response.get('CommonPrefixes')
     return subfolders
 
+
 def get_latest_yyyy_mm_dd(list_of_import_years: list) -> str:
-  list_of_raw_dates = []
-  # print(list_of_raw_dates)
+    list_of_raw_dates = []
 
-  # print(f'Cleaning Import Years')
-  if len(list_of_import_years) == 0:
-      return None
-  else:
-      for subfolder in list_of_import_years:
-        #print(type(subfolder))
-        path_dictionary = dict(subfolder)
-        #print(path_dictionary)
+    if len(list_of_import_years) == 0:
+        return None
+    else:
+        for subfolder in list_of_import_years:
+            path_dictionary = dict(subfolder)
 
-        importstring = path_dictionary["Prefix"]
-        # print(f'Raw Prefix: {importstring}')
+            importstring = path_dictionary["Prefix"]
 
-        importstring = re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}", importstring).group()
-        # print(f'Date with /: {importstring}')
+            importstring = re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}", importstring).group()
 
-        # print(f'Cleaning "{importstring}"')
+            list_of_raw_dates.append(importstring)
 
-        # print(f'Output "{importstring}"')
-        list_of_raw_dates.append(importstring)
+        list_of_raw_dates = sorted(list_of_raw_dates, key=lambda date: datetime.strptime(date, "%Y-%m-%d"),
+                                   reverse=True)
 
-      list_of_raw_dates = sorted(list_of_raw_dates, key=lambda date: datetime.strptime(date, "%Y-%m-%d"), reverse=True)
+        largest_value = list_of_raw_dates[0]
+        return largest_value
 
-      # print(list_of_raw_dates)
-      largest_value = list_of_raw_dates[0]
-      return largest_value
 
 def get_latest_file(list_of_import_years: list) -> str:
-  list_of_raw_dates = []
-  # print(list_of_raw_dates)
+    list_of_raw_dates = []
 
-  # print(f'Cleaning Import Years')
-  if len(list_of_import_years) == 0:
-      return None
-  else:
-      for subfolder in list_of_import_years:
-        #print(type(subfolder))
-        path_dictionary = dict(subfolder)
-        #print(path_dictionary)
+    if len(list_of_import_years) == 0:
+        return None
+    else:
+        for subfolder in list_of_import_years:
+            path_dictionary = dict(subfolder)
 
-        importstring = path_dictionary["Key"]
-        # print(f'Raw Prefix: {importstring}')
+            importstring = path_dictionary["Key"]
 
-        # Cleaning remove the importdate
-        importstring = re.sub(string=importstring,
-                              pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}\/",
-                              repl="")
+            importstring = re.sub(string=importstring,
+                                  pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}\/",
+                                  repl="")
 
-        importstring = re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}", importstring).group()
-        # print(f'Date with /: {importstring}')
+            importstring = re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}", importstring).group()
 
-        # print(f'Cleaning "{importstring}"')
+            list_of_raw_dates.append(importstring)
 
-        # print(f'Output "{importstring}"')
-        list_of_raw_dates.append(importstring)
+        list_of_raw_dates = sorted(list_of_raw_dates, key=lambda date: datetime.strptime(date, "%Y-%m-%d"),
+                                   reverse=True)
 
-      list_of_raw_dates = sorted(list_of_raw_dates, key=lambda date: datetime.strptime(date, "%Y-%m-%d"), reverse=True)
+        largest_value = list_of_raw_dates[0]
+        return largest_value
 
-      # print(list_of_raw_dates)
-      largest_value = list_of_raw_dates[0]
-      return largest_value
 
 # Takes a list of "importyear=X" values and finds the largest one
 def get_latest_value(list_of_import_years: list) -> str:
-  list_of_raw_dates = []
-  # print(list_of_raw_dates)
+    list_of_raw_dates = []
 
-  # print(f'Cleaning Import Years')
-  if len(list_of_import_years) == 0:
-      return None
-  else:
-      for subfolder in list_of_import_years:
-        #print(type(subfolder))
-        path_dictionary = dict(subfolder)
-        #print(path_dictionary)
+    if len(list_of_import_years) == 0:
+        return None
+    else:
+        for subfolder in list_of_import_years:
+            path_dictionary = dict(subfolder)
 
-        importstring = path_dictionary["Prefix"]
-        # print(f'Raw Prefix: {importstring}')
+            importstring = path_dictionary["Prefix"]
 
-        importstring = re.search("[0-9]*\/$", importstring).group()
-        # print(f'Date with /: {importstring}')
+            importstring = re.search("[0-9]*\/$", importstring).group()
 
-        # print(f'Cleaning "{importstring}"')
-        importstring = re.sub(string=importstring,
-                           pattern="[^0-9.]".format(),
-                           repl="")
-        # print(f'Output "{importstring}"')
-        list_of_raw_dates.append(importstring)
+            importstring = re.sub(string=importstring,
+                                  pattern="[^0-9.]".format(),
+                                  repl="")
+            list_of_raw_dates.append(importstring)
 
-      list_of_raw_dates = sorted(list_of_raw_dates, key=int, reverse=True)
+        list_of_raw_dates = sorted(list_of_raw_dates, key=int, reverse=True)
 
-      # print(list_of_raw_dates)
-      largest_value = list_of_raw_dates[0]
-      return largest_value
+        largest_value = list_of_raw_dates[0]
+        return largest_value
 
-def get_latest_data_date(s3_client,bucket,folder_name):
 
+def get_latest_data_date(s3_client, bucket, folder_name):
     # Get Year
     folder_path = f'{folder_name}/'
     year_subfolders = list_subfolders_in_directory(s3_client, bucket, folder_path)
     latest_year = get_latest_value(year_subfolders)
-    # print(f'The Latest Year is {latest_year}')
 
     # Get Month
     monthly_path = f'{folder_path}import_year={latest_year}/'
     monthly_subfolders = list_subfolders_in_directory(s3_client, bucket, monthly_path)
     latest_month = get_latest_value(monthly_subfolders)
-    # print(f'The Latest Month is {latest_month}')
 
     daily_path = f'{monthly_path}import_month={latest_month}/'
     daily_subfolders = list_subfolders_in_directory(s3_client, bucket, daily_path)
     latest_day = get_latest_value(daily_subfolders)
-    # print(f'The Latest Day is {latest_day}')
 
     date_path = f'{daily_path}import_day={latest_day}/'
     latest_date = f'{latest_year}{latest_month}{latest_day}'
@@ -366,21 +314,20 @@ def get_latest_data_date(s3_client,bucket,folder_name):
     response = s3_client.list_objects_v2(Bucket=bucket, Prefix=file_path, Delimiter="/")
     files_in_response = response.get('Contents')
 
-    # print(files_in_response)
     latest_file = get_latest_file(files_in_response)
     print(f'The Latest File Date is {latest_file}')
 
     return latest_file
 
-def list_s3_files_in_folder_using_client(s3_client,bucket,directory):
 
+def list_s3_files_in_folder_using_client(s3_client, bucket, directory):
     response = s3_client.list_objects_v2(Bucket=bucket, Prefix=directory)
     files = response.get("Contents")
 
     for file in files:
         file['Key'] = re.sub(string=file['Key'],
-                       pattern=f"{directory}/".format(),
-                       repl="")
+                             pattern=f"{directory}/".format(),
+                             repl="")
     # returns a list of dictionaries with file metadata
     return files
 
@@ -439,9 +386,9 @@ def main():
     print(f'Calling API from dates: {start_date} to {end_call_date}')
     dates_to_call = create_list_of_call_dates(start_date, end_call_date)
 
-    if(len(dates_to_call) > 30):
-        print(f'{len(dates_to_call)} Dates to Call. Trimming to a 30 Dates')
-        dates_to_call = dates_to_call[:30]
+    if(len(dates_to_call) > 60):
+        print(f'{len(dates_to_call)} Dates to Call. Trimming to a 60 Dates')
+        dates_to_call = dates_to_call[:60]
 
     if(len(dates_to_call) > 0):
         called_data = loop_through_dates(dates_to_call, api_to_call, table_to_call, auth_token)
