@@ -117,8 +117,8 @@ module "copy_vonage_data_landing_to_raw" {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--raw_zone_bucket"    = module.raw_zone.bucket_id
     "--landing_zone_bucket"    = module.landing_zone.bucket_id
-    "--landing_zone_prefix"           = "customer-services/manual/vonage/"
-    "--raw_zone_prefix"           = "customer-services/vonage/"
+    "--landing_zone_prefix"           = "customer-services/manual/vonage"
+    "--raw_zone_prefix"           = "customer-services/vonage"
     "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
   crawler_details = {
