@@ -6,7 +6,6 @@ from pyspark.sql import SparkSession
 
 import boto3
 import re
-import pandas as pd
 import json
 
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
@@ -152,8 +151,7 @@ def read_vonage_filepath(s3_client, bucket, key):
     content_string = contents.decode()
 
     json_dict = json.loads(content_string)
-
-    pandas_df = pd.DataFrame.from_dict(json_dict['items'])
+    json_to_load = json_dict['items']
 
     schema = StructType([
         StructField("categorizedAt", StringType(), True),
@@ -171,7 +169,7 @@ def read_vonage_filepath(s3_client, bucket, key):
         StructField("start", StringType(), True),
         StructField("status", StringType(), True)])
 
-    spark_df = spark.createDataFrame(pandas_df, schema=schema)
+    spark_df = spark.createDataFrame(json_to_load, schema=schema)
 
     # Find Import Date from the Key
     key_import_date = find_importdate(key)
