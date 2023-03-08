@@ -208,6 +208,6 @@ if (len(list_of_landing_zone_files) > 0):
 
     write_location = "s3://" + raw_zone_bucket + "/" + raw_prefix
     print(f'Write Location: {write_location}')
-    full_spark_df.write.partitionBy(*PARTITION_KEYS).parquet(write_location)
+    full_spark_df.write.mode("append").partitionBy(*PARTITION_KEYS).parquet(write_location)
 else:
     print('Up to date')
