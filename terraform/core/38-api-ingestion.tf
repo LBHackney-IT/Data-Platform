@@ -2,7 +2,7 @@ locals {
   s3_target_bucket_name = module.landing_zone.bucket_id
   secret_name           = "icaseworks-key"
   glue_trigger_name     = local.is_live_environment ? module.copy_icaseworks_data_landing_to_raw[0].trigger_name : ""
-  vonage_glue_trigger_name = local.is_live_environment && !local.is_production_environment ? module.copy_vonage_data_landing_to_raw[0].trigger_name : ""
+  vonage_glue_trigger_name = local.is_live_environment ? module.copy_vonage_data_landing_to_raw[0].trigger_name : ""
 }
 
 module "icaseworks_api_ingestion" {
