@@ -18,7 +18,7 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
 logger = glueContext.get_logger()
 
-job = Job(GlueContext)
+job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 
