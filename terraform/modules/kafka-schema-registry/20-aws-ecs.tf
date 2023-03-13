@@ -97,13 +97,44 @@ resource "aws_security_group" "schema_registry_service" {
   }
 
   ingress {
-    description      = "Allow inbound HTTP traffic"
-    from_port        = 8081
-    to_port          = 8081
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    description     = "Allows inbound traffic from Datahub Generalized Metadata Service (GMS)"
+    from_port       = 8081
+    to_port         = 8081
+    protocol        = "TCP"
+    security_groups = [var.datahub_gms_security_group_id]
   }
+
+  ingress {
+    description     = "Allows inbound traffic from Datahub Metadata Audit Event (MAE)"
+    from_port       = 8081
+    to_port         = 8081
+    protocol        = "TCP"
+    security_groups = [var.datahub_mae_consumer_security_group_id]
+  }
+
+  ingress {
+    description     = "Allows inbound traffic from Datahub Metadata Change Event (MCE)"
+    from_port       = 8081
+    to_port         = 8081
+    protocol        = "TCP"
+    security_groups = [var.datahub_mce_consumer_security_group_id]
+  }
+
+  ingress {
+    description     = "Allows inbound traffic from Kafka"
+    from_port       = 8081
+    to_port         = 8081
+    protocol        = "TCP"
+    security_groups = [var.kafka_security_group_id]
+  }
+
+  ingress {
+    description     = "Allow inbound traffic from schema registry ALB"
+    from_port       = 8081
+    to_port         = 8081
+    protocol        = "TCP"
+    security_groups = [var.schema_registry_alb_security_group_id]
+  } 
 
   tags = merge(var.tags, {
     "Name" : "Schema Registry ECS Service"

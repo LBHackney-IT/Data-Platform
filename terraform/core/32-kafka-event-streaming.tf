@@ -25,6 +25,12 @@ module "kafka_event_streaming" {
     "arn:aws:iam::937934410339:role/mtfh-reporting-data-listener/development/mtfh-reporting-data-listener-lambdaExecutionRole",
     "arn:aws:iam::364864573329:role/mtfh-reporting-data-listener/development/mtfh-reporting-data-listener-lambdaExecutionRole"
   ]
+
+  datahub_actions_security_group_id       = module.datahub[0].datahub_actions_security_group_id
+  datahub_gms_security_group_id           = module.datahub[0].datahub_gms_service_security_group_id
+  datahub_mae_consumer_security_group_id  = module.datahub[0].datahub_mae_security_group_id
+  datahub_mce_consumer_security_group_id  = module.datahub[0].datahub_mce_security_group_id
+  kafka_tester_lambda_security_group_id   = module.kafka_test_lambda[0].security_group_id
 }
 
 module "kafka_test_lambda" {

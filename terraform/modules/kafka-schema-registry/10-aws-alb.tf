@@ -23,12 +23,23 @@ resource "aws_security_group" "schema_registry_alb" {
   }
 
   ingress {
-    description      = "Allow inbound HTTP traffic"
-    from_port        = 8081
-    to_port          = 8081
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    description       = "Allow inbound traffic from housing account subnets that the reporting listener lambda is deployed to"
+    protocol          = "TCP"
+    from_port         = 8081
+    to_port           = 8081
+    cidr_blocks       = var.housing_intra_account_ingress_cidr
+  }
+
+  dynamic ingress {
+    for_each = lower(var.environment) != "prod" ? [1] : []
+    
+    content {
+      description     = "Allows inbound traffic from the tester lambda on dev and pre-prod"
+      protocol        = "TCP"
+      from_port       = 8081
+      to_port         = 8081
+      security_groups = [var.kafka_tester_lambda_security_group_id]
+    }
   }
 
   tags = merge(var.tags, {

@@ -49,3 +49,38 @@ variable "is_live_environment" {
   description = "A flag indicting if we are running in a live environment for setting up automation"
   type        = bool
 }
+
+variable "datahub_gms_security_group_id" {
+  description = "Security group id of Datahub GMS"
+  type        = string
+}
+
+variable "datahub_mae_consumer_security_group_id" {
+  description = "Security group id of Datahub MAE consumer"
+  type        = string
+}
+
+variable "datahub_mce_consumer_security_group_id" {
+  description = "Security group id of Datahub MCE consumer"
+  type        = string
+}
+
+variable "kafka_security_group_id" {
+  description = "Security group id of kafka"
+  type        = string
+}
+
+variable "housing_intra_account_ingress_cidr" {
+  description = "Cidr block for intra account ingress rules for housing"
+  type        = list(string)
+}
+
+variable "schema_registry_alb_security_group_id" {
+  description = "Security group id of schema registry ALB"
+  type        = string
+}
+
+variable "kafka_tester_lambda_security_group_id" {
+  description = "Security group id of the tester lambda"
+  type        = string
+}
