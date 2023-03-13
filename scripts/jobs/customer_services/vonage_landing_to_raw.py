@@ -2,6 +2,8 @@
 import sys
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
+from awsglue.job import Job
+from awsglue.utils import getResolvedOptions
 
 from pyspark.sql.functions import lit
 from scripts.helpers.helpers import PARTITION_KEYS, get_glue_env_var
@@ -12,8 +14,12 @@ import re
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
 logger = glueContext.get_logger()
+
+job = Job(GlueContext)
+job.init(args['JOB_NAME'], args)
 
 
 ######################################################
@@ -49,7 +55,11 @@ def return_largest_prefix(prefix_list):
 def get_latest_partition(s3_client, bucket, prefix):
     # This function looks weird but it drills down to the latest partition without listen every file.
     # Finds latest Year -> Month -> Day -> Date
+
     subfolders = list_subfolders_in_directory(s3_client, bucket, prefix)
+    largest_prefix = return_largest_prefix(subfolders)
+
+    subfolders = list_subfolders_in_directory(s3_client, bucket, largest_prefix)
     largest_prefix = return_largest_prefix(subfolders)
 
     subfolders = list_subfolders_in_directory(s3_client, bucket, largest_prefix)
@@ -64,17 +74,12 @@ def get_latest_partition(s3_client, bucket, prefix):
     return largest_prefix
 
 
-def read_and_write_partition(landing_zone_bucket, partition_path, raw_zone_bucket, raw_zone_prefix):
-    key_import_date = find_importdate(partition_path)
-    import_day = key_import_date[6:]
-    import_month = key_import_date[4:6]
-    import_year = key_import_date[:4]
+def read_from_landing_zone(landing_zone_bucket, partition_path):
 
-    print(f'Import Dates: {key_import_date}: Y{import_year} M{import_month} D{import_day}')
     connection_path = f"s3://{landing_zone_bucket}/{partition_path}"
     print(f'Connection Path: {connection_path}')
 
-    dyf = glueContext.create_dynamic_frame.from_options(
+    df = glueContext.create_dynamic_frame.from_options(
         connection_type="s3",
         connection_options={"paths": [connection_path],
                             "recurse": True
@@ -87,21 +92,30 @@ def read_and_write_partition(landing_zone_bucket, partition_path, raw_zone_bucke
 
     print('Dynamic Frame Loaded')
 
-    print('Converting the DynamicFrame back to SparkDF')
-    dyf = dyf.toDF()
-    dyf = dyf.withColumn("import_date", lit(key_import_date))
-    dyf = dyf.withColumn("import_day", lit(import_day))
-    dyf = dyf.withColumn("import_month", lit(import_month))
-    dyf = dyf.withColumn("import_year", lit(import_year))
+    print('Converting the DynamicFrame to SparkDF')
+    df = df.toDF()
+    return df
+
+def add_import_date_columns_from_path(df,partition_path):
+    key_import_date = find_importdate(partition_path)
+    import_day = key_import_date[6:]
+    import_month = key_import_date[4:6]
+    import_year = key_import_date[:4]
+    print(f'Import Dates: {key_import_date}: Y{import_year} M{import_month} D{import_day}')
+
+    df = df.withColumn("import_date", lit(key_import_date)).withColumn("import_day", lit(import_day)).withColumn("import_month", lit(import_month)).withColumn("import_year", lit(import_year))
+
+    return df
+
+def write_to_raw_zone(df,raw_zone_bucket,raw_zone_prefix):
 
     print('Cast null categorizedAt column to string')
-    dyf = dyf.withColumn('categorizedAt', dyf['categorizedAt'].cast('string'))
+    df = df.withColumn('categorizedAt', df['categorizedAt'].cast('string'))
 
     raw_zone_write_path = f"s3://{raw_zone_bucket}/{raw_zone_prefix}"
 
     print('Begin writing to Parquet')
-    dyf.write.mode("append").partitionBy(*PARTITION_KEYS).parquet(raw_zone_write_path)
-
+    df.write.mode("append").partitionBy(*PARTITION_KEYS).parquet(raw_zone_write_path)
 
 def get_all_partitions(s3_client, bucket, prefix, raw_date):
     print(f'Bucket: {bucket}')
@@ -153,6 +167,8 @@ print(partition_list)
 print(f'We have {len(partition_list)} partitions past the raw date: {raw_date}')
 
 for partition in partition_list:
-    read_and_write_partition(landing_zone_bucket, partition, raw_zone_bucket, raw_prefix)
+    partition_data = read_from_landing_zone(landing_zone_bucket,partition)
+    partition_data = add_import_date_columns_from_path(partition_data,partition)
+    write_to_raw_zone(partition_data,raw_zone_bucket,raw_prefix)
 
 job.commit()
