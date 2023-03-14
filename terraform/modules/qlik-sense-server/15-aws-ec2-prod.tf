@@ -1,6 +1,6 @@
 locals {
-    backup_ami_id = "ami-0a9bac68a32217ec9"
-    ec2_tags = {
+    backup_ami_id_prod = "ami-0a9bac68a32217ec9"
+    ec2_tags_prod = {
         BackupPolicy  = title(var.environment)
         Name          = "${var.identifier_prefix}-qlik-sense-restore"
     }
