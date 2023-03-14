@@ -17,7 +17,7 @@ data "aws_secretsmanager_secret_version" "subnet_value_for_qlik_sense_prod_insta
   secret_id = data.aws_secretsmanager_secret.subnet_value_for_qlik_sense_prod_instance[0].id
 }
 
-resource "aws_instance" "qlik_sense_pre_prod_instance" {
+resource "aws_instance" "qlik_sense_prod_instance" {
   count                     = var.is_production_environment ? 1 : 0
   ami                       = local.backup_ami_id
   instance_type             = "c5.4xlarge"
