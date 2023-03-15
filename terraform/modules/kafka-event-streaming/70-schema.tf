@@ -12,6 +12,7 @@ module "schema_registry" {
   topics                                 = local.topics
   is_live_environment                    = var.is_live_environment
 
+  datahub_actions_security_group_id       = var.datahub_actions_security_group_id
   datahub_gms_security_group_id           = var.datahub_gms_security_group_id
   datahub_mae_consumer_security_group_id  = var.datahub_mae_consumer_security_group_id
   datahub_mce_consumer_security_group_id  = var.datahub_mce_consumer_security_group_id
