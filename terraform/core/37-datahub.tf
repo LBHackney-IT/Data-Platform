@@ -16,7 +16,4 @@ module "datahub" {
   schema_registry_properties = {
     schema_registry_url = module.kafka_event_streaming[0].schema_registry_url
   }
-  depends_on = [
-    module.kafka_event_streaming
-  ]
 }

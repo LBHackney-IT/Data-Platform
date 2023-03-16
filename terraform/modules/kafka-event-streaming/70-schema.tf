@@ -11,4 +11,13 @@ module "schema_registry" {
   bastion_instance_id                    = var.bastion_instance_id
   topics                                 = local.topics
   is_live_environment                    = var.is_live_environment
+
+  datahub_actions_security_group_id       = var.datahub_actions_security_group_id
+  datahub_gms_security_group_id           = var.datahub_gms_security_group_id
+  datahub_mae_consumer_security_group_id  = var.datahub_mae_consumer_security_group_id
+  datahub_mce_consumer_security_group_id  = var.datahub_mce_consumer_security_group_id
+  kafka_security_group_id                 = aws_security_group.kafka.id
+  housing_intra_account_ingress_cidr      = local.kafka_intra_account_ingress_rules["cidr_blocks"]
+  schema_registry_alb_security_group_id   = module.schema_registry.load_balancer_security_group_id
+  kafka_tester_lambda_security_group_id   = var.kafka_tester_lambda_security_group_id
 }
