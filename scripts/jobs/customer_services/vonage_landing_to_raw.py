@@ -41,10 +41,13 @@ def list_subfolders_in_directory(s3_client, bucket, prefix):
     subfolders = response.get('CommonPrefixes')
 
     list_of_prefixes = []
-    for dictionary in subfolders:
-        list_of_prefixes.append(dictionary['Prefix'])
+    if subfolders == None:
+        return None
+    else:
+        for dictionary in subfolders:
+            list_of_prefixes.append(dictionary['Prefix'])
 
-    return list_of_prefixes
+        return list_of_prefixes
 
 
 def return_largest_prefix(prefix_list):
@@ -57,19 +60,24 @@ def get_latest_partition(s3_client, bucket, prefix):
     # Finds latest Year -> Month -> Day -> Date
 
     subfolders = list_subfolders_in_directory(s3_client, bucket, prefix)
-    largest_prefix = return_largest_prefix(subfolders)
 
-    subfolders = list_subfolders_in_directory(s3_client, bucket, largest_prefix)
-    largest_prefix = return_largest_prefix(subfolders)
+    # If subfolders are empty, return None instead
+    if subfolders == None:
+        largest_prefix = None
+    else:
+        largest_prefix = return_largest_prefix(subfolders)
 
-    subfolders = list_subfolders_in_directory(s3_client, bucket, largest_prefix)
-    largest_prefix = return_largest_prefix(subfolders)
+        subfolders = list_subfolders_in_directory(s3_client, bucket, largest_prefix)
+        largest_prefix = return_largest_prefix(subfolders)
 
-    subfolders = list_subfolders_in_directory(s3_client, bucket, largest_prefix)
-    largest_prefix = return_largest_prefix(subfolders)
+        subfolders = list_subfolders_in_directory(s3_client, bucket, largest_prefix)
+        largest_prefix = return_largest_prefix(subfolders)
 
-    subfolders = list_subfolders_in_directory(s3_client, bucket, largest_prefix)
-    largest_prefix = return_largest_prefix(subfolders)
+        subfolders = list_subfolders_in_directory(s3_client, bucket, largest_prefix)
+        largest_prefix = return_largest_prefix(subfolders)
+
+        subfolders = list_subfolders_in_directory(s3_client, bucket, largest_prefix)
+        largest_prefix = return_largest_prefix(subfolders)
 
     return largest_prefix
 
@@ -156,8 +164,12 @@ raw_prefix = get_glue_env_var('raw_zone_prefix', '')
 
 # Gets Latest Partition. Used for Raw Zone
 raw_partition = get_latest_partition(s3_client, raw_zone_bucket, raw_prefix)
-raw_date = find_importdate(raw_partition)
-print(f'Latest Raw Date: {raw_date}')
+if raw_partition == None:
+    print(f'No Raw Partition - Will pull all Data')
+    raw_date = 0
+else:
+    raw_date = find_importdate(raw_partition)
+    print(f'Latest Raw Date: {raw_date}')
 
 # get all the partitions we need to ingest
 partition_list = get_all_partitions(s3_client, landing_zone_bucket, landing_prefix, raw_date)
