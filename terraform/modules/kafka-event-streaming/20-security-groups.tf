@@ -1,9 +1,9 @@
 data "aws_secretsmanager_secret" "kafka_intra_account_ingress_rules" {
-    name = "${var.identifier_prefix}-manually-managed-value-kafka-intra-account-ingress-rules"
+  name = "${var.identifier_prefix}-manually-managed-value-kafka-intra-account-ingress-rules"
 }
 
-data "aws_secretsmanager_secret_version" "kafka_intra_account_ingress_rules"{
-    secret_id = data.aws_secretsmanager_secret.kafka_intra_account_ingress_rules.id
+data "aws_secretsmanager_secret_version" "kafka_intra_account_ingress_rules" {
+  secret_id = data.aws_secretsmanager_secret.kafka_intra_account_ingress_rules.id
 }
 
 locals {
@@ -16,7 +16,7 @@ resource "aws_security_group" "kafka" {
   vpc_id      = var.vpc_id
   description = "Specifies rules for traffic to the kafka cluster"
 }
-  
+
 resource "aws_security_group_rule" "allow_inbound_to_zookeeper" {
   description       = "Allows inbound traffic on ZooKeeper port"
   type              = "ingress"
@@ -28,43 +28,43 @@ resource "aws_security_group_rule" "allow_inbound_to_zookeeper" {
 }
 
 resource "aws_security_group_rule" "datahub_actions_ingress" {
-  description               = "Allows inbound traffic from Datahub Actions"
-  type                      = "ingress"
-  from_port                 = 9094
-  to_port                   = 9094
-  protocol                  = "TCP"
-  source_security_group_id  = var.datahub_actions_security_group_id
-  security_group_id         = aws_security_group.kafka.id
+  description              = "Allows inbound traffic from Datahub Actions"
+  type                     = "ingress"
+  from_port                = 9094
+  to_port                  = 9094
+  protocol                 = "TCP"
+  source_security_group_id = var.datahub_actions_security_group_id
+  security_group_id        = aws_security_group.kafka.id
 }
 
 resource "aws_security_group_rule" "datahub_gms_ingress" {
-  description               = "Allows inbound traffic from Datahub Generalized Metadata Service (GMS)"
-  type                      = "ingress"
-  from_port                 = 9094
-  to_port                   = 9094
-  protocol                  = "TCP"
-  source_security_group_id  = var.datahub_gms_security_group_id
-  security_group_id         =  aws_security_group.kafka.id
+  description              = "Allows inbound traffic from Datahub Generalized Metadata Service (GMS)"
+  type                     = "ingress"
+  from_port                = 9094
+  to_port                  = 9094
+  protocol                 = "TCP"
+  source_security_group_id = var.datahub_gms_security_group_id
+  security_group_id        = aws_security_group.kafka.id
 }
 
 resource "aws_security_group_rule" "datahub_mae_ingress" {
-  description               = "Allows inbound traffic from Datahub Metadata Audit Event (MAE)"
-  type                      = "ingress"
-  from_port                 = 9094
-  to_port                   = 9094
-  protocol                  = "TCP"
-  source_security_group_id  = var.datahub_mae_consumer_security_group_id
-  security_group_id         = aws_security_group.kafka.id
+  description              = "Allows inbound traffic from Datahub Metadata Audit Event (MAE)"
+  type                     = "ingress"
+  from_port                = 9094
+  to_port                  = 9094
+  protocol                 = "TCP"
+  source_security_group_id = var.datahub_mae_consumer_security_group_id
+  security_group_id        = aws_security_group.kafka.id
 }
 
 resource "aws_security_group_rule" "datahub_mce_ingress" {
-  description               = "Allows inbound traffic from Datahub Metadata Change Event (MCE)"
-  type                      = "ingress"
-  from_port                 = 9094
-  to_port                   = 9094
-  protocol                  = "TCP"
-  source_security_group_id  = var.datahub_mce_consumer_security_group_id
-  security_group_id         =  aws_security_group.kafka.id
+  description              = "Allows inbound traffic from Datahub Metadata Change Event (MCE)"
+  type                     = "ingress"
+  from_port                = 9094
+  to_port                  = 9094
+  protocol                 = "TCP"
+  source_security_group_id = var.datahub_mce_consumer_security_group_id
+  security_group_id        = aws_security_group.kafka.id
 }
 
 resource "aws_security_group_rule" "allow_outbound_traffic_within_sg" {
@@ -119,22 +119,44 @@ resource "aws_security_group_rule" "allow_inboud_traffic_from_housing_account" {
 }
 
 resource "aws_security_group_rule" "allow_inbound_traffic_from_tester_lambda" {
-  count                     = lower(var.environment) != "prod" ? 1: 0 
-  description               = "Allows inbound traffic from the tester lambda on dev and pre-prod"
-  security_group_id         = aws_security_group.kafka.id
-  protocol                  = "TCP"
-  from_port                 = 9094
-  to_port                   = 9094
-  type                      = "ingress"
-  source_security_group_id  = var.kafka_tester_lambda_security_group_id
+  count                    = lower(var.environment) != "prod" ? 1 : 0
+  description              = "Allows inbound traffic from the tester lambda on dev and pre-prod"
+  security_group_id        = aws_security_group.kafka.id
+  protocol                 = "TCP"
+  from_port                = 9094
+  to_port                  = 9094
+  type                     = "ingress"
+  source_security_group_id = var.kafka_tester_lambda_security_group_id
 }
 
 resource "aws_security_group_rule" "allow_inbound_traffic_from_schema_registry_service" {
-  description               = "Allows inbound traffic from schema registry service"
-  security_group_id         = aws_security_group.kafka.id
-  protocol                  = "TCP"
-  from_port                 = 9094
-  to_port                   = 9094
-  type                      = "ingress"
+  description              = "Allows inbound traffic from schema registry service"
+  security_group_id        = aws_security_group.kafka.id
+  protocol                 = "TCP"
+  from_port                = 9094
+  to_port                  = 9094
+  type                     = "ingress"
   source_security_group_id = module.schema_registry.schema_registry_security_group_id
+}
+
+#kafka setup service for Datahub is a one time task, so this rule don't apply under normal operation
+resource "aws_security_group_rule" "datahub_kafka_setup_ingress" {
+  description              = "Allows inbound traffic from Datahubs one time Kafka setup task"
+  type                     = "ingress"
+  from_port                = 9094
+  to_port                  = 9094
+  protocol                 = "TCP"
+  source_security_group_id = var.datahub_kafka_setup_security_group_id
+  security_group_id        = aws_security_group.kafka.id
+}
+
+#same as above, only required during datahub setup
+resource "aws_security_group_rule" "datahub_kafka_setup_zookeeper_ingress" {
+  description              = "Allows inbound traffic to zookeeper from Datahubs one time Kafka setup task"
+  type                     = "ingress"
+  from_port                = 2182
+  to_port                  = 2182
+  protocol                 = "TCP"
+  source_security_group_id = var.datahub_kafka_setup_security_group_id
+  security_group_id        = aws_security_group.kafka.id
 }

@@ -13,3 +13,7 @@ output "datahub_mce_security_group_id" {
 output "datahub_actions_security_group_id" {
     value = module.datahub_actions.security_group_id
 }
+
+output "datahub_kafka_setup_security_group_id" {
+    value = module.kafka_setup.security_group_id
+}

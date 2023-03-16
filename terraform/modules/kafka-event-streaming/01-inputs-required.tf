@@ -97,3 +97,8 @@ variable "kafka_tester_lambda_security_group_id" {
   description = "Security group id of the kafka tester lambda"
   type = string
 }
+
+variable "datahub_kafka_setup_security_group_id" {
+  description = "security group id of the one time kafka setup task for datahub"
+  type        = string
+}
