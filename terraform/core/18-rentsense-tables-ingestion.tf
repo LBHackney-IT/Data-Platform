@@ -16,6 +16,7 @@ module "ingest_mtfh_rentsense_tables" {
   helper_module_key              = aws_s3_bucket_object.helpers.key
   glue_version                   = "4.0"
   glue_job_timeout               = "180"
+  glue_job_worker_type           = "G.2X"
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
