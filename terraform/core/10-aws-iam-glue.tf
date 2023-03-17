@@ -224,3 +224,29 @@ resource "aws_iam_role_policy_attachment" "attach_can_assume_all_roles_to_glue_r
   role       = aws_iam_role.glue_role.name
   policy_arn = aws_iam_policy.can_assume_all_roles.arn
 }
+
+data "aws_iam_policy_document" "allow_pass_role_to_interactive_notebook_session" {
+  statement {
+    sid       = "AllowRolePassingToInteractiveNotebookSession"
+    effect    = "Allow"
+    resources = [aws_iam_role.glue_role.arn]
+    actions   = ["iam:PassRole"]
+
+    condition {
+      test     = "StringLike"
+      values   = ["glue.amazonaws.com"]
+      variable = "iam:PassedToService"
+    }
+  }
+}
+
+resource "aws_iam_policy" "allow_pass_role_to_interactive_notebook_session" {
+  tags   = module.tags.values
+  name   = "${local.short_identifier_prefix}can-pass-role-to-interactive-notebook-session"
+  policy = data.aws_iam_policy_document.allow_pass_role_to_interactive_notebook_session.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_allow_pass_role_to_interactive_notebook_session" {
+  role       = aws_iam_role.glue_role.name
+  policy_arn = aws_iam_policy.allow_pass_role_to_interactive_notebook_session.arn
+}
