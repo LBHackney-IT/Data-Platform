@@ -121,7 +121,6 @@ module "copy_vonage_data_landing_to_raw" {
   number_of_workers_for_glue_job = 2
   glue_job_worker_type           = "G.1X"
   glue_version                   = "4.0"
-  execution_class                = "FLEX"
   job_parameters             = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--raw_zone_bucket"     = module.raw_zone.bucket_id
