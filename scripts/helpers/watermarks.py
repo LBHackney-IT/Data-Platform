@@ -39,7 +39,9 @@ class Watermarks:
     def add_watermark(self, watermark_item: dict) -> None:
         """Adds a watermark item to the DynamoDB table."""
         try:
-            watermark_item_serialized = self.serializer.serialize(watermark_item)
+            watermark_item_serialized = {
+                k: self.serializer.serialize(v) for k, v in watermark_item.items()
+            }
             self.dynamodb_client.put_item(
                 TableName=self.table_name,
                 Item=watermark_item_serialized,
