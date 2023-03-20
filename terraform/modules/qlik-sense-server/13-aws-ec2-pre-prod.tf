@@ -71,4 +71,9 @@ resource "aws_instance" "qlik_sense_pre_prod_instance" {
   lifecycle {
     ignore_changes = [ami, subnet_id]
   }
+
+  metadata_options {
+    http_tokens   = "required"
+    http_endpoint = "enabled"
+  }
 }
