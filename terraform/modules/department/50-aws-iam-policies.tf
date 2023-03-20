@@ -716,7 +716,7 @@ data "aws_iam_policy_document" "glue_access_to_watermarks_table" {
       "dynamodb:Update*",
       "dynamodb:PutItem"
     ]
-    resources = ["arn:aws:dynamodb:*:*:table/${var.identifier_prefix}glue-watermarks"]
+    resources = ["arn:aws:dynamodb:*:*:table/${var.short_identifier_prefix}glue-watermarks"]
   }
 
 }
