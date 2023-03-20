@@ -30,6 +30,7 @@ module "icaseworks_api_ingestion" {
     "OUTPUT_FOLDER"         = "icaseworks"
     "TRIGGER_NAME"          = local.glue_trigger_name
   }
+
 }
 
 module "vonage_api_ingestion" {
@@ -68,17 +69,20 @@ module "copy_icaseworks_data_landing_to_raw" {
 
   count = local.is_live_environment ? 1 : 0
 
-  job_name                   = "${local.short_identifier_prefix}iCaseworks (OneCase) Copy Landing to Raw"
-  glue_role_arn              = aws_iam_role.glue_role.arn
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
-  spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
-  script_s3_object_key       = aws_s3_bucket_object.copy_json_data_landing_to_raw.key
-  glue_scripts_bucket_id     = module.glue_scripts.bucket_id
-  glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
-  environment                = var.environment
-  trigger_enabled            = local.is_production_environment
-  job_parameters             = {
+  job_name                       = "${local.short_identifier_prefix}iCaseworks (OneCase) Copy Landing to Raw"
+  glue_role_arn                  = aws_iam_role.glue_role.arn
+  helper_module_key              = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  script_s3_object_key           = aws_s3_bucket_object.copy_json_data_landing_to_raw.key
+  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
+  glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
+  environment                    = var.environment
+  trigger_enabled                = local.is_production_environment
+  number_of_workers_for_glue_job = 2
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
+  job_parameters                 = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--s3_bucket_target"    = "${module.raw_zone.bucket_id}/data-and-insight"
     "--s3_bucket_source"    = module.landing_zone.bucket_id
@@ -114,6 +118,9 @@ module "copy_vonage_data_landing_to_raw" {
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   environment                = var.environment
   trigger_enabled            = local.is_production_environment
+  number_of_workers_for_glue_job = 2
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
   job_parameters             = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--raw_zone_bucket"     = module.raw_zone.bucket_id
