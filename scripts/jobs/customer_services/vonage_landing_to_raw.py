@@ -146,6 +146,7 @@ def get_all_partitions(s3_client, bucket, prefix, raw_date):
                 continue
 
     deduped_list = list(set(list_of_folders))
+    deduped_list.sort()
 
     return deduped_list
 
