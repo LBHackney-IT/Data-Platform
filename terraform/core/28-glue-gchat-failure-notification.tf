@@ -8,7 +8,9 @@ locals {
     ],
     "detail" : {
       "state" : [
-        "FAILED"
+        "FAILED",
+        "TIMEOUT",
+        "ERROR"
       ]
     }
   }
