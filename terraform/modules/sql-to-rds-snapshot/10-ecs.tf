@@ -74,4 +74,5 @@ module "sql_to_parquet" {
       ]
     }
   ]
+  security_groups = [aws_security_group.snapshot_db.id]
 }
