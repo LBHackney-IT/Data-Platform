@@ -10,13 +10,13 @@ module "ingest_mtfh_rentsense_tables" {
   tags                      = module.tags.values
   glue_role_arn             = aws_iam_role.glue_role.arn
 
-  job_name                       = "${local.short_identifier_prefix}Ingest MTFH Rentsense tables"
-  job_description                = "Ingest all tables from MTFH for Rentsense from the Housing Dynamo DB instances"
-  script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
-  helper_module_key              = aws_s3_bucket_object.helpers.key
-  glue_version                   = "4.0"
-  glue_job_timeout               = "300"
-  glue_job_worker_type           = "G.1X"
+  job_name             = "${local.short_identifier_prefix}Ingest MTFH Rentsense tables"
+  job_description      = "Ingest all tables from MTFH for Rentsense from the Housing Dynamo DB instances"
+  script_s3_object_key = aws_s3_bucket_object.dynamodb_tables_ingest.key
+  helper_module_key    = aws_s3_bucket_object.helpers.key
+  glue_version         = "4.0"
+  glue_job_timeout     = "300"
+  glue_job_worker_type = "G.1X"
 
   pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
   number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
@@ -25,10 +25,12 @@ module "ingest_mtfh_rentsense_tables" {
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   schedule                       = "cron(30 5 ? * MON-FRI *)"
   job_parameters = {
-    "--table_names"       = "TenureInformation,Persons,ContactDetails,Assets,Accounts,EqualityInformation,HousingRegister,HousingRepairsOnline,PatchesAndAreas,Processes,Notes", # This is a comma delimited list of Dynamo DB table names to be imported
-    "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
-    "--s3_target"         = "s3://${module.landing_zone.bucket_id}/mtfh/"
-    "--number_of_workers" = local.number_of_workers_for_mtfh_ingestion
+    "--table_names"         = "TenureInformation,Persons,ContactDetails,Assets,Accounts,EqualityInformation,HousingRegister,HousingRepairsOnline,PatchesAndAreas,Processes,Notes", # This is a comma delimited list of Dynamo DB table names to be imported
+    "--role_arn"            = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
+    "--s3_target"           = "s3://${module.landing_zone.bucket_id}/mtfh/"
+    "--number_of_workers"   = local.number_of_workers_for_mtfh_ingestion
+    "--enable-job-insights" = "true"
+    "--enable-auto-scaling" = "true"
   }
 
   crawler_details = {
