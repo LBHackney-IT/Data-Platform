@@ -68,6 +68,10 @@ variable "glue_catalog_database_name" {
 variable "google_sheets_document_id" {
   description = "Google sheets document id"
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9-_]{44}$", var.google_sheets_document_id))
+    error_message = "The google_sheets_document_id must be a 44 character string of alphanumeric characters, hyphens and underscores."
+  }
 }
 
 variable "google_sheets_worksheet_name" {
