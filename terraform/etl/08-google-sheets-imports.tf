@@ -477,7 +477,7 @@ module "qa_correspondence_teams_data_load" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_bucket_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
-  google_sheets_document_id       = "1zxZXX1_qU9NW93Ug1JUy7aXsnTz45qIj7Zftmi9trbI/"
+  google_sheets_document_id       = "1zxZXX1_qU9NW93Ug1JUy7aXsnTz45qIj7Zftmi9trbI"
   google_sheets_worksheet_name    = "team_officer_list"
   department                      = module.department_parking_data_source
   dataset_name                    = "correspondence_performance_teams"
