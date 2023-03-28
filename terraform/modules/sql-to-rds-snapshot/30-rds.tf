@@ -16,6 +16,7 @@ resource "aws_db_instance" "ingestion_db" {
   password                = random_password.rds_password.result
   skip_final_snapshot     = true
   vpc_security_group_ids  = [aws_security_group.snapshot_db.id]
+  apply_immediately       = true
 }
 
 resource "random_password" "rds_password" {
