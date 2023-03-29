@@ -52,3 +52,8 @@ variable "aws_subnet_ids" {
   description = "Array of subnet IDs"
   type        = list(string)
 }
+
+variable "vpc_id" {
+  description = "ID of the VPC for the current environment"
+  type        = string
+}

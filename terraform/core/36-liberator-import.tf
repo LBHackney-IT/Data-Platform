@@ -23,6 +23,7 @@ module "liberator_dump_to_rds_snapshot" {
   watched_bucket_kms_key_arn = module.liberator_data_storage.kms_key_arn
   aws_subnet_ids             = data.aws_subnet_ids.network.ids
   ecs_cluster_arn            = aws_ecs_cluster.workers.arn
+  vpc_id                     = data.aws_vpc.network.id
 }
 
 module "liberator_db_snapshot_to_s3" {
