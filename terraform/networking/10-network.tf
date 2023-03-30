@@ -61,7 +61,7 @@ module "core_vpc" {
 
   tags = module.tags.values
 }
-
+#test comment
 resource "aws_ssm_parameter" "vpc_id" {
   name  = "/${local.identifier_prefix}/vpc/vpc_id"
   type  = "String"

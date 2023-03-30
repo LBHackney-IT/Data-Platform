@@ -20,7 +20,7 @@ resource "aws_glue_catalog_database" "landing_zone_academy" {
     prevent_destroy = true
   }
 }
-
+#test comment
 locals {
   table_filter_expressions = local.is_live_environment ? {
     core_hbrent_s    = "^lbhaliverbviews_core_hbrent[s].*",

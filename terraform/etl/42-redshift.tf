@@ -18,7 +18,7 @@ module "redshift" {
 }
 
 // Configuration of redshift external schemas, users & granting permissions
-
+//test comment
 locals {
   unrestricted_schemas = [
     replace(module.department_unrestricted_data_source.raw_zone_catalog_database_name, "-", "_"),
