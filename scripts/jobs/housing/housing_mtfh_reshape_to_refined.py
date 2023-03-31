@@ -85,7 +85,7 @@ if __name__ == "__main__":
                         "uh_ten_ref",
                         "saffron_pay_ref",
                         "startOfTenureDate",
-                        "endoftenuredate.string as endoftenuredate",
+                        "endoftenuredate",
                          "evictiondate",
                          "potentialenddate",
                          "ismutualexchange",
