@@ -46,8 +46,8 @@ module "liberator_db_snapshot_to_s3" {
 }
 
 resource "aws_glue_workflow" "parking_liberator_data" {
-  # This resource is modified outside of terraform by parking analysts.
-  # Any change which forces the workflow to be recreated will lose their changes.
+  # Components for this workflow are managed mainly in etl/38-aws-glue-job-parking.tf by parking officers
+  # There are couple of other resources that are part of the ingestion process, but the core ETL configuration is in the file mentioned above
   name = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   tags = module.tags.values
 }
