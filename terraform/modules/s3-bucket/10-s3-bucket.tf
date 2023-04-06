@@ -66,6 +66,22 @@ data "aws_iam_policy_document" "bucket_policy_document" {
       identifiers = local.role_arns_to_share_access_with
     }
   }
+
+  dynamic "statement" {
+    for_each = var.bucket_policy_statements
+
+    content {
+      sid       = lookup(statement.value, "sid", "")
+      effect    = lookup(statement.value, "effect", "")
+      actions   = lookup(statement.value, "actions", [])
+      resources = lookup(statement.value, "resources", [])
+
+      principals {
+        type        = lookup(statement.value.principals, "type", "")
+        identifiers = lookup(statement.value.principals, "identifiers", [])
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket" "bucket" {
