@@ -76,3 +76,11 @@ module "ingest_housing_income_collection_database_to_housing_raw_zone" {
     })
   }
 }
+   
+    
+resource "aws_ssm_parameter" "ingest_housing_income_collection_database_to_housing_raw_zone_crawler_name" {
+  tags  = module.tags.values
+  name  = "/${local.identifier_prefix}/glue_crawler/housing/ingest_housing_income_collection_database_to_housing_raw_zone_crawler_name"
+  type  = "String"
+  value = module.ingest_housing_income_collection_database_to_housing_raw_zone.crawler_name
+}
