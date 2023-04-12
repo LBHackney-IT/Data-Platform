@@ -39,7 +39,7 @@ module "active_persons_records_refined" {
     "--source_catalog_table_hb_household"              = "lbhaliverbviews_core_hbhousehold"
     "--source_catalog_table_hb_rent_assessment"        = "lbhaliverbviews_core_hbrentass"
     "--source_catalog_table_parking_permit"            = "parking_permit_denormalised_data"
-    "--output_path"                                    = "s3://dataplatform-stg-refined-zone/active-person-records/"
+    "--output_path"                                    = "s3://${module.refined_zone_data_source.bucket_id}/data-and-insight/active-person-records/"
 
   }
   script_name = "active_person_records"
