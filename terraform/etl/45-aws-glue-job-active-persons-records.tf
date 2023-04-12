@@ -2,6 +2,7 @@ module "active_persons_records_refined" {
   source                         = "../modules/aws-glue-job"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
+  count = local.is_live_environment && !local.is_production_environment ? 1 : 0
 
   department                     = module.department_data_and_insight_data_source
   job_name                       = "${local.short_identifier_prefix}Active person records to refined"
@@ -9,9 +10,9 @@ module "active_persons_records_refined" {
   glue_temp_bucket_id            = module.glue_temp_storage_data_source.bucket_id
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = 10
-  max_retries                    = 3
+  max_retries                    = 1
   glue_version                   = "3.0"
-  glue_job_timeout               = 720
+  glue_job_timeout               = 360
   helper_module_key              = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
