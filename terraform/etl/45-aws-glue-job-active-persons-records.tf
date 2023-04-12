@@ -67,5 +67,7 @@ resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
 
   actions {
     job_name = module.active_persons_records_refined.job_name
-  }}
+  }
+
+}
 
