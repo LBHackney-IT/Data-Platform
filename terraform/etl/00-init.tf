@@ -16,13 +16,9 @@ provider "aws" {
   alias  = "aws_api_account"
   region = var.aws_deploy_region
   
-  dynamic assume_role {
-    for_each = local.is_live_environment ? [1] : [] 
-    
-    content {
-      role_arn     = "arn:aws:iam::${var.aws_api_account_id}:role/${var.aws_deploy_iam_role_name}"
-      session_name = "Terraform"
-    }
+  assume_role {
+    role_arn     = "arn:aws:iam::${var.aws_api_account_id}:role/${var.aws_deploy_iam_role_name}"
+    session_name = "Terraform"
   }
 }
 

@@ -80,3 +80,8 @@ resource "aws_iam_role_policy_attachment" "glue_agent_has_full_s3_access_to_glue
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.full_s3_access_to_glue_resources.arn
 }
+
+resource "aws_iam_role_policy_attachment" "glue_access_to_watermarks_table" {
+  role       = aws_iam_role.glue_agent.name
+  policy_arn = aws_iam_policy.glue_access_to_watermarks_table.arn
+}

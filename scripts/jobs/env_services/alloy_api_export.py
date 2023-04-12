@@ -91,11 +91,15 @@ if __name__ == "__main__":
     s3_parquet_prefix = get_glue_env_var("s3_parquet_prefix", "")
     prefix_to_remove = get_glue_env_var("prefix_to_remove", "")
 
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     region = "uk"
     api_key = get_secret(secret_name, "eu-west-2")
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": api_key,
+    }
 
-    post_url = f"https://api.{region}.alloyapp.io/api/export/?token={api_key}"
+    post_url = f"https://api.{region}.alloyapp.io/api/export"
 
     aqs = json.loads(aqs)
 
@@ -106,26 +110,26 @@ if __name__ == "__main__":
 
     logger.info(f"task id: {task_id}")
 
-    url = f"https://api.{region}.alloyapp.io/api/task/{task_id}?token={api_key}"
+    url = f"https://api.{region}.alloyapp.io/api/task/{task_id}"
     task_status = ""
     file_id = ""
 
     while task_status != "Complete":
         time.sleep(60)
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
 
         response = api_response_json(response)
         task_status = response["task"]["status"]
 
     else:
-        url = f"https://api.{region}.alloyapp.io/api/export/{task_id}/file?token={api_key}"
-        response = requests.get(url)
+        url = f"https://api.{region}.alloyapp.io/api/export/{task_id}/file"
+        response = requests.get(url, headers=headers)
         response = api_response_json(response)
         file_id = response["fileItemId"]
 
         logger.info(f"file id: {file_id}")
 
-        url_download = f"https://api.uk.alloyapp.io/api/file/{file_id}?token={api_key}"
+        url_download = f"https://api.uk.alloyapp.io/api/file/{file_id}"
         r = requests.get(url_download, headers=headers)
 
         import_date = date.today()

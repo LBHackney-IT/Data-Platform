@@ -74,6 +74,7 @@ if __name__ == "__main__":
     ten= ten.select("*",element_at("legacyreferences",1).value.alias("uh_ten_ref")
                     ,element_at("legacyreferences",2).value.alias("saffron_pay_ref"))
     
+    ten = ten.withColumn("endoftenuredate", ten.endOfTenureDate.string.cast("string"))
     
     ten2 = ten.withColumn("members", F.explode_outer("householdmembers"))\
                   .withColumn("notices", F.explode_outer("notices"))\
@@ -133,8 +134,7 @@ if __name__ == "__main__":
                         "saffron_pay_ref",
                         "startOfTenureDate",
                         "endoftenuredate",
-                        "endoftenuredate",
-                         "evictiondate",
+                        "evictiondate",
                          "potentialenddate",
                          "ismutualexchange",
                          "subletenddate",

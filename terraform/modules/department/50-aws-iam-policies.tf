@@ -677,3 +677,46 @@ data "aws_iam_policy_document" "notebook_access" {
     ]
   }
 }
+
+//glue-watermarks dynamodb access
+
+resource "aws_iam_policy" "glue_access_to_watermarks_table" {
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-can-access-wartermarks-table")
+  policy = data.aws_iam_policy_document.glue_access_to_watermarks_table.json
+}
+
+data "aws_iam_policy_document" "glue_access_to_watermarks_table" {
+
+  statement {
+    sid    = "ListAndDescribe"
+    effect = "Allow"
+    actions = [
+      "dynamodb:List*",
+      "dynamodb:DescribeReservedCapacity*",
+      "dynamodb:DescribeLimits",
+      "dynamodb:DescribeTimeToLive"
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "SpecificTable"
+    effect = "Allow"
+    actions = [
+      "dynamodb:BatchGet*",
+      "dynamodb:DescribeStream",
+      "dynamodb:DescribeTable",
+      "dynamodb:Get*",
+      "dynamodb:Query",
+      "dynamodb:Scan",
+      "dynamodb:BatchWrite*",
+      "dynamodb:CreateTable",
+      #"dynamodb:Delete*",
+      "dynamodb:Update*",
+      "dynamodb:PutItem"
+    ]
+    resources = ["arn:aws:dynamodb:*:*:table/${var.short_identifier_prefix}glue-watermarks"]
+  }
+
+}

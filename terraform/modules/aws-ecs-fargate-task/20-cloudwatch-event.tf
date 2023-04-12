@@ -13,7 +13,8 @@ resource "aws_cloudwatch_event_target" "ecs_task" {
     platform_version    = "1.4.0"
 
     network_configuration {
-      subnets = var.aws_subnet_ids
+      subnets         = var.aws_subnet_ids
+      security_groups = var.security_groups
     }
   }
 }
