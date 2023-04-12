@@ -50,7 +50,7 @@ module "active_persons_records_refined" {
     configuration      = jsonencode({
       Version  = 1.0
       Grouping = {
-        TableLevelConfiguration = 2
+        TableLevelConfiguration = 3
       }
     })
   }
@@ -62,7 +62,7 @@ resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
   tags     = module.tags.values
   name     = "${local.short_identifier_prefix}Active Person Records to Refined Ingestion Trigger"
   type     = "SCHEDULED"
-  schedule = "cron(0 22 * * *)"
+  schedule = "cron(0 22 * * ? *)"
   enabled  = local.is_live_environment
 
   actions {
