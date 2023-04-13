@@ -1,8 +1,8 @@
 module "active_persons_records_refined" {
-  source                         = "../modules/aws-glue-job"
-  is_production_environment      = local.is_production_environment
-  is_live_environment            = local.is_live_environment
-  count = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
+  is_live_environment       = local.is_live_environment
+  count                     = local.is_live_environment && !local.is_production_environment ? 1 : 0
 
   department                     = module.department_data_and_insight_data_source
   job_name                       = "${local.short_identifier_prefix}Active person records to refined"
@@ -60,7 +60,6 @@ module "active_persons_records_refined" {
 
 # Triggers for ingestion
 resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
-  tags     = module.tags.values
   name     = "${local.short_identifier_prefix}Active Person Records to Refined Ingestion Trigger"
   type     = "SCHEDULED"
   schedule = "cron(0 22 * * ? *)"
@@ -70,5 +69,6 @@ resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
     job_name = module.active_persons_records_refined.job_name
   }
 
-}
+  }
+
 
