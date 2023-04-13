@@ -49,14 +49,8 @@ module "active_persons_records_refined" {
   script_name = "active_person_records"
 
   crawler_details = {
-    database_name      = module.department_customer_services_data_source.refined_zone_catalog_database_name
+    database_name      = module.department_data_and_insight_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/data-and-insight/active-person-records"
-    configuration      = jsonencode({
-      Version  = 1.0
-      Grouping = {
-        TableLevelConfiguration = 3
-      }
-    })
   }
 
 }
@@ -64,7 +58,7 @@ module "active_persons_records_refined" {
 # Triggers for ingestion
 resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
   name     = "${local.short_identifier_prefix}Active Person Records to Refined Ingestion Trigger"
-  tags     = module.department_parking_data_source.tags
+  tags     = module.department_data_and_insight_data_source.tags
   type     = "SCHEDULED"
   schedule = "cron(0 22 * * ? *)"
   enabled  = local.is_live_environment
