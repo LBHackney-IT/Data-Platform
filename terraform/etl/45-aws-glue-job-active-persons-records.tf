@@ -11,7 +11,6 @@ module "active_persons_records_refined" {
   glue_role_arn                  = data.aws_iam_role.glue_role.arn
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = 10
-  max_retries                    = 1
   glue_version                   = "3.0"
   glue_job_timeout               = 360
   helper_module_key              = data.aws_s3_bucket_object.helpers.key
@@ -60,14 +59,15 @@ module "active_persons_records_refined" {
 }
 
 # Triggers for ingestion
-resource "aws_glue_trigger" "active_persons_records_refined" {
+resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
   name     = "${local.short_identifier_prefix}Active Person Records to Refined Ingestion Trigger"
+  tags = module.department_parking_data_source.tags
   type     = "SCHEDULED"
   schedule = "cron(0 22 * * ? *)"
   enabled  = local.is_live_environment
 
   actions {
-    job_name = module.active_persons_records_refined.job_name
+    job_name = module.active_persons_records_refined[0].job_name
   }
 
 }
