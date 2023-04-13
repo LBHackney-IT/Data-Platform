@@ -1,17 +1,21 @@
+locals {
+  active_persons_environment_count = local.is_live_environment && !local.is_production_environment ? 1 : 0
+}
+
 module "active_persons_records_refined" {
   source                         = "../modules/aws-glue-job"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
-
+  count                          = local.active_persons_environment_count
   department                     = module.department_data_and_insight_data_source
   job_name                       = "${local.short_identifier_prefix}Active person records to refined"
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage_data_source.bucket_id
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = 10
-  max_retries                    = 3
   glue_version                   = "3.0"
-  glue_job_timeout               = 720
+  glue_job_timeout               = 360
   helper_module_key              = data.aws_s3_bucket_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
@@ -59,15 +63,17 @@ module "active_persons_records_refined" {
 
 # Triggers for ingestion
 resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
-  tags     = module.tags.values
   name     = "${local.short_identifier_prefix}Active Person Records to Refined Ingestion Trigger"
+  tags     = module.department_parking_data_source.tags
   type     = "SCHEDULED"
   schedule = "cron(0 22 * * ? *)"
   enabled  = local.is_live_environment
+  count    = local.active_persons_environment_count
 
   actions {
-    job_name = module.active_persons_records_refined.job_name
+    job_name = module.active_persons_records_refined[0].job_name
   }
 
 }
+
 
