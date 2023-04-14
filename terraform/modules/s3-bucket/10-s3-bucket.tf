@@ -33,6 +33,22 @@ data "aws_iam_policy_document" "key_policy" {
       identifiers = local.role_arns_to_share_access_with
     }
   }
+
+  dynamic statement {
+    for_each = var.bucket_key_policy_statements
+    
+    content { 
+      sid       = lookup(statement.value, "sid", "")
+      effect    = lookup(statement.value, "effect", "")
+      actions   = lookup(statement.value, "actions", [])
+      resources = ["*"]
+      
+      principals {
+        type        = lookup(statement.value.principals, "type", "")
+        identifiers = lookup(statement.value.principals, "identifiers", [])
+      }
+    }
+  }
 }
 
 resource "aws_kms_key" "key" {
@@ -64,6 +80,22 @@ data "aws_iam_policy_document" "bucket_policy_document" {
     principals {
       type        = "AWS"
       identifiers = local.role_arns_to_share_access_with
+    }
+  }
+
+  dynamic statement {
+    for_each = var.bucket_policy_statements
+    
+    content { 
+      sid       = lookup(statement.value, "sid", "")
+      effect    = lookup(statement.value, "effect", "")
+      actions   = lookup(statement.value, "actions", [])
+      resources = lookup(statement.value, "resources", [])
+      
+      principals {
+        type        = lookup(statement.value.principals, "type", "")
+        identifiers = lookup(statement.value.principals, "identifiers", [])
+      }
     }
   }
 }
