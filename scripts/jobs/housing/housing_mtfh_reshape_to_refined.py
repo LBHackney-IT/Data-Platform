@@ -316,7 +316,7 @@ if __name__ == "__main__":
     ass3 = ass.join(estate,ass.asset_id ==  estate.asset_id,"left").select(ass["*"],estate["estate_name"],estate["estate_id"])\
               .withColumnRenamed("id","tenancy_id")
     
-    ass3 = ass3.withColumn("endoftenuredate", ass.tenure.endoftenuredate.string.cast("string")) 
+    ass3 = ass3.withColumn("endoftenuredate", ass3.tenure.endoftenuredate.string.cast("string")) 
 
     output= ass3.select("asset_id",
                         "assetId", 
