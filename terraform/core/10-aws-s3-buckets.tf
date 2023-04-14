@@ -9,7 +9,7 @@ locals {
     ]
   
     resources = [
-        "${module.refined_zone.bucket_arn}",
+        module.refined_zone.bucket_arn,
         "${module.refined_zone.bucket_arn}/housings/rentsense/export/*"
     ]
 
