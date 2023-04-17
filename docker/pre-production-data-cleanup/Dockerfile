@@ -6,11 +6,11 @@ RUN apk add --update --no-cache \
     coreutils \
     && rm -rf /var/cache/apk/*
 
-COPY ./clean-up-past-x-days.sh .
+COPY ./cleanup-past-x-days.sh .
 
 RUN addgroup -S docker_users \
     && adduser -S docker_user -G docker_users
 
 USER docker_user
 
-CMD ./clean-up-past-x-days.sh
+CMD ./cleanup-past-x-days.sh
