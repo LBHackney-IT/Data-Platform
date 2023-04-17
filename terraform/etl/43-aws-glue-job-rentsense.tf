@@ -1,7 +1,6 @@
-data "aws_ssm_parameter" "ingest_housing_income_collection_database_to_housing_raw_zone_crawler_name" {
-  name = "/${local.identifier_prefix}/glue_crawler/housing/ingest_housing_income_collection_database_to_housing_raw_zone_crawler_name"
+data "aws_ssm_parameter" "ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name" {
+  name = "/${local.identifier_prefix}/glue_crawler/housing/ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name"
 }
-
 
 module "rentsense_output_to_landing_S3" {
   source                    = "../modules/aws-glue-job"
@@ -28,7 +27,7 @@ module "rentsense_output_to_landing_S3" {
     "--source_catalog_database" = module.department_housing_data_source.refined_zone_catalog_database_name
   }
   script_name          = "rentsense_to_refined_and_landing"
-  triggered_by_crawler = data.aws_ssm_parameter.ingest_housing_income_collection_database_to_housing_raw_zone_crawler_name.value 
+  triggered_by_crawler = data.aws_ssm_parameter.ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name.value 
   glue_crawler_excluded_blobs = ["*.json",
     "*.txt",
     "*.zip",
