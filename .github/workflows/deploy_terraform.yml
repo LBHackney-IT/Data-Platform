@@ -185,4 +185,4 @@ jobs:
         if: ${{ (inputs.build_path  == './terraform/core') && (success())  }}
         run: |
           ENVIRONMENT=${{ inputs.environment }} AWS_PROFILE=deploy_role ./docker/pre-production-data-cleanup/deploy.sh
-          
+
