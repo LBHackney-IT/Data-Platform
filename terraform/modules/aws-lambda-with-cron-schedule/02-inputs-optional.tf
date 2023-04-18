@@ -41,3 +41,9 @@ variable "event_input" {
   type        = string
   default     = ""
 }
+
+variable "runtime" {
+  description = "The runtime environment for the Lambda function."
+  type        = string
+  default     = "python3.8"
+}
