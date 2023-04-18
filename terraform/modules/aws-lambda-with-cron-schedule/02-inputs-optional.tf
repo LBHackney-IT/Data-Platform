@@ -1,11 +1,13 @@
 variable "tags" {
   description = "A mapping of tags to assign to the resource."
   type        = map(string)
+  default     = null
 }
 
 variable "identifier_prefix" {
   description = "A prefix to use for the identifier of the resource."
   type        = string
+  default     = ""
 }
 
 variable "lambda_artefact_storage_bucket" {
@@ -21,6 +23,7 @@ variable "event_pattern" {
 variable "lambda_environment_variables" {
   description = "A mapping of environment variables to assign to the lambda."
   type        = map(string)
+  default     = null
 }
 
 variable "secrets_manager_kms_key" {
@@ -29,11 +32,13 @@ variable "secrets_manager_kms_key" {
     key_id = string
     arn    = string
   })
+  default = null
 }
 
 variable "secret_name" {
-  description = "The name of the secret to be retrieved from AWS Secrets Manager."
+  description = "The name of a secret to be retrieved from AWS Secrets Manager."
   type        = string
+  default     = ""
 }
 
 variable "event_input" {
