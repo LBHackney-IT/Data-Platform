@@ -119,7 +119,7 @@ module "sync_production_to_pre_production" {
         { name = "S3_SYNC_SOURCE", value = module.raw_zone.bucket_id },
         { name = "S3_SYNC_TARGET", value = "dataplatform-stg-raw-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 1 1 ? 2050)"
     },
     {
       task_prefix = "refined-zone-"
@@ -130,7 +130,7 @@ module "sync_production_to_pre_production" {
         { name = "S3_SYNC_SOURCE", value = module.refined_zone.bucket_id },
         { name = "S3_SYNC_TARGET", value = "dataplatform-stg-refined-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 1 1 ? 2050)"
     },
     {
       task_prefix = "trusted-zone-"
@@ -141,9 +141,10 @@ module "sync_production_to_pre_production" {
         { name = "S3_SYNC_SOURCE", value = module.trusted_zone.bucket_id },
         { name = "S3_SYNC_TARGET", value = "dataplatform-stg-trusted-zone" }
       ]
-      cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
+      cloudwatch_rule_schedule_expression = "cron(0 0 1 1 ? 2050)"
     }
   ]
+  security_groups = [aws_security_group.pre_production_clean_up[0].id]
 }
 
 resource "aws_s3_bucket_replication_configuration" "raw_zone" {
@@ -226,4 +227,24 @@ resource "aws_s3_bucket_replication_configuration" "trusted_zone" {
       }
     }
   }
+}
+
+resource "aws_security_group" "pre_production_clean_up" {
+  count       = local.is_production_environment ? 1 : 0
+  name        = "${local.short_identifier_prefix}sync-production-to-pre-production"
+  description = "Restrict access for the clean up task"
+  vpc_id      = data.aws_vpc.network.id
+  tags        = module.tags.values
+}
+
+resource "aws_security_group_rule" "allow_outbound_traffic_to_s3" {
+  count             = local.is_production_environment ? 1 : 0
+  description       = "Allow outbound traffic to S3"
+  security_group_id = aws_security_group.pre_production_clean_up[0].id
+  protocol          = "TCP"
+  from_port         = 443
+  to_port           = 443
+  type              = "egress"
+  cidr_blocks       = ["0.0.0.0/0"]
+  ipv6_cidr_blocks  = ["::/0"]
 }

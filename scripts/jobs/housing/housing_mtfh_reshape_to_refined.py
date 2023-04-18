@@ -74,6 +74,7 @@ if __name__ == "__main__":
     ten= ten.select("*",element_at("legacyreferences",1).value.alias("uh_ten_ref")
                     ,element_at("legacyreferences",2).value.alias("saffron_pay_ref"))
     
+    ten = ten.withColumn("endoftenuredate", ten.endOfTenureDate.string.cast("string"))
     
     ten2 = ten.withColumn("members", F.explode_outer("householdmembers"))\
                   .withColumn("notices", F.explode_outer("notices"))\
@@ -133,8 +134,7 @@ if __name__ == "__main__":
                         "saffron_pay_ref",
                         "startOfTenureDate",
                         "endoftenuredate",
-                        "endoftenuredate",
-                         "evictiondate",
+                        "evictiondate",
                          "potentialenddate",
                          "ismutualexchange",
                          "subletenddate",
@@ -200,6 +200,8 @@ if __name__ == "__main__":
     per =  per.withColumn("new_person_type", when(per.person_type.isNull(), per.persontypes2)
                                  .otherwise(per.person_type))
     
+    per = per.withColumn("endDate", per.tenure.endDate.string.cast("string")) 
+    
     per =  per.select("person_id",
                     "preferredTitle",
                     "firstName",
@@ -214,7 +216,7 @@ if __name__ == "__main__":
                     "tenure.propertyReference",
                     "tenure.paymentReference",
                     "tenure.startDate",
-                    "tenure.endDate",   
+                    "endDate",   
                     "tenure.assetId",   
                     "tenure.type",   
                     "tenure.assetFullAddress",
@@ -313,6 +315,8 @@ if __name__ == "__main__":
     
     ass3 = ass.join(estate,ass.asset_id ==  estate.asset_id,"left").select(ass["*"],estate["estate_name"],estate["estate_id"])\
               .withColumnRenamed("id","tenancy_id")
+    
+    ass3 = ass3.withColumn("endoftenuredate", ass3.tenure.endoftenuredate.string.cast("string")) 
 
     output= ass3.select("asset_id",
                         "assetId", 
@@ -327,7 +331,7 @@ if __name__ == "__main__":
                         "postCode",
                         "tenancy_id",
                         "startOfTenureDate",
-                        "EndOfTenureDate",
+                        "endoftenuredate",
                         "paymentReference",
                         "type",
                         "owner",

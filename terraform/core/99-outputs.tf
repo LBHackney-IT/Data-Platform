@@ -21,6 +21,10 @@ output "prod_to_pre_prod_ecr_repository_endpoint" {
   value = try(module.sync_production_to_pre_production[0].ecr_repository_worker_endpoint, null)
 }
 
+output "pre_prod_data_cleanup_ecr_repository_endpoint" {
+  value = try(module.pre_production_data_cleanup[0].ecr_repository_worker_endpoint, null)
+}
+
 output "ssl_connection_resources_bucket_id" {
   value = try(aws_s3_bucket.ssl_connection_resources[0].id, "")
 }
