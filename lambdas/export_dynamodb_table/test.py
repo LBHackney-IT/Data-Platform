@@ -11,7 +11,7 @@ from export_dynamodb_table.main import (
 
 class TestExportDynamoTable(unittest.TestCase):
     def setUp(self):
-        self.client = boto3.client("dynamodb")
+        self.client = boto3.client("dynamodb", "eu-west-2")
         self.table_arn = "arn:aws:dynamodb:us-west-2:123456789012:table/test-table"
         self.s3_bucket = "test-bucket"
         self.s3_prefix = "test-prefix"
