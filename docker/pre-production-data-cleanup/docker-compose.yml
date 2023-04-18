@@ -1,0 +1,5 @@
+version: "3.9"
+services:
+  cmd:
+    container_name: cmd-runner
+    build: .
