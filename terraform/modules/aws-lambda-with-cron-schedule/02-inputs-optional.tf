@@ -10,11 +10,6 @@ variable "identifier_prefix" {
   default     = ""
 }
 
-variable "lambda_artefact_storage_bucket" {
-  description = "The name of the S3 bucket where the lambda artefact is stored."
-  type        = string
-}
-
 variable "event_pattern" {
   description = "The event pattern to use for the CloudWatch event rule."
   type        = string

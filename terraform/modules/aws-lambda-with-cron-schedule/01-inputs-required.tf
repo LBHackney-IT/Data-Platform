@@ -12,4 +12,9 @@ variable "schedule" {
   }
 }
 
+variable "lambda_artefact_storage_bucket" {
+  description = "The name of the S3 bucket where the lambda artefact is stored."
+  type        = string
+}
+
 
