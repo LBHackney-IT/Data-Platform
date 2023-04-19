@@ -1,16 +1,16 @@
 locals {
   rentsense_refined_zone_access_statement = {
-    sid = "AllowRentsenseReadOnlyAccessToExportLocationOnRefinedZone"
+    sid    = "AllowRentsenseReadOnlyAccessToExportLocationOnRefinedZone"
     effect = "Allow"
     actions = [
-        "s3:ListBucket",
-        "s3:GetObject",
-        "s3:GetObjectTagging"
+      "s3:ListBucket",
+      "s3:GetObject",
+      "s3:GetObjectTagging"
     ]
-  
+
     resources = [
-        module.refined_zone.bucket_arn,
-        "${module.refined_zone.bucket_arn}/housing/rentsense/export/*"
+      module.refined_zone.bucket_arn,
+      "${module.refined_zone.bucket_arn}/housing/rentsense/export/*"
     ]
 
     principals = {
@@ -21,9 +21,9 @@ locals {
       ]
     }
   }
-    
+
   rentsense_refined_zone_key_statement = {
-    sid = "RentSenseAccesToRefinedZoneKey"
+    sid    = "RentSenseAccesToRefinedZoneKey"
     effect = "Allow"
     actions = [
       "kms:Decrypt"
@@ -37,6 +37,46 @@ locals {
       ]
     }
   }
+
+  s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement = {
+    sid    = "AllowS3toS3CopierForAddressesAPIWriteAccessToRawZoneUnrestrictedAddressesAPILocation"
+    effect = "Allow"
+
+    actions = [
+      "s3:ListBucket",
+      "s3:PutObject"
+    ]
+
+    resources = [
+      module.raw_zone.bucket_arn,
+      "${module.raw_zone.bucket_arn}/unrestricted/addresses_api/*"
+    ]
+
+    principals = {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${var.aws_api_account_id}:root",
+        "arn:aws:iam::${var.aws_api_account_id}:role/${lower(local.identifier_prefix)}-s3-to-s3-copier-lambda"
+      ]
+    }
+  }
+
+  s3_to_s3_copier_for_addresses_api_raw_zone_key_statement = {
+    sid    = "S3ToS3CopierForAddressesAPIAccessToRawZoneKey"
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt"
+    ]
+
+    principals = {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${var.aws_api_account_id}:root",
+        "arn:aws:iam::${var.aws_api_account_id}:role/${lower(local.identifier_prefix)}-s3-to-s3-copier-lambda"
+      ]
+    }
+  }
+
 }
 
 module "landing_zone" {
@@ -50,30 +90,30 @@ module "landing_zone" {
 }
 
 module "raw_zone" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Raw Zone"
-  bucket_identifier = "raw-zone"
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Raw Zone"
+  bucket_identifier              = "raw-zone"
+  role_arns_to_share_access_with = [var.sync_production_to_pre_production_task_role]
+  bucket_policy_statements       = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement] : []
+  bucket_key_policy_statements   = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement] : []
 
-  role_arns_to_share_access_with = concat(
-    local.is_production_environment ? [module.db_snapshot_to_s3[0].s3_to_s3_copier_lambda_role_arn] : [],
-  [var.sync_production_to_pre_production_task_role])
 }
 
 module "refined_zone" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Refined Zone"
-  bucket_identifier = "refined-zone"
-  role_arns_to_share_access_with  = [var.sync_production_to_pre_production_task_role]
-  bucket_policy_statements        = [local.rentsense_refined_zone_access_statement]
-  bucket_key_policy_statements    = [local.rentsense_refined_zone_key_statement]
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Refined Zone"
+  bucket_identifier              = "refined-zone"
+  role_arns_to_share_access_with = [var.sync_production_to_pre_production_task_role]
+  bucket_policy_statements       = [local.rentsense_refined_zone_access_statement]
+  bucket_key_policy_statements   = [local.rentsense_refined_zone_key_statement]
 }
 
 module "trusted_zone" {
