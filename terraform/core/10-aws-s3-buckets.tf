@@ -56,7 +56,7 @@ locals {
       type = "AWS"
       identifiers = [
         "arn:aws:iam::${var.aws_api_account_id}:root",
-        "arn:aws:iam::${var.aws_api_account_id}:role/dataplatform-prod-s3-to-s3-copier-lambda"
+        module.db_snapshot_to_s3[0].s3_to_s3_copier_lambda_role_arn
       ]
     }
   }
@@ -72,7 +72,7 @@ locals {
       type = "AWS"
       identifiers = [
         "arn:aws:iam::${var.aws_api_account_id}:root",
-        "arn:aws:iam::${var.aws_api_account_id}:role/dataplatform-prod-s3-to-s3-copier-lambda"
+        module.db_snapshot_to_s3[0].s3_to_s3_copier_lambda_role_arn
       ]
     }
   }
