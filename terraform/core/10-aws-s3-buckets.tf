@@ -38,7 +38,7 @@ locals {
     }
   }
 
-  s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_prod_statement = {
+  s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement = {
     sid    = "AllowS3toS3CopierForAddressesAPIWriteAccessToRawZoneUnrestrictedAddressesAPILocation"
     effect = "Allow"
 
@@ -56,12 +56,12 @@ locals {
       type = "AWS"
       identifiers = [
         "arn:aws:iam::${var.aws_api_account_id}:root",
-        module.db_snapshot_to_s3[0].s3_to_s3_copier_lambda_role_arn
+        "arn:aws:iam::${var.aws_api_account_id}:role/${lower(var.identifier_prefix)}-s3-to-s3-copier-lambda"
       ]
     }
   }
 
-  s3_to_s3_copier_for_addresses_api_raw_zone_key_prod_statement = {
+  s3_to_s3_copier_for_addresses_api_raw_zone_key_statement = {
     sid    = "S3ToS3CopierForAddressesAPIAccessToRawZoneKey"
     effect = "Allow"
     actions = [
@@ -72,7 +72,7 @@ locals {
       type = "AWS"
       identifiers = [
         "arn:aws:iam::${var.aws_api_account_id}:root",
-        module.db_snapshot_to_s3[0].s3_to_s3_copier_lambda_role_arn
+        "arn:aws:iam::${var.aws_api_account_id}:role/${lower(var.identifier_prefix)}-s3-to-s3-copier-lambda"
       ]
     }
   }
@@ -98,8 +98,8 @@ module "raw_zone" {
   bucket_name                    = "Raw Zone"
   bucket_identifier              = "raw-zone"
   role_arns_to_share_access_with = [var.sync_production_to_pre_production_task_role]
-  bucket_policy_statements       = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_prod_statement] : []
-  bucket_key_policy_statements   = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_raw_zone_key_prod_statement] : []
+  bucket_policy_statements       = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement] : []
+  bucket_key_policy_statements   = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement] : []
 
 }
 
