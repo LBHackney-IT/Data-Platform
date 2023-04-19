@@ -56,7 +56,7 @@ locals {
       type = "AWS"
       identifiers = [
         "arn:aws:iam::${var.aws_api_account_id}:root",
-        "arn:aws:iam::${var.aws_api_account_id}:role/${lower(var.identifier_prefix)}-s3-to-s3-copier-lambda"
+        "arn:aws:iam::${var.aws_api_account_id}:role/${lower(local.identifier_prefix)}-s3-to-s3-copier-lambda"
       ]
     }
   }
@@ -72,7 +72,7 @@ locals {
       type = "AWS"
       identifiers = [
         "arn:aws:iam::${var.aws_api_account_id}:root",
-        "arn:aws:iam::${var.aws_api_account_id}:role/${lower(var.identifier_prefix)}-s3-to-s3-copier-lambda"
+        "arn:aws:iam::${var.aws_api_account_id}:role/${lower(local.identifier_prefix)}-s3-to-s3-copier-lambda"
       ]
     }
   }
