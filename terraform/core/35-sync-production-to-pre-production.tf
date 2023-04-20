@@ -211,7 +211,7 @@ resource "aws_s3_bucket_replication_configuration" "refined_zone" {
 }
 resource "aws_s3_bucket_replication_configuration" "trusted_zone" {
   count  = local.is_production_environment ? 1 : 0
-  role   = var.sync_production_to_pre_production_task_role
+  role   = aws_iam_role.prod_to_pre_prod_s3_sync_role.arn
   bucket = module.trusted_zone.bucket_id
 
   rule {
