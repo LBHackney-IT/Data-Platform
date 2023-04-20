@@ -1,3 +1,11 @@
+data "aws_secretsmanager_secret" "pre_production_account_id" {
+  name = "manually-managed-value-pre-prod-account-id"
+}
+
+data "aws_secretsmanager_secret_version" "pre_production_account_id" {
+  secret_id = data.aws_secretsmanager_secret.pre_production_account_id.id
+}
+
 data "aws_iam_policy_document" "ecs_assume_role" {
   statement {
     actions = [
@@ -287,9 +295,9 @@ data "aws_iam_policy_document" "prod_to_pre_prod_s3_sync_policy" {
       module.raw_zone.kms_key_arn,
       module.refined_zone.kms_key_arn,
       module.trusted_zone.kms_key_arn,
-      "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0",
-      "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21",
-      "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"
+      "arn:aws:kms:eu-west-2:${data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}:key/03a1da8d-955d-422d-ac0f-fd27946260c0",
+      "arn:aws:kms:eu-west-2:${data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21",
+      "arn:aws:kms:eu-west-2:${data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}:key/49166434-f10b-483c-81e4-91f099e4a8a0"
     ]
   }
 
