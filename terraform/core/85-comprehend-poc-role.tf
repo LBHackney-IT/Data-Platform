@@ -31,7 +31,7 @@ resource "aws_iam_policy" "comprehend_policy" {
 }
 
 resource "aws_iam_policy_attachment" "name" {
-  count = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
   name       = "${local.short_identifier_prefix}comprehend-poc"
   roles      = [aws_iam_role.comprehend_role[0].name]
   policy_arn = aws_iam_policy.comprehend_policy[0].arn
