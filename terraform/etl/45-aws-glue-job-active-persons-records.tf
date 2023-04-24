@@ -1,5 +1,5 @@
 locals {
-  active_persons_environment_count = local.is_live_environment
+  active_persons_environment_count = local.is_live_environment ? 1 : 0
 }
 
 module "active_persons_records_refined" {
