@@ -3,8 +3,8 @@ data "aws_iam_policy_document" "department_data_and_insight_all_zones_read_acces
     sid    = "AllowReadAccessToAllZones"
     effect = "Allow"
     actions = [
-      "s3:GetObject*",
-      "s3:ListBucket"
+      "s3:List*",
+      "s3:Get*"
     ]
     resources = [
       module.landing_zone.bucket_arn,
