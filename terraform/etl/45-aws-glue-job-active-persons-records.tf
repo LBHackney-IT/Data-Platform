@@ -11,7 +11,6 @@ module "active_persons_records_refined" {
   job_name                       = "${local.short_identifier_prefix}Active person records to refined"
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage_data_source.bucket_id
-  glue_role_arn                  = data.aws_iam_role.glue_role.arn
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = 10
   glue_version                   = "3.0"
