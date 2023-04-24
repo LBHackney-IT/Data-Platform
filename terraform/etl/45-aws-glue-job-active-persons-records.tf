@@ -1,12 +1,7 @@
-locals {
-  active_persons_environment_count = local.is_live_environment && !local.is_production_environment ? 1 : 0
-}
-
 module "active_persons_records_refined" {
   source                         = "../modules/aws-glue-job"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
-  count                          = local.active_persons_environment_count
   department                     = module.department_data_and_insight_data_source
   job_name                       = "${local.short_identifier_prefix}Active person records to refined"
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
@@ -61,12 +56,10 @@ resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
   type     = "SCHEDULED"
   schedule = "cron(0 22 * * ? *)"
   enabled  = local.is_live_environment
-  count    = local.active_persons_environment_count
 
   actions {
-    job_name = module.active_persons_records_refined[0].job_name
+    job_name = module.active_persons_records_refined.job_name
   }
 
 }
-
 
