@@ -1,5 +1,5 @@
 locals {
-  active_persons_environment_count = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  active_persons_environment_count = local.is_live_environment ? 1 : 0
 }
 
 module "active_persons_records_refined" {
@@ -68,5 +68,4 @@ resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
   }
 
 }
-
 
