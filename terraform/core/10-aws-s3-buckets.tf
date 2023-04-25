@@ -43,7 +43,9 @@ locals {
     effect = "Allow"
 
     actions = [
-      "s3:*"
+      "s3:ListBucket",
+      "s3:PutObject",
+      "s3:PutObjectAcl"
     ]
 
     resources = [
