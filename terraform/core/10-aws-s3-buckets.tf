@@ -48,7 +48,7 @@ locals {
 
     resources = [
       module.raw_zone.bucket_arn,
-      "${module.raw_zone.bucket_arn}/*"
+      "${module.raw_zone.bucket_arn}/unrestricted/addresses_api/*"
     ]
 
     principals = {
@@ -64,7 +64,8 @@ locals {
     sid    = "S3ToS3CopierForAddressesAPIAccessToRawZoneKey"
     effect = "Allow"
     actions = [
-      "kms:*"
+      "kms:Encrypt",
+      "kms:GenerateDataKey*"
     ]
 
     principals = {
