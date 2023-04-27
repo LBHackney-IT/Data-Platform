@@ -60,7 +60,7 @@ resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
   tags     = module.department_data_and_insight_data_source.tags
   type     = "SCHEDULED"
   schedule = "cron(0 22 * * ? *)"
-  enabled  = local.is_live_environment
+  enabled  = local.is_production_environment
   count    = local.active_persons_environment_count
 
   actions {
