@@ -14,6 +14,7 @@ Dataframe written as Parquet in S3.
 
 import argparse
 
+from pyspark.ml.feature import Imputer
 # from great_expectations.dataset import SparkDFDataset
 
 from pyspark.sql.functions import col, when, trim, length, lit, expr
@@ -26,7 +27,9 @@ from scripts.helpers.helpers import add_import_time_columns, PARTITION_KEYS, \
 import scripts.helpers.damp_and_mould_inputs as inputs
 from scripts.helpers.housing_disrepair_helpers import prepare_input_datasets, set_target, \
     get_total_occupants_housing_benefit, get_total_occupants, group_number_of_bedrooms, get_external_walls, \
-    get_communal_area, get_roof_insulation, get_boilers, get_open_air_walkways, get_vulnerability_score, get_main_fuel
+    get_communal_area, get_roof_insulation, get_boilers, get_open_air_walkways, get_vulnerability_score, get_main_fuel, \
+    clean_boolean_features, drop_rows_with_nulls, impute_missing_values, one_hot_encode_categorical_features, \
+    prepare_index_field, assemble_vector_of_features, scale_continuous_features
 
 
 def main():
@@ -54,6 +57,8 @@ def main():
     local_args, _ = parser.parse_known_args()
     mode = local_args.execution_mode
 
+    impute_data = False
+
     with ExecutionContextProvider(mode, glue_args, local_args) as execution_context:
         logger = execution_context.logger
         spark = execution_context.spark_session
@@ -74,18 +79,18 @@ def main():
 
         df = set_target(dataframe=df, target=inputs.target)
 
+        df = prepare_index_field(dataframe=df, column='uprn')
+
         df = get_total_occupants_housing_benefit(dataframe=df, hb_num_children='no_of_children',
                                                  hb_num_adults='no_of_adults')
 
         df = get_total_occupants(dataframe=df, new_column_name='total_occupants',
-                                 occupancy_columns=inputs.occupants, child_count='child_count')
-        inputs.cont_cols.append('total_occupants')
-
-        # drop rows without a total occupants value
-        df = df.filter((col('total_occupants') > 0)).select('*')
+                                 occupancy_columns=inputs.occupants, child_count='child_count',
+                                 inputs_list_to_update=inputs.cont_cols)
 
         df = group_number_of_bedrooms(dataframe=df, bedroom_column='number_of_bedrooms',
-                                      new_column_name='number_bedrooms_bands')
+                                      new_column_name='number_bedrooms_bands',
+                                      inputs_list_to_update=inputs.cat_cols)
 
         df = get_external_walls(dataframe=df, attachment_column='Attachment', new_column_name='flag_has_external_walls')
 
@@ -105,54 +110,33 @@ def main():
         df = get_vulnerability_score(dataframe=df, vulnerability_dict=inputs.vulnerability_cols,
                                      new_column_name='vulnerability_score')
 
-        # fill bool nas with zero
-        # update bools list
-        df_cols = df.schema.names
-        inputs.bool_cols = [c for c in inputs.bool_cols if c in df_cols]
-        # convert to int
-        for bool_col in inputs.bool_cols:
-            df = df.withColumn(bool_col, col(bool_col).cast('int'))
-
-        print(inputs.bool_cols)
-        df = df.fillna(value=0, subset=inputs.bool_cols)
-
-        # drop rows without key data
-        df = df.filter(trim(col('band_tenancy_length')) != '')
-
-        # # drop columns no longer needed
+        # keep features of interest
         df = df.select(*inputs.ml_cols)
 
+        # clean boolean features
+        df = clean_boolean_features(dataframe=df, bool_list=inputs.bool_cols)
+
+        df = drop_rows_with_nulls(dataframe=df, features_list=['number_bedrooms_bands', 'band_tenancy_length',
+                                                               'total_occupants', 'typologies'])
+
         # impute missing values
-        # imputer = SimpleImputer(missing_values=np.NaN, strategy='median')
-        # df['total_occupants'] = imputer.fit_transform(df['total_occupants'].values.reshape(-1, 1))
+        if impute_data:
+            columns_to_impute = []
+            df = impute_missing_values(dataframe=df, features_to_impute=columns_to_impute, strategy='median', suffix='')
 
-        # set what target to use - this will be the flag_mould_repair column
-        # cols_reordered = [c for c in df.columns if c not in ['target']] + ['target']
-        # df = df[cols_reordered].copy()
-        #
-        # # drop date columns
-        # df = df.drop(columns=date_cols)
-        #
-        # print(f'Number rows: {df.shape[0]}\nNumber columns: {df.shape[1]}')
-        # print(f'Proportion of tenancies with a damp and mould repair:')
-        # print(f'{(df.target.value_counts()[1] / df.shape[0]) * 100:.2f}%')
+        # One Hot Encode categorical features
+        df = one_hot_encode_categorical_features(dataframe=df, string_columns=inputs.cat_cols)
 
-        df.summary().show()
-        df.show(100)
-        df.printSchema()
+        df = scale_continuous_features(dataframe=df, cols_to_scale=['total_occupants', 'vulnerability_score'])
+
+        df = assemble_vector_of_features(dataframe=df, cols_to_omit=['uprn', 'target'])
+
+        # df.summary().show()
+        df.show(10)
+        # df.printSchema()
         logger.info(f'{df.count()}')
-        # logger.info(f'{df.schema.names}')
+        #
 
-        # housing_cleaned = prepare_clean_housing_data(person_df, assets_df, tenure_df)
-        # housing_cleaned = remove_deceased(housing_cleaned)
-        # housing = standardize_housing_data(housing_cleaned)
-        # logger.info(f'housing df cleaned and standardised')
-        #
-        #
-        # logger.info(f'Starting to union dataframes...')
-        # # standard_df = housing.union(council_tax).union(housing_benefit).union(parking_permit).coalesce(10)
-        # # logger.info(f'Standard df ready...starting dq tests')
-        #
         # # make data quality checks using Great Expectations
         # df_ge = SparkDFDataset(standard_df)
         # # check for uniqueness and record any anomalies

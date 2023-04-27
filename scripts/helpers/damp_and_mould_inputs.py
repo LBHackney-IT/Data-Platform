@@ -21,7 +21,6 @@ occupants = ['no_of_people_hb', 'num_of_people_ctax', 'person_count', 'est_num_o
 
 bool_cols = [
     'counter_of_live_hb_claim',
-    #             'flag_current_tenancy',
     'flag_void_before_tenancy',
     'council_has_uc',
     'flag_ten_sust'
@@ -35,6 +34,7 @@ cat_cols = ['estate_street',
             'Heated Rooms',
             'Heating',
             'main_fuel_type',
+            'band_tenancy_length',
             #             'building_age_band',
             'conservation_area',
             'estate_name',
@@ -74,8 +74,6 @@ cont_cols = [
     'est_num_occupants',
     'sum_reps_with_wetroom_pre_2019',
     'sum_reps_with_wetroom',
-    #             'days_between_tenancies',
-    #             'total_number_of_dwellings'
 ]
 
 deleted_estates = ['Aikin Court Estate *Demolished*',
@@ -114,7 +112,6 @@ ml_cols = ['uprn',
            'typologies',
            'estate_street',
            'band_tenancy_length',
-           'days_between_tenancies',
            'flag_void_before_tenancy',
            'flag_ten_sust',
            'total_occupants',

@@ -12,19 +12,19 @@ from graphframes import GraphFrame
 from pyspark.ml import Pipeline
 from pyspark.ml.classification import LogisticRegression, LogisticRegressionModel
 from pyspark.ml.evaluation import BinaryClassificationEvaluator, MulticlassClassificationEvaluator
-from pyspark.ml.feature import StringIndexer, OneHotEncoder, VectorAssembler
+from pyspark.ml.feature import StringIndexer, OneHotEncoder, VectorAssembler, Imputer, StandardScaler
 from pyspark.ml.functions import vector_to_array
 from pyspark.ml.tuning import ParamGridBuilder, CrossValidator, CrossValidatorModel
 from pyspark.sql import DataFrame, SparkSession, Column
 from pyspark.sql.functions import to_date, col, lit, broadcast, udf, when, substring, lower, concat_ws, soundex, \
     regexp_replace, trim, split, struct, arrays_zip, array, array_sort, length, greatest, expr
 from pyspark.sql.pandas.functions import pandas_udf
-from pyspark.sql.types import StructType, StructField, StringType, DateType, BooleanType, DoubleType
+from pyspark.sql.types import StructType, StructField, StringType, DateType, BooleanType, DoubleType, ArrayType
 
 
 def convert_yn_to_bool(dataframe, columns):
     for column in columns:
-        dataframe = dataframe.withColumn(column, when(col(column) == 'Y', 1).otherwise(col(column)))\
+        dataframe = dataframe.withColumn(column, when(col(column) == 'Y', 1).otherwise(col(column))) \
             .withColumn(column, when(col(column) == 'N', 0).otherwise(col(column)))
     return dataframe
 
@@ -65,6 +65,12 @@ def set_target(dataframe, target):
     return dataframe
 
 
+def prepare_index_field(dataframe, column):
+    "This feature will be used as a unique ID and needs to be numerical"
+    dataframe = dataframe.withColumn(column, col(column).cast('float'))
+    return dataframe
+
+
 def get_total_occupants_housing_benefit(dataframe, hb_num_children, hb_num_adults):
     dataframe = dataframe.withColumn('no_of_people_hb', col(hb_num_children) + col(hb_num_adults))
     dataframe = dataframe.na.fill(value=0, subset=['no_of_people_hb'])
@@ -72,20 +78,22 @@ def get_total_occupants_housing_benefit(dataframe, hb_num_children, hb_num_adult
     return dataframe
 
 
-def get_total_occupants(dataframe, new_column_name, occupancy_columns, child_count):
+def get_total_occupants(dataframe, new_column_name, occupancy_columns, child_count, inputs_list_to_update):
     dataframe = dataframe.withColumn(new_column_name,
                                      greatest(*[col(c).cast('int').alias(c) for c in occupancy_columns]))
     dataframe = dataframe.withColumn(new_column_name,
                                      when(((col(new_column_name) == 1) & (col(child_count) > 0)),
                                           2).otherwise(col(new_column_name)))
+    inputs_list_to_update.append(new_column_name)
     return dataframe
 
 
-def group_number_of_bedrooms(dataframe, bedroom_column, new_column_name):
+def group_number_of_bedrooms(dataframe, bedroom_column, new_column_name, inputs_list_to_update):
     dataframe = dataframe.withColumn(new_column_name,
                                      when(col(bedroom_column) <= 1, '1 or more bedrooms')
                                      .otherwise('More than 1 bedrooms'))
     dataframe = dataframe.drop(bedroom_column)
+    inputs_list_to_update.append(new_column_name)
     return dataframe
 
 
@@ -159,3 +167,108 @@ def get_vulnerability_score(dataframe, vulnerability_dict, new_column_name):
             dataframe = dataframe.drop(cols)
     return dataframe
 
+
+def clean_boolean_features(dataframe, bool_list):
+    df_cols = dataframe.schema.names
+    # check that bool list is up-to-date
+    bool_list = [c for c in bool_list if c in df_cols]
+    for bool_col in bool_list:
+        dataframe = dataframe.withColumn(bool_col, col(bool_col).cast('int'))
+    dataframe = dataframe.fillna(value=0, subset=bool_list)
+    return dataframe
+
+
+def drop_rows_with_nulls(dataframe, features_list):
+    # drop rows without key data, using character length
+    for feat in features_list:
+        dataframe = dataframe.filter(~(length(trim(col(feat))) == 0))
+    return dataframe
+
+
+def impute_missing_values(dataframe, features_to_impute, strategy, suffix):
+    imputer = Imputer(
+        inputCols=features_to_impute,
+        outputCols=[f'{a}{suffix}' for a in features_to_impute]
+    ).setStrategy(strategy)
+    dataframe = imputer.fit(dataframe).transform(dataframe)
+    return dataframe
+
+
+def one_hot_encode_categorical_features(dataframe, string_columns):
+    df_cols = dataframe.schema.names
+    # check that bool list is up-to-date
+    columns = [c for c in string_columns if c in df_cols]
+    output_cols = [f'{a}_vec' for a in columns]
+
+    # apply string indexer
+    string_indexer = StringIndexer(inputCols=columns, outputCols=output_cols)
+    indexer_fitted = string_indexer.fit(dataframe)
+    df_indexed = indexer_fitted.transform(dataframe)
+    df_indexed = df_indexed.drop(*columns)
+
+    #  apply one hot encoder
+    output_ohe = [f'{a}_ohe' for a in columns]
+    encoder = OneHotEncoder(inputCols=output_cols, outputCols=output_ohe, dropLast=False)
+    df_ohe = encoder.fit(df_indexed).transform(df_indexed)
+    df_ohe = df_ohe.drop(*output_cols)
+
+    # create set of binary columns so that features can be interpreted post model training
+    for n, ohe in enumerate(output_ohe):
+        df_ohe = df_ohe.select('*', vector_to_array(ohe).alias(f'col_{ohe}'))
+        # prepare for expanding into individual binary columns
+        num_categories = len(df_ohe.first()[f'col_{ohe}'])
+        # get column labels
+        labels = [i.strip().replace(".", "_").replace("-", "_").replace(" ", "_") for i in
+                  indexer_fitted.labelsArray[n]]
+        cols_expanded = [(col(f'col_{ohe}')[i].alias(f'{labels[i]}')) for i in range(num_categories)]
+        df_ohe = df_ohe.select('*', *cols_expanded)
+        df_ohe = df_ohe.drop(ohe)
+        df_ohe = df_ohe.drop(f'col_{ohe}')
+
+    return df_ohe
+
+
+def array_to_list(vector_column):
+    def to_list(vector):
+        return vector.toArray().tolist()
+    return udf(to_list, ArrayType(DoubleType()))(vector_column)
+
+
+def scale_continuous_features(dataframe, cols_to_scale):
+    scaler = StandardScaler(inputCol='selected_cols_assembled', outputCol='scaled_cols')
+    vector_assembler = VectorAssembler().setInputCols(cols_to_scale).setOutputCol('selected_cols_assembled')
+    df_vec = vector_assembler.transform(dataframe)
+    df_scaled = scaler.fit(df_vec.select('selected_cols_assembled')).transform(df_vec)
+    df_scaled = df_scaled.drop('selected_cols_assembled', *cols_to_scale)
+    # extract scaled columns out
+    df_scaled = df_scaled.select('*', array_to_list(col('scaled_cols')).alias('scaled_col_list')) \
+        .select('*', *[col('scaled_col_list')[i].alias(cols_to_scale[i]) for i in range(2)])
+    df_scaled = df_scaled.drop(*['scaled_cols', 'scaled_col_list'])
+    return df_scaled
+
+
+def assemble_vector_of_features(dataframe, cols_to_omit):
+    # vectorise features into a single column
+    cols = [col for col in dataframe.schema.names if col not in cols_to_omit]
+    vector_assembler = VectorAssembler(inputCols=cols, outputCol='features')
+    df_assembled = vector_assembler.transform(dataframe)
+    return df_assembled
+
+# def build_pipeline(dataframe, columns, suffix):
+#     df_cols = dataframe.schema.names
+#     # check that bool list is up-to-date
+#     columns = [c for c in columns if c in df_cols]
+#     output_cols = [f'{a}{suffix}' for a in columns]
+#     string_indexer = StringIndexer(inputCols=columns, outputCols=output_cols)
+#     #  apply one hot encoder
+#     output_ohe = [f'{a}_ohe' for a in columns]
+#     encoder = OneHotEncoder(inputCols=output_cols, outputCols=output_ohe, dropLast=False)
+#     # vectorise features into a single column
+#     vector_assembler = VectorAssembler(
+#         inputCols=["uprn_vec", "title_vec", "date_of_birth_vec", "first_name_similar", "middle_name_similar",
+#                    "last_name_similar", "name_similarity", "address_line_1_similarity", "address_line_2_similarity",
+#                    "full_address_similarity"], outputCol='features')
+#     classifier = LogisticRegression(featuresCol='features', labelCol='target',
+#                                     standardization=False)
+#
+#     pipeline = Pipeline(stages=[string_indexer, one_hot_encoder, vector_assembler, classifier])
