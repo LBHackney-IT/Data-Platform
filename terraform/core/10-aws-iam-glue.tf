@@ -184,7 +184,8 @@ data "aws_iam_policy_document" "access_to_s3_iam_and_secrets" {
     resources = [
       aws_secretsmanager_secret.sheets_credentials_housing.arn,
       aws_secretsmanager_secret.tascomi_api_public_key.id,
-      aws_secretsmanager_secret.tascomi_api_private_key.id
+      aws_secretsmanager_secret.tascomi_api_private_key.id,
+      "arn:aws:secretsmanager:${var.aws_deploy_region}:${var.aws_deploy_account_id}:secret:${local.identifier_prefix}/${module.department_data_and_insight.identifier}/*"
     ]
   }
 }
