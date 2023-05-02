@@ -19,7 +19,7 @@ def convert_yn_to_bool(dataframe, columns):
     return dataframe
 
 
-def prepare_input_datasets(repairs_df, tenure_df, repairs_cols, tenure_df_columns, deleted_estates):
+def prepare_input_datasets(repairs_df, tenure_df, tenure_df_columns, deleted_estates):
     # drop columns not needed in MVP model
     cols_to_drop = [column for column in repairs_df.columns if
                     (column.endswith('_before_ld') | column.endswith('_last_2000'))]
