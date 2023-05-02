@@ -185,8 +185,8 @@ module "trusted_zone" {
     var.sync_production_to_pre_production_task_role
   ]
 
-  bucket_policy_statements     = local.is_live_environment && !local.is_production_environment ? [] : [local.prod_to_pre_prod_trusted_zone_data_sync_statement_for_pre_prod]
-  bucket_key_policy_statements = local.is_live_environment && !local.is_production_environment ? [] : [local.prod_to_pre_prod_data_sync_access_to_trusted_zone_key_statement_for_pre_prod]
+  bucket_policy_statements     = local.is_live_environment && local.is_production_environment ? [] : [local.prod_to_pre_prod_trusted_zone_data_sync_statement_for_pre_prod]
+  bucket_key_policy_statements = local.is_live_environment && local.is_production_environment ? [] : [local.prod_to_pre_prod_data_sync_access_to_trusted_zone_key_statement_for_pre_prod]
 }
 
 module "glue_scripts" {
