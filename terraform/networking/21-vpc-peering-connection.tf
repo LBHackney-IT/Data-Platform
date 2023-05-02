@@ -58,3 +58,4 @@ module "dp_stg_prod_vpc_peering_cross_account" {
   accepter_vpc_id                          = var.aws_dp_vpc_id
   accepter_allow_remote_vpc_dns_resolution = "false"
 }
+#
