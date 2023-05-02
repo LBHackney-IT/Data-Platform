@@ -2,3 +2,4 @@ pytest-watch
 freezegun
 pytest-mock
 pydeequ
+great_expectations
