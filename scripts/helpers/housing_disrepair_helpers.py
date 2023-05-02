@@ -1,25 +1,15 @@
 """
-Functions and objects relating to housing disrepair analysis.
+Functions and objects relating to housing disrepair analysis, specifically for damp and mould predictions.
+
+TODO
+* docstrings
+* ml models and pipeline constructor
 """
 
-import re
-
-import pandas as pd
-from abydos.distance import Cosine
-from abydos.phonetic import DoubleMetaphone
-
-from graphframes import GraphFrame
-from pyspark.ml import Pipeline
-from pyspark.ml.classification import LogisticRegression, LogisticRegressionModel
-from pyspark.ml.evaluation import BinaryClassificationEvaluator, MulticlassClassificationEvaluator
 from pyspark.ml.feature import StringIndexer, OneHotEncoder, VectorAssembler, Imputer, StandardScaler
 from pyspark.ml.functions import vector_to_array
-from pyspark.ml.tuning import ParamGridBuilder, CrossValidator, CrossValidatorModel
-from pyspark.sql import DataFrame, SparkSession, Column
-from pyspark.sql.functions import to_date, col, lit, broadcast, udf, when, substring, lower, concat_ws, soundex, \
-    regexp_replace, trim, split, struct, arrays_zip, array, array_sort, length, greatest, expr
-from pyspark.sql.pandas.functions import pandas_udf
-from pyspark.sql.types import StructType, StructField, StringType, DateType, BooleanType, DoubleType, ArrayType
+from pyspark.sql.functions import col, lit, udf, when, trim, length, greatest, expr
+from pyspark.sql.types import DoubleType, ArrayType
 
 
 def convert_yn_to_bool(dataframe, columns):
@@ -66,8 +56,8 @@ def set_target(dataframe, target):
 
 
 def prepare_index_field(dataframe, column):
-    "This feature will be used as a unique ID and needs to be numerical"
-    dataframe = dataframe.withColumn(column, col(column).cast('float'))
+    """This feature will be used as a unique ID and needs to be numerical/string"""
+    dataframe = dataframe.withColumn(column, col(column).cast('string'))
     return dataframe
 
 
@@ -249,26 +239,8 @@ def scale_continuous_features(dataframe, cols_to_scale):
 
 def assemble_vector_of_features(dataframe, cols_to_omit):
     # vectorise features into a single column
-    cols = [col for col in dataframe.schema.names if col not in cols_to_omit]
+    cols = [column for column in dataframe.schema.names if column not in cols_to_omit]
     vector_assembler = VectorAssembler(inputCols=cols, outputCol='features')
     df_assembled = vector_assembler.transform(dataframe)
     return df_assembled
 
-# def build_pipeline(dataframe, columns, suffix):
-#     df_cols = dataframe.schema.names
-#     # check that bool list is up-to-date
-#     columns = [c for c in columns if c in df_cols]
-#     output_cols = [f'{a}{suffix}' for a in columns]
-#     string_indexer = StringIndexer(inputCols=columns, outputCols=output_cols)
-#     #  apply one hot encoder
-#     output_ohe = [f'{a}_ohe' for a in columns]
-#     encoder = OneHotEncoder(inputCols=output_cols, outputCols=output_ohe, dropLast=False)
-#     # vectorise features into a single column
-#     vector_assembler = VectorAssembler(
-#         inputCols=["uprn_vec", "title_vec", "date_of_birth_vec", "first_name_similar", "middle_name_similar",
-#                    "last_name_similar", "name_similarity", "address_line_1_similarity", "address_line_2_similarity",
-#                    "full_address_similarity"], outputCol='features')
-#     classifier = LogisticRegression(featuresCol='features', labelCol='target',
-#                                     standardization=False)
-#
-#     pipeline = Pipeline(stages=[string_indexer, one_hot_encoder, vector_assembler, classifier])
