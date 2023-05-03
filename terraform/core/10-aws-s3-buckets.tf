@@ -181,6 +181,53 @@ locals {
     }
   }
 
+  prod_to_pre_prod_raw_zone_data_sync_statement_for_pre_prod = {
+    sid    = "ProdToPreProdRawZoneDataSyncAccess"
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+      "s3:PutObject*",
+      "s3:DeleteObject*",
+      "s3:ReplicateObject",
+      "s3:ReplicateTags",
+      "s3:ObjectOwnerOverrideToBucketOwner",
+      "s3:ReplicateDelete"
+    ]
+
+    resources = [
+      "arn:aws:s3:::dataplatform-stg-raw-zone",
+      "arn:aws:s3:::dataplatform-stg-raw-zone/*"
+    ]
+
+    principals = {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${data.aws_secretsmanager_secret_version.production_account_id.secret_string}:role/production-to-pre-production-s3-sync-role"
+      ]
+    }
+  }
+
+  prod_to_pre_prod_data_sync_access_to_raw_zone_key_statement_for_pre_prod = {
+    sid    = "ProdToPreProdRawZoneDataSyncKeyAccess"
+    effect = "Allow"
+    actions = [
+      "kms:RetireGrant",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:Encrypt",
+      "kms:DescribeKey",
+      "kms:Decrypt",
+      "kms:CreateGrant"
+    ]
+
+    principals = {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${data.aws_secretsmanager_secret_version.production_account_id.secret_string}:role/production-to-pre-production-s3-sync-role"
+      ]
+    }
+  }
+
 }
 
 module "landing_zone" {
@@ -202,8 +249,8 @@ module "raw_zone" {
   bucket_name                    = "Raw Zone"
   bucket_identifier              = "raw-zone"
   role_arns_to_share_access_with = [var.sync_production_to_pre_production_task_role]
-  bucket_policy_statements       = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement] : []
-  bucket_key_policy_statements   = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement] : []
+  bucket_policy_statements       = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement] : [local.prod_to_pre_prod_raw_zone_data_sync_statement_for_pre_prod]
+  bucket_key_policy_statements   = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement] : [local.prod_to_pre_prod_data_sync_access_to_raw_zone_key_statement_for_pre_prod]
 
 }
 
