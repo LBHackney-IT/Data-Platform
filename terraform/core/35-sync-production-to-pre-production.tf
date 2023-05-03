@@ -211,7 +211,7 @@ resource "aws_s3_bucket_replication_configuration" "refined_zone" {
 }
 resource "aws_s3_bucket_replication_configuration" "trusted_zone" {
   count  = local.is_production_environment ? 1 : 0
-  role   = var.sync_production_to_pre_production_task_role
+  role   = aws_iam_role.prod_to_pre_prod_s3_sync_role[0].arn
   bucket = module.trusted_zone.bucket_id
 
   rule {
@@ -220,12 +220,12 @@ resource "aws_s3_bucket_replication_configuration" "trusted_zone" {
 
     destination {
       bucket  = "arn:aws:s3:::dataplatform-stg-trusted-zone"
-      account = "120038763019"
+      account = "${data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}"
       access_control_translation {
         owner = "Destination"
       }
       encryption_configuration {
-        replica_kms_key_id = "arn:aws:kms:eu-west-2:120038763019:key/49166434-f10b-483c-81e4-91f099e4a8a0"
+        replica_kms_key_id = "arn:aws:kms:eu-west-2:${data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}:key/49166434-f10b-483c-81e4-91f099e4a8a0"
       }
     }
 
