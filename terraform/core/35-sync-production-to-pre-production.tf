@@ -171,7 +171,7 @@ resource "aws_s3_bucket_replication_configuration" "raw_zone" {
         owner = "Destination"
       }
       encryption_configuration {
-        replica_kms_key_id = "arn:aws:kms:eu-west-2:{data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}:key/03a1da8d-955d-422d-ac0f-fd27946260c0"
+        replica_kms_key_id = "arn:aws:kms:eu-west-2:${data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}:key/03a1da8d-955d-422d-ac0f-fd27946260c0"
       }
     }
 
