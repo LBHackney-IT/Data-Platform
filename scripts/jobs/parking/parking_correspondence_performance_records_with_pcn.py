@@ -5,7 +5,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS_SNAPSHOT
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -13,27 +13,37 @@ def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFra
     result = spark.sql(query)
     return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
 
+
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
-
 environment = get_glue_env_var("environment")
 
-# Script generated for node Amazon S3 - Refined - pcnfoidetails_pcn_foi_full
-AmazonS3Refinedpcnfoidetails_pcn_foi_full_node1655389546733 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-liberator-refined-zone",
+# Script generated for node Amazon S3 - refined - pcnfoidetails_pcn_foi_full
+AmazonS3refinedpcnfoidetails_pcn_foi_full_node1 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-"+environment+"-liberator-refined-zone",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 14)",
     table_name="pcnfoidetails_pcn_foi_full",
-    transformation_ctx="AmazonS3Refinedpcnfoidetails_pcn_foi_full_node1655389546733",
+    transformation_ctx="AmazonS3refinedpcnfoidetails_pcn_foi_full_node1",
 )
 
-# Script generated for node S3 bucket - Raw - liberator_pcn_ic
-S3bucketRawliberator_pcn_ic_node1 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-liberator-raw-zone",
+# Script generated for node S3 bucket  - Raw - liberator_pcn_ic
+S3bucketRawliberator_pcn_ic_node1682353070282 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-"+environment+"-liberator-raw-zone",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 14)",
     table_name="liberator_pcn_ic",
-    transformation_ctx="S3bucketRawliberator_pcn_ic_node1",
+    transformation_ctx="S3bucketRawliberator_pcn_ic_node1682353070282",
+)
+
+# Script generated for node parking_raw_zone - parking_correspondence_performance_teams
+parking_raw_zoneparking_correspondence_performance_teams_node1682353072411 = glueContext.create_dynamic_frame.from_catalog(
+    database="parking-raw-zone",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 14)",
+    table_name="parking_correspondence_performance_teams",
+    transformation_ctx="parking_raw_zoneparking_correspondence_performance_teams_node1682353072411",
 )
 
 # Script generated for node ApplyMapping
@@ -41,8 +51,27 @@ SqlQuery0 = """
 /* 
 Correspondence Performance records last 13 months with PCN FOI records
 16/06/2022 - Created 
+21/04/2023 - added teams data from google spreadsheet load - https://docs.google.com/spreadsheets/d/1zxZXX1_qU9NW93Ug1JUy7aXsnTz45qIj7Zftmi9trbI/edit?usp=sharing
 
 */
+With team as (
+select distinct start_date as t_start_date
+,end_date   as t_end_date
+,team   as t_team
+,team_name   as t_team_name
+,role   as t_role
+,forename   as t_forename
+,surname   as t_surname
+,full_name   as t_full_name
+,qa_doc_created_by   as t_qa_doc_created_by
+,qa_doc_full_name   as t_qa_doc_full_name
+,post_title   as t_post_title
+,notes  as t_notes
+,import_date   as t_import_date--* 
+from parking_correspondence_performance_teams where import_date = (select max(import_date)  from parking_correspondence_performance_teams ) 
+)
+
+
 Select  
 case
 when liberator_pcn_ic.date_received != '' AND liberator_pcn_ic.whenassigned = '' then 'Unassigned'
@@ -241,35 +270,41 @@ Response_generated_at
 ,pcnfoidetails_pcn_foi_full.import_month as pcn_import_month
 ,pcnfoidetails_pcn_foi_full.import_day as pcn_import_day
 ,pcnfoidetails_pcn_foi_full.import_date as pcn_import_date
+,team.*
+
+
 from liberator_pcn_ic
 left join pcnfoidetails_pcn_foi_full on liberator_pcn_ic.ticketserialnumber = pcnfoidetails_pcn_foi_full.pcn and pcnfoidetails_pcn_foi_full.import_date = liberator_pcn_ic.import_date
+left join team on upper(team.t_full_name) = upper(liberator_pcn_ic.Response_written_by)
 
 where liberator_pcn_ic.import_Date = (Select MAX(liberator_pcn_ic.import_date) from liberator_pcn_ic)
 AND length(liberator_pcn_ic.ticketserialnumber) = 10
 AND cast(substr(liberator_pcn_ic.date_received, 1, 10) as date)  > current_date  - interval '13' month  --Last 13 months from todays date
+
 """
 ApplyMapping_node2 = sparkSqlQuery(
     glueContext,
     query=SqlQuery0,
     mapping={
-        "liberator_pcn_ic": S3bucketRawliberator_pcn_ic_node1,
-        "pcnfoidetails_pcn_foi_full": AmazonS3Refinedpcnfoidetails_pcn_foi_full_node1655389546733,
+        "pcnfoidetails_pcn_foi_full": AmazonS3refinedpcnfoidetails_pcn_foi_full_node1,
+        "liberator_pcn_ic": S3bucketRawliberator_pcn_ic_node1682353070282,
+        "parking_correspondence_performance_teams": parking_raw_zoneparking_correspondence_performance_teams_node1682353072411,
     },
     transformation_ctx="ApplyMapping_node2",
 )
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_correspondence_performance_records_with_pcn/",
+    path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_correspondence_performance_records_with_pcn/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day", "import_date"],    
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
     compression="snappy",
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )
 S3bucket_node3.setCatalogInfo(
-    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
+    catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",
     catalogTableName="parking_correspondence_performance_records_with_pcn",
 )
 S3bucket_node3.setFormat("glueparquet")
