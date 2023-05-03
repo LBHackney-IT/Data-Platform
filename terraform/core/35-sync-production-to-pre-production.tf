@@ -157,7 +157,7 @@ module "sync_production_to_pre_production" {
 
 resource "aws_s3_bucket_replication_configuration" "raw_zone" {
   count  = local.is_production_environment ? 1 : 0
-  role   = var.sync_production_to_pre_production_task_role
+  role   = aws_iam_role.prod_to_pre_prod_s3_sync_role[0].arn
   bucket = module.raw_zone.bucket_id
 
   rule {
@@ -166,12 +166,12 @@ resource "aws_s3_bucket_replication_configuration" "raw_zone" {
 
     destination {
       bucket  = "arn:aws:s3:::dataplatform-stg-raw-zone"
-      account = "120038763019"
+      account = data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string
       access_control_translation {
         owner = "Destination"
       }
       encryption_configuration {
-        replica_kms_key_id = "arn:aws:kms:eu-west-2:120038763019:key/03a1da8d-955d-422d-ac0f-fd27946260c0"
+        replica_kms_key_id = "arn:aws:kms:eu-west-2:{data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}:key/03a1da8d-955d-422d-ac0f-fd27946260c0"
       }
     }
 
@@ -184,7 +184,7 @@ resource "aws_s3_bucket_replication_configuration" "raw_zone" {
 }
 resource "aws_s3_bucket_replication_configuration" "refined_zone" {
   count  = local.is_production_environment ? 1 : 0
-  role   = var.sync_production_to_pre_production_task_role
+  role   = aws_iam_role.prod_to_pre_prod_s3_sync_role[0].arn
   bucket = module.refined_zone.bucket_id
 
   rule {
@@ -193,12 +193,12 @@ resource "aws_s3_bucket_replication_configuration" "refined_zone" {
 
     destination {
       bucket  = "arn:aws:s3:::dataplatform-stg-refined-zone"
-      account = "120038763019"
+      account = data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string
       access_control_translation {
         owner = "Destination"
       }
       encryption_configuration {
-        replica_kms_key_id = "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21"
+        replica_kms_key_id = "arn:aws:kms:eu-west-2:${data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21"
       }
     }
 
