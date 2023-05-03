@@ -67,26 +67,6 @@ resource "aws_security_group_rule" "datahub_mce_ingress" {
   security_group_id        = aws_security_group.kafka.id
 }
 
-resource "aws_security_group_rule" "allow_outbound_traffic_within_sg" {
-  description              = "Allow all outbound traffic within the security group"
-  security_group_id        = aws_security_group.kafka.id
-  protocol                 = "-1"
-  from_port                = 0
-  to_port                  = 0
-  type                     = "egress"
-  source_security_group_id = aws_security_group.kafka.id
-}
-
-resource "aws_security_group_rule" "allow_inbound_traffic_within_sg" {
-  description              = "Allow all inbound traffic within the security group"
-  security_group_id        = aws_security_group.kafka.id
-  protocol                 = "-1"
-  from_port                = 0
-  to_port                  = 0
-  type                     = "ingress"
-  source_security_group_id = aws_security_group.kafka.id
-}
-
 resource "aws_security_group_rule" "allow_outbound_traffic_to_s3" {
   description       = "Allow outbound traffic to port 443 to allow writing to S3"
   security_group_id = aws_security_group.kafka.id
