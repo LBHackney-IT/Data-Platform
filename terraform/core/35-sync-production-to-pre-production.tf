@@ -220,7 +220,7 @@ resource "aws_s3_bucket_replication_configuration" "trusted_zone" {
 
     destination {
       bucket  = "arn:aws:s3:::dataplatform-stg-trusted-zone"
-      account = "${data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}"
+      account = data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string
       access_control_translation {
         owner = "Destination"
       }
