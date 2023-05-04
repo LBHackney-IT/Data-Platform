@@ -83,3 +83,9 @@ variable "pre_production_liberator_data_storage_kms_key_arn" {
   type        = string
   default     = null
 }
+
+variable "aws_sandbox_account_id" {
+  description = "AWS sandbox account id"
+  type        = string
+  default     = ""
+}
