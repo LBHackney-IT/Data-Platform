@@ -41,6 +41,9 @@ inputs:
   aws_data_platform_account_id:
     description: "AWS Data Platform account ID"
     required: true
+  aws_sandbox_account_id:
+    description: "AWS Sandbox account id to deploy to"
+    required: true
   aws_api_vpc_id:
     description: "AWS API Account VPC ID"
     required: true
@@ -101,7 +104,7 @@ runs:
       id: plan
       run: |
         ${{ github.action_path }}/../.helpers/box.sh "Running Terraform plan"
-        terraform plan -var-file='../config/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -var 'aws_housing_vpc_id=${{ inputs.aws_housing_vpc_id }}' -var 'aws_mosaic_vpc_id=${{ inputs.aws_mosaic_vpc_id }}' -var 'aws_dp_vpc_id=${{ inputs.aws_dp_vpc_id }}' -var 'copy_liberator_to_pre_prod_lambda_execution_role=${{ inputs.copy_liberator_to_pre_prod_lambda_execution_role }}' -var 'sync_production_to_pre_production_task_role=${{ inputs.sync_production_to_pre_production_task_role }}' -var 'pre_production_liberator_data_storage_kms_key_arn=${{ inputs.pre_production_liberator_data_storage_kms_key_arn }}' -input=false -out=plan.out
+        terraform plan -var-file='../config/${{ inputs.environment }}.tfvars' -var 'aws_deploy_region=${{ inputs.aws_deploy_region }}' -var 'aws_deploy_account_id=${{ inputs.aws_deploy_account_id }}' -var 'aws_api_account_id=${{ inputs.aws_api_account_id }}' -var 'aws_mosaic_prod_account_id=${{ inputs.aws_mosaic_prod_account_id }}' -var 'aws_data_platform_account_id=${{ inputs.aws_data_platform_account_id }}' -var 'aws_hackit_account_id=${{ inputs.aws_hackit_account_id }}' -var 'aws_sandbox_account_id=${{ inputs.aws_sandbox_account_id }}' -var 'aws_deploy_iam_role_name=${{ inputs.aws_deploy_iam_role_name }}' -var 'environment=${{ inputs.environment }}' -var 'google_project_id=${{ inputs.google_project_id }}' -var 'automation_build_url=${{ inputs.automation_build_url }}' -var 'aws_api_vpc_id=${{ inputs.aws_api_vpc_id }}' -var 'aws_housing_vpc_id=${{ inputs.aws_housing_vpc_id }}' -var 'aws_mosaic_vpc_id=${{ inputs.aws_mosaic_vpc_id }}' -var 'aws_dp_vpc_id=${{ inputs.aws_dp_vpc_id }}' -var 'copy_liberator_to_pre_prod_lambda_execution_role=${{ inputs.copy_liberator_to_pre_prod_lambda_execution_role }}' -var 'sync_production_to_pre_production_task_role=${{ inputs.sync_production_to_pre_production_task_role }}' -var 'pre_production_liberator_data_storage_kms_key_arn=${{ inputs.pre_production_liberator_data_storage_kms_key_arn }}' -input=false -out=plan.out
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}"
