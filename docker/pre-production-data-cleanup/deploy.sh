@@ -1,16 +1,16 @@
 #!/bin/bash
 set -eu -o pipefail
 
-if [[ $ENVIRONMENT != "prod" ]]
+if [[ $ENVIRONMENT != "stg" ]]
 then
-    echo "Exiting as not in production environment"
+    echo "Exiting as not in pre-production environment"
     exit 0;
 fi
 
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 terraform_dir="${script_dir}/../../terraform/core"
-ecr_url=$(AWS_PROFILE="" terraform -chdir=${terraform_dir} output -raw prod_to_pre_prod_ecr_repository_endpoint)
+ecr_url=$(AWS_PROFILE="" terraform -chdir=${terraform_dir} output -raw pre_prod_data_cleanup_ecr_repository_endpoint)
 
 docker build -f ${script_dir}/Dockerfile -t ${ecr_url} ${script_dir}
 

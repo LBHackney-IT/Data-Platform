@@ -18,12 +18,11 @@ resource "aws_security_group" "qlik_sense_alb" {
   revoke_rules_on_delete = true
 
   egress {
-    description      = "Allow all outbound traffic"
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    description     = "Allow outbound to target group instances security group"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "TCP"
+    security_groups = [aws_security_group.qlik_sense.id]
   }
 
   ingress {
@@ -57,12 +56,13 @@ resource "aws_alb_target_group" "qlik-sense" {
 
   health_check {
     protocol = "HTTPS"
-    path     = "/saml/hub/"
+    path     = "/hub/"
     matcher  = "302"
   }
 
   stickiness {
-    type = "lb_cookie"
+    type        = "app_cookie"
+    cookie_name = "X-Qlik-saml"
   }
 }
 
@@ -84,6 +84,11 @@ resource "aws_alb" "qlik_sense" {
   lifecycle {
     prevent_destroy = true
   }
+
+  access_logs {
+    bucket  = aws_s3_bucket.qlik_alb_logs[0].id
+    enabled = true
+  }
 }
 
 resource "aws_alb_listener" "qlik_sense_http" {
@@ -98,6 +103,7 @@ resource "aws_alb_listener" "qlik_sense_http" {
       port        = "443"
       protocol    = "HTTPS"
       status_code = "HTTP_301"
+      path        = "/saml/hub"
     }
   }
 }

@@ -23,6 +23,7 @@ module "liberator_dump_to_rds_snapshot" {
   watched_bucket_kms_key_arn = module.liberator_data_storage.kms_key_arn
   aws_subnet_ids             = data.aws_subnet_ids.network.ids
   ecs_cluster_arn            = aws_ecs_cluster.workers.arn
+  vpc_id                     = data.aws_vpc.network.id
 }
 
 module "liberator_db_snapshot_to_s3" {
@@ -45,8 +46,8 @@ module "liberator_db_snapshot_to_s3" {
 }
 
 resource "aws_glue_workflow" "parking_liberator_data" {
-  # This resource is modified outside of terraform by parking analysts.
-  # Any change which forces the workflow to be recreated will lose their changes.
+  # Components for this workflow are managed mainly in etl/38-aws-glue-job-parking.tf by parking officers
+  # There are couple of other resources that are part of the ingestion process, but the core ETL configuration is in the file mentioned above
   name = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   tags = module.tags.values
 }

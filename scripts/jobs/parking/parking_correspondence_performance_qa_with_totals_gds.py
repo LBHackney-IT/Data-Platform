@@ -23,13 +23,11 @@ job.init(args["JOB_NAME"], args)
 environment = get_glue_env_var("environment")
 
 # Script generated for node Amazon S3 - Raw - liberator_pcn_qa
-AmazonS3Rawliberator_pcn_qa_node1668440603311 = (
-    glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-"+environment+"-liberator-raw-zone",
-        push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
-        table_name="liberator_pcn_qa",
-        transformation_ctx="AmazonS3Rawliberator_pcn_qa_node1668440603311",
-    )
+AmazonS3Rawliberator_pcn_qa_node1668440603311 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-"+environment+"-liberator-raw-zone",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
+    table_name="liberator_pcn_qa",
+    transformation_ctx="AmazonS3Rawliberator_pcn_qa_node1668440603311",
 )
 
 # Script generated for node S3 bucket - refined - parking_correspondence_performance_records_with_pcn
@@ -40,12 +38,21 @@ S3bucketrefinedparking_correspondence_performance_records_with_pcn_node1 = glueC
     transformation_ctx="S3bucketrefinedparking_correspondence_performance_records_with_pcn_node1",
 )
 
+# Script generated for node parking_raw_zone - parking_correspondence_performance_teams
+parking_raw_zoneparking_correspondence_performance_teams_node1682093516418 = glueContext.create_dynamic_frame.from_catalog(
+    database="parking-raw-zone",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
+    table_name="parking_correspondence_performance_teams",
+    transformation_ctx="parking_raw_zoneparking_correspondence_performance_teams_node1682093516418",
+)
+
 # Script generated for node ApplyMapping
 SqlQuery0 = """
 /*
 For use in Google Studio to calculate the Correspondence performance for each calendar month Total number of cases and Total number of QA reviews for each month.
 
 14/11/2022 - Created job
+21/04/2023 - added teams data from google spreadsheet load - https://docs.google.com/spreadsheets/d/1zxZXX1_qU9NW93Ug1JUy7aXsnTz45qIj7Zftmi9trbI/edit?usp=sharing
 */
 with qa_tot as (select 
 case 
@@ -57,7 +64,7 @@ when qa_doc_created_by like 'dgardner' then 'Daniel Gardner'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagatolla'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagattolla'
 --Earle Nottingham	when qa_qa_doc_created_by like '' then ''
---Edson Passos	when qa_qa_doc_created_by like '' then ''
+when qa_doc_created_by like 'EPassos' then 'Edson Passos'--Edson Passos	
 when qa_doc_created_by like 'esamson' then 'Emma Samson'
 when qa_doc_created_by like 'hpatel' then 'Hamza Patel'
 when qa_doc_created_by like 'iaHenry' then 'Ian Henry'
@@ -97,9 +104,9 @@ when qa_doc_created_by like 'BAhmed' then 'Bilal Ahmed Choudhury'
 when qa_doc_created_by like 'djulian' then 'Damien Julian'
 when qa_doc_created_by like 'dgardner' then 'Daniel Gardner'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagatolla'
-when qa_doc_created_by like 'DLagatolla' then 'Davide Lagattolla'
+when qa_doc_created_by like 'DLagatolla' then 'Davide Lagatolla'
 --Earle Nottingham	when qa_qa_doc_created_by like '' then ''
---Edson Passos	when qa_qa_doc_created_by like '' then ''
+when qa_doc_created_by like 'EPassos' then 'Edson Passos'--Edson Passos	
 when qa_doc_created_by like 'esamson' then 'Emma Samson'
 when qa_doc_created_by like 'hpatel' then 'Hamza Patel'
 when qa_doc_created_by like 'iaHenry' then 'Ian Henry'
@@ -154,7 +161,7 @@ when response_written_by like  'Sonia Baxter' then 'sbaxter'
 when response_written_by like  'Wasilat Elegbede' then 'WElegbede'
 when response_written_by like  'Claire Glover' then 'Claire Glover'
 when response_written_by like  'Earle Nottingham' then 'Earle Nottingham'
-when response_written_by like  'Edson Passos' then 'Edson Passos'
+when response_written_by like  'Edson Passos' then 'EPassos'
 when response_written_by like  'Melanie Walters' then 'Melanie Walters'
 when response_written_by like  'Nohaad Al-othmani' then 'Nohaad Al-othmani'
 when response_written_by like  'Yusuf Yahya' then 'Yusuf Yahya'
@@ -182,7 +189,7 @@ when response_written_by like  'Sonia Baxter' then 'sbaxter'
 when response_written_by like  'Wasilat Elegbede' then 'WElegbede'
 when response_written_by like  'Claire Glover' then 'Claire Glover'
 when response_written_by like  'Earle Nottingham' then 'Earle Nottingham'
-when response_written_by like  'Edson Passos' then 'Edson Passos'
+when response_written_by like  'Edson Passos' then 'EPassos'
 when response_written_by like  'Melanie Walters' then 'Melanie Walters'
 when response_written_by like  'Nohaad Al-othmani' then 'Nohaad Al-othmani'
 when response_written_by like  'Yusuf Yahya' then 'Yusuf Yahya'
@@ -220,7 +227,7 @@ when response_written_by like  'Sonia Baxter' then 'sbaxter'
 when response_written_by like  'Wasilat Elegbede' then 'WElegbede'
 when response_written_by like  'Claire Glover' then 'Claire Glover'
 when response_written_by like  'Earle Nottingham' then 'Earle Nottingham'
-when response_written_by like  'Edson Passos' then 'Edson Passos'
+when response_written_by like  'Edson Passos' then 'EPassos'
 when response_written_by like  'Melanie Walters' then 'Melanie Walters'
 when response_written_by like  'Nohaad Al-othmani' then 'Nohaad Al-othmani'
 when response_written_by like  'Yusuf Yahya' then 'Yusuf Yahya'
@@ -248,7 +255,7 @@ when response_written_by like  'Sonia Baxter' then 'sbaxter'
 when response_written_by like  'Wasilat Elegbede' then 'WElegbede'
 when response_written_by like  'Claire Glover' then 'Claire Glover'
 when response_written_by like  'Earle Nottingham' then 'Earle Nottingham'
-when response_written_by like  'Edson Passos' then 'Edson Passos'
+when response_written_by like  'Edson Passos' then 'EPassos'
 when response_written_by like  'Melanie Walters' then 'Melanie Walters'
 when response_written_by like  'Nohaad Al-othmani' then 'Nohaad Al-othmani'
 when response_written_by like  'Yusuf Yahya' then 'Yusuf Yahya'
@@ -257,6 +264,23 @@ else response_written_by end,concat(substr(Cast(response_generated_at as varchar
 ,response_written_by 
 ,monthyear
 )
+, team as (
+select distinct start_date as t_start_date
+,end_date   as t_end_date
+,team   as t_team
+,team_name   as t_team_name
+,role   as t_role
+,forename   as t_forename
+,surname   as t_surname
+,full_name   as t_full_name
+,qa_doc_created_by   as t_qa_doc_created_by
+,qa_doc_full_name   as t_qa_doc_full_name
+,post_title   as t_post_title
+,notes  as t_notes
+,import_date   as t_import_date--* 
+from parking_correspondence_performance_teams where import_date = (select max(import_date)  from parking_correspondence_performance_teams ) 
+)
+
 
 SELECT
 --from qa_total
@@ -284,7 +308,7 @@ when qa_doc_created_by like 'dgardner' then 'Daniel Gardner'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagatolla'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagattolla'
 --Earle Nottingham	when qa_qa_doc_created_by like '' then ''
---Edson Passos	when qa_qa_doc_created_by like '' then ''
+when qa_doc_created_by like 'EPassos' then 'Edson Passos'--Edson Passos	
 when qa_doc_created_by like 'esamson' then 'Emma Samson'
 when qa_doc_created_by like 'hpatel' then 'Hamza Patel'
 when qa_doc_created_by like 'iaHenry' then 'Ian Henry'
@@ -316,6 +340,7 @@ FROM liberator_pcn_qa
 
 left join qa_tot on qa_tot.qatot_unique_id = concat(qa_doc_created_by,concat(substr(Cast(qa_done as varchar(10)),1, 7), '-01')  )
 left join corresp_tot on corresp_tot.corresptot_qa_unique_id = concat(qa_doc_created_by,concat(substr(Cast(qa_done as varchar(10)),1, 7), '-01')  )
+left join team on upper(team.t_qa_doc_created_by) = upper(liberator_pcn_qa.qa_doc_created_by)
 
 where import_date =(SELECT max(import_date) FROM liberator_pcn_qa)
 
@@ -326,8 +351,9 @@ ApplyMapping_node2 = sparkSqlQuery(
     glueContext,
     query=SqlQuery0,
     mapping={
-        "parking_correspondence_performance_records_with_pcn": S3bucketrefinedparking_correspondence_performance_records_with_pcn_node1,
         "liberator_pcn_qa": AmazonS3Rawliberator_pcn_qa_node1668440603311,
+        "parking_correspondence_performance_records_with_pcn": S3bucketrefinedparking_correspondence_performance_records_with_pcn_node1,
+        "parking_correspondence_performance_teams": parking_raw_zoneparking_correspondence_performance_teams_node1682093516418,
     },
     transformation_ctx="ApplyMapping_node2",
 )

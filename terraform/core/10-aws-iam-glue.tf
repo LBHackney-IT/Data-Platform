@@ -184,7 +184,8 @@ data "aws_iam_policy_document" "access_to_s3_iam_and_secrets" {
     resources = [
       aws_secretsmanager_secret.sheets_credentials_housing.arn,
       aws_secretsmanager_secret.tascomi_api_public_key.id,
-      aws_secretsmanager_secret.tascomi_api_private_key.id
+      aws_secretsmanager_secret.tascomi_api_private_key.id,
+      "arn:aws:secretsmanager:${var.aws_deploy_region}:${var.aws_deploy_account_id}:secret:/${module.department_data_and_insight.identifier}/*"
     ]
   }
 }
@@ -223,4 +224,30 @@ resource "aws_iam_policy" "can_assume_all_roles" {
 resource "aws_iam_role_policy_attachment" "attach_can_assume_all_roles_to_glue_role" {
   role       = aws_iam_role.glue_role.name
   policy_arn = aws_iam_policy.can_assume_all_roles.arn
+}
+
+data "aws_iam_policy_document" "allow_pass_role_to_interactive_notebook_session" {
+  statement {
+    sid       = "AllowRolePassingToInteractiveNotebookSession"
+    effect    = "Allow"
+    resources = [aws_iam_role.glue_role.arn]
+    actions   = ["iam:PassRole"]
+
+    condition {
+      test     = "StringLike"
+      values   = ["glue.amazonaws.com"]
+      variable = "iam:PassedToService"
+    }
+  }
+}
+
+resource "aws_iam_policy" "allow_pass_role_to_interactive_notebook_session" {
+  tags   = module.tags.values
+  name   = "${local.short_identifier_prefix}can-pass-role-to-interactive-notebook-session"
+  policy = data.aws_iam_policy_document.allow_pass_role_to_interactive_notebook_session.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_allow_pass_role_to_interactive_notebook_session" {
+  role       = aws_iam_role.glue_role.name
+  policy_arn = aws_iam_policy.allow_pass_role_to_interactive_notebook_session.arn
 }

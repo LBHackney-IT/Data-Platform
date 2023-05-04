@@ -68,11 +68,6 @@ module "department_parking" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-parking@hackney.gov.uk"
-  notebook_instance = {
-    github_repository = aws_sagemaker_code_repository.data_platform.code_repository_name
-    extra_python_libs = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.pydeequ.key}"
-    extra_jars        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.jars.key}"
-  }
 }
 
 module "department_finance" {
@@ -256,11 +251,6 @@ module "department_sandbox" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-sandbox@hackney.gov.uk"
-  notebook_instance = {
-    github_repository = aws_sagemaker_code_repository.data_platform.code_repository_name
-    extra_python_libs = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.pydeequ.key}"
-    extra_jars        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.jars.key}"
-  }
 }
 
 module "department_benefits_and_housing_needs" {
@@ -416,11 +406,6 @@ module "department_children_and_education" {
   identity_store_id                    = local.identity_store_id
   google_group_admin_display_name      = local.google_group_admin_display_name
   google_group_display_name            = "saml-aws-data-platform-collaborator-children-and-family-services@hackney.gov.uk"
-  notebook_instance = {
-    github_repository = aws_sagemaker_code_repository.data_platform.code_repository_name
-    extra_python_libs = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.pydeequ.key}"
-    extra_jars        = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.jars.key}"
-  }
 }
     
 module "department_customer_services" {
@@ -452,5 +437,4 @@ module "department_customer_services" {
   identity_store_id                    = local.identity_store_id
   google_group_admin_display_name      = local.google_group_admin_display_name
   google_group_display_name            = "saml-aws-data-platform-collaborator-customer-services@hackney.gov.uk"
-
 }

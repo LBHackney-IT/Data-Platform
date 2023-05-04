@@ -1124,3 +1124,73 @@ module "parking_defect_met_fail_monthly_format" {
     "--environment"         = var.environment
   }
 }
+module "parking_match_pcn_permit_vrm_llpg_nlpg_postcodes" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_match_pcn_permit_vrm_llpg_nlpg_postcodes"
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_match_pcn_permit_vrm_with_address_match_llpg_nlpg_postcodes"
+  trigger_enabled                = local.is_production_environment
+  triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
+  job_description                = "PCNs VRM match to Permits VRM with match to LLPG and NLPG for Registered and Current addresses Post Code for the last 13 months of pcn issue date as at run date with post code match regexp_extract"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
+}
+# MRB 17-04-2023 Job created 
+module "parking_defect_met_fail_monthly_format" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_defect_met_fail_monthly_format"
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_defect_met_fail_monthly_format"
+  glue_version                   = "3.0"
+  #triggered_by_job              = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn"
+  triggered_by_crawler           = module.parking_spreadsheet_parking_ops_db_defects_mgt[0].crawler_name
+  job_description                = "To collect and format the Ops Defect Data into a Pivot."
+  trigger_enabled                = local.is_production_environment
+  glue_job_timeout               = 10
+  number_of_workers_for_glue_job = 2
+  glue_job_worker_type           = "G.1X"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
+}
+
+module "parking_pcn_daily_print_monitoring_all" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_pcn_daily_print_monitoring_all"
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_pcn_daily_print_monitoring_all"
+  glue_version                   = "2.0"
+  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  job_description                = "Takes data from Liberator raw zone for PCN print monitoring for all event dates of the import_date"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  glue_job_timeout               = 240
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
+}

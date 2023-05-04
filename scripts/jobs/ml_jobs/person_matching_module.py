@@ -672,7 +672,7 @@ def standardize_parking_permit_data(parking_permit_cleaned: DataFrame) -> DataFr
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
     * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
     Should be of type string and can be blank.
-    * source_filter: Field to contain additional informaion on parking permits (only contains holding string for now).
+    * source_filter: Field to contain additional information on parking permits (only contains holding string for now).
     Should be of type string and can be blank.
     Args:
         parking_permit_cleaned: parking permit DataFrame after preparing and cleaning it.
@@ -697,55 +697,50 @@ def standardize_parking_permit_data(parking_permit_cleaned: DataFrame) -> DataFr
                                                  col("address_line_4"))) \
         .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"), col("middle_name"),
                 col("last_name"), col("name"), col("date_of_birth"), col("post_code"), col("address_line_1"),
-                col("address_line_2"), col("address_line_3"), col("address_line_4"), col("full_address"), col("source_filter"))
+                col("address_line_2"), col("address_line_3"), col("address_line_4"), col("full_address"),
+                col("source_filter"))
 
     return parking_permit
 
 
-def prepare_clean_schools_admissions_data(spark: SparkSession, schools_admissions_data_path: str) -> DataFrame:
+def prepare_clean_schools_admissions_data(schools_admissions_df: DataFrame) -> DataFrame:
     """A function to prepare and clean schools admissions data. Splits ou middle name from first name. Sorts address
     columns so that they are consistent with other datasets.
 
     Args:
-        spark: SparkSession
-        schools_admissions_data_path: Path of the S3 (or local) folder containing school admissions data.
+        schools_admissions_df: Dataframe containing school admissions data.
 
     Returns:
         A DataFrame after preparing data from multiple sources and cleaning it.
     """
 
-    schools_admissions_cleaned = spark.read.parquet(schools_admissions_data_path)
-
     address_cols = ["address_line_1", "address_line_2", "address_line_3", "address_line_4"]
 
-    schools_admissions_cleaned = schools_admissions_cleaned \
+    schools_admissions_cleaned = schools_admissions_df \
         .withColumn("source", lit("schools_admission")) \
-        .withColumn("source_id", col("Child ID ")) \
-        .withColumn("title", col("Title")) \
-        .withColumn("first_name", split(schools_admissions_cleaned["Contact Forename"], ' ').getItem(0)) \
-        .withColumn("middle_name", split(schools_admissions_cleaned["Contact Forename"], ' ').getItem(1)) \
-        .withColumn("last_name", col("Contact Surname")) \
+        .withColumn("source_id", col("child_id")) \
+        .withColumn("first_name", split(schools_admissions_df["contact_forename"], ' ').getItem(0)) \
+        .withColumn("middle_name", split(schools_admissions_df["contact_forename"], ' ').getItem(1)) \
+        .withColumn("last_name", col("contact_surname")) \
         .withColumn("name", regexp_replace(concat_ws(" ", col("first_name"), col("middle_name"),
                                                      col("last_name")), r"\s+", " ")) \
         .withColumn("date_of_birth", lit("")) \
-        .withColumnRenamed("First Line", "address_line_1") \
-        .withColumnRenamed("Second Line", "address_line_2") \
-        .withColumnRenamed("Third Line", "address_line_3") \
-        .withColumnRenamed("Town", "address_line_4") \
-        .withColumnRenamed("Post Code", "post_code") \
-        .withColumnRenamed("Email", "email") \
-        .withColumnRenamed("UPRN", "uprn") \
+        .withColumnRenamed("first_lLine", "address_line_1") \
+        .withColumnRenamed("second_line", "address_line_2") \
+        .withColumnRenamed("third_line", "address_line_3") \
+        .withColumnRenamed("town", "address_line_4") \
+        .withColumn("source_filter", lit("school admissions")) \
         .select(col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
                 col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
                 col("address_line_1"), col("address_line_2"), col("address_line_3"),
-                col("address_line_4"))
+                col("address_line_4"), col("source_filter"))
 
     # create a zip of address line arrays, sorted in the order of not null (False), column order
     schools_admissions_cleaned = schools_admissions_cleaned.select(
         col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
         col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
         col("address_line_1"), col("address_line_2"), col("address_line_3"),
-        col("address_line_4"),
+        col("address_line_4"), col("source_filter"),
         array_sort(
             arrays_zip(
                 array([col(c).isNull() for c in address_cols]),
@@ -758,6 +753,7 @@ def prepare_clean_schools_admissions_data(spark: SparkSession, schools_admission
     schools_admissions_cleaned = schools_admissions_cleaned.select(
         col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
         col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+        col("source_filter"),
         *[col("address_sorted")[i]['2'].alias(address_cols[i]) for i in range(4)])
 
     # rejig address lines
@@ -781,7 +777,7 @@ def prepare_clean_schools_admissions_data(spark: SparkSession, schools_admission
         .select(col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
                 col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
                 col("address_line_1"), col("address_line_2"), col("address_line_3"),
-                col("address_line_4"))
+                col("address_line_4"), col("source_filter"))
 
     return schools_admissions_cleaned
 
@@ -811,7 +807,8 @@ def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
     * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
     Should be of type string and can be blank.
-
+    * source_filter: Field to contain additional information on parking permits (only contains holding string for now).
+    Should be of type string and can be blank.
 
     Args:
         schools_admissions_cleaned: parking permit DataFrame after preparing and cleaning it.
@@ -839,7 +836,7 @@ def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -
         .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"), col("middle_name"),
                 col("last_name"), col("name"), col("date_of_birth"), col("post_code"), col("address_line_1"),
                 col("address_line_2"), col("address_line_3"), col("address_line_4"),
-                col("full_address"))
+                col("full_address"), col("source_filter"))
 
     return schools_admissions
 

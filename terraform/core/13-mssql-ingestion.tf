@@ -25,6 +25,7 @@ locals {
   table_filter_expressions = local.is_live_environment ? {
     core_hbrent_s    = "^lbhaliverbviews_core_hbrent[s].*",
     core_hbrent_hbc  = "^lbhaliverbviews_core_hbc.*",
+    core_hbuc        = "^lbhaliverbviews_core_hbuc.*",  
     core_hbrentclaim = "^lbhaliverbviews_core_hbrentclaim",
     core_hbrenttrans = "^lbhaliverbviews_core_hbrenttrans",
     core_hbrent_tsc  = "^lbhaliverbviews_core_hbrent[^tsc].*",
@@ -35,6 +36,7 @@ locals {
     current_ctax     = "^lbhaliverbviews_current_ctax.*",
     current_hbn      = "^lbhaliverbviews_current_[hbn].*",
     core_ct          = "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*",
+    core_recov_event = "^lbhaliverbviews_core_recov_event",
     mix              = "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
   } : {}
   academy_ingestion_max_concurrent_runs = local.is_live_environment ? length(local.table_filter_expressions) : 1
