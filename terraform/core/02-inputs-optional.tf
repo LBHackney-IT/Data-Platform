@@ -84,12 +84,6 @@ variable "pre_production_liberator_data_storage_kms_key_arn" {
   default     = null
 }
 
-variable "sync_production_to_pre_production_task_role" {
-  description = "Role arn for the prod to pre-prod raw, refined & trusted zones sync task. Only used in pre-production environment."
-  type        = string
-  default     = null
-}
-
 variable "aws_sandbox_subnet_ids" {
   description = "VPC subnet ids on sandbox account"
   type        = list(string)
