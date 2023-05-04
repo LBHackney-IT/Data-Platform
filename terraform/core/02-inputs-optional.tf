@@ -89,3 +89,21 @@ variable "sync_production_to_pre_production_task_role" {
   type        = string
   default     = null
 }
+
+variable "aws_sandbox_subnet_ids" {
+  description = "VPC subnet ids on sandbox account"
+  type        = list(string)
+  default     = []
+}
+
+variable "aws_sandbox_vpc_id" {
+  description = "VPC id of the sandbox account"
+  type        = string
+  default     = ""
+}
+
+variable "aws_sandbox_account_id" {
+  description = "AWS sandbox account id"
+  type        = string
+  default     = ""
+}
