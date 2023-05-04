@@ -89,3 +89,9 @@ variable "sync_production_to_pre_production_task_role" {
   type        = string
   default     = null
 }
+
+variable "aws_sandbox_account_id" {
+  description = "AWS sandbox account id"
+  type        = string
+  default     = ""
+}
