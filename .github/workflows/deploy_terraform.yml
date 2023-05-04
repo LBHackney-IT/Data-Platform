@@ -175,11 +175,6 @@ jobs:
         if: ${{ (inputs.build_path  == './terraform/core') && (success()) }}
         run: |
           AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
-
-      - name: Build and Deploy Production to Pre-Production sync Image to ECR
-        if: ${{ (inputs.build_path  == './terraform/core') && (success())  }}
-        run: |
-          ENVIRONMENT=${{ inputs.environment }} AWS_PROFILE=deploy_role ./docker/production-to-pre-production/deploy.sh
       
       - name: Build and Deploy Pre-Production clean up job Image to ECR
         if: ${{ (inputs.build_path  == './terraform/core') && (success())  }}

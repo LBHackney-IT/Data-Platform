@@ -17,10 +17,6 @@ output "liberator_dump_to_rds_snapshot_ecr_repository_worker_endpoint" {
   value = try(module.liberator_dump_to_rds_snapshot[0].ecr_repository_worker_endpoint, null)
 }
 
-output "prod_to_pre_prod_ecr_repository_endpoint" {
-  value = try(module.sync_production_to_pre_production[0].ecr_repository_worker_endpoint, null)
-}
-
 output "pre_prod_data_cleanup_ecr_repository_endpoint" {
   value = try(module.pre_production_data_cleanup[0].ecr_repository_worker_endpoint, null)
 }
@@ -36,8 +32,3 @@ output "identity_store_id" {
 output "arn" {
   value = local.sso_instance_arn
 }
-
-output "sync_production_to_pre_production_task_role_arn" {
-  value = try(module.sync_production_to_pre_production[0].task_role, null)
-}
-
