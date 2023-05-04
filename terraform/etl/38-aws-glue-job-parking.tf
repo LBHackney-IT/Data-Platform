@@ -1100,6 +1100,7 @@ module "parking_defect_met_fail" {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
+}
 # MRB 22-11-2022 Job created 
 module "parking_defect_met_fail_monthly_format" {
   source                         = "../modules/aws-glue-job"
