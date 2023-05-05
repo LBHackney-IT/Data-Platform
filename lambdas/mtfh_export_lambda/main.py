@@ -35,9 +35,7 @@ def add_date_partition_key_to_s3_prefix(s3_prefix):
     return f"{s3_prefix}{partition_key}"
 
 
-def get_secret(secret_name):
-    secret_name = getenv("SECRET_NAME")
-    region_name = getenv("AWS_REGION")
+def get_secret(secret_name, region_name="eu-west-2"):
     session = boto3.session.Session()
     client = session.client(service_name="secretsmanager", region_name=region_name)
     get_secret_value_response = client.get_secret_value(SecretId=secret_name)
@@ -53,13 +51,17 @@ def create_table_arn(table_name, account_id, region):
 
 
 def lambda_handler(event, context):
+    secret_name = getenv("SECRET_NAME")
+    region_name = getenv("AWS_REGION")
+
     s3_bucket = event["s3_bucket"]
     s3_prefix = event["s3_prefix"]
+
     s3_prefix = add_date_partition_key_to_s3_prefix(s3_prefix)
 
     region = getenv("AWS_REGION")
 
-    secrets = secret_string_to_dict(get_secret(getenv("SECRET_NAME")))
+    secrets = secret_string_to_dict(get_secret(secret_name, region_name))
     kms_key = secrets["kms_key"]
     role_arn = secrets["role_arn"]
     dynamo_account_id = secrets["dynamo_account_id"]
