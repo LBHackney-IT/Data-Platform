@@ -1,7 +1,8 @@
+import json
 import logging
 from datetime import datetime
 from os import getenv
-import json
+
 import boto3
 
 logger = logging.getLogger()
@@ -12,7 +13,6 @@ def export_dynamo_db_table(
 ):
     try:
         response = client.export_table_to_point_in_time(
-            ExportTime=datetime(2023, 4, 3),
             TableArn=table_arn,
             S3Bucket=s3_bucket,
             S3Prefix=s3_prefix,
@@ -44,8 +44,8 @@ def get_secret(secret_name):
     return get_secret_value_response["SecretString"]
 
 
-def secret_to_dict(secret):
-    return json.loads(secret)
+def secret_string_to_dict(secret_string):
+    return json.loads(secret_string)
 
 
 def create_table_arn(table_name, account_id, region):
@@ -59,7 +59,7 @@ def lambda_handler(event, context):
 
     region = getenv("AWS_REGION")
 
-    secrets = secret_to_dict(get_secret(getenv("SECRET_NAME")))
+    secrets = secret_string_to_dict(get_secret(getenv("SECRET_NAME")))
     kms_key = secrets["kms_key"]
     role_arn = secrets["role_arn"]
     dynamo_account_id = secrets["dynamo_account_id"]
