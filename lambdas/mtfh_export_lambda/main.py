@@ -59,9 +59,7 @@ def lambda_handler(event, context):
 
     s3_prefix = add_date_partition_key_to_s3_prefix(s3_prefix)
 
-    region = getenv("AWS_REGION")
-
-    secrets = secret_string_to_dict(get_secret(secret_name, region_name))
+    secrets = secret_string_to_dict(get_secret(secret_name))
     kms_key = secrets["kms_key"]
     role_arn = secrets["role_arn"]
     dynamo_account_id = secrets["dynamo_account_id"]
@@ -74,13 +72,13 @@ def lambda_handler(event, context):
 
     client = boto3.client(
         "dynamodb",
-        region,
+        region=region_name,
         aws_access_key_id=credentials["Credentials"]["AccessKeyId"],
         aws_secret_access_key=credentials["Credentials"]["SecretAccessKey"],
         aws_session_token=credentials["Credentials"]["SessionToken"],
     )
 
-    table_arn = create_table_arn(event["table_name"], dynamo_account_id, region)
+    table_arn = create_table_arn(event["table_name"], dynamo_account_id, region_name)
 
     response = export_dynamo_db_table(
         client, table_arn, s3_bucket, s3_prefix, s3_account_id, kms_key
