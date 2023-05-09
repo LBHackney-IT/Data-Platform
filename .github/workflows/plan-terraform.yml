@@ -71,7 +71,7 @@ jobs:
       - uses: terraform-compliance/github_action@main
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v1.3.2
