@@ -45,3 +45,7 @@ variable "qlik_ssl_certificate_domain" {
 variable "rentsense_target_path" {
   default = false
 }
+
+variable "datahub_url" {
+  default = false
+}
