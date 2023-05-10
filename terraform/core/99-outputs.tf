@@ -6,7 +6,7 @@ output "network_vpc_arn" {
 
 output "network_vpc_subnets" {
   description = "A list of AWS Subnet IDs"
-  value       = data.aws_subnets.network.ids
+  value       = toset(data.aws_subnets.network.ids)
 }
 
 output "network_vpc_subnet_cider_blocks" {
