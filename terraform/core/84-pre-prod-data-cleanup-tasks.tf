@@ -38,7 +38,7 @@ module "pre_production_data_cleanup" {
   tags                          = module.tags.values
   operation_name                = "${local.short_identifier_prefix}pre-production-data-cleanup"
   ecs_task_role_policy_document = data.aws_iam_policy_document.pre_production_data_cleanup_task_role[0].json
-  aws_subnet_ids                = data.aws_subnet_ids.network.ids
+  aws_subnet_ids                = data.aws_subnets.network.ids
   ecs_cluster_arn               = aws_ecs_cluster.workers.arn
   tasks = [
     {

@@ -2,12 +2,15 @@ data "aws_vpc" "network" {
   id = data.aws_ssm_parameter.aws_vpc_id.value
 }
 
-data "aws_subnet_ids" "network" {
-  vpc_id = data.aws_ssm_parameter.aws_vpc_id.value
+data "aws_subnets" "network" {
+  filter {
+    name    = "vpc-id"
+    values  = [data.aws_ssm_parameter.aws_vpc_id.value]
+  }
 }
 
 data "aws_subnet" "network" {
-  for_each = data.aws_subnet_ids.network.ids
+  for_each = toset(data.aws_subnets.network.ids)
   id       = each.value
 }
 
@@ -17,8 +20,8 @@ resource "random_id" "index" {
 
 # This show a method of randomly selecting a subnet from the VPC to deploy into.
 locals {
-  subnet_ids_list         = tolist(data.aws_subnet_ids.network.ids)
-  subnet_ids_random_index = random_id.index.dec % length(data.aws_subnet_ids.network.ids)
+  subnet_ids_list         = tolist(data.aws_subnets.network.ids)
+  subnet_ids_random_index = random_id.index.dec % length(data.aws_subnets.network.ids)
   instance_subnet_id      = local.subnet_ids_list[local.subnet_ids_random_index]
 }
 
