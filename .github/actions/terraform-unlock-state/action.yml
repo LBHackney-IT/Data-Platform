@@ -65,9 +65,6 @@ inputs:
   copy_liberator_to_pre_prod_lambda_execution_role:
     description: "AWS IAM role name to assume for triggering the lambda to copy liberator data to pre-prod"
     required: true
-  sync_production_to_pre_production_task_role:
-    description: "Role arn for the prod to pre-prod raw, refined & trusted zones sync task. Only used in pre-production environment."
-    required: true
   pre_production_liberator_data_storage_kms_key_arn:
     description: "KMS Key ARN for the liberator data storage bucket in pre production"
     required: true
