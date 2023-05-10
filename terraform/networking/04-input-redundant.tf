@@ -37,3 +37,11 @@ variable "pre_production_liberator_data_storage_kms_key_arn" {
 variable "emails_to_notify_with_budget_alerts" {
   default = false
 }
+
+variable "qlik_ssl_certificate_domain" {
+  default = false
+}
+
+variable "rentsense_target_path" {
+  default = false
+}
