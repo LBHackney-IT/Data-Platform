@@ -14,6 +14,13 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 
 locals {
   command = var.runtime_language == "python3.8" ? "make install-requirements" : (var.runtime_language == "nodejs14.x" ? "npm install" : 0)
+  # This ensures that this data resource will not be evaluated until
+  # after the null_resource has been created.
+  lambda_exporter_id = null_resource.run_install_requirements.id
+
+  # This value gives us something to implicitly depend on
+  # in the archive_file below.
+  source_dir         = "../../lambdas/${local.lambda_name_underscore}"
 }
 
 resource "aws_iam_role" "lambda" {
@@ -106,21 +113,9 @@ resource "null_resource" "run_install_requirements" {
   }
 }
 
-data "null_data_source" "wait_for_lambda_exporter" {
-  inputs = {
-    # This ensures that this data resource will not be evaluated until
-    # after the null_resource has been created.
-    lambda_exporter_id = null_resource.run_install_requirements.id
-
-    # This value gives us something to implicitly depend on
-    # in the archive_file below.
-    source_dir = "../../lambdas/${local.lambda_name_underscore}"
-  }
-}
-
 data "archive_file" "lambda" {
   type        = "zip"
-  source_dir  = data.null_data_source.wait_for_lambda_exporter.outputs["source_dir"]
+  source_dir  = local.source_dir
   output_path = "../../lambdas/${local.lambda_name_underscore}.zip"
 }
 
