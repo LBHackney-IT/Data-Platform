@@ -19,10 +19,6 @@ resource "aws_s3_bucket" "terraform_state_storage" {
       }
     }
   }
-
-  versioning {
-    enabled = true
-  }
 }
 
 resource "aws_s3_bucket_public_access_block" "block_public_access" {
