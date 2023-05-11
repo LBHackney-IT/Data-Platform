@@ -33,3 +33,19 @@ variable "copy_liberator_to_pre_prod_lambda_execution_role" {
 variable "pre_production_liberator_data_storage_kms_key_arn" {
   default = false
 }
+
+variable "emails_to_notify_with_budget_alerts" {
+  default = false
+}
+
+variable "qlik_ssl_certificate_domain" {
+  default = false
+}
+
+variable "rentsense_target_path" {
+  default = false
+}
+
+variable "datahub_url" {
+  default = false
+}
