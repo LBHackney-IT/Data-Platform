@@ -341,10 +341,6 @@ resource "aws_s3_bucket" "ssl_connection_resources" {
 
   bucket = "${local.identifier_prefix}-ssl-connection-resources"
   tags   = module.tags.values
-
-  versioning {
-    enabled = true
-  }
 }
 
 resource "aws_s3_bucket_acl" "ssl_connection_resources" {
@@ -352,4 +348,14 @@ resource "aws_s3_bucket_acl" "ssl_connection_resources" {
 
   bucket = aws_s3_bucket.ssl_connection_resources[0].id
   acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "ssl_connection_resources" {
+  count = local.is_live_environment ? 1 : 0
+  
+  bucket = aws_s3_bucket.ssl_connection_resources[0].id
+  
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
