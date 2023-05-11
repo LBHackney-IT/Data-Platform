@@ -57,7 +57,7 @@ resource "aws_glue_workflow" "parking_liberator_backdated_data" {
   tags = module.tags.values
 
   lifecycle {
-    ignore_changes = ["default_run_properties"]
+    ignore_changes = [default_run_properties]
   }
 }
 
