@@ -65,21 +65,21 @@ module "ringgo_sftp_data_to_raw" {
   is_production_environment  = local.is_production_environment
   is_live_environment        = local.is_live_environment
   job_name                   = "${local.short_identifier_prefix}Parking copy RingGo SFTP data to raw"
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   glue_role_arn              = aws_iam_role.glue_role.arn
-  script_s3_object_key       = aws_s3_bucket_object.parking_copy_ringgo_sftp_data_to_raw.key
+  script_s3_object_key       = aws_s3_object.parking_copy_ringgo_sftp_data_to_raw.key
   
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--s3_bucket_target"    = "${module.raw_zone.bucket_id}/parking"
     "--s3_bucket_source"    = module.landing_zone.bucket_id
     "--s3_prefix"           = "ringgo/sftp/"
-    "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
+    "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_object.helpers.key}"
   }
   
   trigger_enabled      = local.is_production_environment

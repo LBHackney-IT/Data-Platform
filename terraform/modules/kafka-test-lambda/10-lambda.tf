@@ -135,7 +135,7 @@ data "archive_file" "lambda" {
   output_path = "../../lambdas/kafka_test.zip"
 }
 
-resource "aws_s3_bucket_object" "lambda" {
+resource "aws_s3_object" "lambda" {
   bucket      = var.lambda_artefact_storage_bucket
   key         = "kafka_test.zip"
   source      = data.archive_file.lambda.output_path
@@ -151,7 +151,7 @@ resource "aws_lambda_function" "lambda" {
   runtime          = "python3.8"
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
-  s3_key           = aws_s3_bucket_object.lambda.key
+  s3_key           = aws_s3_object.lambda.key
   source_code_hash = data.archive_file.lambda.output_base64sha256
   timeout          = 900
   memory_size      = 256

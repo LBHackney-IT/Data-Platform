@@ -70,10 +70,10 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   is_production_environment = local.is_production_environment
 
   job_name                       = "${local.short_identifier_prefix}Academy Revs & Bens Housing Needs Database Ingestion-${each.key}"
-  script_s3_object_key           = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
+  script_s3_object_key           = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   environment                    = var.environment
-  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
-  helper_module_key              = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = aws_s3_object.pydeequ.key
+  helper_module_key              = aws_s3_object.helpers.key
   jdbc_connections               = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
   glue_role_arn                  = aws_iam_role.glue_role.arn
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
@@ -130,10 +130,10 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   is_production_environment = local.is_production_environment
 
   job_name                       = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
-  script_s3_object_key           = aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  script_s3_object_key           = aws_s3_object.copy_tables_landing_to_raw.key
   environment                    = var.environment
-  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
-  helper_module_key              = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = aws_s3_object.pydeequ.key
+  helper_module_key              = aws_s3_object.helpers.key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
@@ -164,10 +164,10 @@ module "copy_academy_revenues_to_raw_zone" {
   is_production_environment = local.is_production_environment
 
   job_name                       = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
-  script_s3_object_key           = aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  script_s3_object_key           = aws_s3_object.copy_tables_landing_to_raw.key
   environment                    = var.environment
-  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
-  helper_module_key              = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = aws_s3_object.pydeequ.key
+  helper_module_key              = aws_s3_object.helpers.key
   glue_role_arn                  = aws_iam_role.glue_role.arn
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id

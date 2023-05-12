@@ -49,10 +49,10 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
   department = module.department_housing
 
   job_name                   = "${local.short_identifier_prefix}Housing Interim Finance Database Ingestion"
-  script_s3_object_key       = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
+  script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   environment                = var.environment
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
-  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
   jdbc_connections           = local.is_live_environment ? [module.housing_interim_finance_database_ingestion[0].jdbc_connection_name] : []
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id

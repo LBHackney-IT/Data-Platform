@@ -22,10 +22,10 @@ module "boundaries_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries schema ingestion"
-  script_s3_object_key       = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
+  script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
   jdbc_connections           = [module.boundaries_geolive_database_ingestion[0].jdbc_connection_name]
   triggered_by_crawler       = module.boundaries_geolive_database_ingestion[0].crawler_name
   workflow_name              = module.boundaries_geolive_database_ingestion[0].workflow_name
@@ -70,10 +70,10 @@ module "recycling_boundaries_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries in recycling schema ingestion"
-  script_s3_object_key       = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
+  script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
   jdbc_connections           = [module.recycling_geolive_database_ingestion[0].jdbc_connection_name]
   triggered_by_crawler       = module.recycling_geolive_database_ingestion[0].crawler_name
   workflow_name              = module.recycling_geolive_database_ingestion[0].workflow_name
@@ -118,10 +118,10 @@ module "health_boundaries_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries in health schema ingestion"
-  script_s3_object_key       = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
+  script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
   jdbc_connections           = [module.health_geolive_database_ingestion[0].jdbc_connection_name]
   triggered_by_crawler       = module.health_geolive_database_ingestion[0].crawler_name
   workflow_name              = module.health_geolive_database_ingestion[0].workflow_name
@@ -166,10 +166,10 @@ module "education_boundaries_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries in education schema ingestion"
-  script_s3_object_key       = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
+  script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
   jdbc_connections           = [module.education_geolive_database_ingestion[0].jdbc_connection_name]
   triggered_by_crawler       = module.education_geolive_database_ingestion[0].crawler_name
   workflow_name              = module.education_geolive_database_ingestion[0].workflow_name
@@ -214,10 +214,10 @@ module "housing_boundaries_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries in housing schema ingestion"
-  script_s3_object_key       = aws_s3_bucket_object.ingest_database_tables_via_jdbc_connection.key
+  script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
   jdbc_connections           = [module.housing_geolive_database_ingestion[0].jdbc_connection_name]
   triggered_by_crawler       = module.housing_geolive_database_ingestion[0].crawler_name
   workflow_name              = module.housing_geolive_database_ingestion[0].workflow_name

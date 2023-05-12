@@ -65,8 +65,8 @@ module "{module_name}" {{
   source                     = "../modules/aws-glue-job"
   department                 = module.department_parking
   job_name                   = "${{local.short_identifier_prefix}}{job_name}"
-  helper_module_key          = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   script_name                = "{script_name}"
   triggered_by_job           = aws_glue_job.copy_parking_liberator_landing_to_raw.name

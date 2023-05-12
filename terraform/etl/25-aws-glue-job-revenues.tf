@@ -5,8 +5,8 @@ module "etl_ctax_live_properties" {
   is_production_environment      = local.is_production_environment
   department                     = module.department_revenues_data_source
   job_name                       = "${local.short_identifier_prefix}etl_ctax_live_properties"
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   script_name                    = "etl_ctax_live_properties"
   job_description                = "Created with AWS Glue Studio: Revenues ETL CTax_Live_Properties_Automation"
   schedule                       = "cron(55 9 ? * MON-FRI *)"
@@ -26,8 +26,8 @@ module "etl_zerobase_ctax_live_properties" {
   is_production_environment      = local.is_production_environment
   department                     = module.department_revenues_data_source
   job_name                       = "${local.short_identifier_prefix}etl_zerobase_ctax_live_properties"
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   script_name                    = "etl_zerobase_ctax_live_properties"
   job_description                = "Created with AWS Glue Studio: Revenues ETL CTax_Live_Properties_Initialization"
   schedule                       = "cron(0 19 8 JUN ? 2022)"

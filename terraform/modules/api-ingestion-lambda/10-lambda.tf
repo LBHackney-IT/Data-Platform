@@ -119,7 +119,7 @@ data "archive_file" "lambda" {
   output_path = "../../lambdas/${local.lambda_name_underscore}.zip"
 }
 
-resource "aws_s3_bucket_object" "lambda" {
+resource "aws_s3_object" "lambda" {
   bucket      = var.lambda_artefact_storage_bucket
   key         = "${local.lambda_name_underscore}.zip"
   source      = data.archive_file.lambda.output_path
@@ -135,7 +135,7 @@ resource "aws_lambda_function" "lambda" {
   runtime          = var.runtime_language
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
-  s3_key           = aws_s3_bucket_object.lambda.key
+  s3_key           = aws_s3_object.lambda.key
   source_code_hash = data.archive_file.lambda.output_base64sha256
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size

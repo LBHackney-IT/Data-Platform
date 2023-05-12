@@ -9,8 +9,8 @@ module "liberator_fpns_to_refined" {
   department                 = module.department_env_enforcement_data_source
   job_name                   = "${local.short_identifier_prefix}liberator_fpns_refined"
   glue_job_worker_type       = "G.1X"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
@@ -40,8 +40,8 @@ module "noisework_complaints_to_refined" {
   department                 = module.department_env_enforcement_data_source
   job_name                   = "${local.short_identifier_prefix}noisework_complaints_to_refined"
   glue_job_worker_type       = "G.1X"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"

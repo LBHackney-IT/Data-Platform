@@ -6,8 +6,8 @@ module "llpg_raw_to_trusted" {
   department                 = module.department_unrestricted_data_source
   job_name                   = "${local.short_identifier_prefix}llpg_latest_to_trusted"
   glue_job_worker_type       = "G.1X"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
@@ -28,7 +28,7 @@ module "llpg_raw_to_trusted" {
 }
 
 # Script for spatial enrichment
-resource "aws_s3_bucket_object" "spatial_enrichment" {
+resource "aws_s3_object" "spatial_enrichment" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/unrestricted/spatial_enrichment.py"
   acl         = "private"
@@ -37,7 +37,7 @@ resource "aws_s3_bucket_object" "spatial_enrichment" {
 }
     
 # Dictionary resources for spatial enrichment
-resource "aws_s3_bucket_object" "geography_tables_dictionary" {
+resource "aws_s3_object" "geography_tables_dictionary" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/unrestricted/geography_tables_dict.json"
   acl         = "private"
@@ -45,7 +45,7 @@ resource "aws_s3_bucket_object" "geography_tables_dictionary" {
   source_hash = filemd5("../../scripts/jobs/unrestricted/geography-tables-dictionary.json")
 }
     
-resource "aws_s3_bucket_object" "env_services_spatial_enrichment_dictionary" {
+resource "aws_s3_object" "env_services_spatial_enrichment_dictionary" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/env-services/spatial-enrichment-dictionary.json"
   acl         = "private"
@@ -61,18 +61,18 @@ module "env_services_geospatial_enrichment" {
 
   department                 = module.department_environmental_services_data_source
   job_name                   = "${local.short_identifier_prefix}env_services_geospatial_enrichment"
-  script_s3_object_key       = aws_s3_bucket_object.spatial_enrichment.key
+  script_s3_object_key       = aws_s3_object.spatial_enrichment.key
   glue_job_worker_type       = "G.1X"
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   schedule                   = "cron(30 4 ? * MON-FRI *)"
   job_parameters = {
     "--job-bookmark-option"        = "job-bookmark-enable"
     "--enable-glue-datacatalog"    = "true"
     "--additional-python-modules"  = "rtree,geopandas"
-    "--geography_tables_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.geography_tables_dictionary.key}"
-    "--tables_to_enrich_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_bucket_object.env_services_spatial_enrichment_dictionary.key}"
+    "--geography_tables_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.geography_tables_dictionary.key}"
+    "--tables_to_enrich_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.env_services_spatial_enrichment_dictionary.key}"
     "--target_location"            = "s3://${module.refined_zone_data_source.bucket_id}/env-services/spatially-enriched/"
   }
   crawler_details = {
