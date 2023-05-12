@@ -18,7 +18,7 @@ resource "aws_ssm_parameter" "redshift_cluster_credentials_arn" {
 resource "random_password" "redshift_password" {
   length      = 24
   special     = false
-  number      = true
+  numeric     = true
   min_numeric = 1
   upper       = true
   min_upper   = 1
