@@ -50,6 +50,7 @@ module "pre_production_data_cleanup" {
         { name = "S3_CLEANUP_TARGET", value = "dataplatform-stg-raw-zone" }
       ]
       cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
+      cloudwatch_rule_event_pattern       = null
     },
     {
       task_prefix = "refined-zone-"
@@ -60,6 +61,7 @@ module "pre_production_data_cleanup" {
         { name = "S3_CLEANUP_TARGET", value = "dataplatform-stg-refined-zone" }
       ]
       cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
+      cloudwatch_rule_event_pattern       = null
     },
     {
       task_prefix = "trusted-zone-"
@@ -70,6 +72,7 @@ module "pre_production_data_cleanup" {
         { name = "S3_CLEANUP_TARGET", value = "dataplatform-stg-trusted-zone" }
       ]
       cloudwatch_rule_schedule_expression = "cron(0 0 ? * 1 *)"
+      cloudwatch_rule_event_pattern       = null
     }
   ]
   security_groups = [aws_security_group.pre_production_data_cleanup[0].id]

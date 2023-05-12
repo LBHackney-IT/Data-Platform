@@ -16,6 +16,7 @@ resource "aws_glue_crawler" "raw_zone_parking_g_drive_crawler" {
       TableLevelConfiguration = 4
     }
   })
+  table_prefix = null
 }
 
 resource "aws_glue_trigger" "raw_zone_parking_spreadsheets_crawler" {
