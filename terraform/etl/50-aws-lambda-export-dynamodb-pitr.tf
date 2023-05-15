@@ -7,8 +7,7 @@ module "export-mtfh-pitr" {
   identifier_prefix              = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
   s3_key                         = "mtfh_export_lambda.zip"
-
-  lambda_environment_variables = {
+  environment_variables = {
     SECRET_NAME = "${local.short_identifier_prefix}manual-mtfh-step-functions-mtfh-test"
   }
   tags = module.tags.values

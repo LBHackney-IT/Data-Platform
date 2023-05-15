@@ -52,12 +52,6 @@ variable "ephemeral_storage" {
   default     = 512
 }
 
-variable "lambda_environment_variables" {
-  type        = map(string)
-  description = "Environment Variables to pass to the Lambda Function"
-  default     = {}
-}
-
 variable "lambda_output_path" {
   type        = string
   description = "Path to the Lambda artefact zip file"
