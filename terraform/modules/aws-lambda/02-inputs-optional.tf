@@ -67,5 +67,5 @@ variable "lambda_output_path" {
 variable "environment_variables" {
   type        = map(string)
   description = "Environment Variables to pass to the Lambda Function"
-  default     = {}
+  default     = null
 }
