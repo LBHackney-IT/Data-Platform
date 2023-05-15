@@ -1,7 +1,8 @@
+import json
 import logging
 from datetime import datetime
 from os import getenv
-import json
+
 import boto3
 
 logger = logging.getLogger()
@@ -12,7 +13,6 @@ def export_dynamo_db_table(
 ):
     try:
         response = client.export_table_to_point_in_time(
-            ExportTime=datetime(2023, 4, 3),
             TableArn=table_arn,
             S3Bucket=s3_bucket,
             S3Prefix=s3_prefix,
@@ -35,17 +35,15 @@ def add_date_partition_key_to_s3_prefix(s3_prefix):
     return f"{s3_prefix}{partition_key}"
 
 
-def get_secret(secret_name):
-    secret_name = getenv("SECRET_NAME")
-    region_name = getenv("AWS_REGION")
+def get_secret(secret_name, region_name="eu-west-2"):
     session = boto3.session.Session()
     client = session.client(service_name="secretsmanager", region_name=region_name)
     get_secret_value_response = client.get_secret_value(SecretId=secret_name)
     return get_secret_value_response["SecretString"]
 
 
-def secret_to_dict(secret):
-    return json.loads(secret)
+def secret_string_to_dict(secret_string):
+    return json.loads(secret_string)
 
 
 def create_table_arn(table_name, account_id, region):
@@ -53,13 +51,15 @@ def create_table_arn(table_name, account_id, region):
 
 
 def lambda_handler(event, context):
+    secret_name = getenv("SECRET_NAME")
+    region_name = getenv("AWS_REGION")
+
     s3_bucket = event["s3_bucket"]
     s3_prefix = event["s3_prefix"]
+
     s3_prefix = add_date_partition_key_to_s3_prefix(s3_prefix)
 
-    region = getenv("AWS_REGION")
-
-    secrets = secret_to_dict(get_secret(getenv("SECRET_NAME")))
+    secrets = secret_string_to_dict(get_secret(secret_name))
     kms_key = secrets["kms_key"]
     role_arn = secrets["role_arn"]
     dynamo_account_id = secrets["dynamo_account_id"]
@@ -72,13 +72,13 @@ def lambda_handler(event, context):
 
     client = boto3.client(
         "dynamodb",
-        region,
+        region=region_name,
         aws_access_key_id=credentials["Credentials"]["AccessKeyId"],
         aws_secret_access_key=credentials["Credentials"]["SecretAccessKey"],
         aws_session_token=credentials["Credentials"]["SessionToken"],
     )
 
-    table_arn = create_table_arn(event["table_name"], dynamo_account_id, region)
+    table_arn = create_table_arn(event["table_name"], dynamo_account_id, region_name)
 
     response = export_dynamo_db_table(
         client, table_arn, s3_bucket, s3_prefix, s3_account_id, kms_key
