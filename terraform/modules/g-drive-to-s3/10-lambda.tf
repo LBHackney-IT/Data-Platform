@@ -123,7 +123,7 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   function_name    = lower("${var.identifier_prefix}g-drive-${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_bucket_object.g_drive_to_s3_copier_lambda.key
-  source_code_hash = data.archive_file.g_drive_to_s3_copier_lambda.output_base64sha256
+  source_code_hash = filebase64sha256(data.archive_file.g_drive_to_s3_copier_lambda.output_path)
   timeout          = local.lambda_timeout
   memory_size      = local.lambda_memory_size
 
