@@ -49,7 +49,7 @@ variable "lambda_memory_size" {
 variable "ephemeral_storage" {
   type        = number
   description = "Additional Ephemeral Storage for the Lambda Function beyond the default 512MB"
-  default     = 0
+  default     = 512
 }
 
 variable "lambda_environment_variables" {
