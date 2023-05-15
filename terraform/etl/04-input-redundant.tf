@@ -49,3 +49,7 @@ variable "academy_production_database_password" {
 variable "deployment_user_arn" {
   default = false
 }
+
+variable "rentsense_target_path" {
+  default = false
+}
