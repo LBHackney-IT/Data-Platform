@@ -108,7 +108,7 @@ resource "aws_s3_bucket_object" "g_drive_to_s3_copier_lambda" {
   key         = "g_drive_to_s3.zip"
   source      = data.archive_file.g_drive_to_s3_copier_lambda.output_path
   acl         = "private"
-  source_hash = data.archive_file.g_drive_to_s3_copier_lambda.output_md5
+  source_hash = filebase64sha256(data.archive_file.g_drive_to_s3_copier_lambda.output_path)
   depends_on = [
     data.archive_file.g_drive_to_s3_copier_lambda
   ]
