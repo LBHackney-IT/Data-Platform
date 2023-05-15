@@ -2,14 +2,18 @@
 Functions and objects relating to housing disrepair analysis, specifically for damp and mould predictions.
 
 TODO
-* docstrings
+* complete docstrings
 * ml models and pipeline constructor
+* write predictions to csv
 """
-
+from pyspark.ml.classification import LogisticRegression
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator, BinaryClassificationEvaluator
 from pyspark.ml.feature import StringIndexer, OneHotEncoder, VectorAssembler, Imputer, StandardScaler
 from pyspark.ml.functions import vector_to_array
-from pyspark.sql.functions import col, lit, udf, when, trim, length, greatest, expr
+from pyspark.ml.tuning import ParamGridBuilder, CrossValidator
+from pyspark.sql.functions import col, lit, udf, when, trim, length, greatest, expr, concat_ws
 from pyspark.sql.types import DoubleType, ArrayType
+from pyspark.sql import DataFrame
 
 
 def convert_yn_to_bool(dataframe, columns):
@@ -80,7 +84,7 @@ def get_total_occupants(dataframe, new_column_name, occupancy_columns, child_cou
 
 def group_number_of_bedrooms(dataframe, bedroom_column, new_column_name, inputs_list_to_update):
     dataframe = dataframe.withColumn(new_column_name,
-                                     when(col(bedroom_column) <= 1, '1 or more bedrooms')
+                                     when(col(bedroom_column) <= 1, '1 bedroom or less')
                                      .otherwise('More than 1 bedrooms'))
     dataframe = dataframe.drop(bedroom_column)
     inputs_list_to_update.append(new_column_name)
@@ -158,6 +162,16 @@ def get_vulnerability_score(dataframe, vulnerability_dict, new_column_name):
     return dataframe
 
 
+def assign_confidence_score(dataframe, high_confidence_flag):
+    dataframe = dataframe.withColumn('confidence_score',
+                                     when((col(high_confidence_flag) > 0) & (col('target') == 1), lit(1)) \
+                                     .when((col(high_confidence_flag) > 0) & (col('target') == 0), lit(0.6)) \
+                                     .when((col(high_confidence_flag) == 0) & (col('target') == 1), lit(0.8)) \
+                                     .when((col(high_confidence_flag) == 0) & (col('target') == 0), lit(1)) \
+                                     .otherwise(lit(0.8)))
+    return dataframe
+
+
 def clean_boolean_features(dataframe, bool_list):
     df_cols = dataframe.schema.names
     # check that bool list is up-to-date
@@ -198,7 +212,7 @@ def one_hot_encode_categorical_features(dataframe, string_columns):
 
     #  apply one hot encoder
     output_ohe = [f'{a}_ohe' for a in columns]
-    encoder = OneHotEncoder(inputCols=output_cols, outputCols=output_ohe, dropLast=False)
+    encoder = OneHotEncoder(inputCols=output_cols, outputCols=output_ohe, dropLast=True)
     df_ohe = encoder.fit(df_indexed).transform(df_indexed)
     df_ohe = df_ohe.drop(*output_cols)
 
@@ -221,26 +235,160 @@ def one_hot_encode_categorical_features(dataframe, string_columns):
 def array_to_list(vector_column):
     def to_list(vector):
         return vector.toArray().tolist()
+
     return udf(to_list, ArrayType(DoubleType()))(vector_column)
 
 
-def scale_continuous_features(dataframe, cols_to_scale):
-    scaler = StandardScaler(inputCol='selected_cols_assembled', outputCol='scaled_cols')
-    vector_assembler = VectorAssembler().setInputCols(cols_to_scale).setOutputCol('selected_cols_assembled')
-    df_vec = vector_assembler.transform(dataframe)
-    df_scaled = scaler.fit(df_vec.select('selected_cols_assembled')).transform(df_vec)
-    df_scaled = df_scaled.drop('selected_cols_assembled', *cols_to_scale)
+def scale_features(dataframe, vectorised_cols, output_col, mean, std, keep_columns):
+    # set up scaler
+    scaler = StandardScaler(inputCol=vectorised_cols, outputCol=output_col, withMean=mean, withStd=std)
+    scaler_model = scaler.fit(dataframe)
+    df_scaled = scaler_model.transform(dataframe)
     # extract scaled columns out
-    df_scaled = df_scaled.select('*', array_to_list(col('scaled_cols')).alias('scaled_col_list')) \
-        .select('*', *[col('scaled_col_list')[i].alias(cols_to_scale[i]) for i in range(2)])
-    df_scaled = df_scaled.drop(*['scaled_cols', 'scaled_col_list'])
+    if keep_columns:
+        num_in_list = len(df_scaled.first()[vectorised_cols])
+        df_scaled = df_scaled.select('*', array_to_list(col(vectorised_cols)).alias('scaled_col_list'))
+        new_cols = [col('scaled_col_list')[i].alias(vectorised_cols) for i in range(num_in_list)]
+        df_scaled = df_scaled.select('*', *new_cols)
+        df_scaled = df_scaled.drop(*['scaled_col_list'])
+
+    # drop columns no longer required
+    df_scaled = df_scaled.drop(*vectorised_cols)
     return df_scaled
 
 
-def assemble_vector_of_features(dataframe, cols_to_omit):
+def assemble_vector_of_features(dataframe, cols_to_omit, cols_list, output_col):
     # vectorise features into a single column
-    cols = [column for column in dataframe.schema.names if column not in cols_to_omit]
-    vector_assembler = VectorAssembler(inputCols=cols, outputCol='features')
+    cols = [column for column in cols_list if column not in cols_to_omit]
+    vector_assembler = VectorAssembler(inputCols=cols, outputCol=output_col)
     df_assembled = vector_assembler.transform(dataframe)
     return df_assembled
 
+
+def evaluation_of_metrics(predictions: DataFrame, labelled_column: str, weights: str):
+    metrics = MulticlassClassificationEvaluator(predictionCol="prediction",
+                                                labelCol=labelled_column,
+                                                weightCol=weights,
+                                                probabilityCol="probability")
+    accuracy = metrics.evaluate(predictions, {metrics.metricName: "accuracy"})
+    precision_non_match = metrics.evaluate(predictions,
+                                           {metrics.metricName: "precisionByLabel", metrics.metricLabel: 0.0})
+    precision_match = metrics.evaluate(predictions,
+                                       {metrics.metricName: "precisionByLabel", metrics.metricLabel: 1.0})
+    recall_non_match = metrics.evaluate(predictions,
+                                        {metrics.metricName: "recallByLabel", metrics.metricLabel: 0.0})
+    recall_match = metrics.evaluate(predictions,
+                                    {metrics.metricName: "recallByLabel", metrics.metricLabel: 1.0})
+    return accuracy, precision_non_match, precision_match, recall_non_match, recall_match
+
+
+def balance_classes(dataframe, target_col, new_weight_col):
+    balance_ratio = dataframe.filter(col(target_col) == 1).count() / dataframe.count()
+    calculate_weights = udf(lambda x: 1 * balance_ratio if x == 0 else (1 * (1.0 - balance_ratio)), DoubleType())
+    dataframe_with_weights = dataframe.withColumn(new_weight_col, calculate_weights(target_col))
+    return dataframe_with_weights
+
+
+def train_model(df: DataFrame, model_path: str, test_model: bool, save_model: bool, target_col: str,
+                weight_col: str, features_col: str) -> None:
+    """Trains the model
+
+    Args:
+        df: DataFrame containing data. This includes both test and train
+        model_path: Path where trained model is saved.
+        test_model: Boolean to specify whether model should be tested with test data.
+        save_model: Boolean to specify whether model should be saved to S3.
+        target_col: Feature containing target to predict
+        weight_col: Vector containing standardised confidence score
+        features_col: Vector containing standardised input features
+
+    Returns:
+        Nothing. This function doesn't return anything
+    """
+    # Python unpacking (e.g. a,b = ["a", "b"]) removes the type information, therefore extracting from list
+    train_test = df.randomSplit([0.8, 0.2], seed=42)
+    train = train_test[0]
+    test = train_test[1]
+    train.cache()
+    print(f"Training data size: {train.count()}")
+    print(f"Test data size....: {test.count()}")
+
+    classifier = LogisticRegression(featuresCol=features_col, labelCol=target_col, weightCol=weight_col,
+                                    standardization=False)
+
+    param_grid = ParamGridBuilder() \
+        .addGrid(classifier.regParam, [7e-05]) \
+        .addGrid(classifier.elasticNetParam, [1.0]) \
+        .build()
+    evaluator = BinaryClassificationEvaluator(labelCol=target_col,
+                                              rawPredictionCol="rawPrediction",
+                                              weightCol=weight_col)
+
+    cv = CrossValidator(estimator=classifier, estimatorParamMaps=param_grid, evaluator=evaluator, numFolds=5,
+                        seed=42,
+                        parallelism=5)
+    cv_model = cv.fit(train)
+
+    train_prediction = cv_model.transform(train)
+
+    print(f"Training ROC AUC train score before fine-tuning..: {evaluator.evaluate(train_prediction):.5f}")
+    accuracy, precision_non_match, precision_match, recall_non_match, recall_match = \
+        evaluation_of_metrics(train_prediction, labelled_column=target_col, weights=weight_col)
+    print(f"Training Accuracy  before fine-tuning............: {accuracy:.5f}")
+    print(f"Training Precision before fine-tuning (non-match): {precision_non_match:.5f}")
+    print(f"Training Precision before fine-tuning.....(match): {precision_match:.5f}")
+    print(f"Training Recall    before fine-tuning.(non-match): {recall_non_match:.5f}")
+    print(f"Training Recall    before fine-tuning.....(match): {recall_match:.5f}")
+
+    model = cv_model.bestModel
+    training_summary = model.summary
+
+    # Fine-tuning the model to maximize performance
+    f_measure = training_summary.fMeasureByThreshold
+    max_f_measure = f_measure.groupBy().max("F-Measure").select("max(F-Measure)").head()
+    best_threshold = f_measure \
+        .filter(f_measure["F-Measure"] == max_f_measure["max(F-Measure)"]) \
+        .select("threshold") \
+        .head()["threshold"]
+    print(f"Best threshold: {best_threshold}")
+    cv_model.bestModel.setThreshold(best_threshold)
+    print(model.extractParamMap())
+
+    if save_model:
+        cv_model.write().overwrite().save(model_path)
+
+    train_prediction = cv_model.transform(train)
+    print(f"Training ROC AUC train score after fine-tuning...: {evaluator.evaluate(train_prediction):.5f}")
+    accuracy, precision_non_match, precision_match, \
+    recall_non_match, recall_match = evaluation_of_metrics(train_prediction,
+                                                           labelled_column=target_col,
+                                                           weights=weight_col)
+
+    print(f"Training Accuracy  after fine-tuning.............: {accuracy:.5f}")
+    print(f"Training Precision after fine-tuning .(non-match): {precision_non_match:.5f}")
+    print(f"Training Precision after fine-tuning......(match): {precision_match:.5f}")
+    print(f"Training Recall    after fine-tuning..(non-match): {recall_non_match:.5f}")
+    print(f"Training Recall    after fine-tuning......(match): {recall_match:.5f}")
+
+    if test_model:
+        print("Only evaluate once in the end, so keep it commented for most of the time.")
+        test_prediction = cv_model.transform(test)
+        test_prediction.show()
+        print(f'Write predictions to csv...')
+        test_prediction.printSchema()
+        test_prediction_for_export = test_prediction.withColumn('probability',
+                                                                vector_to_array(col('probability'))) \
+            .withColumn('probability_str', concat_ws('probability'))
+        # test_prediction_for_export.write.csv(header=True, path=f"{model_path}/test_predictions")
+
+        accuracy, precision_non_match, precision_match, \
+        recall_non_match, recall_match = evaluation_of_metrics(
+            test_prediction,
+            labelled_column=target_col,
+            weights=weight_col)
+        print(f"Test ROC AUC..............: {evaluator.evaluate(test_prediction):.5f}")
+        print(f"Test Accuracy.............: {accuracy:.5f}")
+        print(f"Test Precision (non-match): {precision_non_match:.5f}")
+        print(f"Test Precision.....(match): {precision_match:.5f}")
+        print(f"Test Recall....(non-match): {recall_non_match:.5f}")
+        print(f"Test Recall........(match): {recall_match:.5f}")

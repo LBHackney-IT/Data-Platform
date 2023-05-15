@@ -1,5 +1,4 @@
 
-from great_expectations.dataset import SparkDFDataset
 from pyspark.sql import DataFrame
 
 from scripts.helpers.helpers import get_glue_env_var
@@ -53,23 +52,3 @@ def get_success_metrics(success_metrics):
     return messages
 
 
-def create_dataframe_for_data_quality_checks_ge(dataframe):
-    return SparkDFDataset(dataframe)
-
-
-def data_quality_uniqueness_ge(dataframe, column):
-    # check for uniqueness and record any anomalies
-    id_uniqueness = dataframe.expect_column_values_to_be_unique(column=column,
-                                                                result_format={"result_format": "COMPLETE"})
-    print(f'Uniqueness: {id_uniqueness}')
-    duplicate_ids = id_uniqueness['result']['unexpected_list']
-    return duplicate_ids
-
-
-def data_quality_completeness_ge(dataframe, column):
-    # check for completeness
-    col_completeness_result = dataframe.expect_column_values_to_not_be_null(column=column,
-                                                                            result_format={
-                                                                                "result_format": "COMPLETE"})
-    print(f'Completeness: {col_completeness_result}')
-    return col_completeness_result

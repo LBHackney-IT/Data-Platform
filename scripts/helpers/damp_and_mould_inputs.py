@@ -1,4 +1,5 @@
-"""Contains lists of columns needed for various parts of the damp and mould analysis work"""
+"""Contains lists and dicts of features needed for various parts of the housing disrepair
+specifically, damp and mould analysis work"""
 
 id_cols = ['uprn']
 
@@ -24,7 +25,6 @@ bool_cols = [
     'flag_void_before_tenancy',
     'council_has_uc',
     'flag_ten_sust'
-    #             'flag_damp_and_mould_complaint'
 ]
 
 cat_cols = ['estate_street',
@@ -35,20 +35,14 @@ cat_cols = ['estate_street',
             'Heating',
             'main_fuel_type',
             'band_tenancy_length',
-            #             'building_age_band',
             'conservation_area',
             'estate_name',
             'external_wall_type_criteria',
-            #             'floor_no',
-            #             'group_typology',
             'open_to_air_walkways',
-            #             'purpose_built_as_social_housing',
             'roof_insulation',
             'type_of_communal_area',
             'typologies',
             'no_of_disabled_members',
-            #             'period_of_built'
-            #             'ct_band'
             ]
 
 cont_cols = [
@@ -58,7 +52,6 @@ cont_cols = [
     'person_count',
     'number_of_bedrooms',
     'max_ten_age',
-    #             'age_of_tenancy',
     'SEN_cases',
     'EHCP_cases',
     'SEN_support_cases',
@@ -123,4 +116,5 @@ ml_cols = ['uprn',
            'flag_heating_boilers',
            'flag_open_to_air_walkways',
            'vulnerability_score',
+           'confidence_score',
            'target']
