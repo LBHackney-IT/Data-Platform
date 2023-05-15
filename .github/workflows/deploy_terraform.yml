@@ -52,6 +52,8 @@ on:
         required: true
       AWS_HACKIT_ACCOUNT_ID:
         required: true
+      AWS_SANDBOX_ACCOUNT_ID:
+        required: true
       AWS_ROLE_TO_ASSUME:
         required: true
       AWS_API_VPC_ID:
@@ -66,8 +68,6 @@ on:
         required: true
       COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE:
         required: true
-      SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE:
-        required: true
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN:
         required: true
 
@@ -78,10 +78,10 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Terraform
-        uses: hashicorp/setup-terraform@v1.3.2
+        uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
           terraform_version: 1.2.0
@@ -151,6 +151,7 @@ jobs:
           aws_api_account_id: ${{ secrets.AWS_API_ACCOUNT_PROD }}
           aws_mosaic_prod_account_id: ${{ secrets.AWS_MOSAIC_PROD_ACCOUNT_ID }}
           aws_data_platform_account_id: ${{ secrets.AWS_DATA_PLATFORM_ACCOUNT_ID }}
+          aws_sandbox_account_id: ${{ secrets.AWS_SANDBOX_ACCOUNT_ID }}
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
           aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
           aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
@@ -158,7 +159,6 @@ jobs:
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           copy_liberator_to_pre_prod_lambda_execution_role: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
-          sync_production_to_pre_production_task_role: ${{ secrets.SYNC_PRODUCTION_TO_PRE_PRODUCTION_TASK_ROLE }}
           pre_production_liberator_data_storage_kms_key_arn: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
           branch: "main"
 
@@ -175,11 +175,6 @@ jobs:
         if: ${{ (inputs.build_path  == './terraform/core') && (success()) }}
         run: |
           AWS_PROFILE=deploy_role ./docker/sql-to-parquet/deploy.sh
-
-      - name: Build and Deploy Production to Pre-Production sync Image to ECR
-        if: ${{ (inputs.build_path  == './terraform/core') && (success())  }}
-        run: |
-          ENVIRONMENT=${{ inputs.environment }} AWS_PROFILE=deploy_role ./docker/production-to-pre-production/deploy.sh
       
       - name: Build and Deploy Pre-Production clean up job Image to ECR
         if: ${{ (inputs.build_path  == './terraform/core') && (success())  }}

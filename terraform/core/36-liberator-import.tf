@@ -21,7 +21,7 @@ module "liberator_dump_to_rds_snapshot" {
   instance_name              = "${local.short_identifier_prefix}liberator-to-rds-snapshot"
   watched_bucket_name        = module.liberator_data_storage.bucket_id
   watched_bucket_kms_key_arn = module.liberator_data_storage.kms_key_arn
-  aws_subnet_ids             = data.aws_subnet_ids.network.ids
+  aws_subnet_ids             = data.aws_subnets.network.ids
   ecs_cluster_arn            = aws_ecs_cluster.workers.arn
   vpc_id                     = data.aws_vpc.network.id
 }
@@ -57,7 +57,7 @@ resource "aws_glue_workflow" "parking_liberator_backdated_data" {
   tags = module.tags.values
 
   lifecycle {
-    ignore_changes = ["default_run_properties"]
+    ignore_changes = [default_run_properties]
   }
 }
 

@@ -105,3 +105,9 @@ variable "qlik_server_instance_type" {
   description = "Not need for this module, declared to prevent terraform from throwing errors"
   default     = false
 }
+
+variable "aws_sandbox_account_id" {
+  description = "AWS sandbox account id"
+  type        = string
+  default     = ""
+}

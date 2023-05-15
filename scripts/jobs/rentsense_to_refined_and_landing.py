@@ -361,6 +361,41 @@ if __name__ == "__main__":
             'WPA': 'Warrant of Possession',
             'BLI': 'Informal Agreement Breach Letter Sent'
         }
+    
+     
+    mapPatch =  {
+            'P11' : 'Patch 11',
+            'P12' : 'Patch 12',
+            'P17' : 'Patch 17',
+            'P2' : 'Patch 2',
+            'P20' : 'Patch 20',
+            'P3' : 'Patch 3',
+            'P6' : 'Patch 6',
+            'P8' : 'Patch 8',
+            'P18' : 'Patch 18',
+            'P10' : 'Patch 10',
+            'P15' : 'Patch 15',
+            'P16' : 'Patch 16',
+            'P19' : 'Patch 19',
+            'P22' : 'Patch 22',
+            'P5' : 'Patch 5',
+            'P1' : 'Patch 1',
+            'P13' : 'Patch 13',
+            'P14' : 'Patch 14',
+            'P21' : 'Patch 21',
+            'P4' : 'Patch 4',
+            'P7' : 'Patch 7',
+            'P9' : 'Patch 9',
+            'P01' : 'Patch 1',
+            'P02' : 'Patch 2',
+            'P03' : 'Patch 3',
+            'P04' : 'Patch 4',
+            'P05' : 'Patch 5',
+            'P06' : 'Patch 6',
+            'P07' : 'Patch 7',
+            'P08' : 'Patch 8',
+            'P09' : 'Patch 9'
+        }
 
     df = glueContext.create_data_frame.from_catalog( 
          database = source_catalog_database, 
@@ -399,6 +434,12 @@ if __name__ == "__main__":
          table_name = "sow2b_dbo_matenancyagreement", 
          transformation_ctx = "sow2b_dbo_matenancyagreement_source")
     df7 = get_latest_partitions_optimized(df7)
+    
+    dfprop = glueContext.create_data_frame.from_catalog( 
+         database = source_raw_database, 
+         table_name = "sow2b_dbo_maproperty", 
+         transformation_ctx = "sow2b_dbo_maproperty_source")
+    dfprop = get_latest_partitions_optimized(dfprop)
   
     df9 = glueContext.create_data_frame.from_catalog( 
          database = source_raw_database, 
@@ -440,14 +481,14 @@ if __name__ == "__main__":
 # create the patch information
     patch_officer = patch_officer.withColumn("patch_number2",F.trim(F.col("patch_number")))
     
-    patch = patch.withColumn("patch2",F.trim(F.col("patch")))\
-                 .withColumn("payref",F.trim(F.col("ref")))\
+    patch = dfprop.withColumn("patch2",F.trim(F.col("arr_patch")))\
+                 .withColumn("property_ref",F.trim(F.col("prop_ref")))\
+                 .replace(to_replace=mapPatch, subset=['patch2'])
     
     patch = patch.join(patch_officer,patch.patch2 ==  patch_officer.patch_number2,"left")
-    patch = patch.selectExpr("payref",
+    patch = patch.selectExpr("property_ref as prop_ref",
                              "patch2 as Patch",
                              "officer_full_name as HousingOfficerName")
-    
     patch = patch.distinct()
  
     
@@ -463,7 +504,8 @@ if __name__ == "__main__":
   
     accounts =  accounts.drop("uh_ten_ref")
           
-    accounts = accounts.join(patch,accounts.paymentreference ==  patch.payref,"left")
+    accounts = accounts.withColumn("prop_ref",F.trim(F.col("property_reference"))) 
+    accounts = accounts.join(patch,accounts.prop_ref ==  patch.prop_ref,"left")
     
     #get the max date to remove dupes
     start_ten = accounts.selectExpr("paymentreference as AccountR",

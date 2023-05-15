@@ -21,3 +21,9 @@ variable "backdated_workflow_arn" {
   type        = string
   default     = ""
 }
+
+variable "aws_account_suffix" {
+  description = "Optional. Suffix to be used for certain resources such as S3 buckets to avoid conflicts with existing setups. This is primarily for development purposes on sandbox account"
+  type        = string
+  default     = ""
+}

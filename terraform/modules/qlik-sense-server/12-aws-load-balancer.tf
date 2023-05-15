@@ -2,13 +2,16 @@ data "aws_acm_certificate" "qlik_sense" {
   domain = var.ssl_certificate_domain
 }
 
-data "aws_subnet_ids" "subnet_ids" {
-  vpc_id = var.vpc_id
+data "aws_subnets" "subnet_ids" {
+  filter {
+    name    = "vpc-id"
+    values  = [var.vpc_id]
+  }
 }
 
 data "aws_subnet" "subnets" {
-  count = length(data.aws_subnet_ids.subnet_ids.ids)
-  id    = tolist(data.aws_subnet_ids.subnet_ids.ids)[count.index]
+  count = length(data.aws_subnets.subnet_ids.ids)
+  id    = tolist(data.aws_subnets.subnet_ids.ids)[count.index]
 }
 
 resource "aws_security_group" "qlik_sense_alb" {
@@ -18,12 +21,11 @@ resource "aws_security_group" "qlik_sense_alb" {
   revoke_rules_on_delete = true
 
   egress {
-    description      = "Allow all outbound traffic"
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    description     = "Allow outbound to target group instances security group"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "TCP"
+    security_groups = [aws_security_group.qlik_sense.id]
   }
 
   ingress {

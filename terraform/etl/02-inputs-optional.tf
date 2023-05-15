@@ -84,8 +84,8 @@ variable "pre_production_liberator_data_storage_kms_key_arn" {
   default     = null
 }
 
-variable "sync_production_to_pre_production_task_role" {
-  description = "Role arn for the prod to pre-prod raw, refined & trusted zones sync task. Only used in pre-production environment."
+variable "aws_sandbox_account_id" {
+  description = "AWS sandbox account id"
   type        = string
-  default     = null
+  default     = ""
 }

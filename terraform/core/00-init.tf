@@ -36,6 +36,21 @@ provider "aws" {
   }
 }
 
+# For cross account development purposes only
+provider "aws" {
+  alias  = "aws_sandbox_account"
+  region = var.aws_deploy_region
+  
+  dynamic assume_role {
+    for_each = local.is_live_environment ? [] : [1]
+
+    content {
+        role_arn     = "arn:aws:iam::${var.aws_sandbox_account_id}:role/${var.aws_deploy_iam_role_name}"
+        session_name = "Terraform"
+    }
+  }
+}
+
 provider "google" {
   region      = "europe-west2"
   zone        = "europe-west2-a"
