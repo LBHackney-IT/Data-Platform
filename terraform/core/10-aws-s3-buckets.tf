@@ -195,7 +195,7 @@ locals {
     ]
 
     resources = [
-      "${module.raw_zone.bucket_arn}",
+      module.raw_zone.bucket_arn,
       "${module.raw_zone.bucket_arn}/*"
     ]
 
