@@ -195,8 +195,8 @@ locals {
     ]
 
     resources = [
-      "arn:aws:s3:::dataplatform-stg-raw-zone",
-      "arn:aws:s3:::dataplatform-stg-raw-zone/*"
+      "${module.raw_zone.bucket_arn}",
+      "${module.raw_zone.bucket_arn}/*"
     ]
 
     principals = {
@@ -241,26 +241,26 @@ module "landing_zone" {
 }
 
 module "raw_zone" {
-  source                         = "../modules/s3-bucket"
-  tags                           = module.tags.values
-  project                        = var.project
-  environment                    = var.environment
-  identifier_prefix              = local.identifier_prefix
-  bucket_name                    = "Raw Zone"
-  bucket_identifier              = "raw-zone"
-  bucket_policy_statements       = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement] : [local.prod_to_pre_prod_raw_zone_data_sync_statement_for_pre_prod]
-  bucket_key_policy_statements   = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement] : [local.prod_to_pre_prod_data_sync_access_to_raw_zone_key_statement_for_pre_prod]
+  source                       = "../modules/s3-bucket"
+  tags                         = module.tags.values
+  project                      = var.project
+  environment                  = var.environment
+  identifier_prefix            = local.identifier_prefix
+  bucket_name                  = "Raw Zone"
+  bucket_identifier            = "raw-zone"
+  bucket_policy_statements     = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement] : [local.prod_to_pre_prod_raw_zone_data_sync_statement_for_pre_prod]
+  bucket_key_policy_statements = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement] : [local.prod_to_pre_prod_data_sync_access_to_raw_zone_key_statement_for_pre_prod]
 
 }
 
 module "refined_zone" {
-  source                         = "../modules/s3-bucket"
-  tags                           = module.tags.values
-  project                        = var.project
-  environment                    = var.environment
-  identifier_prefix              = local.identifier_prefix
-  bucket_name                    = "Refined Zone"
-  bucket_identifier              = "refined-zone"
+  source            = "../modules/s3-bucket"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "Refined Zone"
+  bucket_identifier = "refined-zone"
 
   bucket_policy_statements = concat(
     [local.rentsense_refined_zone_access_statement],
@@ -352,9 +352,9 @@ resource "aws_s3_bucket_acl" "ssl_connection_resources" {
 
 resource "aws_s3_bucket_versioning" "ssl_connection_resources" {
   count = local.is_live_environment ? 1 : 0
-  
+
   bucket = aws_s3_bucket.ssl_connection_resources[0].id
-  
+
   versioning_configuration {
     status = "Enabled"
   }
