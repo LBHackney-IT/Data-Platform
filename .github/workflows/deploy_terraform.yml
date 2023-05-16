@@ -114,6 +114,10 @@ jobs:
         working-directory: "./lambdas/rds-database-snapshot-replicator"
         run: npm install
 
+      - name: Install Dependencies for g-drive-to-s3 Lambda
+        working-directory: "./lambdas/g_drive_to_s3"
+        run: make install-requirements
+
       - name: Download External Python Dependencies
         working-directory: "./external-lib"
         run: make all
