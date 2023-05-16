@@ -138,7 +138,7 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   }
 
   depends_on = [
-    aws_s3_bucket_object.g_drive_to_s3_copier_lambda,
+    aws_s3_object.g_drive_to_s3_copier_lambda,
   ]
 }
 
