@@ -97,36 +97,21 @@ resource "aws_iam_role_policy_attachment" "g_drive_to_s3_copier_lambda" {
   policy_arn = aws_iam_policy.g_drive_to_s3_copier_lambda.arn
 }
 
-locals {
-  lambda_name_underscore = "g_drive_to_s3"
-  lambda_exporter_id     = null_resource.run_install_requirements.id
-  source_dir             = "../../lambdas/${local.lambda_name_underscore}"
-}
-
-resource "null_resource" "run_install_requirements" {
-  triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
-  }
-
-  provisioner "local-exec" {
-    interpreter = ["bash", "-c"]
-    command     = "make install-requirements"
-    working_dir = "${path.module}/../../../lambdas/${local.lambda_name_underscore}/"
-  }
-}
-
 data "archive_file" "g_drive_to_s3_copier_lambda" {
   type        = "zip"
-  source_dir  = local.source_dir
-  output_path = "../../lambdas/${local.lambda_name_underscore}.zip"
+  source_dir  = "../../lambdas/g_drive_to_s3"
+  output_path = "../../lambdas/g_drive_to_s3.zip"
 }
 
 resource "aws_s3_object" "g_drive_to_s3_copier_lambda" {
   bucket      = var.lambda_artefact_storage_bucket
-  key         = "${local.lambda_name_underscore}.zip"
+  key         = "g_drive_to_s3.zip"
   source      = data.archive_file.g_drive_to_s3_copier_lambda.output_path
   acl         = "private"
-  source_hash = null_resource.run_install_requirements.triggers["dir_sha1"]
+  source_hash = data.archive_file.g_drive_to_s3_copier_lambda.output_md5
+  depends_on = [
+    data.archive_file.g_drive_to_s3_copier_lambda
+  ]
 }
 
 resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
@@ -151,6 +136,10 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
       GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_SECRET_ARN = var.google_service_account_credentials_secret
     }
   }
+
+  depends_on = [
+    aws_s3_object.g_drive_to_s3_copier_lambda,
+  ]
 }
 
 resource "aws_lambda_function_event_invoke_config" "g_drive_to_s3_copier_lambda" {
