@@ -22,5 +22,6 @@ module "housing_repairs_google_sheets_address_cleaning" {
     table_prefix       = "housing_repairs_${replace(var.dataset_name, "-", "_")}_"
     database_name      = local.refined_zone_catalog_database_name
     s3_target_location = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/with-cleaned-addresses/"
+    configuration      = null
   }
 }
