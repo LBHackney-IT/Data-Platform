@@ -103,7 +103,6 @@ repairs_cols = cat_cols + bool_cols + cont_cols + date_cols + target
 
 ml_cols = ['uprn',
            'typologies',
-           'estate_street',
            'band_tenancy_length',
            'flag_void_before_tenancy',
            'flag_ten_sust',

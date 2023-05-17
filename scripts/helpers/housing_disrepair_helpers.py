@@ -11,7 +11,7 @@ from pyspark.ml.evaluation import MulticlassClassificationEvaluator, BinaryClass
 from pyspark.ml.feature import StringIndexer, OneHotEncoder, VectorAssembler, Imputer, StandardScaler
 from pyspark.ml.functions import vector_to_array
 from pyspark.ml.tuning import ParamGridBuilder, CrossValidator
-from pyspark.sql.functions import col, lit, udf, when, trim, length, greatest, expr, concat_ws
+from pyspark.sql.functions import col, lit, udf, when, trim, length, greatest, expr
 from pyspark.sql.types import DoubleType, ArrayType
 from pyspark.sql import DataFrame
 
@@ -23,7 +23,7 @@ def convert_yn_to_bool(dataframe, columns):
     return dataframe
 
 
-def prepare_input_datasets(repairs_df, tenure_df, tenure_df_columns, deleted_estates):
+def prepare_input_datasets(repairs_df, tenure_df, tenure_df_columns, deleted_estates, street_or_estate):
     # drop columns not needed in MVP model
     cols_to_drop = [column for column in repairs_df.columns if
                     (column.endswith('_before_ld') | column.endswith('_last_2000'))]
@@ -39,17 +39,16 @@ def prepare_input_datasets(repairs_df, tenure_df, tenure_df_columns, deleted_est
     repairs_df = repairs_df.filter(~col('estate_name').isin(deleted_estates)) \
         .select('*')
 
+    # filter dataset to have either streets or estates
+    repairs_df = repairs_df.filter(col('estate_street').isin(street_or_estate)) \
+        .select('*')
+    repairs_df = repairs_df.drop('estate_street')
+
     # join on uprn field (both string type)
     joined_df = repairs_df.join(tenure_df, 'uprn', 'left')
 
-    # drop rows that don't have estate_street value
-    joined_df = joined_df.withColumn('es_len', length(trim(col('estate_street'))))
-    joined_df = joined_df.filter((joined_df.es_len > 0)).select('*')
-    joined_df = joined_df.drop('es_len')
-
     # drop duplicate rows
     joined_df = joined_df.drop_duplicates(subset=['uprn'])
-
     return joined_df
 
 
@@ -164,10 +163,10 @@ def get_vulnerability_score(dataframe, vulnerability_dict, new_column_name):
 
 def assign_confidence_score(dataframe, high_confidence_flag):
     dataframe = dataframe.withColumn('confidence_score',
-                                     when((col(high_confidence_flag) > 0) & (col('target') == 1), lit(1)) \
-                                     .when((col(high_confidence_flag) > 0) & (col('target') == 0), lit(0.6)) \
-                                     .when((col(high_confidence_flag) == 0) & (col('target') == 1), lit(0.8)) \
-                                     .when((col(high_confidence_flag) == 0) & (col('target') == 0), lit(1)) \
+                                     when((col(high_confidence_flag) > 0) & (col('target') == 1), lit(1))
+                                     .when((col(high_confidence_flag) > 0) & (col('target') == 0), lit(0.6))
+                                     .when((col(high_confidence_flag) == 0) & (col('target') == 1), lit(0.8))
+                                     .when((col(high_confidence_flag) == 0) & (col('target') == 0), lit(1))
                                      .otherwise(lit(0.8)))
     return dataframe
 
@@ -359,10 +358,10 @@ def train_model(df: DataFrame, model_path: str, test_model: bool, save_model: bo
 
     train_prediction = cv_model.transform(train)
     print(f"Training ROC AUC train score after fine-tuning...: {evaluator.evaluate(train_prediction):.5f}")
-    accuracy, precision_non_match, precision_match, \
-    recall_non_match, recall_match = evaluation_of_metrics(train_prediction,
-                                                           labelled_column=target_col,
-                                                           weights=weight_col)
+    accuracy, precision_non_match, precision_match, recall_non_match, recall_match = \
+        evaluation_of_metrics(train_prediction,
+                              labelled_column=target_col,
+                              weights=weight_col)
 
     print(f"Training Accuracy  after fine-tuning.............: {accuracy:.5f}")
     print(f"Training Precision after fine-tuning .(non-match): {precision_non_match:.5f}")
@@ -376,13 +375,12 @@ def train_model(df: DataFrame, model_path: str, test_model: bool, save_model: bo
         test_prediction.show()
         print(f'Write predictions to csv...')
         test_prediction.printSchema()
-        test_prediction_for_export = test_prediction.withColumn('probability',
-                                                                vector_to_array(col('probability'))) \
-            .withColumn('probability_str', concat_ws('probability'))
+        # test_prediction_for_export = test_prediction.withColumn('probability',
+        #                                                         vector_to_array(col('probability'))) \
+        #     .withColumn('probability_str', concat_ws('probability'))
         # test_prediction_for_export.write.csv(header=True, path=f"{model_path}/test_predictions")
 
-        accuracy, precision_non_match, precision_match, \
-        recall_non_match, recall_match = evaluation_of_metrics(
+        accuracy, precision_non_match, precision_match, recall_non_match, recall_match = evaluation_of_metrics(
             test_prediction,
             labelled_column=target_col,
             weights=weight_col)
