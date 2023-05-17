@@ -74,6 +74,7 @@ module "ingest_housing_income_collection_database_to_housing_raw_zone" {
       Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
       }
     })
+    table_prefix      = null
   }
 }
    

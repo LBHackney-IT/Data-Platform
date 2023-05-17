@@ -116,6 +116,7 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
         Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
       }
     })
+    table_prefix      = null
   }
 }
 

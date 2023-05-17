@@ -43,6 +43,7 @@ module "boundaries_geolive_ingestion_job" {
         TableLevelConfiguration = 5
       }
     })
+    table_prefix      = null
   }
 }
     
@@ -91,6 +92,7 @@ module "recycling_boundaries_geolive_ingestion_job" {
         TableLevelConfiguration = 5
       }
     })
+    table_prefix      = null
   }
 }  
   
@@ -139,6 +141,7 @@ module "health_boundaries_geolive_ingestion_job" {
         TableLevelConfiguration = 5
       }
     })
+    table_prefix      = null
   }
 }  
 
@@ -187,6 +190,7 @@ module "education_boundaries_geolive_ingestion_job" {
         TableLevelConfiguration = 5
       }
     })
+    table_prefix      = null
   }
 }  
 
@@ -235,5 +239,6 @@ module "housing_boundaries_geolive_ingestion_job" {
         TableLevelConfiguration = 5
       }
     })
+    table_prefix      = null
   }
 }  

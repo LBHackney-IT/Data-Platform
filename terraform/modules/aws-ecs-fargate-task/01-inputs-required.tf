@@ -26,11 +26,11 @@ variable "aws_subnet_ids" {
 variable "tasks" {
   description = "An array of objects containing tasks to be created"
   type = list(object({
-    task_prefix                         = optional(string)
-    cloudwatch_rule_schedule_expression = optional(string)
-    cloudwatch_rule_event_pattern       = optional(string)
-    task_cpu                            = optional(number)
-    task_memory                         = optional(number)
+    task_prefix                         = string
+    cloudwatch_rule_schedule_expression = string
+    cloudwatch_rule_event_pattern       = string
+    task_cpu                            = number
+    task_memory                         = number
     environment_variables = list(object({
       name  = string
       value = string
