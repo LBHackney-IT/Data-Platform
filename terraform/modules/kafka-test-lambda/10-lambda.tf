@@ -169,3 +169,4 @@ resource "aws_lambda_function" "lambda" {
     subnet_ids         = var.subnet_ids
   }
 }
+
