@@ -9,6 +9,7 @@ from confluent_kafka.admin import AdminClient
 from confluent_kafka.avro import AvroProducer, AvroConsumer, SerializerError
 from confluent_kafka.cimpl import NewTopic, KafkaException
 
+#env vars
 BOOTSTRAP_SERVERS_KEY = "bootstrap.servers"
 SECURITY_PROTOCOL_KEY = "security.protocol"
 SECURITY_PROTOCOL_VALUE = "ssl"
