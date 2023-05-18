@@ -18,6 +18,8 @@ module "load_locations_vaccine_to_refined_sandbox" {
   crawler_details = {
     database_name      = module.department_sandbox_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/sandbox/daro-covid-locations-vaccinations-cleaned"
+    configuration      = null
+    table_prefix       = null 
   }
 }
 
@@ -59,6 +61,8 @@ module "load_covid_data_to_refined_marta" {
   crawler_details = {
     database_name      = module.department_sandbox_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/sandbox/marta-covid-locations-vaccinations-cleaned"
+    configuration      = null
+    table_prefix       = null 
   }
 }
 
@@ -83,6 +87,8 @@ module "load_covid_data_to_refined_adam" {
   crawler_details = {
     database_name      = module.department_sandbox_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/sandbox/covid_adam"
+    configuration      = null
+    table_prefix       = null 
   }
 }
 
@@ -128,6 +134,7 @@ module "steve_covid_locations_and_vaccinations_sandbox" {
     database_name      = module.department_sandbox_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/sandbox/steve-covid-vaccinations-locations"
     table_prefix       = "sandbox_"
+    configuration      = null
   }
 }
 
@@ -152,6 +159,8 @@ module "stg_job_template_huu_do_sandbox" {
   crawler_details = {
     database_name      = module.department_sandbox_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/sandbox/covid-data-huu-do/"
+    configuration      = null
+    table_prefix       = null 
   }
 }
 
@@ -175,6 +184,8 @@ module "covid_vaccinations_verlander_sandbox" {
   crawler_details = {
     database_name      = module.department_sandbox_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/sandbox/covid_locations_verlander/"
+    configuration      = null
+    table_prefix       = null 
   }
 }
 
@@ -198,6 +209,8 @@ module "covid_vaccinations_arda_sandbox" {
   crawler_details = {
     database_name      = module.department_sandbox_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/sandbox/covid_locations_arda/"
+    configuration      = null
+    table_prefix       = null 
   }
 }
 #

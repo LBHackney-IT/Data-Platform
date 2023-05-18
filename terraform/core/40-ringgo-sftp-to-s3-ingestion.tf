@@ -93,5 +93,6 @@ module "ringgo_sftp_data_to_raw" {
         TableLevelConfiguration = 4
       }
     })
+    table_prefix      = null
   }
 }

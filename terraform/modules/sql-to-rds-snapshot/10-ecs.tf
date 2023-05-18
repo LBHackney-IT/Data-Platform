@@ -62,9 +62,11 @@ module "sql_to_parquet" {
   ecs_cluster_arn               = var.ecs_cluster_arn
   tasks = [
     {
-      cloudwatch_rule_event_pattern = local.event_pattern
-      task_cpu                      = 256
-      task_memory                   = 512
+      cloudwatch_rule_event_pattern       = local.event_pattern
+      cloudwatch_rule_schedule_expression = null
+      task_prefix                         = null
+      task_cpu                            = 256
+      task_memory                         = 512
       environment_variables = [
         { name : "MYSQL_HOST", value : aws_db_instance.ingestion_db.address },
         { name : "MYSQL_USER", value : aws_db_instance.ingestion_db.username },

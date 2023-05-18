@@ -199,6 +199,7 @@ module "tascomi_parse_tables_increments" {
         TableLevelConfiguration = 5
       }
     })
+    table_prefix      = null
   }
 }
 
@@ -268,6 +269,7 @@ module "tascomi_create_daily_snapshot" {
         TableLevelConfiguration = 5
       }
     })
+    table_prefix      = null
   }
 }
 
@@ -299,9 +301,9 @@ module "tascomi_applications_to_trusted" {
   crawler_details = {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
     s3_target_location = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
-
+    configuration      = null
+    table_prefix       = null
   }
-
 }
 
 module "tascomi_officers_teams_to_trusted" {
@@ -330,6 +332,8 @@ module "tascomi_officers_teams_to_trusted" {
   crawler_details = {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
     s3_target_location = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/officers"
+    configuration      = null
+    table_prefix       = null
   }
 
 }
@@ -360,6 +364,8 @@ module "tascomi_locations_to_trusted" {
   crawler_details = {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
     s3_target_location = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/locations"
+    configuration      = null
+    table_prefix       = null
   }
 
 }
@@ -388,6 +394,7 @@ module "tascomi_subsidiary_tables_to_trusted" {
   crawler_details = {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
     s3_target_location = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/"
+    configuration      = null
+    table_prefix       = null 
   }
-
 }
