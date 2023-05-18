@@ -1,0 +1,20 @@
+{
+    "aqs_path": "aqs_path",
+    "item_id": "carriageway_id",
+    "import_date": "import_date",
+    "import_datetime": "import_datetime",
+    "import_day": "import_day",
+    "import_month": "import_month",
+    "import_timestamp": "import_timestamp",
+    "import_year": "import_year",
+    "predecessor_file": "item_file",
+    "predecessor_item": "item_id",
+    "predecessor_subtitle": "item_subtitle",
+    "predecessor_title": "item_title",
+    "primary_item": "primary_item",
+    "refined_date": "refined_date",
+    "refined_day": "refined_day",
+    "refined_month": "refined_month",
+    "refined_year": "refined_year",
+    "street_name": "street_name"
+}

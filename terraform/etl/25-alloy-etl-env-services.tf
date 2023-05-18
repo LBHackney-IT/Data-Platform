@@ -3,7 +3,9 @@ locals {
   #alloy_queries                     = local.is_live_environment ? fileset("${path.module}/../../scripts/jobs/env_services/aqs", "*json") : []
   #alloy_queries_max_concurrent_runs = local.is_live_environment ? length(local.alloy_queries) : 1
   alloy_query_names_alphanumeric = local.is_live_environment ? [for i in local.alloy_query_names : replace(i, "\\W", "_")] : []
+  alloy_mapping_files            = local.is_live_environment ? fileset("${path.module}/../../scripts/jobs/env_services/alloy-mapping-files", "*json") : []
 }
+
 
 resource "aws_glue_trigger" "alloy_daily_export" {
   count   = local.is_live_environment ? length(local.alloy_queries) : 0
@@ -178,4 +180,12 @@ resource "aws_glue_crawler" "alloy_refined" {
     }
   })
 
+}
+
+resource "aws_s3_bucket_object" "folders" {
+  for_each = local.alloy_mapping_files
+  bucket   = module.raw_zone_data_source.bucket_id
+  acl      = "private"
+  key      = "env-services/alloy/mapping-files/${each.value}"
+  source   = "${path.module}/../../scripts/jobs/env_services/alloy-mapping-files/${each.value}"
 }
