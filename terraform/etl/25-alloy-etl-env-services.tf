@@ -182,7 +182,7 @@ resource "aws_glue_crawler" "alloy_refined" {
 
 }
 
-resource "aws_s3_bucket_object" "folders" {
+resource "aws_s3_object" "mapping_files" {
   for_each = local.alloy_mapping_files
   bucket   = module.raw_zone_data_source.bucket_id
   acl      = "private"
