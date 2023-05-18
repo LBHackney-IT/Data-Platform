@@ -114,9 +114,10 @@ resource "null_resource" "run_install_requirements" {
 }
 
 data "archive_file" "lambda" {
-  type        = "zip"
-  source_dir  = local.source_dir
-  output_path = "../../lambdas/${local.lambda_name_underscore}.zip"
+  type             = "zip"
+  source_dir       = local.source_dir
+  output_path      = "../../lambdas/${local.lambda_name_underscore}.zip"
+  output_file_mode = "0666"
 }
 
 resource "aws_s3_bucket_object" "lambda" {

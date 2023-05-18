@@ -18,7 +18,6 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
     regex_list = [['=', ""], ['\/', "_"], ['+', "-"]]
