@@ -142,3 +142,5 @@ module "copy_vonage_data_landing_to_raw" {
     table_prefix      = null
   }
 }
+
+
