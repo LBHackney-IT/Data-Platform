@@ -179,4 +179,3 @@ exports.handler = async (event) => {
     await sftp.end();
   }
 }
-

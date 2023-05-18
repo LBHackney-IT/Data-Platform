@@ -400,4 +400,3 @@ def lambda_handler(event, lambda_context):
 def start_glue_trigger(glue_client, trigger_name):
     trigger_details = glue_client.start_trigger(Name=trigger_name)
     logger.info(f"Started trigger: {trigger_details}")
-
