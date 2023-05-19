@@ -133,6 +133,7 @@ data "archive_file" "lambda" {
   type             = "zip"
   source_dir       = local.source_dir
   output_path      = "../../lambdas/kafka_test.zip"
+  depends_on       = [ null_resource.run_install_requirements ]
   output_file_mode = "0666"
 }
 
@@ -142,6 +143,7 @@ resource "aws_s3_bucket_object" "lambda" {
   source      = data.archive_file.lambda.output_path
   acl         = "private"
   source_hash = null_resource.run_install_requirements.triggers["dir_sha1"]
+  depends_on  = [ data.archive_file.lambda ]
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -168,4 +170,9 @@ resource "aws_lambda_function" "lambda" {
     security_group_ids = var.kafka_security_group_id
     subnet_ids         = var.subnet_ids
   }
+  
+  depends_on = [ 
+    null_resource.run_install_requirements,
+    aws_s3_bucket_object.lambda
+  ]
 }
