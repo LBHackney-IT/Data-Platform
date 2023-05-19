@@ -117,6 +117,8 @@ data "archive_file" "lambda" {
   type             = "zip"
   source_dir       = local.source_dir
   output_path      = "../../lambdas/${local.lambda_name_underscore}.zip"
+  depends_on       = [ null_resource.run_install_requirements ]
+  output_file_mode = "0666"
 }
 
 resource "aws_s3_bucket_object" "lambda" {
@@ -125,6 +127,7 @@ resource "aws_s3_bucket_object" "lambda" {
   source      = data.archive_file.lambda.output_path
   acl         = "private"
   source_hash = null_resource.run_install_requirements.triggers["dir_sha1"]
+  depends_on  = [ data.archive_file.lambda ]
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -146,6 +149,11 @@ resource "aws_lambda_function" "lambda" {
   environment {
     variables = var.lambda_environment_variables
   }
+  
+  depends_on = [ 
+    null_resource.run_install_requirements,
+    aws_s3_bucket_object.lambda
+  ]
 }
 
 resource "aws_lambda_function_event_invoke_config" "lambda" {
