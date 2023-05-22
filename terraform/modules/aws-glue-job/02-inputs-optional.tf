@@ -98,12 +98,14 @@ variable "crawler_details" {
   type = object({
     database_name      = string
     s3_target_location = string
-    table_prefix       = optional(string)
-    configuration      = optional(string)
+    table_prefix       = string
+    configuration      = string
   })
   default = {
     database_name      = null
     s3_target_location = null
+    table_prefix       = null
+    configuration      = null
   }
 }
 

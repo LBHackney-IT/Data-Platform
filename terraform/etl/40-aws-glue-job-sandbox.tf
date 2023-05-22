@@ -1,6 +1,5 @@
 #This terraform file is used for creating glue jobs during training.
 
-
 #module "job_template" {
 #  source                    = "../modules/aws-glue-job"
 #  is_live_environment       = local.is_live_environment
