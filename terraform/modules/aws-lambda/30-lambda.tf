@@ -10,7 +10,7 @@ resource "aws_lambda_function" "lambda" {
   role             = aws_iam_role.lambda_role.arn
   handler          = var.handler
   runtime          = var.runtime
-  source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
+  source_code_hash = data.archive_file.lambda.output_base64sha256
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = var.s3_key
   timeout          = var.lambda_timeout
@@ -32,10 +32,11 @@ resource "aws_lambda_function" "lambda" {
 }
 
 data "archive_file" "lambda" {
-  type        = "zip"
-  source_dir  = var.lambda_source_dir
-  output_path = var.lambda_output_path
-  depends_on  = [null_resource.run_install_requirements]
+  type             = "zip"
+  source_dir       = var.lambda_source_dir
+  output_path      = var.lambda_output_path
+  depends_on       = [null_resource.run_install_requirements]
+  output_file_mode = var.output_file_mode
 }
 
 resource "null_resource" "run_install_requirements" {
