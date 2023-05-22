@@ -63,3 +63,9 @@ variable "environment_variables" {
   description = "Environment Variables to pass to the Lambda Function"
   default     = null
 }
+
+variable "output_file_mode" {
+  type        = number
+  description = "File Mode for the Lambda artefact zip file"
+  default     = 0666
+}
