@@ -50,6 +50,8 @@ module "active_persons_records_refined" {
   crawler_details = {
     database_name      = module.department_data_and_insight_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/data-and-insight/active-person-records"
+    configuration      = null
+    table_prefix       = null
   }
 
 }
