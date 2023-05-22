@@ -1,6 +1,7 @@
 locals {
   lambda_name_underscore = replace(var.lambda_name, "-", "_")
-  command                = var.runtime == "python3.8" ? "make install-requirements" : (var.runtime == "nodejs14.x" ? "npm install" : 0)
+  command                = "make install-requirements"
+  include_requirements   = fileexists("${path.module}/../../../lambdas/${local.lambda_name_underscore}/requirements.txt") ? true : false
   environment_map        = var.environment_variables == null ? [] : [var.environment_variables]
 }
 
@@ -26,29 +27,34 @@ resource "aws_lambda_function" "lambda" {
     size = var.ephemeral_storage
   }
   tags = var.tags
+
+  depends_on = [null_resource.run_install_requirements, data.archive_file.lambda]
 }
 
 data "archive_file" "lambda" {
   type        = "zip"
   source_dir  = var.lambda_source_dir
   output_path = var.lambda_output_path
+  depends_on  = [null_resource.run_install_requirements]
 }
 
-#resource "null_resource" "run_install_requirements" {
-#  triggers = {
-#    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
-#  }
-#
-#  provisioner "local-exec" {
-#    interpreter = ["bash", "-c"]
-#    command     = local.command
-#    working_dir = "${path.module}/../../../lambdas/${local.lambda_name_underscore}/"
-#  }
-#}
+resource "null_resource" "run_install_requirements" {
+  count = local.include_requirements ? 1 : 0
+  triggers = {
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = local.command
+    working_dir = "${path.module}/../../../lambdas/${local.lambda_name_underscore}/"
+  }
+}
 
 resource "aws_s3_bucket_object" "lambda" {
-  bucket = var.lambda_artefact_storage_bucket
-  key    = "${local.lambda_name_underscore}.zip"
-  source = data.archive_file.lambda.output_path
-  acl    = "private"
+  bucket     = var.lambda_artefact_storage_bucket
+  key        = "${local.lambda_name_underscore}.zip"
+  source     = data.archive_file.lambda.output_path
+  acl        = "private"
+  depends_on = [data.archive_file.lambda]
 }
