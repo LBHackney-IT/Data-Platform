@@ -188,4 +188,5 @@ resource "aws_s3_object" "mapping_files" {
   acl      = "private"
   key      = "env-services/alloy/mapping-files/${each.value}"
   source   = "${path.module}/../../scripts/jobs/env_services/alloy-mapping-files/${each.value}"
+  etag     = md5(file("${path.module}/../../scripts/jobs/env_services/alloy-mapping-files/${each.value}"))
 }
