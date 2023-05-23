@@ -1,4 +1,5 @@
 module "export-mtfh-pitr" {
+  count                          = !local.is_production_environment ? 1 : 0
   source                         = "../modules/aws-lambda"
   lambda_name                    = "mtfh-export-lambda"
   lambda_source_dir              = "../../lambdas/mtfh_export_lambda"
