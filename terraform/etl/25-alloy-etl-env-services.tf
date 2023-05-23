@@ -183,10 +183,10 @@ resource "aws_glue_crawler" "alloy_refined" {
 }
 
 resource "aws_s3_object" "mapping_files" {
-  for_each = local.alloy_mapping_files
-  bucket   = module.raw_zone_data_source.bucket_id
-  acl      = "private"
-  key      = "env-services/alloy/mapping-files/${each.value}"
-  source   = "${path.module}/../../scripts/jobs/env_services/alloy-mapping-files/${each.value}"
-  etag     = md5(file("${path.module}/../../scripts/jobs/env_services/alloy-mapping-files/${each.value}"))
+  for_each    = local.alloy_mapping_files
+  bucket      = module.raw_zone_data_source.bucket_id
+  acl         = "private"
+  key         = "env-services/alloy/mapping-files/${each.value}"
+  source      = "${path.module}/../../scripts/jobs/env_services/alloy-mapping-files/${each.value}"
+  source_hash = filemd5("${path.module}/../../scripts/jobs/env_services/alloy-mapping-files/${each.value}")
 }
