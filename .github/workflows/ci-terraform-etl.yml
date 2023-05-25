@@ -1,21 +1,21 @@
-name: 'ETL'
+name: "ETL"
 on:
   push:
     branches-ignore:
       - "main"
     paths-ignore:
-      - 'terraform/core/**'
-      - 'terraform/networking/**'
-      - 'terraform/backend-setup/**'
-      - 'scripts/**'
-      - 'lambdas/**'
-      - 'notebook/**'
-      - 'external-lib/**'
-      - 'docker/**'
+      - "terraform/core/**"
+      - "terraform/networking/**"
+      - "terraform/backend-setup/**"
+      - "scripts/**"
+      - "lambdas/**"
+      - "notebook/**"
+      - "external-lib/**"
+      - "docker/**"
 
 jobs:
   ETL-Plan-Staging:
-    name : "Staging"
+    name: "Staging"
     uses: ./.github/workflows/plan-terraform.yml
     with:
       environment: "stg"
@@ -42,6 +42,7 @@ jobs:
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
       COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
+      PRODUCTION_FIREWALL_IP: ${{ secrets.PRODUCTION_FIREWALL_IP }}
   ETL-Plan-Production:
     name: "Production"
     uses: ./.github/workflows/plan-terraform.yml
@@ -70,8 +71,9 @@ jobs:
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_PROD }}
       COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
+      PRODUCTION_FIREWALL_IP: ${{ secrets.PRODUCTION_FIREWALL_IP }}
   ETL-Lint:
-    name : "Lint"
+    name: "Lint"
     uses: ./.github/workflows/lint-terraform.yml
     with:
       environment: "stg"
