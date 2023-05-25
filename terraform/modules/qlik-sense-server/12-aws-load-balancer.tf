@@ -26,21 +26,19 @@ resource "aws_security_group" "qlik_sense_alb" {
   }
 
   ingress {
-    description      = "Allow inbound HTTP traffic"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    description = "Allow inbound HTTP traffic"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.production_firewall_ip]
   }
 
   ingress {
-    description      = "Allow inbound HTTPS traffic"
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    description = "Allow inbound HTTPS traffic"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.production_firewall_ip]
   }
 
   tags = merge(var.tags, {
