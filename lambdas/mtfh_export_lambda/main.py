@@ -72,7 +72,7 @@ def lambda_handler(event, context):
 
     client = boto3.client(
         "dynamodb",
-        region=region_name,
+        region_name=region_name,
         aws_access_key_id=credentials["Credentials"]["AccessKeyId"],
         aws_secret_access_key=credentials["Credentials"]["SecretAccessKey"],
         aws_session_token=credentials["Credentials"]["SessionToken"],
