@@ -18,7 +18,7 @@ resource "aws_sagemaker_notebook_instance_lifecycle_configuration" "sagemaker_li
   #     "sparkmagicconfig" : file("${path.module}/spark-magic-config.json")
   #   }
   # ))
-  on_start  = base64encode("echo startup_script_temporarily_disabled")
+  on_start = base64encode("echo startup_script_temporarily_disabled")
 }
 
 resource "aws_sagemaker_notebook_instance" "nb" {
@@ -31,7 +31,7 @@ resource "aws_sagemaker_notebook_instance" "nb" {
   kms_key_id              = aws_kms_key.kms_key.key_id
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 
   tags = merge({

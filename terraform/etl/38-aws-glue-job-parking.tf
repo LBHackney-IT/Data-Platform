@@ -1004,7 +1004,7 @@ module "parking_shop_front_licence_totals" {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
   }
-}    
+}
 
 module "parking_foi_pcn_gds_daily_summary_records" {
   source                         = "../modules/aws-glue-job"
@@ -1077,20 +1077,21 @@ module "parking_correspondence_performance_qa_with_totals_gds" {
     "--environment"         = var.environment
   }
 }
+
 # MRB 22-11-2022 Job created 
 module "parking_defect_met_fail" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_defect_met_fail"
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_defect_met_fail"
-  glue_version                   = "3.0"
+  source                     = "../modules/aws-glue-job"
+  is_live_environment        = local.is_live_environment
+  is_production_environment  = local.is_production_environment
+  department                 = module.department_parking_data_source
+  job_name                   = "${local.short_identifier_prefix}parking_defect_met_fail"
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                = "parking_defect_met_fail"
+  glue_version               = "3.0"
   #triggered_by_job              = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn"
-  triggered_by_crawler           = module.parking_spreadsheet_parking_ops_db_defects_mgt[0].crawler_name
+  triggered_by_crawler           = local.is_live_environment ? module.parking_spreadsheet_parking_ops_db_defects_mgt[0].crawler_name : null
   job_description                = "To collect and format the Ops Defect Data."
   trigger_enabled                = local.is_production_environment
   glue_job_timeout               = 10
@@ -1125,18 +1126,18 @@ module "parking_match_pcn_permit_vrm_llpg_nlpg_postcodes" {
 }
 # MRB 17-04-2023 Job created 
 module "parking_defect_met_fail_monthly_format" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_defect_met_fail_monthly_format"
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_defect_met_fail_monthly_format"
-  glue_version                   = "3.0"
+  source                     = "../modules/aws-glue-job"
+  is_live_environment        = local.is_live_environment
+  is_production_environment  = local.is_production_environment
+  department                 = module.department_parking_data_source
+  job_name                   = "${local.short_identifier_prefix}parking_defect_met_fail_monthly_format"
+  helper_module_key          = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                = "parking_defect_met_fail_monthly_format"
+  glue_version               = "3.0"
   #triggered_by_job              = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn"
-  triggered_by_crawler           = module.parking_spreadsheet_parking_ops_db_defects_mgt[0].crawler_name
+  triggered_by_crawler           = local.is_live_environment ? module.parking_spreadsheet_parking_ops_db_defects_mgt[0].crawler_name : null
   job_description                = "To collect and format the Ops Defect Data into a Pivot."
   trigger_enabled                = local.is_production_environment
   glue_job_timeout               = 10
