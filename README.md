@@ -196,7 +196,7 @@ personal development environment.
 
 #### Destroying development workspaces
 
-All resources in a given workspace can be destroyed with `make destroy` command. However some resources have deletion protection enabled. In order to destroy the resources you cen remove those protections by replacing all `prevent_destroy = true` statements with `prevent_destroy = true`.
+All resources in a given workspace can be destroyed with `make destroy` command. However some resources have deletion protection enabled. In order to destroy the resources you cen remove those protections by replacing all `prevent_destroy = true` statements with `prevent_destroy = false`.
 
 Please ensure you are in the correct workspace before deleting resources and also make sure you destroy the workspaces in the correct order since they have dependecies to each other. Destroy ETL first and then Core. Please don't destroy Networking since it's using default/shared workspace and is used by all developers. 
 
