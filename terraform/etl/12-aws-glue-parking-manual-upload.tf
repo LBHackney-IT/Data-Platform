@@ -36,7 +36,7 @@ module "manually_uploaded_parking_data_to_raw" {
         TableLevelConfiguration = 4
       }
     })
-    table_prefix       = null 
+    table_prefix = null
   }
 }
 

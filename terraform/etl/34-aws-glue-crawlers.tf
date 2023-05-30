@@ -2,7 +2,7 @@ resource "aws_glue_catalog_database" "landing_zone_data_and_insight_address_matc
   count = local.is_live_environment ? 1 : 0
 
   name = "${local.identifier_prefix}-data-and-insight-address-matching-landing-zone"
-  
+
   lifecycle {
     prevent_destroy = true
   }
