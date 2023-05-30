@@ -42,8 +42,6 @@ on:
         required: true
       AWS_HACKIT_ACCOUNT_ID:
         required: true
-      AWS_SANDBOX_ACCOUNT_ID:
-        required: true
       AWS_ROLE_TO_ASSUME:
         required: true
       AWS_API_VPC_ID:
@@ -119,7 +117,6 @@ jobs:
           aws_api_vpc_id: ${{ secrets.AWS_API_VPC_ID }}
           aws_housing_vpc_id: ${{ secrets.AWS_HOUSING_VPC_ID }}
           aws_mosaic_vpc_id: ${{ secrets.AWS_MOSAIC_VPC_ID }}
-          aws_sandbox_account_id: ${{ secrets.AWS_SANDBOX_ACCOUNT_ID }}
           aws_dp_vpc_id: ${{ secrets.AWS_DP_VPC_ID }}
           aws_hackit_account_id: ${{ secrets.AWS_HACKIT_ACCOUNT_ID }}
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}

@@ -29,6 +29,7 @@ module "housing_repairs_dlo_cleaning_job" {
     table_prefix       = "housing_repairs_repairs_dlo_"
     database_name      = module.department_housing_repairs_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/housing-repairs/repairs-dlo/cleaned/"
+    configuration      = null
   }
 }
 
@@ -57,6 +58,7 @@ module "housing_repairs_dlo_address_cleaning_job" {
     table_prefix       = "housing_repairs_repairs_dlo_"
     database_name      = module.department_housing_repairs_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/housing-repairs/repairs-dlo/with-cleaned-addresses/"
+    configuration      = null
   }
 }
 
@@ -87,6 +89,7 @@ module "get_uprn_from_uhref_job" {
     table_prefix       = "housing_repairs_repairs_dlo_"
     database_name      = module.department_housing_repairs_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/housing-repairs/repairs-dlo/with_uprn_from_uhref/"
+    configuration      = null
   }
 }
 

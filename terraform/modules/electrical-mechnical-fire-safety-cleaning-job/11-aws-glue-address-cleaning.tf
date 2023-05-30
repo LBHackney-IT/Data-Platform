@@ -22,6 +22,7 @@ module "housing_repairs_elec_mech_fire_address_cleaning" {
     database_name      = local.refined_zone_catalog_database_name
     s3_target_location = "s3://${var.refined_zone_bucket_id}/housing-repairs/repairs-electrical-mechanical-fire/${var.dataset_name}/with-cleaned-addresses/"
     table_prefix       = "housing_repairs_elec_mech_fire_${replace(var.dataset_name, "-", "_")}_"
+    configuration      = null
   }
 }
 

@@ -94,7 +94,7 @@ jobs:
           chmod 400 ~/.ssh/id_rsa ~/.ssh/known_hosts
 
       - name: Setup Node.js 14
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "14"
 

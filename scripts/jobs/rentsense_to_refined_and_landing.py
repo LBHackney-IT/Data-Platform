@@ -363,7 +363,7 @@ if __name__ == "__main__":
         }
     
      
-        mapPatch =  {
+    mapPatch =  {
             'P11' : 'Patch 11',
             'P12' : 'Patch 12',
             'P17' : 'Patch 17',
@@ -489,7 +489,7 @@ if __name__ == "__main__":
     patch = patch.selectExpr("property_ref as prop_ref",
                              "patch2 as Patch",
                              "officer_full_name as HousingOfficerName")
-        patch = patch.distinct()
+    patch = patch.distinct()
  
     
 #data loads - takes all records that have no end date and secure tenancies, intro and mesne tenancies are added after as there are some tenancy ids with both

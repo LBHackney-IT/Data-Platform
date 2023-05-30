@@ -23,6 +23,8 @@ module "llpg_raw_to_trusted" {
   crawler_details = {
     database_name      = module.department_unrestricted_data_source.trusted_zone_catalog_database_name
     s3_target_location = "s3://${module.trusted_zone_data_source.bucket_id}/unrestricted/llpg/latest_llpg"
+    configuration      = null
+    table_prefix       = null 
   }
 
 }
@@ -79,5 +81,6 @@ module "env_services_geospatial_enrichment" {
     database_name      = module.department_environmental_services_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/env-services/spatially-enriched"
     table_prefix       = "spatially_enriched_"
+    configuration      = null
   }
 }

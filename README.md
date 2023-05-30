@@ -161,10 +161,20 @@ $ WORKSPACE={developer} make workspace-select
     - You remove _hackney-dataplatform-development_ aws credentials if they exist in your AWS credentials file
     - You remove the _.terraform_ directory, and the _.terraform.lock.hcl_ file if they exist in the project's terraform/etl directory
 
+#### Building dependencies 
+
+In order to apply Terraform some dependencies must be in place first.
+
+To build all necessary dependencies:
+
+1. Navigate to `external-lib` folder and run `make all`
+2. Run `make package-helpers` in the project root directory 
+
+Please note there are other dependencies, such as Python, Maven etc., that must be in place in the development environment before the above commands can be executed successfully, but those can be resolved separately as and when required.
+
 #### Terraform commands
 
 After running, you can run `make plan`, `make apply` and `make destroy` to run the Terraform deploy/destroy commands with the development `env.tfvars` set for you.
-
 
 ## Networking
 
@@ -183,3 +193,11 @@ For new developers coming onto project, the VPC should have already been establi
 workspace state stored in S3. The ID of the VPC has also already been included in the example env.tsvars file. Unless
 you intend to modify the network configuration, you should not need to modify or deploy the network to run your own
 personal development environment.
+
+#### Destroying development workspaces
+
+All resources in a given workspace can be destroyed with `make destroy` command. However some resources have deletion protection enabled. In order to destroy the resources you cen remove those protections by replacing all `prevent_destroy = true` statements with `prevent_destroy = false`.
+
+Please ensure you are in the correct workspace before deleting resources and also make sure you destroy the workspaces in the correct order since they have dependecies to each other. Destroy ETL first and then Core. Please don't destroy Networking since it's using default/shared workspace and is used by all developers. 
+
+If you receive any timeout errors when destroying resources you can simply run destroy again until it succeeds.
