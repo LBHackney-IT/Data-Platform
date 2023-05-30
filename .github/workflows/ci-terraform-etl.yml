@@ -1,17 +1,17 @@
-name: "ETL"
+name: 'ETL'
 on:
   push:
     branches-ignore:
       - "main"
     paths-ignore:
-      - "terraform/core/**"
-      - "terraform/networking/**"
-      - "terraform/backend-setup/**"
-      - "scripts/**"
-      - "lambdas/**"
-      - "notebook/**"
-      - "external-lib/**"
-      - "docker/**"
+      - 'terraform/core/**'
+      - 'terraform/networking/**'
+      - 'terraform/backend-setup/**'
+      - 'scripts/**'
+      - 'lambdas/**'
+      - 'notebook/**'
+      - 'external-lib/**'
+      - 'docker/**'
 
 jobs:
   ETL-Plan-Staging:

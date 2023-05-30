@@ -1,17 +1,17 @@
-name: "Core"
+name: 'Core'
 on:
   push:
     branches-ignore:
       - "main"
     paths-ignore:
-      - "terraform/etl/**"
-      - "terraform/networking/**"
-      - "terraform/backend-setup/**"
-      - "scripts/**"
-      - "lambdas/**"
-      - "notebook/**"
-      - "external-lib/**"
-      - "docker/**"
+      - 'terraform/etl/**'
+      - 'terraform/networking/**'
+      - 'terraform/backend-setup/**'
+      - 'scripts/**'
+      - 'lambdas/**'
+      - 'notebook/**'
+      - 'external-lib/**'
+      - 'docker/**'
 
 jobs:
   CI-Staging-Plan:
