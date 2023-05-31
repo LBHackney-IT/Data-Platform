@@ -1,5 +1,5 @@
 locals {
-  ringgo_copy_glue_job__trigger_name     = local.is_live_environment ? module.ringgo_sftp_data_to_raw[0].trigger_name : ""
+  ringgo_copy_glue_job__trigger_name = local.is_live_environment ? module.ringgo_sftp_data_to_raw[0].trigger_name : ""
 }
 
 module "sftp_to_s3_ingestion" {
@@ -19,21 +19,21 @@ module "sftp_to_s3_ingestion" {
   s3_target_bucket_name          = module.landing_zone.bucket_id
   api_credentials_secret_name    = "ringo-daily-sftp-credentials"
   s3_target_bucket_kms_key_arn   = module.landing_zone.kms_key_arn
-  
+
   lambda_environment_variables = {
-    "SFTP_HOST"                   = local.sftp_server_host
-    "SFTP_USERNAME"               = local.sftp_server_username
-    "SFTP_PASSWORD"               = local.sftp_server_password
-    "SFTP_SOURCE_FILE_PREFIX"     = "data_warehouse_-"
-    "SFTP_TARGET_FILE_PATH"       = "/client/"
-    "SFTP_SOURCE_FILE_EXTENSION"  = "csv"
-    "S3_BUCKET"                   = module.landing_zone.bucket_id
-    "S3_TARGET_FOLDER"            = "ringgo/sftp/input"
-    "TRIGGER_NAME"                =  local.ringgo_copy_glue_job__trigger_name
+    "SFTP_HOST"                  = local.sftp_server_host
+    "SFTP_USERNAME"              = local.sftp_server_username
+    "SFTP_PASSWORD"              = local.sftp_server_password
+    "SFTP_SOURCE_FILE_PREFIX"    = "data_warehouse_-"
+    "SFTP_TARGET_FILE_PATH"      = "/client/"
+    "SFTP_SOURCE_FILE_EXTENSION" = "csv"
+    "S3_BUCKET"                  = module.landing_zone.bucket_id
+    "S3_TARGET_FOLDER"           = "ringgo/sftp/input"
+    "TRIGGER_NAME"               = local.ringgo_copy_glue_job__trigger_name
   }
-  lambda_execution_cron_schedule  = "cron(0 21 * * ? *)"
-  trigger_to_run                  = local.ringgo_copy_glue_job__trigger_name
-}  
+  lambda_execution_cron_schedule = "cron(0 21 * * ? *)"
+  trigger_to_run                 = local.ringgo_copy_glue_job__trigger_name
+}
 
 data "aws_secretsmanager_secret" "sftp_server_credentials" {
   name = "ringo-daily-sftp-credentials"
@@ -53,14 +53,14 @@ locals {
 resource "aws_glue_catalog_database" "parking_ringgo_sftp_catalog_database" {
   count = local.is_live_environment ? 1 : 0
   name  = "${local.short_identifier_prefix}parking-ringgo-sftp-raw-zone"
-  
+
   lifecycle {
     prevent_destroy = true
   }
 }
 
 module "ringgo_sftp_data_to_raw" {
-  source = "../modules/aws-glue-job"
+  source                     = "../modules/aws-glue-job"
   count                      = local.is_live_environment ? 1 : 0
   is_production_environment  = local.is_production_environment
   is_live_environment        = local.is_live_environment
@@ -68,12 +68,12 @@ module "ringgo_sftp_data_to_raw" {
   helper_module_key          = aws_s3_bucket_object.helpers.key
   pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
-  
-  glue_scripts_bucket_id     = module.glue_scripts.bucket_id
-  glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
-  glue_role_arn              = aws_iam_role.glue_role.arn
-  script_s3_object_key       = aws_s3_bucket_object.parking_copy_ringgo_sftp_data_to_raw.key
-  
+
+  glue_scripts_bucket_id = module.glue_scripts.bucket_id
+  glue_temp_bucket_id    = module.glue_temp_storage.bucket_id
+  glue_role_arn          = aws_iam_role.glue_role.arn
+  script_s3_object_key   = aws_s3_bucket_object.parking_copy_ringgo_sftp_data_to_raw.key
+
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--s3_bucket_target"    = "${module.raw_zone.bucket_id}/parking"
@@ -81,9 +81,9 @@ module "ringgo_sftp_data_to_raw" {
     "--s3_prefix"           = "ringgo/sftp/"
     "--extra-py-files"      = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key}"
   }
-  
-  trigger_enabled      = local.is_production_environment
-  
+
+  trigger_enabled = local.is_production_environment
+
   crawler_details = {
     database_name      = aws_glue_catalog_database.parking_ringgo_sftp_catalog_database[0].name
     s3_target_location = "s3://${module.raw_zone.bucket_id}/parking/ringgo/"
@@ -93,6 +93,6 @@ module "ringgo_sftp_data_to_raw" {
         TableLevelConfiguration = 4
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
 }

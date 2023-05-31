@@ -199,7 +199,7 @@ module "tascomi_parse_tables_increments" {
         TableLevelConfiguration = 5
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
 }
 
@@ -241,14 +241,14 @@ module "tascomi_create_daily_snapshot" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
-  department                 = module.department_planning_data_source
-    
-  job_name                   = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
-  glue_job_worker_type       = "G.1X"
-  number_of_workers_for_glue_job  = 8
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
-  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  department                = module.department_planning_data_source
+
+  job_name                       = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
+  glue_job_worker_type           = "G.2X"
+  number_of_workers_for_glue_job = 8
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.refined_zone_data_source.bucket_id}/planning/tascomi/snapshot/"
@@ -269,7 +269,7 @@ module "tascomi_create_daily_snapshot" {
         TableLevelConfiguration = 5
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
 }
 
@@ -278,13 +278,13 @@ module "tascomi_applications_to_trusted" {
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
-  department                 = module.department_planning_data_source
-  job_name                   = "${local.short_identifier_prefix}tascomi_applications_trusted"
-  glue_job_worker_type       = "G.1X"
-  number_of_workers_for_glue_job  = 8
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
-  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  department                     = module.department_planning_data_source
+  job_name                       = "${local.short_identifier_prefix}tascomi_applications_trusted"
+  glue_job_worker_type           = "G.1X"
+  number_of_workers_for_glue_job = 8
+  helper_module_key              = data.aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"                    = "job-bookmark-enable"
     "--target_destination"                     = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
@@ -395,6 +395,6 @@ module "tascomi_subsidiary_tables_to_trusted" {
     database_name      = aws_glue_catalog_database.trusted_zone_tascomi.name
     s3_target_location = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/"
     configuration      = null
-    table_prefix       = null 
+    table_prefix       = null
   }
 }
