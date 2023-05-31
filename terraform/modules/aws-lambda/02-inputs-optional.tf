@@ -51,6 +51,10 @@ variable "ephemeral_storage" {
   type        = number
   description = "Additional Ephemeral Storage for the Lambda Function beyond the default 512MB"
   default     = 512
+  validation {
+    condition     = var.ephemeral_storage >= 512 && var.ephemeral_storage <= 10240
+    error_message = "Ephemeral Storage must be between 512 and 10240 MB"
+  }
 }
 
 variable "lambda_output_path" {
