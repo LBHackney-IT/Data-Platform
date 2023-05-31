@@ -1,7 +1,6 @@
 locals {
   lambda_name_underscore = replace(var.lambda_name, "-", "_")
   command                = "make install-requirements"
-  include_requirements   = fileexists("${path.module}/../../../lambdas/${local.lambda_name_underscore}/requirements.txt") ? true : false
   environment_map        = var.environment_variables == null ? [] : [var.environment_variables]
 }
 
@@ -40,7 +39,6 @@ data "archive_file" "lambda" {
 }
 
 resource "null_resource" "run_install_requirements" {
-  count = local.include_requirements ? 1 : 0
   triggers = {
     dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
   }
