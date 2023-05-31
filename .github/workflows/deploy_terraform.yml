@@ -70,7 +70,8 @@ on:
         required: true
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN:
         required: true
-
+      PRODUCTION_FIREWALL_IP:
+        required: true
 jobs:
   deploy:
     name: Terraform Apply
