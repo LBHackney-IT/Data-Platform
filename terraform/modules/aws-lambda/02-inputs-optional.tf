@@ -43,6 +43,10 @@ variable "lambda_timeout" {
   type        = number
   description = "Amount of time the Lambda Function has to run in seconds"
   default     = 60
+  validation {
+    condition     = var.lambda_timeout >= 1 && var.lambda_timeout <= 900
+    error_message = "Lambda Timeout must be between 1 and 900 seconds"
+  }
 }
 
 variable "lambda_memory_size" {
