@@ -52,7 +52,7 @@ resource "null_resource" "run_install_requirements" {
   }
 }
 
-resource "aws_s3_bucket_object" "lambda" {
+resource "aws_s3_object" "lambda" {
   bucket     = var.lambda_artefact_storage_bucket
   key        = "${local.lambda_name_underscore}.zip"
   source     = data.archive_file.lambda.output_path
