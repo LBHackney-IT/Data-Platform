@@ -69,3 +69,7 @@ variable "rentsense_target_path" {
   description = "The S3 path to target when copying rentsense data"
   type        = string
 }
+variable "production_firewall_ip" {
+  description = "The firewall production IP"
+  type        = string
+}
