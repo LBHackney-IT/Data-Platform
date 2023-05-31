@@ -32,6 +32,11 @@ variable "runtime" {
   type        = string
   description = "Runtime to use for the Lambda Function"
   default     = "python3.8"
+  validation {
+    condition     = can(regex("python[0-9].[0-9]", var.runtime))
+    error_message = "Runtime must be a valid Python runtime"
+  }
+
 }
 
 variable "lambda_timeout" {
