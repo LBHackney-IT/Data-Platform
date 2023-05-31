@@ -53,6 +53,10 @@ variable "lambda_memory_size" {
   type        = number
   description = "Memory Size for the Lambda Function"
   default     = 128
+  validation {
+    condition     = var.lambda_memory_size >= 128 && var.lambda_memory_size <= 10240
+    error_message = "Lambda Memory Size must be between 128 and 10240 MB"
+  }
 }
 
 variable "ephemeral_storage" {
