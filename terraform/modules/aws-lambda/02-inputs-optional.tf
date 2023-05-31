@@ -4,18 +4,6 @@ variable "identifier_prefix" {
   default     = ""
 }
 
-variable "enable_kms_key_access" {
-  type        = bool
-  description = "Grants KMS Key Access to the Lambda Role"
-  default     = false
-}
-
-variable "enable_secrets_manager_access" {
-  type        = bool
-  description = "Grants Secrets Manager Access to the Lambda Role"
-  default     = false
-}
-
 variable "secret_name" {
   type        = string
   description = "Name of the secret stored in Secrets Manager to grant access to"
@@ -33,7 +21,7 @@ variable "runtime" {
   description = "Runtime to use for the Lambda Function"
   default     = "python3.8"
   validation {
-    condition     = can(regex("python3.([7-9]|10)", var.runtime))
+    condition     = can(regex("python3.([7-9]|10", var.runtime))
     error_message = "Runtime must be a valid Python runtime"
   }
 
