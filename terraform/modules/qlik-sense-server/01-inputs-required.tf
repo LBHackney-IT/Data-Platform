@@ -55,3 +55,8 @@ variable "secrets_manager_kms_key" {
     arn    = string
   })
 }
+
+variable "production_firewall_ip" {
+  description = "The production firewall IP"
+  type        = string
+}

@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda_role" {
-  name = "${var.identifier_prefix}dynamodb-export-lambda-role"
+  name = "${var.identifier_prefix}${var.lambda_name}-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -23,29 +23,6 @@ data "aws_iam_policy_document" "lambda_role" {
     ]
     effect    = "Allow"
     resources = ["*"]
-  }
-
-  dynamic "statement" {
-    for_each = var.enable_kms_key_access ? [1] : []
-    content {
-      actions = [
-        "kms:Decrypt",
-        "kms:GenerateDataKey",
-      ]
-      effect    = "Allow"
-      resources = [var.secrets_manager_kms_key.arn]
-    }
-  }
-  dynamic "statement" {
-    for_each = var.enable_secrets_manager_access ? [1] : []
-
-    content {
-      actions = [
-        "secretsmanager:GetSecretValue",
-      ]
-      effect    = "Allow"
-      resources = ["arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:${var.secret_name}*"]
-    }
   }
 }
 
