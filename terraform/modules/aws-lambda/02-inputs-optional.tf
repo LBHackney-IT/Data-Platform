@@ -74,3 +74,9 @@ variable "output_file_mode" {
   description = "File Mode for the Lambda artefact zip file"
   default     = 0666
 }
+
+variable "install_requirements" {
+  type        = bool
+  description = "Whether to create and install requirements.txt for the Lambda Function"
+  default     = true
+}
