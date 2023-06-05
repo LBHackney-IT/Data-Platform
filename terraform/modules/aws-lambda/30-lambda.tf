@@ -27,14 +27,14 @@ resource "aws_lambda_function" "lambda" {
   }
   tags = var.tags
 
-  depends_on = [null_resource.run_install_requirements, data.archive_file.lambda]
+  depends_on = [null_resource.run_install_requirements[0], data.archive_file.lambda]
 }
 
 data "archive_file" "lambda" {
   type             = "zip"
   source_dir       = var.lambda_source_dir
   output_path      = var.lambda_output_path
-  depends_on       = [null_resource.run_install_requirements]
+  depends_on       = [null_resource.run_install_requirements[0]]
   output_file_mode = var.output_file_mode
 }
 
