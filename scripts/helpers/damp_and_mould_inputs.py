@@ -1,55 +1,50 @@
-"""Contains lists and dicts of features needed for various parts of the housing disrepair
-specifically, damp and mould analysis work"""
+"""Contains lists and dicts of features needed to train a model to predict dwellings ate risk of disrepair
+related to dmp and mould."""
 
 id_cols = ['uprn']
 
-target = ['flag_dam_mould_repair_pre_2019']
+target = ['flag_damp_mould_pre_2019']
 
 vulnerability_cols = {'benefits': {'counter_of_live_hb_claim', 'council_has_uc'},
                       'age_over_65_yrs': {'max_ten_age'},
-                      'flag_child': {'child_count', 'no_of_children'},
+                      'flag_child': {'child_count'},
                       'flag_sen': {'SEN_cases', 'SEN_support_cases'},
                       'flag_ehcp': {'EHCP_cases'},
                       'flag_disabled': {'sum_reps_with_wetroom_pre_2019', 'ct_disc_disabled',
-                                        'flag_blue_badge_property', 'no_of_disabled_members'
+                                        'flag_blue_badge_property'
                                         },
                       'flag_fsm': {'FSM_cases'},
                       'flag_social_care': {'num_asc_cases', 'num_csc_cases', 'asc_long_term_support',
                                            'asc_short_term_support', 'asc_social_care_involvement'}
                       }
 
-occupants = ['no_of_people_hb', 'num_of_people_ctax', 'person_count', 'est_num_occupants']
+occupants = ['est_num_occupants']
 
 bool_cols = [
     'counter_of_live_hb_claim',
-    'flag_void_before_tenancy',
+    'flag_void_before_2019',
     'council_has_uc',
-    'flag_ten_sust'
-]
+    'flag_ten_sust',
+    'flag_leak_pre_2019'
+    ]
 
-cat_cols = ['estate_street',
-            'Attachment',
-            'Boiler Efficiency',
+cat_cols = ['Attachment',
             'Glazing',
-            'Heated Rooms',
             'Heating',
             'main_fuel_type',
-            'band_tenancy_length',
             'conservation_area',
             'estate_name',
             'external_wall_type_criteria',
             'open_to_air_walkways',
             'roof_insulation',
             'type_of_communal_area',
-            'typologies',
-            'no_of_disabled_members',
+            'typologies']
+
+ohe_cols = ['number_bedrooms_bands',
+            'typologies'
             ]
 
 cont_cols = [
-    'no_of_adults',
-    'no_of_children',
-    'num_of_people_ctax',
-    'person_count',
     'number_of_bedrooms',
     'max_ten_age',
     'SEN_cases',
@@ -67,7 +62,7 @@ cont_cols = [
     'est_num_occupants',
     'sum_reps_with_wetroom_pre_2019',
     'sum_reps_with_wetroom',
-]
+    ]
 
 deleted_estates = ['Aikin Court Estate *Demolished*',
                    'Elm House Estate *DELETED*',
@@ -92,19 +87,13 @@ ti_cols = [
     'child_count',
     'flag_ten_sust',
     'council_has_uc'
-]
+    ]
 
-date_cols = ['startoftenuredate',
-             'endoftenuredate',
-             'date_first_damp_mould',
-             'date_last_damp_mould']
-
-repairs_cols = cat_cols + bool_cols + cont_cols + date_cols + target
+repairs_cols = id_cols + cat_cols + bool_cols + cont_cols + target
 
 ml_cols = ['uprn',
            'typologies',
-           'band_tenancy_length',
-           'flag_void_before_tenancy',
+           'flag_void_before_2019',
            'flag_ten_sust',
            'total_occupants',
            'number_bedrooms_bands',
