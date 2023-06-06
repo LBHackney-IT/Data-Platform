@@ -78,5 +78,5 @@ variable "output_file_mode" {
 variable "install_requirements" {
   type        = bool
   description = "Whether to create and install requirements.txt for the Lambda Function"
-  default     = true
+  default     = false
 }
