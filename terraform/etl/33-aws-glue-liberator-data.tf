@@ -126,7 +126,7 @@ resource "aws_glue_catalog_database" "raw_zone_liberator" {
 // LIBERATOR REFINED ZONE
 resource "aws_glue_catalog_database" "refined_zone_liberator" {
   name = "${local.identifier_prefix}-liberator-refined-zone"
-  
+
   lifecycle {
     prevent_destroy = true
   }

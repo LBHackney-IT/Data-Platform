@@ -111,3 +111,9 @@ variable "aws_sandbox_account_id" {
   type        = string
   default     = ""
 }
+
+variable "production_firewall_ip" {
+  description = "The firewall production IP"
+  type        = string
+  default     = ""
+}

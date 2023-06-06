@@ -49,6 +49,7 @@ This SQL creates the Warrant return figures on the basis of the following spec:-
 25/11/2021 - Amend to add cancellation reasons from Alan, to identify PCN as NOT cancelled but NOT PAID
 12/01/2022 - Amend the Cancellation reason list inline with an email from Nohaad
 20/01/2022 - Amend the cancellation reason list after review by Michael Benn
+19/05/2023 - change calculation of Paid/Part Paid
 ******************************************************************************************************************************/
 /*** Collect those PCNs that have a Warrant date ***/
 WITH Bailiff_PCNs_Int as (
@@ -113,14 +114,16 @@ Bailiff_PCNs as (
       substr(cast(cast(warrant_issued as date) as string), 1, 8)||'01' as MonthYear,
       lib_initial_debt_amount, lib_payment_received, lib_write_off_amount,pcn_canx_date,cancellationreason,
   
-      /*** Create the payment flag ***/
-      CASE
-         When Write_Off_Flag = 1                                                              Then 'Not Paid'
-         When cast(lib_payment_received as double) = 0 AND 
-              cast(lib_write_off_amount as double) = 0                                        Then 'Not Paid'
-         When cast(lib_payment_received as double) = cast(lib_initial_debt_amount as double)  Then 'Paid'
-         When cast(lib_payment_received as double) != cast(lib_initial_debt_amount as double) 
-                        AND cast(lib_payment_received as double) != 0                         Then 'Part Payment'
+        /*** Create the payment flag ***/
+        /** 19-05-2023 update calculation to add write off and payment **/
+        CASE
+            When Write_Off_Flag = 1                                                             Then 'Not Paid'
+            When cast(lib_payment_received as double) = 0 AND 
+                            cast(lib_write_off_amount as double) = 0                            Then 'Not Paid'
+            When (cast(lib_payment_received as double) + cast(lib_write_off_amount as double))              
+                                            >= cast(lib_initial_debt_amount as double)          Then 'Paid'
+            When (cast(lib_payment_received as double) + cast(lib_write_off_amount as double))              
+                                            < cast(lib_initial_debt_amount as double)          Then 'Part Payment'
       END as Payment_Status
   
    FROM Bailiff_PCNs_Int
