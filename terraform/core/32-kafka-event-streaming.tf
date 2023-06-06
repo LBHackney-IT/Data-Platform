@@ -50,5 +50,6 @@ module "kafka_test_lambda" {
   lambda_environment_variables = {
     "TARGET_KAFKA_BROKERS" = module.kafka_event_streaming[0].cluster_config.bootstrap_brokers_tls
     "SCHEMA_REGISTRY_URL"  = module.kafka_event_streaming[0].schema_registry_url
+    
   }
 }
