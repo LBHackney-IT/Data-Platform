@@ -132,3 +132,4 @@ def read_message_from_topic_using_schema(kafka_brokers, kafka_topic, schema_regi
 
         print('Received message: {}'.format(message.value()))
     consumer.close()    
+
