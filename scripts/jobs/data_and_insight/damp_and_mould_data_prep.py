@@ -44,13 +44,13 @@ def main():
                         required=False)
 
     # set argument for each arg
-    # source_catalog_database_data_and_insight_glue_arg = "source_catalog_database_data_and_insight"
+    source_catalog_database_data_and_insight_glue_arg = "source_catalog_database_data_and_insight"
     source_catalog_table_housing_disrepair_glue_arg = "source_catalog_table_housing_disrepair"
     source_catalog_table_ti_output_2019_glue_arg = "source_catalog_table_ti_output_2019"
     output_path_glue_arg = "output_path"
 
     glue_args = [
-        # source_catalog_database_data_and_insight_glue_arg,
+        source_catalog_database_data_and_insight_glue_arg,
         source_catalog_table_housing_disrepair_glue_arg,
         source_catalog_table_ti_output_2019_glue_arg,
         output_path_glue_arg
@@ -61,6 +61,7 @@ def main():
 
     street_or_estate_list = ['estate']
     hb_occupants = False
+    local = True
 
     with ExecutionContextProvider(mode, glue_args, local_args) as execution_context:
         logger = execution_context.logger
@@ -68,26 +69,28 @@ def main():
         spark.conf.set("spark.sql.broadcastTimeout", 7200)
 
         # get input datasets
-        # source_catalog_database_data_and_insight = execution_context.get_input_args(
-        #     source_catalog_database_data_and_insight_glue_arg)
+        source_catalog_database_data_and_insight = execution_context.get_input_args(
+            source_catalog_database_data_and_insight_glue_arg)
         source_catalog_table_housing_disrepair = execution_context.get_input_args(
             source_catalog_table_housing_disrepair_glue_arg)
         source_catalog_table_ti_output_2019 = execution_context.get_input_args(
             source_catalog_table_ti_output_2019_glue_arg)
 
-        repairs_df = execution_context.get_dataframe(source_catalog_table_housing_disrepair)
-        tenure_df = execution_context.get_dataframe(source_catalog_table_ti_output_2019)
-        # repairs_df = execution_context.get_dataframe(name_space=source_catalog_database_data_and_insight,
-        #                                              table_name=source_catalog_table_housing_disrepair,
-        #                                              push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-        #                                                  source_catalog_database_data_and_insight,
-        #                                                  source_catalog_table_housing_disrepair, 'import_date'))
-        #
-        # tenure_df = execution_context.get_dataframe(name_space=source_catalog_database_data_and_insight,
-        #                                             table_name=source_catalog_table_ti_output_2019,
-        #                                             push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-        #                                                 source_catalog_database_data_and_insight,
-        #                                                 source_catalog_table_ti_output_2019, 'import_date'))
+        if local:
+            repairs_df = execution_context.get_dataframe(source_catalog_table_housing_disrepair)
+            tenure_df = execution_context.get_dataframe(source_catalog_table_ti_output_2019)
+        else:
+            repairs_df = execution_context.get_dataframe(name_space=source_catalog_database_data_and_insight,
+                                                         table_name=source_catalog_table_housing_disrepair,
+                                                         push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
+                                                             source_catalog_database_data_and_insight,
+                                                             source_catalog_table_housing_disrepair, 'import_date'))
+
+            tenure_df = execution_context.get_dataframe(name_space=source_catalog_database_data_and_insight,
+                                                        table_name=source_catalog_table_ti_output_2019,
+                                                        push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
+                                                            source_catalog_database_data_and_insight,
+                                                            source_catalog_table_ti_output_2019, 'import_date'))
 
         for prop_type in street_or_estate_list:
             df = prepare_input_datasets(repairs_df, tenure_df,
@@ -104,9 +107,8 @@ def main():
                                          damp_mould_flag='flag_damp_mould_pre_2019',
                                          leak_weighting=0.3)
 
-            if hb_occupants:
-                df = get_total_occupants_housing_benefit(dataframe=df, hb_num_children='no_of_children',
-                                                         hb_num_adults='no_of_adults')
+            df = get_total_occupants_housing_benefit(dataframe=df, hb_num_children='no_of_children',
+                                                     hb_num_adults='no_of_adults')
 
             df = get_total_occupants(dataframe=df, new_column_name='total_occupants',
                                      occupancy_columns=inputs.occupants, child_count='child_count')
@@ -158,7 +160,7 @@ def main():
             result_unique = df_ge.expect_column_values_to_be_unique(column='uprn',
                                                                     result_format={"result_format": "BOOLEAN_ONLY"})
             assert result_unique["success"] == True, \
-                f'The UPRN (ID) field is not unique.'
+                'The UPRN (ID) field is not unique.'
             logger.info(f'Column "uprn" contains unique values: {result_unique["success"]}')
 
             # check for completeness
@@ -167,7 +169,7 @@ def main():
                                                                         result_format={"result_format": "BASIC"})
 
             assert result_not_null["success"] == True, \
-                f'The UPRN (ID) field contains null values.'
+                'The UPRN (ID) field contains null values.'
             logger.info(f'Column "uprn" values not null: {result_not_null["success"]}')
 
             # write output to parquet

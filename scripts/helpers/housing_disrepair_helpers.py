@@ -173,7 +173,7 @@ def get_vulnerability_score(dataframe, vulnerability_dict, new_column_name):
             # for multiple columns
             calc = '+'.join(cols)
             dataframe = dataframe.withColumn(new_column_name,
-                                             f.when(((f.expr(calc) > 0)),
+                                             f.when((f.expr(calc) > 0),
                                                     1 + f.col(new_column_name)).otherwise(f.col(new_column_name)))
             dataframe = dataframe.drop(*cols)
         else:
