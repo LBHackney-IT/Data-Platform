@@ -217,3 +217,14 @@ variable "max_retries" {
     error_message = "Maximum number of retries must be between 0 and 3."
   }
 }
+
+variable "execution_class" {
+  description = "Execution class to use for the glue job"
+  type        = string
+  default     = "STANDARD"
+
+  validation {
+    condition     = contains(["STANDARD", "FLEX"], var.execution_class)
+    error_message = "Execution class must be STANDARD or FLEX."
+  }
+}
