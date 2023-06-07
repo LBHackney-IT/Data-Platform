@@ -59,14 +59,14 @@ def main():
     local_args, _ = parser.parse_known_args()
     mode = local_args.execution_mode
 
-    street_or_estate_list = ['estate']
-    hb_occupants = False
-    local = True
-
     with ExecutionContextProvider(mode, glue_args, local_args) as execution_context:
         logger = execution_context.logger
         spark = execution_context.spark_session
         spark.conf.set("spark.sql.broadcastTimeout", 7200)
+
+        # set additional variables
+        street_or_estate_list = ['estate']
+        local = True
 
         # get input datasets
         source_catalog_database_data_and_insight = execution_context.get_input_args(
