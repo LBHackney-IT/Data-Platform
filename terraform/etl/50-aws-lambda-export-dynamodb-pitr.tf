@@ -1,3 +1,7 @@
+locals {
+  mtfh_tables = ["TenureInformation", "Persons", "ContactDetails", "Assets", "Accounts", "EqualityInformation", "HousingRegister", "HousingRepairsOnline", "PatchesAndAreas", "Processes", "Notes"]
+}
+
 data "aws_ssm_parameter" "role_arn_to_access_housing_tables_etl" {
   name = "/mtfh/${var.environment}/role-arn-to-access-dynamodb-tables"
 }
@@ -37,8 +41,20 @@ module "glue-mtfh-landing-to-raw" {
   glue_version = "4.0"
 }
 
-locals {
-  mtfh_export_stm_definition = <<EOF
+resource "aws_secretsmanager_secret" "mtfh_export_secret" {
+  count = !local.is_production_environment ? 1 : 0
+  name  = "${local.short_identifier_prefix}mtfh-step-functions-again"
+  tags  = module.tags.values
+}
+
+module "mtfh-state-maching" {
+  count             = !local.is_production_environment ? 1 : 0
+  source            = "../modules/aws-step-functions"
+  name              = "mtfh-export"
+  identifier_prefix = local.short_identifier_prefix
+  role_arn          = aws_iam_role.iam_for_sfn.arn
+  tags              = module.tags.values
+  definition        = <<EOF
   {
   "Comment": "A description of my state machine",
   "StartAt": "Get Table ARN",
@@ -168,24 +184,6 @@ locals {
   }
 }
 EOF
-
-  mtfh_tables = ["TenureInformation", "Persons", "ContactDetails", "Assets", "Accounts", "EqualityInformation", "HousingRegister", "HousingRepairsOnline", "PatchesAndAreas", "Processes", "Notes"]
-}
-
-resource "aws_secretsmanager_secret" "mtfh_export_secret" {
-  count = !local.is_production_environment ? 1 : 0
-  name  = "${local.short_identifier_prefix}mtfh-step-functions-again"
-  tags  = module.tags.values
-}
-
-module "mtfh-state-maching" {
-  count             = !local.is_production_environment ? 1 : 0
-  source            = "../modules/aws-step-functions"
-  name              = "mtfh-export"
-  identifier_prefix = local.short_identifier_prefix
-  definition        = local.mtfh_export_stm_definition
-  role_arn          = aws_iam_role.iam_for_sfn.arn
-  tags              = module.tags.values
 }
 
 resource "aws_iam_role" "iam_for_sfn" {
