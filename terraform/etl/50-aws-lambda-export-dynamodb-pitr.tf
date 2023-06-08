@@ -189,8 +189,8 @@ module "mtfh-state-maching" {
 }
 
 resource "aws_iam_role" "iam_for_sfn" {
-  name = "stepFunctionExecutionIAM"
-
+  name               = "stepFunctionExecutionIAM"
+  tags               = module.tags.values
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -208,8 +208,8 @@ EOF
 }
 
 resource "aws_iam_policy" "policy_invoke_lambda" {
-  name = "stepFunctionMTFHLambdaFunctionInvocationPolicy"
-
+  name   = "stepFunctionMTFHLambdaFunctionInvocationPolicy"
+  tags   = module.tags.values
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -229,8 +229,8 @@ EOF
 }
 
 resource "aws_iam_policy" "policy_invoke_glue" {
-  name = "stepFunctionMTFHGlueJobInvocationPolicy"
-
+  name   = "stepFunctionMTFHGlueJobInvocationPolicy"
+  tags   = module.tags.values
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -247,8 +247,8 @@ EOF
 }
 
 resource "aws_iam_policy" "retrievemtfhsecrets" {
-  name = "stepFunctionMTFHSecretsRetrievalPolicy"
-
+  name   = "stepFunctionMTFHSecretsRetrievalPolicy"
+  tags   = module.tags.values
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -265,8 +265,8 @@ EOF
 }
 
 resource "aws_iam_policy" "role_can_assume_housing_reporting_role" {
-  name = "${local.short_identifier_prefix}role_can_assume_housing_reporting_role"
-
+  name   = "${local.short_identifier_prefix}role_can_assume_housing_reporting_role"
+  tags   = module.tags.values
   policy = <<EOF
 {
     "Version": "2012-10-17",
