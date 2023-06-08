@@ -53,7 +53,7 @@ module "mtfh-state-maching" {
   source            = "../modules/aws-step-functions"
   name              = "mtfh-export"
   identifier_prefix = local.short_identifier_prefix
-  role_arn          = aws_iam_role.iam_for_sfn.arn
+  role_arn          = aws_iam_role.iam_for_sfn[0].arn
   tags              = module.tags.values
   definition        = <<EOF
   {
@@ -288,36 +288,36 @@ EOF
 
 resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_invoke_lambda" {
   count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn.name
-  policy_arn = aws_iam_policy.policy_invoke_lambda.arn
+  role       = aws_iam_role.iam_for_sfn[0].name
+  policy_arn = aws_iam_policy.policy_invoke_lambda[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_invoke_glue" {
   count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn.name
-  policy_arn = aws_iam_policy.policy_invoke_glue.arn
+  role       = aws_iam_role.iam_for_sfn[0].name
+  policy_arn = aws_iam_policy.policy_invoke_glue[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_retrievemtfhsecrets" {
   count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn.name
-  policy_arn = aws_iam_policy.retrievemtfhsecrets.arn
+  role       = aws_iam_role.iam_for_sfn[0].name
+  policy_arn = aws_iam_policy.retrievemtfhsecrets[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam_for_lambda_attach_policy_retrievemtfhsecrets" {
   count      = local.create_mtfh_sfn_resource_count
   role       = module.export-mtfh-pitr[0].lambda_iam_role
-  policy_arn = aws_iam_policy.retrievemtfhsecrets.arn
+  policy_arn = aws_iam_policy.retrievemtfhsecrets[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam_for_lambda_role_assume_role" {
   count      = local.create_mtfh_sfn_resource_count
   role       = module.export-mtfh-pitr[0].lambda_iam_role
-  policy_arn = aws_iam_policy.role_can_assume_housing_reporting_role.arn
+  policy_arn = aws_iam_policy.role_can_assume_housing_reporting_role[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam_policy_for_sfn_can_assume_role" {
   count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn.name
-  policy_arn = aws_iam_policy.role_can_assume_housing_reporting_role.arn
+  role       = aws_iam_role.iam_for_sfn[0].name
+  policy_arn = aws_iam_policy.role_can_assume_housing_reporting_role[0].arn
 }
