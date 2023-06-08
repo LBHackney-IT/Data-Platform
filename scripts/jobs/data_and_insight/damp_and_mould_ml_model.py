@@ -178,7 +178,7 @@ def main():
 
                 av_metrics = zip(cv_model.avgMetrics, params)
 
-                logger.info(f'\nAverage metrics for {classifier}: {av_metrics}\n')
+                logger.info(f'Average metrics for {classifier}: {av_metrics}')
 
                 # apply best model to test data and generate metrics
                 prediction_test = best_mod.transform(test)
@@ -200,8 +200,8 @@ def main():
             metrics_df.write.csv(header=True, mode='overwrite', path=f'{model_output_path}/metrics/')
 
         if stacking:
-            logger.info(f'Starting the stacking process...')
-            logger.info(f'Splitting dataset into train, validation and test sets...')
+            logger.info('Starting the stacking process...')
+            logger.info('Splitting dataset into train, validation and test sets...')
 
             train_stack, val_stack, test_stack = split_dataset(dataframe=dm_df, target='target',
                                                                ratio_list=[0.4, 0.4, 0.2])
@@ -253,7 +253,7 @@ def main():
             # make predictions on the validation set
             base_model_preds = pipeline_base_model.transform(val_stack)
 
-            logger.info(f'Setting up meta model...')
+            logger.info('Setting up meta model...')
             # create the meta features dataset
             meta_model_cols = ['pred_log_reg', 'pred_rf', 'pred_gbt', 'pred_lsvm', 'pred_dtc']
             meta_model_cont_cols = ['prob_log_reg', 'prob_rf', 'prob_dtc']
@@ -286,13 +286,13 @@ def main():
             pipeline_meta_model = cv_meta.fit(meta_feats_df)
 
             # make predictions using meta model on test dataset
-            logger.info(f'Making predictions on test dataset...')
+            logger.info('Making predictions on test dataset...')
             base_model_preds_test = pipeline_base_model.transform(test_stack)
             meta_test_df = base_model_preds_test.select(*meta_model_cols, *meta_model_cont_cols, 'target')
             meta_model_test_preds = pipeline_meta_model.transform(meta_test_df)
 
             meta_model_test_preds.show(5)
-            stacked_metrics_df = get_evaluation_metrics(classifier_name=f'Stacked',
+            stacked_metrics_df = get_evaluation_metrics(classifier_name='Stacked',
                                                         spark=spark,
                                                         predictions=meta_model_test_preds,
                                                         target='target',
