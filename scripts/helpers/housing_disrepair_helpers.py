@@ -132,7 +132,7 @@ def get_roof_insulation(dataframe, roof_insulation_column, new_column_name):
     dataframe = dataframe.withColumn(new_column_name,
                                      f.when(f.col(roof_insulation_column).isin(['Another Dwelling Above',
                                                                                 'mm200', 'mm100', 'mm300',
-                                                                                'mm400',  'mm250', 'mm150',
+                                                                                'mm400', 'mm250', 'mm150',
                                                                                 'mm50', 'mm75', 'mm270',
                                                                                 'mm350', 'mm25',
                                                                                 'mm12']), 1).otherwise(0))
@@ -227,10 +227,10 @@ def get_evaluation_metrics(classifier_name, spark, predictions, prediction_col, 
     accuracy = round(float((tp + tn)) / float((tp + fp + fn + tn)), 3)
     precision = round(float(tp / float((tp + fp))), 3)
     recall = round(float(tp / float((tp + fn))), 3)
-    f1 = round(float(2 * ((precision * recall) / (precision + recall))), 3)
     evaluator = BinaryClassificationEvaluator(labelCol=target)
     auc_roc = float(evaluator.evaluate(predictions, {evaluator.metricName: "areaUnderROC"}))
     auc_pr = float(evaluator.evaluate(predictions, {evaluator.metricName: "areaUnderPR"}))
+    f1 = round(float(2 * ((precision * recall) / (precision + recall))), 3)
 
     metrics = spark.createDataFrame([
         ('TP', tp),
@@ -273,15 +273,23 @@ def split_dataset(dataframe, target, ratio_list):
         print('Not enough variables within ratio_list, expecting three.')
 
 
-def set_up_base_model_pipeline_stages(string_cols, string_cols_indexed, feature_cols, output_feature_col,
+def set_up_base_model_pipeline_stages(string_cols,
+                                      feature_cols,
+                                      output_feature_col,
                                       input_target_col,
-                                      output_target_col):
+                                      output_target_col
+                                      ):
+
+    string_cols_indexed = [f'{a}_num' for a in string_cols]
+    ohe_input_cols = [a for a in string_cols_indexed]
+    ohe_output_cols = [f'{a}_ohe' for a in string_cols_indexed]
+    vector_feat_cols = feature_cols+ohe_output_cols
+
     # set up the pipeline for base model prep
     stage1 = StringIndexer(inputCols=string_cols, outputCols=string_cols_indexed, handleInvalid='keep')
-    stage2 = OneHotEncoder(inputCols=[a for a in string_cols_indexed], outputCols=[f'{a}_ohe' for a in
-                                                                                   string_cols_indexed],
-                           dropLast=True)
-    stage3 = VectorAssembler(inputCols=feature_cols, outputCol='features')
+    stage2 = OneHotEncoder(inputCols=ohe_input_cols,
+                           outputCols=ohe_output_cols, dropLast=True)
+    stage3 = VectorAssembler(inputCols=vector_feat_cols, outputCol='features')
     stage4 = StandardScaler(inputCol='features', outputCol=output_feature_col, withMean=True)
     stage5 = StringIndexer(inputCol=input_target_col, outputCol=output_target_col)
     stages = [stage1, stage2, stage3, stage4, stage5]
