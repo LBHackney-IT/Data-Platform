@@ -1,5 +1,6 @@
 locals {
-  mtfh_tables = ["TenureInformation", "Persons", "ContactDetails", "Assets", "Accounts", "EqualityInformation", "HousingRegister", "HousingRepairsOnline", "PatchesAndAreas", "Processes", "Notes"]
+  mtfh_tables                    = ["TenureInformation", "Persons", "ContactDetails", "Assets", "Accounts", "EqualityInformation", "HousingRegister", "HousingRepairsOnline", "PatchesAndAreas", "Processes", "Notes"]
+  create_mtfh_sfn_resource_count = !local.is_production_environment ? 1 : 0
 }
 
 data "aws_ssm_parameter" "role_arn_to_access_housing_tables_etl" {
@@ -7,7 +8,7 @@ data "aws_ssm_parameter" "role_arn_to_access_housing_tables_etl" {
 }
 
 module "export-mtfh-pitr" {
-  count                          = !local.is_production_environment ? 1 : 0
+  count                          = local.create_mtfh_sfn_resource_count
   source                         = "../modules/aws-lambda"
   lambda_name                    = "mtfh-export-lambda"
   lambda_source_dir              = "../../lambdas/mtfh_export_lambda"
@@ -23,7 +24,7 @@ module "export-mtfh-pitr" {
 }
 
 module "glue-mtfh-landing-to-raw" {
-  count                      = !local.is_production_environment ? 1 : 0
+  count                      = local.create_mtfh_sfn_resource_count
   job_name                   = "${local.short_identifier_prefix}mtfh-landing-json-to-raw}"
   source                     = "../modules/aws-glue-job"
   is_live_environment        = local.is_live_environment
@@ -42,13 +43,13 @@ module "glue-mtfh-landing-to-raw" {
 }
 
 resource "aws_secretsmanager_secret" "mtfh_export_secret" {
-  count = !local.is_production_environment ? 1 : 0
+  count = local.create_mtfh_sfn_resource_count
   name  = "${local.short_identifier_prefix}mtfh-step-functions-again"
   tags  = module.tags.values
 }
 
 module "mtfh-state-maching" {
-  count             = !local.is_production_environment ? 1 : 0
+  count             = local.create_mtfh_sfn_resource_count
   source            = "../modules/aws-step-functions"
   name              = "mtfh-export"
   identifier_prefix = local.short_identifier_prefix
@@ -187,6 +188,7 @@ EOF
 }
 
 resource "aws_iam_role" "iam_for_sfn" {
+  count              = local.create_mtfh_sfn_resource_count
   name               = "stepFunctionExecutionIAM"
   tags               = module.tags.values
   assume_role_policy = <<EOF
@@ -206,6 +208,7 @@ EOF
 }
 
 resource "aws_iam_policy" "policy_invoke_lambda" {
+  count  = local.create_mtfh_sfn_resource_count
   name   = "stepFunctionMTFHLambdaFunctionInvocationPolicy"
   tags   = module.tags.values
   policy = <<EOF
@@ -227,6 +230,7 @@ EOF
 }
 
 resource "aws_iam_policy" "policy_invoke_glue" {
+  count  = local.create_mtfh_sfn_resource_count
   name   = "stepFunctionMTFHGlueJobInvocationPolicy"
   tags   = module.tags.values
   policy = <<EOF
@@ -245,6 +249,7 @@ EOF
 }
 
 resource "aws_iam_policy" "retrievemtfhsecrets" {
+  count  = local.create_mtfh_sfn_resource_count
   name   = "stepFunctionMTFHSecretsRetrievalPolicy"
   tags   = module.tags.values
   policy = <<EOF
@@ -263,6 +268,7 @@ EOF
 }
 
 resource "aws_iam_policy" "role_can_assume_housing_reporting_role" {
+  count  = local.create_mtfh_sfn_resource_count
   name   = "${local.short_identifier_prefix}role_can_assume_housing_reporting_role"
   tags   = module.tags.values
   policy = <<EOF
@@ -281,31 +287,37 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_invoke_lambda" {
+  count      = local.create_mtfh_sfn_resource_count
   role       = aws_iam_role.iam_for_sfn.name
   policy_arn = aws_iam_policy.policy_invoke_lambda.arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_invoke_glue" {
+  count      = local.create_mtfh_sfn_resource_count
   role       = aws_iam_role.iam_for_sfn.name
   policy_arn = aws_iam_policy.policy_invoke_glue.arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_retrievemtfhsecrets" {
+  count      = local.create_mtfh_sfn_resource_count
   role       = aws_iam_role.iam_for_sfn.name
   policy_arn = aws_iam_policy.retrievemtfhsecrets.arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam_for_lambda_attach_policy_retrievemtfhsecrets" {
+  count      = local.create_mtfh_sfn_resource_count
   role       = module.export-mtfh-pitr[0].lambda_iam_role
   policy_arn = aws_iam_policy.retrievemtfhsecrets.arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam_for_lambda_role_assume_role" {
+  count      = local.create_mtfh_sfn_resource_count
   role       = module.export-mtfh-pitr[0].lambda_iam_role
   policy_arn = aws_iam_policy.role_can_assume_housing_reporting_role.arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam_policy_for_sfn_can_assume_role" {
+  count      = local.create_mtfh_sfn_resource_count
   role       = aws_iam_role.iam_for_sfn.name
   policy_arn = aws_iam_policy.role_can_assume_housing_reporting_role.arn
 }
