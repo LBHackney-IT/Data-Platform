@@ -30,8 +30,8 @@ module "glue-mtfh-landing-to-raw" {
   is_live_environment        = local.is_live_environment
   is_production_environment  = local.is_production_environment
   department                 = module.department_housing_data_source
-  helper_module_key          = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key          = data.aws_s3_object.helpers.key
+  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   script_name                = "mtfh_json_export_to_raw"
   job_parameters = {

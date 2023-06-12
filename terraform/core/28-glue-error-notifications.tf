@@ -8,7 +8,7 @@ data "archive_file" "glue_job_failure_notification_lambda" {
   output_path = "../../lambdas/glue-failure-notifications.zip"
 }
 
-resource "aws_s3_bucket_object" "glue_job_failure_notification_lambda" {
+resource "aws_s3_object" "glue_job_failure_notification_lambda" {
   bucket      = module.lambda_artefact_storage.bucket_id
   key         = "glue-failure-notifications.zip"
   source      = data.archive_file.glue_job_failure_notification_lambda.output_path
@@ -24,7 +24,7 @@ resource "aws_lambda_function" "glue_failure_notification_lambda" {
   runtime          = "nodejs14.x"
   function_name    = "${local.short_identifier_prefix}glue-failure-notification"
   s3_bucket        = module.lambda_artefact_storage.bucket_id
-  s3_key           = aws_s3_bucket_object.glue_job_failure_notification_lambda.key
+  s3_key           = aws_s3_object.glue_job_failure_notification_lambda.key
   source_code_hash = data.archive_file.glue_job_failure_notification_lambda.output_base64sha256
   timeout          = local.lambda_timeout
 

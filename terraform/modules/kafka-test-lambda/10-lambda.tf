@@ -133,17 +133,17 @@ data "archive_file" "lambda" {
   type             = "zip"
   source_dir       = local.source_dir
   output_path      = "../../lambdas/kafka_test.zip"
-  depends_on       = [ null_resource.run_install_requirements ]
+  depends_on       = [null_resource.run_install_requirements]
   output_file_mode = "0666"
 }
 
-resource "aws_s3_bucket_object" "lambda" {
+resource "aws_s3_object" "lambda" {
   bucket      = var.lambda_artefact_storage_bucket
   key         = "kafka_test.zip"
   source      = data.archive_file.lambda.output_path
   acl         = "private"
   source_hash = null_resource.run_install_requirements.triggers["dir_sha1"]
-  depends_on  = [ data.archive_file.lambda ]
+  depends_on  = [data.archive_file.lambda]
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -154,7 +154,7 @@ resource "aws_lambda_function" "lambda" {
   runtime          = "python3.8"
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
-  s3_key           = aws_s3_bucket_object.lambda.key
+  s3_key           = aws_s3_object.lambda.key
   source_code_hash = data.archive_file.lambda.output_base64sha256
   timeout          = 900
   memory_size      = 256
@@ -170,9 +170,9 @@ resource "aws_lambda_function" "lambda" {
     security_group_ids = var.kafka_security_group_id
     subnet_ids         = var.subnet_ids
   }
-  
-  depends_on = [ 
+
+  depends_on = [
     null_resource.run_install_requirements,
-    aws_s3_bucket_object.lambda
+    aws_s3_object.lambda
   ]
 }

@@ -3,7 +3,7 @@ locals {
   object_key     = "${var.department.identifier_snake_case}/${var.data_cleaning_script_name}.py"
 }
 
-resource "aws_s3_bucket_object" "housing_repairs_repairs_cleaning_script" {
+resource "aws_s3_object" "housing_repairs_repairs_cleaning_script" {
   bucket      = var.glue_scripts_bucket_id
   key         = "scripts/${local.object_key}"
   acl         = "private"
@@ -25,7 +25,7 @@ module "housing_repairs_google_sheets_cleaning" {
     "--source_catalog_table"             = var.source_catalog_table
     "--cleaned_repairs_s3_bucket_target" = "s3://${var.refined_zone_bucket_id}/housing-repairs/${var.dataset_name}/cleaned/"
   }
-  script_s3_object_key       = aws_s3_bucket_object.housing_repairs_repairs_cleaning_script.key
+  script_s3_object_key       = aws_s3_object.housing_repairs_repairs_cleaning_script.key
   spark_ui_output_storage_id = var.spark_ui_output_storage_id
   workflow_name              = var.workflow_name
   triggered_by_crawler       = var.trigger_crawler_name
