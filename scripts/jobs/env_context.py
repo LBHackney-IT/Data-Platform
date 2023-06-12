@@ -71,7 +71,6 @@ class ExecutionContextProvider:
                 .set("spark.sql.execution.arrow.pyspark.selfDestruct.enabled", "true")\
                 .set("mapred.output.committer.class", "org.apache.hadoop.mapred.DirectFileOutputCommitter")
             sc = SparkContext(conf=conf)
-#             sc.setCheckpointDir("s3://dataplatform-stg-glue-temp-storage/planning/checkpoint/")
         self.__glue_context = GlueContext(sc) if self.mode == DEFAULT_MODE_AWS else None
         
         self.__spark_session = self.__glue_context.spark_session if self.mode == DEFAULT_MODE_AWS else SparkSession \
