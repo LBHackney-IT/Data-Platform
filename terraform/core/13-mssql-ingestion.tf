@@ -25,7 +25,7 @@ locals {
   table_filter_expressions = local.is_live_environment ? {
     core_hbrent_s    = "^lbhaliverbviews_core_hbrent[s].*",
     core_hbrent_hbc  = "^lbhaliverbviews_core_hbc.*",
-    core_hbuc        = "^lbhaliverbviews_core_hbuc.*",  
+    core_hbuc        = "^lbhaliverbviews_core_hbuc.*",
     core_hbrentclaim = "^lbhaliverbviews_core_hbrentclaim",
     core_hbrenttrans = "^lbhaliverbviews_core_hbrenttrans",
     core_hbrent_tsc  = "^lbhaliverbviews_core_hbrent[^tsc].*",

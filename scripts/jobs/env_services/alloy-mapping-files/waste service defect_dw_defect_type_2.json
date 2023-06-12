@@ -1,0 +1,20 @@
+{
+    "aqs_path": "aqs_path",
+    "attributes_defecttypedefecttype_5f8df195e27d98006789bb31": "defect_type",
+    "item_id": "defect_type_id",
+    "import_date": "import_date",
+    "import_datetime": "import_datetime",
+    "import_day": "import_day",
+    "import_month": "import_month",
+    "import_timestamp": "import_timestamp",
+    "import_year": "import_year",
+    "predecessor_file": "item_file",
+    "predecessor_item": "item_id",
+    "predecessor_attributes_itemssubtitle": "item_subtitle",
+    "predecessor_attributes_itemstitle": "item_title",
+    "primary_item": "primary_item",
+    "refined_date": "refined_date",
+    "refined_day": "refined_day",
+    "refined_month": "refined_month",
+    "refined_year": "refined_year"
+}

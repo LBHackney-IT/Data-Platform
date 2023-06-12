@@ -22,6 +22,8 @@ module "address_matching_glue_job" {
   crawler_details = {
     database_name      = aws_glue_catalog_database.landing_zone_data_and_insight_address_matching[count.index].name
     s3_target_location = "s3://${module.landing_zone_data_source.bucket_id}/data-and-insight/address-matching-glue-job-output/"
+    configuration      = null
+    table_prefix       = null 
   }
 }
 

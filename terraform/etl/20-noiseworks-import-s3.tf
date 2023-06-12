@@ -22,5 +22,6 @@ module "noiseworks_to_raw_zone" {
     database_name      = module.department_env_enforcement_data_source.raw_zone_catalog_database_name
     s3_target_location = "s3://${module.raw_zone_data_source.bucket_id}/env-enforcement/noiseworks/"
     table_prefix       = "noiseworks_"
+    configuration      = null 
   }
 }

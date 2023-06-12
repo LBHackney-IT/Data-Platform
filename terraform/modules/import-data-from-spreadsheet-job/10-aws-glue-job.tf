@@ -29,6 +29,7 @@ module "spreadsheet_import" {
         TableLevelConfiguration = 3
       }
     })
+    table_prefix      = null
   }
   trigger_enabled = false
 }

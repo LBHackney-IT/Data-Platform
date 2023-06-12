@@ -41,8 +41,9 @@ module "rentsense_output_to_landing_S3" {
     Version = 1.0
     Grouping = {
       TableLevelConfiguration = 4
-    }
-  })
+      }
+    })
+    table_prefix = null
   }
 
 }

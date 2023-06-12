@@ -18,11 +18,11 @@ locals {
   confluent_kafka_command = "docker run -v \"$PWD\":/var/task \"lambci/lambda:build-python3.8\" /bin/sh -c \"pip install -r requirements.txt -t python/lib/python3.8/site-packages/; exit\""
   # This ensures that this data resource will not be evaluated until
   # after the null_resource has been created.
-  lambda_exporter_id      = null_resource.run_install_requirements.id
+  lambda_exporter_id = null_resource.run_install_requirements.id
 
   # This value gives us something to implicitly depend on
   # in the archive_file below.
-  source_dir              = "../../lambdas/kafka_test"
+  source_dir = "../../lambdas/kafka_test"
 }
 
 resource "aws_iam_role" "lambda" {
@@ -130,9 +130,11 @@ resource "null_resource" "run_install_requirements" {
 }
 
 data "archive_file" "lambda" {
-  type        = "zip"
-  source_dir  = local.source_dir
-  output_path = "../../lambdas/kafka_test.zip"
+  type             = "zip"
+  source_dir       = local.source_dir
+  output_path      = "../../lambdas/kafka_test.zip"
+  depends_on       = [ null_resource.run_install_requirements ]
+  output_file_mode = "0666"
 }
 
 resource "aws_s3_object" "lambda" {
@@ -141,6 +143,7 @@ resource "aws_s3_object" "lambda" {
   source      = data.archive_file.lambda.output_path
   acl         = "private"
   source_hash = null_resource.run_install_requirements.triggers["dir_sha1"]
+  depends_on  = [ data.archive_file.lambda ]
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -167,5 +170,9 @@ resource "aws_lambda_function" "lambda" {
     security_group_ids = var.kafka_security_group_id
     subnet_ids         = var.subnet_ids
   }
+  
+  depends_on = [ 
+    null_resource.run_install_requirements,
+    aws_s3_bucket_object.lambda
+  ]
 }
-

@@ -98,6 +98,7 @@ module "copy_icaseworks_data_landing_to_raw" {
         TableLevelConfiguration = 3
       }
     })
+    table_prefix      = null
   }
 }
 
@@ -138,6 +139,6 @@ module "copy_vonage_data_landing_to_raw" {
         TableLevelConfiguration = 3
       }
     })
+    table_prefix      = null
   }
 }
-#

@@ -9,6 +9,7 @@ from confluent_kafka.admin import AdminClient
 from confluent_kafka.avro import AvroProducer, AvroConsumer, SerializerError
 from confluent_kafka.cimpl import NewTopic, KafkaException
 
+#environment variables
 BOOTSTRAP_SERVERS_KEY = "bootstrap.servers"
 SECURITY_PROTOCOL_KEY = "security.protocol"
 SECURITY_PROTOCOL_VALUE = "ssl"
@@ -131,3 +132,4 @@ def read_message_from_topic_using_schema(kafka_brokers, kafka_topic, schema_regi
 
         print('Received message: {}'.format(message.value()))
     consumer.close()    
+

@@ -18,7 +18,7 @@ resource "aws_sagemaker_notebook_instance_lifecycle_configuration" "sagemaker_li
   #     "sparkmagicconfig" : file("${path.module}/spark-magic-config.json")
   #   }
   # ))
-  on_start  = base64encode("echo startup_script_temporarily_disabled")
+  on_start = base64encode("echo startup_script_temporarily_disabled")
 }
 
 resource "aws_sagemaker_notebook_instance" "nb" {

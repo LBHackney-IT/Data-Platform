@@ -3,7 +3,9 @@ locals {
   #alloy_queries                     = local.is_live_environment ? fileset("${path.module}/../../scripts/jobs/env_services/aqs", "*json") : []
   #alloy_queries_max_concurrent_runs = local.is_live_environment ? length(local.alloy_queries) : 1
   alloy_query_names_alphanumeric = local.is_live_environment ? [for i in local.alloy_query_names : replace(i, "\\W", "_")] : []
+  alloy_mapping_files            = local.is_live_environment ? fileset("${path.module}/../../scripts/jobs/env_services/alloy-mapping-files", "*json") : []
 }
+
 
 resource "aws_glue_trigger" "alloy_daily_export" {
   count   = local.is_live_environment ? length(local.alloy_queries) : 0
@@ -38,6 +40,7 @@ module "alloy_api_export_raw_env_services" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   trigger_enabled            = false
   script_name                = "alloy_api_export"
+  glue_version               = "4.0"
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
@@ -119,6 +122,7 @@ module "alloy_raw_to_refined_env_services" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   triggered_by_crawler       = aws_glue_crawler.alloy_export_crawler[count.index].name
   script_name                = "alloy_raw_to_refined"
+  glue_version               = "4.0"
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
@@ -178,4 +182,13 @@ resource "aws_glue_crawler" "alloy_refined" {
     }
   })
 
+}
+
+resource "aws_s3_object" "mapping_files" {
+  for_each    = local.alloy_mapping_files
+  bucket      = module.raw_zone_data_source.bucket_id
+  acl         = "private"
+  key         = "env-services/alloy/mapping-files/${each.value}"
+  source      = "${path.module}/../../scripts/jobs/env_services/alloy-mapping-files/${each.value}"
+  source_hash = filemd5("${path.module}/../../scripts/jobs/env_services/alloy-mapping-files/${each.value}")
 }

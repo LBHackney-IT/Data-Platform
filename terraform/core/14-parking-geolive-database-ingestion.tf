@@ -43,5 +43,6 @@ module "parking_geolive_ingestion_job" {
         TableLevelConfiguration = 4
       }
     })
+    table_prefix      = null
   }
 }
