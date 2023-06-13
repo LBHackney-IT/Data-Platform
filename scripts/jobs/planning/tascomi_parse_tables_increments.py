@@ -47,7 +47,8 @@ dq_params = {'appeals': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'application_types': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'pre_applications': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'pre_application_categories': {'unique': ['id', 'import_date'], 'complete': 'id'},
-             'asset_constraints': {'unique': ['id', 'import_date'], 'complete': 'id'}
+             'asset_constraints': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'nature_of_enquiries': {'unique': ['id', 'import_date'], 'complete': 'id'}
              }
 
 

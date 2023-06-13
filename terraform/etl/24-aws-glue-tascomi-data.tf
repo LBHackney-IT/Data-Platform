@@ -18,7 +18,8 @@ locals {
     "committee_application_map",
     "user_teams",
     "user_team_map",
-    "pre_applications"
+    "pre_applications",
+    "nature_of_enquiries"
   ]
 
   tascomi_static_tables = [
