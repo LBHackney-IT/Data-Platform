@@ -25,7 +25,7 @@ module "export-mtfh-pitr" {
 
 module "glue-mtfh-landing-to-raw" {
   count                      = local.create_mtfh_sfn_resource_count
-  job_name                   = "${local.short_identifier_prefix}mtfh-landing-json-to-raw}"
+  job_name                   = "${local.short_identifier_prefix}mtfh-landing-json-to-raw"
   source                     = "../modules/aws-glue-job"
   is_live_environment        = local.is_live_environment
   is_production_environment  = local.is_production_environment
