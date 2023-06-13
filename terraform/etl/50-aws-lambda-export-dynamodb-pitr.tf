@@ -38,8 +38,9 @@ module "glue-mtfh-landing-to-raw" {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
   }
-  tags         = module.tags.values
-  glue_version = "4.0"
+  tags                 = module.tags.values
+  glue_version         = "4.0"
+  glue_job_worker_type = "G.1X"
 }
 
 resource "aws_secretsmanager_secret" "mtfh_export_secret" {
