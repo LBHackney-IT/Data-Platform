@@ -41,6 +41,7 @@ module "alloy_api_export_raw_env_services" {
   trigger_enabled            = false
   script_name                = "alloy_api_export"
   glue_version               = "4.0"
+  glue_job_worker_type       = "G.1X"
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
@@ -123,6 +124,7 @@ module "alloy_raw_to_refined_env_services" {
   triggered_by_crawler       = aws_glue_crawler.alloy_export_crawler[count.index].name
   script_name                = "alloy_raw_to_refined"
   glue_version               = "4.0"
+  glue_job_worker_type       = "G.1X"
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"

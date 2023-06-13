@@ -25,7 +25,7 @@ module "export-mtfh-pitr" {
 
 module "glue-mtfh-landing-to-raw" {
   count                      = local.create_mtfh_sfn_resource_count
-  job_name                   = "${local.short_identifier_prefix}mtfh-landing-json-to-raw}"
+  job_name                   = "${local.short_identifier_prefix}mtfh-landing-json-to-raw"
   source                     = "../modules/aws-glue-job"
   is_live_environment        = local.is_live_environment
   is_production_environment  = local.is_production_environment
@@ -38,8 +38,9 @@ module "glue-mtfh-landing-to-raw" {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
   }
-  tags         = module.tags.values
-  glue_version = "4.0"
+  tags                 = module.tags.values
+  glue_version         = "4.0"
+  glue_job_worker_type = "G.1X"
 }
 
 resource "aws_secretsmanager_secret" "mtfh_export_secret" {
