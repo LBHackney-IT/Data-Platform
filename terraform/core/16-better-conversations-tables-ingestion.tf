@@ -16,9 +16,9 @@ module "ingest_better_conversations_tables" {
 
   job_name                       = "${local.short_identifier_prefix}Ingest Better Conversations tables"
   job_description                = "Ingest a snapshot of 2 Better Conversations tables from the API Prod Dynamo DB instance"
-  script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
-  helper_module_key              = aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
+  script_s3_object_key           = aws_s3_object.dynamodb_tables_ingest.key
+  helper_module_key              = aws_s3_object.helpers.key
+  pydeequ_zip_key                = aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   number_of_workers_for_glue_job = local.number_of_workers_for_better_conversations_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id

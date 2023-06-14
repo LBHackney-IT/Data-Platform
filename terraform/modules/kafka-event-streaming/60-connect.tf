@@ -5,7 +5,7 @@ resource "aws_mskconnect_custom_plugin" "avro_converter_s3_sink" {
   location {
     s3 {
       bucket_arn = module.kafka_dependency_storage.bucket_arn
-      file_key   = aws_s3_bucket_object.kafka_connector_s3.key
+      file_key   = aws_s3_object.kafka_connector_s3.key
     }
   }
 }

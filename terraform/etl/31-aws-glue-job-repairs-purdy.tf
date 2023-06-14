@@ -14,11 +14,11 @@ module "housing_repairs_purdy" {
   glue_crawler_excluded_blobs    = local.glue_crawler_excluded_blobs
   glue_temp_storage_bucket_url   = module.glue_temp_storage_data_source.bucket_url
   refined_zone_bucket_id         = module.refined_zone_data_source.bucket_id
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
-  address_cleaning_script_key    = aws_s3_bucket_object.address_cleaning.key
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  address_cleaning_script_key    = aws_s3_object.address_cleaning.key
   addresses_api_data_catalog     = aws_glue_catalog_database.raw_zone_unrestricted_address_api.name
-  address_matching_script_key    = aws_s3_bucket_object.levenshtein_address_matching.key
+  address_matching_script_key    = aws_s3_object.levenshtein_address_matching.key
   trusted_zone_bucket_id         = module.trusted_zone_data_source.bucket_id
 
   data_cleaning_script_name  = "repairs_purdy_cleaning"

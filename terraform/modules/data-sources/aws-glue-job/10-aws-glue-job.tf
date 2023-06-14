@@ -9,14 +9,14 @@ locals {
   } : {}
 }
 
-data "aws_s3_bucket_object" "job_script" {
+data "aws_s3_object" "job_script" {
   count  = var.script_s3_object_key == null ? 1 : 0
   bucket = local.scripts_bucket_id
   key    = local.script.key
 }
 
 locals {
-  object_key      = var.script_s3_object_key == null ? data.aws_s3_bucket_object.job_script[0].key : var.script_s3_object_key
+  object_key      = var.script_s3_object_key == null ? data.aws_s3_object.job_script[0].key : var.script_s3_object_key
   job_name_prefix = local.environment == "stg" ? "stg " : ""
 }
 

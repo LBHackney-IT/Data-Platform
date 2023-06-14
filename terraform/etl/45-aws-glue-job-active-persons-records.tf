@@ -15,8 +15,8 @@ module "active_persons_records_refined" {
   number_of_workers_for_glue_job = 10
   glue_version                   = "3.0"
   glue_job_timeout               = 360
-  helper_module_key              = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
 
   job_parameters = {
