@@ -123,7 +123,7 @@ variable "number_of_workers_for_glue_job" {
 variable "glue_job_worker_type" {
   description = "Specify the worker type to use for the glue job"
   type        = string
-  default     = "Standard"
+  default     = "G.1X"
 
   validation {
     condition     = contains(["Standard", "G.1X", "G.2X"], var.glue_job_worker_type)
