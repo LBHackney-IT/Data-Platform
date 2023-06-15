@@ -5,7 +5,7 @@ This script prepares and standardises input datasets containing data about housi
 
 Input datasets:
 * Housing disrepair for 2013-2019
-* Tenure Information snapshot for 2019
+* Tenure information snapshot for 2019
 * Data processed for either street_or_estate property types.
 
 Output:
@@ -26,10 +26,10 @@ from scripts.helpers.helpers import add_import_time_columns, PARTITION_KEYS, \
     create_pushdown_predicate_for_max_date_partition_value
 import scripts.helpers.damp_and_mould_inputs as inputs
 from scripts.helpers.housing_disrepair_helpers import prepare_input_datasets, set_target, \
-    get_total_occupants_housing_benefit, get_total_occupants, group_number_of_bedrooms, get_external_walls, \
+    get_total_occupants, group_number_of_bedrooms, get_external_walls, \
     get_communal_area, get_roof_insulation, get_boilers, get_open_air_walkways, get_vulnerability_score, \
     get_main_fuel, clean_boolean_features, drop_rows_with_nulls, impute_missing_values, \
-    prepare_index_field, assign_confidence_score
+    prepare_index_field, assign_confidence_score, rename_void_column
 
 
 def main():
@@ -67,6 +67,7 @@ def main():
         # set additional variables
         street_or_estate_list = ['estate']
         local = True
+        leak_weighting = 0.7
 
         # get input datasets
         source_catalog_database_data_and_insight = execution_context.get_input_args(
@@ -97,7 +98,8 @@ def main():
                                         repairs_df_columns=inputs.repairs_cols,
                                         tenure_df_columns=inputs.ti_cols,
                                         deleted_estates=inputs.deleted_estates,
-                                        street_or_estate=prop_type)
+                                        street_or_estate=prop_type,
+                                        year_subset='_pre2019')
 
             df = set_target(dataframe=df, target_col=inputs.target[0])
 
@@ -105,13 +107,12 @@ def main():
 
             df = assign_confidence_score(dataframe=df, leak_flag='flag_leak_pre_2019',
                                          damp_mould_flag='flag_damp_mould_pre_2019',
-                                         leak_weighting=0.3)
-
-            df = get_total_occupants_housing_benefit(dataframe=df, hb_num_children='no_of_children',
-                                                     hb_num_adults='no_of_adults')
+                                         leak_weighting=leak_weighting)
 
             df = get_total_occupants(dataframe=df, new_column_name='total_occupants',
                                      occupancy_columns=inputs.occupants, child_count='child_count')
+
+            df = rename_void_column(dataframe=df, void_column='flag_void_before_2019')
 
             df = group_number_of_bedrooms(dataframe=df, bedroom_column='number_of_bedrooms',
                                           new_column_name='number_bedrooms_bands')
@@ -141,7 +142,14 @@ def main():
             df = df.select(*inputs.ml_cols)
 
             # clean boolean features
-            df = clean_boolean_features(dataframe=df, bool_list=inputs.bool_cols)
+            bools = [
+                'counter_of_live_hb_claim',
+                'flag_void',
+                'council_has_uc',
+                'flag_ten_sust',
+                'flag_leak_pre_2019']
+
+            df = clean_boolean_features(dataframe=df, bool_list=bools)
 
             # drop rows with null values in specific columns
             df = drop_rows_with_nulls(dataframe=df, features_list=['number_bedrooms_bands',
@@ -181,7 +189,7 @@ def main():
                                              save_mode='overwrite')
             logger.info(f'Prepared dataframe for {prop_type} written successfully to {output_path}/{prop_type}')
             logger.info(f'Prepared dataset for {prop_type} number of rows: {df.count()}')
-            df.show(10, truncate=False)
+            df.show(5)
 
 
 if __name__ == '__main__':
