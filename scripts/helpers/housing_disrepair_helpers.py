@@ -11,19 +11,47 @@ from pyspark.sql.types import DoubleType, ArrayType
 
 
 def convert_yn_to_bool(dataframe, columns):
+    """
+    Converts string columns with 'Y' / 'N' to a boolean type column with 1 / 0
+
+    Args:
+        dataframe: PySpark dataframe
+        columns: list of columns to be converted
+    Returns:
+        dataframe: PySpark dataframe containing the converted columns
+    """
     for column in columns:
-        dataframe = dataframe.withColumn(column, f.when(f.col(column) == 'Y', 1).otherwise(f.col(column))) \
-            .withColumn(column, f.when(f.col(column) == 'N', 0).otherwise(f.col(column)))
+        dataframe = dataframe.withColumn(column, f.when(f.col(column).isin(['Y', 'Yes']), 1).otherwise(f.col(column))) \
+            .withColumn(column, f.when(f.col(column).isin(['N', 'No']), 0).otherwise(f.col(column)))
     return dataframe
 
 
 def prepare_input_datasets(repairs_df, tenure_df, repairs_df_columns, tenure_df_columns, deleted_estates,
-                           street_or_estate):
+                           street_or_estate, year_subset):
+    """
+    Performs initial preparation for input datasets (repairs and tenure dataframes) and returns single joined
+    dataframe.
+
+    Args:
+        year_subset ():
+        street_or_estate ():
+        repairs_df:
+        tenure_df:
+        repairs_df_columns:
+        tenure_df_columns:
+        deleted_estates:
+    Returns:
+        joined_df: PySpark dataframe containing the prepared repairs and tenure dataframes, joined
+        by uprn fields.
+    """
     tenure_df = tenure_df.select(*tenure_df_columns)
 
     # drop rows without uprn
     repairs_df = repairs_df.withColumn('uprn_len', f.length(f.trim(f.col('uprn'))))
     repairs_df = repairs_df.filter((repairs_df.uprn_len > 0)) \
+        .select('*')
+    tenure_df = tenure_df.withColumn('uprn_len', f.length(f.trim(f.col('uprn'))))
+    tenure_df = tenure_df.filter((tenure_df.uprn_len > 0)) \
         .select('*')
 
     # drop rows with deleted/demolished estates
@@ -35,13 +63,13 @@ def prepare_input_datasets(repairs_df, tenure_df, repairs_df_columns, tenure_df_
         .select('*')
     repairs_df = repairs_df.drop('estate_street')
 
+    cols_to_keep_repairs = [column for column in repairs_df.columns if
+                            (column.endswith(year_subset))] + repairs_df_columns
+    cols_to_keep_repairs_refined = [column for column in cols_to_keep_repairs if column in repairs_df.schema.names]
+    repairs_df = repairs_df.select(*cols_to_keep_repairs_refined)
+
     # join on uprn field (both string type)
     joined_df = repairs_df.join(tenure_df, 'uprn', 'left')
-
-    # drop columns not needed in MVP model
-    cols_to_keep = [column for column in joined_df.columns if
-                    (column.endswith('_pre2019'))] + repairs_df_columns
-    joined_df = joined_df.select(*cols_to_keep)
 
     # drop duplicate rows
     joined_df = joined_df.drop_duplicates(subset=['uprn'])
@@ -86,6 +114,17 @@ def prepare_index_field(dataframe, column):
 
 
 def get_total_occupants_housing_benefit(dataframe, hb_num_children, hb_num_adults):
+    """
+    Creates new column with the sum of adults and children in households receiving housing benefit.
+    Args:
+        dataframe (PySpark Dataframe):
+        hb_num_children (Column):
+        hb_num_adults (Column):
+
+    Returns:
+        dataframe with new column 'no_of_people_hb'
+
+    """
     dataframe = dataframe.withColumn('no_of_people_hb', f.col(hb_num_children) + f.col(hb_num_adults))
     dataframe = dataframe.na.fill(value=0, subset=['no_of_people_hb'])
     dataframe = dataframe.drop(hb_num_adults)
@@ -113,6 +152,11 @@ def group_number_of_bedrooms(dataframe, bedroom_column, new_column_name):
     return dataframe
 
 
+def rename_void_column(dataframe, void_column):
+    dataframe = dataframe.withColumnRenamed(void_column, 'flag_void')
+    return dataframe
+
+
 def get_external_walls(dataframe, attachment_column, new_column_name):
     dataframe = dataframe.withColumn(new_column_name,
                                      f.when(f.col(attachment_column).isin(['EndTerrace', 'SemiDetached', 'Detached',
@@ -132,7 +176,7 @@ def get_roof_insulation(dataframe, roof_insulation_column, new_column_name):
     dataframe = dataframe.withColumn(new_column_name,
                                      f.when(f.col(roof_insulation_column).isin(['Another Dwelling Above',
                                                                                 'mm200', 'mm100', 'mm300',
-                                                                                'mm400',  'mm250', 'mm150',
+                                                                                'mm400', 'mm250', 'mm150',
                                                                                 'mm50', 'mm75', 'mm270',
                                                                                 'mm350', 'mm25',
                                                                                 'mm12']), 1).otherwise(0))
@@ -224,13 +268,14 @@ def get_evaluation_metrics(classifier_name, spark, predictions, prediction_col, 
     fp = float(predictions.filter(f"{prediction_col} == 1.0 AND {target} == 0").count())
     tn = float(predictions.filter(f"{prediction_col} == 0.0 AND {target} == 0").count())
     fn = float((predictions.filter(f"{prediction_col} == 0.0 AND {target} == 1").count()))
+    print(f'tp: {tp}\ntn: {tn}\nfp: {fp}\nfn: {fn}\n')
     accuracy = round(float((tp + tn)) / float((tp + fp + fn + tn)), 3)
     precision = round(float(tp / float((tp + fp))), 3)
     recall = round(float(tp / float((tp + fn))), 3)
-    f1 = round(float(2 * ((precision * recall) / (precision + recall))), 3)
     evaluator = BinaryClassificationEvaluator(labelCol=target)
     auc_roc = float(evaluator.evaluate(predictions, {evaluator.metricName: "areaUnderROC"}))
     auc_pr = float(evaluator.evaluate(predictions, {evaluator.metricName: "areaUnderPR"}))
+    f1 = round(float(2 * ((precision * recall) / (precision + recall))), 3)
 
     metrics = spark.createDataFrame([
         ('TP', tp),
@@ -273,15 +318,35 @@ def split_dataset(dataframe, target, ratio_list):
         print('Not enough variables within ratio_list, expecting three.')
 
 
-def set_up_base_model_pipeline_stages(string_cols, string_cols_indexed, feature_cols, output_feature_col,
+def set_up_base_model_pipeline_stages(string_cols,
+                                      feature_cols,
+                                      output_feature_col,
                                       input_target_col,
-                                      output_target_col):
+                                      output_target_col
+                                      ):
+    """
+
+    Args:
+        string_cols (list[str]):
+        feature_cols (list[str]):
+        output_feature_col (vector):
+        input_target_col ():
+        output_target_col ():
+
+    Returns:
+
+    """
+
+    string_cols_indexed = [f'{a}_num' for a in string_cols]
+    ohe_input_cols = [a for a in string_cols_indexed]
+    ohe_output_cols = [f'{a}_ohe' for a in string_cols_indexed]
+    vector_feat_cols = feature_cols + ohe_output_cols
+
     # set up the pipeline for base model prep
     stage1 = StringIndexer(inputCols=string_cols, outputCols=string_cols_indexed, handleInvalid='keep')
-    stage2 = OneHotEncoder(inputCols=[a for a in string_cols_indexed], outputCols=[f'{a}_ohe' for a in
-                                                                                   string_cols_indexed],
-                           dropLast=True)
-    stage3 = VectorAssembler(inputCols=feature_cols, outputCol='features')
+    stage2 = OneHotEncoder(inputCols=ohe_input_cols,
+                           outputCols=ohe_output_cols, dropLast=True)
+    stage3 = VectorAssembler(inputCols=vector_feat_cols, outputCol='features')
     stage4 = StandardScaler(inputCol='features', outputCol=output_feature_col, withMean=True)
     stage5 = StringIndexer(inputCol=input_target_col, outputCol=output_target_col)
     stages = [stage1, stage2, stage3, stage4, stage5]
@@ -290,6 +355,20 @@ def set_up_base_model_pipeline_stages(string_cols, string_cols_indexed, feature_
 
 def set_up_meta_model_pipeline_stages(meta_feature_cols, output_meta_features_col, meta_cont_cols, meta_target_col,
                                       output_meta_target_col):
+    """
+
+    Args:
+        meta_feature_cols ():
+        output_meta_features_col ():
+        meta_cont_cols ():
+        meta_target_col ():
+        output_meta_target_col ():
+
+    Returns:
+        meta_model_stages(list)
+
+    """
+
     # set up the pipeline for base model prep
     stage1 = StringIndexer(inputCol=meta_target_col, outputCol=output_meta_target_col)
     stage2 = VectorAssembler(inputCols=meta_feature_cols, outputCol="meta_features")
@@ -307,3 +386,19 @@ def apply_pca(dataframe, feature_column, output_col, num_pca):
     result = model.transform(dataframe)
     print(f'PCA explained variance: {model.explainedVariance}\n')
     return result
+
+
+def get_child_count(dataframe, child_columns, new_column_name):
+    """
+
+    Args:
+        dataframe ():
+        child_columns ():
+        new_column_name ():
+
+    Returns:
+
+    """
+    dataframe = dataframe.withColumn(new_column_name,
+                                     f.greatest(*[f.col(c).cast('int').alias(c) for c in child_columns]))
+    return dataframe
