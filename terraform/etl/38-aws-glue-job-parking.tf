@@ -17,6 +17,7 @@ module "parking_pcn_denormalisation" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -39,6 +40,7 @@ module "parking_persistent_evaders" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -128,6 +130,7 @@ module "parking_kpi_gds_summary" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -151,6 +154,7 @@ module "parking_foi_pcn_gds_summary" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -350,6 +354,7 @@ module "parking_pcn_report_summary" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -372,6 +377,7 @@ module "parking_pcn_ltn_report_summary" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -636,6 +642,7 @@ module "parking_bailiff_warrant_figures" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -768,6 +775,7 @@ module "parking_foreign_vrm_pcns" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -812,6 +820,7 @@ module "parking_correspondence_performance_records_with_pcn" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 module "parking_dc_liberator_latest_permit_status" {
@@ -877,6 +886,7 @@ module "parking_foi_pcn_gds_daily_summary" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 module "parking_eta_decision_records_pcn_dispute_gds" {
@@ -1006,6 +1016,7 @@ module "parking_correspondence_performance_records_with_pcn_gds" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 module "parking_shop_front_licence_totals" {
