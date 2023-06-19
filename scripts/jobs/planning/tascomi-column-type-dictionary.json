@@ -1,6 +1,11 @@
 [
     {
       "integer": {
+        "nature_of_enquiries": [
+          "creation_user_id",
+          "id",
+          "last_updated_by"
+        ],
         "user_team_map": [
           "creation_user_id",
           "id",
@@ -363,6 +368,10 @@
         ]
       },
       "timestamp": {
+        "nature_of_enquiries": [
+          "last_updated",
+          "submit_date"
+        ],
         "user_team_map": [
           "last_updated",
           "submit_date"
@@ -630,6 +639,9 @@
         ]
       },
       "boolean": {
+        "nature_of_enquiries": [
+          "enabled"
+        ],
         "user_teams": [
           "enabled"
         ],
