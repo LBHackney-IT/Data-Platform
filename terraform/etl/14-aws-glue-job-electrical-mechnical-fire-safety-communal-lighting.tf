@@ -1,5 +1,5 @@
 module "communal_lighting" {
-  count = local.is_live_environment ? 1 : 0
+  count = local.is_live_environment ? 0 : 0
 
   source                    = "../modules/electrical-mechnical-fire-safety-cleaning-job"
   is_live_environment       = local.is_live_environment
