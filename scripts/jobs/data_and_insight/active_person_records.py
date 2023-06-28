@@ -30,7 +30,7 @@ from great_expectations.dataset import SparkDFDataset
 from pyspark.sql.functions import col, when
 
 from scripts.jobs.env_context import DEFAULT_MODE_AWS, LOCAL_MODE, ExecutionContextProvider
-from scripts.jobs.ml_jobs.person_matching_module import remove_deceased,\
+from scripts.jobs.data_and_insight.person_matching_module import remove_deceased,\
     prepare_clean_council_tax_data, standardize_council_tax_data,\
     prepare_clean_housing_benefit_data, standardize_housing_benefit_data, \
     prepare_clean_parking_permit_data, standardize_parking_permit_data, prepare_clean_housing_data, \
