@@ -359,7 +359,7 @@ module "Ringgo_Daily_Transactions" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1oNI9tNpKJHoZEkiiVBomzneebeAPw9h9"
+  google_drive_document_id       = "1ll3m46JruyWgkryYHlOTBSmxrQonrXgh"
   glue_job_name                  = "Ringgo Daily Transactions"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
