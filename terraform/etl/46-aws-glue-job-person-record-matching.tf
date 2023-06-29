@@ -8,8 +8,8 @@ module "electoral_register_refined" {
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage_data_source.bucket_id
   glue_job_worker_type           = "G.1X"
-  number_of_workers_for_glue_job = 2
-  glue_version                   = "4.0"
+  number_of_workers_for_glue_job = 10
+  glue_version                   = "3.0"
   glue_job_timeout               = 360
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
@@ -20,10 +20,11 @@ module "electoral_register_refined" {
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
     "--additional-python-modules"        = "abydos,graphframes,great_expectations==0.15.48"
-    "--source_input_path"                = "s3://${module.raw_zone_data_source.bucket_id}/data-and-insight/manual/electoral-register-jun23/"
+    "--source_catalog_database"          = module.department_data_and_insight_data_source.raw_zone_catalog_database_name
+    "--source_catalog_table"             = "electoral_register_jun23"
     "--output_path"                      = "s3://${module.refined_zone_data_source.bucket_id}/data-and-insight/electoral-register/"
-
   }
+
   script_name = "electoral_register_data_to_refined"
 
   crawler_details = {
@@ -31,6 +32,9 @@ module "electoral_register_refined" {
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/data-and-insight/electoral-register/"
     configuration      = null
     table_prefix       = null
+    Grouping           = {
+      TableLevelConfiguration = 3
+    }
   }
 
 }

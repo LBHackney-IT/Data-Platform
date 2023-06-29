@@ -851,7 +851,7 @@ def prepare_clean_electoral_register_data(electoral_register_df: DataFrame) -> D
         electoral_register_cleaned (Dataframe): Cleaned dataframe containing electoral register data.
     """
 
-    address_cols = ["property_address_1", "property_address_2", "property_address_3", "property_address_4"]
+    address_cols = ["address_line_1", "address_line_2", "address_line_3", "address_line_4"]
 
     electoral_register_cleaned = electoral_register_df \
         .withColumn("source", lit("electoral_register")) \
@@ -862,13 +862,14 @@ def prepare_clean_electoral_register_data(electoral_register_df: DataFrame) -> D
         .withColumn("name", regexp_replace(concat_ws(" ", col("first_name"), col("middle_name"),
                                                      col("last_name")), r"\s+", " ")) \
         .withColumn("date_of_birth", to_date(col("elector_dob"), format="yyyy-MM-dd")) \
-        .withColumnRenamed("first_line", "property_address_1") \
-        .withColumnRenamed("second_line", "property_address_2") \
-        .withColumnRenamed("third_line", "property_address_3") \
-        .withColumnRenamed("town", "property_address_4") \
-        .withColumnRenamed("post_code", "property_post_code") \
-        .withColumnRenamed("uprn", "property_urn") \
-        .withColumnRenamed("email", lit("")) \
+        .withColumnRenamed("property_address_1", "address_line_1") \
+        .withColumnRenamed("property_address_2", "address_line_2") \
+        .withColumnRenamed("property_address_3", "address_line_3") \
+        .withColumnRenamed("property_address_4", "address_line_4") \
+        .withColumnRenamed("property_post_code", "post_code") \
+        .withColumnRenamed("property_urn", "uprn") \
+        .withColumn("email", lit("")) \
+        .withColumn("title", lit("")) \
         .withColumn("source_filter", lit("electoral register jun23")) \
         .select(col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
                 col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
