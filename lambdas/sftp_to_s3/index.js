@@ -7,7 +7,7 @@ const AWS_REGION = "eu-west-2";
 
 const s3Bucket = process.env.S3_BUCKET;
 const s3TargetFolder = process.env.S3_TARGET_FOLDER;
-let sftpFilePath = process.env.SFTP_TARGET_FILE_PATH; 
+let sftpFilePath = process.env.SFTP_TARGET_FILE_PATH;
 let sftpSourceFilePrefix = process.env.SFTP_SOURCE_FILE_PREFIX;
 const sftpSourceFileExtension = process.env.SFTP_SOURCE_FILE_EXTENSION;
 const trigger_to_run = process.env.TRIGGER_NAME;
@@ -25,19 +25,17 @@ let month;
 let day;
 let date;
 
-async function getImportFilenamePattern(manualOverrideDateString)
-{
+async function getImportFilenamePattern(manualOverrideDateString) {
   let dateToImport = new Date();
   dateToImport.setDate(dateToImport.getDate() - 1);
 
-  if(manualOverrideDateString)
-  {
+  if (manualOverrideDateString) {
     //throw exception if invalid date or date format is detected
     Settings.throwOnInvalid = true;
     DateTime.fromISO(manualOverrideDateString);
 
     let parts = manualOverrideDateString.split('-');
-    dateToImport = new Date(parts[0], parts[1] - 1, parts[2]); 
+    dateToImport = new Date(parts[0], parts[1] - 1, parts[2]);
   }
 
   year = dateToImport.getFullYear().toString();
@@ -50,9 +48,9 @@ async function getImportFilenamePattern(manualOverrideDateString)
 
 async function findFiles(sftpConn) {
   console.log(`filepath on server: ${sftpFilePath}`)
-  
+
   const validPath = await sftpConn.exists(sftpFilePath);
-  
+
   if (!validPath) {
     return {
       success: false,
@@ -67,8 +65,7 @@ async function findFiles(sftpConn) {
     //set path
     sftpFilePath,
     //filter files by given pattern
-    function filterByFileNamePattern(file) 
-    {
+    function filterByFileNamePattern(file) {
       let name = file.name.toLowerCase();
       return name.includes(fileNamePattern.toLowerCase());
     }
@@ -81,7 +78,7 @@ async function findFiles(sftpConn) {
       fileNames: [],
     };
   }
-  
+
   const fileNames = fileList.filter(file => file.type != 'd').map(file => file.name);
   console.log(fileNames);
   return {
@@ -132,13 +129,13 @@ async function streamFileFromSftpToS3(sftp, fileName) {
 }
 
 exports.handler = async (event) => {
-  
+
   let manualOverrideDateString = event['DateToImport'];
- 
+
   console.log(`Manual override date: ${manualOverrideDateString}`);
- 
+
   getImportFilenamePattern(manualOverrideDateString);
- 
+
   const sftp = new sftpClient();
 
   if (await checkS3ForFile()) {
@@ -163,7 +160,7 @@ exports.handler = async (event) => {
     await Promise.all(findFilesResponse.fileNames.map(file => streamFileFromSftpToS3(sftp, file)));
 
     //start trigger
-    const glue = new AWS.Glue({apiVersion: '2017-03-31'});
+    const glue = new AWS.Glue({ apiVersion: '2017-03-31' });
     const params = {
       Name: trigger_to_run
     };
@@ -179,4 +176,3 @@ exports.handler = async (event) => {
     await sftp.end();
   }
 }
-
