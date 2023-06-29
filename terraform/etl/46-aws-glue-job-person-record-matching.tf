@@ -1,12 +1,8 @@
-locals {
-  electoral_register_environment_count = local.is_live_environment && !local.is_production_environment ? 1 : 0
-}
-
 module "electoral_register_refined" {
   source                         = "../modules/aws-glue-job"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
-  count                          = local.electoral_register_environment_count
+  count                          = local.is_live_environment && !local.is_production_environment ? 1 : 0
   department                     = module.department_data_and_insight_data_source
   job_name                       = "${local.short_identifier_prefix}Electoral register data to refined"
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
