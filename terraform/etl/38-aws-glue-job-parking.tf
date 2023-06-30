@@ -1220,7 +1220,7 @@ module "parking_cycle_hangar_waiting_list" {
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cycle_hangar_wait_list"
+  script_name                    = "parking_cycle_hangars_waiting_list.py"
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "Takes data from Liberator raw zone and creates a geocoded, duplicate-free version of the cycle hangars waiting list"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
