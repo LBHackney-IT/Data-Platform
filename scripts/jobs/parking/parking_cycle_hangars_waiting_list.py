@@ -95,20 +95,22 @@ Cycle_Hangar_allocation as (
     FROM liberator_hangar_allocations
     WHERE allocation_status IN ('live')
 ),
-    
+
 Street_Rec as (
     SELECT *
     FROM liberator_permit_llpg
-    WHERE address1 = 'STREET RECORD')
+    WHERE address1 = 'STREET RECORD'
+)
     
 /**** OUTPUT THE DATA ****/
 SELECT
-    A.party_id, first_name, surname, B.uprn as USER_UPRN,
+    A.party_id, first_name, surname, B.uprn as user_uprn,
     B.address1, B.address2, B.address3, B.postcode, 
-    B.telephone_number, D.Address2 as Street,
-    C.x, C.y,
+    B.telephone_number,
+    D.Address2 as street,
+    C.x, C.y, 
     
-    current_timestamp()                            as ImportDateTime,
+    current_timestamp() as importdatetime,
     replace(cast(current_date() as string),'-','') as import_date,
     
     cast(Year(current_date) as string)    as import_year, 
@@ -117,7 +119,7 @@ SELECT
     
 FROM waiting_list as A
 LEFT JOIN Licence_Party as B ON A.party_id = B.business_party_id
-LEFT JOIN LLPG          as C ON B.uprn = cast(C.UPRN as string)
+LEFT JOIN LLPG as C ON B.uprn = cast(C.UPRN as string)
 LEFT JOIN Street_Rec    as D ON C.USRN = D.USRN
 LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id AND row_num = 1
 WHERE row1= 1 AND E.party_id is NULL and D.Address2 is not NULL
@@ -136,7 +138,7 @@ SQL_node1658765472050 = sparkSqlQuery(
 
 # Script generated for node Amazon S3
 AmazonS3_node1658765590649 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/parking_cycle_hangar_wait_list/with_coords/",
+    path="s3://dataplatform-" + environment + "-refined-zone/parking/parking_cycle_hangar_waiting_list/parking_cycle_hangar_waiting_list_with_coordinates/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=PARTITION_KEYS,
@@ -146,7 +148,7 @@ AmazonS3_node1658765590649 = glueContext.getSink(
 )
 AmazonS3_node1658765590649.setCatalogInfo(
     catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
-    catalogTableName="parking_cycle_hangar_wait_list_with_coords",
+    catalogTableName="parking_cycle_hangar_waiting_list_with_coordinates",
 )
 AmazonS3_node1658765590649.setFormat("glueparquet")
 AmazonS3_node1658765590649.writeFrame(SQL_node1658765472050)
