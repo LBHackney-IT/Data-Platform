@@ -55,6 +55,14 @@ resource "aws_s3_object" "env_services_spatial_enrichment_dictionary" {
   source_hash = filemd5("../../scripts/jobs/env_services/spatial-enrichment-dictionary.json")
 }
 
+resource "aws_s3_object" "parking_spatial_enrichment_dictionary" {
+  bucket      = module.glue_scripts_data_source.bucket_id
+  key         = "scripts/parking/spatial-enrichment-dictionary.json"
+  acl         = "private"
+  source      = "../../scripts/jobs/parking/spatial-enrichment-dictionary.json"
+  source_hash = filemd5("../../scripts/jobs/parking/spatial-enrichment-dictionary.json")
+}
+
 # Job using the script and dictionary above for the environmental services dept 
 module "env_services_geospatial_enrichment" {
   source                    = "../modules/aws-glue-job"
@@ -84,3 +92,5 @@ module "env_services_geospatial_enrichment" {
     configuration      = null
   }
 }
+
+
