@@ -138,7 +138,7 @@ SQL_node1658765472050 = sparkSqlQuery(
 
 # Script generated for node Amazon S3
 AmazonS3_node1658765590649 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/parking_cycle_hangar_waiting_list/parking_cycle_hangar_waiting_list_with_coordinates/",
+    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_cycle_hangars_waiting_list/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=PARTITION_KEYS,
@@ -148,7 +148,7 @@ AmazonS3_node1658765590649 = glueContext.getSink(
 )
 AmazonS3_node1658765590649.setCatalogInfo(
     catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
-    catalogTableName="parking_cycle_hangar_waiting_list_with_coordinates",
+    catalogTableName="parking_cycle_hangars_waiting_list",
 )
 AmazonS3_node1658765590649.setFormat("glueparquet")
 AmazonS3_node1658765590649.writeFrame(SQL_node1658765472050)
