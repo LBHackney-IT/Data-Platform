@@ -103,6 +103,7 @@ module "parking_geospatial_enrichment" {
   job_name                   = "${local.short_identifier_prefix}parking_geospatial_enrichment"
   script_s3_object_key       = aws_s3_object.spatial_enrichment.key
   glue_job_worker_type       = "G.1X"
+  glue_version               = "4.0"
   helper_module_key          = data.aws_s3_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
@@ -119,7 +120,12 @@ module "parking_geospatial_enrichment" {
     database_name      = module.department_parking_data_source.refined_zone_catalog_database_name
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/parking/spatially-enriched"
     table_prefix       = "spatially_enriched_"
-    configuration      = null
+    configuration = jsonencode({
+      Version = 1.0
+      Grouping = {
+        TableLevelConfiguration = 4
+      }
+    })
   }
 }
 
