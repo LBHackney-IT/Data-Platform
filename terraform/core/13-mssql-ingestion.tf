@@ -80,7 +80,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_job_timeout               = 420
-  glue_version                   = local.is_production_environment ? "2.0" : "4.0"
+  glue_version                   = "4.0"
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = 2
   job_parameters = {
@@ -139,7 +139,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
-  glue_version                   = local.is_production_environment ? "2.0" : "4.0"
+  glue_version                   = "4.0"
   glue_job_worker_type           = "G.2X"
   number_of_workers_for_glue_job = 10
   glue_job_timeout               = 220
@@ -175,7 +175,7 @@ module "copy_academy_revenues_to_raw_zone" {
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
-  glue_version                   = local.is_production_environment ? "2.0" : "4.0"
+  glue_version                   = "4.0"
   glue_job_worker_type           = "G.2X"
   number_of_workers_for_glue_job = 10
   glue_job_timeout               = 220
