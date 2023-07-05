@@ -154,6 +154,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
     "--job-bookmark-option"        = "job-bookmark-enable"
     "--write-shuffle-files-to-s3"  = "true"
     "--write-shuffle-spills-to-s3" = "true"
+    "--conf"                       = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -190,5 +191,6 @@ module "copy_academy_revenues_to_raw_zone" {
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--write-shuffle-files-to-s3"        = "true"
     "--write-shuffle-spills-to-s3"       = "true"
+    "--conf"                             = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
