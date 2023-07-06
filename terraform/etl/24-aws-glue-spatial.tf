@@ -110,6 +110,7 @@ module "parking_geospatial_enrichment" {
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   triggered_by_job           = "${local.short_identifier_prefix}parking_cycle_hangar_waiting_list"
+  workflow_name              = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   job_parameters = {
     "--job-bookmark-option"        = "job-bookmark-enable"
     "--enable-glue-datacatalog"    = "true"
