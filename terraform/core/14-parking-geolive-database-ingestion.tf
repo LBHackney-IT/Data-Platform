@@ -22,6 +22,7 @@ module "parking_geolive_ingestion_job" {
 
   department                 = module.department_parking
   job_name                   = "${local.short_identifier_prefix}geolive parking schema ingestion"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   helper_module_key          = aws_s3_object.helpers.key
@@ -43,6 +44,6 @@ module "parking_geolive_ingestion_job" {
         TableLevelConfiguration = 4
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
 }
