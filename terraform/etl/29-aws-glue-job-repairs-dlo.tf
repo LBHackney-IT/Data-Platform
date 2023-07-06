@@ -14,6 +14,7 @@ module "housing_repairs_dlo_cleaning_job" {
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}Housing Repairs - Repairs DLO Cleaning"
+  glue_version      = local.is_production_environment ? "2.0" : "4.0"
   helper_module_key = data.aws_s3_object.helpers.key
   pydeequ_zip_key   = data.aws_s3_object.pydeequ.key
   job_parameters = {
@@ -41,6 +42,7 @@ module "housing_repairs_dlo_address_cleaning_job" {
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}DLO Repairs - Address Cleaning"
+  glue_version      = local.is_production_environment ? "2.0" : "4.0"
   helper_module_key = data.aws_s3_object.helpers.key
   pydeequ_zip_key   = data.aws_s3_object.pydeequ.key
   job_parameters = {
@@ -70,6 +72,7 @@ module "get_uprn_from_uhref_job" {
 
   department        = module.department_housing_repairs_data_source
   job_name          = "${local.short_identifier_prefix}Get UPRN from UHref DLO repairs"
+  glue_version      = local.is_production_environment ? "2.0" : "4.0"
   helper_module_key = data.aws_s3_object.helpers.key
   pydeequ_zip_key   = data.aws_s3_object.pydeequ.key
   glue_role_arn     = data.aws_iam_role.glue_role.arn
@@ -115,6 +118,7 @@ module "repairs_dlo_levenshtein_address_matching" {
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   workflow_name                  = module.repairs_dlo[0].workflow_name
   triggered_by_crawler           = module.get_uprn_from_uhref_job[0].crawler_name
+  glue_version                   = local.is_production_environment ? "2.0" : "4.0"
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = 12
 }
