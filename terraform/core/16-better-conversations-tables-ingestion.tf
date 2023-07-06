@@ -15,6 +15,7 @@ module "ingest_better_conversations_tables" {
   glue_role_arn             = aws_iam_role.glue_role.arn
 
   job_name                       = "${local.short_identifier_prefix}Ingest Better Conversations tables"
+  glue_version = local.is_production_environment ? "2.0" : "4.0"
   job_description                = "Ingest a snapshot of 2 Better Conversations tables from the API Prod Dynamo DB instance"
   script_s3_object_key           = aws_s3_object.dynamodb_tables_ingest.key
   helper_module_key              = aws_s3_object.helpers.key

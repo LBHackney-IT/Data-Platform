@@ -53,6 +53,7 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
   is_production_environment = local.is_production_environment
 
   job_name                   = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables for Rentsense to housing department raw zone"
+  glue_version = local.is_production_environment ? "2.0" : "4.0"
   department                 = module.department_housing
   script_s3_object_key       = aws_s3_object.copy_tables_landing_to_raw.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id

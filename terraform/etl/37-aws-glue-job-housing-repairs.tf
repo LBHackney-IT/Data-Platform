@@ -7,6 +7,7 @@ module "address_matching_glue_job" {
 
   department                 = module.department_housing_repairs_data_source
   job_name                   = "${local.short_identifier_prefix}Address Matching"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   helper_module_key          = data.aws_s3_object.helpers.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
@@ -23,7 +24,7 @@ module "address_matching_glue_job" {
     database_name      = aws_glue_catalog_database.landing_zone_data_and_insight_address_matching[count.index].name
     s3_target_location = "s3://${module.landing_zone_data_source.bucket_id}/data-and-insight/address-matching-glue-job-output/"
     configuration      = null
-    table_prefix       = null 
+    table_prefix       = null
   }
 }
 
@@ -36,6 +37,7 @@ module "address_cleaning_glue_job" {
 
   department                 = module.department_housing_repairs_data_source
   job_name                   = "${local.short_identifier_prefix}Housing Repairs - Address Cleaning"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   helper_module_key          = data.aws_s3_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   script_s3_object_key       = aws_s3_object.address_cleaning.key

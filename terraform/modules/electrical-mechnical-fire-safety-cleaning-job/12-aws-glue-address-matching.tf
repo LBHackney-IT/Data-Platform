@@ -5,6 +5,7 @@ module "housing_repairs_elec_mech_fire_address_matching" {
 
   department        = var.department
   job_name          = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Address Matching"
+  glue_version      = var.is_production_environment ? "2.0" : "4.0"
   helper_module_key = var.helper_module_key
   pydeequ_zip_key   = var.pydeequ_zip_key
   job_parameters = {
