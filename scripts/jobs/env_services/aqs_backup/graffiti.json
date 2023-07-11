@@ -1,3 +1,5 @@
+//deprecated query used for data pre 2023-07-07
+
 {
     "aqs": {
         "type": "Join",
