@@ -19,7 +19,8 @@
                   "attributes_tasksRaisedTime",
                   "attributes_tasksStartTime",
                   "attributes_tasksCompletionTime",
-                  "attributes_graffitiFromFMS_6166a5fe13abdf015b8533bb"
+                  "attributes_graffitiFromFMS_6166a5fe13abdf015b8533bb",
+                  "attributes_itemsGeometry"
             ],
             "joinAttributes": [
                   "root.attributes_graffitiIncidentType_6213aea7caf7db01596c7bef.attributes_graffitiIncidentLookUpGraffitiIncidentLookUp_6213ada9caf7db01596c74aa",
