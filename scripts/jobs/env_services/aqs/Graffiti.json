@@ -2,30 +2,30 @@
     "aqs": {
         "type": "Join",
         "properties": {
-            "dodiCode": "designs_graffiti_5d76650afe2ad80cdc58a241", 
+            "dodiCode": "designs_graffiti_5d76650afe2ad80cdc58a241",
             "collectionCode": [
                 "Live"
             ],
             "attributes": [
-                  "attributes_itemsTitle",
-                  "attributes_itemsSubtitle",
-                  "attributes_graffitiDescription_5d76669cfe2ad80304c617bc",
-                  "attributes_graffitiOffensive_5d766672fe2ad80cdc58a9c1",
-                  "attributes_graffitiAreaClearedm2_5d766663fe2ad80304c617b6",
-                  "attributes_graffitiNearestAddress_6194e3f292a138015b8bd977",
-                  "attributes_graffitiIncidentType_6213aea7caf7db01596c7bef",
-                  "attributes_tasksStatus",
-                  "attributes_tasksTeam",
-                  "attributes_tasksRaisedTime",
-                  "attributes_tasksStartTime",
-                  "attributes_tasksCompletionTime",
-                  "attributes_graffitiFromFMS_6166a5fe13abdf015b8533bb",
-                  "attributes_itemsGeometry"
+                "attributes_itemsTitle",
+                "attributes_itemsSubtitle",
+                "attributes_graffitiDescription_5d76669cfe2ad80304c617bc",
+                "attributes_graffitiOffensive_5d766672fe2ad80cdc58a9c1",
+                "attributes_graffitiAreaClearedm2_5d766663fe2ad80304c617b6",
+                "attributes_graffitiNearestAddress_6194e3f292a138015b8bd977",
+                "attributes_graffitiIncidentType_6213aea7caf7db01596c7bef",
+                "attributes_tasksStatus",
+                "attributes_tasksTeam",
+                "attributes_tasksRaisedTime",
+                "attributes_tasksStartTime",
+                "attributes_tasksCompletionTime",
+                "attributes_graffitiFromFMS_6166a5fe13abdf015b8533bb",
+                "attributes_itemsGeometry"
             ],
             "joinAttributes": [
-                  "root.attributes_graffitiIncidentType_6213aea7caf7db01596c7bef.attributes_graffitiIncidentLookUpGraffitiIncidentLookUp_6213ada9caf7db01596c74aa",
-                  "root.attributes_tasksStatus.attributes_taskStatusesStatus",
-                  "root.attributes_tasksTeam.attributes_teamsTeamName"
+                "root.attributes_graffitiIncidentType_6213aea7caf7db01596c7bef.attributes_graffitiIncidentLookUpGraffitiIncidentLookUp_6213ada9caf7db01596c74aa",
+                "root.attributes_tasksStatus.attributes_taskStatusesStatus",
+                "root.attributes_tasksTeam.attributes_teamsTeamName"
             ]
         },
         "children": []
