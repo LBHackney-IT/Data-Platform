@@ -88,6 +88,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
     "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
     "--s3_ingestion_details_target" = "s3://${module.landing_zone.bucket_id}/academy/ingestion-details/"
     "--table_filter_expression"     = each.value
+    "--conf"                        = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
