@@ -64,7 +64,7 @@ With CalendarFormat as (
       dow,
       fin_year,
       fin_year_startdate,
-      fin_year_enddate
+      fin_year_enddate,
       ROW_NUMBER() OVER ( PARTITION BY date ORDER BY date DESC) R1
    FROM calendar),
 
