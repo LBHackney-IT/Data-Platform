@@ -1,1214 +1,1968 @@
 [
-    {
-      "integer": {
-        "nature_of_enquiries": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "user_team_map": [
-          "creation_user_id",
-          "id",
-          "last_updated_by",
-          "user_id",
-          "user_team_id"
-        ],
-        "user_teams": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "committee_application_map": [
-          "application_id",
-          "committee_id",
-          "creation_user_id",
-          "id",
-          "last_updated_by",
-          "load_order"
-        ],
-        "applications": [
-          "admin_officer_id",
-          "agent_id",
-          "agricultural_holding_involved_owner_details",
-          "agricultural_land_use_months",
-          "agricultural_land_use_years",
-          "applicant_id",
-          "application_source_id",
-          "application_stage",
-          "application_type_id",
-          "approved_units",
-          "breeam_level_id",
-          "breeam_status_id",
-          "car_difference",
-          "car_total_existing",
-          "car_total_proposed",
-          "certificate_b_owner_details",
-          "certificate_c_owner_details",
-          "certificate_of_compliance_b_owner_details",
-          "certificate_of_compliance_c_owner_details",
-          "community_id",
-          "creation_user_id",
-          "cycle_difference",
-          "cycle_total_existing",
-          "cycle_total_proposed",
-          "decision_expiry_months",
-          "decision_expiry_years",
-          "decision_level_id",
-          "decision_monitoring_standard_phrase_id",
-          "decision_officer_id",
-          "decision_type_id",
-          "decision_user_team_id",
-          "disability_difference",
-          "disability_total_existing",
-          "disability_total_proposed",
-          "dtf_location_id",
-          "eia_id",
-          "existing_employees_full_time",
-          "existing_employees_full_time_equivalent",
-          "existing_employees_part_time",
-          "external_referee",
-          "external_referee_id",
-          "felled_trees",
-          "id",
-          "ii_volume_to_be_demolished",
-          "i_total_building_volume",
-          "last_updated_by",
-          "legal_agreement_obligation_type_id",
-          "lgv_difference",
-          "lgv_total_existing",
-          "lgv_total_proposed",
-          "motorcycles_difference",
-          "motorcycles_total_existing",
-          "motorcycles_total_proposed",
-          "net_increase_in_dwellings",
-          "net_increase_in_dwellings_4bcd",
-          "net_increase_in_dwellings_4scd",
-          "officer_id",
-          "original_application_reference",
-          "original_application_type",
-          "other_difference",
-          "other_owner_details",
-          "other_total_existing",
-          "other_total_proposed",
-          "overturn_reason_id",
-          "parish_id",
-          "proposed_employees_full_time",
-          "proposed_employees_full_time_equivalent",
-          "proposed_employees_part_time",
-          "pruned_trees",
-          "ps_development_code_id",
-          "referral_reason_id",
-          "requested_committee_meeting_id",
-          "residential_development_type_id",
-          "service_centre_id",
-          "settlement_group_id",
-          "site_visit_other_contact",
-          "surface_site_owner",
-          "temporary_consent_months",
-          "temporary_consent_years",
-          "tree_location",
-          "user_team_id",
-          "validation_officer_id",
-          "ward_id"
-        ],
-        "contacts": [
-          "company_type_id",
-          "contact_type_id",
-          "creation_user_id",
-          "dtf_location_id",
-          "id",
-          "last_updated_by",
-          "title_id"
-        ],
-        "application_types": [
-          "assessment_stage_target_days",
-          "committee_stage_target_days",
-          "complete_stage_target_days",
-          "consultation_complete_stage_target_days",
-          "consultation_stage_target_days",
-          "creation_user_id",
-          "decision_issued_stage_target_days",
-          "default_decision_expiry_months",
-          "default_decision_expiry_years",
-          "determination_referred_stage_target_days",
-          "id",
-          "incomplete_stage_target_days",
-          "last_updated_by",
-          "received_stage_target_days",
-          "recommendation_stage_target_days",
-          "target_days",
-          "under_appeal_stage_target_days"
-        ],
-        "emails": [
-          "appeal_id",
-          "application_id",
-          "asset_constraint_id",
-          "communication_file_id",
-          "creation_user_id",
-          "enforcement_id",
-          "id",
-          "last_updated_by",
-          "legal_agreement_id",
-          "mandrill_status_check_count",
-          "preapplication_id"
-        ],
-        "enforcements": [
-          "admin_officer_id",
-          "case_officer_id",
-          "community_id",
-          "complainant_details",
-          "complainant_id",
-          "complaint_location",
-          "complaint_location_id",
-          "complaint_source",
-          "complaint_source_id",
-          "creation_user_id",
-          "enforcement_case_status_id",
-          "enforcement_outcome_type_id",
-          "enforcement_protocol_id",
-          "id",
-          "last_updated_by",
-          "offender_details",
-          "offender_id",
-          "offender_interest_id",
-          "priority_status_id",
-          "reason_for_file_closure_id",
-          "target_for_closure_weeks",
-          "user_team_id",
-          "ward_id"
-        ],
-        "fees": [
-          "appeal_id",
-          "application_id",
-          "applied_fee_reason_id",
-          "creation_user_id",
-          "enforcement_id",
-          "exemption_reason_id",
-          "fee_type_2_id",
-          "fee_type_3_id",
-          "fee_type_id",
-          "id",
-          "last_updated_by",
-          "payment_method_id",
-          "preapplication_id",
-          "proposed_no_of_dwellings"
-        ],
-        "public_comments": [
-          "application_id",
-          "creation_user_id",
-          "id",
-          "last_updated_by",
-          "public_record_user_id"
-        ],
-        "communications": [
-          "appeal_id",
-          "application_id",
-          "asset_constraint_id",
-          "communication_type_id",
-          "creation_user_id",
-          "enforcement_id",
-          "id",
-          "last_updated_by",
-          "legal_agreement_id",
-          "legal_agreement_schedule_financial_id",
-          "officer_id",
-          "preapplication_id"
-        ],
-        "fee_payments": [
-          "contact_id",
-          "creation_user_id",
-          "fee_id",
-          "id",
-          "last_updated_by",
-          "payment_method_id",
-          "receipting_officer_id"
-        ],
-        "appeal_decision": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "appeal_status": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "appeal_types": [
-          "automated_stage_config_id",
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "breach_types": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "committees": [
-          "committee_agenda_layout_id",
-          "creation_user_id",
-          "id",
-          "last_updated_by",
-          "officer_id"
-        ],
-        "communication_templates": [
-          "communication_type_id",
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "communication_types": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "contact_types": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "decision_levels": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "pre_application_categories": [
-          "automated_stage_config_id",
-          "creation_user_id",
-          "id",
-          "last_updated_by",
-          "target_days"
-        ],
-        "decision_types": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "document_types": [
-          "creation_user_id",
-          "id",
-          "last_updated_by",
-          "validation_trigger_id"
-        ],
-        "fee_types": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "ps_development_codes": [
-          "creation_user_id",
-          "expiry_days",
-          "id",
-          "last_updated_by"
-        ],
-        "users": [
-          "creation_user_id",
-          "id",
-          "last_updated_by"
-        ],
-        "public_consultations": [
-          "creation_user_id",
-          "document_id",
-          "id",
-          "last_updated_by",
-          "public_record_id"
-        ],
-        "appeals": [
-          "admin_officer_id",
-          "agent_id",
-          "allocated_inspector_id",
-          "appeal_decision_id",
-          "appeal_format",
-          "appeal_status_id",
-          "appeal_type_id",
-          "applicant_id",
-          "application_id",
-          "community_id",
-          "creation_user_id",
-          "enforcement_id",
-          "id",
-          "inspectorate_contact_id",
-          "inspectorate_team",
-          "last_updated_by",
-          "offender_id",
-          "officer_id",
-          "user_team_id",
-          "ward_id"
-        ],
-        "dtf_locations": [
-          "creation_user_id",
-          "custodian_code_id",
-          "id",
-          "last_updated_by",
-          "merge_source_id",
-          "street_id"
-        ],
-        "documents": [
-          "appeal_id",
-          "application_id",
-          "asset_constraint_id",
-          "communication_id",
-          "consultation_duration",
-          "creation_user_id",
-          "document_type_id",
-          "email_id",
-          "enforcement_id",
-          "id",
-          "last_updated_by",
-          "legal_agreement_id",
-          "officer_id",
-          "parent_document_id",
-          "preapplication_id",
-          "publication_id",
-          "public_comment_id",
-          "publicity_duration",
-          "publicity_justification_id",
-          "public_record_id",
-          "uploaded_file_id"
-        ]
-      },
-      "timestamp": {
-        "nature_of_enquiries": [
-          "last_updated",
-          "submit_date"
-        ],
-        "user_team_map": [
-          "last_updated",
-          "submit_date"
-        ],
-        "user_teams": [
-          "last_updated",
-          "submit_date"
-        ],
-        "committee_application_map": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "applications": [
-          "advertisement_from",
-          "advertisement_to",
-          "agricultural_holding_involved_owner_notified",
-          "agricultural_holding_involved_signed_on",
-          "application_declaration_signed_on",
-          "beneficial_occupation_date",
-          "brought_into_use_date_20_march_2013_or_later",
-          "ceased_date",
-          "certificate_a_signed_on",
-          "certificate_b_owner_notified",
-          "certificate_b_signed_on",
-          "certificate_c_owner_notified",
-          "certificate_c_publicity_date",
-          "certificate_c_signed_on",
-          "certificate_d_publicity_date",
-          "certificate_d_signed_on",
-          "certificate_of_compliance_a_signed_on",
-          "certificate_of_compliance_b_owner_notified",
-          "certificate_of_compliance_b_signed_on",
-          "certificate_of_compliance_c_owner_notified",
-          "certificate_of_compliance_c_publicity_date",
-          "certificate_of_compliance_c_signed_on",
-          "commencement_date",
-          "committee_actual_date",
-          "committee_date",
-          "committee_proposed_date",
-          "completion_date",
-          "date_decision_taken",
-          "date_of_advice",
-          "date_of_decision_5rm",
-          "date_of_deed_of_variation_if_any",
-          "date_of_s106_agreement",
-          "decision_expiry_date",
-          "decision_issued_date",
-          "development_already_completed_date",
-          "development_already_started_date",
-          "documents_to_legal_date",
-          "end_of_previous_use",
-          "expiry_date",
-          "expiry_of_temporary_consent_use_operations",
-          "extension_of_time_due_date",
-          "ian_deadline_date",
-          "iii_date_proposed_demolition_area_built",
-          "implementation_date",
-          "intial_vetting_date",
-          "last_in_use_date",
-          "last_in_use_date_if_not_20_march_2013",
-          "last_updated",
-          "last_use_as_arcade_casino",
-          "legal_agreement_date",
-          "legal_draft_received_date",
-          "legal_services_instructed_date",
-          "non_agricultural_holding_signed_on",
-          "original_decision_date",
-          "planned_commencement",
-          "planned_completion",
-          "planning_portal_submit_date",
-          "planning_reference_date",
-          "ppa_decision_due_date",
-          "received_date",
-          "record_allocated_date",
-          "reference_condition_date",
-          "referral_date",
-          "referral_returned_date",
-          "registration_date",
-          "returned_to_admin_date",
-          "s73_reference_if_any_date",
-          "statutory_declaration_received_date",
-          "submit_date",
-          "use_works_activity_date",
-          "valid_date",
-          "work_completed_date",
-          "work_started_date"
-        ],
-        "contacts": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "application_types": [
-          "last_updated",
-          "submit_date"
-        ],
-        "emails": [
-          "ceased_date",
-          "email_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "enforcements": [
-          "ceased_date",
-          "complainant_acknowledged_date",
-          "complainant_correspondence_date",
-          "complaint_received",
-          "complaint_received_date",
-          "complaint_registered",
-          "date_file_closed",
-          "investigation_date",
-          "last_updated",
-          "resolution_date",
-          "site_visit_target_date",
-          "submit_date",
-          "target_for_closure"
-        ],
-        "fees": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "public_comments": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "communications": [
-          "ceased_date",
-          "completed_date",
-          "emailed_date",
-          "last_updated",
-          "printed_date",
-          "submit_date"
-        ],
-        "fee_payments": [
-          "ceased_date",
-          "last_updated",
-          "payment_date",
-          "submit_date"
-        ],
-        "appeal_decision": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "appeal_status": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "appeal_types": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "breach_types": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "committees": [
-          "actual_date",
-          "appeal_decision_from_date",
-          "appeal_decision_to_date",
-          "appeal_received_from_date",
-          "appeal_received_to_date",
-          "ceased_date",
-          "delegated_decision_from_date",
-          "delegated_decision_to_date",
-          "last_updated",
-          "proposed_date",
-          "submit_date"
-        ],
-        "communication_templates": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "communication_types": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "contact_types": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "decision_levels": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "pre_application_categories": [
-          "last_updated",
-          "submit_date"
-        ],
-        "decision_types": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "document_types": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "fee_types": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "ps_development_codes": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "users": [
-          "ceased_date",
-          "last_login",
-          "last_password_change",
-          "last_updated",
-          "submit_date"
-        ],
-        "public_consultations": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "appeals": [
-          "appeal_decision_date",
-          "appeal_start_date",
-          "appellant_statement_received_date",
-          "ceased_date",
-          "evidence_submitted_date",
-          "final_comments_due_date",
-          "final_comments_sent_date",
-          "hearing_date",
-          "hearing_notification_due_date",
-          "last_updated",
-          "proof_of_evidence_due_date",
-          "public_inquiry_date",
-          "public_inquiry_notification_due_date",
-          "questionaire_due_date",
-          "questionaire_sent_date",
-          "statement_due_date",
-          "statement_of_common_ground_due_date",
-          "statement_of_common_ground_submitted_date",
-          "statement_sent_date",
-          "submit_date",
-          "target_for_appeal_determination"
-        ],
-        "dtf_locations": [
-          "ceased_date",
-          "last_updated",
-          "submit_date"
-        ],
-        "documents": [
-          "ceased_date",
-          "document_date",
-          "last_updated",
-          "submit_date"
-        ]
-      },
-      "boolean": {
-        "nature_of_enquiries": [
-          "enabled"
-        ],
-        "user_teams": [
-          "enabled"
-        ],
-        "committee_application_map": [
-          "ceased",
-          "determined_at_this_committee"
-        ],
-        "applications": [
-          "a_charitable_use",
-          "advert_already_in_place",
-          "advertised_in_press",
-          "advert_projects_over_highway_public_highway",
-          "affordable_housing_component",
-          "agricultural_necessity",
-          "agricultural_tenancy_terminated",
-          "a_interior_works",
-          "alleged_subsidence_damage",
-          "alteration_of_existing_road_proposed",
-          "alteration_proposal",
-          "alterations_or_enlargement_to_roof",
-          "amended_application",
-          "a_new_build_floorspace_100m2",
-          "a_new_building_or_operations_proposed",
-          "a_new_build_permitted_floorspace_100m2",
-          "a_new_residential_floorspace",
-          "appeal_against_non_determination",
-          "applicant_has_permission_of_landowner_for_adverts",
-          "applicant_is_owner",
-          "applicant_owns_land_buildings",
-          "archeology_biodiversity_affected",
-          "a_total_demolition",
-          "at_risk_of_flooding",
-          "b_change_of_use_land_buildings_proposed",
-          "b_demolition_within_curtilage",
-          "b_exterior_works",
-          "b_floorspace_change_one_or_more_new_dwellings",
-          "b_new_non_residential_floorspace",
-          "b_one_or_more_new_dwellings",
-          "b_social_housing_relief",
-          "building_work",
-          "building_work_4sca",
-          "ceased",
-          "cess_pit_disposal",
-          "change_of_use",
-          "cil_ah_related",
-          "c_none_of_the_above",
-          "committee_overturn",
-          "consented_change_of_use",
-          "consultation_not_applicable",
-          "contamination_known",
-          "contamination_suspected",
-          "county_matters",
-          "c_partial_demolition",
-          "c_self_build_exemption_new_home",
-          "c_structure_object_within_curtilage",
-          "current_agricultural_tenancy",
-          "currently_vacant",
-          "date_planted_evidenced",
-          "demolition_of_building",
-          "demolition_proposal",
-          "designated_areas_aonb",
-          "designated_areas_conservation_area",
-          "designated_areas_green_belt",
-          "designated_areas_national_park",
-          "designated_areas_nnr",
-          "designated_areas_none_of_the_above",
-          "designated_areas_sac",
-          "designated_areas_spa_ramsar",
-          "designated_areas_sssi",
-          "designated_areas_world_heritage_site",
-          "designed_for_agriculture",
-          "details_on_plans",
-          "development_already_completed",
-          "development_already_started",
-          "development_plan_departure",
-          "dont_know",
-          "dont_know_5lbl",
-          "d_self_build_exemption_residential_annex_extension",
-          "d_stripping_of_walls_ceilings_finishes",
-          "dwelling_alteration_involved",
-          "ecclesiastical_grade_i",
-          "ecclesiastical_grade_ii",
-          "ecclesiastical_grade_ii_12lbc",
-          "eligibility",
-          "environmental_statement_es_attached",
-          "existing_building_works",
-          "existing_connection_planned",
-          "existing_council_relationship",
-          "existing_use",
-          "existing_use_works_activity_in_breach_of_a_condition",
-          "existing_watercourse",
-          "extension",
-          "extension_of_time_agreed",
-          "external_referral_required",
-          "flat_roof_installation",
-          "floor_area_465m2",
-          "from_nearest_non_farm_house_400m",
-          "from_roadway_25m",
-          "full_contact_not_known",
-          "gis_data_present",
-          "grade_i",
-          "grade_i_5lbl",
-          "grade_ii",
-          "grade_ii_12lbc",
-          "grade_ii_5lbl",
-          "hazardous_substances_consent_required",
-          "hazardous_substance_storage",
-          "height_of_proposed_development_na",
-          "icnirp_submitted",
-          "impact_on_existing_parking",
-          "insurance_claim",
-          "interceptor_ditch_and_sumps",
-          "interruption_in_breach_use_activity",
-          "in_time",
-          "lbc_details_on_plans",
-          "ldp_site",
-          "less_than_30_years_old",
-          "livestock_slurry_or_sewage_sludge_housing",
-          "local_consultation_carried_out",
-          "loss_of_trees_or_hedges",
-          "mains_disposal",
-          "mains_sewer",
-          "material_change_of_use",
-          "matters_to_be_determined_access",
-          "matters_to_be_determined_appearance",
-          "matters_to_be_determined_landscaping",
-          "matters_to_be_determined_layout",
-          "matters_to_be_determined_scale",
-          "matters_to_be_reserved_access",
-          "matters_to_be_reserved_appearance",
-          "matters_to_be_reserved_landscaping",
-          "matters_to_be_reserved_layout",
-          "matters_to_be_reserved_none",
-          "matters_to_be_reserved_scale",
-          "modification_or_discharge_requested_discharge",
-          "modification_or_discharge_requested_modify",
-          "new_altered_pedestrian_access",
-          "new_altered_vehicle_access",
-          "new_prows",
-          "new_public_roads",
-          "new_road_proposed",
-          "no_longer_required_for_agriculture",
-          "other_developments_90m_last_2_years",
-          "other_disposal",
-          "outline_draft_agreement_included",
-          "overturn_approval_to_refusal",
-          "overturn_refusal_to_approval",
-          "own_council_application",
-          "package_treatment_plant_disposal",
-          "partial_discharge",
-          "pitch_roof_installation",
-          "planning_performance_agreement_signed",
-          "pond_lake",
-          "pre_application_advice",
-          "previous_building",
-          "previous_cou_a1_a2_sg_to_a3",
-          "previous_cou_a1_a2_sg_to_d2",
-          "previous_cou_sg_to_c3",
-          "previous_excavations_deposits",
-          "proposal_requires_tree_hedge_pruning_removal",
-          "proposed_building_alteration",
-          "proposed_building_extension",
-          "proposed_building_new_building",
-          "proposed_new_building",
-          "provision_of_community_infrastructure",
-          "prows",
-          "public_open_space_loss_gain",
-          "recycling_storage_collection_arranged",
-          "redevelopment_rebuilding",
-          "regulation_4_application",
-          "related_to_reserved_matters_application",
-          "replacement_of_existing_apparatus",
-          "replant_required",
-          "residential_development_monitoring",
-          "result_of_enforcement",
-          "result_of_preapp",
-          "retained_excavated_material",
-          "retrospective_application",
-          "return_as_invalid",
-          "romp_application",
-          "row_diversions_extinguishments",
-          "s106_ah_related",
-          "section_73_application",
-          "septic_tank_disposal",
-          "site_publically_visible",
-          "soakaway",
-          "sole_a1_a2_sg_use_on_5_december_2013",
-          "sole_arcade_casino_use_on_19_march_2014",
-          "stand_alone_renewable_low_carbon_development",
-          "statutory_declaration_condition_applies",
-          "substitute_plans",
-          "supplementary_information_template_sit_submitted",
-          "sustainable_drainage",
-          "tan6_rural_enterprise_dwelling",
-          "temporary_consent",
-          "temporary_structures_equipment",
-          "tpo_title_known",
-          "trade_effluent_waste_involved",
-          "tree_health_and_safety",
-          "trees_additional_supporting_information",
-          "trees_hedges_on_relevant_adjacent_land",
-          "trees_hedges_present_on_site",
-          "trees_or_hedges_affected",
-          "trees_with_a_tree_protection_order_tpo",
-          "trees_within_a_conservation_area",
-          "trees_within_falling_distance_of_proposal",
-          "tree_works",
-          "twelve_month_resubmission",
-          "type_of_planning_agreement_s_106a",
-          "type_of_planning_agreement_s_106ba_affordable_housing",
-          "type_of_planning_agreement_s_299a_crown_land",
-          "use_vulnerable_to_contamination",
-          "valid_at_receipt",
-          "waste_management_proposal",
-          "waste_storage_collection_incorporated",
-          "watercourse_surface_water_groundwater_affected",
-          "will_proposal_increase_flood_risk_elsewhere",
-          "within_20m_of_watercourse",
-          "within_3km_of_aerodrome",
-          "work_already_started",
-          "work_completed",
-          "work_started"
-        ],
-        "contacts": [
-          "agent",
-          "ceased",
-          "phone_book"
-        ],
-        "application_types": [
-          "assessment_stage_required",
-          "committee_stage_required",
-          "complete_stage_required",
-          "consultation_complete_stage_required",
-          "consultation_stage_required",
-          "decision_issued_stage_required",
-          "determination_referred_stage_required",
-          "enabled",
-          "exclude_from_stat_returns",
-          "incomplete_stage_required",
-          "received_stage_required",
-          "recommendation_stage_required",
-          "show_on_portal",
-          "under_appeal_stage_required"
-        ],
-        "emails": [
-          "ceased",
-          "show_in_message_center"
-        ],
-        "enforcements": [
-          "advertised_in_press",
-          "ceased",
-          "county_matters",
-          "gis_data_present"
-        ],
-        "fees": [
-          "apply_fee_type_1",
-          "apply_fee_type_2",
-          "apply_fee_type_3",
-          "apply_manual_fee",
-          "ceased",
-          "fee_exempt",
-          "half_fee_concession",
-          "multi_part_fee",
-          "overridden",
-          "paid",
-          "refunded"
-        ],
-        "public_comments": [
-          "ceased"
-        ],
-        "communications": [
-          "ceased",
-          "completed",
-          "draft",
-          "emailed",
-          "internal",
-          "printed"
-        ],
-        "fee_payments": [
-          "ceased",
-          "paid",
-          "refund"
-        ],
-        "appeal_decision": [
-          "against_lpa",
-          "ceased",
-          "enabled",
-          "for_lpa"
-        ],
-        "appeal_status": [
-          "ceased",
-          "enabled",
-          "in_progress",
-          "is_default"
-        ],
-        "appeal_types": [
-          "ceased",
-          "enabled"
-        ],
-        "breach_types": [
-          "ceased",
-          "enabled"
-        ],
-        "committees": [
-          "ceased"
-        ],
-        "communication_templates": [
-          "ceased",
-          "enable_track_changes"
-        ],
-        "communication_types": [
-          "ceased",
-          "decision_notice",
-          "enabled",
-          "eot_request",
-          "liability_demand_notice",
-          "neighbour_letter",
-          "report",
-          "validation"
-        ],
-        "contact_types": [
-          "ceased",
-          "enabled",
-          "invoicee",
-          "is_default"
-        ],
-        "decision_levels": [
-          "ceased",
-          "committee",
-          "enabled",
-          "is_default"
-        ],
-        "pre_application_categories": [
-          "enabled",
-          "show_on_portal",
-          "statutory"
-        ],
-        "decision_types": [
-          "approval_decision",
-          "cadw_external_referral",
-          "called_in",
-          "ceased",
-          "enabled",
-          "legal_dept_referral",
-          "pa_not_required",
-          "refusal_decision",
-          "show_on_portal",
-          "transfer",
-          "turned_away",
-          "withdrawal"
-        ],
-        "document_types": [
-          "assessment_report",
-          "ceased",
-          "consultation_document",
-          "enabled",
-          "exclude_from_public_portal",
-          "is_default",
-          "press_notice",
-          "public_consultation",
-          "publicity_document",
-          "remove_from_portal_when_determined",
-          "show_consultation_stance",
-          "site_notice",
-          "spatial_analysis_results"
-        ],
-        "fee_types": [
-          "appeal",
-          "application",
-          "ceased",
-          "enabled",
-          "enforcement",
-          "flat_fee",
-          "pre_application"
-        ],
-        "ps_development_codes": [
-          "ceased",
-          "certificates_of_appropriate_alternative_development",
-          "certificates_of_lawful_development",
-          "certificates_of_lawfulness_proposed_works",
-          "enabled",
-          "exclude_from_stat_returns",
-          "exclude_from_stat_return_totals",
-          "major",
-          "minor",
-          "nma",
-          "notification",
-          "other",
-          "pa_for_pd",
-          "pa_for_pd_other"
-        ],
-        "users": [
-          "ceased",
-          "enabled",
-          "manager",
-          "officer"
-        ],
-        "public_consultations": [
-          "bypass_redaction",
-          "ceased",
-          "display_comments",
-          "display_contact",
-          "display_file",
-          "is_public"
-        ],
-        "appeals": [
-          "ceased"
-        ],
-        "dtf_locations": [
-          "ceased"
-        ],
-        "documents": [
-          "ceased",
-          "sent"
-        ]
-      },
-      "float": {
-        "applications": [
-          "acrylonitrile_tonnes_",
-          "ammonia_tonnes_",
-          "amount_of_open_space_gained",
-          "amount_of_open_space_lost",
-          "anaerobic_digestion",
-          "approximate_total_volume_m3",
-          "a_rear_projection_m",
-          "biofuels",
-          "biomass",
-          "b_ridge_height_m",
-          "bromine_tonnes_",
-          "brownfield_greenfield_greenfield_land",
-          "brownfield_greenfield_previously_developed_land",
-          "c1_flood_plain_risks_non_residential_units",
-          "c1_flood_plain_risks_residential_units",
-          "c2_flood_plain_risks_non_residential_units",
-          "c2_flood_plain_risks_residential_units",
-          "c_eaves_height_m",
-          "chlorine_tonnes_",
-          "combined_heat_and_power",
-          "commercial_and_industrial_throughput",
-          "construction_demolition_and_excavation_throughput",
-          "cumulative_cou_floorspace_m2",
-          "depth_height_of_excavation_landfilling_landraising",
-          "district_heating",
-          "ethylene_oxide_tonnes_",
-          "excavation_proposed_area_of_work",
-          "expected_community_infrastructure_levy_sum",
-          "expected_legal_agreement_sum",
-          "flat_roof_projection_m",
-          "floor_area",
-          "floorspace_proposed_for_cou_m2",
-          "floorspace_where_cou_proposed_m2",
-          "flour_tonnes_",
-          "fuel_cells",
-          "geothermal",
-          "gross_floor_space_m2",
-          "gross_floorspace_m2",
-          "gross_floorspace_m2_4acd",
-          "ground_water_air_heat_pumps",
-          "hazardous",
-          "hydrogen_cyanide_tonnes_",
-          "hydropower",
-          "length_of_hedgerow_removal",
-          "liquid_oxygen_tonnes_",
-          "liquid_petroleum_gas_tonnes_",
-          "market_housing_existing_gross_int_floorspace",
-          "market_housing_gross_int_floorspace_lost",
-          "market_housing_total_gross_floorspace_proposed",
-          "maximum_height_m",
-          "municipal_throughput",
-          "number_of_holding",
-          "other_renewable_low_carbon_energy_capacity",
-          "other_tonnes_",
-          "phosgene_tonnes_",
-          "pitched_roof_projection_m",
-          "previous_excavations_deposits_area",
-          "previous_total_cou_floorspace_m2",
-          "previous_total_cou_floorspace_m2_4acd",
-          "previous_total_cou_floorspace_m2_4sca",
-          "proposed_area_of_unit",
-          "proposed_cou_floorspace_m2",
-          "proposed_road_dimensions_length",
-          "proposed_road_dimensions_width",
-          "proposed_total_cou_floorspace_m2",
-          "proposed_total_cou_floorspace_m2_4sca",
-          "quantity_m3",
-          "refined_white_sugar_tonnes_",
-          "site_area_gis",
-          "site_area_hectares",
-          "site_area_proposed_for_cou_ha",
-          "size_of_holding",
-          "social_housing_existing_gross_int_floorspace",
-          "social_housing_gross_int_floorspace_lost",
-          "social_housing_total_gross_floorspace_proposed",
-          "solar",
-          "sulphur_dioxide_tonnes_",
-          "surface_area_ha",
-          "surface_site_area_ha",
-          "total_cou_floorspace_m2",
-          "total_fee",
-          "total_non_residential_existing_gross_int_floorspace",
-          "total_non_residential_gross_int_floorspace_lost",
-          "total_non_residential_total_gross_floorspace_proposed",
-          "total_residential_existing_gross_int_floorspace",
-          "total_residential_gross_int_floorspace_lost",
-          "total_residential_total_gross_floorspace_proposed",
-          "waste_heat_energy",
-          "wind"
-        ],
-        "fees": [
-          "fee",
-          "manual_fee",
-          "proposed_floor_space",
-          "proposed_site_area"
-        ],
-        "fee_payments": [
-          "amount_paid"
-        ],
-        "fee_types": [
-          "fee"
-        ],
-        "users": [
-          "mileage_rate"
-        ],
-        "appeals": [
-          "appeal_costs_awarded"
-        ],
-        "dtf_locations": [
-          "x_coordinate",
-          "y_coordinate"
-        ]
-      },
-      "double": {
-        "applications": [
-          "affordable_housing_balancing_sum",
-          "height_of_proposed_development",
-          "proposed_building_dimensions_breadth",
-          "proposed_building_dimensions_eaves",
-          "proposed_building_dimensions_length",
-          "proposed_building_dimensions_ridge",
-          "proposed_building_distance_from_proposal",
-          "proposed_building_overall_ground_area",
-          "proposed_fish_tank_cage_depth",
-          "proposed_fish_tank_cage_height",
-          "proposed_fish_tank_cage_length",
-          "proposed_fish_tank_cage_width"
-        ]
-      },
-      "long": {
-        "applications": [
-          "site_address_x",
-          "site_address_y",
-          "tree_location_x",
-          "tree_location_y"
-        ],
-        "enforcements": [
-          "complaint_location_x",
-          "complaint_location_y"
-        ],
-        "appeals": [
-          "appeal_location_x",
-          "appeal_location_y"
-        ],
-        "dtf_locations": [
-          "parent_uprn",
-          "uprn",
-          "usrn"
-        ]
-      }
+  {
+    "integer": {
+      "action_types": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "additional_contacts": [
+        "contact_id",
+        "contact_type_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "parent_contact_id"
+      ],
+      "appeal_decision": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "appeal_formats": [
+        "creation_user_id",
+        "days",
+        "id",
+        "last_updated_by"
+      ],
+      "appeal_status": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "appeal_types": [
+        "automated_stage_config_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "appeals": [
+        "admin_officer_id",
+        "agent_id",
+        "allocated_inspector_id",
+        "appeal_decision_id",
+        "appeal_format",
+        "appeal_status_id",
+        "appeal_type_id",
+        "applicant_id",
+        "application_id",
+        "community_id",
+        "creation_user_id",
+        "enforcement_id",
+        "id",
+        "inspectorate_contact_id",
+        "inspectorate_team",
+        "last_updated_by",
+        "offender_id",
+        "officer_id",
+        "user_team_id",
+        "ward_id"
+      ],
+      "application_types": [
+        "assessment_stage_target_days",
+        "committee_stage_target_days",
+        "complete_stage_target_days",
+        "consultation_complete_stage_target_days",
+        "consultation_stage_target_days",
+        "creation_user_id",
+        "decision_issued_stage_target_days",
+        "default_decision_expiry_months",
+        "default_decision_expiry_years",
+        "determination_referred_stage_target_days",
+        "id",
+        "incomplete_stage_target_days",
+        "last_updated_by",
+        "received_stage_target_days",
+        "recommendation_stage_target_days",
+        "target_days",
+        "under_appeal_stage_target_days"
+      ],
+      "applications": [
+        "admin_officer_id",
+        "agent_id",
+        "agricultural_holding_involved_owner_details",
+        "agricultural_land_use_months",
+        "agricultural_land_use_years",
+        "applicant_id",
+        "application_source_id",
+        "application_stage",
+        "application_type_id",
+        "approved_units",
+        "breeam_level_id",
+        "breeam_status_id",
+        "car_difference",
+        "car_total_existing",
+        "car_total_proposed",
+        "certificate_b_owner_details",
+        "certificate_c_owner_details",
+        "certificate_of_compliance_b_owner_details",
+        "certificate_of_compliance_c_owner_details",
+        "community_id",
+        "creation_user_id",
+        "cycle_difference",
+        "cycle_total_existing",
+        "cycle_total_proposed",
+        "decision_expiry_months",
+        "decision_expiry_years",
+        "decision_level_id",
+        "decision_monitoring_standard_phrase_id",
+        "decision_officer_id",
+        "decision_type_id",
+        "decision_user_team_id",
+        "disability_difference",
+        "disability_total_existing",
+        "disability_total_proposed",
+        "dtf_location_id",
+        "eia_id",
+        "existing_employees_full_time",
+        "existing_employees_full_time_equivalent",
+        "existing_employees_part_time",
+        "external_referee",
+        "external_referee_id",
+        "felled_trees",
+        "id",
+        "ii_volume_to_be_demolished",
+        "i_total_building_volume",
+        "last_updated_by",
+        "legal_agreement_obligation_type_id",
+        "lgv_difference",
+        "lgv_total_existing",
+        "lgv_total_proposed",
+        "motorcycles_difference",
+        "motorcycles_total_existing",
+        "motorcycles_total_proposed",
+        "net_increase_in_dwellings",
+        "net_increase_in_dwellings_4bcd",
+        "net_increase_in_dwellings_4scd",
+        "officer_id",
+        "original_application_reference",
+        "original_application_type",
+        "other_difference",
+        "other_owner_details",
+        "other_total_existing",
+        "other_total_proposed",
+        "overturn_reason_id",
+        "parish_id",
+        "proposed_employees_full_time",
+        "proposed_employees_full_time_equivalent",
+        "proposed_employees_part_time",
+        "pruned_trees",
+        "ps_development_code_id",
+        "referral_reason_id",
+        "requested_committee_meeting_id",
+        "residential_development_type_id",
+        "service_centre_id",
+        "settlement_group_id",
+        "site_visit_other_contact",
+        "surface_site_owner",
+        "temporary_consent_months",
+        "temporary_consent_years",
+        "tree_location",
+        "user_team_id",
+        "validation_officer_id",
+        "ward_id"
+      ],
+      "assessments": [
+        "appeal_id",
+        "application_id",
+        "asset_constraint_id",
+        "creation_user_id",
+        "enforcement_id",
+        "id",
+        "last_updated_by",
+        "legal_agreement_id",
+        "preapplication_id",
+        "recommendation_type_id"
+      ],
+      "asset_constraint_types": [
+        "automated_stage_config_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "asset_constraints": [
+        "admin_officer_id",
+        "asset_constraint_justification_id",
+        "asset_constraint_status_id",
+        "asset_constraint_type_id",
+        "community_id",
+        "confirmation_decision_type_id",
+        "contact_id",
+        "creation_user_id",
+        "current_listing_grade_id",
+        "dtf_location_id",
+        "id",
+        "last_updated_by",
+        "officer_id",
+        "ward_id"
+      ],
+      "breach_types": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "breeam_levels": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "case_journal_entry_types": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "case_journal_related_standard_phrases": [
+        "application_decision_standard_phrase_id",
+        "assessment_condition_phrase_id",
+        "assessment_policy_standard_phrase_id",
+        "case_journal_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "standard_phrase_id"
+      ],
+      "case_journals": [
+        "action_officer_id",
+        "appeal_id",
+        "application_id",
+        "asset_constraint_id",
+        "contact_id",
+        "creation_user_id",
+        "enforcement_id",
+        "entry_type_id",
+        "id",
+        "last_updated_by",
+        "legal_agreement_id",
+        "legal_agreement_schedule_expenditure_id",
+        "officer_id",
+        "preapplication_id"
+      ],
+      "committee_application_map": [
+        "application_id",
+        "committee_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "load_order"
+      ],
+      "committees": [
+        "committee_agenda_layout_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "officer_id"
+      ],
+      "communication_templates": [
+        "communication_type_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "communication_types": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "communications": [
+        "appeal_id",
+        "application_id",
+        "asset_constraint_id",
+        "communication_type_id",
+        "creation_user_id",
+        "enforcement_id",
+        "id",
+        "last_updated_by",
+        "legal_agreement_id",
+        "legal_agreement_schedule_financial_id",
+        "officer_id",
+        "preapplication_id"
+      ],
+      "communities": [
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "zone_id"
+      ],
+      "company_types": [
+        "creation_user_id",
+        "id"
+      ],
+      "complaint_sources": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "contact_types": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "contacts": [
+        "company_type_id",
+        "contact_type_id",
+        "creation_user_id",
+        "dtf_location_id",
+        "id",
+        "last_updated_by",
+        "title_id"
+      ],
+      "custodian_codes": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "decision_levels": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "decision_safeguards": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "decision_types": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "document_types": [
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "validation_trigger_id"
+      ],
+      "documents": [
+        "appeal_id",
+        "application_id",
+        "asset_constraint_id",
+        "communication_id",
+        "consultation_duration",
+        "creation_user_id",
+        "document_type_id",
+        "email_id",
+        "enforcement_id",
+        "id",
+        "last_updated_by",
+        "legal_agreement_id",
+        "officer_id",
+        "parent_document_id",
+        "preapplication_id",
+        "publication_id",
+        "public_comment_id",
+        "publicity_duration",
+        "publicity_justification_id",
+        "public_record_id",
+        "uploaded_file_id"
+      ],
+      "dtf_locations": [
+        "creation_user_id",
+        "custodian_code_id",
+        "id",
+        "last_updated_by",
+        "merge_source_id",
+        "street_id"
+      ],
+      "eias": [
+        "creation_user_id",
+        "expiry_days",
+        "id",
+        "last_updated_by"
+      ],
+      "emails": [
+        "appeal_id",
+        "application_id",
+        "asset_constraint_id",
+        "communication_file_id",
+        "creation_user_id",
+        "enforcement_id",
+        "id",
+        "last_updated_by",
+        "legal_agreement_id",
+        "mandrill_status_check_count",
+        "preapplication_id"
+      ],
+      "enforcement_actions_taken": [
+        "action_type_id",
+        "appeal_decision_id",
+        "appeal_id",
+        "court_decision_id",
+        "creation_user_id",
+        "enforcement_id",
+        "id",
+        "injunction_decision_id",
+        "last_updated_by",
+        "user_id"
+      ],
+      "enforcement_breach_details": [
+        "breach_type_id",
+        "creation_user_id",
+        "enforcement_breach_id",
+        "id",
+        "last_updated_by",
+        "targets_for_resolution_weeks"
+      ],
+      "enforcement_breaches": [
+        "creation_user_id",
+        "enforcement_id",
+        "id",
+        "last_updated_by"
+      ],
+      "enforcement_case_statuses": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "enforcement_outcome_types": [
+        "id",
+        "last_updated_by",
+        "creation_user_id"
+      ],
+      "enforcement_outcomes": [
+        "creation_user_id",
+        "enforcement_id",
+        "enforcement_outcome_type_id",
+        "id",
+        "last_updated_by"
+      ],
+      "enforcement_protocols": [
+        "automated_stage_config_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "enforcements": [
+        "admin_officer_id",
+        "case_officer_id",
+        "community_id",
+        "complainant_details",
+        "complainant_id",
+        "complaint_location",
+        "complaint_location_id",
+        "complaint_source",
+        "complaint_source_id",
+        "creation_user_id",
+        "enforcement_case_status_id",
+        "enforcement_outcome_type_id",
+        "enforcement_protocol_id",
+        "id",
+        "last_updated_by",
+        "offender_details",
+        "offender_id",
+        "offender_interest_id",
+        "priority_status_id",
+        "reason_for_file_closure_id",
+        "target_for_closure_weeks",
+        "user_team_id",
+        "ward_id"
+      ],
+      "enquiry_outcome": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "enquiry_stage": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "fee_payments": [
+        "contact_id",
+        "creation_user_id",
+        "fee_id",
+        "id",
+        "last_updated_by",
+        "payment_method_id",
+        "receipting_officer_id"
+      ],
+      "fee_types": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "fees": [
+        "appeal_id",
+        "application_id",
+        "applied_fee_reason_id",
+        "creation_user_id",
+        "enforcement_id",
+        "exemption_reason_id",
+        "fee_type_2_id",
+        "fee_type_3_id",
+        "fee_type_id",
+        "id",
+        "last_updated_by",
+        "payment_method_id",
+        "preapplication_id",
+        "proposed_no_of_dwellings"
+      ],
+      "file_closure_reasons": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "fund_codes": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "gis_constraints": [
+        "asset_constraint_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "legal_agreement_id"
+      ],
+      "gis_layers": [
+        "creation_user_id",
+        "gis_layer_style_id",
+        "id",
+        "last_updated_by",
+        "layer_group_id"
+      ],
+      "nature_of_enquiries": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "notes": [
+        "contact_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "pre_application_categories": [
+        "automated_stage_config_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "target_days"
+      ],
+      "pre_applications": [
+        "admin_officer_id",
+        "agent_id",
+        "applicant_id",
+        "community_id",
+        "creation_user_id",
+        "dtf_location_id",
+        "dwellings_changes",
+        "enquiry_outcome_id",
+        "enquiry_stage_id",
+        "id",
+        "last_updated_by",
+        "nature_of_enquiry_id",
+        "officer_id",
+        "pre_application_category_id",
+        "pre_application_source_id",
+        "user_team_id",
+        "ward_id"
+      ],
+      "priority_statuses": [
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "site_visit_target_days"
+      ],
+      "ps_development_codes": [
+        "creation_user_id",
+        "expiry_days",
+        "id",
+        "last_updated_by"
+      ],
+      "public_comments": [
+        "application_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "public_record_user_id"
+      ],
+      "public_consultations": [
+        "creation_user_id",
+        "document_id",
+        "id",
+        "last_updated_by",
+        "public_record_id"
+      ],
+      "public_documents": [
+        "creation_user_id",
+        "document_id",
+        "id",
+        "last_updated_by",
+        "public_record_id"
+      ],
+      "related_records": [
+        "appeal_id",
+        "application_id",
+        "asset_constraint_id",
+        "creation_user_id",
+        "enforcement_id",
+        "id",
+        "last_updated_by",
+        "legal_agreement_id",
+        "preapplication_id",
+        "related_appeal_id",
+        "related_application_id",
+        "related_asset_constraint_conservation_area_id",
+        "related_asset_constraint_id",
+        "related_asset_constraint_listed_building_id",
+        "related_asset_constraint_permitted_development_id",
+        "related_asset_constraint_tree_preservation_id",
+        "related_enforcement_id",
+        "related_legal_agreement_id",
+        "related_preapplication_id"
+      ],
+      "site_visit_types": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "site_visits": [
+        "application_id",
+        "assessment_id",
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "officer_id",
+        "site_visit_type_id",
+        "time_taken_hours",
+        "time_taken_mins"
+      ],
+      "standard_phrase_categories": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "standard_phrases": [
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "standard_phrase_sub_category_id"
+      ],
+      "titles": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "uploaded_files": [
+        "appeal_id",
+        "application_id",
+        "asset_constraint_id",
+        "contact_id",
+        "creation_user_id",
+        "enforcement_id",
+        "id",
+        "last_updated_by",
+        "legal_agreement_id",
+        "preapplication_id",
+        "site_visit_id",
+        "uploaded_file_type_id"
+      ],
+      "user_team_map": [
+        "creation_user_id",
+        "id",
+        "last_updated_by",
+        "user_id",
+        "user_team_id"
+      ],
+      "user_teams": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "users": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ],
+      "wards": [
+        "creation_user_id",
+        "id",
+        "last_updated_by"
+      ]
+    },
+    "timestamp": {
+      "action_types": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "additional_contacts": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "appeal_decision": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "appeal_formats": [
+        "last_updated",
+        "submit_date"
+      ],
+      "appeal_status": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "appeal_types": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "appeals": [
+        "appeal_decision_date",
+        "appeal_start_date",
+        "appellant_statement_received_date",
+        "ceased_date",
+        "evidence_submitted_date",
+        "final_comments_due_date",
+        "final_comments_sent_date",
+        "hearing_date",
+        "hearing_notification_due_date",
+        "last_updated",
+        "proof_of_evidence_due_date",
+        "public_inquiry_date",
+        "public_inquiry_notification_due_date",
+        "questionaire_due_date",
+        "questionaire_sent_date",
+        "statement_due_date",
+        "statement_of_common_ground_due_date",
+        "statement_of_common_ground_submitted_date",
+        "statement_sent_date",
+        "submit_date",
+        "target_for_appeal_determination"
+      ],
+      "application_types": [
+        "last_updated",
+        "submit_date"
+      ],
+      "applications": [
+        "advertisement_from",
+        "advertisement_to",
+        "agricultural_holding_involved_owner_notified",
+        "agricultural_holding_involved_signed_on",
+        "application_declaration_signed_on",
+        "beneficial_occupation_date",
+        "brought_into_use_date_20_march_2013_or_later",
+        "ceased_date",
+        "certificate_a_signed_on",
+        "certificate_b_owner_notified",
+        "certificate_b_signed_on",
+        "certificate_c_owner_notified",
+        "certificate_c_publicity_date",
+        "certificate_c_signed_on",
+        "certificate_d_publicity_date",
+        "certificate_d_signed_on",
+        "certificate_of_compliance_a_signed_on",
+        "certificate_of_compliance_b_owner_notified",
+        "certificate_of_compliance_b_signed_on",
+        "certificate_of_compliance_c_owner_notified",
+        "certificate_of_compliance_c_publicity_date",
+        "certificate_of_compliance_c_signed_on",
+        "commencement_date",
+        "committee_actual_date",
+        "committee_date",
+        "committee_proposed_date",
+        "completion_date",
+        "date_decision_taken",
+        "date_of_advice",
+        "date_of_decision_5rm",
+        "date_of_deed_of_variation_if_any",
+        "date_of_s106_agreement",
+        "decision_expiry_date",
+        "decision_issued_date",
+        "development_already_completed_date",
+        "development_already_started_date",
+        "documents_to_legal_date",
+        "end_of_previous_use",
+        "expiry_date",
+        "expiry_of_temporary_consent_use_operations",
+        "extension_of_time_due_date",
+        "ian_deadline_date",
+        "iii_date_proposed_demolition_area_built",
+        "implementation_date",
+        "intial_vetting_date",
+        "last_in_use_date",
+        "last_in_use_date_if_not_20_march_2013",
+        "last_updated",
+        "last_use_as_arcade_casino",
+        "legal_agreement_date",
+        "legal_draft_received_date",
+        "legal_services_instructed_date",
+        "non_agricultural_holding_signed_on",
+        "original_decision_date",
+        "planned_commencement",
+        "planned_completion",
+        "planning_portal_submit_date",
+        "planning_reference_date",
+        "ppa_decision_due_date",
+        "received_date",
+        "record_allocated_date",
+        "reference_condition_date",
+        "referral_date",
+        "referral_returned_date",
+        "registration_date",
+        "returned_to_admin_date",
+        "s73_reference_if_any_date",
+        "statutory_declaration_received_date",
+        "submit_date",
+        "use_works_activity_date",
+        "valid_date",
+        "work_completed_date",
+        "work_started_date"
+      ],
+      "assessments": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "asset_constraint_types": [
+        "last_updated",
+        "submit_date"
+      ],
+      "asset_constraints": [
+        "confirmation_decision_date",
+        "delisting_date",
+        "last_updated",
+        "listed_status_from_date",
+        "owner_notification_date",
+        "proposal_consideration_started_date",
+        "restriction_in_effect_from_date",
+        "revocation_date",
+        "submit_date",
+        "submitted_date",
+        "tpo_in_effect_from_date"
+      ],
+      "breach_types": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "breeam_levels": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "case_journal_entry_types": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "case_journal_related_standard_phrases": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "case_journals": [
+        "action_by_date",
+        "actioned_on_date",
+        "ceased_date",
+        "last_updated",
+        "record_date",
+        "submit_date"
+      ],
+      "committee_application_map": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "committees": [
+        "actual_date",
+        "appeal_decision_from_date",
+        "appeal_decision_to_date",
+        "appeal_received_from_date",
+        "appeal_received_to_date",
+        "ceased_date",
+        "delegated_decision_from_date",
+        "delegated_decision_to_date",
+        "last_updated",
+        "proposed_date",
+        "submit_date"
+      ],
+      "communication_templates": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "communication_types": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "communications": [
+        "ceased_date",
+        "completed_date",
+        "emailed_date",
+        "last_updated",
+        "printed_date",
+        "submit_date"
+      ],
+      "communities": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "company_types": [
+        "ceased_date",
+        "submit_date"
+      ],
+      "complaint_sources": [
+        "last_updated",
+        "submit_date"
+      ],
+      "contact_types": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "contacts": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "custodian_codes": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "decision_levels": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "decision_safeguards": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "decision_types": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "document_types": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "documents": [
+        "ceased_date",
+        "document_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "dtf_locations": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "eias": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "emails": [
+        "ceased_date",
+        "email_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "enforcement_actions_taken": [
+        "authorisation_date",
+        "compliance_due_date",
+        "court_decision_date",
+        "date_complied_with",
+        "date_effective",
+        "date_of_appeal_decision",
+        "date_served",
+        "injunction_date",
+        "issue_date",
+        "last_updated",
+        "planned_date",
+        "reminder_date",
+        "submit_date"
+      ],
+      "enforcement_breach_details": [
+        "breach_offence_date",
+        "date_of_immunity",
+        "last_updated",
+        "submit_date",
+        "target_date_for_resolution"
+      ],
+      "enforcement_breaches": [
+        "last_updated",
+        "submit_date"
+      ],
+      "enforcement_case_statuses": [
+        "last_updated",
+        "submit_date"
+      ],
+      "enforcement_outcome_types": [
+        "last_updated",
+        "submit_date"
+      ],
+      "enforcement_outcomes": [
+        "last_updated",
+        "submit_date"
+      ],
+      "enforcement_protocols": [
+        "last_updated",
+        "submit_date"
+      ],
+      "enforcements": [
+        "ceased_date",
+        "complainant_acknowledged_date",
+        "complainant_correspondence_date",
+        "complaint_received",
+        "complaint_received_date",
+        "complaint_registered",
+        "date_file_closed",
+        "investigation_date",
+        "last_updated",
+        "resolution_date",
+        "site_visit_target_date",
+        "submit_date",
+        "target_for_closure"
+      ],
+      "enquiry_outcome": [
+        "last_updated",
+        "submit_date"
+      ],
+      "enquiry_stage": [
+        "last_updated",
+        "submit_date"
+      ],
+      "fee_payments": [
+        "ceased_date",
+        "last_updated",
+        "payment_date",
+        "submit_date"
+      ],
+      "fee_types": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "fees": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "file_closure_reasons": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "fund_codes": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "gis_constraints": [
+        "ceased_date",
+        "constraint_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "gis_layers": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "nature_of_enquiries": [
+        "last_updated",
+        "submit_date"
+      ],
+      "notes": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "pre_application_categories": [
+        "last_updated",
+        "submit_date"
+      ],
+      "pre_applications": [
+        "application_declaration_signed_on",
+        "ceased_date",
+        "enquiry_date",
+        "extension_of_time_due_date",
+        "initial_enquiry_date",
+        "last_updated",
+        "ppa_decision_due_date",
+        "response_date",
+        "submit_date",
+        "target_response_date"
+      ],
+      "priority_statuses": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "ps_development_codes": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "public_comments": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "public_consultations": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "public_documents": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "related_records": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "site_visit_types": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "site_visits": [
+        "ceased_date",
+        "last_updated",
+        "planned_date",
+        "submit_date",
+        "visit_date"
+      ],
+      "standard_phrase_categories": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "standard_phrases": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "titles": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "uploaded_files": [
+        "ceased_date",
+        "last_updated",
+        "submit_date"
+      ],
+      "user_team_map": [
+        "last_updated",
+        "submit_date"
+      ],
+      "user_teams": [
+        "last_updated",
+        "submit_date"
+      ],
+      "users": [
+        "ceased_date",
+        "last_login",
+        "last_password_change",
+        "last_updated",
+        "submit_date"
+      ],
+      "wards": [
+        "last_updated",
+        "submit_date"
+      ]
+    },
+    "boolean": {
+      "action_types": [
+        "breach_of_condition_notice",
+        "ceased",
+        "enabled",
+        "injunction",
+        "is_notice",
+        "planning_contravention_notice",
+        "planning_enforcement_order",
+        "stop_notice",
+        "temporary_stop_notice"
+      ],
+      "additional_contacts": [
+        "ceased"
+      ],
+      "appeal_decision": [
+        "against_lpa",
+        "ceased",
+        "enabled",
+        "for_lpa"
+      ],
+      "appeal_formats": [
+        "enabled",
+        "hearing",
+        "public_inquiry",
+        "written_representation"
+      ],
+      "appeal_status": [
+        "ceased",
+        "enabled",
+        "in_progress",
+        "is_default"
+      ],
+      "appeal_types": [
+        "ceased",
+        "enabled"
+      ],
+      "appeals": [
+        "ceased"
+      ],
+      "application_types": [
+        "assessment_stage_required",
+        "committee_stage_required",
+        "complete_stage_required",
+        "consultation_complete_stage_required",
+        "consultation_stage_required",
+        "decision_issued_stage_required",
+        "determination_referred_stage_required",
+        "enabled",
+        "exclude_from_stat_returns",
+        "incomplete_stage_required",
+        "received_stage_required",
+        "recommendation_stage_required",
+        "show_on_portal",
+        "under_appeal_stage_required"
+      ],
+      "applications": [
+        "a_charitable_use",
+        "advert_already_in_place",
+        "advertised_in_press",
+        "advert_projects_over_highway_public_highway",
+        "affordable_housing_component",
+        "agricultural_necessity",
+        "agricultural_tenancy_terminated",
+        "a_interior_works",
+        "alleged_subsidence_damage",
+        "alteration_of_existing_road_proposed",
+        "alteration_proposal",
+        "alterations_or_enlargement_to_roof",
+        "amended_application",
+        "a_new_build_floorspace_100m2",
+        "a_new_building_or_operations_proposed",
+        "a_new_build_permitted_floorspace_100m2",
+        "a_new_residential_floorspace",
+        "appeal_against_non_determination",
+        "applicant_has_permission_of_landowner_for_adverts",
+        "applicant_is_owner",
+        "applicant_owns_land_buildings",
+        "archeology_biodiversity_affected",
+        "a_total_demolition",
+        "at_risk_of_flooding",
+        "b_change_of_use_land_buildings_proposed",
+        "b_demolition_within_curtilage",
+        "b_exterior_works",
+        "b_floorspace_change_one_or_more_new_dwellings",
+        "b_new_non_residential_floorspace",
+        "b_one_or_more_new_dwellings",
+        "b_social_housing_relief",
+        "building_work",
+        "building_work_4sca",
+        "ceased",
+        "cess_pit_disposal",
+        "change_of_use",
+        "cil_ah_related",
+        "c_none_of_the_above",
+        "committee_overturn",
+        "consented_change_of_use",
+        "consultation_not_applicable",
+        "contamination_known",
+        "contamination_suspected",
+        "county_matters",
+        "c_partial_demolition",
+        "c_self_build_exemption_new_home",
+        "c_structure_object_within_curtilage",
+        "current_agricultural_tenancy",
+        "currently_vacant",
+        "date_planted_evidenced",
+        "demolition_of_building",
+        "demolition_proposal",
+        "designated_areas_aonb",
+        "designated_areas_conservation_area",
+        "designated_areas_green_belt",
+        "designated_areas_national_park",
+        "designated_areas_nnr",
+        "designated_areas_none_of_the_above",
+        "designated_areas_sac",
+        "designated_areas_spa_ramsar",
+        "designated_areas_sssi",
+        "designated_areas_world_heritage_site",
+        "designed_for_agriculture",
+        "details_on_plans",
+        "development_already_completed",
+        "development_already_started",
+        "development_plan_departure",
+        "dont_know",
+        "dont_know_5lbl",
+        "d_self_build_exemption_residential_annex_extension",
+        "d_stripping_of_walls_ceilings_finishes",
+        "dwelling_alteration_involved",
+        "ecclesiastical_grade_i",
+        "ecclesiastical_grade_ii",
+        "ecclesiastical_grade_ii_12lbc",
+        "eligibility",
+        "environmental_statement_es_attached",
+        "existing_building_works",
+        "existing_connection_planned",
+        "existing_council_relationship",
+        "existing_use",
+        "existing_use_works_activity_in_breach_of_a_condition",
+        "existing_watercourse",
+        "extension",
+        "extension_of_time_agreed",
+        "external_referral_required",
+        "flat_roof_installation",
+        "floor_area_465m2",
+        "from_nearest_non_farm_house_400m",
+        "from_roadway_25m",
+        "full_contact_not_known",
+        "gis_data_present",
+        "grade_i",
+        "grade_i_5lbl",
+        "grade_ii",
+        "grade_ii_12lbc",
+        "grade_ii_5lbl",
+        "hazardous_substances_consent_required",
+        "hazardous_substance_storage",
+        "height_of_proposed_development_na",
+        "icnirp_submitted",
+        "impact_on_existing_parking",
+        "insurance_claim",
+        "interceptor_ditch_and_sumps",
+        "interruption_in_breach_use_activity",
+        "in_time",
+        "lbc_details_on_plans",
+        "ldp_site",
+        "less_than_30_years_old",
+        "livestock_slurry_or_sewage_sludge_housing",
+        "local_consultation_carried_out",
+        "loss_of_trees_or_hedges",
+        "mains_disposal",
+        "mains_sewer",
+        "material_change_of_use",
+        "matters_to_be_determined_access",
+        "matters_to_be_determined_appearance",
+        "matters_to_be_determined_landscaping",
+        "matters_to_be_determined_layout",
+        "matters_to_be_determined_scale",
+        "matters_to_be_reserved_access",
+        "matters_to_be_reserved_appearance",
+        "matters_to_be_reserved_landscaping",
+        "matters_to_be_reserved_layout",
+        "matters_to_be_reserved_none",
+        "matters_to_be_reserved_scale",
+        "modification_or_discharge_requested_discharge",
+        "modification_or_discharge_requested_modify",
+        "new_altered_pedestrian_access",
+        "new_altered_vehicle_access",
+        "new_prows",
+        "new_public_roads",
+        "new_road_proposed",
+        "no_longer_required_for_agriculture",
+        "other_developments_90m_last_2_years",
+        "other_disposal",
+        "outline_draft_agreement_included",
+        "overturn_approval_to_refusal",
+        "overturn_refusal_to_approval",
+        "own_council_application",
+        "package_treatment_plant_disposal",
+        "partial_discharge",
+        "pitch_roof_installation",
+        "planning_performance_agreement_signed",
+        "pond_lake",
+        "pre_application_advice",
+        "previous_building",
+        "previous_cou_a1_a2_sg_to_a3",
+        "previous_cou_a1_a2_sg_to_d2",
+        "previous_cou_sg_to_c3",
+        "previous_excavations_deposits",
+        "proposal_requires_tree_hedge_pruning_removal",
+        "proposed_building_alteration",
+        "proposed_building_extension",
+        "proposed_building_new_building",
+        "proposed_new_building",
+        "provision_of_community_infrastructure",
+        "prows",
+        "public_open_space_loss_gain",
+        "recycling_storage_collection_arranged",
+        "redevelopment_rebuilding",
+        "regulation_4_application",
+        "related_to_reserved_matters_application",
+        "replacement_of_existing_apparatus",
+        "replant_required",
+        "residential_development_monitoring",
+        "result_of_enforcement",
+        "result_of_preapp",
+        "retained_excavated_material",
+        "retrospective_application",
+        "return_as_invalid",
+        "romp_application",
+        "row_diversions_extinguishments",
+        "s106_ah_related",
+        "section_73_application",
+        "septic_tank_disposal",
+        "site_publically_visible",
+        "soakaway",
+        "sole_a1_a2_sg_use_on_5_december_2013",
+        "sole_arcade_casino_use_on_19_march_2014",
+        "stand_alone_renewable_low_carbon_development",
+        "statutory_declaration_condition_applies",
+        "substitute_plans",
+        "supplementary_information_template_sit_submitted",
+        "sustainable_drainage",
+        "tan6_rural_enterprise_dwelling",
+        "temporary_consent",
+        "temporary_structures_equipment",
+        "tpo_title_known",
+        "trade_effluent_waste_involved",
+        "tree_health_and_safety",
+        "trees_additional_supporting_information",
+        "trees_hedges_on_relevant_adjacent_land",
+        "trees_hedges_present_on_site",
+        "trees_or_hedges_affected",
+        "trees_with_a_tree_protection_order_tpo",
+        "trees_within_a_conservation_area",
+        "trees_within_falling_distance_of_proposal",
+        "tree_works",
+        "twelve_month_resubmission",
+        "type_of_planning_agreement_s_106a",
+        "type_of_planning_agreement_s_106ba_affordable_housing",
+        "type_of_planning_agreement_s_299a_crown_land",
+        "use_vulnerable_to_contamination",
+        "valid_at_receipt",
+        "waste_management_proposal",
+        "waste_storage_collection_incorporated",
+        "watercourse_surface_water_groundwater_affected",
+        "will_proposal_increase_flood_risk_elsewhere",
+        "within_20m_of_watercourse",
+        "within_3km_of_aerodrome",
+        "work_already_started",
+        "work_completed",
+        "work_started"
+      ],
+      "assessments": [
+        "assessment_complete",
+        "ceased"
+      ],
+      "asset_constraint_types": [
+        "conservation_area",
+        "enabled",
+        "listed_buildings",
+        "permitted_development_rights_removal",
+        "tree_preservation"
+      ],
+      "asset_constraints": [
+        "advertised_in_press"
+      ],
+      "breach_types": [
+        "ceased",
+        "enabled"
+      ],
+      "breeam_levels": [
+        "ceased",
+        "enabled"
+      ],
+      "case_journal_entry_types": [
+        "ceased",
+        "enabled"
+      ],
+      "case_journal_related_standard_phrases": [
+        "ceased"
+      ],
+      "case_journals": [
+        "ceased",
+        "complaint_response"
+      ],
+      "committee_application_map": [
+        "ceased",
+        "determined_at_this_committee"
+      ],
+      "committees": [
+        "ceased"
+      ],
+      "communication_templates": [
+        "ceased",
+        "enable_track_changes"
+      ],
+      "communication_types": [
+        "ceased",
+        "decision_notice",
+        "enabled",
+        "eot_request",
+        "liability_demand_notice",
+        "neighbour_letter",
+        "report",
+        "validation"
+      ],
+      "communications": [
+        "ceased",
+        "completed",
+        "draft",
+        "emailed",
+        "internal",
+        "printed"
+      ],
+      "communities": [
+        "ceased"
+      ],
+      "company_types": [
+        "ceased",
+        "enabled",
+        "is_default"
+      ],
+      "complaint_sources": [
+        "enabled"
+      ],
+      "contact_types": [
+        "ceased",
+        "enabled",
+        "invoicee",
+        "is_default"
+      ],
+      "contacts": [
+        "agent",
+        "ceased",
+        "phone_book"
+      ],
+      "custodian_codes": [
+        "ceased",
+        "enabled",
+        "restricted_data"
+      ],
+      "decision_levels": [
+        "ceased",
+        "committee",
+        "enabled",
+        "is_default"
+      ],
+      "decision_safeguards": [
+        "ceased",
+        "enabled",
+        "lock_application_fields",
+        "lock_assessment",
+        "lock_case_journals",
+        "lock_decision_notice",
+        "lock_documents",
+        "lock_fees",
+        "lock_related_records",
+        "lock_validation_requirements",
+        "trigger_only"
+      ],
+      "decision_types": [
+        "approval_decision",
+        "cadw_external_referral",
+        "called_in",
+        "ceased",
+        "enabled",
+        "legal_dept_referral",
+        "pa_not_required",
+        "refusal_decision",
+        "show_on_portal",
+        "transfer",
+        "turned_away",
+        "withdrawal"
+      ],
+      "document_types": [
+        "assessment_report",
+        "ceased",
+        "consultation_document",
+        "enabled",
+        "exclude_from_public_portal",
+        "is_default",
+        "press_notice",
+        "public_consultation",
+        "publicity_document",
+        "remove_from_portal_when_determined",
+        "show_consultation_stance",
+        "site_notice",
+        "spatial_analysis_results"
+      ],
+      "documents": [
+        "ceased",
+        "sent"
+      ],
+      "dtf_locations": [
+        "ceased"
+      ],
+      "eias": [
+        "ceased",
+        "eia_application",
+        "enabled",
+        "is_default"
+      ],
+      "emails": [
+        "ceased",
+        "show_in_message_center"
+      ],
+      "enforcement_actions_taken": [
+        "appeal_received",
+        "compliance",
+        "postponed"
+      ],
+      "enforcement_case_statuses": [
+        "closed_status",
+        "enabled",
+        "is_default"
+      ],
+      "enforcement_outcome_types": [
+        "enabled",
+        "no_breach",
+        "positive_action"
+      ],
+      "enforcement_protocols": [
+        "enabled"
+      ],
+      "enforcements": [
+        "advertised_in_press",
+        "ceased",
+        "county_matters",
+        "gis_data_present"
+      ],
+      "enquiry_outcome": [
+        "application_to_be_submitted",
+        "enabled"
+      ],
+      "enquiry_stage": [
+        "assessing_stage",
+        "awaiting_more_details",
+        "closed_status",
+        "enabled",
+        "is_default"
+      ],
+      "fee_payments": [
+        "ceased",
+        "paid",
+        "refund"
+      ],
+      "fee_types": [
+        "appeal",
+        "application",
+        "ceased",
+        "enabled",
+        "enforcement",
+        "flat_fee",
+        "pre_application"
+      ],
+      "fees": [
+        "apply_fee_type_1",
+        "apply_fee_type_2",
+        "apply_fee_type_3",
+        "apply_manual_fee",
+        "ceased",
+        "fee_exempt",
+        "half_fee_concession",
+        "multi_part_fee",
+        "overridden",
+        "paid",
+        "refunded"
+      ],
+      "file_closure_reasons": [
+        "ceased",
+        "enabled",
+        "no_breach",
+        "positive_action",
+        "show_resolution_fields"
+      ],
+      "fund_codes": [
+        "ceased",
+        "enabled"
+      ],
+      "gis_constraints": [
+        "ceased"
+      ],
+      "gis_layers": [
+        "ceased",
+        "enabled",
+        "source_tiled",
+        "stagger",
+        "visible"
+      ],
+      "nature_of_enquiries": [
+        "enabled"
+      ],
+      "notes": [
+        "ceased"
+      ],
+      "pre_application_categories": [
+        "enabled",
+        "show_on_portal",
+        "statutory"
+      ],
+      "pre_applications": [
+        "buildings_structures_with_5m_of_proposal",
+        "ceased",
+        "confidential_commerically_sensitive",
+        "details_on_plans",
+        "extension_of_time_agreed",
+        "gis_data_present",
+        "in_time",
+        "ppa_signed",
+        "previous_extensions_alterations"
+      ],
+      "priority_statuses": [
+        "ceased",
+        "enabled"
+      ],
+      "ps_development_codes": [
+        "ceased",
+        "certificates_of_appropriate_alternative_development",
+        "certificates_of_lawful_development",
+        "certificates_of_lawfulness_proposed_works",
+        "enabled",
+        "exclude_from_stat_returns",
+        "exclude_from_stat_return_totals",
+        "major",
+        "minor",
+        "nma",
+        "notification",
+        "other",
+        "pa_for_pd",
+        "pa_for_pd_other"
+      ],
+      "public_comments": [
+        "ceased"
+      ],
+      "public_consultations": [
+        "bypass_redaction",
+        "ceased",
+        "display_comments",
+        "display_contact",
+        "display_file",
+        "is_public"
+      ],
+      "public_documents": [
+        "bypass_redaction",
+        "ceased",
+        "is_public"
+      ],
+      "related_records": [
+        "ceased"
+      ],
+      "site_visit_types": [
+        "ceased",
+        "enabled"
+      ],
+      "site_visits": [
+        "ceased"
+      ],
+      "standard_phrase_categories": [
+        "ceased",
+        "condition",
+        "decision",
+        "enabled",
+        "policy",
+        "show_condition_reason_text",
+        "term",
+        "validation"
+      ],
+      "standard_phrases": [
+        "ceased",
+        "enabled"
+      ],
+      "titles": [
+        "ceased",
+        "enabled",
+        "is_default"
+      ],
+      "uploaded_files": [
+        "ceased"
+      ],
+      "user_teams": [
+        "enabled"
+      ],
+      "users": [
+        "ceased",
+        "enabled",
+        "manager",
+        "officer"
+      ],
+      "wards": [
+        "enabled"
+      ]
+    },
+    "float": {
+      "appeals": [
+        "appeal_costs_awarded"
+      ],
+      "applications": [
+        "acrylonitrile_tonnes_",
+        "ammonia_tonnes_",
+        "amount_of_open_space_gained",
+        "amount_of_open_space_lost",
+        "anaerobic_digestion",
+        "approximate_total_volume_m3",
+        "a_rear_projection_m",
+        "biofuels",
+        "biomass",
+        "b_ridge_height_m",
+        "bromine_tonnes_",
+        "brownfield_greenfield_greenfield_land",
+        "brownfield_greenfield_previously_developed_land",
+        "c1_flood_plain_risks_non_residential_units",
+        "c1_flood_plain_risks_residential_units",
+        "c2_flood_plain_risks_non_residential_units",
+        "c2_flood_plain_risks_residential_units",
+        "c_eaves_height_m",
+        "chlorine_tonnes_",
+        "combined_heat_and_power",
+        "commercial_and_industrial_throughput",
+        "construction_demolition_and_excavation_throughput",
+        "cumulative_cou_floorspace_m2",
+        "depth_height_of_excavation_landfilling_landraising",
+        "district_heating",
+        "ethylene_oxide_tonnes_",
+        "excavation_proposed_area_of_work",
+        "expected_community_infrastructure_levy_sum",
+        "expected_legal_agreement_sum",
+        "flat_roof_projection_m",
+        "floor_area",
+        "floorspace_proposed_for_cou_m2",
+        "floorspace_where_cou_proposed_m2",
+        "flour_tonnes_",
+        "fuel_cells",
+        "geothermal",
+        "gross_floor_space_m2",
+        "gross_floorspace_m2",
+        "gross_floorspace_m2_4acd",
+        "ground_water_air_heat_pumps",
+        "hazardous",
+        "hydrogen_cyanide_tonnes_",
+        "hydropower",
+        "length_of_hedgerow_removal",
+        "liquid_oxygen_tonnes_",
+        "liquid_petroleum_gas_tonnes_",
+        "market_housing_existing_gross_int_floorspace",
+        "market_housing_gross_int_floorspace_lost",
+        "market_housing_total_gross_floorspace_proposed",
+        "maximum_height_m",
+        "municipal_throughput",
+        "number_of_holding",
+        "other_renewable_low_carbon_energy_capacity",
+        "other_tonnes_",
+        "phosgene_tonnes_",
+        "pitched_roof_projection_m",
+        "previous_excavations_deposits_area",
+        "previous_total_cou_floorspace_m2",
+        "previous_total_cou_floorspace_m2_4acd",
+        "previous_total_cou_floorspace_m2_4sca",
+        "proposed_area_of_unit",
+        "proposed_cou_floorspace_m2",
+        "proposed_road_dimensions_length",
+        "proposed_road_dimensions_width",
+        "proposed_total_cou_floorspace_m2",
+        "proposed_total_cou_floorspace_m2_4sca",
+        "quantity_m3",
+        "refined_white_sugar_tonnes_",
+        "site_area_gis",
+        "site_area_hectares",
+        "site_area_proposed_for_cou_ha",
+        "size_of_holding",
+        "social_housing_existing_gross_int_floorspace",
+        "social_housing_gross_int_floorspace_lost",
+        "social_housing_total_gross_floorspace_proposed",
+        "solar",
+        "sulphur_dioxide_tonnes_",
+        "surface_area_ha",
+        "surface_site_area_ha",
+        "total_cou_floorspace_m2",
+        "total_fee",
+        "total_non_residential_existing_gross_int_floorspace",
+        "total_non_residential_gross_int_floorspace_lost",
+        "total_non_residential_total_gross_floorspace_proposed",
+        "total_residential_existing_gross_int_floorspace",
+        "total_residential_gross_int_floorspace_lost",
+        "total_residential_total_gross_floorspace_proposed",
+        "waste_heat_energy",
+        "wind"
+      ],
+      "dtf_locations": [
+        "x_coordinate",
+        "y_coordinate"
+      ],
+      "fee_payments": [
+        "amount_paid"
+      ],
+      "fee_types": [
+        "fee"
+      ],
+      "fees": [
+        "fee",
+        "manual_fee",
+        "proposed_floor_space",
+        "proposed_site_area"
+      ],
+      "pre_applications": [
+        "area_of_site",
+        "floorspace_change",
+        "height_to_eaves",
+        "height_to_ridge_top_of_roof",
+        "overall_height",
+        "overall_length",
+        "overall_width",
+        "site_area_changes",
+        "volume_of_site"
+      ],
+      "site_visits": [
+        "mileage",
+        "mileage_cost",
+        "time_taken_cost"
+      ],
+      "users": [
+        "mileage_rate"
+      ]
+    },
+    "double": {
+      "applications": [
+        "affordable_housing_balancing_sum",
+        "height_of_proposed_development",
+        "proposed_building_dimensions_breadth",
+        "proposed_building_dimensions_eaves",
+        "proposed_building_dimensions_length",
+        "proposed_building_dimensions_ridge",
+        "proposed_building_distance_from_proposal",
+        "proposed_building_overall_ground_area",
+        "proposed_fish_tank_cage_depth",
+        "proposed_fish_tank_cage_height",
+        "proposed_fish_tank_cage_length",
+        "proposed_fish_tank_cage_width"
+      ],
+      "gis_layers": [
+        "max_resolution"
+      ]
+    },
+    "long": {
+      "appeals": [
+        "appeal_location_x",
+        "appeal_location_y"
+      ],
+      "applications": [
+        "site_address_x",
+        "site_address_y",
+        "tree_location_x",
+        "tree_location_y"
+      ],
+      "dtf_locations": [
+        "parent_uprn",
+        "uprn",
+        "usrn"
+      ],
+      "enforcements": [
+        "complaint_location_x",
+        "complaint_location_y"
+      ],
+      "pre_applications": [
+        "site_description_x",
+        "site_description_y"
+      ]
     }
+  }
 ]
