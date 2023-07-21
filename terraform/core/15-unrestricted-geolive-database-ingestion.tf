@@ -22,6 +22,7 @@ module "boundaries_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries schema ingestion"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   helper_module_key          = aws_s3_object.helpers.key
@@ -43,10 +44,10 @@ module "boundaries_geolive_ingestion_job" {
         TableLevelConfiguration = 5
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
 }
-    
+
 module "recycling_geolive_database_ingestion" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
@@ -71,6 +72,7 @@ module "recycling_boundaries_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries in recycling schema ingestion"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   helper_module_key          = aws_s3_object.helpers.key
@@ -92,10 +94,10 @@ module "recycling_boundaries_geolive_ingestion_job" {
         TableLevelConfiguration = 5
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
-}  
-  
+}
+
 module "health_geolive_database_ingestion" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
@@ -111,7 +113,7 @@ module "health_geolive_database_ingestion" {
   schema_name                 = "health"
   job_schedule                = "cron(20 2 ? * MON *)"
 }
-  
+
 module "health_boundaries_geolive_ingestion_job" {
   count                     = local.is_production_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
@@ -120,6 +122,7 @@ module "health_boundaries_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries in health schema ingestion"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   helper_module_key          = aws_s3_object.helpers.key
@@ -141,9 +144,9 @@ module "health_boundaries_geolive_ingestion_job" {
         TableLevelConfiguration = 5
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
-}  
+}
 
 module "education_geolive_database_ingestion" {
   count = local.is_live_environment ? 1 : 0
@@ -169,6 +172,7 @@ module "education_boundaries_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries in education schema ingestion"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   helper_module_key          = aws_s3_object.helpers.key
@@ -190,9 +194,9 @@ module "education_boundaries_geolive_ingestion_job" {
         TableLevelConfiguration = 5
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
-}  
+}
 
 module "housing_geolive_database_ingestion" {
   count = local.is_live_environment ? 1 : 0
@@ -218,6 +222,7 @@ module "housing_boundaries_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive boundaries in housing schema ingestion"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   helper_module_key          = aws_s3_object.helpers.key
@@ -239,6 +244,6 @@ module "housing_boundaries_geolive_ingestion_job" {
         TableLevelConfiguration = 5
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
-}  
+}

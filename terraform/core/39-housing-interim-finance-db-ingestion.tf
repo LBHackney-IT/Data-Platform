@@ -11,7 +11,7 @@ module "housing_interim_finance_database_ingestion" {
   database_secret_name        = "database-credentials/SOW2b-housing-interim-finance"
   identifier_prefix           = local.short_identifier_prefix
   create_workflow             = false
-  job_schedule                = "cron(30 6 ? * MON-FRI *)" 
+  job_schedule                = "cron(30 6 ? * MON-FRI *)"
 }
 
 locals {
@@ -49,6 +49,7 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
   department = module.department_housing
 
   job_name                   = "${local.short_identifier_prefix}Housing Interim Finance Database Ingestion"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   environment                = var.environment
   pydeequ_zip_key            = aws_s3_object.pydeequ.key
@@ -72,13 +73,13 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
         TableLevelConfiguration = 3
       }
       CrawlerOutput = {
-      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+        Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
 }
-    
+
 resource "aws_ssm_parameter" "ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name" {
   tags  = module.tags.values
   name  = "/${local.identifier_prefix}/glue_crawler/housing/ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name"

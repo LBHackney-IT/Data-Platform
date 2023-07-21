@@ -101,6 +101,7 @@ module "ingest_tascomi_data" {
   number_of_workers_for_glue_job  = local.number_of_workers
   max_concurrent_runs_of_glue_job = local.tascomi_ingestion_max_concurrent_runs
   job_name                        = "${local.short_identifier_prefix}tascomi_api_ingestion_planning"
+  glue_version                    = "2.0"
   helper_module_key               = data.aws_s3_object.helpers.key
   pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
   job_parameters = {
@@ -191,6 +192,7 @@ module "tascomi_parse_tables_increments" {
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_parse_tables_increments_planning"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   helper_module_key          = data.aws_s3_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
@@ -225,6 +227,7 @@ module "tascomi_recast_tables_increments" {
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_recast_tables_increments_planning"
+  glue_version               = "2.0"
   helper_module_key          = data.aws_s3_object.helpers.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
@@ -259,6 +262,7 @@ module "tascomi_create_daily_snapshot" {
   department                = module.department_planning_data_source
 
   job_name                       = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
+  glue_version                   = "2.0"
   glue_job_worker_type           = "G.2X"
   number_of_workers_for_glue_job = 8
   helper_module_key              = data.aws_s3_object.helpers.key
@@ -295,6 +299,7 @@ module "tascomi_applications_to_trusted" {
 
   department                     = module.department_planning_data_source
   job_name                       = "${local.short_identifier_prefix}tascomi_applications_trusted"
+  glue_version                   = "2.0"
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = 8
   helper_module_key              = data.aws_s3_object.helpers.key
@@ -328,6 +333,7 @@ module "tascomi_officers_teams_to_trusted" {
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_officers_trusted"
+  glue_version               = "2.0"
   glue_job_worker_type       = "G.1X"
   helper_module_key          = data.aws_s3_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
@@ -360,6 +366,7 @@ module "tascomi_locations_to_trusted" {
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_locations_trusted"
+  glue_version               = "2.0"
   glue_job_worker_type       = "G.1X"
   helper_module_key          = data.aws_s3_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
@@ -392,6 +399,7 @@ module "tascomi_subsidiary_tables_to_trusted" {
 
   department                 = module.department_planning_data_source
   job_name                   = "${local.short_identifier_prefix}tascomi_subsidiary_tables_trusted"
+  glue_version               = "2.0"
   glue_job_worker_type       = "G.1X"
   helper_module_key          = data.aws_s3_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key

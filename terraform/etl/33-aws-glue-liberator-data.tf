@@ -64,14 +64,14 @@ resource "aws_glue_job" "copy_parking_liberator_landing_to_raw" {
 
   name              = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   number_of_workers = 2
-  worker_type       = "Standard"
+  worker_type       = "G.1X"
   role_arn          = data.aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
     script_location = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.copy_tables_landing_to_raw.key}"
   }
 
-  glue_version = "2.0"
+  glue_version = "4.0"
 
   default_arguments = {
     "--job-bookmark-option"       = "job-bookmark-enable"
@@ -92,14 +92,14 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw" {
 
   name              = "${local.short_identifier_prefix}Copy Env Enforcement Liberator landing zone to raw"
   number_of_workers = 2
-  worker_type       = "Standard"
+  worker_type       = "G.1X"
   role_arn          = data.aws_iam_role.glue_role.arn
   command {
     python_version  = "3"
     script_location = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.copy_tables_landing_to_raw.key}"
   }
 
-  glue_version = "2.0"
+  glue_version = "4.0"
 
   default_arguments = {
     "--job-bookmark-option"       = "job-bookmark-enable"
@@ -138,6 +138,7 @@ resource "aws_glue_crawler" "refined_zone_parking_liberator_crawler" {
   database_name = aws_glue_catalog_database.refined_zone_liberator.name
   name          = "${local.identifier_prefix}-refined-zone-liberator"
   role          = data.aws_iam_role.glue_role.arn
+  schedule      = local.is_production_environment  || !local.is_live_environment ? null : "cron(30 8 * * ? *)"
 
   s3_target {
     path       = "s3://${module.refined_zone_data_source.bucket_id}/parking/liberator/"

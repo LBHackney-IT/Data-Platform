@@ -123,7 +123,7 @@ variable "number_of_workers_for_glue_job" {
 variable "glue_job_worker_type" {
   description = "Specify the worker type to use for the glue job"
   type        = string
-  default     = "Standard"
+  default     = "G.1X"
 
   validation {
     condition     = contains(["Standard", "G.1X", "G.2X"], var.glue_job_worker_type)
@@ -200,7 +200,7 @@ variable "jdbc_connections" {
 variable "glue_version" {
   description = "Version of glue to use, defaulted to 2.0"
   type        = string
-  default     = "2.0"
+  default     = "4.0"
   validation {
     condition     = contains(["1.0", "2.0", "3.0", "4.0"], var.glue_version)
     error_message = "Glue version supplied is not valid, must be \"1.0\", \"2.0\", \"3.0\" or \"4.0\"."

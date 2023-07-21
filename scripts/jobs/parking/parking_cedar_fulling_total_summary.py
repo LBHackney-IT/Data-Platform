@@ -64,7 +64,8 @@ With CalendarFormat as (
       dow,
       fin_year,
       fin_year_startdate,
-      fin_year_enddate
+      fin_year_enddate,
+      ROW_NUMBER() OVER ( PARTITION BY date ORDER BY date DESC) R1
    FROM calendar),
 
 LatestYear as (
@@ -109,7 +110,7 @@ SELECT
     END as Year_Type    
      
 FROM parking_cedar_payments as A
-LEFT JOIN CalendarFormat as B ON A.PayMonthYear = Cast(Cast(B.date as varchar(10)) as date)
+LEFT JOIN CalendarFormat as B ON A.PayMonthYear = Cast(Cast(B.date as varchar(10)) as date) and R1 = 1
 WHERE A.import_Date = (Select MAX(import_date) from parking_cedar_payments) and
 paymenttype = 'Parking'),
 
@@ -322,7 +323,7 @@ SELECT
     cast(day(current_date) as string)     as import_day
 
 FROM DeDupe_Data
-WHERE row_num = '1'
+WHERE row_num = 1
 ORDER BY Pay_Year
 """
 ApplyMapping_node2 = sparkSqlQuery(

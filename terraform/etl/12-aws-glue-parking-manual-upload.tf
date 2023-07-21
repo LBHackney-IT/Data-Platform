@@ -18,6 +18,8 @@ module "manually_uploaded_parking_data_to_raw" {
   helper_module_key          = data.aws_s3_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
+  glue_version               = "4.0"
+  glue_job_worker_type       = "G.1X"
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-enable"
     "--s3_bucket_target"    = module.raw_zone_data_source.bucket_id

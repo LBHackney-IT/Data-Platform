@@ -80,6 +80,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
   glue_job_timeout               = 420
+  glue_version                   = "4.0"
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = 2
   job_parameters = {
@@ -87,6 +88,7 @@ module "ingest_academy_revenues_and_benefits_housing_needs_to_landing_zone" {
     "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
     "--s3_ingestion_details_target" = "s3://${module.landing_zone.bucket_id}/academy/ingestion-details/"
     "--table_filter_expression"     = each.value
+    "--conf"                        = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -138,6 +140,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  glue_version                   = "4.0"
   glue_job_worker_type           = "G.2X"
   number_of_workers_for_glue_job = 10
   glue_job_timeout               = 220
@@ -152,6 +155,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
     "--job-bookmark-option"        = "job-bookmark-enable"
     "--write-shuffle-files-to-s3"  = "true"
     "--write-shuffle-spills-to-s3" = "true"
+    "--conf"                       = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
@@ -172,6 +176,7 @@ module "copy_academy_revenues_to_raw_zone" {
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  glue_version                   = "4.0"
   glue_job_worker_type           = "G.2X"
   number_of_workers_for_glue_job = 10
   glue_job_timeout               = 220
@@ -187,5 +192,6 @@ module "copy_academy_revenues_to_raw_zone" {
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--write-shuffle-files-to-s3"        = "true"
     "--write-shuffle-spills-to-s3"       = "true"
+    "--conf"                             = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
