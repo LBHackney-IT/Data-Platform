@@ -40,8 +40,10 @@ Temp SQL that formats the defect managment records For pivot report
 18/11/2022 - Create Query
 21/11/2022 - add sub/grand total(s) and calculate KPI percentage
 22/11/2022 - change % calc to make it a decimal
+28/07/2023 - add N/A records. Change closed date to a date made up
+of sign off month and year NOT repair_date
 *********************************************************************************/
-With Defect as (
+With Defect_Basic as (
 SELECT
     reference_no, 
     CAST(CASE
@@ -73,7 +75,20 @@ SELECT
     expected_wo_completion_date, target_turn_around, met_not_met, 
     full_repair_category, 
     issue, engineer
-  
+    CASE
+        When sign_off_year != '1899'        Then sign_off_month
+        ELSE CASE
+                When repair_date like '%/%'Then substr(repair_date, 4, 2)
+                ELSE substr(cast(repair_date as string),6, 2)
+            END 
+    END as sign_off_month,   
+    CASE
+        When sign_off_year != '1899'        Then sign_off_year
+        ELSE CASE
+                When repair_date like '%/%'Then substr(repair_date, 7, 4)
+                ELSE substr(cast(repair_date as string),1, 4)
+            END 
+    END as sign_off_year  
 FROM parking_parking_ops_db_defects_mgt
 WHERE import_date = (Select MAX(import_date) 
                                 FROM parking_parking_ops_db_defects_mgt)
@@ -81,6 +96,15 @@ AND length(ltrim(rtrim(reported_date))) > 0
 AND met_not_met not IN ('#VALUE!','#N/A')
 AND length(ltrim(rtrim(repair_date)))> 0),
 
+/*** Tom has informed me that I cannot use the Repair date, but use the sigh off month & year
+USe these fields to recreate Month_repair_date ***/
+Defect as (
+    SELECT
+        reference_no, reported_date, repair_date,
+        CAST( sign_off_year||'-'||sign_off_month||'-01' as date) as Month_repair_date,
+        category, date_wo_sent, expected_wo_completion_date, target_turn_around, met_not_met, 
+        full_repair_category, issue, engineer, sign_off_month, sign_off_year         
+    FROM Defect_Basic),
 /********************************************************************************
 Obtain the category totals
 ********************************************************************************/
