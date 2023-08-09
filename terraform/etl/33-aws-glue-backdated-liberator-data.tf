@@ -101,6 +101,6 @@ resource "aws_glue_job" "copy_env_enforcement_liberator_landing_to_raw_backdated
     "--extra-py-files"            = "s3://${module.glue_scripts_data_source.bucket_id}/${data.aws_s3_object.helpers.key}"
     "--enable-glue-datacatalog"   = "true"
     "--enable-spark-ui"           = "true"
-    "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage_data_source.bucket_id}/env-enforcement/liberator"
+    "--spark-event-logs-path"     = "s3://${module.spark_ui_output_storage_data_source.bucket_id}/env-enforcement/liberator/"
   }
 }
