@@ -5,7 +5,12 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from scripts.helpers.helpers import (
+    get_glue_env_var,
+    get_latest_partitions,
+    PARTITION_KEYS,
+)
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -23,19 +28,25 @@ job.init(args["JOB_NAME"], args)
 environment = get_glue_env_var("environment")
 
 # Script generated for node Amazon S3 - Raw - liberator_pcn_qa
-AmazonS3Rawliberator_pcn_qa_node1668440603311 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-"+environment+"-liberator-raw-zone",
-    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
-    table_name="liberator_pcn_qa",
-    transformation_ctx="AmazonS3Rawliberator_pcn_qa_node1668440603311",
+AmazonS3Rawliberator_pcn_qa_node1668440603311 = (
+    glueContext.create_dynamic_frame.from_catalog(
+        database="dataplatform-" + environment + "-liberator-raw-zone",
+        push_down_predicate=(
+            "to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)"
+        ),
+        table_name="liberator_pcn_qa",
+        transformation_ctx="AmazonS3Rawliberator_pcn_qa_node1668440603311",
+    )
 )
 
 # Script generated for node S3 bucket - refined - parking_correspondence_performance_records_with_pcn
 S3bucketrefinedparking_correspondence_performance_records_with_pcn_node1 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-"+environment+"-liberator-refined-zone",
+    database="dataplatform-" + environment + "-liberator-refined-zone",
     push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
     table_name="parking_correspondence_performance_records_with_pcn",
-    transformation_ctx="S3bucketrefinedparking_correspondence_performance_records_with_pcn_node1",
+    transformation_ctx=(
+        "S3bucketrefinedparking_correspondence_performance_records_with_pcn_node1"
+    ),
 )
 
 # Script generated for node parking_raw_zone - parking_correspondence_performance_teams
@@ -43,7 +54,9 @@ parking_raw_zoneparking_correspondence_performance_teams_node1682093516418 = glu
     database="parking-raw-zone",
     push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
     table_name="parking_correspondence_performance_teams",
-    transformation_ctx="parking_raw_zoneparking_correspondence_performance_teams_node1682093516418",
+    transformation_ctx=(
+        "parking_raw_zoneparking_correspondence_performance_teams_node1682093516418"
+    ),
 )
 
 # Script generated for node ApplyMapping
@@ -59,12 +72,12 @@ with qa_tot as (select
 case 
 when qa_doc_created_by like 'AFalade' then 'Ayo Falade'
 when qa_doc_created_by like 'BAhmed' then 'Bilal Ahmed Choudhury'
---Claire Glover	when qa_qa_doc_created_by like '' then ''
+--Claire Glover	when qa_doc_created_by like '' then ''
 when qa_doc_created_by like 'djulian' then 'Damien Julian'
 when qa_doc_created_by like 'dgardner' then 'Daniel Gardner'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagatolla'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagattolla'
---Earle Nottingham	when qa_qa_doc_created_by like '' then ''
+--Earle Nottingham	when qa_doc_created_by like '' then ''
 when qa_doc_created_by like 'EPassos' then 'Edson Passos'--Edson Passos	
 when qa_doc_created_by like 'esamson' then 'Emma Samson'
 when qa_doc_created_by like 'hpatel' then 'Hamza Patel'
@@ -73,7 +86,7 @@ when qa_doc_created_by like 'Imali' then 'Imran Ali'
 when qa_doc_created_by like 'JAhmed' then 'Jahed Ahmed'
 when qa_doc_created_by like 'mmagnusson' then 'Magnus Magnusson'
 when qa_doc_created_by like 'mwalters' then 'Melanie Walters'
---Nohaad Al-othmani	when qa_qa_doc_created_by like '' then ''
+--Nohaad Al-othmani	when qa_doc_created_by like '' then ''
 when qa_doc_created_by like 'OOnisemo' then 'Olabisi Onisemo'
 when qa_doc_created_by like 'oolagbaju' then 'Olamide Olagbaju'
 when qa_doc_created_by like 'PShakes' then 'Pameta Shakes'
@@ -111,12 +124,12 @@ else qa_doc_created_by end as qa_link_officer_name_corresp
  case 
 when qa_doc_created_by like 'AFalade' then 'Ayo Falade'
 when qa_doc_created_by like 'BAhmed' then 'Bilal Ahmed Choudhury'
---Claire Glover	when qa_qa_doc_created_by like '' then ''
+--Claire Glover	when qa_doc_created_by like '' then ''
 when qa_doc_created_by like 'djulian' then 'Damien Julian'
 when qa_doc_created_by like 'dgardner' then 'Daniel Gardner'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagatolla'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagattolla'
---Earle Nottingham	when qa_qa_doc_created_by like '' then ''
+--Earle Nottingham	when qa_doc_created_by like '' then ''
 when qa_doc_created_by like 'EPassos' then 'Edson Passos'--Edson Passos	
 when qa_doc_created_by like 'esamson' then 'Emma Samson'
 when qa_doc_created_by like 'hpatel' then 'Hamza Patel'
@@ -125,7 +138,7 @@ when qa_doc_created_by like 'Imali' then 'Imran Ali'
 when qa_doc_created_by like 'JAhmed' then 'Jahed Ahmed'
 when qa_doc_created_by like 'mmagnusson' then 'Magnus Magnusson'
 when qa_doc_created_by like 'mwalters' then 'Melanie Walters'
---Nohaad Al-othmani	when qa_qa_doc_created_by like '' then ''
+--Nohaad Al-othmani	when qa_doc_created_by like '' then ''
 when qa_doc_created_by like 'OOnisemo' then 'Olabisi Onisemo'
 when qa_doc_created_by like 'oolagbaju' then 'Olamide Olagbaju'
 when qa_doc_created_by like 'PShakes' then 'Pameta Shakes'
@@ -358,12 +371,12 @@ qa_tot.qa_link_officer_name_corresp
 ,case 
 when qa_doc_created_by like 'AFalade' then 'Ayo Falade'
 when qa_doc_created_by like 'BAhmed' then 'Bilal Ahmed Choudhury'
---Claire Glover	when qa_qa_doc_created_by like '' then ''
+--Claire Glover	when qa_doc_created_by like '' then ''
 when qa_doc_created_by like 'djulian' then 'Damien Julian'
 when qa_doc_created_by like 'dgardner' then 'Daniel Gardner'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagatolla'
 when qa_doc_created_by like 'DLagatolla' then 'Davide Lagattolla'
---Earle Nottingham	when qa_qa_doc_created_by like '' then ''
+--Earle Nottingham	when qa_doc_created_by like '' then ''
 when qa_doc_created_by like 'EPassos' then 'Edson Passos'--Edson Passos	
 when qa_doc_created_by like 'esamson' then 'Emma Samson'
 when qa_doc_created_by like 'hpatel' then 'Hamza Patel'
@@ -372,7 +385,7 @@ when qa_doc_created_by like 'Imali' then 'Imran Ali'
 when qa_doc_created_by like 'JAhmed' then 'Jahed Ahmed'
 when qa_doc_created_by like 'mmagnusson' then 'Magnus Magnusson'
 when qa_doc_created_by like 'mwalters' then 'Melanie Walters'
---Nohaad Al-othmani	when qa_qa_doc_created_by like '' then ''
+--Nohaad Al-othmani	when qa_doc_created_by like '' then ''
 when qa_doc_created_by like 'OOnisemo' then 'Olabisi Onisemo'
 when qa_doc_created_by like 'oolagbaju' then 'Olamide Olagbaju'
 when qa_doc_created_by like 'PShakes' then 'Pameta Shakes'
@@ -424,7 +437,9 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_correspondence_performance_qa_with_totals_gds/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/parking_correspondence_performance_qa_with_totals_gds/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],
@@ -433,7 +448,7 @@ S3bucket_node3 = glueContext.getSink(
     transformation_ctx="S3bucket_node3",
 )
 S3bucket_node3.setCatalogInfo(
-    catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",
+    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
     catalogTableName="parking_correspondence_performance_qa_with_totals_gds",
 )
 S3bucket_node3.setFormat("glueparquet")
