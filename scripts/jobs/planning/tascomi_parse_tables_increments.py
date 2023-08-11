@@ -47,9 +47,23 @@ dq_params = {'appeals': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'application_types': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'pre_applications': {'unique': ['id', 'import_date'], 'complete': 'id'},
              'pre_application_categories': {'unique': ['id', 'import_date'], 'complete': 'id'},
-             'asset_constraints': {'unique': ['id', 'import_date'], 'complete': 'id'}
+             'asset_constraints': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'nature_of_enquiries': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'enquiry_outcome': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'enquiry_stage': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'wards': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'appeal_formats': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'enforcement_outcome_types': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'enforcement_protocols': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'priority_statuses': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'complaint_sources': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'file_closure_reasons': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'enforcement_case_statuses': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'enforcement_breaches': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'enforcement_outcomes': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'enforcement_actions_taken': {'unique': ['id', 'import_date'], 'complete': 'id'},
+             'enforcement_breach_details': {'unique': ['id', 'import_date'], 'complete': 'id'}
              }
-
 
 if __name__ == "__main__":
 

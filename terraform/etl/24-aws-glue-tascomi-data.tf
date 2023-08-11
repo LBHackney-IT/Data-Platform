@@ -18,7 +18,11 @@ locals {
     "committee_application_map",
     "user_teams",
     "user_team_map",
-    "pre_applications"
+    "pre_applications",
+    "enforcement_breaches",
+    "enforcement_outcomes",
+    "enforcement_actions_taken",
+    "enforcement_breach_details"
   ]
 
   tascomi_static_tables = [
@@ -37,8 +41,19 @@ locals {
     "fee_types",
     "ps_development_codes",
     "public_consultations",
-    "pre_application_categories"
-  ]
+    "pre_application_categories",
+    "nature_of_enquiries",
+    "enquiry_outcome",
+    "enquiry_stage",
+    "wards",
+    "appeal_formats",
+    "enforcement_outcome_types",
+    "enforcement_protocols",
+    "priority_statuses",
+    "complaint_sources",
+    "file_closure_reasons",
+    "enforcement_case_statuses"
+]
 
   table_list = join(",", concat(local.tascomi_table_names, local.tascomi_static_tables))
 
