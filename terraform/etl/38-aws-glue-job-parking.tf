@@ -1257,3 +1257,26 @@ module "parking_permit_street_stress" {
     "--environment"         = var.environment
   }
 }
+# MRB 14-08-2023 Job created 
+module "parking_permit_street_stress_with_cpz" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_permit_street_stress_with_cpz"
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_permit_street_stress"
+  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  job_description                = "Calculate Permit stress, by Street and Permit Type"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+  }
+}
