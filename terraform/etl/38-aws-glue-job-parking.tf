@@ -1267,7 +1267,7 @@ module "parking_permit_street_stress_with_cpz" {
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_permit_street_stress"
+  script_name                    = "parking_permit_street_stress_with_cpz"
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "Calculate Permit stress, by Street and Permit Type"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
