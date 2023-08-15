@@ -54,6 +54,7 @@ Parking spaces (Shared use, Resident, etc) and the number of extant Permits
 
 16/03/2023 - Create SQL
 01/08/2023 - rewrite to obtain the CPZ
+15/08/2023 - change because Zone does not exist in the Parkmap data
 *********************************************************************************/
 /** Get all of the addresses in HAckney **/
 With LLPG as (
@@ -74,15 +75,19 @@ LLPG_FULL as (
     SELECT
         A.address1, A.address2, A.address3, A.address4, 
         A.address5, A.post_code, 
-        A.cpz_name, A.uprn, A.usrn, B.address2 as Street
+        A.cpz_name, A.uprn, A.usrn, B.address2 as Street,
+        ROW_NUMBER() OVER ( PARTITION BY A.usrn, B.address2 
+                                ORDER BY A.usrn, B.address2 DESC) llpg1    
     FROM LLPG as A
-    LEFT JOIN Street_Rec as B ON A.USRN = B.USRN),
+    LEFT JOIN Street_Rec as B ON A.USRN = B.USRN
+    WHERE A.address1 != 'STREET RECORD'),
 /********************************************************************************/
 /** Get the Parkmap records **/
 Parkmap as (
     SELECT
-        order_type, street_name, no_of_spaces, zone, nsg
-    FROM geolive_parking_order
+        order_type, street_name, no_of_spaces, nsg, cpz_name as Zone
+    FROM geolive_parking_order  as A
+    LEFT JOIN LLPG_FULL as B ON lower(A.street_name) = lower(B.Street) and B.llpg1 = 1
     WHERE import_date = (Select MAX(import_date) 
                                    from geolive_parking_order)
     AND order_type IN ('Business bay', 'Estate permit bay', 'Cashless Shared Use', 'Permit Bay', 
