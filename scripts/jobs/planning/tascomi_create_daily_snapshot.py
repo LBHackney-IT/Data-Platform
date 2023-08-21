@@ -98,7 +98,22 @@ dq_params = {'appeals': {'unique': ['id']},
              'application_types': {'unique': ['id']},
              'pre_applications': {'unique': ['id']},
              'pre_application_categories': {'unique': ['id']},
-             'asset_constraints': {'unique': ['id']}
+             'asset_constraints': {'unique': ['id']},
+             'nature_of_enquiries': {'unique': ['id']},
+             'enquiry_outcome': {'unique': ['id']},
+             'enquiry_stage': {'unique': ['id']},
+             'wards': {'unique': ['id']},
+             'appeal_formats': {'unique': ['id']},
+             'enforcement_outcome_types': {'unique': ['id']},
+             'enforcement_protocols': {'unique': ['id']},
+             'priority_statuses': {'unique': ['id']},
+             'complaint_sources': {'unique': ['id']},
+             'file_closure_reasons': {'unique': ['id']},
+             'enforcement_case_statuses': {'unique': ['id']},
+             'enforcement_breaches': {'unique': ['id']},
+             'enforcement_outcomes': {'unique': ['id']},
+             'enforcement_actions_taken': {'unique': ['id']},
+             'enforcement_breach_details': {'unique': ['id']}
              }
 
 if __name__ == "__main__":

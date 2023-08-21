@@ -50,6 +50,7 @@ This SQL creates the Warrant return figures on the basis of the following spec:-
 12/01/2022 - Amend the Cancellation reason list inline with an email from Nohaad
 20/01/2022 - Amend the cancellation reason list after review by Michael Benn
 19/05/2023 - change calculation of Paid/Part Paid
+28/07/2028 - add additional cancel reasons and rework the calculation for paid/part paid, etc
 ******************************************************************************************************************************/
 /*** Collect those PCNs that have a Warrant date ***/
 WITH Bailiff_PCNs_Int as (
@@ -100,8 +101,11 @@ WITH Bailiff_PCNs_Int as (
                                       'V - Vulnerable Group',
                                       'Vulnerable',
                                       'Vulnerable Debtor',
-                                      'X - Warrant has expired') Then 1
-          When pcn_canx_date is NULL                             Then 2
+                                      'X - Warrant has expired'
+                                      'X - Warrant expired',
+                                      'Warrant out of date') Then 1
+          When pcn_canx_date is NULL                         Then 2
+          When cast(lib_payment_received as double) > 0      Then 3 /* Added 28/07/2023 */
           ELSE 0
      END as Write_Off_Flag
    FROM pcnfoidetails_pcn_foi_full 
@@ -116,14 +120,16 @@ Bailiff_PCNs as (
   
         /*** Create the payment flag ***/
         /** 19-05-2023 update calculation to add write off and payment **/
+        /** 28/07/2023 - change the calculation...again! **/
         CASE
-            When Write_Off_Flag = 1                                                             Then 'Not Paid'
-            When cast(lib_payment_received as double) = 0 AND 
-                            cast(lib_write_off_amount as double) = 0                            Then 'Not Paid'
-            When (cast(lib_payment_received as double) + cast(lib_write_off_amount as double))              
-                                            >= cast(lib_initial_debt_amount as double)          Then 'Paid'
-            When (cast(lib_payment_received as double) + cast(lib_write_off_amount as double))              
-                                            < cast(lib_initial_debt_amount as double)          Then 'Part Payment'
+            When Write_Off_Flag = 1 AND 
+                            CAST(lib_payment_received as double) = 0 Then 'Not Paid'
+             When cast(lib_payment_received as double) = 0 AND 
+                            CAST(lib_write_off_amount as double) = 0 Then 'Not Paid'
+        When (cast(lib_payment_received as double) + cast(lib_write_off_amount as double))              
+                            >= cast(lib_initial_debt_amount as double) Then 'Paid'
+        When (cast(lib_payment_received as double) + cast(lib_write_off_amount as double))              
+                            < cast(lib_initial_debt_amount as double)  Then 'Part Payment'
       END as Payment_Status
   
    FROM Bailiff_PCNs_Int

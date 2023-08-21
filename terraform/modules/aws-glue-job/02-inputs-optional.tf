@@ -200,7 +200,7 @@ variable "jdbc_connections" {
 variable "glue_version" {
   description = "Version of glue to use, defaulted to 2.0"
   type        = string
-  default     = "2.0"
+  default     = "4.0"
   validation {
     condition     = contains(["1.0", "2.0", "3.0", "4.0"], var.glue_version)
     error_message = "Glue version supplied is not valid, must be \"1.0\", \"2.0\", \"3.0\" or \"4.0\"."

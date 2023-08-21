@@ -1,0 +1,13 @@
+[{
+	"cycle_hangar_waiting_list": {
+		"database_name":"dataplatform-prod-liberator-refined-zone",
+		"table_name":"parking_cycle_hangars_waiting_list",
+		"partition_keys":["import_year","import_month","import_day","import_date"],
+		"date_partition_name":"import_date",
+		"x_column":"x",
+    		"y_column":"y",
+		"geom_format": "coords",
+		"source_crs": "epsg:27700",
+		"enrich_with":["housing_estate"]
+	}
+}]
