@@ -3,7 +3,7 @@ module "staff_sickness_forecast_refined" {
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
   count                          = !local.is_production_environment && local.is_live_environment ? 1 : 0
-  department                     = module.department_data_and_insight_data_source
+  department                     = module.department_hr_and_od_data_source
   job_name                       = "${local.short_identifier_prefix}Staff sickness forecasting refined"
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage_data_source.bucket_id
@@ -20,9 +20,9 @@ module "staff_sickness_forecast_refined" {
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
     "--additional-python-modules"        = "prophet"
-    "--source_catalog_database"          = module.department_data_and_insight_data_source.raw_zone_catalog_database_name
+    "--source_catalog_database"          = module.department_hr_and_od_data_source.raw_zone_catalog_database_name
     "--source_catalog_table_sickness"    = "staff_sickness"
-    "--output_path"                      = "s3://${module.refined_zone_data_source.bucket_id}/data-and-insight/staff-sickness/"
+    "--output_path"                      = "s3://${module.refined_zone_data_source.bucket_id}/hr-and-od/staff-sickness/"
     "--season"                           = 52
     "--periods"                          = 26
 
@@ -31,8 +31,8 @@ module "staff_sickness_forecast_refined" {
   script_name = "staff_sickness_forecasting"
 
   crawler_details = {
-    database_name      = module.department_data_and_insight_data_source.refined_zone_catalog_database_name
-    s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/data-and-insight/staff-sickness/"
+    database_name      = module.department_hr_and_od_data_source.refined_zone_catalog_database_name
+    s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/hr-and-od/staff-sickness/"
     configuration      = null
     table_prefix       = null
     Grouping           = {
