@@ -78,7 +78,7 @@ def test_sarimax(train, test, order, seasonal_order, exog=None):
 
     """
     model_sarimax = SARIMAX(endog=train.y,
-                            exog=None,
+                            exog=exog,
                             order=order,
                             seasonal_order=seasonal_order).fit()
 
@@ -113,7 +113,7 @@ def forecast_with_sarimax(train, order, seasonal_order, steps, exog=None):
     """
     # train Sarimax model with all data
     model_sarimax = SARIMAX(endog=train.y,
-                            exog=None,
+                            exog=exog,
                             order=order,
                             seasonal_order=seasonal_order).fit()
 
@@ -158,18 +158,19 @@ def get_seasonal_decompose_plot(x, model, period, plot=False, fname=None):
     seasonal = decompose.seasonal
     residual = decompose.resid
     if plot:
+        label_loc = 'upper left'
         fig, axes = plt.subplots(4, 1, sharex=True, sharey=False)
         fig.set_figheight(10)
         fig.set_figwidth(15)
         fig.suptitle('Decomposition of time series data')
         axes[0].plot(x, label='Original')
-        axes[0].legend(loc='upper left')
+        axes[0].legend(loc=label_loc)
         axes[1].plot(trend, label='Trend')
-        axes[1].legend(loc='upper left')
+        axes[1].legend(loc=label_loc)
         axes[2].plot(seasonal, label='Cyclic')
-        axes[2].legend(loc='upper left')
+        axes[2].legend(loc=label_loc)
         axes[3].plot(residual, label='Residuals')
-        axes[3].legend(loc='upper left')
+        axes[3].legend(loc=label_loc)
         if fname:
             plt.tight_layout()
             plt.savefig(fname=fname)
@@ -201,14 +202,13 @@ def plot_time_series_data(x, var_dict, title, xlabel, ylabel, fname=None):
         plt.tight_layout()
         plt.savefig(fname=fname)
     plt.show()
-    return
 
 
 # plot predictions and forecast
 def plot_pred_forecast(train, test, predictions, forecast,
                        train_label, test_label, title,
                        suptitle, ylabel, xlabel, metrics, fname):
-    fig, ax = plt.subplots(figsize=(20, 8))
+    _, ax = plt.subplots(figsize=(20, 8))
     train.y.plot(ax=ax, label=train_label)
     test.y.plot(ax=ax, label=test_label)
     predictions.plot(ax=ax, label='Test forecast')
@@ -222,7 +222,6 @@ def plot_pred_forecast(train, test, predictions, forecast,
         plt.tight_layout()
         plt.savefig(fname=fname)
     plt.show()
-    return
 
 
 def apply_prophet(df, periods, horizon):
