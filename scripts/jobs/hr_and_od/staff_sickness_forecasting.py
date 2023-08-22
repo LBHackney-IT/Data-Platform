@@ -6,7 +6,7 @@ This script uses helpers from time_series_helpers.py to forecast future staff si
 import argparse
 
 from scripts.helpers.time_series_helpers import get_best_arima_model, test_sarimax, forecast_with_sarimax, \
-    get_train_test_subsets, get_seasonal_decompose_plot, plot_pred_forecast, \
+    get_train_test_subsets, get_seasonal_decomposition, plot_pred_forecast, \
     reshape_time_series_data
 from scripts.jobs.env_context import DEFAULT_MODE_AWS, LOCAL_MODE, ExecutionContextProvider
 from scripts.helpers.helpers import add_import_time_columns, PARTITION_KEYS, \
@@ -68,16 +68,20 @@ def main():
         absence_pdf = reshape_time_series_data(pdf=absence_pdf,
                                                date_col='Calculation Date:Absence',
                                                var_cols=['Days Lost:Absence'])
-        absence_pdf = absence_pdf.loc['2017-05-16': '2023-08-07']
+
+        # set min and max cutoff dates
+        #  TODO a function that trims data to nearest Monday two weeks either end
+        min_date = '2017-05-16'
+        max_date = '2023-08-07'
+
+        absence_pdf = absence_pdf.loc[min_date: max_date]
         # resample data to week level
         week_absence = absence_pdf.resample('W-MON').sum()
 
         # look at the absence data in more detail
-        get_seasonal_decompose_plot(x=week_absence,
-                                    model='additive',
-                                    period=season,
-                                    plot=True,
-                                    fname=output_data_path + 'images/seasonal_decomp.png')
+        absence_reshape, trend, season, residuals = get_seasonal_decomposition(x=week_absence,
+                                                                               model='additive',
+                                                                               period=season)
 
         # split into train and test subsets. Test based on number weeks/periods to predict e.g 6 months
         train, test = get_train_test_subsets(time_series=week_absence, periods=periods)
@@ -92,7 +96,8 @@ def main():
                                                                m=season)
 
         # test SARIMAX with new values
-        sarimax_metrics, predictions = test_sarimax(train=train, test=test,
+        sarimax_metrics, predictions = test_sarimax(train=train,
+                                                    test=test,
                                                     order=best_order,
                                                     seasonal_order=best_seasonal_order)
         logger.info(f'SARIMAX model evaluation metrics: {sarimax_metrics}')
