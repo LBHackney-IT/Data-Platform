@@ -6,14 +6,6 @@ data "aws_secretsmanager_secret_version" "production_account_id" {
   secret_id = data.aws_secretsmanager_secret.production_account_id.id
 }
 
-data "aws_secretsmanager_secret" "housing_production_account_id" {
-  name = "manually-managed-value-housing-prod-account-id"
-}
-
-data "aws_secretsmanager_secret_version" "housing_production_account_id" {
-  secret_id = data.aws_secretsmanager_secret.housing_production_account_id.id
-}
-
 locals {
   rentsense_refined_zone_access_statement = {
     sid    = "AllowRentsenseReadOnlyAccessToExportLocationOnRefinedZone"
@@ -236,73 +228,16 @@ locals {
     }
   }
 
-  share_kms_key_with_housing_reporting_role = {
-    sid    = "Allow use of KMS key by housing reporting role"
-    effect = "Allow"
-    actions = [
-      "kms:GenerateDataKey*",
-      "kms:Decrypt"
-    ]
-    principals = {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:sts::${data.aws_secretsmanager_secret_version.housing_production_account_id.secret_string}:assumed-role/LBH_Reporting_Data_Sync_Role/export_dynamo_db_table"
-      ]
-    }
-    resources = "*"
-  }
-
-  allow_housing_reporting_role_access_to_landing_zone_path_pre_prod = {
-    sid    = "Allow MTFH PITR Export to access landing zone paths"
-    effect = "Allow"
-    principals = {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:sts::${data.aws_secretsmanager_secret_version.housing_production_account_id.secret_string}:assumed-role/LBH_Reporting_Data_Sync_Role/export_dynamo_db_table"
-      ]
-    }
-    actions = [
-      "s3:AbortMultipartUpload",
-      "s3:PutObject",
-      "s3:PutObjectAcl"
-    ]
-    resources = [
-      "arn:aws:s3:::dataplatform-stg-landing-zone",
-      "arn:aws:s3:::dataplatform-stg-landing-zone/mtfh/*"
-    ]
-  }
-
-  allow_housing_reporting_role_access_to_landing_zone_path = {
-    sid    = "Allow MTFH PITR Export to access landing zone paths"
-    effect = "Allow"
-    principals = {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:sts::${data.aws_secretsmanager_secret_version.housing_production_account_id.secret_string}:assumed-role/LBH_Reporting_Data_Sync_Role/export_dynamo_db_table"
-      ]
-    }
-    actions = [
-      "s3:AbortMultipartUpload",
-      "s3:PutObject",
-      "s3:PutObjectAcl"
-    ]
-    resources = [
-      "arn:aws:s3:::dataplatform-prod-landing-zone",
-      "arn:aws:s3:::dataplatform-prod-landing-zone/mtfh/*"
-    ]
-  }
 }
 
 module "landing_zone" {
-  source                       = "../modules/s3-bucket"
-  tags                         = module.tags.values
-  project                      = var.project
-  environment                  = var.environment
-  identifier_prefix            = local.identifier_prefix
-  bucket_name                  = "Landing Zone"
-  bucket_identifier            = "landing-zone"
-  bucket_policy_statements     = local.is_production_environment ? [local.allow_housing_reporting_role_access_to_landing_zone_path] : (local.is_live_environment ? [local.allow_housing_reporting_role_access_to_landing_zone_path_pre_prod] : [])
-  bucket_key_policy_statements = [local.share_kms_key_with_housing_reporting_role]
+  source            = "../modules/s3-bucket"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "Landing Zone"
+  bucket_identifier = "landing-zone"
 }
 
 module "raw_zone" {
