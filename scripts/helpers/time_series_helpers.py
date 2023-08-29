@@ -15,6 +15,9 @@ from sklearn.metrics import mean_squared_error
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
+import pandas as pd
+
+from statsmodels.tsa.exponential_smoothing.ets import ETSModel
 
 def get_train_test_subsets(time_series: ps.DataFrame, periods: int) -> Tuple[ps.DataFrame, ps.DataFrame]:
     """ Splits dataset into train and test datasets. Test subset is determined by periods which is the number
@@ -107,7 +110,7 @@ def test_sarimax(train: ps.DataFrame, test: ps.DataFrame, order: tuple,
     return sarimax_metrics, predictions
 
 
-def forecast_with_sarimax(train: ps.DataFrame, order: tuple, seasonal_order: tuple, steps: Union[int, str, datetime],
+def forecast_with_sarimax(train: ps.DataFrame, order: tuple, seasonal_order: tuple, steps: tuple[int, str, datetime],
                           exog=None) -> ps.Series:
     """
     Trains SARIMAX model with full dataset and produces a forcast for number periods (steps) specified.
@@ -134,7 +137,7 @@ def forecast_with_sarimax(train: ps.DataFrame, order: tuple, seasonal_order: tup
     return model_forecast
 
 
-def reshape_time_series_data(pdf: ps.DataFrame, date_col: str, var_cols: list) -> ps.DataFrame:
+def reshape_time_series_data(pdf: ps.DataFrame, date_col: str, var_cols: list, dateformat: str) -> ps.DataFrame:
     """
     Prepares and cleans time series dataframe for time series models. Datetime column cast as datetime data type,
     datetime set as dataframe index, and features renamed to 'y_{n}'.
@@ -147,10 +150,10 @@ def reshape_time_series_data(pdf: ps.DataFrame, date_col: str, var_cols: list) -
         Reshaped dataframe
 
     """
-    # cast date column and add as index
+
     pdf = pdf[[date_col] + var_cols]
     pdf = pdf.rename(columns={date_col: 'ds'})
-    pdf.ds = ps.to_datetime(pdf.ds, format='%d/%m/%Y')
+    pdf.ds = ps.to_datetime(pdf.ds, format=dateformat)
     pdf = pdf.set_index('ds').sort_index()
     if len(var_cols) == 1:
         pdf = pdf.rename(columns={var_cols[0]: 'y'})
@@ -295,3 +298,49 @@ def apply_prophet(df, periods, horizon):
     cross_val = cross_validation(m, horizon=horizon)
     metrics = performance_metrics(cross_val)
     return forecast, cross_val, metrics
+
+def get_start_end_date(dataframe, period, forecast_count):
+
+    max_index = dataframe.index.max()
+
+    # Get Time difference based on period
+    # Map frequency
+    date_maker = {
+        "M": [max_index + pd.DateOffset(months=1), max_index + pd.DateOffset(months=forecast_count)],
+        "D": [max_index + pd.DateOffset(months=1), max_index + pd.DateOffset(months=forecast_count)],
+        "W": [max_index + pd.DateOffset(weeks=1), max_index + pd.DateOffset(weeks=forecast_count)],
+        "Y": [max_index + pd.DateOffset(years=1), max_index + pd.DateOffset(years=forecast_count)],
+        "Q": [max_index + pd.DateOffset(months=3), max_index + pd.DateOffset(months=forecast_count * 3)]
+    }
+
+    start_date = date_maker.get(period)[0]
+    end_date = date_maker.get(period)[1]
+
+    return start_date, end_date
+
+def forecast_ets(dataframe, start_date, end_date):
+    # create ETS
+    dataframe = dataframe
+    print("Start ETS")
+    print(dataframe)
+    print(dataframe.dtypes)
+    model = ETSModel(
+        dataframe,
+        error="add",
+        trend="add",
+        seasonal="add",
+        damped_trend=True,
+        seasonal_periods=4,
+    )
+    fit = model.fit()
+    # Get max index date
+
+    # Do forecast
+    print(f'Get Prediction with: {start_date} to {end_date}')
+
+    pred = fit.get_prediction(start=start_date, end=end_date)
+
+    # # Return the Result as DF
+    df = pred.summary_frame(alpha=0.05)
+
+    return df
