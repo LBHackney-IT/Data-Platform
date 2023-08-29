@@ -320,7 +320,6 @@ def get_start_end_date(dataframe, period, forecast_count):
 
 def forecast_ets(dataframe, start_date, end_date):
     # create ETS
-    dataframe = dataframe
     print("Start ETS")
     print(dataframe)
     print(dataframe.dtypes)
