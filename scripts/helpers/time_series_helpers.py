@@ -303,8 +303,6 @@ def get_start_end_date(dataframe, period, forecast_count):
 
     max_index = dataframe.index.max()
 
-    # Get Time difference based on period
-    # Map frequency
     date_maker = {
         "M": [max_index + pd.DateOffset(months=1), max_index + pd.DateOffset(months=forecast_count)],
         "D": [max_index + pd.DateOffset(months=1), max_index + pd.DateOffset(months=forecast_count)],
@@ -320,26 +318,16 @@ def get_start_end_date(dataframe, period, forecast_count):
 
 def forecast_ets(dataframe, start_date, end_date):
     # create ETS
-    print("Start ETS")
-    print(dataframe)
-    print(dataframe.dtypes)
+    print(f'Get Prediction with: {start_date} to {end_date}')
     model = ETSModel(
         dataframe,
         error="add",
         trend="add",
-        seasonal="add",
-        damped_trend=True,
-        seasonal_periods=4,
     )
     fit = model.fit()
-    # Get max index date
-
-    # Do forecast
-    print(f'Get Prediction with: {start_date} to {end_date}')
 
     pred = fit.get_prediction(start=start_date, end=end_date)
 
-    # # Return the Result as DF
     df = pred.summary_frame(alpha=0.05)
 
     return df
