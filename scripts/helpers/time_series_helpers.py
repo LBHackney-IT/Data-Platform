@@ -354,7 +354,7 @@ def forecast_ets(dataframe, start_date, end_date, seasonal=None, damped_trend=Fa
         trend="add",
         seasonal=seasonal,
         damped_trend=damped_trend,
-        seasonal_periods=4,
+        seasonal_periods=seasonal_periods,
     )
     fit = model.fit()
 
