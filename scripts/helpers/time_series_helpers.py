@@ -300,6 +300,18 @@ def apply_prophet(df, periods, horizon):
     return forecast, cross_val, metrics
 
 def get_start_end_date(dataframe, period, forecast_count):
+    """
+
+        Args:
+            Dataframe (Dataframe): Dataframe containing training timeseries dataset.
+            period (string): Description of the Period. "M" for example,
+            forecast_count (Int): Amount of data points you want to forecast for
+
+        Returns:
+            Start Date (Datetime),
+            End Date (Datetime)
+
+        """
 
     max_index = dataframe.index.max()
 
@@ -317,7 +329,18 @@ def get_start_end_date(dataframe, period, forecast_count):
     return start_date, end_date
 
 def forecast_ets(dataframe, start_date, end_date):
-    # create ETS
+    """
+
+        Args:
+            Dataframe (Dataframe): Dataframe containing training timeseries dataset.
+            start_date (string): Start date of the Forecast,
+            end_date (string): End date of the Forecast
+
+        Returns:
+            Forecast Results (Dataframe),
+
+        """
+
     print(f'Get Prediction with: {start_date} to {end_date}')
     model = ETSModel(
         dataframe,
