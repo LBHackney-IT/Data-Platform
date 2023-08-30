@@ -19,6 +19,7 @@ import pandas as pd
 
 from statsmodels.tsa.exponential_smoothing.ets import ETSModel
 
+
 def get_train_test_subsets(time_series: ps.DataFrame, periods: int) -> Tuple[ps.DataFrame, ps.DataFrame]:
     """ Splits dataset into train and test datasets. Test subset is determined by periods which is the number
     periods to test the model with. Returned dataframes contain unique rows, with no overlap.
@@ -299,6 +300,7 @@ def apply_prophet(df, periods, horizon):
     metrics = performance_metrics(cross_val)
     return forecast, cross_val, metrics
 
+
 def get_start_end_date(dataframe, period, forecast_count):
     """
 
@@ -328,7 +330,8 @@ def get_start_end_date(dataframe, period, forecast_count):
 
     return start_date, end_date
 
-def forecast_ets(dataframe, start_date, end_date,seasonal=None,damped_trend=False,seasonal_periods=None):
+
+def forecast_ets(dataframe, start_date, end_date, seasonal=None, damped_trend=False, seasonal_periods=None):
     """
 
         Args:
