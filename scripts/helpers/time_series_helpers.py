@@ -328,13 +328,16 @@ def get_start_end_date(dataframe, period, forecast_count):
 
     return start_date, end_date
 
-def forecast_ets(dataframe, start_date, end_date):
+def forecast_ets(dataframe, start_date, end_date,seasonal=None,damped_trend=False,seasonal_periods=None):
     """
 
         Args:
             Dataframe (Dataframe): Dataframe containing training timeseries dataset.
             start_date (string): Start date of the Forecast,
             end_date (string): End date of the Forecast
+            seasonal (String): Trend Component model. Optional. "Add", "mul" or None (default)
+            damped_trend (Bool): Whether or not an included trend component is damped. Default is False
+            seasonal_periods (int): The number of periods in a complete seasonal cycle for seasonal (Holt-Winters) models. For example, 4 for quarterly data with an annual cycle or 7 for daily data with a weekly cycle. Required if seasonal is not None.
 
         Returns:
             Forecast Results (Dataframe),
@@ -346,6 +349,9 @@ def forecast_ets(dataframe, start_date, end_date):
         dataframe,
         error="add",
         trend="add",
+        seasonal=seasonal,
+        damped_trend=damped_trend,
+        seasonal_periods=4,
     )
     fit = model.fit()
 
