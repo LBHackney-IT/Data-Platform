@@ -15,6 +15,10 @@ from sklearn.metrics import mean_squared_error
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
+import pandas as pd
+
+from statsmodels.tsa.exponential_smoothing.ets import ETSModel
+
 
 def get_train_test_subsets(time_series: ps.DataFrame, periods: int) -> Tuple[ps.DataFrame, ps.DataFrame]:
     """ Splits dataset into train and test datasets. Test subset is determined by periods which is the number
@@ -107,7 +111,7 @@ def test_sarimax(train: ps.DataFrame, test: ps.DataFrame, order: tuple,
     return sarimax_metrics, predictions
 
 
-def forecast_with_sarimax(train: ps.DataFrame, order: tuple, seasonal_order: tuple, steps: Union[int, str, datetime],
+def forecast_with_sarimax(train: ps.DataFrame, order: tuple, seasonal_order: tuple, steps: tuple[int, str, datetime],
                           exog=None) -> ps.Series:
     """
     Trains SARIMAX model with full dataset and produces a forcast for number periods (steps) specified.
@@ -134,7 +138,7 @@ def forecast_with_sarimax(train: ps.DataFrame, order: tuple, seasonal_order: tup
     return model_forecast
 
 
-def reshape_time_series_data(pdf: ps.DataFrame, date_col: str, var_cols: list) -> ps.DataFrame:
+def reshape_time_series_data(pdf: ps.DataFrame, date_col: str, var_cols: list, dateformat: str) -> ps.DataFrame:
     """
     Prepares and cleans time series dataframe for time series models. Datetime column cast as datetime data type,
     datetime set as dataframe index, and features renamed to 'y_{n}'.
@@ -147,10 +151,10 @@ def reshape_time_series_data(pdf: ps.DataFrame, date_col: str, var_cols: list) -
         Reshaped dataframe
 
     """
-    # cast date column and add as index
+
     pdf = pdf[[date_col] + var_cols]
     pdf = pdf.rename(columns={date_col: 'ds'})
-    pdf.ds = ps.to_datetime(pdf.ds, format='%d/%m/%Y')
+    pdf.ds = ps.to_datetime(pdf.ds, format=dateformat)
     pdf = pdf.set_index('ds').sort_index()
     if len(var_cols) == 1:
         pdf = pdf.rename(columns={var_cols[0]: 'y'})
@@ -295,3 +299,67 @@ def apply_prophet(df, periods, horizon):
     cross_val = cross_validation(m, horizon=horizon)
     metrics = performance_metrics(cross_val)
     return forecast, cross_val, metrics
+
+
+def get_start_end_date(dataframe, period, forecast_count):
+    """
+
+        Args:
+            Dataframe (Dataframe): Dataframe containing training timeseries dataset.
+            period (string): Description of the Period. "M" for example,
+            forecast_count (Int): Amount of data points you want to forecast for
+
+        Returns:
+            Start Date (Datetime),
+            End Date (Datetime)
+
+        """
+
+    max_index = dataframe.index.max()
+
+    date_maker = {
+        "M": [max_index + pd.DateOffset(months=1), max_index + pd.DateOffset(months=forecast_count)],
+        "D": [max_index + pd.DateOffset(months=1), max_index + pd.DateOffset(months=forecast_count)],
+        "W": [max_index + pd.DateOffset(weeks=1), max_index + pd.DateOffset(weeks=forecast_count)],
+        "Y": [max_index + pd.DateOffset(years=1), max_index + pd.DateOffset(years=forecast_count)],
+        "Q": [max_index + pd.DateOffset(months=3), max_index + pd.DateOffset(months=forecast_count * 3)]
+    }
+
+    start_date = date_maker.get(period)[0]
+    end_date = date_maker.get(period)[1]
+
+    return start_date, end_date
+
+
+def forecast_ets(dataframe, start_date, end_date, seasonal=None, damped_trend=False, seasonal_periods=None):
+    """
+
+        Args:
+            Dataframe (Dataframe): Dataframe containing training timeseries dataset.
+            start_date (string): Start date of the Forecast,
+            end_date (string): End date of the Forecast
+            seasonal (String): Trend Component model. Optional. "Add", "mul" or None (default)
+            damped_trend (Bool): Whether or not an included trend component is damped. Default is False
+            seasonal_periods (int): The number of periods in a complete seasonal cycle for seasonal (Holt-Winters) models. For example, 4 for quarterly data with an annual cycle or 7 for daily data with a weekly cycle. Required if seasonal is not None.
+
+        Returns:
+            Forecast Results (Dataframe),
+
+        """
+
+    print(f'Get Prediction with: {start_date} to {end_date}')
+    model = ETSModel(
+        dataframe,
+        error="add",
+        trend="add",
+        seasonal=seasonal,
+        damped_trend=damped_trend,
+        seasonal_periods=4,
+    )
+    fit = model.fit()
+
+    pred = fit.get_prediction(start=start_date, end=end_date)
+
+    df = pred.summary_frame(alpha=0.05)
+
+    return df
