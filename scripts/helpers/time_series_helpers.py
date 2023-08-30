@@ -158,6 +158,7 @@ def reshape_time_series_data(pdf: ps.DataFrame, date_col: str, var_cols: list, d
     pdf = pdf.set_index('ds').sort_index()
     if len(var_cols) == 1:
         pdf = pdf.rename(columns={var_cols[0]: 'y'})
+        pdf = pdf.astype({'y': float})
     elif len(var_cols) > 1:
         for v_col in var_cols:
             counter = 0
