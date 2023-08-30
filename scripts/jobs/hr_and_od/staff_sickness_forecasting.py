@@ -66,8 +66,9 @@ def main():
                                                          source_catalog_table_sickness, 'import_date'))
         absence_pdf = absence_df.toPandas()
         absence_pdf = reshape_time_series_data(pdf=absence_pdf,
-                                               date_col='Calculation Date:Absence',
-                                               var_cols=['Days Lost:Absence'])
+                                               date_col='calculation_date:absence',
+                                               var_cols=['days_lost:absence'],
+                                               dateformat='%d/%m/%Y')
 
         # set min and max cutoff dates
         #  TODO a function that trims data to nearest Monday two weeks either end

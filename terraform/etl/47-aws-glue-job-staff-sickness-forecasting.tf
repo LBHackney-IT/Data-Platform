@@ -19,7 +19,7 @@ module "staff_sickness_forecast_refined" {
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
-    "--additional-python-modules"        = "prophet"
+    "--additional-python-modules"        = "prophet,statsmodels==0.14.0"
     "--source_catalog_database"          = module.department_hr_and_od_data_source.raw_zone_catalog_database_name
     "--source_catalog_table_sickness"    = "staff_sickness"
     "--output_path"                      = "s3://${module.refined_zone_data_source.bucket_id}/hr-and-od/staff-sickness/"
