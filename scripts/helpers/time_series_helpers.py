@@ -2,8 +2,10 @@
 Functions to support development of time series analytics work.
 """
 import datetime
-from typing import Tuple, Union
+import io
+from typing import Tuple
 
+import boto3
 import numpy as np
 from matplotlib import pyplot as plt
 from pmdarima import auto_arima
@@ -33,8 +35,8 @@ def get_train_test_subsets(time_series: ps.DataFrame, periods: int) -> Tuple[ps.
         train (Dataframe): Dataframe with most recent n periods removed
         test (Dataframe): Dataframe with most recent n periods only.
     """
-    train = time_series[: -periods]
-    test = time_series[-periods:]
+    train = time_series[: -int(periods)]
+    test = time_series[-int(periods):]
     return train, test
 
 
@@ -111,7 +113,7 @@ def test_sarimax(train: ps.DataFrame, test: ps.DataFrame, order: tuple,
     return sarimax_metrics, predictions
 
 
-def forecast_with_sarimax(train: ps.DataFrame, order: tuple, seasonal_order: tuple, steps: tuple[int, str, datetime],
+def forecast_with_sarimax(train: ps.DataFrame, order: tuple, seasonal_order: tuple, steps: tuple[int | str | datetime],
                           exog=None) -> ps.Series:
     """
     Trains SARIMAX model with full dataset and produces a forcast for number periods (steps) specified.
@@ -146,6 +148,7 @@ def reshape_time_series_data(pdf: ps.DataFrame, date_col: str, var_cols: list, d
         pdf (Dataframe): Dataframe containing date columns and features
         date_col (str): Name of the column containing datetime
         var_cols (list): List of features to keep within the reshaped dataframe
+        dateformat (str): Format of date using strftime format codes e.g. '%d/%m/%y'
 
     Returns:
         Reshaped dataframe
@@ -169,7 +172,7 @@ def reshape_time_series_data(pdf: ps.DataFrame, date_col: str, var_cols: list, d
     return pdf
 
 
-def get_seasonal_decomposition(x: ps.DataFrame, model: str, period: int) -> Tuple[ps.DataFrame, ps.Series,
+def get_seasonal_decomposition(x: ps.DataFrame, model: str, period: int) -> tuple[ps.DataFrame, ps.Series,
                                                                                   ps.Series, ps.Series]:
     """
     Drops any NAs from input dataframe. Extracts the trend, seasonality and residuals from dataset.
@@ -185,15 +188,15 @@ def get_seasonal_decomposition(x: ps.DataFrame, model: str, period: int) -> Tupl
         residual (Series) Random variation in the data once trend and seasonality removed.
     """
     x_reshaped = x.dropna
-    decompose = seasonal_decompose(x=x_reshaped, model=model, period=period)
+    decompose = seasonal_decompose(x=x_reshaped, model=model, period=int(period))
     trend = decompose.trend
-    seasonal = decompose.seasonal
+    seasonality = decompose.seasonal
     residual = decompose.resid
-    return x_reshaped, trend, seasonal, residual
+    return x_reshaped, trend, seasonality, residual
 
 
 def plot_seasonal_decomposition(x: ps.DataFrame, trend: ps.Series, seasonal: ps.Series, residual: ps.Series,
-                                fname=None, show=False) -> None:
+                                bucket: str, fname=None, show=False) -> None:
     """Options to plot seasonal decomposition data as well as save a PNG to file.
     If fname=None, PNG will not be saved. Returns None.
     """
@@ -212,13 +215,17 @@ def plot_seasonal_decomposition(x: ps.DataFrame, trend: ps.Series, seasonal: ps.
     axes[3].legend(loc=label_loc)
     if fname:
         plt.tight_layout()
-        plt.savefig(fname=fname)
+        img_data = io.BytesIO()
+        plt.savefig(img_data)
+        img_data.seek(0)
+        s3 = boto3.client('s3')
+        s3.put_object(Bucket=bucket, Key=fname, Body=img_data)
     if show:
         plt.show()
 
 
 def plot_time_series_data(x: ps.DataFrame, var_dict: dict, title: str, xlabel: str, ylabel: str,
-                          fname=None, show=False) -> None:
+                          bucket: str, fname=None, show=False) -> None:
     """Options to plot time series data as well as save a PNG to file.
 
     Args:
@@ -227,7 +234,8 @@ def plot_time_series_data(x: ps.DataFrame, var_dict: dict, title: str, xlabel: s
         title (str): Title of plot.
         xlabel (str): Label of x axis.
         ylabel (str): label of y axis.
-        fname (str): Filename of PNG. If None, PNG will not be saved.
+        bucket (): Name of bucket to write to.
+        fname (str): Path and filename of PNG. If None, PNG will not be saved.
         show (bool): Option to show plot in console.
 
     Returns:
@@ -243,14 +251,18 @@ def plot_time_series_data(x: ps.DataFrame, var_dict: dict, title: str, xlabel: s
     plt.legend()
     if fname:
         plt.tight_layout()
-        plt.savefig(fname=fname)
+        img_data = io.BytesIO()
+        plt.savefig(img_data)
+        img_data.seek(0)
+        s3 = boto3.client('s3')
+        s3.put_object(Bucket=bucket, Key=fname, Body=img_data)
     if show:
         plt.show()
 
 
 def plot_pred_forecast(train: ps.DataFrame, test: ps.DataFrame, predictions: ps.DataFrame, forecast: ps.Series,
                        train_label: str, test_label: str, title: str, suptitle: str, ylabel: str, xlabel: str,
-                       metrics: dict, fname=None, show=False) -> None:
+                       metrics: dict, bucket: str, fname=None, show=False, ) -> None:
     """
 
     Args:
@@ -265,7 +277,8 @@ def plot_pred_forecast(train: ps.DataFrame, test: ps.DataFrame, predictions: ps.
         ylabel (str): y axis label.
         xlabel (str): x axis label.
         metrics (dict): Dictionary containing model performance metrics. Any length.
-        fname (str): Default is None. If not empty, then will be the name of the file.
+        bucket (str): Name of bucket to write to.
+        fname (str): Default is None. If not empty, then will be the folder and file path.
         show (bool): Boolean option to show chart in console.
 
     Returns:
@@ -284,7 +297,11 @@ def plot_pred_forecast(train: ps.DataFrame, test: ps.DataFrame, predictions: ps.
     plt.xlabel(xlabel)
     if fname:
         plt.tight_layout()
-        plt.savefig(fname=fname)
+        img_data = io.BytesIO()
+        plt.savefig(img_data)
+        img_data.seek(0)
+        s3 = boto3.client('s3')
+        s3.put_object(Bucket=bucket, Key=fname, Body=img_data)
     if show:
         plt.show()
 
@@ -294,7 +311,7 @@ def apply_prophet(df, periods, horizon):
     """
     m = Prophet()
     m.fit(df)
-    future = m.make_future_dataframe(periods=periods)
+    future = m.make_future_dataframe(periods=int(periods))
     future.tail()
     forecast = m.predict(future)
     cross_val = cross_validation(m, horizon=horizon)
@@ -315,7 +332,6 @@ def get_start_end_date(dataframe, period, forecast_count):
             End Date (Datetime)
 
         """
-
     max_index = dataframe.index.max()
 
     date_maker = {
@@ -328,7 +344,6 @@ def get_start_end_date(dataframe, period, forecast_count):
 
     start_date = date_maker.get(period)[0]
     end_date = date_maker.get(period)[1]
-
     return start_date, end_date
 
 
@@ -340,7 +355,7 @@ def forecast_ets(dataframe, start_date, end_date, seasonal=None, damped_trend=Fa
             start_date (string): Start date of the Forecast,
             end_date (string): End date of the Forecast
             seasonal (String): Trend Component model. Optional. "Add", "mul" or None (default)
-            damped_trend (Bool): Whether or not an included trend component is damped. Default is False
+            damped_trend (Bool): Whether or not an included trend component is dampened. Default is False
             seasonal_periods (int): The number of periods in a complete seasonal cycle for seasonal (Holt-Winters) models. For example, 4 for quarterly data with an annual cycle or 7 for daily data with a weekly cycle. Required if seasonal is not None.
 
         Returns:
@@ -355,12 +370,9 @@ def forecast_ets(dataframe, start_date, end_date, seasonal=None, damped_trend=Fa
         trend="add",
         seasonal=seasonal,
         damped_trend=damped_trend,
-        seasonal_periods=4,
+        seasonal_periods=seasonal_periods,
     )
     fit = model.fit()
-
     pred = fit.get_prediction(start=start_date, end=end_date)
-
     df = pred.summary_frame(alpha=0.05)
-
     return df
