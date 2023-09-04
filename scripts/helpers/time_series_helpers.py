@@ -2,27 +2,26 @@
 Functions to support development of time series analytics work.
 """
 import datetime
-import io
-from typing import Tuple
 
+import io
 import boto3
 import numpy as np
 from matplotlib import pyplot as plt
+import pandas as pd
 from pmdarima import auto_arima
 from prophet import Prophet
 from prophet.diagnostics import cross_validation, performance_metrics
 
 import pyspark.pandas as ps
 from sklearn.metrics import mean_squared_error
+from statsmodels.tsa.exponential_smoothing.ets import ETSModel
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
-import pandas as pd
-
-from statsmodels.tsa.exponential_smoothing.ets import ETSModel
 
 
-def get_train_test_subsets(time_series: ps.DataFrame, periods: int) -> Tuple[ps.DataFrame, ps.DataFrame]:
+
+def get_train_test_subsets(time_series: ps.DataFrame, periods: int) -> tuple[ps.DataFrame, ps.DataFrame]:
     """ Splits dataset into train and test datasets. Test subset is determined by periods which is the number
     periods to test the model with. Returned dataframes contain unique rows, with no overlap.
 
@@ -41,7 +40,7 @@ def get_train_test_subsets(time_series: ps.DataFrame, periods: int) -> Tuple[ps.
 
 
 def get_best_arima_model(y: ps.DataFrame, start_q: int, start_p: int, max_iter: int, m: int,
-                         d=None, D=None, **kwargs: dict) -> Tuple[tuple, tuple]:
+                         d=None, D=None, **kwargs: dict) -> tuple[tuple, tuple]:
     """
     Uses the Auto Arima algorithm from pmdarima to determine the best parameters for order and
     seasonal order in Auto Regression models. Function expects time series dataset with dates set as index, and target
@@ -74,7 +73,7 @@ def get_best_arima_model(y: ps.DataFrame, start_q: int, start_p: int, max_iter: 
 
 
 def test_sarimax(train: ps.DataFrame, test: ps.DataFrame, order: tuple,
-                 seasonal_order: tuple, exog=None) -> Tuple[dict, ps.DataFrame]:
+                 seasonal_order: tuple, exog=None) -> tuple[dict, ps.DataFrame]:
     """
     Function that fits a SARIMAX model and calculates evaluation metrics RMSE, MAE, AIC and BIC.
     See https://www.statsmodels.org/dev/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.html#statsmodels.tsa.statespace.sarimax.SARIMAX
