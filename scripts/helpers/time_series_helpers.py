@@ -19,8 +19,6 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 
-
-
 def get_train_test_subsets(time_series: ps.DataFrame, periods: int) -> tuple[ps.DataFrame, ps.DataFrame]:
     """ Splits dataset into train and test datasets. Test subset is determined by periods which is the number
     periods to test the model with. Returned dataframes contain unique rows, with no overlap.
@@ -76,7 +74,7 @@ def test_sarimax(train: ps.DataFrame, test: ps.DataFrame, order: tuple,
                  seasonal_order: tuple, exog=None) -> tuple[dict, ps.DataFrame]:
     """
     Function that fits a SARIMAX model and calculates evaluation metrics RMSE, MAE, AIC and BIC.
-    See https://www.statsmodels.org/dev/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.html#statsmodels.tsa.statespace.sarimax.SARIMAX
+    See https://www.statsmodels.org/dev/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.html
     for full documentation.
 
     Args:
@@ -112,7 +110,7 @@ def test_sarimax(train: ps.DataFrame, test: ps.DataFrame, order: tuple,
     return sarimax_metrics, predictions
 
 
-def forecast_with_sarimax(train: ps.DataFrame, order: tuple, seasonal_order: tuple, steps: tuple[int | str | datetime],
+def forecast_with_sarimax(train: ps.DataFrame, order: tuple, seasonal_order: tuple, steps: "int|str|datetime",
                           exog=None) -> ps.Series:
     """
     Trains SARIMAX model with full dataset and produces a forcast for number periods (steps) specified.
@@ -171,32 +169,29 @@ def reshape_time_series_data(pdf: ps.DataFrame, date_col: str, var_cols: list, d
     return pdf
 
 
-def get_seasonal_decomposition(x: ps.DataFrame, model: str, period: int) -> tuple[ps.DataFrame, ps.Series,
-                                                                                  ps.Series, ps.Series]:
+def get_seasonal_decomposition(x: np.array, model: str, period: int) -> tuple[ps.Series, ps.Series, ps.Series]:
     """
     Drops any NAs from input dataframe. Extracts the trend, seasonality and residuals from dataset.
     Args:
-        x (Dataframe): Dataframe indexed by date.
+        x (array): Array containing time series and variable.
         model (str): Either of “additive” or “multiplicative”. Type of seasonal component.
         period (int): Number of periods within the season e.g. 52 weeks in a year (the season).
 
     Returns:
-        x_reshaped (Dataframe): reshaped dataframe with NAs dropped.
         trend (Series): The upward and/or downward change in the values in the dataset.
         seasonal (Series) Short term cyclical repeating pattern in data.
         residual (Series) Random variation in the data once trend and seasonality removed.
     """
-    x_reshaped = x.dropna
-    decompose = seasonal_decompose(x=x_reshaped, model=model, period=int(period))
+    decompose = seasonal_decompose(x=x, model=model, period=int(period))
     trend = decompose.trend
     seasonality = decompose.seasonal
     residual = decompose.resid
-    return x_reshaped, trend, seasonality, residual
+    return trend, seasonality, residual
 
 
-def plot_seasonal_decomposition(x: ps.DataFrame, trend: ps.Series, seasonal: ps.Series, residual: ps.Series,
+def plot_seasonal_decomposition(x: np.array, trend: ps.Series, seasonal: ps.Series, residual: ps.Series,
                                 bucket: str, fname=None, show=False) -> None:
-    """Options to plot seasonal decomposition data as well as save a PNG to file.
+    """Options to plot seasonal decomposition data as well as write a PNG to file.
     If fname=None, PNG will not be saved. Returns None.
     """
     label_loc = 'upper left'
@@ -208,7 +203,7 @@ def plot_seasonal_decomposition(x: ps.DataFrame, trend: ps.Series, seasonal: ps.
     axes[0].legend(loc=label_loc)
     axes[1].plot(trend, label='Trend')
     axes[1].legend(loc=label_loc)
-    axes[2].plot(seasonal, label='Cyclic')
+    axes[2].plot(seasonal, label='Seasonality')
     axes[2].legend(loc=label_loc)
     axes[3].plot(residual, label='Residuals')
     axes[3].legend(loc=label_loc)
@@ -225,7 +220,7 @@ def plot_seasonal_decomposition(x: ps.DataFrame, trend: ps.Series, seasonal: ps.
 
 def plot_time_series_data(x: ps.DataFrame, var_dict: dict, title: str, xlabel: str, ylabel: str,
                           bucket: str, fname=None, show=False) -> None:
-    """Options to plot time series data as well as save a PNG to file.
+    """Options to plot time series data as well as write a PNG to file.
 
     Args:
         x (Dataframe): Dataframe containing time series data, indexed by datetime.
@@ -322,7 +317,7 @@ def get_start_end_date(dataframe, period, forecast_count):
     """
 
         Args:
-            Dataframe (Dataframe): Dataframe containing training timeseries dataset.
+            dataframe (Dataframe): Dataframe containing training timeseries dataset.
             period (string): Description of the Period. "M" for example,
             forecast_count (Int): Amount of data points you want to forecast for
 
@@ -350,12 +345,14 @@ def forecast_ets(dataframe, start_date, end_date, seasonal=None, damped_trend=Fa
     """
 
         Args:
-            Dataframe (Dataframe): Dataframe containing training timeseries dataset.
+            dataframe (Dataframe): Dataframe containing training timeseries dataset.
             start_date (string): Start date of the Forecast,
             end_date (string): End date of the Forecast
             seasonal (String): Trend Component model. Optional. "Add", "mul" or None (default)
-            damped_trend (Bool): Whether or not an included trend component is dampened. Default is False
-            seasonal_periods (int): The number of periods in a complete seasonal cycle for seasonal (Holt-Winters) models. For example, 4 for quarterly data with an annual cycle or 7 for daily data with a weekly cycle. Required if seasonal is not None.
+            damped_trend (Bool): Dampen the trend component. Default is False
+            seasonal_periods (int): The number of periods in a complete seasonal cycle for seasonal
+                                    (Holt-Winters) models. For example, 4 for quarterly data with an annual cycle
+                                    or 7 for daily data with a weekly cycle. Required if seasonal is not None.
 
         Returns:
             Forecast Results (Dataframe),
