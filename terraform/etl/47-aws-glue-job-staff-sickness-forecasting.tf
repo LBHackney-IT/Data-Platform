@@ -23,7 +23,7 @@ module "staff_sickness_forecast_refined" {
     "--source_catalog_database"          = module.department_hr_and_od_data_source.raw_zone_catalog_database_name
     "--source_catalog_table_sickness"    = "staff_sickness"
     "--output_path"                      = "s3://${module.refined_zone_data_source.bucket_id}/hr-and-od/staff-sickness/"
-    "--target_bucket"                    = "module.department_hr_and_od_data_source.refined_zone_catalog_database_name"
+    "--target_bucket"                    = module.refined_zone_data_source.bucket_id
     "--season"                           = 52
     "--periods"                          = 26
 

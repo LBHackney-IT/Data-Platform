@@ -85,13 +85,16 @@ def main():
         # resample data to week level
         week_absence = absence_pdf.resample('W-MON').sum()
 
+        # convert to array for use in seasonal decompose
+        week_absence_arr = week_absence.values
+
         # look at the absence data in more detail
-        absence_reshape, trend, seasonality, residuals = get_seasonal_decomposition(x=absence_pdf,
-                                                                                    model='additive',
-                                                                                    period=int(season))
+        trend, seasonality, residuals = get_seasonal_decomposition(x=week_absence_arr,
+                                                                   model='additive',
+                                                                   period=int(season))
         # plot decomposition
-        plot_seasonal_decomposition(x=absence_pdf, trend=trend, seasonal=seasonality, residual=residuals,
-                                    bucket=target_bucket, fname='images/decomposition_staff_sickness.png')
+        plot_seasonal_decomposition(x=week_absence_arr, trend=trend, seasonal=seasonality, residual=residuals,
+                                    bucket=target_bucket, fname='hr-and-od/images/decomposition_staff_sickness.png')
 
         # split into train and test subsets. Test based on number weeks/periods to predict e.g 6 months
         train, test = get_train_test_subsets(time_series=week_absence, periods=int(periods))
@@ -123,7 +126,7 @@ def main():
                            train_label='Train', test_label='Test', title='Absence forecasting (Sickness)',
                            suptitle='SARIMAX', metrics=sarimax_metrics,
                            ylabel='Number absences', xlabel='Year', bucket=target_bucket,
-                           fname='images/sarimax_pred_forecast_staff_sickness.png')
+                           fname='hr-and-od/images/sarimax_pred_forecast_staff_sickness.png')
 
         # Convert pandas df to spark df and then write forecast to parquet
         model_forecast_df = spark.createDataFrame(model_forecast, FloatType())
