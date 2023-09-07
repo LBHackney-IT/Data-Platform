@@ -774,10 +774,10 @@ if __name__ == "__main__":
     balances = ten.join(bals,ten.paymentreference ==  bals.paymentreference2,"inner") 
     
     balances = balances. selectExpr("paymentreference as PaymentReference",
-                                    "CurrentBalance as CurrentBalance",
+                                    "previousweekbalance as CurrentBalance",
                                     "BalanceDate",
                                     "uh_ten_ref as AccountReference",
-                                  "import_date")
+                                    "import_date")
     
     balances = balances.distinct()
     
