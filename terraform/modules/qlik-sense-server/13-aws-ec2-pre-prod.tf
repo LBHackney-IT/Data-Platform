@@ -5,11 +5,11 @@ locals {
     Name         = "${var.identifier_prefix}-qlik-sense-restore"
   }
 
-  # backup_ami_id_to_restore = "ami-0462df3547bccd38d"
-  # ec2_tags_for_restore = {
-  #   BackupPolicy = title(var.environment)
-  #   Name         = "${var.identifier_prefix}-qlik-sense-restore-2"
-  # }
+  backup_ami_id_to_restore = "ami-0462df3547bccd38d"
+  ec2_tags_for_restore = {
+    BackupPolicy = title(var.environment)
+    Name         = "${var.identifier_prefix}-qlik-sense-restore-2"
+  }
 }
 
 resource "aws_ami_launch_permission" "ami_permissions_for_pre_prod" {
