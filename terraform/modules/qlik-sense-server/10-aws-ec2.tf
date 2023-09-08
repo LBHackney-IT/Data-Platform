@@ -112,6 +112,16 @@ data "aws_secretsmanager_secret_version" "central_backup_role_arn" {
   secret_id = data.aws_secretsmanager_secret.central_backup_role_arn[0].id
 }
 
+data "aws_secretsmanager_secret" "pre_prod_deployment_role_arn" {
+  count = var.is_production_environment ? 1 : 0
+  name  = "${var.identifier_prefix}-manually-managed-value-pre-prod-deployment-role-arn"
+}
+
+data "aws_secretsmanager_secret_version" "pre_prod_deployment_role_arn" {
+  count     = var.is_production_environment ? 1 : 0
+  secret_id = data.aws_secretsmanager_secret.pre_prod_deployment_role_arn[0].id
+}
+
 data "aws_iam_policy_document" "key_policy" {
   statement {
     effect = "Allow"
@@ -127,15 +137,15 @@ data "aws_iam_policy_document" "key_policy" {
     }
   }
 
-  dynamic statement {
-    for_each = var.is_production_environment ? [1] : [] 
-    
+  dynamic "statement" {
+    for_each = var.is_production_environment ? [1] : []
+
     content {
-      sid =  "AllowCentralBackupVaultAccessToThisKey"
+      sid    = "AllowCentralBackupVaultAccessToThisKey"
       effect = "Allow"
-      
+
       principals {
-        type = "AWS"
+        type        = "AWS"
         identifiers = [data.aws_secretsmanager_secret_version.central_backup_role_arn[0].secret_string]
       }
 
@@ -147,6 +157,32 @@ data "aws_iam_policy_document" "key_policy" {
         "kms:Decrypt",
         "kms:RetireGrant",
         "kms:CreateGrant"
+      ]
+
+      resources = [
+        "*"
+      ]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.is_production_environment ? [1] : []
+
+    content {
+      sid    = "AllowPreProdDeploymentRoleAccessToThisKey"
+      effect = "Allow"
+
+      principals {
+        type        = "AWS"
+        identifiers = [data.aws_secretsmanager_secret_version.pre_prod_deployment_role_arn[0].secret_string]
+      }
+
+      actions = [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
       ]
 
       resources = [
