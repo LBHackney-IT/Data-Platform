@@ -988,7 +988,7 @@ module "Parking_Permit_Diesel_Tends_Bought_in_Month" {
   job_description                = "Monthly review of Permits bought in month, broken down by diesel or electric vehicles"
   trigger_enabled                = local.is_production_environment
   schedule                       = "cron(0 1 10 * ? *)"
-  number_of_workers_for_glue_job = 2
+  number_of_workers_for_glue_job = 6
   glue_job_worker_type           = "G.1X"
   glue_version                   = "4.0"
   job_parameters = {
@@ -1088,7 +1088,7 @@ module "parking_pcn_daily_print_monitoring" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
-    "--conf" = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
 
