@@ -8,7 +8,7 @@ module "staff_sickness_forecast_refined" {
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage_data_source.bucket_id
   glue_job_worker_type           = "G.1X"
-  number_of_workers_for_glue_job = 4
+  number_of_workers_for_glue_job = 8
   glue_version                   = "4.0"
   glue_job_timeout               = 360
   helper_module_key              = data.aws_s3_object.helpers.key
@@ -19,10 +19,11 @@ module "staff_sickness_forecast_refined" {
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
-    "--additional-python-modules"        = "prophet"
+    "--additional-python-modules"        = "prophet,statsmodels==0.14.0"
     "--source_catalog_database"          = module.department_hr_and_od_data_source.raw_zone_catalog_database_name
     "--source_catalog_table_sickness"    = "staff_sickness"
     "--output_path"                      = "s3://${module.refined_zone_data_source.bucket_id}/hr-and-od/staff-sickness/"
+    "--target_bucket"                    = module.refined_zone_data_source.bucket_id
     "--season"                           = 52
     "--periods"                          = 26
 
@@ -36,7 +37,7 @@ module "staff_sickness_forecast_refined" {
     configuration      = null
     table_prefix       = null
     Grouping           = {
-      TableLevelConfiguration = 3
+      TableLevelConfiguration = 2
     }
   }
 
