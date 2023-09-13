@@ -19,6 +19,9 @@ import pandas as pd
 
 from statsmodels.tsa.exponential_smoothing.ets import ETSModel
 
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+
 
 def get_train_test_subsets(time_series: ps.DataFrame, periods: int) -> Tuple[ps.DataFrame, ps.DataFrame]:
     """ Splits dataset into train and test datasets. Test subset is determined by periods which is the number
@@ -331,7 +334,7 @@ def get_start_end_date(dataframe, period, forecast_count):
     return start_date, end_date
 
 
-def forecast_ets(dataframe, start_date, end_date, seasonal=None, damped_trend=False, seasonal_periods=None):
+def forecast_ets(dataframe, start_date, end_date, trend="add", seasonal=None, damped_trend=False, seasonal_periods=None):
     """
 
         Args:
@@ -351,10 +354,10 @@ def forecast_ets(dataframe, start_date, end_date, seasonal=None, damped_trend=Fa
     model = ETSModel(
         dataframe,
         error="add",
-        trend="add",
+        trend=trend,
         seasonal=seasonal,
         damped_trend=damped_trend,
-        seasonal_periods=4,
+        seasonal_periods=seasonal_periods,
     )
     fit = model.fit()
 
@@ -363,3 +366,33 @@ def forecast_ets(dataframe, start_date, end_date, seasonal=None, damped_trend=Fa
     df = pred.summary_frame(alpha=0.05)
 
     return df
+
+def holt_winters(dataframe,forecast_count,seasonal_periods=None,seasonal=None,use_boxcox = None,initialization_method="estimated"):
+    """
+
+            Args:
+                Dataframe (Dataframe): Dataframe containing training timeseries dataset. Must be equally spaced with Date in the Index
+                forecast_count (int): Amount of data points to forecast
+                seasonal (String): Trend Component model. Optional. "Add", "mul" or None (default)
+                seasonal_periods (int): The number of periods in a complete seasonal cycle for seasonal (Holt-Winters) models. For example, 4 for quarterly data with an annual cycle or 7 for daily data with a weekly cycle. Required if seasonal is not None.
+                use_boxcox (bool): None (default) or True
+                initialization_method (String):
+            Returns:
+                Forecast Results (Dataframe),
+
+    """
+    model = ExponentialSmoothing(
+        dataframe,
+        seasonal_periods=seasonal_periods,
+        trend="add",
+        seasonal=seasonal,
+        use_boxcox=use_boxcox,
+        initialization_method=initialization_method
+    ).fit()
+
+    forecast = model.forecast(forecast_count)
+
+    pdf = pd.DataFrame()
+    pdf["mean"] = forecast
+
+    return pdf
