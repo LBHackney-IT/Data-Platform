@@ -108,6 +108,7 @@ SELECT
     B.address1, B.address2, B.address3, B.postcode, 
     B.telephone_number,
     D.Address2 as street,
+    B.record_created as Date_Registered,
     C.x, C.y, 
     
     current_timestamp() as importdatetime,
