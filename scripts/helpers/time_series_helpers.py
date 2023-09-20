@@ -22,7 +22,6 @@ from statsmodels.tsa.exponential_smoothing.ets import ETSModel
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 
-
 def get_train_test_subsets(time_series: ps.DataFrame, periods: int) -> Tuple[ps.DataFrame, ps.DataFrame]:
     """ Splits dataset into train and test datasets. Test subset is determined by periods which is the number
     periods to test the model with. Returned dataframes contain unique rows, with no overlap.
@@ -335,7 +334,9 @@ def get_start_end_date(dataframe: pd.DataFrame, period: str, forecast_count: int
 
     return start_date, end_date
 
-def forecast_ets(dataframe: pd.DataFrame, start_date: str, end_date: str, seasonal_period: str="none", error: str="add", trend: str="add", damped_trend: bool=False) -> pd.DateFrame:
+
+def forecast_ets(dataframe: pd.DataFrame, start_date: str, end_date: str, seasonal_period: str = "none",
+                 error: str = "add", trend: str = "add", damped_trend: bool = False) -> pd.DateFrame:
     """
         Args:
             Dataframe (dataframe): Dataframe containing training timeseries dataset.
@@ -377,7 +378,10 @@ def forecast_ets(dataframe: pd.DataFrame, start_date: str, end_date: str, season
 
     return pred
 
-def holt_winters(dataframe: pd.DataFrame,forecast_count: int,seasonal_period: str ="none",trend: str ="add",use_boxcox: bool = False,initialization_method: str ="estimated") -> pd.DateFrame:
+
+def forecast_holt_winters_ets(dataframe: pd.DataFrame, forecast_count: int, seasonal_period: str = "none",
+                              trend: str = "add", use_boxcox: bool = False,
+                              initialization_method: str = "estimated") -> pd.DateFrame:
     """
 
             Args:
@@ -396,10 +400,10 @@ def holt_winters(dataframe: pd.DataFrame,forecast_count: int,seasonal_period: st
     """
 
     period_dictionary = {
-        "M": [12,"add"],
-        "W": [52,"add"],
-        "Q": [4,"add"],
-        "none": [None,None]
+        "M": [12, "add"],
+        "W": [52, "add"],
+        "Q": [4, "add"],
+        "none": [None, None]
     }
 
     seasonal = period_dictionary.get(seasonal_period)[1]
