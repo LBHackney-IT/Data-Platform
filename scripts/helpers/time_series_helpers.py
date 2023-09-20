@@ -338,16 +338,16 @@ def get_start_end_date(dataframe: pd.DataFrame, period: str, forecast_count: int
 def forecast_ets(dataframe: pd.DataFrame, start_date: str, end_date: str, seasonal_period: str="none", error: str="add", trend: str="add", damped_trend: bool=False) -> pd.DateFrame:
     """
         Args:
-            Dataframe (Dataframe): Dataframe containing training timeseries dataset.
+            Dataframe (dataframe): Dataframe containing training timeseries dataset.
             start_date (string): Start date of the Forecast,
             end_date (string): End date of the Forecast
             seasonal_period (String) Optional: Period for the data. "M" /  "W" / "Q" this will fill in the parameters for the model based on very commonly used values, not including days. Default is "none", use "none" if the data is not seasonal
             error (String): The error model. “add” (default) or “mul”.
-            trend (String):
-            damped_trend=False
+            trend (String): The trend component model. “add” (default), “mul”, or None.
+            damped_trend (Bool): Whether an included trend component is damped. Default is False.
 
         Returns:
-            Forecast Results (pd.Dataframe)
+            pdf (dataframe): Pandas Dataframe containing the forecast results
 
             https://www.statsmodels.org/dev/generated/statsmodels.tsa.exponential_smoothing.ets.ETSModel.html
     """
@@ -381,14 +381,14 @@ def holt_winters(dataframe: pd.DataFrame,forecast_count: int,seasonal_period: st
     """
 
             Args:
-                Dataframe (Dataframe): Dataframe containing training timeseries dataset. Must be equally spaced with Date in the Index
+                Dataframe (dataframe): Dataframe containing training timeseries dataset. Must be equally spaced with Date in the Index
                 forecast_count (int): Amount of data points to forecast
                 seasonal_period (String): Period for the data. "M" /  "W" / "Q" this will fill in the parameters for the model based on very commonly used values, not including days. Default is "none", use "none" if the data is not seasonal
-                trend (String):
+                trend (String): The trend component model. “add” (default), “mul”, or None.
                 use_boxcox (bool): Should the Box-Cox transform be applied to the data first? If ‘log’ then apply the log. If float then use the value as lambda. Defaults to False
-                initialization_method (String):
+                initialization_method (String): Method for initialize the recursions. One of:None,‘estimated’ (Default),‘heuristic’,‘legacy-heuristic’,‘known’
             Returns:
-                Forecast Results (Dataframe)
+                pdf  (dataframe): Pandas Dataframe containing the forecast results
 
             Delivers a generic "commonly used" forecast for the selected period
 
