@@ -53,7 +53,8 @@ AmazonS3_node1685714303815 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_licence_party",
     transformation_ctx="AmazonS3_node1685714303815",
-    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("dataplatform-" + environment + "-liberator-raw-zone", "liberator_licence_party", 'import_date')
+    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("dataplatform-" + environment + "-liberator-raw-zone", "liberator_licence_party", 'import_date'),
+    additional_options = {"mergeSchema": "true"}
 )
 
 # Script generated for node SQL
@@ -107,6 +108,7 @@ SELECT
     A.party_id, first_name, surname, B.uprn as user_uprn,
     B.address1, B.address2, B.address3, B.postcode, 
     B.telephone_number,
+    B.email_address,
     D.Address2 as street,
     B.record_created as Date_Registered,
     C.x, C.y, 
