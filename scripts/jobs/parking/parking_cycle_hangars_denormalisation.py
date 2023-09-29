@@ -149,7 +149,7 @@ DataSource2 = glueContext.create_dynamic_frame.from_catalog(
 DataSource1 = glueContext.create_dynamic_frame.from_catalog(
     database = "dataplatform-" + environment + "-liberator-raw-zone", 
     table_name = "liberator_hangar_details", 
-    push_down_predicate = create_pushdown_predicate_for_max_date_partition_value("dataplatform-" + environment + "-liberator-raw-zone", "liberator_hangar_details", 'import_date')
+    push_down_predicate = create_pushdown_predicate_for_max_date_partition_value("dataplatform-" + environment + "-liberator-raw-zone", "liberator_hangar_details", 'import_date'),
     transformation_ctx = "DataSource1")
 ## @type: SqlCode
 ## @args: [sqlAliases = {"liberator_hangar_details": DataSource1, "liberator_hangar_types": DataSource2, "liberator_hangar_allocations": DataSource3, "liberator_licence_party": DataSource0}, sqlName = SqlQuery0, transformation_ctx = "Transform0"]
