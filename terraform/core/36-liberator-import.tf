@@ -27,7 +27,7 @@ module "liberator_dump_to_rds_snapshot" {
 }
 
 module "liberator_db_snapshot_to_s3" {
-  count                          = 1
+  count                          = local.is_production_environment ? 1 : 0
   source                         = "../modules/db-snapshot-to-s3"
   tags                           = module.tags.values
   project                        = var.project
