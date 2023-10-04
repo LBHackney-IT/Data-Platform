@@ -51,7 +51,7 @@ module "noisework_complaints_to_refined" {
     "--s3_bucket_target2"       = "s3://${module.refined_zone_data_source.bucket_id}/env-enforcement/noisework_complaints_to_geocode"
     "--enable-glue-datacatalog" = "true"
     "--source_catalog_database" = module.department_env_enforcement_data_source.raw_zone_catalog_database_name
-    "--source_catalog_table"    = "noiseworks_case"
+    "--source_catalog_table1"   = "noiseworks_case"
     "--source_catalog_table2"   = "noiseworks_complaint"
 
   }
