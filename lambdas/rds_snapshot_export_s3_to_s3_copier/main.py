@@ -50,26 +50,25 @@ def s3_copy_folder(
     page_iterator = paginator.paginate(**operation_parameters)
     year, month, day, date = get_date_time(source_identifier)
     for page in page_iterator:
-        if "Contents" in page:
-            for key in page["Contents"]:
-                source_key = key["Key"]
-                if not source_key.endswith(".parquet"):
-                    continue
-
-                parquet_file_name = source_key.split("/")[-1]
-                database_name = source_key.split("/")[1]
-                table_name = source_key.split("/")[2]
-                copy_object_params = {
-                    "Bucket": target_bucket,
-                    "CopySource": f"{source_bucket}/{source_key}",
-                    "Key": f"{target_prefix}{database_name}/{table_name}/import_year={year}/import_month={month}/import_day={day}/import_date={date}/{parquet_file_name}",
-                    "ACL": "bucket-owner-full-control",
-                }
-
-                try:
-                    s3_client.copy_object(**copy_object_params)
-                except Exception as e:
-                    print(e)
+        if "Contents" not in page:
+            continue
+        for key in page["Contents"]:
+            source_key = key["Key"]
+            if not source_key.endswith(".parquet"):
+                continue
+            parquet_file_name = source_key.split("/")[-1]
+            database_name = source_key.split("/")[1]
+            table_name = source_key.split("/")[2]
+            copy_object_params = {
+                "Bucket": target_bucket,
+                "CopySource": f"{source_bucket}/{source_key}",
+                "Key": f"{target_prefix}{database_name}/{table_name}/import_year={year}/import_month={month}/import_day={day}/import_date={date}/{parquet_file_name}",
+                "ACL": "bucket-owner-full-control",
+            }
+            try:
+                s3_client.copy_object(**copy_object_params)
+            except Exception as e:
+                print(e)
 
 
 def start_workflow_run(workflow_name: str, glue_client):
