@@ -18,7 +18,7 @@ def get_date_time(source_identifier: str) -> tuple[str, str, str, str]:
     split_identifier = source_identifier.split("-")
     day = split_identifier[5]
     month = split_identifier[4]
-    year = split_identifier[3]
+    year = "20" + split_identifier[3]
 
     date = f"{year}{month}{day}"
     return year, month, day, date
