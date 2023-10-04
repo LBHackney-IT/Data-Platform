@@ -109,3 +109,7 @@ def lambda_handler(event, context) -> None:
         workflow_name = os.environ["WORKFLOW_NAME"]
         glue = boto3.client("glue")
         start_workflow_run(workflow_name, glue)
+
+
+if __name__ == "__main__":
+    lambda_handler("event", "context")
