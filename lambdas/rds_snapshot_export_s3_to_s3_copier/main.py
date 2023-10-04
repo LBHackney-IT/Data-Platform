@@ -56,7 +56,8 @@ def s3_copy_folder(
             source_key = key["Key"]
             if not source_key.endswith(".parquet"):
                 continue
-            parquet_file_name = source_key.split("/")[-1]
+            source_key_split = source_key.split("/")
+            parquet_file_name = source_key_split[-1]
             database_name = source_key.split("/")[1]
             table_name = source_key.split("/")[2]
             copy_object_params = {
