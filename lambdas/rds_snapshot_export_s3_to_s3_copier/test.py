@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from main import get_date_time, s3_copy_folder
+from rds_snapshot_export_s3_to_s3_copier.main import get_date_time, s3_copy_folder
 
 
 class TestS3CopyFolder(unittest.TestCase):
