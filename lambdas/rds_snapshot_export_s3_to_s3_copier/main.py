@@ -58,8 +58,8 @@ def s3_copy_folder(
                 continue
             source_key_split = source_key.split("/")
             parquet_file_name = source_key_split[-1]
-            database_name = source_key.split("/")[1]
-            table_name = source_key.split("/")[2]
+            database_name = source_key_split("/")[1]
+            table_name = source_key_split("/")[2]
             copy_object_params = {
                 "Bucket": target_bucket,
                 "CopySource": f"{source_bucket}/{source_key}",
