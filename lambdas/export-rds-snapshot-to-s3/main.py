@@ -6,7 +6,6 @@ from botocore.exceptions import ClientError
 
 logger = logging.getLogger()
 rds = boto3.client("rds")
-s3 = boto3.client("s3")
 
 
 def lambda_handler(event, context):
