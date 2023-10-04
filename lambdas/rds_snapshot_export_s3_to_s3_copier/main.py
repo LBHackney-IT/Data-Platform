@@ -62,7 +62,7 @@ def s3_copy_folder(
                 copy_object_params = {
                     "Bucket": target_bucket,
                     "CopySource": f"{source_bucket}/{source_key}",
-                    "Key": f"{target_prefix}/{database_name}/{table_name}/import_year={year}/import_month={month}/import_day={day}/import_date={date}/{parquet_file_name}",
+                    "Key": f"{target_prefix}{database_name}/{table_name}/import_year={year}/import_month={month}/import_day={day}/import_date={date}/{parquet_file_name}",
                     "ACL": "bucket-owner-full-control",
                 }
 
@@ -95,7 +95,7 @@ def lambda_handler(event, context) -> None:
     else:
         source_prefix = ""
     if "TARGET_PREFIX" in os.environ:
-        target_prefix = os.environ["TARGET_PREFIX"]
+        target_prefix = os.environ["TARGET_PREFIX"] + "/"
     else:
         target_prefix = ""
 
