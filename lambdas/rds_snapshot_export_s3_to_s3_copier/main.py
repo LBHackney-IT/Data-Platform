@@ -4,12 +4,13 @@ import boto3
 
 
 def get_date_time(source_identifier: str) -> tuple[str, str, str, str]:
-    """Gets the year, month, day and date from the source identifier
+    """
+    Gets the year, month, day and date from the source identifier
 
     Args:
         source_identifier (str): source identifier taken from the
         event, as implemented this will include datetime for the snapshot as
-        applicable in the form sql-to-parquet-yy-mm-dd-hhmmss
+        applicable in the form rds:sql-to-parquet-yy-mm-dd-hhmmss
 
     Returns:
         tuple(str, str, str, str): year, month, day, date
@@ -38,12 +39,10 @@ def s3_copy_folder(
     Args:
         s3_client (boto3.client): low level S3 client
         source_bucket (str): source bucket for the parquet files
-        source_path (str): source key
-        target_bucket (str): _description_
-        target_path (str): _description_
-        snapshot_time (str): _description_
-        source_identifier (str): _description_
-        is_backdated (bool, optional): _description_. Defaults to False.
+        source_prefix (str): prefix in the source bucket for the parquet files
+        target_bucket (str): target bucket for the parquet files
+        target_prefix (str): target prefix for the parquet files
+        source_identifier (str): to be taken from the event key SourceIdentifier
     """
     paginator = s3_client.get_paginator("list_objects_v2")
     operation_parameters = {"Bucket": source_bucket, "Prefix": source_prefix}
