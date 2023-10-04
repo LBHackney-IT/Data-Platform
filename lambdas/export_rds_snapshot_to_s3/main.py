@@ -9,7 +9,7 @@ rds = boto3.client("rds")
 
 
 def lambda_handler(event, context):
-    snapshot_identifier = event["detail"]["SourceIdentifier"] + "s3_export"
+    snapshot_identifier = event["detail"]["SourceIdentifier"] + "_s3_export"
     source_arn = event["detail"]["SourceArn"]
     bucket_name = os.environ["BUCKET_NAME"]
     iam_role_arn = os.environ["IAM_ROLE_ARN"]
