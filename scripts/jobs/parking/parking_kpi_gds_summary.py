@@ -62,12 +62,12 @@ AmazonS3liberatorrawzoneliberator_pcn_audit_node1638297295740 = glueContext.crea
     push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 
-# Script generated for node Amazon S3 - parking raw - eta_decision_records
-AmazonS3parkingraweta_decision_records_node1645813232451 = (
+# Script generated for node Amazon S3 - parking raw - parking_eta_decision_records
+AmazonS3parkingrawzoneparking_eta_decision_records_node1645806323578 = (
     glueContext.create_dynamic_frame.from_catalog(
         database="parking-raw-zone",
-        table_name="eta_decision_records",
-        transformation_ctx="AmazonS3parkingraweta_decision_records_node1645813232451",
+        table_name="parking_eta_decision_records",
+        transformation_ctx="AmazonS3parkingrawzoneparking_eta_decision_records_node1645806323578",
     )
 )
 
@@ -602,7 +602,7 @@ ApplyMapping_node2 = sparkSqlQuery(
         "pcnfoidetails_pcn_foi_full": S3bucketpcnfoidetails_pcn_foi_full_node1,
         "liberator_pcn_tickets": AmazonS3liberator_pcn_tickets_node1637153316033,
         "liberator_pcn_audit": AmazonS3liberatorrawzoneliberator_pcn_audit_node1638297295740,
-        "eta_decision_records": AmazonS3parkingraweta_decision_records_node1645813232451,
+        "eta_decision_records": AmazonS3parkingrawzoneparking_eta_decision_records_node1645806323578,
     },
     transformation_ctx="ApplyMapping_node2",
 )
