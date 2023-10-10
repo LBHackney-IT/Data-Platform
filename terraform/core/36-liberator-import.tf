@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 ### New modules for liberator ingestion
 
 module "liberator_rds_snapshot_to_s3" {
-  count                          = local.is_production_environment ? 0 : 1
+  count                          = 0
   source                         = "../modules/rds-snapshot-to-s3"
   tags                           = module.tags.values
   identifier_prefix              = local.identifier_prefix
