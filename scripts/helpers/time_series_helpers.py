@@ -336,7 +336,7 @@ def get_start_end_date(dataframe: pd.DataFrame, period: str, forecast_count: int
 
 
 def forecast_ets(dataframe: pd.DataFrame, start_date: str, end_date: str, seasonal_period: str = "none",
-                 error: str = "add", trend: str = "add", damped_trend: bool = False) -> pd.DateFrame:
+                 error: str = "add", trend: str = "add", damped_trend: bool = False) -> pd.DataFrame:
     """
         Args:
             Dataframe (dataframe): Dataframe containing training timeseries dataset.
@@ -381,7 +381,7 @@ def forecast_ets(dataframe: pd.DataFrame, start_date: str, end_date: str, season
 
 def forecast_holt_winters_ets(dataframe: pd.DataFrame, forecast_count: int, seasonal_period: str = "none",
                               trend: str = "add", use_boxcox: bool = False,
-                              initialization_method: str = "estimated") -> pd.DateFrame:
+                              initialization_method: str = "estimated") -> pd.DataFrame:
     """
 
             Args:
