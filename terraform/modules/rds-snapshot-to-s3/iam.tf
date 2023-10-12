@@ -1,10 +1,19 @@
-resource "aws_lambda_permission" "allow_cloudwatch" {
+resource "aws_lambda_permission" "allow_cloudwatch_snapshot_export_trigger" {
   for_each = { for instance in local.rds_instances : instance.id => instance }
 
   action        = "lambda:InvokeFunction"
-  function_name = module.rds-to-s3-copier.lambda_function_arn
+  function_name = module.trigger_rds_snapshot_export.lambda_function_arn
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.rds_event_rule[each.key].arn
+  source_arn    = aws_cloudwatch_event_rule.rds_snapshot_created_event_rule[each.key].arn
+}
+
+resource "aws_lambda_permission" "allow_cloudwatch_snapshot_copier" {
+  for_each = { for instance in local.rds_instances : instance.id => instance }
+
+  action        = "lambda:InvokeFunction"
+  function_name = module.rds_snapshot_s3_to_s3_copier.lambda_function_arn
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.rds_snapshot_exported_event_rule[each.key].arn
 }
 
 resource "aws_iam_role" "cloudwatch_events_role" {
@@ -32,10 +41,91 @@ resource "aws_iam_role_policy" "cloudwatch_events_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Effect   = "Allow",
-        Action   = "lambda:InvokeFunction",
-        Resource = module.rds-to-s3-copier.lambda_function_arn,
+        Effect = "Allow",
+        Action = "lambda:InvokeFunction",
+        Resource = [
+          module.trigger_rds_snapshot_export.lambda_function_arn,
+          module.rds_snapshot_s3_to_s3_copier.lambda_function_arn
+        ]
       }
     ]
   })
+}
+
+resource "aws_iam_role" "rds_snapshot_to_s3_lambda_role" {
+  name               = "rds-snapshot-to-s3-lambda-role"
+  assume_role_policy = jsondecode(data.aws_iam_policy_document.lambda_assume_role.json)
+
+}
+
+resource "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
+  name = "rds-snapshot-to-s3-lambda-policy"
+
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "rds:StartExportTask",
+      "rds:DescribeExportTasks"
+    ]
+    effect = "Allow"
+    resources = [
+      local.rds_instances[*].arn
+    ]
+  }
+}
+
+resource "aws_iam_policy_attachment" "name" {
+  name       = "rds-snapshot-to-s3-lambda-policy-attachment"
+  policy_arn = aws_iam_policy.rds_snapshot_to_s3_lambda.arn
+  roles = [
+    aws_iam_role.rds_snapshot_to_s3_lambda_role.name
+  ]
+}
+
+resource "aws_iam_role" "rds_snapshot_s3_to_s3_copier_lambda_role" {
+  name               = "rds-snapshot-s3-to-s3-copier-lambda-role"
+  assume_role_policy = jsondecode(data.aws_iam_policy_document.lambda_assume_role.json)
+}
+
+resource "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
+  name = "rds-snapshot-s3-to-s3-copier-lambda-policy"
+
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:ListBucket",
+      "s3:DeleteObject"
+    ]
+    effect = "Allow"
+    resources = [
+      module.landing_zone.bucket_arn,
+      "${module.landing_zone.bucket_arn}/*",
+      module.raw_zone.bucket_arn,
+      "${module.raw_zone.bucket_arn}/*"
+    ]
+  }
 }
