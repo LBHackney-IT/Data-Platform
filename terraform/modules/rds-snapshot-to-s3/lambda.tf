@@ -1,6 +1,6 @@
 module "trigger_rds_snapshot_export" {
   source                         = "../aws-lambda"
-  lambda_name                    = "rds-to-s3-copier"
+  lambda_name                    = "export-rds-snapshot-to-s3"
   runtime                        = "python3.10"
   handler                        = "lambda_function.lambda_handler"
   lambda_artefact_storage_bucket = var.lambda_artefact_storage_bucket
