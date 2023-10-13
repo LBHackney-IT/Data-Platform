@@ -66,66 +66,91 @@ The SQL tidies the Cycle Hangar waiting list, It will create a single record for
 
 02/06/2023 - Create Query
 09/06/2023 - add X & Y from LLPG
+12/10/2023 - Add the different types of hangars requested by the party
 ********************************************************************************************************************/
 /*** Waiting List ***/
 WITH waiting_list as (
     SELECT *,
-        ROW_NUMBER() OVER ( PARTITION BY party_id 
+        ROW_NUMBER() OVER ( PARTITION BY party_id
                             ORDER BY party_id DESC) row1
     FROM liberator_hangar_waiting_list
-),
-    
+    WHERE Import_Date = (Select MAX(Import_Date) from
+                                liberator_hangar_waiting_list)),
 /*** Party List ***/
 Licence_Party as (
-    SELECT * 
-    FROM liberator_licence_party 
-),
+    SELECT *
+    FROM liberator_licence_party
+    WHERE Import_Date = (Select MAX(Import_Date) from
+                                    liberator_licence_party)),
 /*** STREET ***/
 LLPG as (
     SELECT *
     FROM liberator_permit_llpg
-),
+    WHERE import_date = (Select MAX(import_date) from
+                                       liberator_permit_llpg)),
 /*******************************************************************************
 Cycle Hangar allocation details
-*******************************************************************************/ 
+*******************************************************************************/
 Cycle_Hangar_allocation as (
-    SELECT 
+    SELECT
         *,
         ROW_NUMBER() OVER ( PARTITION BY party_id
         ORDER BY party_id, date_of_allocation DESC) row_num
     FROM liberator_hangar_allocations
-    WHERE allocation_status IN ('live')
-),
-
+    WHERE Import_Date = (Select MAX(Import_Date) from
+                                  liberator_hangar_allocations)
+    AND allocation_status IN ('live')),
+   
 Street_Rec as (
     SELECT *
     FROM liberator_permit_llpg
-    WHERE address1 = 'STREET RECORD'
-)
-    
-/**** OUTPUT THE DATA ****/
-SELECT
-    A.party_id, first_name, surname, B.uprn as user_uprn,
-    B.address1, B.address2, B.address3, B.postcode, 
-    B.telephone_number,
-    B.email_address,
-    D.Address2 as street,
-    B.record_created as Date_Registered,
-    C.x, C.y, 
-    
+    WHERE import_date = (Select MAX(import_date) from
+                                       liberator_permit_llpg)
+    AND address1 = 'STREET RECORD'),
+   
+/** Obtain the unique Party IDs **/
+Party_ID_List as (
+    SELECT
+        A.party_id, first_name, surname, B.uprn as USER_UPRN,
+        B.address1, B.address2, B.address3, B.postcode,
+        B.telephone_number, D.Address2 as Street, email_address,
+        B.record_created as Date_Registered,
+        C.x, C.y      
+    FROM waiting_list as A
+    LEFT JOIN Licence_Party as B ON A.party_id = B.business_party_id
+    LEFT JOIN LLPG          as C ON B.uprn = cast(C.UPRN as string)
+    LEFT JOIN Street_Rec    as D ON C.USRN = D.USRN
+    LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id AND row_num = 1
+    WHERE row1= 1 AND E.party_id is NULL and D.Address2 is not NULL),
+
+Count_Hangar_Details as (
+    SELECT party_id,
+        SUM(CASE
+            When registration_type = 'ESTATE' Then 1
+            ELSE 0
+            END) as Estate_Count,
+          SUM(CASE
+            When registration_type = 'NEWONLY' Then 1
+            ELSE 0
+            END) as Newonly_Count,  
+          SUM(CASE
+            When registration_type = 'RESIDENT' Then 1
+            ELSE 0
+            END) as Resident_Count      
+    FROM waiting_list
+    GROUP BY party_id)
+ 
+SELECT A.*, B.Estate_Count, B.Newonly_Count, B.Resident_Count,
+
     current_timestamp() as importdatetime,
     replace(cast(current_date() as string),'-','') as import_date,
-    
-    cast(Year(current_date) as string)    as import_year, 
-    cast(month(current_date) as string)   as import_month, 
+   
+    cast(Year(current_date) as string)    as import_year,
+    cast(month(current_date) as string)   as import_month,
     cast(day(current_date) as string)     as import_day
-    
-FROM waiting_list as A
-LEFT JOIN Licence_Party as B ON A.party_id = B.business_party_id
-LEFT JOIN LLPG as C ON B.uprn = cast(C.UPRN as string)
-LEFT JOIN Street_Rec    as D ON C.USRN = D.USRN
-LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id AND row_num = 1
-WHERE row1= 1 AND E.party_id is NULL and D.Address2 is not NULL
+
+FROM Party_ID_List as A
+LEFT JOIN Count_Hangar_Details as B ON A.party_id = B.party_id 
 """
 SQL_node1658765472050 = sparkSqlQuery(
     glueContext,
