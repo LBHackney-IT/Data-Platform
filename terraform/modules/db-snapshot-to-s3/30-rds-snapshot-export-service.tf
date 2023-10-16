@@ -41,10 +41,8 @@ data "aws_iam_policy_document" "rds_snapshot_export_service" {
       "s3:DeleteObject*"
     ]
     resources = [
-      module.rds_export_storage.bucket_arn,
-      "${module.rds_export_storage.bucket_arn}/*",
-      module.rds_export_storage.bucket_arn,
-      "${module.rds_export_storage.bucket_arn}/*",
+      var.rds_export_storage_bucket_arn,
+      "${var.rds_export_storage_bucket_arn}/*"
     ]
   }
 
@@ -54,7 +52,7 @@ data "aws_iam_policy_document" "rds_snapshot_export_service" {
     ]
     effect = "Allow"
     resources = [
-      module.rds_export_storage.kms_key_arn
+      var.rds_export_storage_kms_key_arn
     ]
   }
 }

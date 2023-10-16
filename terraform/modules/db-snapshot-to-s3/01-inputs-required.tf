@@ -42,3 +42,19 @@ variable "service_area" {
 variable "rds_instance_ids" {
   type = list(string)
 }
+
+variable "rds_export_storage_bucket_arn" {
+  type = string
+}
+
+variable "rds_export_storage_kms_key_arn" {
+  type = string
+}
+
+variable "rds_export_storage_kms_key_id" {
+  type = string
+}
+
+variable "rds_export_storage_bucket_id" {
+  type = string
+}

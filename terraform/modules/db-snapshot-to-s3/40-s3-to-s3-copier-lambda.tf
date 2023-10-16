@@ -53,8 +53,8 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
     ]
     effect = "Allow"
     resources = [
-      module.rds_export_storage.kms_key_arn,
-      "${module.rds_export_storage.bucket_arn}/*",
+      var.rds_export_storage_bucket_arn,
+      "${var.rds_export_storage_bucket_arn}/*",
       var.zone_kms_key_arn,
       var.zone_bucket_arn,
       "${var.zone_bucket_arn}/*",
@@ -73,8 +73,8 @@ data "aws_iam_policy_document" "s3_to_s3_copier_lambda" {
     resources = [
       var.zone_bucket_arn,
       "${var.zone_bucket_arn}/*",
-      module.rds_export_storage.bucket_arn,
-      "${module.rds_export_storage.bucket_arn}/*"
+      var.rds_export_storage_bucket_arn,
+      "${var.rds_export_storage_bucket_arn}/*"
     ]
   }
 

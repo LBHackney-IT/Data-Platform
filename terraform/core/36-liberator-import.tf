@@ -37,6 +37,10 @@ module "liberator_db_snapshot_to_s3" {
   zone_kms_key_arn               = module.landing_zone.kms_key_arn
   zone_bucket_arn                = module.landing_zone.bucket_arn
   zone_bucket_id                 = module.landing_zone.bucket_id
+  rds_export_storage_bucket_arn  = module.rds_export_storage.bucket_arn
+  rds_export_storage_bucket_id   = module.rds_export_storage.bucket_id
+  rds_export_storage_kms_key_arn = module.rds_export_storage.kms_key_arn
+  rds_export_storage_kms_key_id  = module.rds_export_storage.kms_key_id
   service_area                   = "parking"
   rds_instance_ids               = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_id]
   workflow_name                  = aws_glue_workflow.parking_liberator_data.name
@@ -79,7 +83,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 ### New modules for liberator ingestion
 
 module "liberator_rds_snapshot_to_s3" {
-  count                          = 0
+  count                          = 1
   source                         = "../modules/rds-snapshot-to-s3"
   tags                           = module.tags.values
   identifier_prefix              = local.identifier_prefix
@@ -87,8 +91,9 @@ module "liberator_rds_snapshot_to_s3" {
   environment                    = var.environment
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   zone_kms_key_arn               = module.landing_zone.kms_key_arn
-  zone_bucket_arn                = module.landing_zone.bucket_arn
+  source_bucket_arn              = module.landing_zone.bucket_arn
   zone_bucket_id                 = module.landing_zone.bucket_id
+  target_bucket_arn              = module.raw_zone.bucket_arn
   service_area                   = "parking"
   rds_instance_ids               = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_id]
   rds_instance_arns              = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_arn]

@@ -424,3 +424,14 @@ resource "aws_s3_bucket_versioning" "ssl_connection_resources" {
     status = "Enabled"
   }
 }
+
+module "rds_export_storage" {
+  source = "../modules/s3-bucket"
+
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "RDS Export Storage"
+  bucket_identifier = "rds-export-storage"
+}
