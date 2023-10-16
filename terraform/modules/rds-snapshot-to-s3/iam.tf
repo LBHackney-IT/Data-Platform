@@ -58,9 +58,7 @@ resource "aws_iam_role" "rds_snapshot_to_s3_lambda_role" {
 
 }
 
-resource "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
-  name = "rds-snapshot-to-s3-lambda-policy"
-
+data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
   statement {
     actions = [
       "logs:CreateLogGroup",
@@ -85,22 +83,14 @@ resource "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
   }
 }
 
-resource "aws_iam_policy_attachment" "name" {
-  name       = "rds-snapshot-to-s3-lambda-policy-attachment"
-  policy_arn = aws_iam_policy.rds_snapshot_to_s3_lambda.arn
-  roles = [
-    aws_iam_role.rds_snapshot_to_s3_lambda_role.name
-  ]
-}
+
 
 resource "aws_iam_role" "rds_snapshot_s3_to_s3_copier_lambda_role" {
   name               = "rds-snapshot-s3-to-s3-copier-lambda-role"
   assume_role_policy = jsondecode(data.aws_iam_policy_document.lambda_assume_role.json)
 }
 
-resource "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
-  name = "rds-snapshot-s3-to-s3-copier-lambda-policy"
-
+data "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
   statement {
     actions = [
       "logs:CreateLogGroup",
@@ -122,10 +112,38 @@ resource "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
     ]
     effect = "Allow"
     resources = [
-      module.landing_zone.bucket_arn,
-      "${module.landing_zone.bucket_arn}/*",
-      module.raw_zone.bucket_arn,
-      "${module.raw_zone.bucket_arn}/*"
+      var.source_bucket_arn,
+      "${var.source_bucket_arn}/*",
+      var.target_bucket_arn,
+      "${var.target_bucket_arn}/*"
     ]
+  }
+}
+
+resource "aws_iam_policy" "rds_snapshot_s3_to_s3_copier_role_policy" {
+  name   = lower("${var.identifier_prefix}-rds-snapshot-s3-to-s3-copier-lambda-policy")
+  policy = data.aws_iam_policy_document.rds_snapshot_s3_to_s3_copier_role_policy.json
+  tags   = var.tags
+}
+
+resource "aws_iam_policy_attachment" "rds_snapshot_copier_attachment" {
+  name       = "${var.identifier_prefix}-rds-snapshot-s3-to-s3-lambda-policy-attachment"
+  policy_arn = aws_iam_policy.rds_snapshot_s3_to_s3_copier_role_policy.arn
+  roles = [
+    aws_iam_role.rds_snapshot_to_s3_lambda_role.name
+  ]
+}
+
+data "aws_iam_policy_document" "lambda_assume_role" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "lambda.amazonaws.com"
+      ]
+      type = "Service"
+    }
   }
 }
