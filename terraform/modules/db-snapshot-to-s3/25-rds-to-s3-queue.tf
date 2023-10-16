@@ -128,7 +128,7 @@ resource "aws_sns_topic_subscription" "subscribe_sqs_to_sns_topic" {
 
 resource "aws_lambda_event_source_mapping" "event_source_mapping" {
   event_source_arn = aws_sqs_queue.rds_snapshot_to_s3.arn
-  enabled          = true
+  enabled          = false
   function_name    = aws_lambda_function.rds_snapshot_to_s3_lambda.arn
   batch_size       = 1
 }
