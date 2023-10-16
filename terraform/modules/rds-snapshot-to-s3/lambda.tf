@@ -9,6 +9,11 @@ module "trigger_rds_snapshot_export" {
   s3_key                         = "export-rds-snapshot-to-s3.zip"
   identifier_prefix              = var.identifier_prefix
   tags                           = var.tags
+  environment_variables = {
+    "BUCKET_NAME"  = var.zone_bucket_id
+    "IAM_ROLE_ARN" = aws_iam_role.rds_snapshot_to_s3_lambda_role.arn
+    "KMS_KEY_ID"   = var.zone_kms_key_arn
+  }
 }
 
 module "rds_snapshot_s3_to_s3_copier" {
