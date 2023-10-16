@@ -54,7 +54,7 @@ resource "aws_iam_role_policy" "cloudwatch_events_policy" {
 
 resource "aws_iam_role" "rds_snapshot_to_s3_lambda_role" {
   name               = "rds-snapshot-to-s3-lambda-role"
-  assume_role_policy = jsondecode(data.aws_iam_policy_document.lambda_assume_role.json)
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 
 }
 
@@ -78,7 +78,7 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
     ]
     effect = "Allow"
     resources = [
-      local.rds_instances[*].arn
+      local.rds_instances[0].arn
     ]
   }
 }
@@ -87,7 +87,7 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
 
 resource "aws_iam_role" "rds_snapshot_s3_to_s3_copier_lambda_role" {
   name               = "rds-snapshot-s3-to-s3-copier-lambda-role"
-  assume_role_policy = jsondecode(data.aws_iam_policy_document.lambda_assume_role.json)
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
 data "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
