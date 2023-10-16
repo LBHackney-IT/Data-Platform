@@ -22,4 +22,11 @@ module "rds_snapshot_s3_to_s3_copier" {
   s3_key                         = "rds-export-s3-to-s3-copier.zip"
   identifier_prefix              = var.identifier_prefix
   tags                           = var.tags
+  environment_variables = {
+    "SOURCE_BUCKET" = var.source_bucket_arn
+    "TARGET_BUCKET" = var.target_bucket_arn
+    "SOURCE_PREFIX" = var.source_prefix
+    "TARGET_PREFIX" = var.target_prefix
+    "WORKFLOW_NAME" = var.workflow_name
+  }
 }

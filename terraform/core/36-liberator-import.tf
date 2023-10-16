@@ -94,6 +94,8 @@ module "liberator_rds_snapshot_to_s3" {
   source_bucket_arn              = module.landing_zone.bucket_arn
   zone_bucket_id                 = module.landing_zone.bucket_id
   target_bucket_arn              = module.raw_zone.bucket_arn
+  source_prefix                  = "parking/liberator/"
+  target_prefix                  = "parking/liberator/"
   service_area                   = "parking"
   rds_instance_ids               = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_id]
   rds_instance_arns              = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_arn]
