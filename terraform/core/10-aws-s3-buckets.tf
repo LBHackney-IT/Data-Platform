@@ -435,3 +435,14 @@ module "rds_export_storage" {
   bucket_name       = "RDS Export Storage"
   bucket_identifier = "rds-export-storage"
 }
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "rds_export_storage_encryption" {
+  bucket = module.rds_export_storage.bucket_id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "aws:kms"
+    }
+    bucket_key_enabled = true
+  }
+}
