@@ -251,11 +251,11 @@ module "Cedar_Backing_Data" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1tuNgqL5oj9dFt8fO613klZM58bLidsCC"
+  google_drive_document_id       = "1fvArJhriEjgs911pLWzfuJ0m0kI0U6cI"
   glue_job_name                  = "Cedar Backing Data"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Cedar_Backing_Data/Cedar_Backing_sept_2023.csv"
+  input_file_name                = "Cedar_Backing_Data/Cedar_Backing_sept_2023_update.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
