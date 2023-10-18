@@ -1,6 +1,6 @@
 # Any internal local variables should be declared here. We also import the tag module for convenience
 module "tags" {
-  source = "github.com/LBHackney-IT/aws-tags-lbh.git?ref=v1.1.1"
+  source = "git@github.com:LBHackney-IT/aws-tags-lbh.git?ref=v1.1.1"
 
   application          = var.application
   automation_build_url = var.automation_build_url
@@ -47,8 +47,8 @@ data "aws_ssm_parameter" "aws_vpc_id" {
 
 data "aws_subnets" "network" {
   filter {
-    name    = "vpc-id"
-    values  = [data.aws_ssm_parameter.aws_vpc_id.value]
+    name   = "vpc-id"
+    values = [data.aws_ssm_parameter.aws_vpc_id.value]
   }
 }
 
