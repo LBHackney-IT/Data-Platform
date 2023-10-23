@@ -14,3 +14,7 @@ output "cloudwatch_event_rule_name" {
 output "cloudwatch_event_rule_arn" {
   value = module.sql_to_parquet.event_rule_arns[0]
 }
+
+output "rds_instance_arn" {
+  value = aws_db_instance.ingestion_db.arn
+}

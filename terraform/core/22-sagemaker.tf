@@ -15,8 +15,8 @@ module "sagemaker" {
   development_endpoint_role_arn = aws_iam_role.glue_role.arn
   tags                          = module.tags.values
   identifier_prefix             = local.short_identifier_prefix
-  python_libs                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.pydeequ.key}"
-  extra_jars                    = "s3://${module.glue_scripts.bucket_id}/${aws_s3_bucket_object.jars.key}"
+  python_libs                   = "s3://${module.glue_scripts.bucket_id}/${aws_s3_object.helpers.key},s3://${module.glue_scripts.bucket_id}/${aws_s3_object.pydeequ.key}"
+  extra_jars                    = "s3://${module.glue_scripts.bucket_id}/${aws_s3_object.jars.key}"
   instance_name                 = "admin"
   github_repository             = aws_sagemaker_code_repository.data_platform.code_repository_name
 }
@@ -117,7 +117,7 @@ data "archive_file" "shutdown_notebooks" {
   output_path = "../../lambdas/shutdown_notebooks.zip"
 }
 
-resource "aws_s3_bucket_object" "shutdown_notebooks" {
+resource "aws_s3_object" "shutdown_notebooks" {
   bucket      = module.lambda_artefact_storage.bucket_id
   key         = "shutdown_notebooks.zip"
   source      = data.archive_file.shutdown_notebooks.output_path
@@ -141,7 +141,7 @@ resource "aws_lambda_function" "shutdown_notebooks" {
   runtime          = "python3.8"
   function_name    = "${local.short_identifier_prefix}shutdown-notebooks"
   s3_bucket        = module.lambda_artefact_storage.bucket_id
-  s3_key           = aws_s3_bucket_object.shutdown_notebooks.key
+  s3_key           = aws_s3_object.shutdown_notebooks.key
   source_code_hash = data.archive_file.shutdown_notebooks.output_base64sha256
   timeout          = "60"
 }

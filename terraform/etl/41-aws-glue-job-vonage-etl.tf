@@ -10,8 +10,8 @@ module "ingest_vonage_data" {
   number_of_workers_for_glue_job  = 12
   max_concurrent_runs_of_glue_job = 1
   job_name                        = "${local.short_identifier_prefix}vonage_one_time_ingestion_customer_services"
-  helper_module_key               = data.aws_s3_bucket_object.helpers.key
-  pydeequ_zip_key                 = data.aws_s3_bucket_object.pydeequ.key
+  helper_module_key               = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
   glue_job_worker_type           = "G.2X"
   glue_version                   = "4.0"
   glue_job_timeout               = 360

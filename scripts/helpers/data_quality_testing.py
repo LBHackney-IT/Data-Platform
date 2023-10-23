@@ -1,5 +1,8 @@
+
 from pyspark.sql import DataFrame
+
 from scripts.helpers.helpers import get_glue_env_var
+
 
 def get_metrics_target_location():
     metrics_target_location = get_glue_env_var('deequ_metrics_location')
@@ -47,3 +50,5 @@ def get_success_metrics(success_metrics):
         for message in success_metrics.collect()
     ]
     return messages
+
+

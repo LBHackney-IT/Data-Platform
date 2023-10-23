@@ -14,7 +14,7 @@ locals {
   } : {}
 }
 
-resource "aws_s3_bucket_object" "job_script" {
+resource "aws_s3_object" "job_script" {
   count = var.script_s3_object_key == null ? 1 : 0
 
   bucket      = local.scripts_bucket_id
@@ -25,7 +25,7 @@ resource "aws_s3_bucket_object" "job_script" {
 }
 
 locals {
-  object_key      = var.script_s3_object_key == null ? aws_s3_bucket_object.job_script[0].key : var.script_s3_object_key
+  object_key      = var.script_s3_object_key == null ? aws_s3_object.job_script[0].key : var.script_s3_object_key
   job_name_prefix = local.environment == "stg" ? "stg " : ""
 }
 
@@ -39,6 +39,8 @@ resource "aws_glue_job" "job" {
   role_arn          = local.glue_role_arn
   timeout           = var.glue_job_timeout
   connections       = var.jdbc_connections
+  execution_class   = var.is_production_environment || var.glue_version == "2.0" || var.glue_job_worker_type == "STANDARD" ? var.prod_execution_class : var.non_prod_execution_class
+
   command {
     python_version  = "3"
     script_location = "s3://${local.scripts_bucket_id}/${local.object_key}"
@@ -56,6 +58,7 @@ resource "aws_glue_job" "job" {
       "--extra-py-files"                   = "s3://${local.scripts_bucket_id}/${var.helper_module_key},s3://${local.scripts_bucket_id}/${var.pydeequ_zip_key}"
       "--extra-jars"                       = local.extra_jars
       "--enable-continuous-cloudwatch-log" = "true"
+      "--enable-metrics"                   = ""
       "--enable-spark-ui"                  = "true"
       "--spark-event-logs-path"            = local.spark_ui_storage
   })

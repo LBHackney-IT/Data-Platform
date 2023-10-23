@@ -633,7 +633,7 @@ def prepare_clean_parking_permit_data(parking_permit_df: DataFrame) -> DataFrame
         A DataFrame after preparing and cleaning parking permit data.
     """
 
-    parking_permit_cleaned = parking_permit_df\
+    parking_permit_cleaned = parking_permit_df \
         .withColumn("source", lit("parking_permit")) \
         .withColumn("source_filter", lit("live parking permit")) \
         .withColumn("extracted_name",
@@ -839,6 +839,124 @@ def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -
                 col("full_address"), col("source_filter"))
 
     return schools_admissions
+
+
+def prepare_clean_electoral_register_data(electoral_register_df: DataFrame) -> DataFrame:
+    """
+    This function cleans raw electoral register data from Xpress read for standardising.
+    Args:
+        electoral_register_df (DataFrame): Raw data from Xpress.
+
+    Returns:
+        electoral_register_cleaned (Dataframe): Cleaned dataframe containing electoral register data.
+    """
+
+    address_cols = ["address_line_1", "address_line_2", "address_line_3", "address_line_4"]
+
+    electoral_register_cleaned = electoral_register_df \
+        .withColumn("source", lit("electoral_register")) \
+        .withColumn("source_id", col("elector_id")) \
+        .withColumn("first_name", split(electoral_register_df["elector_forename"], ' ').getItem(0)) \
+        .withColumn("middle_name", col("elector_middle_name")) \
+        .withColumn("last_name", col("elector_surname")) \
+        .withColumn("name", regexp_replace(concat_ws(" ", col("first_name"), col("middle_name"),
+                                                     col("last_name")), r"\s+", " ")) \
+        .withColumn("date_of_birth", to_date(col("elector_dob"), format="yyyy-MM-dd")) \
+        .withColumnRenamed("property_address_1", "address_line_1") \
+        .withColumnRenamed("property_address_2", "address_line_2") \
+        .withColumnRenamed("property_address_3", "address_line_3") \
+        .withColumnRenamed("property_address_4", "address_line_4") \
+        .withColumnRenamed("property_post_code", "post_code") \
+        .withColumnRenamed("property_urn", "uprn") \
+        .withColumn("email", lit("")) \
+        .withColumn("title", lit("")) \
+        .withColumn("source_filter", lit("electoral register jun23")) \
+        .select(col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+                col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+                col("address_line_1"), col("address_line_2"), col("address_line_3"),
+                col("address_line_4"), col("source_filter"))
+
+    # create a zip of address line arrays, sorted in the order of not null (False), column order
+    electoral_register_cleaned = electoral_register_cleaned.select(
+        col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+        col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+        col("address_line_1"), col("address_line_2"), col("address_line_3"),
+        col("address_line_4"), col("source_filter"),
+        array_sort(
+            arrays_zip(
+                array([col(c).isNull() for c in address_cols]),
+                array([lit(i) for i in range(4)]),
+                array([col(c) for c in address_cols])
+            )
+        ).alias('address_sorted'))
+
+    # disaggregate address_sorted arrays into columns
+    electoral_register_cleaned = electoral_register_cleaned.select(
+        col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+        col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+        col("source_filter"),
+        *[col("address_sorted")[i]['2'].alias(address_cols[i]) for i in range(4)])
+
+    return electoral_register_cleaned
+
+
+def standardize_electoral_register_data(electoral_register_cleaned: DataFrame) -> DataFrame:
+    """Standardize electoral register data. This function convert all the custom names (coming from their respective
+    sources to standard names that will be used by various other functions like feature engineering etc.)
+    The DataFrame returned will have the following columns:
+
+    * source: Source of the data like parking, tax etc. Should be of type string and cannot be blank.
+    * source_id: Unique ID for reach record. It's ok to have same person with different source_id. Should be of type
+    string and cannot be blank.
+    * uprn: UPRN of the address. Should be of type string and can be blank.
+    * title: Title of the person. Should be of type string and can be blank.
+    * first_name: First name of the person. Should be of type string and can be blank.
+    * middle_name: Middle name of the person. Should be of type string and can be blank.
+    * last_name: Last name of the person. Should be of type string and can be blank.
+    * name: Concatenation of first and last name after sorting alphabetically of the person. Should be of type
+    string and can be blank.
+    * date_of_birth: Date of birth of the person. Should be of type Date and can be blank.
+    * post_code: Postal code of the address. Should be of type string and can be blank.
+    * address_line_1: First line of the address. Should be of type string and can be blank. If this is empty then check
+    if other address lines contain a value, and shift if necessary.
+    * address_line_2: Second line of the address. Should be of type string and can be blank. If this is empty then check
+    if other address lines contain a value, and shift if necessary.
+    * address_line_3: Third line of the address. Should be of type string and can be blank.
+    * address_line_4: Fourth line of the address. Should be of type string and can be blank.
+    * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
+    Should be of type string and can be blank.
+    * source_filter: Field to contain additional information on electoral register (only contains holding string for now).
+    Should be of type string and can be blank.
+
+    Args:
+        electoral_register_cleaned: a cleaned electoral_register dataframe
+
+    Returns:
+        A electoral_register DataFrame with all the standard column listed above.
+
+    """
+    electoral_register = electoral_register_cleaned \
+        .withColumn("source_id", col("source_id")) \
+        .withColumn("title", categorise_title(lower(trim(col("title"))))) \
+        .withColumn("first_name", standardize_name(trim(col("first_name")))) \
+        .withColumn("middle_name", standardize_name(trim(col("middle_name")))) \
+        .withColumn("last_name", standardize_name(trim(col("last_name")))) \
+        .withColumn("name", standardize_name(trim(col("name")))) \
+        .withColumn("post_code", lower(trim(col("post_code")))) \
+        .withColumn("address_line_1", standardize_address_line(trim(col("address_line_1")))) \
+        .withColumn("address_line_2", standardize_address_line(trim(col("address_line_2")))) \
+        .withColumn("address_line_3", standardize_address_line(trim(col("address_line_3")))) \
+        .withColumn("address_line_4", standardize_address_line(trim(col("address_line_4")))) \
+        .withColumn("full_address1", full_address(trim(col("address_line_1")), trim(col("address_line_2")),
+                                                  trim(col("address_line_3")),
+                                                  trim(col("address_line_4")))) \
+        .withColumn("full_address", regexp_replace(col("full_address1"), r"\s+", " ")) \
+        .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"), col("middle_name"),
+                col("last_name"), col("name"), col("date_of_birth"), col("post_code"), col("address_line_1"),
+                col("address_line_2"), col("address_line_3"), col("address_line_4"),
+                col("full_address"), col("source_filter"))
+
+    return electoral_register
 
 
 def remove_deceased(df: DataFrame) -> DataFrame:

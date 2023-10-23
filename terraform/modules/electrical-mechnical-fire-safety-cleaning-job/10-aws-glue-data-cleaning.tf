@@ -3,7 +3,7 @@ locals {
   object_key     = "${var.department.identifier_snake_case}/${var.script_name}.py"
 }
 
-resource "aws_s3_bucket_object" "housing_repairs_elec_mech_fire_data_cleaning_script" {
+resource "aws_s3_object" "housing_repairs_elec_mech_fire_data_cleaning_script" {
   bucket      = var.glue_scripts_bucket_id
   key         = "scripts/${local.object_key}"
   acl         = "private"
@@ -18,6 +18,7 @@ module "housing_repairs_elec_mech_fire_cleaning" {
 
   department        = var.department
   job_name          = "${var.short_identifier_prefix}Housing Repairs - Electrical Mechnical Fire Safety ${title(replace(var.dataset_name, "-", " "))} Cleaning"
+  glue_version      = var.is_production_environment ? "2.0" : "4.0"
   helper_module_key = var.helper_module_key
   pydeequ_zip_key   = var.pydeequ_zip_key
   job_parameters = {
@@ -28,7 +29,7 @@ module "housing_repairs_elec_mech_fire_cleaning" {
     "--extra-jars"                       = var.deequ_jar_file_path
   }
   workflow_name              = var.worksheet_resource.workflow_name
-  script_s3_object_key       = aws_s3_bucket_object.housing_repairs_elec_mech_fire_data_cleaning_script.key
+  script_s3_object_key       = aws_s3_object.housing_repairs_elec_mech_fire_data_cleaning_script.key
   triggered_by_crawler       = var.worksheet_resource.crawler_name
   spark_ui_output_storage_id = var.spark_ui_output_storage_id
   crawler_details = {

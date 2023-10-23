@@ -20,7 +20,7 @@ locals {
 
   # This value gives us something to implicitly depend on
   # in the archive_file below.
-  source_dir         = "../../lambdas/${local.lambda_name_underscore}"
+  source_dir = "../../lambdas/${local.lambda_name_underscore}"
 }
 
 resource "aws_iam_role" "lambda" {
@@ -117,17 +117,17 @@ data "archive_file" "lambda" {
   type             = "zip"
   source_dir       = local.source_dir
   output_path      = "../../lambdas/${local.lambda_name_underscore}.zip"
-  depends_on       = [ null_resource.run_install_requirements ]
+  depends_on       = [null_resource.run_install_requirements]
   output_file_mode = "0666"
 }
 
-resource "aws_s3_bucket_object" "lambda" {
+resource "aws_s3_object" "lambda" {
   bucket      = var.lambda_artefact_storage_bucket
   key         = "${local.lambda_name_underscore}.zip"
   source      = data.archive_file.lambda.output_path
   acl         = "private"
   source_hash = null_resource.run_install_requirements.triggers["dir_sha1"]
-  depends_on  = [ data.archive_file.lambda ]
+  depends_on  = [data.archive_file.lambda]
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -138,7 +138,7 @@ resource "aws_lambda_function" "lambda" {
   runtime          = var.runtime_language
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
-  s3_key           = aws_s3_bucket_object.lambda.key
+  s3_key           = aws_s3_object.lambda.key
   source_code_hash = data.archive_file.lambda.output_base64sha256
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
@@ -149,10 +149,10 @@ resource "aws_lambda_function" "lambda" {
   environment {
     variables = var.lambda_environment_variables
   }
-  
-  depends_on = [ 
+
+  depends_on = [
     null_resource.run_install_requirements,
-    aws_s3_bucket_object.lambda
+    aws_s3_object.lambda
   ]
 }
 

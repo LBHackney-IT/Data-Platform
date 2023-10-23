@@ -12,12 +12,12 @@ module "ingest_mtfh_rentsense_tables" {
 
   job_name                       = "${local.short_identifier_prefix}Ingest MTFH Rentsense tables"
   job_description                = "Ingest all tables from MTFH for Rentsense from the Housing Dynamo DB instances"
-  script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
-  helper_module_key              = aws_s3_bucket_object.helpers.key
+  script_s3_object_key           = aws_s3_object.dynamodb_tables_ingest.key
+  helper_module_key              = aws_s3_object.helpers.key
   glue_version                   = "4.0"
   glue_job_timeout               = "300"
   glue_job_worker_type           = "G.1X"
-  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
+  pydeequ_zip_key                = aws_s3_object.pydeequ.key
   number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
@@ -45,37 +45,6 @@ module "ingest_mtfh_rentsense_tables" {
   }
 }
 
-module "test_ingest_mtfh_contracts_table" {
-  source                    = "../modules/aws-glue-job"
-  is_live_environment       = local.is_live_environment
-  is_production_environment = local.is_production_environment
-  environment               = var.environment
-  tags                      = module.tags.values
-  glue_role_arn             = aws_iam_role.glue_role.arn
-
-  count = local.is_live_environment && !local.is_production_environment ? 1 : 0
-
-  job_name                       = "${local.short_identifier_prefix}Test Ingest MTFH Contracts tables"
-  job_description                = "Ingest Contracts table from MTFH for Rentsense from the Housing Dynamo DB instances"
-  script_s3_object_key           = aws_s3_bucket_object.dynamodb_tables_ingest.key
-  helper_module_key              = aws_s3_bucket_object.helpers.key
-  glue_version                   = "4.0"
-  glue_job_timeout               = "180"
-  pydeequ_zip_key                = aws_s3_bucket_object.pydeequ.key
-  number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
-  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
-  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
-  #schedule                       = "cron(30 5 ? * MON-FRI *)"
-  job_parameters = {
-    "--table_names"       = "Contracts" # This is a comma delimited list of Dynamo DB table names to be imported
-    "--role_arn"          = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
-    "--s3_target"         = "s3://${module.landing_zone.bucket_id}/mtfh contracts test/"
-    "--number_of_workers" = local.number_of_workers_for_mtfh_ingestion
-  }
-
-}
-
 module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
   tags = module.tags.values
 
@@ -84,12 +53,13 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
   is_production_environment = local.is_production_environment
 
   job_name                   = "${local.short_identifier_prefix}Copy MTFH Dynamo DB tables for Rentsense to housing department raw zone"
+  glue_version               = local.is_production_environment ? "2.0" : "4.0"
   department                 = module.department_housing
-  script_s3_object_key       = aws_s3_bucket_object.copy_tables_landing_to_raw.key
+  script_s3_object_key       = aws_s3_object.copy_tables_landing_to_raw.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   environment                = var.environment
-  pydeequ_zip_key            = aws_s3_bucket_object.pydeequ.key
-  helper_module_key          = aws_s3_bucket_object.helpers.key
+  pydeequ_zip_key            = aws_s3_object.pydeequ.key
+  helper_module_key          = aws_s3_object.helpers.key
   glue_role_arn              = aws_iam_role.glue_role.arn
   glue_temp_bucket_id        = module.glue_temp_storage.bucket_id
   glue_scripts_bucket_id     = module.glue_scripts.bucket_id
@@ -116,7 +86,7 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
         Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
 }
 

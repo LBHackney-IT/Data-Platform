@@ -127,15 +127,15 @@ data "aws_iam_policy_document" "key_policy" {
     }
   }
 
-  dynamic statement {
-    for_each = var.is_production_environment ? [1] : [] 
-    
+  dynamic "statement" {
+    for_each = var.is_production_environment ? [1] : []
+
     content {
-      sid =  "AllowCentralBackupVaultAccessToThisKey"
+      sid    = "AllowCentralBackupVaultAccessToThisKey"
       effect = "Allow"
-      
+
       principals {
-        type = "AWS"
+        type        = "AWS"
         identifiers = [data.aws_secretsmanager_secret_version.central_backup_role_arn[0].secret_string]
       }
 
