@@ -81,6 +81,10 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v3
 
+      - name: Set Github Auth
+        run: git config --global url."https://oauth2:${{ secrets.TERRAFORM_SECRET_TOKEN}}@github.com".insteadOf https://github.com
+        shell: bash
+      
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2.0.3
         with:
