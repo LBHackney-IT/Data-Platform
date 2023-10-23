@@ -60,6 +60,8 @@ on:
         required: true
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN:
         required: true
+      TERRAFORM_SECRET_TOKEN:
+        required: true
 
 jobs:
   validate:
@@ -68,6 +70,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Set Github Auth
+        run: git config --global url."https://oauth2:${{ secrets.TERRAFORM_SECRET_TOKEN}}@github.com".insteadOf https://github.com
+        shell: bash
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2.0.3
@@ -107,6 +113,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Set Github Auth
+        run: git config --global url."https://oauth2:${{ secrets.TERRAFORM_SECRET_TOKEN}}@github.com".insteadOf https://github.com
+        shell: bash
+      
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2.0.3
         with:
