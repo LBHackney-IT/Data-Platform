@@ -72,6 +72,8 @@ on:
         required: true
       PRODUCTION_FIREWALL_IP:
         required: true
+      TERRAFORM_SECRET_TOKEN:
+        required: true
 jobs:
   deploy:
     name: Terraform Apply

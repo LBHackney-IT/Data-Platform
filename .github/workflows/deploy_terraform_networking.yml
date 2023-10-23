@@ -66,6 +66,8 @@ on:
         required: true
       GOOGLE_CREDENTIALS:
         required: true
+      TERRAFORM_SECRET_TOKEN:
+        required: true
 
 
 jobs:
