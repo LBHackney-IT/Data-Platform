@@ -807,11 +807,11 @@ def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
     * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
     Should be of type string and can be blank.
-    * source_filter: Field to contain additional information on parking permits (only contains holding string for now).
+    * source_filter: Field to contain additional information on schools admissions (only contains holding string for now).
     Should be of type string and can be blank.
 
     Args:
-        schools_admissions_cleaned: parking permit DataFrame after preparing and cleaning it.
+        schools_admissions_cleaned: schools admissions DataFrame after preparing and cleaning it.
 
     Returns:
         A schools admissions DataFrame with all the standard column listed above.
@@ -839,6 +839,146 @@ def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -
                 col("full_address"), col("source_filter"))
 
     return schools_admissions
+
+
+def prepare_clean_freedom_pass_admissions_data(freedom_df: DataFrame) -> DataFrame:
+    """A function to prepare and clean schools admissions data. Splits ou middle name from first name. Sorts address
+    columns so that they are consistent with other datasets.
+
+    Args:
+        freedom_df (Dataframe): Dataframe containing freedom pass applications data.
+
+    Returns:
+        freedom_cleaned (Dataframe): A DataFrame after preparing data from multiple sources and cleaning it.
+    """
+
+    address_cols = ["address_line_1", "address_line_2", "address_line_3", "address_line_4"]
+
+    freedom_cleaned = freedom_df \
+        .withColumn("source", lit("freedom_passes")) \
+        .withColumn("source_id", col("applicantid")) \
+        .withColumn("first_name", col("forename")) \
+        .withColumn("middle_name", lit("")) \
+        .withColumn("last_name", col("surname")) \
+        .withColumn("name", regexp_replace(concat_ws(" ", col("first_name"), col("last_name")), r"\s+", " ")) \
+        .withColumnRenamed("house_name_number", "address_line_1") \
+        .withColumnRenamed("building_name", "address_line_2") \
+        .withColumnRenamed("street", "address_line_3") \
+        .withColumnRenamed("district", "address_line_4") \
+        .withColumnRenamed("postcode", "post_code") \
+        .withColumnRenamed("email_address", "email") \
+        .withColumn("date_of_birth", to_date(col("date_of_birth"), format="dd/MM/yyyy"))\
+        .withColumn("uprn", lit("")) \
+        .withColumn("source_filter", lit("freedom_passes_2024")) \
+        .select(col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+                col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+                col("address_line_1"), col("address_line_2"), col("address_line_3"),
+                col("address_line_4"), col("source_filter"))
+
+    # create a zip of address line arrays, sorted in the order of not null (False), column order
+    freedom_cleaned = freedom_cleaned.select(
+        col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+        col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+        col("address_line_1"), col("address_line_2"), col("address_line_3"),
+        col("address_line_4"), col("source_filter"),
+        array_sort(
+            arrays_zip(
+                array([col(c).isNull() for c in address_cols]),
+                array([lit(i) for i in range(4)]),
+                array([col(c) for c in address_cols])
+            )
+        ).alias('address_sorted'))
+
+    # disaggregate address_sorted arrays into columns
+    freedom_cleaned = freedom_cleaned.select(
+        col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+        col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+        col("source_filter"),
+        *[col("address_sorted")[i]['2'].alias(address_cols[i]) for i in range(4)])
+
+    # rejig address lines
+    freedom_cleaned = freedom_cleaned \
+        .withColumn("address_line_1", when(col("address_line_1").rlike(r"\d+[a-z]$")
+                                           & col("address_line_2").rlike(r"^[A-Za-z]"),
+                                           concat_ws(" ", col("address_line_1"), col("address_line_2")))
+                    .otherwise(col("address_line_1"))) \
+        .withColumn("address_line_2", when(col("address_line_1").contains(col("address_line_2")),
+                                           col("address_line_3"))
+                    .otherwise(concat_ws(" ", col("address_line_2"), col("address_line_3")))) \
+        .withColumn("address_line_2", when(col("address_line_2").rlike(r"\d+$"),
+                                           concat_ws(" ", col("address_line_2"), col("address_line_4")))
+                    .otherwise(col("address_line_2"))) \
+        .withColumn("address_line_3", when(col("address_line_2").contains(col("address_line_3")), lit("london"))) \
+        .withColumn("address_line_2", when(col("address_line_2").isNull(), lit("hackney"))
+                    .otherwise(col("address_line_2"))) \
+        .withColumn("address_line_3", when(col("address_line_3").isNull(), lit("london"))
+                    .otherwise(col("address_line_3"))) \
+        .withColumn("address_line_4", lit("")) \
+        .select(col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
+                col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"),
+                col("address_line_1"), col("address_line_2"), col("address_line_3"),
+                col("address_line_4"), col("source_filter"))
+
+    return freedom_cleaned
+
+
+def standardize_freedom_pass_data(freedom_cleaned: DataFrame) -> DataFrame:
+    """Standardize freedom pass data. This function convert all the custom names (coming from their respective
+    sources to standard names that will be used by various other functions like feature engineering etc.)
+    The DataFrame returned will have the following columns:
+
+    * source: Source of the data like parking, tax etc. Should be of type string and cannot be blank.
+    * source_id: Unique ID for reach record. It's ok to have same person with different source_id. Should be of type
+    string and cannot be blank.
+    * uprn: UPRN of the address. Should be of type string and can be blank.
+    * title: Title of the person. Should be of type string and can be blank.
+    * first_name: First name of the person. Should be of type string and can be blank.
+    * middle_name: Middle name of the person. Should be of type string and can be blank.
+    * last_name: Last name of the person. Should be of type string and can be blank.
+    * name: Concatenation of first and last name after sorting alphabetically of the person. Should be of type
+    string and can be blank.
+    * date_of_birth: Date of birth of the person. Should be of type Date and can be blank.
+    * post_code: Postal code of the address. Should be of type string and can be blank.
+    * address_line_1: First line of the address. Should be of type string and can be blank. If this is empty then check
+    if other address lines contain a value, and shift if necessary.
+    * address_line_2: Second line of the address. Should be of type string and can be blank. If this is empty then check
+    if other address lines contain a value, and shift if necessary.
+    * address_line_3: Third line of the address. Should be of type string and can be blank.
+    * address_line_4: Fourth line of the address. Should be of type string and can be blank.
+    * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
+    Should be of type string and can be blank.
+    * source_filter: Field to contain additional information on freedom pass dataset e.g year (only contains holding string for now).
+    Should be of type string and can be blank.
+
+    Args:
+        freedom_cleaned (Dataframe): Freedom pass dataframe after preparing and cleaning it.
+
+    Returns:
+        freedom_passes (Dataframe): Freedom pass dataframe with all the standardised columns listed above.
+
+    """
+    freedom_passes = freedom_cleaned \
+        .withColumn("source_id", col("source_id")) \
+        .withColumn("title", categorise_title(lower(trim(col("title"))))) \
+        .withColumn("first_name", standardize_name(trim(col("first_name")))) \
+        .withColumn("middle_name", standardize_name(trim(col("middle_name")))) \
+        .withColumn("last_name", standardize_name(trim(col("last_name")))) \
+        .withColumn("name", standardize_name(trim(col("name")))) \
+        .withColumn("post_code", lower(trim(col("post_code")))) \
+        .withColumn("address_line_1", standardize_address_line(trim(col("address_line_1")))) \
+        .withColumn("address_line_2", standardize_address_line(trim(col("address_line_2")))) \
+        .withColumn("address_line_3", standardize_address_line(trim(col("address_line_3")))) \
+        .withColumn("address_line_4", standardize_address_line(trim(col("address_line_4")))) \
+        .withColumn("full_address1", full_address(trim(col("address_line_1")), trim(col("address_line_2")),
+                                                  trim(col("address_line_3")),
+                                                  trim(col("address_line_4")))) \
+        .withColumn("full_address", regexp_replace(col("full_address1"), r"\s+", " ")) \
+        .select(col("source"), col("source_id"), col("uprn"), col("title"), col("first_name"), col("middle_name"),
+                col("last_name"), col("name"), col("date_of_birth"), col("post_code"), col("address_line_1"),
+                col("address_line_2"), col("address_line_3"), col("address_line_4"),
+                col("full_address"), col("source_filter"))
+
+    return freedom_passes
 
 
 def prepare_clean_electoral_register_data(electoral_register_df: DataFrame) -> DataFrame:
