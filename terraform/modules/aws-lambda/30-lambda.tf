@@ -27,7 +27,7 @@ resource "aws_lambda_function" "lambda" {
   }
   tags = var.tags
 
-  depends_on = [null_resource.run_install_requirements[0], data.archive_file.lambda]
+  depends_on = [null_resource.run_install_requirements[0], data.archive_file.lambda, resource.aws_s3_object.lambda]
 }
 
 data "archive_file" "lambda" {
@@ -53,7 +53,7 @@ resource "null_resource" "run_install_requirements" {
 
 resource "aws_s3_object" "lambda" {
   bucket     = var.lambda_artefact_storage_bucket
-  key        = "${local.lambda_name_underscore}.zip"
+  key        = var.s3_key
   source     = data.archive_file.lambda.output_path
   acl        = "private"
   depends_on = [data.archive_file.lambda]

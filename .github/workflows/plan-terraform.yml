@@ -60,6 +60,8 @@ on:
         required: true
       PRODUCTION_FIREWALL_IP:
         required: true
+      TERRAFORM_SECRET_TOKEN:
+        required: true
 
 jobs:
   plan:
@@ -70,7 +72,11 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
-
+      
+      - name: Set Github Auth
+        run: git config --global url."https://oauth2:${{ secrets.TERRAFORM_SECRET_TOKEN}}@github.com".insteadOf https://github.com
+        shell: bash
+      
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2.0.3
         with:
@@ -123,6 +129,7 @@ jobs:
           copy_liberator_to_pre_prod_lambda_execution_role: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
           pre_production_liberator_data_storage_kms_key_arn: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
           production_firewall_ip: ${{ secrets.PRODUCTION_FIREWALL_IP }}
+          TERRAFORM_SECRET_TOKEN: ${{ secrets.TERRAFORM_SECRET_TOKEN }}
       - name: Terraform Compliance
         if: ${{ (success()) && (inputs.build_path  != './terraform/etl') }}
         id: terraform-compliance
