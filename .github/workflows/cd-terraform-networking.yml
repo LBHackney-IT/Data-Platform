@@ -81,6 +81,7 @@ jobs:
       AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
       AWS_DP_VPC_ID: ${{ secrets.AWS_DP_DEV_VPC_ID }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_STG }}
+      TERRAFORM_SECRET_TOKEN: ${{ secrets.TERRAFORM_SECRET_TOKEN }}
   production:
     needs: [ "pre-production" ]
     uses: ./.github/workflows/deploy_terraform_networking.yml
@@ -109,3 +110,4 @@ jobs:
       AWS_MOSAIC_VPC_ID: ${{ secrets.AWS_MOSAIC_VPC_ID }}
       AWS_DP_VPC_ID: ${{ secrets.AWS_DP_STG_VPC_ID }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_PROD }}
+      TERRAFORM_SECRET_TOKEN: ${{ secrets.TERRAFORM_SECRET_TOKEN }}
