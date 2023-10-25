@@ -177,7 +177,7 @@ data "aws_iam_policy_document" "vpc_flow_assume_role" {
 }
 
 resource "aws_iam_role_policy" "cloudwatch_logs" {
-  name   = "${local.identifier_prefix}-cloudwatch-logs"
+  name   = "${local.identifier_prefix}-cloudwatch-flow-logs"
   role   = aws_iam_role.vpc_flow_logs.id
   policy = data.aws_iam_policy_document.cloudwatch_logs.json
 }
