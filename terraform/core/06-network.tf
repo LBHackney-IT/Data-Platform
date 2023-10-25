@@ -4,8 +4,8 @@ data "aws_vpc" "network" {
 
 data "aws_subnets" "network" {
   filter {
-    name    = "vpc-id"
-    values  = [data.aws_ssm_parameter.aws_vpc_id.value]
+    name   = "vpc-id"
+    values = [data.aws_ssm_parameter.aws_vpc_id.value]
   }
 }
 
@@ -137,5 +137,63 @@ resource "aws_instance" "bastion" {
   metadata_options {
     http_tokens   = "required"
     http_endpoint = "enabled"
+  }
+}
+
+resource "aws_flow_log" "vpc" {
+  tags = module.tags.values
+
+  log_destination      = aws_cloudwatch_log_group.vpc_flow_log.arn
+  log_destination_type = "cloud-watch-logs"
+
+  traffic_type = "ALL"
+
+  vpc_id = data.aws_vpc.network.id
+}
+
+resource "aws_cloudwatch_log_group" "vpc_flow_log" {
+  name              = "${local.identifier_prefix}-vpc-flow-log"
+  retention_in_days = 30
+  tags              = module.tags.values
+}
+
+resource "aws_iam_role" "vpc_flow_logs" {
+  name               = "${local.identifier_prefix}-vpc-flow-logs"
+  assume_role_policy = data.aws_iam_policy_document.vpc_flow_assume_role.json
+  tags               = module.tags.values
+}
+
+data "aws_iam_policy_document" "vpc_flow_assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["vpc-flow-logs.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role_policy" "cloudwatch_logs" {
+  name   = "${local.identifier_prefix}-cloudwatch-logs"
+  role   = aws_iam_role.vpc_flow_logs.id
+  policy = data.aws_iam_policy_document.cloudwatch_logs.json
+}
+
+data "aws_iam_policy_document" "cloudwatch_logs" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+    ]
+
+    resources = ["*"]
   }
 }
