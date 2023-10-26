@@ -59,124 +59,97 @@ module "mtfh-state-maching" {
   definition        = <<EOF
   {
     "Comment": "A description of my state machine",
-    "StartAt": "Get Table ARN",
+    "StartAt": "Pass",
     "States": {
-      "Get Table ARN": {
-        "Type": "Task",
-        "Next": "Pass",
-        "Parameters": {
-          "SecretId": "${aws_secretsmanager_secret.mtfh_export_secret[0].name}"
-        },
-        "Resource": "arn:aws:states:::aws-sdk:secretsmanager:getSecretValue",
-        "ResultPath": "$.secretManagerResponse",
-        "InputPath": "$.tableName"
-      },
       "Pass": {
         "Type": "Pass",
-        "Next": "Lambda Invoke",
-        "Parameters": {
-          "table_name.$": "$.tableName",
-          "s3_bucket": "dataplatform-tim-landing-zone",
-          "s3_prefix": "mtfh-exports/",
-          "secrets.$": "States.StringToJson($.secretManagerResponse.SecretString)"
-        }
+        "Next": "Ingest MTFH Table"
       },
-      "Lambda Invoke": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::lambda:invoke",
-        "Parameters": {
-          "FunctionName": "${module.export-mtfh-pitr[0].lambda_function_arn}",
-          "Payload.$": "$"
-        },
-        "Retry": [
-          {
-            "ErrorEquals": [
-              "Lambda.ServiceException",
-              "Lambda.AWSLambdaException",
-              "Lambda.SdkClientException",
-              "Lambda.TooManyRequestsException"
-            ],
-            "IntervalSeconds": 2,
-            "MaxAttempts": 6,
-            "BackoffRate": 2
-          }
-        ],
-        "Next": "Pass (1)",
-        "ResultPath": "$.lambdaResult"
-      },
-      "Pass (1)": {
-        "Type": "Pass",
-        "Next": "Choice",
-        "Parameters": {
-          "lambda_result_payload.$": "States.StringToJson($.lambdaResult.Payload)",
-          "status_code.$": "$.lambdaResult.StatusCode",
-          "secrets.$": "$.secrets"
-        }
-      },
-      "Choice": {
-        "Type": "Choice",
-        "Choices": [
-          {
-            "Variable": "$.status_code",
-            "NumericEquals": 200,
-            "Next": "Wait After Lambda (30s)"
-          }
-        ],
-        "Default": "Fail (Default)"
-      },
-      "Wait After Lambda (30s)": {
-        "Type": "Wait",
-        "Seconds": 30,
-        "Next": "DescribeExport"
-      },
-      "DescribeExport": {
-        "Type": "Task",
-        "Parameters": {
-          "ExportArn.$": "$.lambda_result_payload.ExportDescription.ExportArn"
-        },
-        "Resource": "arn:aws:states:::aws-sdk:dynamodb:describeExport",
-        "Next": "DescribeExport State",
-        "Credentials": {
-          "RoleArn.$": "$.secrets.role_arn"
-        }
-      },
-      "DescribeExport State": {
-        "Type": "Choice",
-        "Choices": [
-          {
-            "Variable": "$.ExportDescription.ExportStatus",
-            "StringEquals": "IN_PROGRESS",
-            "Next": "IN_PROGRESS Wait (30s)"
+      "Ingest MTFH Table": {
+        "Type": "Map",
+        "ItemProcessor": {
+          "ProcessorConfig": {
+            "Mode": "DISTRIBUTED",
+            "ExecutionType": "EXPRESS"
           },
-          {
-            "Variable": "$.ExportDescription.ExportStatus",
-            "StringEquals": "FAILED",
-            "Next": "Fail (DescribeExport)"
-          },
-          {
-            "Variable": "$.ExportDescription.ExportStatus",
-            "StringEquals": "SUCCEEDED",
-            "Next": "Glue StartJobRun"
+          "StartAt": "Lambda Invoke",
+          "States": {
+            "Lambda Invoke": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${module.export-mtfh-pitr[0].lambda_function_arn}",
+                "Payload.$": "$"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 6,
+                  "BackoffRate": 2
+                }
+              ],
+              "ResultPath": "$.lambdaResult",
+              "Next": "Wait After Lambda (30s)"
+            },
+            "Wait After Lambda (30s)": {
+              "Type": "Wait",
+              "Seconds": 30,
+              "Next": "DescribeExport"
+            },
+            "DescribeExport": {
+              "Type": "Task",
+              "Parameters": {
+                "ExportArn.$": "$.lambda_result_payload.ExportDescription.ExportArn"
+              },
+              "Resource": "arn:aws:states:::aws-sdk:dynamodb:describeExport",
+              "Next": "DescribeExport State",
+              "Credentials": {
+                "RoleArn.$": "$.secrets.role_arn"
+              }
+            },
+            "DescribeExport State": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.ExportDescription.ExportStatus",
+                  "StringEquals": "IN_PROGRESS",
+                  "Next": "IN_PROGRESS Wait (30s)"
+                },
+                {
+                  "Variable": "$.ExportDescription.ExportStatus",
+                  "StringEquals": "FAILED",
+                  "Next": "Fail (DescribeExport)"
+                },
+                {
+                  "Variable": "$.ExportDescription.ExportStatus",
+                  "StringEquals": "SUCCEEDED",
+                  "Next": "Glue StartJobRun"
+                }
+              ]
+            },
+            "IN_PROGRESS Wait (30s)": {
+              "Type": "Wait",
+              "Seconds": 30,
+              "Next": "DescribeExport"
+            },
+            "Fail (DescribeExport)": {
+              "Type": "Fail"
+            },
+            "Glue StartJobRun": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::glue:startJobRun",
+              "Parameters": {
+                "JobName": "${module.glue-mtfh-landing-to-raw[0].job_name}"
+              },
+              "End": true
+            }
           }
-        ],
-        "Default": "Fail (Default)"
-      },
-      "IN_PROGRESS Wait (30s)": {
-        "Type": "Wait",
-        "Seconds": 30,
-        "Next": "DescribeExport"
-      },
-      "Fail (Default)": {
-        "Type": "Fail"
-      },
-      "Fail (DescribeExport)": {
-        "Type": "Fail"
-      },
-      "Glue StartJobRun": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::glue:startJobRun",
-        "Parameters": {
-          "JobName": "${module.glue-mtfh-landing-to-raw[0].job_name}"
         },
         "Next": "Success"
       },
