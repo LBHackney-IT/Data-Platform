@@ -27,3 +27,15 @@ variable "aws_account_suffix" {
   type        = string
   default     = ""
 }
+
+variable "source_prefix" {
+  description = "Prefix to be used for the source bucket location"
+  type        = string
+  default     = ""
+}
+
+variable "target_prefix" {
+  description = "Prefix to be used for the target bucket location"
+  type        = string
+  default     = ""
+}

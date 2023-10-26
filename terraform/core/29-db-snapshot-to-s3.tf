@@ -23,6 +23,10 @@ module "db_snapshot_to_s3" {
   zone_kms_key_arn               = module.raw_zone.kms_key_arn
   zone_bucket_arn                = module.raw_zone.bucket_arn
   zone_bucket_id                 = module.raw_zone.bucket_id
+  rds_export_storage_bucket_arn  = module.rds_export_storage.bucket_arn
+  rds_export_storage_bucket_id   = module.rds_export_storage.bucket_id
+  rds_export_storage_kms_key_arn = module.rds_export_storage.kms_key_arn
+  rds_export_storage_kms_key_id  = module.rds_export_storage.kms_key_id
   service_area                   = "unrestricted"
   rds_instance_ids               = var.rds_instance_ids
 

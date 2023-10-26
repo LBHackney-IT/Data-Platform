@@ -159,8 +159,8 @@ resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {
   environment {
     variables = {
       IAM_ROLE_ARN     = aws_iam_role.rds_snapshot_export_service.arn,
-      KMS_KEY_ID       = module.rds_export_storage.kms_key_id,
-      S3_BUCKET_NAME   = module.rds_export_storage.bucket_id,
+      KMS_KEY_ID       = var.rds_export_storage_kms_key_id,
+      S3_BUCKET_NAME   = var.rds_export_storage_bucket_id,
       COPIER_QUEUE_ARN = aws_sqs_queue.s3_to_s3_copier.arn
     }
   }

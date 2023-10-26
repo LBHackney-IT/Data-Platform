@@ -26,9 +26,6 @@ variable "zone_kms_key_arn" {
   type = string
 }
 
-variable "zone_bucket_arn" {
-  type = string
-}
 
 variable "zone_bucket_id" {
   type = string
@@ -45,4 +42,12 @@ variable "rds_instance_ids" {
 
 variable "rds_instance_arns" {
   type = list(string)
+}
+
+variable "source_bucket_arn" {
+  type = string
+}
+
+variable "target_bucket_arn" {
+  type = string
 }
