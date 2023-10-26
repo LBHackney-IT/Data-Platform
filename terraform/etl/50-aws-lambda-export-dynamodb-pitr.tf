@@ -176,10 +176,10 @@ resource "aws_cloudwatch_event_target" "mtfh_export_trigger_event_target" {
   target_id = "mtfh-export-trigger-event-target"
   arn       = module.mtfh-state-machine[0].arn
   role_arn  = aws_iam_role.iam_for_sfn[0].arn
-  input = jsonencode({
-    for table in local.mtfh_tables :
-    table => "table name " + table
-  })
+  input = <<EOF
+  {
+   "table_name": "table"
+  }
 }
 
 resource "aws_iam_role" "iam_for_sfn" {
