@@ -11,7 +11,7 @@ resource "null_resource" "run_install_requirements" {
   }
 
   provisioner "local-exec" {
-    # interpreter = ["bash", "-c"]
+    interpreter = ["bash", "-c"]
     command     = local.command
     working_dir = "${path.module}/../../../lambdas/${local.lambda_name_underscore}/"
   }
