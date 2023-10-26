@@ -433,7 +433,7 @@ module "rds_export_storage" {
   environment       = var.environment
   identifier_prefix = local.identifier_prefix
   bucket_name       = "RDS Export Storage"
-  bucket_identifier = "rds-export-storage"
+  bucket_identifier = "rds-shapshot-export-storage"
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "rds_export_storage_encryption" {
