@@ -49,7 +49,7 @@ resource "aws_secretsmanager_secret" "mtfh_export_secret" {
   tags  = module.tags.values
 }
 
-module "mtfh-state-maching" {
+module "mtfh-state-machine" {
   count             = local.create_mtfh_sfn_resource_count
   source            = "../modules/aws-step-functions"
   name              = "mtfh-export"
@@ -161,137 +161,124 @@ module "mtfh-state-maching" {
   EOF
 }
 
+resource "aws_cloudwatch_event_rule" "mtfh_export_trigger_event" {
+  count               = local.create_mtfh_sfn_resource_count
+  name                = "${local.short_identifier_prefix}mtfh-export-trigger-event"
+  description         = "Trigger event for MTFH export"
+  schedule_expression = "cron(0 0 * * ? *)"
+  is_enabled          = false
+  tags                = module.tags.values
+}
+
+resource "aws_cloudwatch_event_target" "mtfh_export_trigger_event_target" {
+  count     = local.create_mtfh_sfn_resource_count
+  rule      = aws_cloudwatch_event_rule.mtfh_export_trigger_event[0].name
+  target_id = "mtfh-export-trigger-event-target"
+  arn       = module.mtfh-state-machine[0].arn
+  role_arn  = aws_iam_role.iam_for_sfn[0].arn
+  input = jsonencode({
+    for table in local.mtfh_tables :
+    table => "table name " + table
+  })
+}
+
 resource "aws_iam_role" "iam_for_sfn" {
   count              = local.create_mtfh_sfn_resource_count
   name               = "stepFunctionExecutionIAM"
   tags               = module.tags.values
-  assume_role_policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Principal": {
-          "Service": "states.amazonaws.com"
-        },
-        "Action": "sts:AssumeRole"
-      }
+  assume_role_policy = data.aws_iam_policy_document.step_functions_assume_role[0].json
+}
+
+data "aws_iam_policy_document" "step_functions_assume_role" {
+  count = local.create_mtfh_sfn_resource_count
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["states.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "retrievemtfhsecrets" {
+  count = local.create_mtfh_sfn_resource_count
+  statement {
+    actions = ["secretsmanager:GetSecretValue"]
+    resources = [
+      aws_secretsmanager_secret.mtfh_export_secret[0].arn
     ]
   }
-  EOF
 }
 
-resource "aws_iam_policy" "policy_invoke_lambda" {
-  count  = local.create_mtfh_sfn_resource_count
-  name   = "stepFunctionMTFHLambdaFunctionInvocationPolicy"
-  tags   = module.tags.values
-  policy = <<EOF
-  {
-      "Version": "2012-10-17",
-      "Statement": [
-          {
-              "Sid": "InvokeMTFHLambdaFunction",
-              "Effect": "Allow",
-              "Action": [
-                  "lambda:InvokeFunction",
-                  "lambda:InvokeAsync"
-              ],
-              "Resource": "${module.export-mtfh-pitr[0].lambda_function_arn}"
-          }
-      ]
+data "aws_iam_policy_document" "invoke_mtfh_lambda_policy" {
+  count = local.create_mtfh_sfn_resource_count
+  statement {
+    actions = ["lambda:InvokeFunction", "lambda:InvokeAsync"]
+    resources = [
+      module.export-mtfh-pitr[0].lambda_function_arn
+    ]
   }
-  EOF
 }
 
-resource "aws_iam_policy" "policy_invoke_glue" {
-  count  = local.create_mtfh_sfn_resource_count
-  name   = "stepFunctionMTFHGlueJobInvocationPolicy"
-  tags   = module.tags.values
-  policy = <<EOF
-  {
-      "Version": "2012-10-17",
-      "Statement": [
-          {
-              "Sid": "InvokeMTFHGlueJob",
-              "Effect": "Allow",
-              "Action": "glue:StartJobRun",
-              "Resource": "${module.glue-mtfh-landing-to-raw[0].job_arn}"
-          }
-      ]
+data "aws_iam_policy_document" "mtfh_invoke_glue" {
+  count = local.create_mtfh_sfn_resource_count
+  statement {
+    actions = ["glue:StartJobRun"]
+    resources = [
+      module.glue-mtfh-landing-to-raw[0].job_arn
+    ]
   }
-  EOF
 }
 
-resource "aws_iam_policy" "retrievemtfhsecrets" {
-  count  = local.create_mtfh_sfn_resource_count
-  name   = "stepFunctionMTFHSecretsRetrievalPolicy"
-  tags   = module.tags.values
-  policy = <<EOF
-  {
-      "Version": "2012-10-17",
-      "Statement": [
-          {
-              "Sid": "RetrieveMTFHSecrets",
-              "Effect": "Allow",
-              "Action": "secretsmanager:GetSecretValue",
-              "Resource": "${aws_secretsmanager_secret.mtfh_export_secret[0].arn}"
-          }
-      ]
+data "aws_iam_policy_document" "can_assume_housing_reporting_role" {
+  count = local.create_mtfh_sfn_resource_count
+  statement {
+    actions = ["sts:AssumeRole"]
+    resources = [
+      data.aws_ssm_parameter.role_arn_to_access_housing_tables_etl.value
+    ]
   }
-  EOF
 }
 
-resource "aws_iam_policy" "role_can_assume_housing_reporting_role" {
+data "aws_iam_policy_document" "mtfh_step_functions_policies" {
+  count = local.create_mtfh_sfn_resource_count
+  source_policy_documents = [
+    data.aws_iam_policy_document.invoke_mtfh_lambda_policy[0].json,
+    data.aws_iam_policy_document.mtfh_invoke_glue[0].json,
+    data.aws_iam_policy_document.can_assume_housing_reporting_role[0].json
+  ]
+}
+
+data "aws_iam_policy_document" "mtfh_step_functions_policies_for_lambda" {
+  count = local.create_mtfh_sfn_resource_count
+  source_policy_documents = [
+    data.aws_iam_policy_document.retrievemtfhsecrets[0].json,
+    data.aws_iam_policy_document.can_assume_housing_reporting_role[0].json
+  ]
+}
+
+resource "aws_iam_policy" "mtfh_step_functions_policies" {
   count  = local.create_mtfh_sfn_resource_count
-  name   = "${local.short_identifier_prefix}role_can_assume_housing_reporting_role"
-  tags   = module.tags.values
-  policy = <<EOF
-  {
-      "Version": "2012-10-17",
-      "Statement": [
-          {
-              "Sid": "roleCanAssumeRole",
-              "Effect": "Allow",
-              "Action": "sts:AssumeRole",
-              "Resource": "${data.aws_ssm_parameter.role_arn_to_access_housing_tables_etl.value}"
-          }
-      ]
-  }
-  EOF
+  name   = "mtfh_step_functions_policies"
+  policy = data.aws_iam_policy_document.mtfh_step_functions_policies[0].json
 }
 
-resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_invoke_lambda" {
-  count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn[0].name
-  policy_arn = aws_iam_policy.policy_invoke_lambda[0].arn
+resource "aws_iam_policy" "mtfh_step_functions_policies_for_lambda" {
+  count  = local.create_mtfh_sfn_resource_count
+  name   = "mtfh_step_functions_policies_for_lambda"
+  policy = data.aws_iam_policy_document.mtfh_step_functions_policies_for_lambda[0].json
 }
 
-resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_invoke_glue" {
+resource "aws_iam_policy_attachment" "mtfh_step_functions_policies" {
   count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn[0].name
-  policy_arn = aws_iam_policy.policy_invoke_glue[0].arn
+  name       = "mtfh_step_functions_policies"
+  roles      = [aws_iam_role.iam_for_sfn[0].name]
+  policy_arn = aws_iam_policy.mtfh_step_functions_policies[0].arn
 }
 
-resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_retrievemtfhsecrets" {
+resource "aws_iam_policy_attachment" "mtfh_lambda_policies" {
   count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn[0].name
-  policy_arn = aws_iam_policy.retrievemtfhsecrets[0].arn
-}
-
-resource "aws_iam_role_policy_attachment" "iam_for_lambda_attach_policy_retrievemtfhsecrets" {
-  count      = local.create_mtfh_sfn_resource_count
-  role       = module.export-mtfh-pitr[0].lambda_iam_role
-  policy_arn = aws_iam_policy.retrievemtfhsecrets[0].arn
-}
-
-resource "aws_iam_role_policy_attachment" "iam_for_lambda_role_assume_role" {
-  count      = local.create_mtfh_sfn_resource_count
-  role       = module.export-mtfh-pitr[0].lambda_iam_role
-  policy_arn = aws_iam_policy.role_can_assume_housing_reporting_role[0].arn
-}
-
-resource "aws_iam_role_policy_attachment" "iam_policy_for_sfn_can_assume_role" {
-  count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn[0].name
-  policy_arn = aws_iam_policy.role_can_assume_housing_reporting_role[0].arn
+  name       = "mtfh_lambda_policies"
+  roles      = [module.export-mtfh-pitr[0].lambda_iam_role]
+  policy_arn = aws_iam_policy.mtfh_step_functions_policies_for_lambda[0].arn
 }
