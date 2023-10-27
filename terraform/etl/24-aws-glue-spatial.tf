@@ -136,9 +136,9 @@ module "parking_geospatial_enrichment" {
 # Ward look up resource for AddressBasePremium loader
 resource "aws_s3_object" "ons_ward_lookup" {
   bucket      = module.glue_scripts_data_source.bucket_id
-  key         = "scripts/unrestricted/ons_ward_lookup.csv"
+  key         = "scripts/unrestricted/ons_ward_lookup_may_2023.csv"
   acl         = "private"
-  source      = "../../scripts/jobs/unrestricted/ons_ward_lookup.csv"
+  source      = "../../scripts/jobs/unrestricted/ons_ward_lookup_may_2023.csv"
   source_hash = filemd5("../../scripts/jobs/unrestricted/ons_ward_lookup.csv")
 }
 
