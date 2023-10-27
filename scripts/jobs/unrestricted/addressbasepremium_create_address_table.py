@@ -179,7 +179,7 @@ if __name__ == "__main__":
     job.init(args['JOB_NAME'], args)
     logger.info(f'The job is starting.')
 
-    # Prepare organisation table by only keeping the last org for a given UPRN
+    # Prepare organisation table (DTF type 31) by only keeping the last org for a given UPRN
     logger.info(f'Preparing Organisation records')
 
     df_31 = spark.read \
@@ -195,7 +195,7 @@ if __name__ == "__main__":
 
     df_31.createOrReplaceTempView('ORG')
 
-    # Prepare xref table by only keeping the wards, and get corresponding ward names from Geolive
+    # Prepare xref table (DTF type 23) by only keeping the wards, and get corresponding ward names from Geolive
     logger.info(f'Preparing xref records for wards')
 
     df_23 = spark.read \
@@ -216,7 +216,7 @@ if __name__ == "__main__":
     df_23 = df_23.join(ward_df, df_23.CROSS_REFERENCE == ward_df.ward_code, "left")
     df_23.createOrReplaceTempView('XREF')
 
-    # Prepare classification table by only keeping abp classification scheme
+    # Prepare classification table (DTF type 32) by only keeping abp classification scheme
     logger.info(f'Preparing classif records')
 
     df_32 = spark.read \
@@ -236,7 +236,7 @@ if __name__ == "__main__":
 
     df_32.createOrReplaceTempView('CLASSIF')
 
-    # Prepare BLPU records and join them with wards, orgs and classification
+    # Prepare BLPU records (DTF type 21) and join them with wards, orgs and classification
     logger.info(f'Preparing BLPU records and join them with wards, orgs and classification')
 
     df_21 = spark.read \
@@ -248,7 +248,7 @@ if __name__ == "__main__":
     result_df = spark.sql(join_blpu_query)
     result_df.createOrReplaceTempView('BLPU')
 
-    # Prepare streetdesc and LPI to only keep english language
+    # Prepare streetdesc (DTF type 15) and LPI (DTF type 24) to only keep english language
     logger.info(f'Preparing streetdesc and LPI records keeping only english language')
 
     df_15 = spark.read \
@@ -291,7 +291,7 @@ if __name__ == "__main__":
     logger.info(f'Creating full address line')
     result_df = spark.sql(create_full_address_line_query)
 
-    # Write to s3
+    # Write to s3 and update catalogue
     result_df = add_import_time_columns(result_df)
     address_dyf = DynamicFrame.fromDF(result_df, glueContext, "national_address_dyf")
 
