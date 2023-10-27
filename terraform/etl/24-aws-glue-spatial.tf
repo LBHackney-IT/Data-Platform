@@ -166,7 +166,7 @@ module "addressbasepremium_load_files" {
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
     "--job-bookmark-option"  = "job-bookmark-disable"    
-    "--raw_bucket"           = "${module.raw_zone_data_source.bucket_id}"
+    "--raw_bucket"           = module.raw_zone_data_source.bucket_id
     "--raw_prefix"           = "unrestricted/os_addressbase_premium/full_supply/epoch_102/raw/"
     "--processed_data_path"  = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/os_addressbase_premium/full_supply/epoch_102/processed/"
   }
