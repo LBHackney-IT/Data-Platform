@@ -139,7 +139,7 @@ resource "aws_s3_object" "ons_ward_lookup" {
   key         = "scripts/unrestricted/ons_ward_lookup_may_2023.csv"
   acl         = "private"
   source      = "../../scripts/jobs/unrestricted/ons_ward_lookup_may_2023.csv"
-  source_hash = filemd5("../../scripts/jobs/unrestricted/ons_ward_lookup.csv")
+  source_hash = filemd5("../../scripts/jobs/unrestricted/ons_ward_lookup_may_2023.csv")
 }
 
 # BLPU classification look up resource for AddressBasePremium loader
