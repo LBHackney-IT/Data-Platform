@@ -172,3 +172,27 @@ module "addressbasepremium_load_files" {
   }
   script_name                = "addressbasepremium_load_files"
 }
+
+# Job using pre-processed csv files to create one national_address table  
+module "addressbasepremium_create_address_table" {
+  source                    = "../modules/aws-glue-job"
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
+
+  department                     = module.department_unrestricted_data_source
+  job_name                       = "${local.short_identifier_prefix}addressbasepremium_create_address_table"
+  glue_version                   = "4.0"
+  glue_job_worker_type           = "G.1X"
+  number_of_workers_for_glue_job = 8
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  job_parameters = {
+    "--job-bookmark-option"          = "job-bookmark-disable"    
+    "--blpu_class_lookup_path"       = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.blpu_class_lookup.key}"
+    "--ward_lookup_path"             = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.ons_ward_lookup.key}"
+    "--processed_source_data_path"   = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/os_addressbase_premium/full_supply/epoch_102/processed/"
+    "--target_path"                  = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/unrestricted/national_address"
+  }
+  script_name                    = "addressbasepremium_create_address_table"
+}
