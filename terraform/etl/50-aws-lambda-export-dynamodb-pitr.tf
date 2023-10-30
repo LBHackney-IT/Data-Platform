@@ -59,12 +59,8 @@ module "mtfh-state-machine" {
   definition        = <<EOF
   {
     "Comment": "A description of my state machine",
-    "StartAt": "Pass",
+    "StartAt": "Ingest MTFH Table",
     "States": {
-      "Pass": {
-        "Type": "Pass",
-        "Next": "Ingest MTFH Table"
-      },
       "Ingest MTFH Table": {
         "Type": "Map",
         "ItemProcessor": {
@@ -151,6 +147,16 @@ module "mtfh-state-machine" {
             }
           }
         },
+        "InputPath": "$.table_names",
+        "Catch": [
+          {
+            "ErrorEquals": [
+              "States.ALL"
+            ],
+            "ResultPath": "$.error-info",
+            "Next": "Success"
+          }
+        ],
         "Next": "Success"
       },
       "Success": {
@@ -176,10 +182,11 @@ resource "aws_cloudwatch_event_target" "mtfh_export_trigger_event_target" {
   target_id = "mtfh-export-trigger-event-target"
   arn       = module.mtfh-state-machine[0].arn
   role_arn  = aws_iam_role.iam_for_sfn[0].arn
-  input = <<EOF
+  input     = <<EOF
   {
-   "table_name": "table"
+   "table_names": ${jsonencode(local.mtfh_tables)}
   }
+  EOF
 }
 
 resource "aws_iam_role" "iam_for_sfn" {
