@@ -1,6 +1,6 @@
 locals {
   mtfh_tables                    = ["TenureInformation", "Persons", "ContactDetails", "Assets", "Accounts", "EqualityInformation", "HousingRegister", "HousingRepairsOnline", "PatchesAndAreas", "Processes", "Notes"]
-  create_mtfh_sfn_resource_count = !local.is_production_environment ? 1 : 0
+  create_mtfh_sfn_resource_count = 1
 }
 
 data "aws_ssm_parameter" "role_arn_to_access_housing_tables_etl" {
@@ -172,7 +172,7 @@ resource "aws_cloudwatch_event_rule" "mtfh_export_trigger_event" {
   name                = "${local.short_identifier_prefix}mtfh-export-trigger-event"
   description         = "Trigger event for MTFH export"
   schedule_expression = "cron(0 0 * * ? *)"
-  is_enabled          = false
+  is_enabled          = local.is_production_environment ? true : false
   tags                = module.tags.values
 }
 
