@@ -1,6 +1,6 @@
 locals {
   mtfh_tables                    = ["TenureInformation", "Persons", "ContactDetails", "Assets", "Accounts", "EqualityInformation", "HousingRegister", "HousingRepairsOnline", "PatchesAndAreas", "Processes", "Notes"]
-  create_mtfh_sfn_resource_count = !local.is_production_environment ? 1 : 0
+  create_mtfh_sfn_resource_count = 1
 }
 
 data "aws_ssm_parameter" "role_arn_to_access_housing_tables_etl" {
@@ -49,7 +49,7 @@ resource "aws_secretsmanager_secret" "mtfh_export_secret" {
   tags  = module.tags.values
 }
 
-module "mtfh-state-maching" {
+module "mtfh-state-machine" {
   count             = local.create_mtfh_sfn_resource_count
   source            = "../modules/aws-step-functions"
   name              = "mtfh-export"
@@ -58,267 +58,234 @@ module "mtfh-state-maching" {
   tags              = module.tags.values
   definition        = <<EOF
   {
-  "Comment": "A description of my state machine",
-  "StartAt": "Get Table ARN",
-  "States": {
-    "Get Table ARN": {
-      "Type": "Task",
-      "Next": "Pass",
-      "Parameters": {
-        "SecretId": "${aws_secretsmanager_secret.mtfh_export_secret[0].name}"
-      },
-      "Resource": "arn:aws:states:::aws-sdk:secretsmanager:getSecretValue",
-      "ResultPath": "$.secretManagerResponse",
-      "InputPath": "$.tableName"
-    },
-    "Pass": {
-      "Type": "Pass",
-      "Next": "Lambda Invoke",
-      "Parameters": {
-        "table_name.$": "$.tableName",
-        "s3_bucket": "dataplatform-tim-landing-zone",
-        "s3_prefix": "mtfh-exports/",
-        "secrets.$": "States.StringToJson($.secretManagerResponse.SecretString)"
-      }
-    },
-    "Lambda Invoke": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::lambda:invoke",
-      "Parameters": {
-        "FunctionName": "${module.export-mtfh-pitr[0].lambda_function_arn}",
-        "Payload.$": "$"
-      },
-      "Retry": [
-        {
-          "ErrorEquals": [
-            "Lambda.ServiceException",
-            "Lambda.AWSLambdaException",
-            "Lambda.SdkClientException",
-            "Lambda.TooManyRequestsException"
-          ],
-          "IntervalSeconds": 2,
-          "MaxAttempts": 6,
-          "BackoffRate": 2
-        }
-      ],
-      "Next": "Pass (1)",
-      "ResultPath": "$.lambdaResult"
-    },
-    "Pass (1)": {
-      "Type": "Pass",
-      "Next": "Choice",
-      "Parameters": {
-        "lambda_result_payload.$": "States.StringToJson($.lambdaResult.Payload)",
-        "status_code.$": "$.lambdaResult.StatusCode",
-        "secrets.$": "$.secrets"
-      }
-    },
-    "Choice": {
-      "Type": "Choice",
-      "Choices": [
-        {
-          "Variable": "$.status_code",
-          "NumericEquals": 200,
-          "Next": "Wait After Lambda (30s)"
-        }
-      ],
-      "Default": "Fail (Default)"
-    },
-    "Wait After Lambda (30s)": {
-      "Type": "Wait",
-      "Seconds": 30,
-      "Next": "DescribeExport"
-    },
-    "DescribeExport": {
-      "Type": "Task",
-      "Parameters": {
-        "ExportArn.$": "$.lambda_result_payload.ExportDescription.ExportArn"
-      },
-      "Resource": "arn:aws:states:::aws-sdk:dynamodb:describeExport",
-      "Next": "DescribeExport State",
-      "Credentials": {
-        "RoleArn.$": "$.secrets.role_arn"
-      }
-    },
-    "DescribeExport State": {
-      "Type": "Choice",
-      "Choices": [
-        {
-          "Variable": "$.ExportDescription.ExportStatus",
-          "StringEquals": "IN_PROGRESS",
-          "Next": "IN_PROGRESS Wait (30s)"
+    "Comment": "A description of my state machine",
+    "StartAt": "Ingest MTFH Table",
+    "States": {
+      "Ingest MTFH Table": {
+        "Type": "Map",
+        "ItemProcessor": {
+          "ProcessorConfig": {
+            "Mode": "DISTRIBUTED",
+            "ExecutionType": "EXPRESS"
+          },
+          "StartAt": "Lambda Invoke",
+          "States": {
+            "Lambda Invoke": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${module.export-mtfh-pitr[0].lambda_function_arn}",
+                "Payload.$": "$"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 6,
+                  "BackoffRate": 2
+                }
+              ],
+              "ResultPath": "$.lambdaResult",
+              "Next": "Wait After Lambda (30s)"
+            },
+            "Wait After Lambda (30s)": {
+              "Type": "Wait",
+              "Seconds": 30,
+              "Next": "DescribeExport"
+            },
+            "DescribeExport": {
+              "Type": "Task",
+              "Parameters": {
+                "ExportArn.$": "$.lambda_result_payload.ExportDescription.ExportArn"
+              },
+              "Resource": "arn:aws:states:::aws-sdk:dynamodb:describeExport",
+              "Next": "DescribeExport State",
+              "Credentials": {
+                "RoleArn.$": "$.secrets.role_arn"
+              }
+            },
+            "DescribeExport State": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.ExportDescription.ExportStatus",
+                  "StringEquals": "IN_PROGRESS",
+                  "Next": "IN_PROGRESS Wait (30s)"
+                },
+                {
+                  "Variable": "$.ExportDescription.ExportStatus",
+                  "StringEquals": "FAILED",
+                  "Next": "Fail (DescribeExport)"
+                },
+                {
+                  "Variable": "$.ExportDescription.ExportStatus",
+                  "StringEquals": "SUCCEEDED",
+                  "Next": "Glue StartJobRun"
+                }
+              ]
+            },
+            "IN_PROGRESS Wait (30s)": {
+              "Type": "Wait",
+              "Seconds": 30,
+              "Next": "DescribeExport"
+            },
+            "Fail (DescribeExport)": {
+              "Type": "Fail"
+            },
+            "Glue StartJobRun": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::glue:startJobRun",
+              "Parameters": {
+                "JobName": "${module.glue-mtfh-landing-to-raw[0].job_name}"
+              },
+              "End": true
+            }
+          }
         },
-        {
-          "Variable": "$.ExportDescription.ExportStatus",
-          "StringEquals": "FAILED",
-          "Next": "Fail (DescribeExport)"
-        },
-        {
-          "Variable": "$.ExportDescription.ExportStatus",
-          "StringEquals": "SUCCEEDED",
-          "Next": "Glue StartJobRun"
-        }
-      ],
-      "Default": "Fail (Default)"
-    },
-    "IN_PROGRESS Wait (30s)": {
-      "Type": "Wait",
-      "Seconds": 30,
-      "Next": "DescribeExport"
-    },
-    "Fail (Default)": {
-      "Type": "Fail"
-    },
-    "Fail (DescribeExport)": {
-      "Type": "Fail"
-    },
-    "Glue StartJobRun": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::glue:startJobRun",
-      "Parameters": {
-        "JobName": "${module.glue-mtfh-landing-to-raw[0].job_name}"
+        "InputPath": "$.table_names",
+        "Catch": [
+          {
+            "ErrorEquals": [
+              "States.ALL"
+            ],
+            "ResultPath": "$.error-info",
+            "Next": "Success"
+          }
+        ],
+        "Next": "Success"
       },
-      "Next": "Success"
-    },
-    "Success": {
-      "Type": "Succeed"
+      "Success": {
+        "Type": "Succeed"
+      }
     }
   }
+  EOF
 }
-EOF
+
+resource "aws_cloudwatch_event_rule" "mtfh_export_trigger_event" {
+  count               = local.create_mtfh_sfn_resource_count
+  name                = "${local.short_identifier_prefix}mtfh-export-trigger-event"
+  description         = "Trigger event for MTFH export"
+  schedule_expression = "cron(0 0 * * ? *)"
+  is_enabled          = local.is_production_environment ? true : false
+  tags                = module.tags.values
+}
+
+resource "aws_cloudwatch_event_target" "mtfh_export_trigger_event_target" {
+  count     = local.create_mtfh_sfn_resource_count
+  rule      = aws_cloudwatch_event_rule.mtfh_export_trigger_event[0].name
+  target_id = "mtfh-export-trigger-event-target"
+  arn       = module.mtfh-state-machine[0].arn
+  role_arn  = aws_iam_role.iam_for_sfn[0].arn
+  input     = <<EOF
+  {
+   "table_names": ${jsonencode(local.mtfh_tables)}
+  }
+  EOF
 }
 
 resource "aws_iam_role" "iam_for_sfn" {
   count              = local.create_mtfh_sfn_resource_count
   name               = "stepFunctionExecutionIAM"
   tags               = module.tags.values
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "states.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
+  assume_role_policy = data.aws_iam_policy_document.step_functions_assume_role[0].json
+}
+
+data "aws_iam_policy_document" "step_functions_assume_role" {
+  count = local.create_mtfh_sfn_resource_count
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["states.amazonaws.com"]
     }
+  }
+}
+
+data "aws_iam_policy_document" "retrievemtfhsecrets" {
+  count = local.create_mtfh_sfn_resource_count
+  statement {
+    actions = ["secretsmanager:GetSecretValue"]
+    resources = [
+      aws_secretsmanager_secret.mtfh_export_secret[0].arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "invoke_mtfh_lambda_policy" {
+  count = local.create_mtfh_sfn_resource_count
+  statement {
+    actions = ["lambda:InvokeFunction", "lambda:InvokeAsync"]
+    resources = [
+      module.export-mtfh-pitr[0].lambda_function_arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "mtfh_invoke_glue" {
+  count = local.create_mtfh_sfn_resource_count
+  statement {
+    actions = ["glue:StartJobRun"]
+    resources = [
+      module.glue-mtfh-landing-to-raw[0].job_arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "can_assume_housing_reporting_role" {
+  count = local.create_mtfh_sfn_resource_count
+  statement {
+    actions = ["sts:AssumeRole"]
+    resources = [
+      data.aws_ssm_parameter.role_arn_to_access_housing_tables_etl.value
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "mtfh_step_functions_policies" {
+  count = local.create_mtfh_sfn_resource_count
+  source_policy_documents = [
+    data.aws_iam_policy_document.invoke_mtfh_lambda_policy[0].json,
+    data.aws_iam_policy_document.mtfh_invoke_glue[0].json,
+    data.aws_iam_policy_document.can_assume_housing_reporting_role[0].json
   ]
 }
-EOF
+
+data "aws_iam_policy_document" "mtfh_step_functions_policies_for_lambda" {
+  count = local.create_mtfh_sfn_resource_count
+  source_policy_documents = [
+    data.aws_iam_policy_document.retrievemtfhsecrets[0].json,
+    data.aws_iam_policy_document.can_assume_housing_reporting_role[0].json
+  ]
 }
 
-resource "aws_iam_policy" "policy_invoke_lambda" {
+resource "aws_iam_policy" "mtfh_step_functions_policies" {
   count  = local.create_mtfh_sfn_resource_count
-  name   = "stepFunctionMTFHLambdaFunctionInvocationPolicy"
-  tags   = module.tags.values
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "InvokeMTFHLambdaFunction",
-            "Effect": "Allow",
-            "Action": [
-                "lambda:InvokeFunction",
-                "lambda:InvokeAsync"
-            ],
-            "Resource": "${module.export-mtfh-pitr[0].lambda_function_arn}"
-        }
-    ]
-}
-EOF
+  name   = "mtfh_step_functions_policies"
+  policy = data.aws_iam_policy_document.mtfh_step_functions_policies[0].json
 }
 
-resource "aws_iam_policy" "policy_invoke_glue" {
+resource "aws_iam_policy" "mtfh_step_functions_policies_for_lambda" {
   count  = local.create_mtfh_sfn_resource_count
-  name   = "stepFunctionMTFHGlueJobInvocationPolicy"
-  tags   = module.tags.values
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "InvokeMTFHGlueJob",
-            "Effect": "Allow",
-            "Action": "glue:StartJobRun",
-            "Resource": "${module.glue-mtfh-landing-to-raw[0].job_arn}"
-        }
-    ]
-}
-EOF
+  name   = "mtfh_step_functions_policies_for_lambda"
+  policy = data.aws_iam_policy_document.mtfh_step_functions_policies_for_lambda[0].json
 }
 
-resource "aws_iam_policy" "retrievemtfhsecrets" {
-  count  = local.create_mtfh_sfn_resource_count
-  name   = "stepFunctionMTFHSecretsRetrievalPolicy"
-  tags   = module.tags.values
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "RetrieveMTFHSecrets",
-            "Effect": "Allow",
-            "Action": "secretsmanager:GetSecretValue",
-            "Resource": "${aws_secretsmanager_secret.mtfh_export_secret[0].arn}"
-        }
-    ]
-}
-EOF
-}
-
-resource "aws_iam_policy" "role_can_assume_housing_reporting_role" {
-  count  = local.create_mtfh_sfn_resource_count
-  name   = "${local.short_identifier_prefix}role_can_assume_housing_reporting_role"
-  tags   = module.tags.values
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "roleCanAssumeRole",
-            "Effect": "Allow",
-            "Action": "sts:AssumeRole",
-            "Resource": "${data.aws_ssm_parameter.role_arn_to_access_housing_tables_etl.value}"
-        }
-    ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_invoke_lambda" {
+resource "aws_iam_policy_attachment" "mtfh_step_functions_policies" {
   count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn[0].name
-  policy_arn = aws_iam_policy.policy_invoke_lambda[0].arn
+  name       = "mtfh_step_functions_policies"
+  roles      = [aws_iam_role.iam_for_sfn[0].name]
+  policy_arn = aws_iam_policy.mtfh_step_functions_policies[0].arn
 }
 
-resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_invoke_glue" {
+resource "aws_iam_policy_attachment" "mtfh_lambda_policies" {
   count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn[0].name
-  policy_arn = aws_iam_policy.policy_invoke_glue[0].arn
-}
-
-resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_retrievemtfhsecrets" {
-  count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn[0].name
-  policy_arn = aws_iam_policy.retrievemtfhsecrets[0].arn
-}
-
-resource "aws_iam_role_policy_attachment" "iam_for_lambda_attach_policy_retrievemtfhsecrets" {
-  count      = local.create_mtfh_sfn_resource_count
-  role       = module.export-mtfh-pitr[0].lambda_iam_role
-  policy_arn = aws_iam_policy.retrievemtfhsecrets[0].arn
-}
-
-resource "aws_iam_role_policy_attachment" "iam_for_lambda_role_assume_role" {
-  count      = local.create_mtfh_sfn_resource_count
-  role       = module.export-mtfh-pitr[0].lambda_iam_role
-  policy_arn = aws_iam_policy.role_can_assume_housing_reporting_role[0].arn
-}
-
-resource "aws_iam_role_policy_attachment" "iam_policy_for_sfn_can_assume_role" {
-  count      = local.create_mtfh_sfn_resource_count
-  role       = aws_iam_role.iam_for_sfn[0].name
-  policy_arn = aws_iam_policy.role_can_assume_housing_reporting_role[0].arn
+  name       = "mtfh_lambda_policies"
+  roles      = [module.export-mtfh-pitr[0].lambda_iam_role]
+  policy_arn = aws_iam_policy.mtfh_step_functions_policies_for_lambda[0].arn
 }
