@@ -72,13 +72,31 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
   }
 
   statement {
+    actions   = ["iam:PassRole"]
+    effect    = "Allow"
+    resources = [var.rds_snapshot_service_arn]
+  }
+
+  statement {
     actions = [
       "rds:StartExportTask",
       "rds:DescribeExportTasks"
     ]
     effect = "Allow"
     resources = [
-      local.rds_instances[0].arn
+      "*"
+    ]
+  }
+
+  statement {
+    sid = "AllowKMSDecrypt"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey*"
+    ]
+    effect = "Allow"
+    resources = [
+      var.rds_export_storage_kms_key_arn
     ]
   }
 }
@@ -112,10 +130,34 @@ data "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
     ]
     effect = "Allow"
     resources = [
-      var.source_bucket_arn,
-      "${var.source_bucket_arn}/*",
+      var.rds_export_bucket_arn,
+      "${var.rds_export_bucket_arn}/*",
       var.target_bucket_arn,
       "${var.target_bucket_arn}/*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:GenerateDataKey"
+    ]
+    effect = "Allow"
+    resources = [
+      var.rds_export_storage_kms_key_arn,
+      var.target_bucket_kms_key_arn
+    ]
+  }
+
+  statement {
+    actions = [
+      "glue:StartWorkflowRun"
+    ]
+    effect = "Allow"
+    resources = [
+      var.workflow_arn,
+      var.backdated_workflow_arn
     ]
   }
 }

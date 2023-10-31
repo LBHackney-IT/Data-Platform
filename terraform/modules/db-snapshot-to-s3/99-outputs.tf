@@ -3,3 +3,8 @@ output "s3_to_s3_copier_lambda_role_arn" {
   description = "KMS Key arn"
   value       = aws_iam_role.s3_to_s3_copier_lambda.arn
 }
+
+output "rds_snapshot_service_arn" {
+  description = "RDS Snapshot Service ARN"
+  value       = aws_iam_role.rds_snapshot_export_service.arn
+}
