@@ -6,7 +6,7 @@ locals {
 
 resource "aws_lambda_function" "lambda" {
   function_name    = lower("${var.identifier_prefix}-${var.lambda_name}")
-  role             = var.lambda_role_arn ? var.lambda_role_arn : aws_iam_role.lambda.arn
+  role             = var.lambda_role_arn == null ? aws_iam_role.lambda.arn : aws_iam_role.lambda.arnvar.lambda_role_arn
   handler          = var.handler
   runtime          = var.runtime
   source_code_hash = data.archive_file.lambda.output_base64sha256

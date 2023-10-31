@@ -84,5 +84,5 @@ variable "install_requirements" {
 variable "lambda_role_arn" {
   type        = string
   description = "ARN of the IAM Role to use for the Lambda Function"
-  default     = ""
+  default     = null
 }
