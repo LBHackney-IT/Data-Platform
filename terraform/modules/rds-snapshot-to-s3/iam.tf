@@ -68,7 +68,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 
 # RDS Snapshot to S3 lambda IAM
 resource "aws_iam_role" "rds_snapshot_to_s3_lambda_role" {
-  name               = "-rds-snapshot-to-s3-lambda-role"
+  name               = "${var.identifier_prefix}-rds-snapshot-to-s3-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
@@ -123,7 +123,7 @@ resource "aws_iam_policy" "rds_snapshot_to_s3_lambda_role_policy" {
 
 resource "aws_iam_policy_attachment" "rds_snapshot_copier_attachment" {
   name       = "${var.identifier_prefix}-rds-snapshot-s3-to-s3-lambda-policy-attachment"
-  policy_arn = aws_iam_policy.rds_snapshot_s3_to_s3_copier_role_policy.arn
+  policy_arn = aws_iam_policy.rds_snapshot_to_s3_lambda_role_policy.arn
   roles = [
     aws_iam_role.rds_snapshot_to_s3_lambda_role.name
   ]
@@ -131,7 +131,7 @@ resource "aws_iam_policy_attachment" "rds_snapshot_copier_attachment" {
 
 # S3 to S3 copier lambda IAM
 resource "aws_iam_role" "rds_snapshot_s3_to_s3_copier_lambda_role" {
-  name               = "-rds-snapshot-s3-to-s3-copier-lambda-role"
+  name               = "${var.identifier_prefix}-rds-snapshot-s3-to-s3-copier-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
