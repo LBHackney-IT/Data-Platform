@@ -136,6 +136,19 @@ data "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
       "${var.target_bucket_arn}/*"
     ]
   }
+
+  statement {
+    actions = [
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:GenerateDataKey"
+    ]
+    effect = "Allow"
+    resources = [
+      var.rds_export_storage_kms_key_arn,
+      var.target_bucket_kms_key_arn
+    ]
+  }
 }
 
 resource "aws_iam_policy" "rds_snapshot_s3_to_s3_copier_role_policy" {
