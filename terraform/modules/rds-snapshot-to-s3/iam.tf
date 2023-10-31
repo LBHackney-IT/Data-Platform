@@ -149,6 +149,17 @@ data "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
       var.target_bucket_kms_key_arn
     ]
   }
+
+  statement {
+    actions = [
+      "glue:StartWorkflowRun"
+    ]
+    effect = "Allow"
+    resources = [
+      var.workflow_arn,
+      var.backdated_workflow_arn
+    ]
+  }
 }
 
 resource "aws_iam_policy" "rds_snapshot_s3_to_s3_copier_role_policy" {
