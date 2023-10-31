@@ -113,6 +113,21 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
       var.rds_export_storage_kms_key_arn
     ]
   }
+
+  statement {
+    actions = [
+      "s3:PutObject*",
+      "s3:GetObject*",
+      "s3:ListBucket",
+      "s3:DeleteObject*",
+      "s3:GetBucketLocation"
+    ]
+    effect = "Allow"
+    resources = [
+      var.rds_export_bucket_arn,
+      "${var.rds_export_bucket_arn}/*"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "rds_snapshot_to_s3_lambda_role_policy" {
@@ -150,10 +165,11 @@ data "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
 
   statement {
     actions = [
-      "s3:GetObject",
-      "s3:PutObject",
+      "s3:PutObject*",
+      "s3:GetObject*",
       "s3:ListBucket",
-      "s3:DeleteObject"
+      "s3:DeleteObject*",
+      "s3:GetBucketLocation"
     ]
     effect = "Allow"
     resources = [
