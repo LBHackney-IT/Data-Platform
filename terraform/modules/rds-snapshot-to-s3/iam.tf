@@ -72,13 +72,31 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
   }
 
   statement {
+    actions   = ["iam:PassRole"]
+    effect    = "Allow"
+    resources = [aws_iam_role.rds_snapshot_export_service.arn]
+  }
+
+  statement {
     actions = [
       "rds:StartExportTask",
       "rds:DescribeExportTasks"
     ]
     effect = "Allow"
     resources = [
-      local.rds_instances[0].arn
+      "*"
+    ]
+  }
+
+  statement {
+    sid = "AllowKMSDecrypt"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey*"
+    ]
+    effect = "Allow"
+    resources = [
+      var.rds_export_storage_kms_key_arn
     ]
   }
 }
