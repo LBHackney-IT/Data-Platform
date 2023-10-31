@@ -18,14 +18,15 @@ resource "null_resource" "run_install_requirements" {
 }
 
 resource "aws_lambda_function" "lambda" {
-  function_name = lower("${var.identifier_prefix}${var.lambda_name}")
-  role          = aws_iam_role.lambda_role.arn
-  handler       = var.handler
-  runtime       = var.runtime
-  s3_bucket     = var.lambda_artefact_storage_bucket
-  s3_key        = var.s3_key
-  timeout       = var.lambda_timeout
-  memory_size   = var.lambda_memory_size
+  function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
+  role             = aws_iam_role.lambda_role.arn
+  handler          = var.handler
+  runtime          = var.runtime
+  source_code_hash = fileexists("${path.module}/../../../lambdas/${local.lambda_name_underscore}/${local.lambda_name_underscore}.zip") ? filebase64sha256("${path.module}/../../../lambdas/${local.lambda_name_underscore}/${local.lambda_name_underscore}.zip") : ""
+  s3_bucket        = var.lambda_artefact_storage_bucket
+  s3_key           = var.s3_key
+  timeout          = var.lambda_timeout
+  memory_size      = var.lambda_memory_size
 
   dynamic "environment" {
     for_each = local.environment_map
