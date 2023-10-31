@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
   statement {
     actions   = ["iam:PassRole"]
     effect    = "Allow"
-    resources = [aws_iam_role.rds_snapshot_export_service.arn]
+    resources = [var.rds_snapshot_service_arn]
   }
 
   statement {

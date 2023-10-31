@@ -94,6 +94,7 @@ module "liberator_rds_snapshot_to_s3" {
   rds_export_bucket_id           = module.rds_export_storage.bucket_id
   rds_export_storage_kms_key_arn = module.rds_export_storage.kms_key_arn
   rds_export_storage_kms_key_id  = module.rds_export_storage.kms_key_id
+  rds_snapshot_service_arn       = module.liberator_db_snapshot_to_s3[0].rds_snapshot_service_arn
   target_bucket_arn              = module.landing_zone.bucket_arn
   target_bucket_id               = module.landing_zone.bucket_id
   target_bucket_kms_key_arn      = module.landing_zone.kms_key_arn
