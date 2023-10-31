@@ -22,12 +22,10 @@ variable "lambda_artefact_storage_bucket" {
   type = string
 }
 
-variable "zone_kms_key_arn" {
+variable "target_bucket_kms_key_arn" {
   type = string
 }
-
-
-variable "zone_bucket_id" {
+variable "rds_export_bucket_id" {
   type = string
 }
 
@@ -44,10 +42,26 @@ variable "rds_instance_arns" {
   type = list(string)
 }
 
-variable "source_bucket_arn" {
+variable "rds_export_bucket_arn" {
   type = string
 }
 
 variable "target_bucket_arn" {
+  type = string
+}
+
+variable "target_bucket_id" {
+  type = string
+}
+
+variable "rds_export_storage_kms_key_arn" {
+  type = string
+}
+
+variable "rds_export_storage_kms_key_id" {
+  type = string
+}
+
+variable "target_bucket_kms_key_id" {
   type = string
 }
