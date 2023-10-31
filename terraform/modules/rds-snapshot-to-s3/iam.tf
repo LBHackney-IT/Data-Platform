@@ -130,8 +130,8 @@ data "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
     ]
     effect = "Allow"
     resources = [
-      var.source_bucket_arn,
-      "${var.source_bucket_arn}/*",
+      var.rds_export_bucket_arn,
+      "${var.rds_export_bucket_arn}/*",
       var.target_bucket_arn,
       "${var.target_bucket_arn}/*"
     ]
