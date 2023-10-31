@@ -99,7 +99,7 @@ module "liberator_rds_snapshot_to_s3" {
   target_bucket_id               = module.landing_zone.bucket_id
   target_bucket_kms_key_arn      = module.landing_zone.kms_key_arn
   target_bucket_kms_key_id       = module.landing_zone.kms_key_id
-  target_prefix                  = "parking/liberator/"
+  target_prefix                  = "parking"
   service_area                   = "parking"
   rds_instance_ids               = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_id]
   rds_instance_arns              = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_arn]
