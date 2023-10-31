@@ -80,3 +80,9 @@ variable "install_requirements" {
   description = "Whether to create and install requirements.txt for the Lambda Function"
   default     = false
 }
+
+variable "lambda_role_arn" {
+  type        = string
+  description = "ARN of the IAM Role to use for the Lambda Function"
+  default     = null
+}

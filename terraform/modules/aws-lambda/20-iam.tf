@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda_role" {
-  name = "${var.identifier_prefix}${var.lambda_name}-role"
+  name = "${var.identifier_prefix}-${var.lambda_name}-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "lambda_role" {
 }
 
 resource "aws_iam_policy" "lambda_role" {
-  name   = lower("${var.identifier_prefix}${var.lambda_name}")
+  name   = lower("${var.identifier_prefix}-${var.lambda_name}")
   policy = data.aws_iam_policy_document.lambda_role.json
   tags   = var.tags
 }

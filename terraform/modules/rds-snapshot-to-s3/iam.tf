@@ -52,10 +52,24 @@ resource "aws_iam_role_policy" "cloudwatch_events_policy" {
   })
 }
 
-resource "aws_iam_role" "rds_snapshot_to_s3_lambda_role" {
-  name               = "rds-snapshot-to-s3-lambda-role"
-  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+data "aws_iam_policy_document" "lambda_assume_role" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "lambda.amazonaws.com"
+      ]
+      type = "Service"
+    }
+  }
+}
 
+# RDS Snapshot to S3 lambda IAM
+resource "aws_iam_role" "rds_snapshot_to_s3_lambda_role" {
+  name               = "${var.identifier_prefix}-rds-snapshot-to-s3-lambda-role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
 data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
@@ -99,12 +113,40 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
       var.rds_export_storage_kms_key_arn
     ]
   }
+
+  statement {
+    actions = [
+      "s3:PutObject*",
+      "s3:GetObject*",
+      "s3:ListBucket",
+      "s3:DeleteObject*",
+      "s3:GetBucketLocation"
+    ]
+    effect = "Allow"
+    resources = [
+      var.rds_export_bucket_arn,
+      "${var.rds_export_bucket_arn}/*"
+    ]
+  }
 }
 
+resource "aws_iam_policy" "rds_snapshot_to_s3_lambda_role_policy" {
+  name   = lower("${var.identifier_prefix}-rds-snapshot-to-s3-lambda-policy")
+  policy = data.aws_iam_policy_document.rds_snapshot_to_s3_lambda.json
+  tags   = var.tags
+}
 
+resource "aws_iam_policy_attachment" "rds_snapshot_copier_attachment" {
+  name       = "${var.identifier_prefix}-rds-snapshot-s3-to-s3-lambda-policy-attachment"
+  policy_arn = aws_iam_policy.rds_snapshot_to_s3_lambda_role_policy.arn
+  roles = [
+    aws_iam_role.rds_snapshot_to_s3_lambda_role.name
+  ]
+}
 
+# S3 to S3 copier lambda IAM
 resource "aws_iam_role" "rds_snapshot_s3_to_s3_copier_lambda_role" {
-  name               = "rds-snapshot-s3-to-s3-copier-lambda-role"
+  name               = "${var.identifier_prefix}-rds-snapshot-s3-to-s3-copier-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
@@ -123,10 +165,11 @@ data "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
 
   statement {
     actions = [
-      "s3:GetObject",
-      "s3:PutObject",
+      "s3:PutObject*",
+      "s3:GetObject*",
       "s3:ListBucket",
-      "s3:DeleteObject"
+      "s3:DeleteObject*",
+      "s3:GetBucketLocation"
     ]
     effect = "Allow"
     resources = [
@@ -168,24 +211,12 @@ resource "aws_iam_policy" "rds_snapshot_s3_to_s3_copier_role_policy" {
   tags   = var.tags
 }
 
-resource "aws_iam_policy_attachment" "rds_snapshot_copier_attachment" {
-  name       = "${var.identifier_prefix}-rds-snapshot-s3-to-s3-lambda-policy-attachment"
+resource "aws_iam_policy_attachment" "rds_snapshot_s3_to_s3_copier_attachment" {
+  name       = "${var.identifier_prefix}-rds-snapshot-s3-to-s3-copier-lambda-policy-attachment"
   policy_arn = aws_iam_policy.rds_snapshot_s3_to_s3_copier_role_policy.arn
   roles = [
-    aws_iam_role.rds_snapshot_to_s3_lambda_role.name
+    aws_iam_role.rds_snapshot_s3_to_s3_copier_lambda_role.name
   ]
 }
 
-data "aws_iam_policy_document" "lambda_assume_role" {
-  statement {
-    actions = [
-      "sts:AssumeRole"
-    ]
-    principals {
-      identifiers = [
-        "lambda.amazonaws.com"
-      ]
-      type = "Service"
-    }
-  }
-}
+

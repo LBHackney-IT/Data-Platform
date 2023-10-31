@@ -16,7 +16,7 @@ def lambda_handler(event, context):
     kms_key_id = os.environ["KMS_KEY_ID"]
 
     try:
-        rds.export_snapshot_to_s3(
+        rds.start_export_task(
             ExportTaskIdentifier=snapshot_identifier,
             SourceArn=source_arn,
             S3BucketName=bucket_name,
