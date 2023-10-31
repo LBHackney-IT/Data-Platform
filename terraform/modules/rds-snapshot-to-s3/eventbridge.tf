@@ -15,7 +15,7 @@ resource "aws_cloudwatch_event_rule" "rds_snapshot_created_event_rule" {
     source = ["aws.rds"],
     detail = {
       SourceArn = [{
-        "prefix" : "arn:aws:rds:eu-west-2:120038763019:snapshot:sql-to-parquet"
+        "prefix" : "arn:aws:rds:eu-west-2:${data.aws_caller_identity.current.account_id}:snapshot:sql-to-parquet"
       }],
       EventID = ["RDS-EVENT-0042"]
     }
@@ -41,7 +41,7 @@ resource "aws_cloudwatch_event_rule" "rds_snapshot_exported_event_rule" {
     source = ["aws.rds"],
     detail = {
       SourceArn = [{
-        "prefix" : "arn:aws:rds:eu-west-2:120038763019:snapshot:sql-to-parquet"
+        "prefix" : "arn:aws:rds:eu-west-2:${data.aws_caller_identity.current.account_id}:snapshot:sql-to-parquet"
       }],
       EventID = ["RDS-EVENT-0161"]
     }
