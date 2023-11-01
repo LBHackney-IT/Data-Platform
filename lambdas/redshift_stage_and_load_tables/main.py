@@ -41,9 +41,12 @@ def lambda_handler(event, context):
         )
         query_id = start_sql_execution(cluster_id, redshift_database, user, sql)
         query_ids.append(query_id)
-
+    # fmt: off
     return {
         "statusCode": 200,
         "body": "Started Redshift data staging and load for all tables!",
-        "query_ids": query_ids,
+        "query_ids": query_ids
     }
+
+
+# fmt: on
