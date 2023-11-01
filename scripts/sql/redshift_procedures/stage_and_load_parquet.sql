@@ -1,32 +1,41 @@
 CREATE OR REPLACE PROCEDURE stage_and_load_parquet(
         s3_path VARCHAR,
         iam_role VARCHAR,
-        target_table_name VARCHAR
-    ) LANGUAGE plpgsql AS $$ BEGIN -- Dynamically create and load the staging table
+        schema_name VARCHAR,
+        table_name VARCHAR
+    ) LANGUAGE plpgsql AS $$ BEGIN -- Create the staging table
     EXECUTE format(
-        '
-        CREATE TABLE IF NOT EXISTS %s_staging (LIKE %s);
-        COPY %s_staging FROM %L
-        IAM_ROLE %L
-        FORMAT AS PARQUET;
-    ',
-        target_table_name,
-        target_table_name,
-        target_table_name,
-        s3_path,
-        iam_role
+        'CREATE TABLE IF NOT EXISTS %I.%I_staging (LIKE %I.%I);',
+        schema_name,
+        table_name,
+        schema_name,
+        table_name
     );
--- Swap: Delete from main table and insert from staging table
+-- Load data from S3 into the staging table
 EXECUTE format(
-    '
-        DELETE FROM %s;
-        INSERT INTO %s SELECT * FROM %s_staging;
-        TRUNCATE %s_staging;
-    ',
-    target_table_name,
-    target_table_name,
-    target_table_name,
-    target_table_name
+    'COPY %I.%I_staging FROM %L FORMAT AS PARQUET IAM_ROLE %L;',
+    schema_name,
+    table_name,
+    s3_path,
+    iam_role
 );
+-- Begin transaction
+BEGIN;
+-- Insert data from staging to main table
+EXECUTE format(
+    'INSERT INTO %I.%I SELECT * FROM %I.%I_staging;',
+    schema_name,
+    table_name,
+    schema_name,
+    table_name
+);
+-- Truncate staging table
+EXECUTE format(
+    'TRUNCATE %I.%I_staging;',
+    schema_name,
+    table_name
+);
+-- Commit transaction
+COMMIT;
 END;
 $$;

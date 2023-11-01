@@ -23,6 +23,7 @@ def lambda_handler(event, context):
     user = os.environ["REDSHIFT_USER"]
     iam_role = os.environ["REDSHIFT_IAM_ROLE"]
     source_bucket = os.environ["SOURCE_BUCKET"]
+    schema_name = os.environ["SCHEMA_NAME"]
 
     import_year = event["year"]
     import_month = event["month"]
@@ -34,7 +35,10 @@ def lambda_handler(event, context):
 
     for table in event["tables"]:
         s3_path = f"s3://{source_bucket}/{source_database}/{table}/{import_year}/{import_month}/{import_day}/{import_date}/"
-        sql = f"CALL stage_and_load_parquet('{s3_path}', '{iam_role}', '{table}')"
+        sql = (
+            f"CALL stage_and_load_parquet('{s3_path}', '{iam_role}', '{schema_name}',"
+            f" '{table}')"
+        )
         query_id = start_sql_execution(cluster_id, redshift_database, user, sql)
         query_ids.append(query_id)
 
