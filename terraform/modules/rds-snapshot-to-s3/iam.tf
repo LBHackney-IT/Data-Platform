@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
     ]
     principals {
       identifiers = [
-        "rds.amazonaws.com"
+        "export.rds.amazonaws.com"
       ]
       type = "Service"
     }
