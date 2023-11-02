@@ -121,8 +121,15 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
   statement {
     sid = "AllowKMSDecrypt"
     actions = [
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
       "kms:Decrypt",
-      "kms:GenerateDataKey*"
+      "kms:GenerateDataKeyPairWithoutPlaintext",
+      "kms:ReEncryptFrom",
+      "kms:ReEncryptTo",
+      "kms:CreateGrant",
+      "kms:DescribeKey",
+      "kms:RetireGrant"
     ]
     effect = "Allow"
     resources = [
