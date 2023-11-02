@@ -10,6 +10,9 @@ rds = boto3.client("rds")
 
 
 def lambda_handler(event, context):
+    print("## EVENT")
+    print(event)
+
     bucket_name = os.environ["BUCKET_NAME"]
     iam_role_arn = os.environ["IAM_ROLE_ARN"]
     kms_key_id = os.environ["KMS_KEY_ID"]
