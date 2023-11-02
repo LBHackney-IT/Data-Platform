@@ -103,7 +103,7 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
     ]
     effect = "Allow"
     resources = [
-      aws_iam_role.rds_snapshot_to_s3_lambda_role
+      aws_iam_role.rds_snapshot_to_s3_lambda_role.arn
     ]
   }
 
