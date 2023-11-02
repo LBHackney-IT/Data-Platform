@@ -64,6 +64,18 @@ data "aws_iam_policy_document" "lambda_assume_role" {
       type = "Service"
     }
   }
+
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "rds.amazonaws.com"
+      ]
+      type = "Service"
+    }
+  }
 }
 
 # RDS Snapshot to S3 lambda IAM
@@ -86,9 +98,13 @@ data "aws_iam_policy_document" "rds_snapshot_to_s3_lambda" {
   }
 
   statement {
-    actions   = ["iam:PassRole"]
-    effect    = "Allow"
-    resources = [var.rds_snapshot_service_arn]
+    actions = [
+      "iam:PassRole"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_iam_role.rds_snapshot_to_s3_lambda_role
+    ]
   }
 
   statement {
