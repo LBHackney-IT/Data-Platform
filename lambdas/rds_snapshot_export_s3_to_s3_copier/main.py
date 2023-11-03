@@ -1,4 +1,5 @@
 import os
+import ast
 
 import boto3
 
@@ -57,8 +58,8 @@ def s3_copy_folder(
                 continue
             source_key_split = source_key.split("/")
             parquet_file_name = source_key_split[-1]
-            database_name = source_key_split("/")[1]
-            table_name = source_key_split("/")[2]
+            database_name = source_key_split[1]
+            table_name = source_key_split[2]
             copy_object_params = {
                 "Bucket": target_bucket,
                 "CopySource": f"{source_bucket}/{source_key}",
@@ -85,6 +86,8 @@ def start_workflow_run(workflow_name: str, glue_client):
 
 
 def lambda_handler(event, context) -> None:
+    print("## EVENT")
+    print(event)
     s3 = boto3.client("s3")
 
     source_bucket = os.environ["SOURCE_BUCKET"]
@@ -98,7 +101,8 @@ def lambda_handler(event, context) -> None:
     else:
         target_prefix = ""
 
-    snapshot_id = event["detail"]["SnapshotIdentifier"]
+    event = ast.literal_eval(event)
+    snapshot_id = event["detail"]["SourceIdentifier"]
 
     s3_copy_folder(
         s3, source_bucket, source_prefix, target_bucket, target_prefix, snapshot_id
