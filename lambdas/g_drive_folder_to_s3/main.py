@@ -54,10 +54,7 @@ def authenticate_google_drive(google_credentials):
     Args:
         google_credentials (dict): Google Drive API credentials as a dictionary.
 
-    Returns:
-        Credentials: Google Drive API credentials.
     """
-    credentials = None
     creds = None
     SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
 

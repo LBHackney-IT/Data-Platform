@@ -27,7 +27,7 @@ mock_secrets_data = {
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
     with moto.mock_s3():
-        yield boto3.client('s3', region_name='us-east-1')
+        yield boto3.client('s3', region_name='eu-west-2')
 
 @pytest.fixture
 def s3_bucket(aws_credentials):
@@ -84,7 +84,24 @@ def test_download_file(google_drive_service):
 
 def test_upload_to_s3(s3_bucket):
     # Test upload_to_s3 function
-    upload_to_s3(s3_bucket, b'File Data', 'test_file.json')
+    s3_client = boto3.client('s3')
+    s3_bucket_name = "your_bucket_name"
+    file_content = b'File Data'
+    file_name = 'test_file.json'
+
+    # Call the upload_to_s3 function to upload data
+    upload_to_s3(s3_bucket_name, s3_client, file_content, file_name)
+    
+    # Fetch the uploaded object from S3
+    response = s3_client.get_object(Bucket=s3_bucket_name, Key=file_name)
+    uploaded_data = response['Body'].read()
+    
+    # Assert the uploaded data is as expected
+    assert uploaded_data == file_content, "Uploaded data does not match expected data"
+    
+    # Cleanup - Delete the uploaded file (important to avoid extra costs)
+    s3_client.delete_object(Bucket=s3_bucket_name, Key=file_name)
+
 
 def test_lambda_handler(google_drive_service, s3_bucket):
     # Mock Google Drive API response
