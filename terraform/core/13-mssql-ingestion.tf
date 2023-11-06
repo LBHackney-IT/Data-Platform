@@ -278,6 +278,7 @@ module "academy_state_machine" {
               "Type": "Task",
               "Resource": "arn:aws:states:::glue:startJobRun.sync",
               "Parameters": {
+                "JobName": "${module.academy_glue_job[0].job_name}",
                 "Parameters": {
                   "Arguments": {
                     "--table_filter_expression": "$.table_filter_expression"
