@@ -250,7 +250,7 @@ module "academy_state_machine" {
         "Resource": "arn:aws:states:::aws-sdk:ec2:describeSubnets",
         "Parameters": {
           "SubnetIds": [
-            "${data.aws_subnet.network[local.instance_subnet_id]}"
+            "${local.instance_subnet_id}"
           ]
         },
         "ResultPath": "$.SubnetResult",
