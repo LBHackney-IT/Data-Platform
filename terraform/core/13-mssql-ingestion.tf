@@ -195,3 +195,134 @@ module "copy_academy_revenues_to_raw_zone" {
     "--conf"                             = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
+
+## Academy State Machine
+
+locals {
+  academy_state_machine_count = local.is_live_environment && !local.is_production_environment ? 1 : 0
+}
+
+module "academy_glue_job" {
+  count                     = local.academy_state_machine_count
+  source                    = "../modules/aws-glue-job"
+  tags                      = module.tags.values
+  is_live_environment       = local.is_live_environment
+  is_production_environment = local.is_production_environment
+
+  job_name                       = "${local.short_identifier_prefix}Academy Revs & Bens Housing Needs Database Ingestion"
+  script_s3_object_key           = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
+  environment                    = var.environment
+  pydeequ_zip_key                = aws_s3_object.pydeequ.key
+  helper_module_key              = aws_s3_object.helpers.key
+  jdbc_connections               = [module.academy_mssql_database_ingestion[0].jdbc_connection_name]
+  glue_role_arn                  = aws_iam_role.glue_role.arn
+  glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
+  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
+  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
+  glue_job_timeout               = 420
+  glue_version                   = "4.0"
+  glue_job_worker_type           = "G.1X"
+  number_of_workers_for_glue_job = 2
+  job_parameters = {
+    "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
+    "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
+    "--s3_ingestion_details_target" = "s3://${module.landing_zone.bucket_id}/academy/ingestion-details/"
+    "--table_filter_expression"     = ""
+    "--conf"                        = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
+  }
+}
+
+
+module "academy_state_machine" {
+  count             = local.academy_state_machine_count
+  tags              = module.tags.values
+  source            = "../modules/aws-step-functions"
+  name              = "academy-revs-and-bens-housing-needs-database-ingestion"
+  identifier_prefix = local.short_identifier_prefix
+  role_arn          = aws_iam_role.academy_step_functions_role[0].arn
+  definition        = <<EOF
+  {
+    "Comment": "A description of my state machine",
+    "StartAt": "GetNumberOfAvailableIPs",
+    "States": {
+      "GetNumberOfAvailableIPs": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::aws-sdk:ec2:describeSubnets",
+        "Parameters": {
+          "SubnetIds": [
+            "${data.aws_subnet.network[local.instance_subnet_id]}"
+          ]
+        },
+        "ResultPath": "$.SubnetResult",
+        "Next": "InvokeLambdaCalculateMaxConcurrency"
+      },
+      "InvokeLambdaCalculateMaxConcurrency": {
+        "Type": "Task",
+        "Resource": "${module.max_concurrency_lambda[0].lambda_function_arn}",
+        "Parameters": {
+          "AvailableIPs.$": "$.SubnetResult.Subnets[0].AvailableIpAddressCount",
+          "NumTasks.$": "$.TaskCount"
+        },
+        "ResultPath": "$.MaxConcurrencyResult",
+        "Next": "Map"
+      },
+      "Map": {
+        "Type": "Map",
+        "ItemProcessor": {
+          "ProcessorConfig": {
+            "Mode": "INLINE"
+          },
+          "StartAt": "Glue StartJobRun",
+          "States": {
+            "Glue StartJobRun": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::glue:startJobRun.sync",
+              "Parameters": {
+                "Parameters": {
+                  "Arguments": {
+                    "--table_filter_expression": "$.table_filter_expression"
+                  }
+                }
+              },
+              "End": true
+            }
+          }
+        },
+        "MaxConcurrencyPath": "$.MaxConcurrencyResult",
+        "End": true
+      }
+    }
+  }
+  EOF
+}
+
+module "max_concurrency_lambda" {
+  count                          = local.academy_state_machine_count
+  source                         = "../modules/aws-lambda"
+  tags                           = module.tags.values
+  lambda_name                    = "academy-revs-and-bens-housing-needs-database-ingestion-max-concurrency"
+  identifier_prefix              = local.short_identifier_prefix
+  handler                        = "main.lambda_handler"
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
+  s3_key                         = "academy-revs-and-bens-housing-needs-database-ingestion-max-concurrency.zip"
+  lambda_source_dir              = "../../lambdas/calculate_max_concurrency"
+  runtime                        = "python3.8"
+}
+
+resource "aws_iam_role" "academy_step_functions_role" {
+  count              = local.academy_state_machine_count
+  name               = "${local.short_identifier_prefix}academy-step-functions-role"
+  tags               = module.tags.values
+  assume_role_policy = data.aws_iam_policy_document.step_functions_assume_role_policy.json
+}
+
+data "aws_iam_policy_document" "step_functions_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["states.amazonaws.com"]
+    }
+  }
+}
