@@ -200,6 +200,7 @@ module "copy_academy_revenues_to_raw_zone" {
 
 locals {
   academy_state_machine_count = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  number_of_glue_workers      = 2
 }
 
 module "academy_glue_job" {
@@ -222,7 +223,7 @@ module "academy_glue_job" {
   glue_job_timeout               = 420
   glue_version                   = "4.0"
   glue_job_worker_type           = "G.1X"
-  number_of_workers_for_glue_job = 2
+  number_of_workers_for_glue_job = local.number_of_glue_workers
   job_parameters = {
     "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
@@ -261,7 +262,7 @@ module "academy_state_machine" {
         "Resource": "${module.max_concurrency_lambda[0].lambda_function_arn}",
         "Parameters": {
           "AvailableIPs.$": "$.SubnetResult.Subnets[0].AvailableIpAddressCount",
-          "NumTasks.$": "$.TaskCount"
+          "Workers.$": "${local.number_of_glue_workers}"
         },
         "ResultPath": "$.MaxConcurrencyResult",
         "Next": "Map"
@@ -281,7 +282,7 @@ module "academy_state_machine" {
                 "JobName": "${module.academy_glue_job[0].job_name}",
                 "Parameters": {
                   "Arguments": {
-                    "--table_filter_expression": "$.table_filter_expression"
+                    "--table_filter_expression.$": "$.FilterString"
                   }
                 }
               },
@@ -289,8 +290,13 @@ module "academy_state_machine" {
             }
           }
         },
-        "MaxConcurrencyPath": "$.MaxConcurrencyResult",
-        "End": true
+        "MaxConcurrencyPath": "$.MaxConcurrencyResult.max_concurrency",
+        "End": true,
+        "ItemsPath": "$.TableFilters",
+        "ItemSelector": {
+          "MaxConcurrency.$": "$.MaxConcurrencyResult.max_concurrency",
+          "FilterString.$": "$$.Map.Item.Value"
+        }
       }
     }
   }
@@ -326,5 +332,45 @@ data "aws_iam_policy_document" "step_functions_assume_role_policy" {
       type        = "Service"
       identifiers = ["states.amazonaws.com"]
     }
+  }
+}
+
+data "aws_iam_policy_document" "academy_step_functions_policy" {
+  statement {
+    actions = [
+      "logs:CreateLogDelivery",
+      "logs:GetLogDelivery",
+      "logs:UpdateLogDelivery",
+      "logs:DeleteLogDelivery",
+      "logs:ListLogDeliveries",
+      "logs:PutResourcePolicy",
+      "logs:DescribeResourcePolicies",
+      "logs:DescribeLogGroups"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "glue:StartJobRun",
+      "glue:GetJobRun",
+      "glue:GetJobRuns",
+      "glue:BatchStopJobRun"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "lambda:InvokeFunction"
+    ]
+    resources = [module.max_concurrency_lambda[0].lambda_function_arn]
+  }
+
+  statement {
+    actions = [
+      "ec2:DescribeSubnets"
+    ]
+    resources = ["*"]
   }
 }
