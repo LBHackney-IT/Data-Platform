@@ -168,8 +168,8 @@ module "addressbasepremium_load_files" {
   job_parameters = {
     "--job-bookmark-option"  = "job-bookmark-disable"    
     "--raw_bucket"           = module.raw_zone_data_source.bucket_id
-    "--raw_prefix"           = "unrestricted/os_addressbase_premium/full_supply/epoch_102/raw/"
-    "--processed_data_path"  = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/os_addressbase_premium/full_supply/epoch_102/processed/"
+    "--raw_prefix"           = "unrestricted/os-addressbase-premium/full-supply/epoch-105/raw/"
+    "--processed_data_path"  = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/os-addressbase-premium/full-supply/epoch-105/processed/"
   }
   script_name                = "addressbasepremium_load_files"
 }
@@ -192,8 +192,8 @@ module "addressbasepremium_create_address_table" {
     "--job-bookmark-option"          = "job-bookmark-disable"    
     "--blpu_class_lookup_path"       = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.blpu_class_lookup.key}"
     "--ward_lookup_path"             = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.ons_ward_lookup.key}"
-    "--processed_source_data_path"   = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/os_addressbase_premium/full_supply/epoch_102/processed/"
-    "--target_path"                  = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/unrestricted/national_address"
+    "--processed_source_data_path"   = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/os-addressbase-premium/full-supply/epoch-105/processed/"
+    "--target_path"                  = "s3://${module.refined_zone_data_source.bucket_id}/unrestricted/national_address"
   }
   script_name                    = "addressbasepremium_create_address_table"
 }
