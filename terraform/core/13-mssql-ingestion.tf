@@ -339,7 +339,6 @@ data "aws_iam_policy_document" "step_functions_assume_role_policy" {
 }
 
 data "aws_iam_policy_document" "academy_step_functions_policy" {
-  count = local.academy_state_machine_count
   statement {
     actions = [
       "logs:CreateLogDelivery",
@@ -385,7 +384,7 @@ resource "aws_cloudwatch_event_rule" "academy_state_machine_trigger" {
   tags                = module.tags.values
   description         = "Trigger the Academy State Machine every weekday at 1am"
   schedule_expression = "cron(0 1 ? * MON-FRI *)"
-  is_enabled          = local.is_production_environment ? true : false
+  is_enabled          = true
   role_arn            = aws_iam_role.academy_cloudwatch_execution_role[0].arn
 }
 
@@ -419,7 +418,6 @@ data "aws_iam_policy_document" "cloudwatch_assume_role_policy" {
 }
 
 data "aws_iam_policy_document" "cloudwatch_execution_policy" {
-  count = local.academy_state_machine_count
   statement {
     actions = [
       "states:StartExecution"
