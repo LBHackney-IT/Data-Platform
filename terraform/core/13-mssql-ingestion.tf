@@ -265,7 +265,7 @@ module "academy_state_machine" {
         "Resource": "${module.max_concurrency_lambda[0].lambda_function_arn}",
         "Parameters": {
           "AvailableIPs.$": "$.SubnetResult.Subnets[0].AvailableIpAddressCount",
-          "Workers.$": "${local.number_of_glue_workers}"
+          "Workers": "${local.number_of_glue_workers}"
         },
         "ResultPath": "$.MaxConcurrencyResult",
         "Next": "Map"
@@ -283,11 +283,9 @@ module "academy_state_machine" {
               "Resource": "arn:aws:states:::glue:startJobRun.sync",
               "Parameters": {
                 "JobName": "${module.academy_glue_job[0].job_name}",
-                "Parameters": {
                   "Arguments": {
                     "--table_filter_expression.$": "$.FilterString"
                   }
-                }
               },
               "End": true
             }
