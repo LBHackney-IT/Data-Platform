@@ -300,7 +300,7 @@ module "max_concurrency_lambda" {
   count                          = local.academy_state_machine_count
   source                         = "../modules/aws-lambda"
   tags                           = module.tags.values
-  lambda_name                    = "academy-revs-and-bens-housing-needs-database-ingestion-max-concurrency"
+  lambda_name                    = "academy-max-concurrency"
   identifier_prefix              = local.short_identifier_prefix
   handler                        = "main.lambda_handler"
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
