@@ -306,6 +306,7 @@ module "max_concurrency_lambda" {
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   s3_key                         = "academy-revs-and-bens-housing-needs-database-ingestion-max-concurrency.zip"
   lambda_source_dir              = "../../lambdas/calculate_max_concurrency"
+  lambda_output_path             = "../../lambdas/calculate_max_concurrency/max-concurrency.zip"
   runtime                        = "python3.8"
 }
 
