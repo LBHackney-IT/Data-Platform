@@ -114,7 +114,7 @@ if __name__ == "__main__":
         #     filepath = csvfileList[i]
             processed += 1
             logger.info("Processing file number " + str(processed) + " out of " + str(csvfileCount))
-            s3_object = boto_client.get_object(Bucket='dataplatform-stg-raw-zone', Key=filepath)
+            s3_object = boto_client.get_object(Bucket=args['raw_bucket'], Key=filepath)
             data = s3_object['Body'].read().decode('utf-8').splitlines()
             csvreader = csv.reader(data)
             try:
