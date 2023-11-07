@@ -383,14 +383,14 @@ resource "aws_cloudwatch_event_rule" "academy_state_machine_trigger" {
   description         = "Trigger the Academy State Machine every weekday at 1am"
   schedule_expression = "cron(0 1 ? * MON-FRI *)"
   is_enabled          = true
-  role_arn            = aws_iam_role.academy_cloudwatch_execution_role[0].arn
 }
 
 resource "aws_cloudwatch_event_target" "academy_state_machine_trigger" {
-  count = local.academy_state_machine_count
-  rule  = aws_cloudwatch_event_rule.academy_state_machine_trigger[0].name
-  arn   = module.academy_state_machine[0].arn
-  input = <<EOF
+  count    = local.academy_state_machine_count
+  rule     = aws_cloudwatch_event_rule.academy_state_machine_trigger[0].name
+  arn      = module.academy_state_machine[0].arn
+  role_arn = aws_iam_role.academy_cloudwatch_execution_role[0].arn
+  input    = <<EOF
   {
     "TableFilters": ${jsonencode(local.academy_table_filters)}
   }
