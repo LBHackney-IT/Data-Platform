@@ -1,13 +1,13 @@
 locals {
-    backup_ami_id_prod = "ami-0a9bac68a32217ec9"
-    ec2_tags_prod = {
-        BackupPolicy  = title(var.environment)
-        Name          = "${var.identifier_prefix}-qlik-sense-restore"
-    }
-    ec2_tags_prod_restore = {
-        BackupPolicy  = title(var.environment)
-        Name          = "${var.identifier_prefix}-qlik-sense-restore-2"
-    }
+  backup_ami_id_prod = "ami-0a9bac68a32217ec9"
+  ec2_tags_prod = {
+    BackupPolicy = title(var.environment)
+    Name         = "${var.identifier_prefix}-qlik-sense-restore"
+  }
+  ec2_tags_prod_restore = {
+    BackupPolicy = title(var.environment)
+    Name         = "${var.identifier_prefix}-qlik-sense-restore-2"
+  }
 }
 
 #manually added/managed value
@@ -22,11 +22,11 @@ data "aws_secretsmanager_secret_version" "subnet_value_for_qlik_sense_prod_insta
 }
 
 resource "aws_instance" "qlik_sense_prod_instance" {
-  count                     = var.is_production_environment ? 1 : 0
-  ami                       = local.backup_ami_id_prod
-  instance_type             = "c5.4xlarge"
-  subnet_id                 = data.aws_secretsmanager_secret_version.subnet_value_for_qlik_sense_prod_instance[0].secret_string
-  vpc_security_group_ids    = [aws_security_group.qlik_sense.id]
+  count                  = var.is_production_environment ? 1 : 0
+  ami                    = local.backup_ami_id_prod
+  instance_type          = "c6i.4xlarge"
+  subnet_id              = data.aws_secretsmanager_secret_version.subnet_value_for_qlik_sense_prod_instance[0].secret_string
+  vpc_security_group_ids = [aws_security_group.qlik_sense.id]
 
   private_dns_name_options {
     enable_resource_name_dns_a_record = true
@@ -39,18 +39,18 @@ resource "aws_instance" "qlik_sense_prod_instance" {
   associate_public_ip_address = false
 
   root_block_device {
-    encrypted               = true
-    delete_on_termination   = false
-    kms_key_id              = aws_kms_key.key.arn
-    tags                    = merge(var.tags, local.ec2_tags_prod)
-    volume_size             = 1000
-    volume_type             = "gp3"
+    encrypted             = true
+    delete_on_termination = false
+    kms_key_id            = aws_kms_key.key.arn
+    tags                  = merge(var.tags, local.ec2_tags_prod)
+    volume_size           = 1000
+    volume_type           = "gp3"
   }
 
   lifecycle {
     ignore_changes = [ami, subnet_id]
   }
-  
+
   metadata_options {
     http_tokens   = "required"
     http_endpoint = "enabled"
