@@ -376,6 +376,20 @@ data "aws_iam_policy_document" "academy_step_functions_policy" {
   }
 }
 
+resource "aws_iam_policy" "academy_step_functions_policy" {
+  count  = local.academy_state_machine_count
+  name   = "${local.short_identifier_prefix}academy-step-functions-policy"
+  tags   = module.tags.values
+  policy = data.aws_iam_policy_document.academy_step_functions_policy.json
+}
+
+resource "aws_iam_policy_attachment" "academy_step_functions_policy_attachment" {
+  count      = local.academy_state_machine_count
+  name       = "${local.short_identifier_prefix}academy-step-functions-policy-attachment"
+  policy_arn = aws_iam_policy.academy_step_functions_policy[0].arn
+  roles      = [aws_iam_role.academy_step_functions_role[0].name]
+}
+
 resource "aws_cloudwatch_event_rule" "academy_state_machine_trigger" {
   count               = local.academy_state_machine_count
   name                = "${local.short_identifier_prefix}academy-state-machine-trigger"
@@ -387,10 +401,11 @@ resource "aws_cloudwatch_event_rule" "academy_state_machine_trigger" {
 }
 
 resource "aws_cloudwatch_event_target" "academy_state_machine_trigger" {
-  count = local.academy_state_machine_count
-  rule  = aws_cloudwatch_event_rule.academy_state_machine_trigger[0].name
-  arn   = module.academy_state_machine[0].arn
-  input = <<EOF
+  count    = local.academy_state_machine_count
+  rule     = aws_cloudwatch_event_rule.academy_state_machine_trigger[0].name
+  arn      = module.academy_state_machine[0].arn
+  role_arn = aws_iam_role.academy_cloudwatch_execution_role[0].arn
+  input    = <<EOF
   {
     "TableFilters": ${jsonencode(local.academy_table_filters)}
   }
