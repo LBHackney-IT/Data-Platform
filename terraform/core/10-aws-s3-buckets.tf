@@ -448,7 +448,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "rds_export_storag
 }
 
 module "deprecated_rds_export_storage" {
-  source = "../s3-bucket"
+  source = "../modules/s3-bucket"
 
   tags              = module.tags.values
   project           = var.project
