@@ -377,6 +377,20 @@ data "aws_iam_policy_document" "academy_step_functions_policy" {
   }
 }
 
+resource "aws_iam_policy" "academy_step_functions_policy" {
+  count  = local.academy_state_machine_count
+  name   = "${local.short_identifier_prefix}academy-step-functions-policy"
+  tags   = module.tags.values
+  policy = data.aws_iam_policy_document.academy_step_functions_policy.json
+}
+
+resource "aws_iam_policy_attachment" "academy_step_functions_policy_attachment" {
+  count      = local.academy_state_machine_count
+  name       = "${local.short_identifier_prefix}academy-step-functions-policy-attachment"
+  policy_arn = aws_iam_policy.academy_step_functions_policy[0].arn
+  roles      = [aws_iam_role.academy_step_functions_role[0].name]
+}
+
 resource "aws_cloudwatch_event_rule" "academy_state_machine_trigger" {
   count               = local.academy_state_machine_count
   name                = "${local.short_identifier_prefix}academy-state-machine-trigger"
