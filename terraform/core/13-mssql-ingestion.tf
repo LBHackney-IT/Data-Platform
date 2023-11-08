@@ -337,6 +337,7 @@ data "aws_iam_policy_document" "step_functions_assume_role_policy" {
 }
 
 data "aws_iam_policy_document" "academy_step_functions_policy" {
+  count = local.academy_state_machine_count
   statement {
     actions = [
       "logs:CreateLogDelivery",
@@ -416,6 +417,7 @@ data "aws_iam_policy_document" "cloudwatch_assume_role_policy" {
 }
 
 data "aws_iam_policy_document" "cloudwatch_execution_policy" {
+  count = local.academy_state_machine_count
   statement {
     actions = [
       "states:StartExecution"
@@ -435,5 +437,5 @@ resource "aws_iam_policy" "academy_cloudwatch_execution_policy" {
   count  = local.academy_state_machine_count
   name   = "${local.short_identifier_prefix}academy-cloudwatch-execution-policy"
   tags   = module.tags.values
-  policy = data.aws_iam_policy_document.cloudwatch_execution_policy.json
+  policy = data.aws_iam_policy_document.cloudwatch_execution_policy[0].json
 }
