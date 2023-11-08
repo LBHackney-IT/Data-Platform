@@ -446,3 +446,14 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "rds_export_storag
     bucket_key_enabled = true
   }
 }
+
+module "deprecated_rds_export_storage" {
+  source = "../s3-bucket"
+
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = "${local.identifier_prefix}-dp"
+  bucket_name       = "RDS Export Storage"
+  bucket_identifier = "rds-export-storage"
+}
