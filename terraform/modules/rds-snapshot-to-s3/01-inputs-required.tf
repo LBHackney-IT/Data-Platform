@@ -65,7 +65,3 @@ variable "rds_export_storage_kms_key_id" {
 variable "target_bucket_kms_key_id" {
   type = string
 }
-
-variable "rds_snapshot_service_arn" {
-  type = string
-}
