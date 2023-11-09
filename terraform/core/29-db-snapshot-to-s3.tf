@@ -41,6 +41,5 @@ moved {
 }
 
 moved {
-  from = module.db_snapshot_to_s3[0].module.rds_export_storage.aws_s3_bucket.bucket
-  to   = module.deprecated_rds_export_storage.aws_s3_bucket.bucket
-}
+  from  = local.is_production_environment ? module.db_snapshot_to_s3[0].module.rds_export_storage.aws_s3_bucket.bucket : null
+  to    = local.is_production_environment ? module.deprecated_rds_export_storage.aws_s3_bucket.bucket :   null
