@@ -105,3 +105,8 @@ module "liberator_rds_snapshot_to_s3" {
   backdated_workflow_name        = aws_glue_workflow.parking_liberator_backdated_data.name
   backdated_workflow_arn         = aws_glue_workflow.parking_liberator_backdated_data.arn
 }
+
+moved {
+  from = module.liberator_db_snapshot_to_s3[0].module.rds_export_storage.aws_s3_bucket.bucket_id
+  to   = module.deprecated_rds_export_storage.aws_s3_bucket.bucket_id
+}
