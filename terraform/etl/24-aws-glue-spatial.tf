@@ -5,7 +5,7 @@ module "llpg_raw_to_trusted" {
 
   department                 = module.department_unrestricted_data_source
   job_name                   = "${local.short_identifier_prefix}llpg_latest_to_trusted"
-  glue_version               = local.is_production_environment ? "2.0" : "4.0"
+  glue_version               = "4.0"
   glue_job_worker_type       = "G.1X"
   helper_module_key          = data.aws_s3_object.helpers.key
   pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
