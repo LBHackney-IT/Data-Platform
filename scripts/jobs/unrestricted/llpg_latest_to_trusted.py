@@ -49,7 +49,6 @@ if __name__ == "__main__":
                 }
                 
     df2 = data_source.toDF()
-    df2 = get_latest_partitions(df2)
     # Duplicate ward column to apply mapping
     df2 = df2.withColumn('llpg_ward_map', col('ward').cast('string')) 
 
