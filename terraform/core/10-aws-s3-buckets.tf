@@ -468,3 +468,29 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "deprecated_rds_ex
     bucket_key_enabled = true
   }
 }
+
+module "addresses_api_rds_export_storage" {
+  source = "../modules/s3-bucket"
+
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "RDS Export Storage"
+  bucket_identifier = "rds-export-storage"
+
+  providers = {
+    aws = aws.aws_api_account
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "addresses_api_rds_export_storage" {
+  bucket = module.addresses_api_rds_export_storage.bucket_id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "aws:kms"
+    }
+    bucket_key_enabled = true
+  }
+}
