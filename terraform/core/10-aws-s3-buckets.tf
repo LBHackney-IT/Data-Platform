@@ -478,6 +478,10 @@ module "addresses_api_rds_export_storage" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "RDS Export Storage"
   bucket_identifier = "rds-export-storage"
+
+  providers = {
+    aws = aws.aws_api_account
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "addresses_api_rds_export_storage" {
