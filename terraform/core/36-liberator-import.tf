@@ -107,6 +107,6 @@ module "liberator_rds_snapshot_to_s3" {
 }
 
 moved {
-  from = module.liberator_db_snapshot_to_s3[0].module.rds_export_storage.aws_s3_bucket.bucket
-  to   = module.deprecated_rds_export_storage.aws_s3_bucket.bucket
+  from = module.liberator_db_snapshot_to_s3[0].module.rds_export_storage.aws_s3_bucket.bucket_id
+  to   = module.deprecated_rds_export_storage.aws_s3_bucket.bucket_id
 }
