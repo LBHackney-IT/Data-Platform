@@ -483,14 +483,3 @@ module "addresses_api_rds_export_storage" {
     aws = aws.aws_api_account
   }
 }
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "addresses_api_rds_export_storage" {
-  bucket = module.addresses_api_rds_export_storage.bucket_id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "aws:kms"
-    }
-    bucket_key_enabled = true
-  }
-}
