@@ -493,4 +493,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "addresses_api_rds
     }
     bucket_key_enabled = true
   }
+
+  provider = aws.aws_api_account
 }
