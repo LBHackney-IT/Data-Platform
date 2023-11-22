@@ -22,3 +22,4 @@ module "redshift_serverless" {
   refined_zone_kms_key_arn              = module.refined_zone.kms_key_arn
   trusted_zone_kms_key_arn              = module.trusted_zone.kms_key_arn
 }
+

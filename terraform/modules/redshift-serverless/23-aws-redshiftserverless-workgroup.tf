@@ -45,3 +45,4 @@ resource "aws_redshiftserverless_workgroup" "default" {
   #             parameter_value = "true"
   #           }
 }
+

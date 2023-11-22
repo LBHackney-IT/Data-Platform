@@ -4,6 +4,7 @@ variable "workgroup_base_capacity" {
   default     = 32
 }
 
+
 # variable "maximimum_query_execution_time" {
 #   description = "Max query execution time (in seconds)"
 #   type        = number

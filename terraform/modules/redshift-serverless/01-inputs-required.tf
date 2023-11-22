@@ -53,8 +53,8 @@ variable "serverless_compute_usage_limit_period" {
 }
 
 variable "serverless_compute_usage_limit_amount" {
-  description   = "Usage limit amount (RPU)" 
-  type              = number
+  description = "Usage limit amount (RPU)"
+  type        = number
 }
 
 variable "landing_zone_bucket_arn" {
@@ -66,6 +66,7 @@ variable "refined_zone_bucket_arn" {
   description = "ARN of refined zone bucket"
   type        = string
 }
+
 
 variable "trusted_zone_bucket_arn" {
   description = "ARN of trusted zone bucket"
