@@ -117,14 +117,14 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket" {
       sse_algorithm = "aws:kms"
     }
     bucket_key_enabled = true
-    mfa_delete         = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_versioning" "bucket" {
   bucket = aws_s3_bucket.bucket.id
   versioning_configuration {
-    status = "Enabled"
+    status     = "Enabled"
+    mfa_delete = "Disabled"
   }
 }
 
