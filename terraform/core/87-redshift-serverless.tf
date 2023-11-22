@@ -10,7 +10,7 @@ module "redshift_serverless" {
   workgroup_name                        = "${local.identifier_prefix}-default"
   admin_username                        = "data_engineers"
   db_name                               = "data_platform"
-  workgroup_base_capacity               = 16
+  workgroup_base_capacity               = 32
   serverless_compute_usage_limit_period = "daily"
   serverless_compute_usage_limit_amount = 1
   landing_zone_bucket_arn               = module.landing_zone.bucket_arn
