@@ -34,15 +34,15 @@ data "aws_iam_policy_document" "key_policy" {
     }
   }
 
-  dynamic statement {
+  dynamic "statement" {
     for_each = var.bucket_key_policy_statements
-    
-    content { 
+
+    content {
       sid       = lookup(statement.value, "sid", "")
       effect    = lookup(statement.value, "effect", "")
       actions   = lookup(statement.value, "actions", [])
       resources = ["*"]
-      
+
       principals {
         type        = lookup(statement.value.principals, "type", "")
         identifiers = lookup(statement.value.principals, "identifiers", [])
@@ -83,15 +83,15 @@ data "aws_iam_policy_document" "bucket_policy_document" {
     }
   }
 
-  dynamic statement {
+  dynamic "statement" {
     for_each = var.bucket_policy_statements
-    
-    content { 
+
+    content {
       sid       = lookup(statement.value, "sid", "")
       effect    = lookup(statement.value, "effect", "")
       actions   = lookup(statement.value, "actions", [])
       resources = lookup(statement.value, "resources", [])
-      
+
       principals {
         type        = lookup(statement.value.principals, "type", "")
         identifiers = lookup(statement.value.principals, "identifiers", [])
@@ -107,17 +107,23 @@ resource "aws_s3_bucket" "bucket" {
 
   force_destroy = (var.environment == "dev")
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.key.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
+}
 
-  versioning {
-    enabled = true
+resource "aws_s3_bucket_server_side_encryption_configuration" "bucket" {
+  bucket = aws_s3_bucket.bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "aws:kms"
+    }
+    bucket_key_enabled = true
+  }
+}
+
+resource "aws_s3_bucket_versioning" "bucket" {
+  bucket = aws_s3_bucket.bucket.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
