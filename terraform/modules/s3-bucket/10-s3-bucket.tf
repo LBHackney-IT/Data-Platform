@@ -117,6 +117,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket" {
       sse_algorithm = "aws:kms"
     }
     bucket_key_enabled = true
+    mfa_delete         = "Enabled"
   }
 }
 
