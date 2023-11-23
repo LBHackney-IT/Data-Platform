@@ -39,6 +39,10 @@ locals {
     core_recov_event = "^lbhaliverbviews_core_recov_event",
     mix              = "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
   } : {}
+  landing_to_raw_filter_expressions = local.is_live_environment ? {
+    revenues               = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)",
+    benefits_housing_needs = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
+  } : {}
   academy_ingestion_max_concurrent_runs = local.is_live_environment ? length(local.table_filter_expressions) : 1
 }
 
@@ -73,7 +77,7 @@ resource "aws_glue_trigger" "academy_revenues_and_benefits_housing_needs_landing
   }
 }
 
-module "copy_academy_benefits_housing_needs_to_raw_zone" {
+module "copy_academy_landing_to_raw" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
 
@@ -81,43 +85,7 @@ module "copy_academy_benefits_housing_needs_to_raw_zone" {
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
 
-  job_name                       = "${local.short_identifier_prefix}Copy Academy Benefits Housing Needs to raw zone"
-  script_s3_object_key           = aws_s3_object.copy_tables_landing_to_raw.key
-  environment                    = var.environment
-  pydeequ_zip_key                = aws_s3_object.pydeequ.key
-  helper_module_key              = aws_s3_object.helpers.key
-  glue_role_arn                  = aws_iam_role.glue_role.arn
-  glue_temp_bucket_id            = module.glue_temp_storage.bucket_id
-  glue_scripts_bucket_id         = module.glue_scripts.bucket_id
-  spark_ui_output_storage_id     = module.spark_ui_output_storage.bucket_id
-  glue_version                   = "4.0"
-  glue_job_worker_type           = "G.2X"
-  number_of_workers_for_glue_job = 10
-  glue_job_timeout               = 220
-  triggered_by_crawler           = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
-  job_parameters = {
-    "--s3_bucket_target"           = module.raw_zone.bucket_id
-    "--s3_prefix"                  = "benefits-housing-needs/"
-    "--table_filter_expression"    = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
-    "--glue_database_name_source"  = aws_glue_catalog_database.landing_zone_academy.name
-    "--glue_database_name_target"  = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
-    "--enable-glue-datacatalog"    = "true"
-    "--job-bookmark-option"        = "job-bookmark-enable"
-    "--write-shuffle-files-to-s3"  = "true"
-    "--write-shuffle-spills-to-s3" = "true"
-    "--conf"                       = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
-
-module "copy_academy_revenues_to_raw_zone" {
-  count = local.is_live_environment ? 1 : 0
-  tags  = module.tags.values
-
-  source                    = "../modules/aws-glue-job"
-  is_live_environment       = local.is_live_environment
-  is_production_environment = local.is_production_environment
-
-  job_name                       = "${local.short_identifier_prefix}Copy Academy Revenues to raw zone"
+  job_name                       = "${local.short_identifier_prefix}Copy Academy to raw zone"
   script_s3_object_key           = aws_s3_object.copy_tables_landing_to_raw.key
   environment                    = var.environment
   pydeequ_zip_key                = aws_s3_object.pydeequ.key
@@ -134,7 +102,7 @@ module "copy_academy_revenues_to_raw_zone" {
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = "revenues/"
-    "--table_filter_expression"          = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)"
+    "--table_filter_expression"          = ""
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
     "--enable-glue-datacatalog"          = "true"
@@ -144,6 +112,7 @@ module "copy_academy_revenues_to_raw_zone" {
     "--write-shuffle-spills-to-s3"       = "true"
     "--conf"                             = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
+
 }
 
 ## Academy State Machine
@@ -195,61 +164,95 @@ module "academy_state_machine" {
   role_arn          = aws_iam_role.academy_step_functions_role[0].arn
   definition        = <<EOF
   {
-    "Comment": "A description of my state machine",
-    "StartAt": "GetNumberOfAvailableIPs",
-    "States": {
-      "GetNumberOfAvailableIPs": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::aws-sdk:ec2:describeSubnets",
-        "Parameters": {
-          "SubnetIds": [
-            "${local.instance_subnet_id}"
-          ]
-        },
-        "ResultPath": "$.SubnetResult",
-        "Next": "InvokeLambdaCalculateMaxConcurrency"
+  "Comment": "A description of my state machine",
+  "StartAt": "GetNumberOfAvailableIPs",
+  "States": {
+    "GetNumberOfAvailableIPs": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:ec2:describeSubnets",
+      "Parameters": {
+        "SubnetIds": [
+          "${local.instance_subnet_id}"
+        ]
       },
-      "InvokeLambdaCalculateMaxConcurrency": {
-        "Type": "Task",
-        "Resource": "${module.max_concurrency_lambda[0].lambda_function_arn}",
-        "Parameters": {
-          "AvailableIPs.$": "$.SubnetResult.Subnets[0].AvailableIpAddressCount",
-          "Workers": "${local.number_of_glue_workers}"
-        },
-        "ResultPath": "$.MaxConcurrencyResult",
-        "Next": "Map"
+      "ResultPath": "$.SubnetResult",
+      "Next": "InvokeLambdaCalculateMaxConcurrency"
+    },
+    "InvokeLambdaCalculateMaxConcurrency": {
+      "Type": "Task",
+      "Resource": "${module.max_concurrency_lambda[0].lambda_function_arn}",
+      "Parameters": {
+        "AvailableIPs.$": "$.SubnetResult.Subnets[0].AvailableIpAddressCount",
+        "Workers": "${local.number_of_glue_workers}"
       },
-      "Map": {
-        "Type": "Map",
-        "ItemProcessor": {
-          "ProcessorConfig": {
-            "Mode": "INLINE"
-          },
-          "StartAt": "Glue StartJobRun",
-          "States": {
-            "Glue StartJobRun": {
-              "Type": "Task",
-              "Resource": "arn:aws:states:::glue:startJobRun.sync",
-              "Parameters": {
-                "JobName": "${module.academy_glue_job[0].job_name}",
-                  "Arguments": {
-                    "--table_filter_expression.$": "$.FilterString"
-                  }
-              },
-              "End": true
-            }
+      "ResultPath": "$.MaxConcurrencyResult",
+      "Next": "Database Ingestion Map"
+    },
+    "Database Ingestion Map": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "Glue: Database Ingestion",
+        "States": {
+          "Glue: Database Ingestion": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+            "Parameters": {
+              "JobName": "${module.academy_glue_job[0].job_name}",
+              "Arguments": {
+                "--table_filter_expression.$": "$.FilterString"
+              }
+            },
+            "End": true
           }
-        },
-        "MaxConcurrencyPath": "$.MaxConcurrencyResult.max_concurrency",
-        "End": true,
-        "ItemsPath": "$.TableFilters",
-        "ItemSelector": {
-          "MaxConcurrency.$": "$.MaxConcurrencyResult.max_concurrency",
-          "FilterString.$": "$$.Map.Item.Value"
         }
-      }
+      },
+      "MaxConcurrencyPath": "$.MaxConcurrencyResult.max_concurrency",
+      "ItemsPath": "$.TableFilters",
+      "ItemSelector": {
+        "MaxConcurrency.$": "$.MaxConcurrencyResult.max_concurrency",
+        "FilterString.$": "$$.Map.Item.Value"
+      },
+      "Next": "StartCrawler",
+      "ResultPath": "$.dbIngestionMapOutput"
+    },
+    "StartCrawler": {
+      "Type": "Task",
+      "Parameters": {
+        "Name": "${resource.aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name}}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+      "Next": "Copy to Raw Map",
+      "ResultPath": "$.crawlerOutput"
+    },
+    "Copy to Raw Map": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "Glue: Copy to Raw Zone",
+        "States": {
+          "Glue: Copy to Raw Zone": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::glue:startJobRun",
+            "Parameters": {
+              "JobName": "${module.copy_academy_landing_to_raw[0].job_name}}",
+              "Arguments": {
+                "--table_filter_expression.$": "$.LandingToRawFilterString"
+              }
+            },
+            "End": true
+          }
+        }
+      },
+      "End": true,
+      "ResultPath": "$.copyToRawOutput"
     }
   }
+}
   EOF
 }
 
@@ -357,6 +360,7 @@ resource "aws_cloudwatch_event_target" "academy_state_machine_trigger" {
   input    = <<EOF
   {
     "TableFilters": ${jsonencode(local.academy_table_filters)}
+    "LandingToRawFilterString": "${jsonencode(local.landing_to_raw_filter_expressions)}"
   }
   EOF
 }
