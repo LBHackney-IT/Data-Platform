@@ -39,10 +39,6 @@ locals {
     core_recov_event = "^lbhaliverbviews_core_recov_event",
     mix              = "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"
   } : {}
-  landing_to_raw_filter_expressions = local.is_live_environment ? {
-    revenues               = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)",
-    benefits_housing_needs = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
-  } : {}
   academy_ingestion_max_concurrent_runs = local.is_live_environment ? length(local.table_filter_expressions) : 1
 }
 
@@ -121,6 +117,8 @@ locals {
   academy_state_machine_count = local.is_live_environment ? 1 : 0
   number_of_glue_workers      = 2
   academy_table_filters       = ["^lbhaliverbviews_core_hbrent[s].*", "^lbhaliverbviews_core_hbc.*", "^lbhaliverbviews_core_hbuc.*", "^lbhaliverbviews_core_hbrentclaim", "^lbhaliverbviews_core_hbrenttrans", "^lbhaliverbviews_core_hbrent[^tsc].*", "^lbhaliverbviews_core_hbmember", "^lbhaliverbviews_core_hbincome", "^lbhaliverbviews_core_hb[abdefghjklnopsw]", "^lbhaliverbviews_core_ct[dt].*", "^lbhaliverbviews_current_ctax.*", "^lbhaliverbviews_current_[hbn].*", "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*", "^lbhaliverbviews_core_recov_event", "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"]
+  landing_to_raw_filter_expressions = [{ s3_prefix = "revenues/", FilterString = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)" }, {
+  s3_prefix = "benefits/", FilterString = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)" }]
 }
 
 module "academy_glue_job" {
@@ -241,7 +239,8 @@ module "academy_state_machine" {
             "Parameters": {
               "JobName": "${module.copy_academy_landing_to_raw[0].job_name}}",
               "Arguments": {
-                "--table_filter_expression.$": "$.LandingToRawFilterString"
+                "--table_filter_expression.$": "$.landingToRaw.FilterString"
+                "--s3_prefix.$": "$.landingToRaw.S3Prefix"
               }
             },
             "End": true
@@ -360,10 +359,10 @@ resource "aws_cloudwatch_event_target" "academy_state_machine_trigger" {
   role_arn = aws_iam_role.academy_cloudwatch_execution_role[0].arn
   input    = <<EOF
   {
-    "TableFilters": ${jsonencode(local.academy_table_filters)}
-    "LandingToRawFilterString": "${jsonencode(local.landing_to_raw_filter_expressions)}"
-  }
-  EOF
+    "TableFilters": "${jsonencode(local.academy_table_filters)}",
+    "LandingToRaw": "${jsonencode(local.landing_to_raw_filter_expressions)}"
+    }
+    EOF
 }
 
 resource "aws_iam_role" "academy_cloudwatch_execution_role" {
