@@ -3,8 +3,8 @@ def calculate_max_concurrency(available_ips: int, ips_per_job: int) -> int:
 
 
 def lambda_handler(event, context):
-    available_ips = event["AvailableIPs"]
-    ips_per_job = event["Workers"]
+    available_ips = int(event["AvailableIPs"])
+    ips_per_job = int(event["Workers"])
     max_concurrency = calculate_max_concurrency(available_ips, ips_per_job)
     return {"max_concurrency": max_concurrency}
 

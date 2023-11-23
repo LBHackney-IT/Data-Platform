@@ -26,29 +26,6 @@ module "liberator_dump_to_rds_snapshot" {
   vpc_id                     = data.aws_vpc.network.id
 }
 
-module "liberator_db_snapshot_to_s3" {
-  count                          = 1
-  source                         = "../modules/db-snapshot-to-s3"
-  tags                           = module.tags.values
-  project                        = var.project
-  environment                    = var.environment
-  identifier_prefix              = "${local.identifier_prefix}-dp"
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
-  zone_kms_key_arn               = module.landing_zone.kms_key_arn
-  zone_bucket_arn                = module.landing_zone.bucket_arn
-  zone_bucket_id                 = module.landing_zone.bucket_id
-  rds_export_storage_bucket_arn  = module.rds_export_storage.bucket_arn
-  rds_export_storage_bucket_id   = module.rds_export_storage.bucket_id
-  rds_export_storage_kms_key_arn = module.rds_export_storage.kms_key_arn
-  rds_export_storage_kms_key_id  = module.rds_export_storage.kms_key_id
-  service_area                   = "parking"
-  rds_instance_ids               = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_id]
-  workflow_name                  = aws_glue_workflow.parking_liberator_data.name
-  workflow_arn                   = aws_glue_workflow.parking_liberator_data.arn
-  backdated_workflow_name        = aws_glue_workflow.parking_liberator_backdated_data.name
-  backdated_workflow_arn         = aws_glue_workflow.parking_liberator_backdated_data.arn
-}
-
 resource "aws_glue_workflow" "parking_liberator_data" {
   # Components for this workflow are managed mainly in etl/38-aws-glue-job-parking.tf by parking officers
   # There are couple of other resources that are part of the ingestion process, but the core ETL configuration is in the file mentioned above
@@ -107,6 +84,6 @@ module "liberator_rds_snapshot_to_s3" {
 }
 
 moved {
-  from = module.liberator_db_snapshot_to_s3[0].module.rds_export_storage.aws_s3_bucket.bucket_id
-  to   = module.deprecated_rds_export_storage.aws_s3_bucket.bucket_id
+  from = module.liberator_db_snapshot_to_s3[0].module.rds_export_storage.aws_s3_bucket.bucket
+  to   = module.deprecated_rds_export_storage.aws_s3_bucket.bucket
 }
