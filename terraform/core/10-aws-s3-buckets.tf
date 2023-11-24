@@ -450,12 +450,13 @@ module "deprecated_rds_export_storage" {
 module "addresses_api_rds_export_storage" {
   source = "../modules/s3-bucket"
 
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "RDS Export Storage"
-  bucket_identifier = "rds-export-storage"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "RDS Export Storage"
+  bucket_identifier              = "rds-export-storage"
+  role_arns_to_share_access_with = module.db_snapshot_to_s3[0].rds_snapshot_to_s3_lambda_role_arn
 
   providers = {
     aws = aws.aws_api_account
@@ -467,7 +468,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "addresses_api_rds
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "aws:kms"
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = module.addresses_api_rds_export_storage.kms_key_arn
     }
     bucket_key_enabled = true
   }
