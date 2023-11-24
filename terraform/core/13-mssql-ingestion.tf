@@ -97,7 +97,7 @@ module "copy_academy_landing_to_raw" {
   triggered_by_crawler           = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
-    "--s3_prefix"                        = "revenues/"
+    "--s3_prefix"                        = ""
     "--table_filter_expression"          = ""
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
     "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
