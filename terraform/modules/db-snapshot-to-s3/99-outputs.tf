@@ -8,3 +8,8 @@ output "rds_snapshot_service_arn" {
   description = "RDS Snapshot Service ARN"
   value       = aws_iam_role.rds_snapshot_export_service.arn
 }
+
+output "rds_snapshot_to_s3_lambda_role_arn" {
+  description = "RDS Snapshot to S3 Lambda Role ARN"
+  value       = aws_iam_role.rds_snapshot_to_s3_lambda.arn
+}
