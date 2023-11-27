@@ -1,5 +1,5 @@
 {
-    "Comment": "A description of my state machine",
+    "Comment": "State Machine for Academy Ingestion",
     "StartAt": "GetNumberOfAvailableIPs",
     "States": {
         "GetNumberOfAvailableIPs": {
