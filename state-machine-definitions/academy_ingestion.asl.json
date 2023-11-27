@@ -56,7 +56,7 @@
         "StartCrawler": {
             "Type": "Task",
             "Parameters": {
-                "Name": "${AcademyCrawlerName}}"
+                "Name": "${AcademyCrawlerName}"
             },
             "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
             "Next": "Copy to Raw Map",
