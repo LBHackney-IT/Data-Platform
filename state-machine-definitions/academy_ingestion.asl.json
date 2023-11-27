@@ -7,7 +7,7 @@
             "Resource": "arn:aws:states:::aws-sdk:ec2:describeSubnets",
             "Parameters": {
                 "SubnetIds": [
-                    "${SunbnetIds}"
+                    "${SubnetIds}"
                 ]
             },
             "ResultPath": "$.SubnetResult",
