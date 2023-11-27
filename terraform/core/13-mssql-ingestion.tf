@@ -250,7 +250,7 @@ module "academy_state_machine" {
             "Parameters": {
               "JobName": "${module.copy_academy_landing_to_raw[0].job_name}}",
               "Arguments": {
-                "--table_filter_expression.$": "$.landingToRaw.FilterString"
+                "--table_filter_expression.$": "$.landingToRaw.FilterString",
                 "--s3_prefix.$": "$.landingToRaw.S3Prefix"
               }
             },
