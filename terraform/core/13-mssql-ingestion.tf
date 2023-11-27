@@ -117,7 +117,7 @@ locals {
   academy_state_machine_count = local.is_live_environment ? 1 : 0
   number_of_glue_workers      = 2
   academy_table_filters       = ["^lbhaliverbviews_core_hbrent[s].*", "^lbhaliverbviews_core_hbc.*", "^lbhaliverbviews_core_hbuc.*", "^lbhaliverbviews_core_hbrentclaim", "^lbhaliverbviews_core_hbrenttrans", "^lbhaliverbviews_core_hbrent[^tsc].*", "^lbhaliverbviews_core_hbmember", "^lbhaliverbviews_core_hbincome", "^lbhaliverbviews_core_hb[abdefghjklnopsw]", "^lbhaliverbviews_core_ct[dt].*", "^lbhaliverbviews_current_ctax.*", "^lbhaliverbviews_current_[hbn].*", "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*", "^lbhaliverbviews_core_recov_event", "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"]
-  some_json_thing = {
+  academy_ingestion_input = {
     TableFilters = local.academy_table_filters
     LandingToRaw = [
       {
@@ -288,7 +288,7 @@ resource "aws_cloudwatch_event_target" "academy_state_machine_trigger" {
   rule     = aws_cloudwatch_event_rule.academy_state_machine_trigger[0].name
   arn      = module.academy_state_machine[0].arn
   role_arn = aws_iam_role.academy_cloudwatch_execution_role[0].arn
-  input    = jsonencode(local.some_json_thing)
+  input    = jsonencode(local.academy_ingestion_input)
 }
 
 resource "aws_iam_role" "academy_cloudwatch_execution_role" {
