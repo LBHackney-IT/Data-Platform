@@ -117,15 +117,15 @@ locals {
   academy_state_machine_count = local.is_live_environment ? 1 : 0
   number_of_glue_workers      = 2
   academy_table_filters       = ["^lbhaliverbviews_core_hbrent[s].*", "^lbhaliverbviews_core_hbc.*", "^lbhaliverbviews_core_hbuc.*", "^lbhaliverbviews_core_hbrentclaim", "^lbhaliverbviews_core_hbrenttrans", "^lbhaliverbviews_core_hbrent[^tsc].*", "^lbhaliverbviews_core_hbmember", "^lbhaliverbviews_core_hbincome", "^lbhaliverbviews_core_hb[abdefghjklnopsw]", "^lbhaliverbviews_core_ct[dt].*", "^lbhaliverbviews_current_ctax.*", "^lbhaliverbviews_current_[hbn].*", "^lbhaliverbviews_core_ct[abcefghijklmnopqrsvw].*", "^lbhaliverbviews_core_recov_event", "(^lbhaliverbviews_core_cr.*|^lbhaliverbviews_core_[ins].*|^lbhaliverbviews_xdbvw.*|^lbhaliverbviews_current_im.*)"]
-  some_json_thing = {
+  academy_ingestion_input = {
     TableFilters = local.academy_table_filters
     LandingToRaw = [
       {
-        s3_prefix    = "revenues/",
+        S3Prefix     = "revenues/",
         FilterString = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)"
       },
       {
-        s3_prefix    = "benefits/",
+        S3Prefix     = "benefits/",
         FilterString = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
       }
     ]
@@ -163,6 +163,18 @@ module "academy_glue_job" {
   }
 }
 
+data "template_file" "academy_state_machine_definition" {
+  count    = local.academy_state_machine_count
+  template = file("../../state-machine-definitions/academy_ingestion.asl.json")
+  vars = {
+    SubnetIds                      = local.instance_subnet_id,
+    MaxConcurrencyLambdaArn        = module.max_concurrency_lambda[0].lambda_function_arn,
+    NumberOfGlueWorkers            = local.number_of_glue_workers,
+    IngestionGlueJobName           = module.academy_glue_job[0].job_name,
+    AcademyCrawlerName             = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name,
+    AcademyLandingToRawGlueJobName = module.copy_academy_landing_to_raw[0].job_name
+  }
+}
 
 module "academy_state_machine" {
   count             = local.academy_state_machine_count
@@ -171,99 +183,7 @@ module "academy_state_machine" {
   name              = "academy-revs-and-bens-housing-needs-database-ingestion"
   identifier_prefix = local.short_identifier_prefix
   role_arn          = aws_iam_role.academy_step_functions_role[0].arn
-  definition        = <<EOF
-  {
-  "Comment": "A description of my state machine",
-  "StartAt": "GetNumberOfAvailableIPs",
-  "States": {
-    "GetNumberOfAvailableIPs": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::aws-sdk:ec2:describeSubnets",
-      "Parameters": {
-        "SubnetIds": [
-          "${local.instance_subnet_id}"
-        ]
-      },
-      "ResultPath": "$.SubnetResult",
-      "Next": "InvokeLambdaCalculateMaxConcurrency"
-    },
-    "InvokeLambdaCalculateMaxConcurrency": {
-      "Type": "Task",
-      "Resource": "${module.max_concurrency_lambda[0].lambda_function_arn}",
-      "Parameters": {
-        "AvailableIPs.$": "$.SubnetResult.Subnets[0].AvailableIpAddressCount",
-        "Workers": "${local.number_of_glue_workers}"
-      },
-      "ResultPath": "$.MaxConcurrencyResult",
-      "Next": "Database Ingestion Map"
-    },
-    "Database Ingestion Map": {
-      "Type": "Map",
-      "ItemProcessor": {
-        "ProcessorConfig": {
-          "Mode": "INLINE"
-        },
-        "StartAt": "Glue: Database Ingestion",
-        "States": {
-          "Glue: Database Ingestion": {
-            "Type": "Task",
-            "Resource": "arn:aws:states:::glue:startJobRun.sync",
-            "Parameters": {
-              "JobName": "${module.academy_glue_job[0].job_name}",
-              "Arguments": {
-                "--table_filter_expression.$": "$.FilterString"
-              }
-            },
-            "End": true
-          }
-        }
-      },
-      "MaxConcurrencyPath": "$.MaxConcurrencyResult.max_concurrency",
-      "ItemsPath": "$.TableFilters",
-      "ItemSelector": {
-        "MaxConcurrency.$": "$.MaxConcurrencyResult.max_concurrency",
-        "FilterString.$": "$$.Map.Item.Value"
-      },
-      "Next": "StartCrawler",
-      "ResultPath": "$.dbIngestionMapOutput"
-    },
-    "StartCrawler": {
-      "Type": "Task",
-      "Parameters": {
-        "Name": "${resource.aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name}}"
-      },
-      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
-      "Next": "Copy to Raw Map",
-      "ResultPath": "$.crawlerOutput"
-    },
-    "Copy to Raw Map": {
-      "Type": "Map",
-      "ItemProcessor": {
-        "ProcessorConfig": {
-          "Mode": "INLINE"
-        },
-        "StartAt": "Glue: Copy to Raw Zone",
-        "States": {
-          "Glue: Copy to Raw Zone": {
-            "Type": "Task",
-            "Resource": "arn:aws:states:::glue:startJobRun",
-            "Parameters": {
-              "JobName": "${module.copy_academy_landing_to_raw[0].job_name}}",
-              "Arguments": {
-                "--table_filter_expression.$": "$.landingToRaw.FilterString",
-                "--s3_prefix.$": "$.landingToRaw.S3Prefix"
-              }
-            },
-            "End": true
-          }
-        }
-      },
-      "End": true,
-      "ResultPath": "$.copyToRawOutput"
-    }
-  }
-}
-  EOF
+  definition        = data.template_file.academy_state_machine_definition[0].rendered
 }
 
 module "max_concurrency_lambda" {
@@ -368,7 +288,7 @@ resource "aws_cloudwatch_event_target" "academy_state_machine_trigger" {
   rule     = aws_cloudwatch_event_rule.academy_state_machine_trigger[0].name
   arn      = module.academy_state_machine[0].arn
   role_arn = aws_iam_role.academy_cloudwatch_execution_role[0].arn
-  input    = jsonencode(local.some_json_thing)
+  input    = jsonencode(local.academy_ingestion_input)
 }
 
 resource "aws_iam_role" "academy_cloudwatch_execution_role" {
