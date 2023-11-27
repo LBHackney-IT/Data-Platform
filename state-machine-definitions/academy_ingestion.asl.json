@@ -76,13 +76,18 @@
                         "Parameters": {
                             "JobName": "${AcademyLandingToRawGlueJobName}",
                             "Arguments": {
-                                "--table_filter_expression.$": "$.landingToRaw.FilterString",
-                                "--s3_prefix.$": "$.landingToRaw.S3Prefix"
+                                "--table_filter_expression.$": "$.FilterString",
+                                "--s3_prefix.$": "$.S3Prefix"
                             }
                         },
                         "End": true
                     }
                 }
+            },
+            "ItemsPath": "$.LandingToRaw",
+            "ItemSelector": {
+                "FilterString.$": "$$.Map.Item.Value.FilterString",
+                "S3Prefix.$": "$$.Map.Item.Value.S3Prefix"
             },
             "End": true,
             "ResultPath": "$.copyToRawOutput"

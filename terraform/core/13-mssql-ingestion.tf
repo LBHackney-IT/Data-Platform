@@ -121,11 +121,11 @@ locals {
     TableFilters = local.academy_table_filters
     LandingToRaw = [
       {
-        s3_prefix    = "revenues/",
+        S3Prefix     = "revenues/",
         FilterString = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)"
       },
       {
-        s3_prefix    = "benefits/",
+        S3Prefix     = "benefits/",
         FilterString = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
       }
     ]
