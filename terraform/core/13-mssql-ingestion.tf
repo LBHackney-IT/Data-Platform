@@ -111,7 +111,7 @@ module "copy_academy_landing_to_raw" {
 
 }
 
-## Academy State Machine
+## Academy State Machine.
 
 locals {
   academy_state_machine_count = local.is_live_environment ? 1 : 0
