@@ -102,8 +102,8 @@
             ],
             "Default": "Copy to Raw Map"
         },
-        "Wait": {
-            "Type": "WaitAfterGetCrawlerChoice",
+        "WaitAfterGetCrawlerChoice": {
+            "Type": "Wait",
             "Seconds": 600,
             "Next": "GetCrawler"
         },
