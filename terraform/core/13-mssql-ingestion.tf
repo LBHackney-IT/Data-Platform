@@ -95,7 +95,6 @@ module "copy_academy_landing_to_raw" {
   number_of_workers_for_glue_job  = 10
   glue_job_timeout                = 220
   max_concurrent_runs_of_glue_job = length(local.academy_ingestion_input.LandingToRaw)
-  triggered_by_crawler            = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
   job_parameters = {
     "--s3_bucket_target"                 = module.raw_zone.bucket_id
     "--s3_prefix"                        = ""
