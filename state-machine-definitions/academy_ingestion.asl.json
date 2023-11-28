@@ -59,8 +59,53 @@
                 "Name": "${AcademyCrawlerName}"
             },
             "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
-            "Next": "Copy to Raw Map",
+            "Next": "WaitAfterStartCrawler",
             "ResultPath": "$.crawlerOutput"
+        },
+        "WaitAfterStartCrawler": {
+            "Type": "Wait",
+            "Seconds": 600,
+            "Next": "GetCrawler"
+        },
+        "GetCrawler": {
+            "Type": "Task",
+            "Next": "GetCrawlerChoice",
+            "Parameters": {
+                "Name": "${AcademyCrawlerName}"
+            },
+            "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler",
+            "ResultPath": "$.GetCrawlerOutput",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.ALL"
+                    ],
+                    "BackoffRate": 2,
+                    "IntervalSeconds": 1,
+                    "MaxAttempts": 8
+                }
+            ]
+        },
+        "GetCrawlerChoice": {
+            "Type": "Choice",
+            "Choices": [
+                {
+                    "Variable": "$.GetCrawlerOutput.Crawler.State",
+                    "StringMatches": "RUNNING",
+                    "Next": "WaitAfterGetCrawlerChoice"
+                },
+                {
+                    "Variable": "$.GetCrawlerOutput.Crawler.State",
+                    "StringMatches": "STOPPING",
+                    "Next": "WaitAfterGetCrawlerChoice"
+                }
+            ],
+            "Default": "Copy to Raw Map"
+        },
+        "WaitAfterGetCrawlerChoice": {
+            "Type": "Wait",
+            "Seconds": 600,
+            "Next": "GetCrawler"
         },
         "Copy to Raw Map": {
             "Type": "Map",
@@ -77,7 +122,8 @@
                             "JobName": "${AcademyLandingToRawGlueJobName}",
                             "Arguments": {
                                 "--table_filter_expression.$": "$.FilterString",
-                                "--s3_prefix.$": "$.S3Prefix"
+                                "--s3_prefix.$": "$.S3Prefix",
+                                "--glue_database_name_target": "$.GlueDatabaseTarget"
                             }
                         },
                         "End": true
@@ -87,7 +133,8 @@
             "ItemsPath": "$.LandingToRaw",
             "ItemSelector": {
                 "FilterString.$": "$$.Map.Item.Value.FilterString",
-                "S3Prefix.$": "$$.Map.Item.Value.S3Prefix"
+                "S3Prefix.$": "$$.Map.Item.Value.S3Prefix",
+                "GlueDatabaseTarget.$": "$$.Map.Item.Value.GlueDatabaseTarget"
             },
             "End": true,
             "ResultPath": "$.copyToRawOutput"

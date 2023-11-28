@@ -60,19 +60,6 @@ resource "aws_glue_crawler" "academy_revenues_and_benefits_housing_needs_landing
   })
 }
 
-resource "aws_glue_trigger" "academy_revenues_and_benefits_housing_needs_landing_zone_crawler" {
-  tags = module.tags.values
-
-  name     = "${local.short_identifier_prefix}academy-revenues-benefits-housing-needs-database-ingestion-crawler-trigger"
-  type     = "SCHEDULED"
-  schedule = "cron(15 8,12 ? * MON,TUE,WED,THU,FRI *)"
-  enabled  = local.is_production_environment
-
-  actions {
-    crawler_name = aws_glue_crawler.academy_revenues_and_benefits_housing_needs_landing_zone.name
-  }
-}
-
 module "copy_academy_landing_to_raw" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
@@ -100,7 +87,7 @@ module "copy_academy_landing_to_raw" {
     "--s3_prefix"                        = ""
     "--table_filter_expression"          = ""
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
-    "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
+    "--glue_database_name_target"        = ""
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
     "--enable-auto-scaling"              = "true"
@@ -122,12 +109,14 @@ locals {
     TableFilters = local.academy_table_filters
     LandingToRaw = [
       {
-        S3Prefix     = "revenues/",
-        FilterString = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)"
+        S3Prefix           = "revenues/",
+        FilterString       = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)",
+        GlueDatabaseTarget = module.department_revenues.raw_zone_catalog_database_name
       },
       {
-        S3Prefix     = "benefits/",
-        FilterString = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
+        S3Prefix           = "benefits-housing-needs/",
+        FilterString       = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)",
+        GlueDatabaseTarget = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
       }
     ]
   }
