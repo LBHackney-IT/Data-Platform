@@ -134,7 +134,7 @@
             "ItemSelector": {
                 "FilterString.$": "$$.Map.Item.Value.FilterString",
                 "S3Prefix.$": "$$.Map.Item.Value.S3Prefix",
-                "GlueDatabaseTarget": "$$.Map.Item.Value.GlueDatabaseTarget"
+                "GlueDatabaseTarget.$": "$$.Map.Item.Value.GlueDatabaseTarget"
             },
             "End": true,
             "ResultPath": "$.copyToRawOutput"
