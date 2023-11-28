@@ -100,7 +100,7 @@ module "copy_academy_landing_to_raw" {
     "--s3_prefix"                        = ""
     "--table_filter_expression"          = ""
     "--glue_database_name_source"        = aws_glue_catalog_database.landing_zone_academy.name
-    "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
+    "--glue_database_name_target"        = ""
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
     "--enable-auto-scaling"              = "true"
@@ -122,12 +122,14 @@ locals {
     TableFilters = local.academy_table_filters
     LandingToRaw = [
       {
-        S3Prefix     = "revenues/",
-        FilterString = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)"
+        S3Prefix           = "revenues/",
+        FilterString       = "(^lbhaliverbviews_core_(?!hb).*|^lbhaliverbviews_current_(?!hb).*|^lbhaliverbviews_xdbvw_.*)",
+        GlueDatabaseTarget = module.department_revenues.raw_zone_catalog_database_name
       },
       {
-        S3Prefix     = "benefits/",
-        FilterString = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)"
+        S3Prefix           = "benefits-housing-needs/",
+        FilterString       = "(^lbhaliverbviews_core_hb.*|^lbhaliverbviews_current_hb.*)",
+        GlueDatabaseTarget = module.department_benefits_and_housing_needs.raw_zone_catalog_database_name
       }
     ]
   }
