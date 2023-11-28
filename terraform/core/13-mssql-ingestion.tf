@@ -104,6 +104,7 @@ module "copy_academy_landing_to_raw" {
     "--glue_database_name_target"        = module.department_revenues.raw_zone_catalog_database_name
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
+    "--enable-auto-scaling"              = "true"
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--write-shuffle-files-to-s3"        = "true"
     "--write-shuffle-spills-to-s3"       = "true"
