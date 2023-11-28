@@ -13,7 +13,7 @@ resource "aws_sqs_queue" "s3_to_s3_copier" {
   visibility_timeout_seconds = local.lambda_timeout * 6
 
   name              = lower("${var.identifier_prefix}-s3-to-s3-copier")
-  kms_master_key_id = var.rds_export_storage_kms_key_id
+  kms_master_key_id = aws_kms_key.s3_to_s3_copier_kms_key.key_id
 }
 
 resource "aws_kms_key" "s3_to_s3_copier_kms_key" {
