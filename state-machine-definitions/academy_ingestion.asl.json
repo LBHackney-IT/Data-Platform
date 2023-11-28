@@ -59,12 +59,17 @@
                 "Name": "${AcademyCrawlerName}"
             },
             "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
-            "Next": "Copy to Raw Map",
+            "Next": "WaitAfterStartCrawler",
             "ResultPath": "$.crawlerOutput"
+        },
+        "WaitAfterStartCrawler": {
+            "Type": "Wait",
+            "Seconds": 600,
+            "Next": "GetCrawler"
         },
         "GetCrawler": {
             "Type": "Task",
-            "Next": "Choice",
+            "Next": "GetCrawlerChoice",
             "Parameters": {
                 "Name": "${AcademyCrawlerName}"
             },
@@ -81,24 +86,24 @@
                 }
             ]
         },
-        "Choice": {
+        "GetCrawlerChoice": {
             "Type": "Choice",
             "Choices": [
                 {
                     "Variable": "$.GetCrawlerOutput.Crawler.State",
                     "StringMatches": "RUNNING",
-                    "Next": "Wait"
+                    "Next": "WaitAfterGetCrawlerChoice"
                 },
                 {
                     "Variable": "$.GetCrawlerOutput.Crawler.State",
                     "StringMatches": "STOPPING",
-                    "Next": "Wait"
+                    "Next": "WaitAfterGetCrawlerChoice"
                 }
             ],
             "Default": "Copy to Raw Map"
         },
         "Wait": {
-            "Type": "Wait",
+            "Type": "WaitAfterGetCrawlerChoice",
             "Seconds": 600,
             "Next": "GetCrawler"
         },
