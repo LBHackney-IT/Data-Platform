@@ -230,7 +230,8 @@ data "aws_iam_policy_document" "academy_step_functions_policy" {
       "glue:GetJobRun",
       "glue:GetJobRuns",
       "glue:BatchStopJobRun",
-      "glue:StartCrawler"
+      "glue:StartCrawler",
+      "glue:GetCrawler"
     ]
     resources = ["*"]
   }
