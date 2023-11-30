@@ -51,7 +51,7 @@ resource "aws_glue_crawler" "bens_housing_needs_raw_zone" {
     s3_target {
         path = "s3://${module.raw_zone.bucket_id}/benefits-housing-needs/"
     }
-Done.
+
      configuration = jsonencode({
         Version = 1.0
         Grouping = {
