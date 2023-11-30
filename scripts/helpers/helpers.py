@@ -2,6 +2,7 @@ import datetime
 import re
 import sys
 import unicodedata
+import logging
 
 import boto3
 from awsglue.utils import getResolvedOptions
