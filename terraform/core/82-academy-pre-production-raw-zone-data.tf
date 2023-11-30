@@ -29,7 +29,7 @@ resource "aws_glue_crawler" "revenue_raw_zone" {
 
         Partitions = {  
             AddOrUpdateBehavior = "InheritFromTable"  
-         }
+        }
     })
 }
 
@@ -62,6 +62,6 @@ resource "aws_glue_crawler" "bens_housing_needs_raw_zone" {
 
         Partitions = {  
             AddOrUpdateBehavior = "InheritFromTable"  
-         }  
+        }  
     })
 }
