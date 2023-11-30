@@ -32,7 +32,7 @@ class TestInitialiseJob(unittest.TestCase):
             initialise_job({}, self.mock_job, self.mock_logger)
         self.mock_logger.error.assert_called_once()
 
-    @patch("scripts.helpers.logging")
+    @patch("scripts.helpers.helpers.logging")
     def test_initialise_job_with_initialisation_exception_and_default_logger(
         self, mock_logging
     ):
