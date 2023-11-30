@@ -24,6 +24,12 @@ resource "aws_glue_crawler" "revenue_raw_zone" {
         Grouping = {
             TableLevelConfiguration = 3
         }
+
+        TableGroupingPolicy = "CombineCompatibleSchemas"             
+
+        Partitions = {  
+            AddOrUpdateBehavior = "InheritFromTable"  
+         }
     })
 }
 
@@ -45,11 +51,17 @@ resource "aws_glue_crawler" "bens_housing_needs_raw_zone" {
     s3_target {
         path = "s3://${module.raw_zone.bucket_id}/benefits-housing-needs/"
     }
-
+Done.
      configuration = jsonencode({
         Version = 1.0
         Grouping = {
             TableLevelConfiguration = 3
         }
+
+        TableGroupingPolicy = "CombineCompatibleSchemas"         
+
+        Partitions = {  
+            AddOrUpdateBehavior = "InheritFromTable"  
+         }  
     })
 }
