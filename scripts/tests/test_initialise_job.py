@@ -32,14 +32,14 @@ class TestInitialiseJob(unittest.TestCase):
             initialise_job({}, self.mock_job, self.mock_logger)
         self.mock_logger.error.assert_called_once()
 
-    @patch("scripts.helpers.helpers.logging")
+    @patch("scripts.helpers.logging")
     def test_initialise_job_with_initialisation_exception_and_default_logger(
         self, mock_logging
     ):
         self.mock_job.init.side_effect = Exception("Test Exception")
         with self.assertRaises(Exception):
             initialise_job(self.args_with_bookmark, self.mock_job)
-        mock_logging.getLogger.assert_called_with(__name__)
+        mock_logging.getLogger.assert_called_with("scripts.helpers.helpers")
         self.mock_job.init.assert_called_once()
 
     def test_initialise_job_with_initialisation_exception_and_custom_logger(self):
