@@ -577,9 +577,8 @@ def copy_file(source_bucket, source_path, source_filename, target_bucket, target
     except Exception as error:
         ## do nothing
         print('Error Occured: copy_file', error)
-        
 
-def initialise_job(args: Dict[str, str], job: Job, logger: Optional[logging.Logger] = None) -> None:
+
     """
     Initialize the AWS Glue job with specific arguments.
 
