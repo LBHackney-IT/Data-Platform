@@ -16,7 +16,7 @@ class TestInitialiseJob(unittest.TestCase):
     def test_initialise_job_with_bookmark_context_and_logger(self):
         initialise_job(self.args_with_bookmark, self.mock_job, self.mock_logger)
         self.mock_job.init.assert_called_once_with(
-            "test_jobtest_context", self.args_with_bookmark
+            "test_job_test_context", self.args_with_bookmark
         )
         self.mock_logger.error.assert_not_called()
 

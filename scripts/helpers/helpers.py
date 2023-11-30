@@ -3,6 +3,7 @@ import re
 import sys
 import unicodedata
 import logging
+from typing import Dict, Optional
 
 import boto3
 from awsglue.utils import getResolvedOptions
@@ -580,16 +581,16 @@ def copy_file(source_bucket, source_path, source_filename, target_bucket, target
         print('Error Occured: copy_file', error)
 
 
-def initialise_job(args, job, logger=None) -> None:
+def initialise_job(args: Dict[str, str], job: Job, logger: Optional[logging.Logger] = None) -> None:
     """
-    Initialise the AWS Glue job with specific arguments.
+    Initialize the AWS Glue job with specific arguments.
 
     Args:
-        args (Dict[str, str]): Arguments for the job initialisation, must contain "JOB_NAME".
+        args (Dict[str, str]): Arguments for the job initialization, must contain "JOB_NAME".
         job (Job): The AWS Glue job instance.
         logger (Optional[logging.Logger]): Optional logger for logging messages.
 
-    The function initialises the job with "JOB_NAME" and optionally with "BOOKMARK_CONTEXT" from args.
+    The function initializes the job with "JOB_NAME" and, if provided, "BOOKMARK_CONTEXT" separated by an underscore.
     If an exception occurs, it logs the error.
     """
     if logger is None:
@@ -600,10 +601,11 @@ def initialise_job(args, job, logger=None) -> None:
         logger.error("JOB_NAME is required in args")
         raise ValueError("JOB_NAME is required in args")
 
+    bookmark_context = args.get("BOOKMARK_CONTEXT")
+    full_job_name = job_name + (f"_{bookmark_context}" if bookmark_context else "")
+
     try:
-        bookmark_context = args.get("BOOKMARK_CONTEXT", "")
-        job.init(job_name + bookmark_context, args)
+        job.init(full_job_name, args)
     except Exception as e:
         logger.error(f"Failed to initialise job: {e}")
         raise
-
