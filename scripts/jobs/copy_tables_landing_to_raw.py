@@ -17,8 +17,12 @@ sc = SparkContext()
 glue_context = GlueContext(sc)
 spark = glue_context.spark_session
 job = Job(glue_context)
-job.init(args['JOB_NAME'], args)
 
+try:
+    job.init(args["JOB_NAME"] + args["BOOKMARK_CONTEXT"], args)
+except Exception:
+    job.init(args["JOB_NAME"], args)
+    
 glue_client = boto3.client('glue')
 database_name_source = get_glue_env_var("glue_database_name_source")
 database_name_target = get_glue_env_var("glue_database_name_target")
