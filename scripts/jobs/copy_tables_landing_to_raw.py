@@ -9,8 +9,9 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 
 from scripts.helpers.helpers import (
-    get_glue_env_var,
     add_timestamp_column,
+    get_glue_env_var,
+    initialise_job,
     PARTITION_KEYS,
 )
 
@@ -22,10 +23,7 @@ glue_context = GlueContext(sc)
 spark = glue_context.spark_session
 job = Job(glue_context)
 
-try:
-    job.init(args["JOB_NAME"] + args["BOOKMARK_CONTEXT"], args)
-except Exception:
-    job.init(args["JOB_NAME"], args)
+initialise_job(args, job)
 
 glue_client = boto3.client("glue")
 database_name_source = get_glue_env_var("glue_database_name_source")

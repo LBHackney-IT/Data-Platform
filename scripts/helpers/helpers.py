@@ -577,3 +577,32 @@ def copy_file(source_bucket, source_path, source_filename, target_bucket, target
     except Exception as error:
         ## do nothing
         print('Error Occured: copy_file', error)
+        
+
+def initialise_job(args: Dict[str, str], job: Job, logger: Optional[logging.Logger] = None) -> None:
+    """
+    Initialize the AWS Glue job with specific arguments.
+
+    Args:
+        args (Dict[str, str]): Arguments for the job initialization, must contain "JOB_NAME".
+        job (Job): The AWS Glue job instance.
+        logger (Optional[logging.Logger]): Optional logger for logging messages.
+
+    The function initializes the job with "JOB_NAME" and optionally with "BOOKMARK_CONTEXT" from args.
+    If an exception occurs, it logs the error.
+    """
+    if logger is None:
+        logger = logging.getLogger(__name__)
+
+    job_name = args.get("JOB_NAME")
+    if not job_name:
+        logger.error("JOB_NAME is required in args")
+        raise ValueError("JOB_NAME is required in args")
+
+    try:
+        bookmark_context = args.get("BOOKMARK_CONTEXT", "")
+        job.init(job_name + bookmark_context, args)
+    except Exception as e:
+        logger.error(f"Failed to initialise job: {e}")
+        raise
+
