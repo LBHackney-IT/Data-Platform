@@ -22,8 +22,9 @@ sc = SparkContext()
 glue_context = GlueContext(sc)
 spark = glue_context.spark_session
 job = Job(glue_context)
+logger = glue_context.get_logger()
 
-initialise_job(args, job)
+initialise_job(args, job, logger)
 
 glue_client = boto3.client("glue")
 database_name_source = get_glue_env_var("glue_database_name_source")
@@ -31,7 +32,7 @@ database_name_target = get_glue_env_var("glue_database_name_target")
 bucket_target = get_glue_env_var("s3_bucket_target")
 prefix = get_glue_env_var("s3_prefix")
 table_filter_expression = get_glue_env_var("table_filter_expression")
-logger = glue_context.get_logger()
+
 
 filtering_pattern = re.compile(table_filter_expression)
 tables_to_copy = [
