@@ -117,7 +117,7 @@
                 "States": {
                     "Glue: Copy to Raw Zone": {
                         "Type": "Task",
-                        "Resource": "arn:aws:states:::glue:startJobRun",
+                        "Resource": "arn:aws:states:::glue:startJobRun.sync",
                         "Parameters": {
                             "JobName": "${AcademyLandingToRawGlueJobName}",
                             "Arguments": {
