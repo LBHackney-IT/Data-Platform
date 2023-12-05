@@ -117,14 +117,14 @@
                 "States": {
                     "Glue: Copy to Raw Zone": {
                         "Type": "Task",
-                        "Resource": "arn:aws:states:::glue:startJobRun",
+                        "Resource": "arn:aws:states:::glue:startJobRun.sync",
                         "Parameters": {
                             "JobName": "${AcademyLandingToRawGlueJobName}",
                             "Arguments": {
                                 "--BOOKMARK_CONTEXT.$": "$.BookmarkContext",
                                 "--table_filter_expression.$": "$.FilterString",
                                 "--s3_prefix.$": "$.S3Prefix",
-                                "--glue_database_name_target": "$.GlueDatabaseTarget"
+                                "--glue_database_name_target.$": "$.GlueDatabaseTarget"
                             }
                         },
                         "End": true
@@ -139,7 +139,8 @@
                 "BookmarkContext.$": "$$.Map.Item.Value.BookmarkContext"
             },
             "End": true,
-            "ResultPath": "$.copyToRawOutput"
+            "ResultPath": "$.copyToRawOutput",
+            "MaxConcurrency": 1
         }
     }
 }
