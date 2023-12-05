@@ -450,7 +450,7 @@ module "deprecated_rds_export_storage" {
 module "addresses_api_rds_export_storage" {
   source = "../modules/s3-bucket"
 
-  tags                           = merge(${module.tags.values}, { "Team" = "DataAndInsight" })
+  tags                           = merge(module.tags.values, { "Team" = "DataAndInsight" })
   project                        = var.project
   environment                    = var.environment
   identifier_prefix              = local.identifier_prefix
