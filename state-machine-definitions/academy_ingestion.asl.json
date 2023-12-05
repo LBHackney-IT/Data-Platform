@@ -139,7 +139,8 @@
                 "BookmarkContext.$": "$$.Map.Item.Value.BookmarkContext"
             },
             "End": true,
-            "ResultPath": "$.copyToRawOutput"
+            "ResultPath": "$.copyToRawOutput",
+            "MaxConcurrency": 1
         }
     }
 }
