@@ -585,7 +585,7 @@ module "parking_eta_decision_records" {
       worksheet_name    = "eta_decision_records"
     }
   }
-}   
+}
 module "pcn_permits_nlpg_llpg_matching_via_athena" {
   count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
@@ -620,7 +620,7 @@ module "pcn_permits_nlpg_llpg_matching_via_athena" {
       worksheet_name    = "parking_pcn_permit_nlpg_llpg_matching_via_athena"
     }
   }
-}  
+}
 module "unmatched_cedar_batches" {
   count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
@@ -818,7 +818,7 @@ module "bailiff_warrant_status" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1KRDEoWHEup1kWkumb32aPhPpjDSTrsKw"
-  glue_job_name                  = "bailiff_allocation"
+  glue_job_name                  = "bailiff_warrant_status"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "bailiff_warrant_status/bailiff_warrant_status_06_12_2023.csv"
