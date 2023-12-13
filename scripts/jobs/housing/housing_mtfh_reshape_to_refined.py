@@ -15,7 +15,6 @@ from scripts.helpers.helpers import (
 )
 
 
-# Define the functions that will be used in your job (optional). For Production jobs, these functions should be tested via unit testing.
 def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource("s3")
     folderString = s3_bucket_target.replace("s3://", "")
@@ -54,13 +53,11 @@ if __name__ == "__main__":
     logger = glueContext.get_logger()
     job = Job(glueContext)
 
-    # Log something. This will be ouput in the logs of this Glue job [search in the Runs tab: all logs>xxxx_driver]
     logger.info(
         f"The job is starting. The source database is {source_catalog_database}"
     )
 
-    # Load data from glue catalog
-
+    # Load data from glue catalog into table views
     load_table_view(source_catalog_database, "mtfh_tenureinformation", glueContext)
     load_table_view(source_catalog_database, "mtfh_persons", glueContext)
     load_table_view(source_catalog_database, "mtfh_contactdetails", glueContext)
