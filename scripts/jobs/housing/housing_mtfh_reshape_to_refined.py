@@ -10,12 +10,7 @@ from pyspark.sql.functions import *
 import pyspark.sql.functions as F
 from scripts.helpers.helpers import (
     get_glue_env_var,
-    get_latest_partitions,
-    create_pushdown_predicate,
-    add_import_time_columns,
     PARTITION_KEYS,
-    parse_json_into_dataframe,
-    table_exists_in_catalog,
     create_pushdown_predicate_for_max_date_partition_value,
 )
 
