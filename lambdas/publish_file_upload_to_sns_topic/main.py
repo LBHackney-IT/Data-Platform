@@ -12,7 +12,8 @@ def lambda_handler(event, context):
     topic_arn = os.environ["TOPIC_ARN"]
     sns = boto3.client("sns")
 
-    logger.info("## event", event)
+    logger.info("## event")
+    logger.info(event)
 
     bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
     file_key = event["Records"][0]["s3"]["object"]["key"]
