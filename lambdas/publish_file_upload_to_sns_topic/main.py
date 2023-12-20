@@ -19,11 +19,12 @@ def lambda_handler(event, context):
     event_time = event["Records"][0]["eventTime"]
 
     message = f"File uploaded: {file_key} to bucket: {bucket_name} at: {event_time}"
+    subject = f"New File Uploaded to S3: {bucket_name}/{file_key}"
 
     sns.publish(
         TopicArn=topic_arn,
         Message=message,
-        Subject="New File Uploaded to S3: {bucket_name}/{file_key}",
+        Subject=subject,
     )
 
     return {
