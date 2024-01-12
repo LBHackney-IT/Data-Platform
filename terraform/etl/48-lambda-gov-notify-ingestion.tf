@@ -17,8 +17,8 @@ data "aws_iam_policy_document" "housing_landing_zone_access" {
     ]
 
     resources = [
-      module.landing_zone_data_source.bucket_id,
-      "${module.landing_zone_data_source.bucket_id}/housing/*",
+      module.landing_zone_data_source.bucket_arn,
+      "${module.landing_zone_data_source.bucket_arn}/housing/*",
     ]
   }
 }
