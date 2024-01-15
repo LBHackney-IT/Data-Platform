@@ -23,6 +23,7 @@ module "parking_load_redshift_tables" {
 resource "aws_iam_role" "parking_redshift_copier" {
   count = local.is_live_environment && !local.is_production_environment ? 1 : 0
   name  = "parking_redshift_copier"
+  tags  = module.tags.values
   assume_role_policy = jsonencode({
     Statement = [
       {
@@ -103,6 +104,7 @@ resource "aws_iam_policy" "lambda_policy" {
 
 resource "aws_iam_role" "lambda_role" {
   name = "lambda_execution_role"
+  tags = module.tags.values
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
