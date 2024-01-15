@@ -6,6 +6,7 @@ module "parking_load_redshift_tables" {
   lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
   s3_key                         = "parking-load-redshift-tables.zip"
   lambda_source_dir              = "../../lambdas/redshift_stage_and_load_tables"
+  lambda_output_path             = "../../lambdas/lambda-archives/parking-load-redshift-tables.zip"
 
   environment_variables = {
     "REDSHIFT_CLUSTER_ID" = module.redshift[0].cluster_id
