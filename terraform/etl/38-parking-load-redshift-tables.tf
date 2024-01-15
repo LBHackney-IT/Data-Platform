@@ -121,6 +121,7 @@ resource "aws_iam_role" "lambda_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
+  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
   role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.lambda_policy[0].arn
 }
