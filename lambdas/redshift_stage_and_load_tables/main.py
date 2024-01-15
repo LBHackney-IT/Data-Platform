@@ -5,6 +5,12 @@ import boto3
 redshift_data_client = boto3.client("redshift-data")
 
 
+def read_sql_from_file(file_path, params):
+    with open(file_path, "r") as f:
+        sql_template = f.read()
+    return sql_template.format(**params)
+
+
 def start_sql_execution(cluster_id, database, user, sql):
     response = redshift_data_client.execute_statement(
         ClusterIdentifier=cluster_id,
@@ -24,6 +30,7 @@ def lambda_handler(event, context):
     iam_role = os.environ["REDSHIFT_IAM_ROLE"]
     source_bucket = os.environ["SOURCE_BUCKET"]
     schema_name = os.environ["SCHEMA_NAME"]
+    sql_file = os.environ["SQL_FILE"]
 
     import_year = event["year"]
     import_month = event["month"]
@@ -35,18 +42,21 @@ def lambda_handler(event, context):
 
     for table in event["tables"]:
         s3_path = f"s3://{source_bucket}/{source_database}/{table}/{import_year}/{import_month}/{import_day}/{import_date}/"
-        sql = (
-            f"CALL stage_and_load_parquet('{s3_path}', '{iam_role}', '{schema_name}',"
-            f" '{table}')"
-        )
+
+        params = {
+            "schema_name": schema_name,
+            "table_name": table,
+            "s3_path": s3_path,
+            "iam_role": iam_role,
+        }
+
+        sql = read_sql_from_file(sql_file, params)
+
         query_id = start_sql_execution(cluster_id, redshift_database, user, sql)
         query_ids.append(query_id)
-    # fmt: off
+
     return {
         "statusCode": 200,
         "body": "Started Redshift data staging and load for all tables!",
-        "query_ids": query_ids
+        "query_ids": query_ids,
     }
-
-
-# fmt: on
