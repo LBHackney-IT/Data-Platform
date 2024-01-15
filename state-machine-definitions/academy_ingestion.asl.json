@@ -1,0 +1,146 @@
+{
+    "Comment": "State Machine for Academy Ingestion",
+    "StartAt": "GetNumberOfAvailableIPs",
+    "States": {
+        "GetNumberOfAvailableIPs": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::aws-sdk:ec2:describeSubnets",
+            "Parameters": {
+                "SubnetIds": [
+                    "${SubnetIds}"
+                ]
+            },
+            "ResultPath": "$.SubnetResult",
+            "Next": "InvokeLambdaCalculateMaxConcurrency"
+        },
+        "InvokeLambdaCalculateMaxConcurrency": {
+            "Type": "Task",
+            "Resource": "${MaxConcurrencyLambdaArn}",
+            "Parameters": {
+                "AvailableIPs.$": "$.SubnetResult.Subnets[0].AvailableIpAddressCount",
+                "Workers": "${NumberOfGlueWorkers}"
+            },
+            "ResultPath": "$.MaxConcurrencyResult",
+            "Next": "Database Ingestion Map"
+        },
+        "Database Ingestion Map": {
+            "Type": "Map",
+            "ItemProcessor": {
+                "ProcessorConfig": {
+                    "Mode": "INLINE"
+                },
+                "StartAt": "Glue: Database Ingestion",
+                "States": {
+                    "Glue: Database Ingestion": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                        "Parameters": {
+                            "JobName": "${IngestionGlueJobName}",
+                            "Arguments": {
+                                "--table_filter_expression.$": "$.FilterString"
+                            }
+                        },
+                        "End": true
+                    }
+                }
+            },
+            "MaxConcurrencyPath": "$.MaxConcurrencyResult.max_concurrency",
+            "ItemsPath": "$.TableFilters",
+            "ItemSelector": {
+                "MaxConcurrency.$": "$.MaxConcurrencyResult.max_concurrency",
+                "FilterString.$": "$$.Map.Item.Value"
+            },
+            "Next": "StartCrawler",
+            "ResultPath": "$.dbIngestionMapOutput"
+        },
+        "StartCrawler": {
+            "Type": "Task",
+            "Parameters": {
+                "Name": "${AcademyCrawlerName}"
+            },
+            "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+            "Next": "WaitAfterStartCrawler",
+            "ResultPath": "$.crawlerOutput"
+        },
+        "WaitAfterStartCrawler": {
+            "Type": "Wait",
+            "Seconds": 600,
+            "Next": "GetCrawler"
+        },
+        "GetCrawler": {
+            "Type": "Task",
+            "Next": "GetCrawlerChoice",
+            "Parameters": {
+                "Name": "${AcademyCrawlerName}"
+            },
+            "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler",
+            "ResultPath": "$.GetCrawlerOutput",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.ALL"
+                    ],
+                    "BackoffRate": 2,
+                    "IntervalSeconds": 1,
+                    "MaxAttempts": 8
+                }
+            ]
+        },
+        "GetCrawlerChoice": {
+            "Type": "Choice",
+            "Choices": [
+                {
+                    "Variable": "$.GetCrawlerOutput.Crawler.State",
+                    "StringMatches": "RUNNING",
+                    "Next": "WaitAfterGetCrawlerChoice"
+                },
+                {
+                    "Variable": "$.GetCrawlerOutput.Crawler.State",
+                    "StringMatches": "STOPPING",
+                    "Next": "WaitAfterGetCrawlerChoice"
+                }
+            ],
+            "Default": "Copy to Raw Map"
+        },
+        "WaitAfterGetCrawlerChoice": {
+            "Type": "Wait",
+            "Seconds": 600,
+            "Next": "GetCrawler"
+        },
+        "Copy to Raw Map": {
+            "Type": "Map",
+            "ItemProcessor": {
+                "ProcessorConfig": {
+                    "Mode": "INLINE"
+                },
+                "StartAt": "Glue: Copy to Raw Zone",
+                "States": {
+                    "Glue: Copy to Raw Zone": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                        "Parameters": {
+                            "JobName": "${AcademyLandingToRawGlueJobName}",
+                            "Arguments": {
+                                "--BOOKMARK_CONTEXT.$": "$.BookmarkContext",
+                                "--table_filter_expression.$": "$.FilterString",
+                                "--s3_prefix.$": "$.S3Prefix",
+                                "--glue_database_name_target.$": "$.GlueDatabaseTarget"
+                            }
+                        },
+                        "End": true
+                    }
+                }
+            },
+            "ItemsPath": "$.LandingToRaw",
+            "ItemSelector": {
+                "FilterString.$": "$$.Map.Item.Value.FilterString",
+                "S3Prefix.$": "$$.Map.Item.Value.S3Prefix",
+                "GlueDatabaseTarget.$": "$$.Map.Item.Value.GlueDatabaseTarget",
+                "BookmarkContext.$": "$$.Map.Item.Value.BookmarkContext"
+            },
+            "End": true,
+            "ResultPath": "$.copyToRawOutput",
+            "MaxConcurrency": 1
+        }
+    }
+}

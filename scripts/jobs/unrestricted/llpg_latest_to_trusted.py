@@ -11,7 +11,7 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.functions import *
 import pyspark.sql.functions as F
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate, add_import_time_columns, PARTITION_KEYS
+from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, create_pushdown_predicate_for_latest_written_partition, add_import_time_columns, PARTITION_KEYS
 
 def clear_target_folder(s3_bucket_target):
     s3 = boto3.resource('s3')
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     data_source = glueContext.create_dynamic_frame.from_catalog(
         name_space=source_catalog_database,
         table_name=source_catalog_table,
-        push_down_predicate = create_pushdown_predicate('import_date', 10)
+        push_down_predicate = create_pushdown_predicate_for_latest_written_partition(source_catalog_database, source_catalog_table)
     )
     
     map_ward = {
@@ -49,7 +49,6 @@ if __name__ == "__main__":
                 }
                 
     df2 = data_source.toDF()
-    df2 = get_latest_partitions(df2)
     # Duplicate ward column to apply mapping
     df2 = df2.withColumn('llpg_ward_map', col('ward').cast('string')) 
 

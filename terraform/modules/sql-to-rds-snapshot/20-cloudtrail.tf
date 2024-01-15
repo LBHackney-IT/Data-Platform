@@ -79,17 +79,25 @@ resource "aws_kms_key" "key" {
 resource "aws_s3_bucket" "cloudtrail" {
   bucket        = "${var.identifier_prefix}-cloudtrail"
   force_destroy = true
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.key.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
+}
 
-  versioning {
-    enabled = true
+resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
+  bucket = aws_s3_bucket.cloudtrail.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.key.arn
+      sse_algorithm     = "aws:kms"
+    }
+    bucket_key_enabled = true
+  }
+}
+
+resource "aws_s3_bucket_versioning" "cloudtrail" {
+  bucket = aws_s3_bucket.cloudtrail.id
+
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 

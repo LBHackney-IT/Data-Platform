@@ -1,0 +1,564 @@
+blpu_class,usage_description,primary_code,secondary_code,tertiary_code,quaternary_code,usage_primary,usage_secondary,usage_tertiary,usage_quaternary,planning_use_class
+C,Commercial,C,,,,Commercial,,,,
+CA,"Commercial, Agricultural",C,A,,,Commercial,Agricultural,,,
+CA01,"Commercial, Agricultural, Farm / Non-Residential Associated Building",C,A,1,,Commercial,Agricultural,Farm / Non-Residential Associated Building,,Pmtd 6
+CA02,"Commercial, Agricultural, Fishery",C,A,2,,Commercial,Agricultural,Fishery,,Sui Generis
+CA02FF,"Commercial, Agricultural, Fishery, Fish Farming",C,A,2,FF,Commercial,Agricultural,Fishery,Fish Farming,
+CA02FH,"Commercial, Agricultural, Fishery, Fish Hatchery",C,A,2,FH,Commercial,Agricultural,Fishery,Fish Hatchery,
+CA02FP,"Commercial, Agricultural, Fishery, Fish Processing",C,A,2,FP,Commercial,Agricultural,Fishery,Fish Processing,
+CA02OY,"Commercial, Agricultural, Fishery, Oyster / Mussel Bed",C,A,2,OY,Commercial,Agricultural,Fishery,Oyster / Mussel Bed,
+CA03,"Commercial, Agricultural, Horticulture",C,A,3,,Commercial,Agricultural,Horticulture,,Sui Generis
+CA03SH,"Commercial, Agricultural, Horticulture, Smallholding",C,A,3,SH,Commercial,Agricultural,Horticulture,Smallholding,
+CA03VY,"Commercial, Agricultural, Horticulture, Vineyard",C,A,3,VY,Commercial,Agricultural,Horticulture,Vineyard,
+CA03WB,"Commercial, Agricultural, Horticulture, Watercress Bed",C,A,3,WB,Commercial,Agricultural,Horticulture,Watercress Bed,
+CA04,"Commercial, Agricultural, Slaughter House / Abattoir",C,A,4,,Commercial,Agricultural,Slaughter House / Abattoir,,Sui Generis / B2
+CB,"Commercial, Ancillary Building",C,B,,,Commercial,Ancillary Building,,,Sui Generis
+CC,"Commercial, Community Services",C,C,,,Commercial,Community Services,,,
+CC02,"Commercial, Community Services, Law Court",C,C,2,,Commercial,Community Services,Law Court,,Sui Generis
+CC03,"Commercial, Community Services, Prison",C,C,3,,Commercial,Community Services,Prison,,Sui Generis
+CC03HD,"Commercial, Community Services, Prison, HM Detention Centre",C,C,3,HD,Commercial,Community Services,Prison,HM Detention Centre,
+CC03PR,"Commercial, Community Services, Prison, HM Prison Service",C,C,3,PR,Commercial,Community Services,Prison,HM Prison Service,
+CC03SC,"Commercial, Community Services, Prison, Secure Residential Accommodation",C,C,3,SC,Commercial,Community Services,Prison,Secure Residential Accommodation,
+CC04,"Commercial, Community Services, Public / Village Hall / Other Community Facility",C,C,4,,Commercial,Community Services,Public / Village Hall / Other Community Facility,,D1
+CC04YR,"Commercial, Community Services, Public / Village Hall / Other Community Facility, Youth Recreational / Social Club",C,C,4,YR,Commercial,Community Services,Public / Village Hall / Other Community Facility,Youth Recreational / Social Club,
+CC05,"Commercial, Community Services, Public Convenience",C,C,5,,Commercial,Community Services,Public Convenience,,Sui Generis
+CC06,"Commercial, Community Services, Cemetery / Crematorium / Graveyard. In Current Use.",C,C,6,,Commercial,Community Services,Cemetery / Crematorium / Graveyard. In Current Use.,,Sui Generis
+CC06CB,"Commercial, Community Services, Cemetery / Crematorium / Graveyard. In Current Use., Columbarium",C,C,6,CB,Commercial,Community Services,Cemetery / Crematorium / Graveyard. In Current Use.,Columbarium,
+CC06CR,"Commercial, Community Services, Cemetery / Crematorium / Graveyard. In Current Use., Chapel Of Rest",C,C,6,CR,Commercial,Community Services,Cemetery / Crematorium / Graveyard. In Current Use.,Chapel Of Rest,
+CC06CN,"Commercial, Community Services, Cemetery / Crematorium / Graveyard. In Current Use., Crematorium",C,C,6,CN,Commercial,Community Services,Cemetery / Crematorium / Graveyard. In Current Use.,Crematorium,
+CC06CY,"Commercial, Community Services, Cemetery / Crematorium / Graveyard. In Current Use., Cemetery",C,C,6,CY,Commercial,Community Services,Cemetery / Crematorium / Graveyard. In Current Use.,Cemetery,
+CC06MC,"Commercial, Community Services, Cemetery / Crematorium / Graveyard. In Current Use., Military Cemetery",C,C,6,MC,Commercial,Community Services,Cemetery / Crematorium / Graveyard. In Current Use.,Military Cemetery,
+CC06MY,"Commercial, Community Services, Cemetery / Crematorium / Graveyard. In Current Use., Mortuary",C,C,6,MY,Commercial,Community Services,Cemetery / Crematorium / Graveyard. In Current Use.,Mortuary,
+CC07,"Commercial, Community Services, Church Hall / Religious Meeting Place / Hall",C,C,7,,Commercial,Community Services,Church Hall / Religious Meeting Place / Hall,,D1
+CC08,"Commercial, Community Services, Community Service Centre / Office",C,C,8,,Commercial,Community Services,Community Service Centre / Office,,D1 / D2
+CC09,"Commercial, Community Services, Public Household Waste Recycling Centre (HWRC)",C,C,9,,Commercial,Community Services,Public Household Waste Recycling Centre (HWRC),,B2
+CC10,"Commercial, Community Services, Recycling Site",C,C,10,,Commercial,Community Services,Recycling Site,,B2
+CC11,"Commercial, Community Services, CCTV",C,C,11,,Commercial,Community Services,CCTV,,Pmtd 33
+CC12,"Commercial, Community Services, Job Centre",C,C,12,,Commercial,Community Services,Job Centre,,A2
+CE,"Commercial, Education",C,E,,,Commercial,Education,,,
+CE01,"Commercial, Education, College",C,E,1,,Commercial,Education,College,,C2 / D1
+CE01FE,"Commercial, Education, College, Further Education",C,E,1,FE,Commercial,Education,College,Further Education,
+CE01HE,"Commercial, Education, College, Higher Education",C,E,1,HE,Commercial,Education,College,Higher Education,
+CE02,"Commercial, Education, Children’s Nursery / Crèche",C,E,2,,Commercial,Education,Children’s Nursery / Crèche,,D1
+CE03,"Commercial, Education, Preparatory / First / Primary / Infant / Junior / Middle School",C,E,3,,Commercial,Education,Preparatory / First / Primary / Infant / Junior / Middle School,,D1 / C1 / C2
+CE03FS,"Commercial, Education, Preparatory / First / Primary / Infant / Junior / Middle School, First School",C,E,3,FS,Commercial,Education,Preparatory / First / Primary / Infant / Junior / Middle School,First School,
+CE03IS,"Commercial, Education, Preparatory / First / Primary / Infant / Junior / Middle School, Infant School",C,E,3,IS,Commercial,Education,Preparatory / First / Primary / Infant / Junior / Middle School,Infant School,
+CE03JS,"Commercial, Education, Preparatory / First / Primary / Infant / Junior / Middle School, Junior School",C,E,3,JS,Commercial,Education,Preparatory / First / Primary / Infant / Junior / Middle School,Junior School,
+CE03MS,"Commercial, Education, Preparatory / First / Primary / Infant / Junior / Middle School, Middle School",C,E,3,MS,Commercial,Education,Preparatory / First / Primary / Infant / Junior / Middle School,Middle School,
+CE03NP,"Commercial, Education, Preparatory / First / Primary / Infant / Junior / Middle School, Non State Primary / Preparatory School",C,E,3,NP,Commercial,Education,Preparatory / First / Primary / Infant / Junior / Middle School,Non State Primary / Preparatory School,
+CE03PS,"Commercial, Education, Preparatory / First / Primary / Infant / Junior / Middle School, Primary School",C,E,3,PS,Commercial,Education,Preparatory / First / Primary / Infant / Junior / Middle School,Primary School,
+CE04,"Commercial, Education, Secondary / High School",C,E,4,,Commercial,Education,Secondary / High School,,D1 / C2
+CE04NS,"Commercial, Education, Secondary / High School, Non State Secondary School",C,E,4,NS,Commercial,Education,Secondary / High School,Non State Secondary School,
+CE04SS,"Commercial, Education, Secondary / High School, Secondary School",C,E,4,SS,Commercial,Education,Secondary / High School,Secondary School,
+CE05,"Commercial, Education, University",C,E,5,,Commercial,Education,University,,D1 / C2
+CE06,"Commercial, Education, Special Needs Establishment.",C,E,6,,Commercial,Education,Special Needs Establishment.,,D1 / C2
+CE07,"Commercial, Education, Other Educational Establishment",C,E,7,,Commercial,Education,Other Educational Establishment,,
+CH,"Commercial, Hotel / Motel / Boarding / Guest House",C,H,,,Commercial,Hotel / Motel / Boarding / Guest House,,,
+CH01,"Commercial, Hotel / Motel / Boarding / Guest House, Boarding / Guest House / Bed And Breakfast / Youth Hostel",C,H,1,,Commercial,Hotel / Motel / Boarding / Guest House,Boarding / Guest House / Bed And Breakfast / Youth Hostel,,C1 / Sui Generis
+CH01YH,"Commercial, Hotel / Motel / Boarding / Guest House, Boarding / Guest House / Bed And Breakfast / Youth Hostel, Youth Hostel",C,H,1,YH,Commercial,Hotel / Motel / Boarding / Guest House,Boarding / Guest House / Bed And Breakfast / Youth Hostel,Youth Hostel,
+CH02,"Commercial, Hotel / Motel / Boarding / Guest House, Holiday Let/Accomodation/Short-Term Let Other Than CH01",C,H,2,,Commercial,Hotel / Motel / Boarding / Guest House,Holiday Let/Accomodation/Short-Term Let Other Than CH01,,C1 / C3
+CH03,"Commercial, Hotel / Motel / Boarding / Guest House, Hotel/Motel",C,H,3,,Commercial,Hotel / Motel / Boarding / Guest House,Hotel/Motel,,C1
+CI,"Commercial, Industrial",C,I,,,Commercial,Industrial,,,
+CI01,"Commercial, Industrial, Factory/Manufacturing",C,I,1,,Commercial,Industrial,Factory/Manufacturing,,B1 / B2
+CI01AW,"Commercial, Industrial, Factory/Manufacturing, Aircraft Works",C,I,1,AW,Commercial,Industrial,Factory/Manufacturing,Aircraft Works,
+CI01BB,"Commercial, Industrial, Factory/Manufacturing, Boat Building",C,I,1,BB,Commercial,Industrial,Factory/Manufacturing,Boat Building,
+CI01BR,"Commercial, Industrial, Factory/Manufacturing, Brick Works",C,I,1,BR,Commercial,Industrial,Factory/Manufacturing,Brick Works,
+CI01BW,"Commercial, Industrial, Factory/Manufacturing, Brewery",C,I,1,BW,Commercial,Industrial,Factory/Manufacturing,Brewery,
+CI01CD,"Commercial, Industrial, Factory/Manufacturing, Cider Manufacture",C,I,1,CD,Commercial,Industrial,Factory/Manufacturing,Cider Manufacture,
+CI01CM,"Commercial, Industrial, Factory/Manufacturing, Chemical Works",C,I,1,CM,Commercial,Industrial,Factory/Manufacturing,Chemical Works,
+CI01CW,"Commercial, Industrial, Factory/Manufacturing, Cement Works",C,I,1,CW,Commercial,Industrial,Factory/Manufacturing,Cement Works,
+CI01DA,"Commercial, Industrial, Factory/Manufacturing, Dairy Processing",C,I,1,DA,Commercial,Industrial,Factory/Manufacturing,Dairy Processing,
+CI01DY,"Commercial, Industrial, Factory/Manufacturing, Distillery",C,I,1,DY,Commercial,Industrial,Factory/Manufacturing,Distillery,
+CI01FL,"Commercial, Industrial, Factory/Manufacturing, Flour Mill",C,I,1,FL,Commercial,Industrial,Factory/Manufacturing,Flour Mill,
+CI01FO,"Commercial, Industrial, Factory/Manufacturing, Food Processing",C,I,1,FO,Commercial,Industrial,Factory/Manufacturing,Food Processing,
+CI01GW,"Commercial, Industrial, Factory/Manufacturing, Glassworks",C,I,1,GW,Commercial,Industrial,Factory/Manufacturing,Glassworks,
+CI01MG,"Commercial, Industrial, Factory/Manufacturing, Manufacturing",C,I,1,MG,Commercial,Industrial,Factory/Manufacturing,Manufacturing,
+CI01OH,"Commercial, Industrial, Factory/Manufacturing, Oast House",C,I,1,OH,Commercial,Industrial,Factory/Manufacturing,Oast House,
+CI01OR,"Commercial, Industrial, Factory/Manufacturing, Oil Refining",C,I,1,OR,Commercial,Industrial,Factory/Manufacturing,Oil Refining,
+CI01PG,"Commercial, Industrial, Factory/Manufacturing, Pottery Manufacturing",C,I,1,PG,Commercial,Industrial,Factory/Manufacturing,Pottery Manufacturing,
+CI01PM,"Commercial, Industrial, Factory/Manufacturing, Paper Mill",C,I,1,PM,Commercial,Industrial,Factory/Manufacturing,Paper Mill,
+CI01PW,"Commercial, Industrial, Factory/Manufacturing, Printing Works",C,I,1,PW,Commercial,Industrial,Factory/Manufacturing,Printing Works,
+CI01YD,"Commercial, Industrial, Factory/Manufacturing, Shipyard",C,I,1,YD,Commercial,Industrial,Factory/Manufacturing,Shipyard,
+CI01SR,"Commercial, Industrial, Factory/Manufacturing, Sugar Refinery",C,I,1,SR,Commercial,Industrial,Factory/Manufacturing,Sugar Refinery,
+CI01SW,"Commercial, Industrial, Factory/Manufacturing, Steel Works",C,I,1,SW,Commercial,Industrial,Factory/Manufacturing,Steel Works,
+CI01TL,"Commercial, Industrial, Factory/Manufacturing, Timber Mill",C,I,1,TL,Commercial,Industrial,Factory/Manufacturing,Timber Mill,
+CI01WN,"Commercial, Industrial, Factory/Manufacturing, Winery",C,I,1,WN,Commercial,Industrial,Factory/Manufacturing,Winery,
+CI02,"Commercial, Industrial, Mineral / Ore Working / Quarry / Mine",C,I,2,,Commercial,Industrial,Mineral / Ore Working / Quarry / Mine,,Sui Generis
+CI02MA,"Commercial, Industrial, Mineral / Ore Working / Quarry / Mine, Mineral Mining / Active",C,I,2,MA,Commercial,Industrial,Mineral / Ore Working / Quarry / Mine,Mineral Mining / Active,
+CI02MD,"Commercial, Industrial, Mineral / Ore Working / Quarry / Mine, Mineral Distribution / Storage",C,I,2,MD,Commercial,Industrial,Mineral / Ore Working / Quarry / Mine,Mineral Distribution / Storage,
+CI02MP,"Commercial, Industrial, Mineral / Ore Working / Quarry / Mine, Mineral Processing",C,I,2,MP,Commercial,Industrial,Mineral / Ore Working / Quarry / Mine,Mineral Processing,
+CI02OA,"Commercial, Industrial, Mineral / Ore Working / Quarry / Mine, Oil / Gas Extraction / Active",C,I,2,OA,Commercial,Industrial,Mineral / Ore Working / Quarry / Mine,Oil / Gas Extraction / Active,
+CI02QA,"Commercial, Industrial, Mineral / Ore Working / Quarry / Mine, Mineral Quarrying / Open Extraction / Active",C,I,2,QA,Commercial,Industrial,Mineral / Ore Working / Quarry / Mine,Mineral Quarrying / Open Extraction / Active,
+CI03,"Commercial, Industrial, Workshop / Light Industrial",C,I,3,,Commercial,Industrial,Workshop / Light Industrial,,B1 / B2
+CI03GA,"Commercial, Industrial, Workshop / Light Industrial, Servicing Garage",C,I,3,GA,Commercial,Industrial,Workshop / Light Industrial,Servicing Garage,
+CI04,"Commercial, Industrial, Warehouse / Store / Storage Depot",C,I,4,,Commercial,Industrial,Warehouse / Store / Storage Depot,,B8
+CI04CS,"Commercial, Industrial, Warehouse / Store / Storage Depot, Crop Handling / Storage",C,I,4,CS,Commercial,Industrial,Warehouse / Store / Storage Depot,Crop Handling / Storage,
+CI04PL,"Commercial, Industrial, Warehouse / Store / Storage Depot, Postal Sorting / Distribution",C,I,4,PL,Commercial,Industrial,Warehouse / Store / Storage Depot,Postal Sorting / Distribution,
+CI04SO,"Commercial, Industrial, Warehouse / Store / Storage Depot, Solid Fuel Storage",C,I,4,SO,Commercial,Industrial,Warehouse / Store / Storage Depot,Solid Fuel Storage,
+CI04TS,"Commercial, Industrial, Warehouse / Store / Storage Depot, Timber Storage",C,I,4,TS,Commercial,Industrial,Warehouse / Store / Storage Depot,Timber Storage,
+CI05,"Commercial, Industrial, Wholesale Distribution",C,I,5,,Commercial,Industrial,Wholesale Distribution,,B8
+CI05SF,"Commercial, Industrial, Wholesale Distribution, Solid Fuel Distribution",C,I,5,SF,Commercial,Industrial,Wholesale Distribution,Solid Fuel Distribution,
+CI05TD,"Commercial, Industrial, Wholesale Distribution, Timber Distribution",C,I,5,TD,Commercial,Industrial,Wholesale Distribution,Timber Distribution,
+CI06,"Commercial, Industrial, Recycling Plant",C,I,6,,Commercial,Industrial,Recycling Plant,,B2
+CI07,"Commercial, Industrial, Incinerator / Waste Transfer Station",C,I,7,,Commercial,Industrial,Incinerator / Waste Transfer Station,,B2
+CI08,"Commercial, Industrial, Maintenance Depot",C,I,8,,Commercial,Industrial,Maintenance Depot,,B1 / B2
+CL,"Commercial, Leisure",C,L,,,Commercial,Leisure,,,
+CL01,"Commercial, Leisure, Amusements",C,L,1,,Commercial,Leisure,Amusements,,D2 / Sui Generis
+CL01LP,"Commercial, Leisure, Amusements, Leisure Pier",C,L,1,LP,Commercial,Leisure,Amusements,Leisure Pier,
+CL02,"Commercial, Leisure, Holiday / Campsite",C,L,2,,Commercial,Leisure,Holiday / Campsite,,D2 / Sui Generis
+CL02CG,"Commercial, Leisure, Holiday / Campsite, Camping",C,L,2,CG,Commercial,Leisure,Holiday / Campsite,Camping,
+CL02CV,"Commercial, Leisure, Holiday / Campsite, Caravanning",C,L,2,CV,Commercial,Leisure,Holiday / Campsite,Caravanning,
+CL02HA,"Commercial, Leisure, Holiday / Campsite, Holiday Accommodation",C,L,2,HA,Commercial,Leisure,Holiday / Campsite,Holiday Accommodation,
+CL02HO,"Commercial, Leisure, Holiday / Campsite, Holiday Centre",C,L,2,HO,Commercial,Leisure,Holiday / Campsite,Holiday Centre,
+CL02YC,"Commercial, Leisure, Holiday / Campsite, Youth Organisation Camp",C,L,2,YC,Commercial,Leisure,Holiday / Campsite,Youth Organisation Camp,
+CL03,"Commercial, Leisure, Library",C,L,3,,Commercial,Leisure,Library,,D1
+CL03RR,"Commercial, Leisure, Library, Reading Room",C,L,3,RR,Commercial,Leisure,Library,Reading Room,
+CL04,"Commercial, Leisure, Museum / Gallery",C,L,4,,Commercial,Leisure,Museum / Gallery,,D1
+CL04AC,"Commercial, Leisure, Museum / Gallery, Art Centre / Gallery",C,L,4,AC,Commercial,Leisure,Museum / Gallery,Art Centre / Gallery,
+CL04AM,"Commercial, Leisure, Museum / Gallery, Aviation Museum",C,L,4,AM,Commercial,Leisure,Museum / Gallery,Aviation Museum,
+CL04HG,"Commercial, Leisure, Museum / Gallery, Heritage Centre",C,L,4,HG,Commercial,Leisure,Museum / Gallery,Heritage Centre,
+CL04IM,"Commercial, Leisure, Museum / Gallery, Industrial Museum",C,L,4,IM,Commercial,Leisure,Museum / Gallery,Industrial Museum,
+CL04MM,"Commercial, Leisure, Museum / Gallery, Military Museum",C,L,4,MM,Commercial,Leisure,Museum / Gallery,Military Museum,
+CL04SM,"Commercial, Leisure, Museum / Gallery, Science Museum",C,L,4,SM,Commercial,Leisure,Museum / Gallery,Science Museum,
+CL04TM,"Commercial, Leisure, Museum / Gallery, Transport Museum",C,L,4,TM,Commercial,Leisure,Museum / Gallery,Transport Museum,
+CL04NM,"Commercial, Leisure, Museum / Gallery, Maritime Museum",C,L,4,NM,Commercial,Leisure,Museum / Gallery,Maritime Museum,
+CL06,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre",C,L,6,,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,,D2
+CL06AH,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Athletics Facility",C,L,6,AH,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Athletics Facility,
+CL06BF,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Bowls Facility",C,L,6,BF,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Bowls Facility,
+CL06CK,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Cricket Facility",C,L,6,CK,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Cricket Facility,
+CL06CU,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Curling Facility",C,L,6,CU,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Curling Facility,
+CL06YF,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Cycling Sports Facility",C,L,6,YF,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Cycling Sports Facility,
+CL06DS,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Diving / Swimming Facility",C,L,6,DS,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Diving / Swimming Facility,
+CL06EQ,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Equestrian Sports Facility",C,L,6,EQ,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Equestrian Sports Facility,
+CL06FB,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Football Facility",C,L,6,FB,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Football Facility,
+CL06FI,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Fishing / Angling Facility",C,L,6,FI,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Fishing / Angling Facility,
+CL06GF,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Golf Facility",C,L,6,GF,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Golf Facility,
+CL06GL,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Gliding Facility",C,L,6,GL,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Gliding Facility,
+CL06GR,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Greyhound Racing Facility",C,L,6,GR,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Greyhound Racing Facility,
+CL06HF,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Hockey Facility",C,L,6,HF,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Hockey Facility,
+CL06HR,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Horse Racing Facility",C,L,6,HR,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Horse Racing Facility,
+CL06HV,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Historic Vessel / Aircraft / Vehicle",C,L,6,HV,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Historic Vessel / Aircraft / Vehicle,
+CL06LS,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Activity / Leisure / Sports Centre",C,L,6,LS,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Activity / Leisure / Sports Centre,
+CL06ME,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Model Sports Facility",C,L,6,ME,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Model Sports Facility,
+CL06MF,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Motor Sports Facility",C,L,6,MF,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Motor Sports Facility,
+CL06PF,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Playing Field",C,L,6,PF,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Playing Field,
+CL06QS,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Racquet Sports Facility",C,L,6,QS,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Racquet Sports Facility,
+CL06RF,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Rugby Facility",C,L,6,RF,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Rugby Facility,
+CL06RG,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Recreation Ground",C,L,6,RG,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Recreation Ground,
+CL06SI,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Shinty Facility",C,L,6,SI,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Shinty Facility,
+CL06SK,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Skateboarding Facility",C,L,6,SK,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Skateboarding Facility,
+CL06SX,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Civilian Firing Facility",C,L,6,SX,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Civilian Firing Facility,
+CL06TB,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Tenpin Bowling Facility",C,L,6,TB,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Tenpin Bowling Facility,
+CL06TN,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Public Tennis Court",C,L,6,TN,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Public Tennis Court,
+CL06WA,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Water Sports Facility",C,L,6,WA,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Water Sports Facility,
+CL06WP,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Winter Sports Facility",C,L,6,WP,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Winter Sports Facility,
+CL06WY,"Commercial, Leisure, Indoor / Outdoor Leisure / Sporting Activity / Centre, Wildlife Sports Facility",C,L,6,WY,Commercial,Leisure,Indoor / Outdoor Leisure / Sporting Activity / Centre,Wildlife Sports Facility,
+CL07,"Commercial, Leisure, Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall",C,L,7,,Commercial,Leisure,Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall,,D2 / Sui Generis / D1
+CL07TH,"Commercial, Leisure, Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall, Theatre",C,L,7,TH,Commercial,Leisure,Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall,Theatre,
+CL07CI,"Commercial, Leisure, Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall, Cinema",C,L,7,CI,Commercial,Leisure,Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall,Cinema,
+CL07EN,"Commercial, Leisure, Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall, Entertainment Complex",C,L,7,EN,Commercial,Leisure,Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall,Entertainment Complex,
+CL07EX,"Commercial, Leisure, Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall, Conference / Exhibition Centre",C,L,7,EX,Commercial,Leisure,Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall,Conference / Exhibition Centre,
+CL08,"Commercial, Leisure, Zoo / Theme Park",C,L,8,,Commercial,Leisure,Zoo / Theme Park,,Sui Generis
+CL08AK,"Commercial, Leisure, Zoo / Theme Park, Amusement Park",C,L,8,AK,Commercial,Leisure,Zoo / Theme Park,Amusement Park,
+CL08MX,"Commercial, Leisure, Zoo / Theme Park, Model Village Site",C,L,8,MX,Commercial,Leisure,Zoo / Theme Park,Model Village Site,
+CL08WZ,"Commercial, Leisure, Zoo / Theme Park, Wildlife / Zoological Park",C,L,8,WZ,Commercial,Leisure,Zoo / Theme Park,Wildlife / Zoological Park,
+CL08AQ,"Commercial, Leisure, Zoo / Theme Park, Aquatic Attraction",C,L,8,AQ,Commercial,Leisure,Zoo / Theme Park,Aquatic Attraction,
+CL09,"Commercial, Leisure, Beach Hut (Recreational, Non-Residential Use Only)",C,L,9,,Commercial,Leisure,"Beach Hut (Recreational, Non-Residential Use Only)",,Sui Generis
+CL10,"Commercial, Leisure, Licensed Private Members’ Club",C,L,10,,Commercial,Leisure,Licensed Private Members’ Club,,Sui Generis
+CL10RE,"Commercial, Leisure, Licensed Private Members’ Club, Recreational / Social Club",C,L,10,RE,Commercial,Leisure,Licensed Private Members’ Club,Recreational / Social Club,
+CL11,"Commercial, Leisure, Arena / Stadium",C,L,11,,Commercial,Leisure,Arena / Stadium,,D2
+CL11SD,"Commercial, Leisure, Arena / Stadium, Stadium",C,L,11,SD,Commercial,Leisure,Arena / Stadium,Stadium,
+CL11SJ,"Commercial, Leisure, Arena / Stadium, Showground",C,L,11,SJ,Commercial,Leisure,Arena / Stadium,Showground,
+CM,"Commercial, Medical",C,M,,,Commercial,Medical,,,
+CM01,"Commercial, Medical, Dentist",C,M,1,,Commercial,Medical,Dentist,,D1
+CM02,"Commercial, Medical, General Practice Surgery / Clinic",C,M,2,,Commercial,Medical,General Practice Surgery / Clinic,,D1
+CM02HL,"Commercial, Medical, General Practice Surgery / Clinic, Health Care Services",C,M,2,HL,Commercial,Medical,General Practice Surgery / Clinic,Health Care Services,
+CM02HC,"Commercial, Medical, General Practice Surgery / Clinic, Health Centre",C,M,2,HC,Commercial,Medical,General Practice Surgery / Clinic,Health Centre,
+CM03,"Commercial, Medical, Hospital / Hospice",C,M,3,,Commercial,Medical,Hospital / Hospice,,C2
+CM03HI,"Commercial, Medical, Hospital / Hospice, Hospice",C,M,3,HI,Commercial,Medical,Hospital / Hospice,Hospice,
+CM03HP,"Commercial, Medical, Hospital / Hospice, Hospital",C,M,3,HP,Commercial,Medical,Hospital / Hospice,Hospital,
+CM04,"Commercial, Medical, Medical / Testing / Research Laboratory",C,M,4,,Commercial,Medical,Medical / Testing / Research Laboratory,,B1 / B2
+CM05,"Commercial, Medical, Professional Medical Service",C,M,5,,Commercial,Medical,Professional Medical Service,,D1
+CM05ZS,"Commercial, Medical, Professional Medical Service, Assessment / Development Services",C,M,5,ZS,Commercial,Medical,Professional Medical Service,Assessment / Development Services,
+CN,"Commercial, Animal Centre",C,N,,,Commercial,Animal Centre,,,
+CN01,"Commercial, Animal Centre, Cattery / Kennel",C,N,1,,Commercial,Animal Centre,Cattery / Kennel,,Sui Generis
+CN02,"Commercial, Animal Centre, Animal Services",C,N,2,,Commercial,Animal Centre,Animal Services,,Sui Generis
+CN02AX,"Commercial, Animal Centre, Animal Services, Animal Quarantining",C,N,2,AX,Commercial,Animal Centre,Animal Services,Animal Quarantining,
+CN03,"Commercial, Animal Centre, Equestrian",C,N,3,,Commercial,Animal Centre,Equestrian,,D2
+CN03HB,"Commercial, Animal Centre, Equestrian, Horse Racing / Breeding Stable",C,N,3,HB,Commercial,Animal Centre,Equestrian,Horse Racing / Breeding Stable,
+CN03SB,"Commercial, Animal Centre, Equestrian, Commercial Stabling / Riding",C,N,3,SB,Commercial,Animal Centre,Equestrian,Commercial Stabling / Riding,
+CN04,"Commercial, Animal Centre, Vet / Animal Medical Treatment",C,N,4,,Commercial,Animal Centre,Vet / Animal Medical Treatment,,Sui Generis
+CN05,"Commercial, Animal Centre, Animal / Bird / Marine Sanctuary",C,N,5,,Commercial,Animal Centre,Animal / Bird / Marine Sanctuary,,Sui Generis
+CN05AN,"Commercial, Animal Centre, Animal / Bird / Marine Sanctuary, Animal Sanctuary",C,N,5,AN,Commercial,Animal Centre,Animal / Bird / Marine Sanctuary,Animal Sanctuary,
+CN05MR,"Commercial, Animal Centre, Animal / Bird / Marine Sanctuary, Marine Sanctuary",C,N,5,MR,Commercial,Animal Centre,Animal / Bird / Marine Sanctuary,Marine Sanctuary,
+CO,"Commercial, Office",C,O,,,Commercial,Office,,,
+CO01,"Commercial, Office, Office / Work Studio",C,O,1,,Commercial,Office,Office / Work Studio,,B1
+CO01EM,"Commercial, Office, Office / Work Studio, Embassy /, High Commission / Consulate",C,O,1,EM,Commercial,Office,Office / Work Studio,"Embassy /, High Commission / Consulate",
+CO01FM,"Commercial, Office, Office / Work Studio, Film Studio",C,O,1,FM,Commercial,Office,Office / Work Studio,Film Studio,
+CO01GV,"Commercial, Office, Office / Work Studio, Central Government Service",C,O,1,GV,Commercial,Office,Office / Work Studio,Central Government Service,
+CO01LG,"Commercial, Office, Office / Work Studio, Local Government Service",C,O,1,LG,Commercial,Office,Office / Work Studio,Local Government Service,
+CO02,"Commercial, Office, Broadcasting (TV / Radio)",C,O,2,,Commercial,Office,Broadcasting (TV / Radio),,B1
+CR,"Commercial, Retail",C,R,,,Commercial,Retail,,,
+CR01,"Commercial, Retail, Bank / Financial Service",C,R,1,,Commercial,Retail,Bank / Financial Service,,A2
+CR02,"Commercial, Retail, Retail Service Agent",C,R,2,,Commercial,Retail,Retail Service Agent,,A1 / B1 / A2
+CR02PO,"Commercial, Retail, Retail Service Agent, Post Office",C,R,2,PO,Commercial,Retail,Retail Service Agent,Post Office,
+CR04,"Commercial, Retail, Market (Indoor / Outdoor)",C,R,4,,Commercial,Retail,Market (Indoor / Outdoor),,A1
+CR04FK,"Commercial, Retail, Market (Indoor / Outdoor), Fish Market",C,R,4,FK,Commercial,Retail,Market (Indoor / Outdoor),Fish Market,
+CR04FV,"Commercial, Retail, Market (Indoor / Outdoor), Fruit / Vegetable Market",C,R,4,FV,Commercial,Retail,Market (Indoor / Outdoor),Fruit / Vegetable Market,
+CR04LV,"Commercial, Retail, Market (Indoor / Outdoor), Livestock Market",C,R,4,LV,Commercial,Retail,Market (Indoor / Outdoor),Livestock Market,
+CR05,"Commercial, Retail, Petrol Filling Station",C,R,5,,Commercial,Retail,Petrol Filling Station,,Sui Generis
+CR06,"Commercial, Retail, Public House / Bar / Nightclub",C,R,6,,Commercial,Retail,Public House / Bar / Nightclub,,A4 / Sui Generis
+CR07,"Commercial, Retail, Restaurant / Cafeteria",C,R,7,,Commercial,Retail,Restaurant / Cafeteria,,A3
+CR08,"Commercial, Retail, Shop / Showroom",C,R,8,,Commercial,Retail,Shop / Showroom,,A1 / Sui Generis
+CR08GC,"Commercial, Retail, Shop / Showroom, Garden Centre",C,R,8,GC,Commercial,Retail,Shop / Showroom,Garden Centre,
+CR09,"Commercial, Retail, Other Licensed Premise / Vendor",C,R,9,,Commercial,Retail,Other Licensed Premise / Vendor,,A1 / A2 / Sui Generis
+CR10,"Commercial, Retail, Fast Food Outlet / Takeaway (Hot / Cold)",C,R,10,,Commercial,Retail,Fast Food Outlet / Takeaway (Hot / Cold),,A5
+CR11,"Commercial, Retail, Automated Teller Machine (ATM)",C,R,11,,Commercial,Retail,Automated Teller Machine (ATM),,Sui Generis
+CS,"Commercial, Storage Land",C,S,,,Commercial,Storage Land,,,
+CS01,"Commercial, Storage Land, General Storage Land",C,S,1,,Commercial,Storage Land,General Storage Land,,B8
+CS02,"Commercial, Storage Land, Builders’ Yard",C,S,2,,Commercial,Storage Land,Builders’ Yard,,Sui Generis
+CT,"Commercial, Transport",C,T,,,Commercial,Transport,,,
+CT01,"Commercial, Transport, Airfield / Airstrip / Airport / Air Transport Infrastructure Facility",C,T,1,,Commercial,Transport,Airfield / Airstrip / Airport / Air Transport Infrastructure Facility,,Sui Generis
+CT01AF,"Commercial, Transport, Airfield / Airstrip / Airport / Air Transport Infrastructure Facility, Airfield",C,T,1,AF,Commercial,Transport,Airfield / Airstrip / Airport / Air Transport Infrastructure Facility,Airfield,
+CT01AY,"Commercial, Transport, Airfield / Airstrip / Airport / Air Transport Infrastructure Facility, Air Passenger Terminal",C,T,1,AY,Commercial,Transport,Airfield / Airstrip / Airport / Air Transport Infrastructure Facility,Air Passenger Terminal,
+CT01AI,"Commercial, Transport, Airfield / Airstrip / Airport / Air Transport Infrastructure Facility, Air Transport Infrastructure Services",C,T,1,AI,Commercial,Transport,Airfield / Airstrip / Airport / Air Transport Infrastructure Facility,Air Transport Infrastructure Services,
+CT01AP,"Commercial, Transport, Airfield / Airstrip / Airport / Air Transport Infrastructure Facility, Airport",C,T,1,AP,Commercial,Transport,Airfield / Airstrip / Airport / Air Transport Infrastructure Facility,Airport,
+CT01HS,"Commercial, Transport, Airfield / Airstrip / Airport / Air Transport Infrastructure Facility, Helicopter Station",C,T,1,HS,Commercial,Transport,Airfield / Airstrip / Airport / Air Transport Infrastructure Facility,Helicopter Station,
+CT01HT,"Commercial, Transport, Airfield / Airstrip / Airport / Air Transport Infrastructure Facility, Heliport / Helipad",C,T,1,HT,Commercial,Transport,Airfield / Airstrip / Airport / Air Transport Infrastructure Facility,Heliport / Helipad,
+CT02,"Commercial, Transport, Bus Shelter",C,T,2,,Commercial,Transport,Bus Shelter,,Pmtd 17H
+CT03,"Commercial, Transport, Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site",C,T,3,,Commercial,Transport,Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site,,Sui Generis
+CT03PK,"Commercial, Transport, Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site, Public Park And Ride",C,T,3,PK,Commercial,Transport,Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site,Public Park And Ride,
+CT03PP,"Commercial, Transport, Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site, Public Car Parking",C,T,3,PP,Commercial,Transport,Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site,Public Car Parking,
+CT03PU,"Commercial, Transport, Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site, Public Coach Parking",C,T,3,PU,Commercial,Transport,Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site,Public Coach Parking,
+CT03VP,"Commercial, Transport, Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site, Public Commercial Vehicle Parking",C,T,3,VP,Commercial,Transport,Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site,Public Commercial Vehicle Parking,
+CT04,"Commercial, Transport, Goods Freight Handling / Terminal",C,T,4,,Commercial,Transport,Goods Freight Handling / Terminal,,B8
+CT04AE,"Commercial, Transport, Goods Freight Handling / Terminal, Air Freight Terminal",C,T,4,AE,Commercial,Transport,Goods Freight Handling / Terminal,Air Freight Terminal,
+CT04CF,"Commercial, Transport, Goods Freight Handling / Terminal, Container Freight",C,T,4,CF,Commercial,Transport,Goods Freight Handling / Terminal,Container Freight,
+CT04RH,"Commercial, Transport, Goods Freight Handling / Terminal, Road Freight Transport",C,T,4,RH,Commercial,Transport,Goods Freight Handling / Terminal,Road Freight Transport,
+CT04RT,"Commercial, Transport, Goods Freight Handling / Terminal, Rail Freight Transport",C,T,4,RT,Commercial,Transport,Goods Freight Handling / Terminal,Rail Freight Transport,
+CT05,"Commercial, Transport, Marina",C,T,5,,Commercial,Transport,Marina,,Sui Generis
+CT06,"Commercial, Transport, Mooring",C,T,6,,Commercial,Transport,Mooring,,Sui Generis
+CT07,"Commercial, Transport, Railway Asset",C,T,7,,Commercial,Transport,Railway Asset,,Sui Generis / 17A / Pmtd 17H
+CT08,"Commercial, Transport, Station / Interchange / Terminal / Halt",C,T,8,,Commercial,Transport,Station / Interchange / Terminal / Halt,,Sui Generis
+CT08BC,"Commercial, Transport, Station / Interchange / Terminal / Halt, Bus / Coach Station",C,T,8,BC,Commercial,Transport,Station / Interchange / Terminal / Halt,Bus / Coach Station,
+CT08RS,"Commercial, Transport, Station / Interchange / Terminal / Halt, Railway Station",C,T,8,RS,Commercial,Transport,Station / Interchange / Terminal / Halt,Railway Station,
+CT08VH,"Commercial, Transport, Station / Interchange / Terminal / Halt, Vehicular Rail Terminal",C,T,8,VH,Commercial,Transport,Station / Interchange / Terminal / Halt,Vehicular Rail Terminal,
+CT09,"Commercial, Transport, Transport Track / Way",C,T,9,,Commercial,Transport,Transport Track / Way,,Pmtd 17A
+CT09CL,"Commercial, Transport, Transport Track / Way, Cliff Railway",C,T,9,CL,Commercial,Transport,Transport Track / Way,Cliff Railway,
+CT09CX,"Commercial, Transport, Transport Track / Way, Chair Lift / Cable Car / Ski Tow",C,T,9,CX,Commercial,Transport,Transport Track / Way,Chair Lift / Cable Car / Ski Tow,
+CT09MO,"Commercial, Transport, Transport Track / Way, Monorail",C,T,9,MO,Commercial,Transport,Transport Track / Way,Monorail,
+CT10,"Commercial, Transport, Vehicle Storage",C,T,10,,Commercial,Transport,Vehicle Storage,,Sui Generis
+CT10BG,"Commercial, Transport, Vehicle Storage, Boat Storage",C,T,10,BG,Commercial,Transport,Vehicle Storage,Boat Storage,
+CT10BU,"Commercial, Transport, Vehicle Storage, Bus / Coach Depot",C,T,10,BU,Commercial,Transport,Vehicle Storage,Bus / Coach Depot,
+CT11,"Commercial, Transport, Transport Related Infrastructure",C,T,11,,Commercial,Transport,Transport Related Infrastructure,,Sui Generis / Pmtd 17B / Pmtd 17C
+CT11AD,"Commercial, Transport, Transport Related Infrastructure, Aqueduct",C,T,11,AD,Commercial,Transport,Transport Related Infrastructure,Aqueduct,
+CT11LK,"Commercial, Transport, Transport Related Infrastructure, Lock",C,T,11,LK,Commercial,Transport,Transport Related Infrastructure,Lock,
+CT11WE,"Commercial, Transport, Transport Related Infrastructure, Weir",C,T,11,WE,Commercial,Transport,Transport Related Infrastructure,Weir,
+CT11WG,"Commercial, Transport, Transport Related Infrastructure, Weighbridge / Load Gauge",C,T,11,WG,Commercial,Transport,Transport Related Infrastructure,Weighbridge / Load Gauge,
+CT12,"Commercial, Transport, Overnight Lorry Park",C,T,12,,Commercial,Transport,Overnight Lorry Park,,Sui Generis
+CT13,"Commercial, Transport, Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay",C,T,13,,Commercial,Transport,Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay,,Sui Generis
+CT13FR,"Commercial, Transport, Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay, Passenger Ferry Terminal",C,T,13,FR,Commercial,Transport,Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay,Passenger Ferry Terminal,
+CT13NB,"Commercial, Transport, Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay, Non-Tanker Nautical Berthing",C,T,13,NB,Commercial,Transport,Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay,Non-Tanker Nautical Berthing,
+CT13NF,"Commercial, Transport, Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay, Nautical Refuelling Facility",C,T,13,NF,Commercial,Transport,Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay,Nautical Refuelling Facility,
+CT13SA,"Commercial, Transport, Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay, Slipway",C,T,13,SA,Commercial,Transport,Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay,Slipway,
+CT13SP,"Commercial, Transport, Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay, Ship Passenger Terminal",C,T,13,SP,Commercial,Transport,Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay,Ship Passenger Terminal,
+CT13TK,"Commercial, Transport, Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay, Tanker Berthing",C,T,13,TK,Commercial,Transport,Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay,Tanker Berthing,
+CT13VF,"Commercial, Transport, Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay, Vehicular Ferry Terminal",C,T,13,VF,Commercial,Transport,Harbour / Port / Dock / Dockyard / Slipway / Landing Stage / Pier / Jetty / Pontoon / Terminal / Berthing / Quay,Vehicular Ferry Terminal,
+CU,"Commercial, Utility",C,U,,,Commercial,Utility,,,
+CU01,"Commercial, Utility, Electricity Sub-Station",C,U,1,,Commercial,Utility,Electricity Sub-Station,,Pmdt 17G
+CU02,"Commercial, Utility, Landfill",C,U,2,,Commercial,Utility,Landfill,,Sui Generis
+CU03,"Commercial, Utility, Power Station / Energy Production",C,U,3,,Commercial,Utility,Power Station / Energy Production,,Sui Generis
+CU03ED,"Commercial, Utility, Power Station / Energy Production, Electricity Distribution Facility",C,U,3,ED,Commercial,Utility,Power Station / Energy Production,Electricity Distribution Facility,
+CU03EP,"Commercial, Utility, Power Station / Energy Production, Electricity Production Facility",C,U,3,EP,Commercial,Utility,Power Station / Energy Production,Electricity Production Facility,
+CU03WF,"Commercial, Utility, Power Station / Energy Production, Wind Farm",C,U,3,WF,Commercial,Utility,Power Station / Energy Production,Wind Farm,
+CU03WU,"Commercial, Utility, Power Station / Energy Production, Wind Turbine",C,U,3,WU,Commercial,Utility,Power Station / Energy Production,Wind Turbine,
+CU04,"Commercial, Utility, Pump House / Pumping Station / Water Tower",C,U,4,,Commercial,Utility,Pump House / Pumping Station / Water Tower,,Pmdt 8 / Sui Generis
+CU04WC,"Commercial, Utility, Pump House / Pumping Station / Water Tower, Water Controlling / Pumping",C,U,4,WC,Commercial,Utility,Pump House / Pumping Station / Water Tower,Water Controlling / Pumping,
+CU04WD,"Commercial, Utility, Pump House / Pumping Station / Water Tower, Water Distribution / Pumping",C,U,4,WD,Commercial,Utility,Pump House / Pumping Station / Water Tower,Water Distribution / Pumping,
+CU04WM,"Commercial, Utility, Pump House / Pumping Station / Water Tower, Water Quality Monitoring",C,U,4,WM,Commercial,Utility,Pump House / Pumping Station / Water Tower,Water Quality Monitoring,
+CU04WS,"Commercial, Utility, Pump House / Pumping Station / Water Tower, Water Storage",C,U,4,WS,Commercial,Utility,Pump House / Pumping Station / Water Tower,Water Storage,
+CU04WW,"Commercial, Utility, Pump House / Pumping Station / Water Tower, Waste Water Distribution / Pumping",C,U,4,WW,Commercial,Utility,Pump House / Pumping Station / Water Tower,Waste Water Distribution / Pumping,
+CU06,"Commercial, Utility, Telecommunication",C,U,6,,Commercial,Utility,Telecommunication,,Pmdt 24 / Sui Generis
+CU06TE,"Commercial, Utility, Telecommunication, Telecommunications Mast",C,U,6,TE,Commercial,Utility,Telecommunication,Telecommunications Mast,
+CU06TX,"Commercial, Utility, Telecommunication, Telephone Exchange",C,U,6,TX,Commercial,Utility,Telecommunication,Telephone Exchange,
+CU07,"Commercial, Utility, Water / Waste Water / Sewage Treatment Works",C,U,7,,Commercial,Utility,Water / Waste Water / Sewage Treatment Works,,Sui Generis
+CU07WR,"Commercial, Utility, Water / Waste Water / Sewage Treatment Works, Waste Water Treatment",C,U,7,WR,Commercial,Utility,Water / Waste Water / Sewage Treatment Works,Waste Water Treatment,
+CU07WT,"Commercial, Utility, Water / Waste Water / Sewage Treatment Works, Water Treatment",C,U,7,WT,Commercial,Utility,Water / Waste Water / Sewage Treatment Works,Water Treatment,
+CU08,"Commercial, Utility, Gas / Oil Storage / Distribution",C,U,8,,Commercial,Utility,Gas / Oil Storage / Distribution,,Sui Generis
+CU08GG,"Commercial, Utility, Gas / Oil Storage / Distribution, Gas Governor",C,U,8,GG,Commercial,Utility,Gas / Oil Storage / Distribution,Gas Governor,
+CU08GH,"Commercial, Utility, Gas / Oil Storage / Distribution, Gas Holder",C,U,8,GH,Commercial,Utility,Gas / Oil Storage / Distribution,Gas Holder,
+CU08OT,"Commercial, Utility, Gas / Oil Storage / Distribution, Oil Terminal",C,U,8,OT,Commercial,Utility,Gas / Oil Storage / Distribution,Oil Terminal,
+CU09,"Commercial, Utility, Other Utility Use",C,U,9,,Commercial,Utility,Other Utility Use,,B2
+CU09OV,"Commercial, Utility, Other Utility Use, Observatory",C,U,9,OV,Commercial,Utility,Other Utility Use,Observatory,
+CU09RA,"Commercial, Utility, Other Utility Use, Radar Station",C,U,9,RA,Commercial,Utility,Other Utility Use,Radar Station,
+CU09SE,"Commercial, Utility, Other Utility Use, Satellite Earth Station",C,U,9,SE,Commercial,Utility,Other Utility Use,Satellite Earth Station,
+CU09CQ,"Commercial, Utility, Other Utility Use, Cable Terminal Station",C,U,9,CQ,Commercial,Utility,Other Utility Use,Cable Terminal Station,
+CU10,"Commercial, Utility, Waste Management",C,U,10,,Commercial,Utility,Waste Management,,Pmdt 12
+CU11,"Commercial, Utility, Telephone Box",C,U,11,,Commercial,Utility,Telephone Box,,Sui Generis
+CU11OP,"Commercial, Utility, Telephone Box, Other Public Telephones",C,U,11,OP,Commercial,Utility,Telephone Box,Other Public Telephones,
+CU12,"Commercial, Utility, Dam",C,U,12,,Commercial,Utility,Dam,,Sui Generis
+CX,"Commercial, Emergency / Rescue Service",C,X,,,Commercial,Emergency / Rescue Service,,,
+CX01,"Commercial, Emergency / Rescue Service, Police / Transport Police / Station",C,X,1,,Commercial,Emergency / Rescue Service,Police / Transport Police / Station,,Sui Generis
+CX01PT,"Commercial, Emergency / Rescue Service, Police / Transport Police / Station, Police Training",C,X,1,PT,Commercial,Emergency / Rescue Service,Police / Transport Police / Station,Police Training,
+CX02,"Commercial, Emergency / Rescue Service, Fire Station",C,X,2,,Commercial,Emergency / Rescue Service,Fire Station,,Sui Generis
+CX02FT,"Commercial, Emergency / Rescue Service, Fire Station, Fire Service Training",C,X,2,FT,Commercial,Emergency / Rescue Service,Fire Station,Fire Service Training,
+CX03,"Commercial, Emergency / Rescue Service, Ambulance Station",C,X,3,,Commercial,Emergency / Rescue Service,Ambulance Station,,Sui Generis
+CX03AA,"Commercial, Emergency / Rescue Service, Ambulance Station, Air Sea Rescue / Air Ambulance",C,X,3,AA,Commercial,Emergency / Rescue Service,Ambulance Station,Air Sea Rescue / Air Ambulance,
+CX04,"Commercial, Emergency / Rescue Service, Lifeboat Services / Station",C,X,4,,Commercial,Emergency / Rescue Service,Lifeboat Services / Station,,Sui Generis
+CX05,"Commercial, Emergency / Rescue Service, Coastguard Rescue / Lookout / Station",C,X,5,,Commercial,Emergency / Rescue Service,Coastguard Rescue / Lookout / Station,,Sui Generis
+CX06,"Commercial, Emergency / Rescue Service, Mountain Rescue Station",C,X,6,,Commercial,Emergency / Rescue Service,Mountain Rescue Station,,Sui Generis
+CX07,"Commercial, Emergency / Rescue Service, Lighthouse",C,X,7,,Commercial,Emergency / Rescue Service,Lighthouse,,Sui Generis / Pmdt17I
+CX08,"Commercial, Emergency / Rescue Service, Police Box / Kiosk",C,X,8,,Commercial,Emergency / Rescue Service,Police Box / Kiosk,,Sui Generis
+CZ,"Commercial, Information",C,Z,,,Commercial,Information,,,
+CZ01,"Commercial, Information, Advertising Hoarding",C,Z,1,,Commercial,Information,Advertising Hoarding,,Sui Generis
+CZ02,"Commercial, Information, Tourist Information Signage",C,Z,2,,Commercial,Information,Tourist Information Signage,,B1
+CZ02VI,"Commercial, Information, Tourist Information Signage, Visitor Information",C,Z,2,VI,Commercial,Information,Tourist Information Signage,Visitor Information,
+CZ03,"Commercial, Information, Traffic Information Signage",C,Z,3,,Commercial,Information,Traffic Information Signage,,B1
+L,Land,L,,,,Land,,,,
+LA,"Land, Agricultural",L,A,,,Land,Agricultural,,,
+LA01,"Land, Agricultural, Grazing Land",L,A,1,,Land,Agricultural,Grazing Land,,Sui Generis
+LA02,"Land, Agricultural, Permanent Crop / Crop Rotation",L,A,2,,Land,Agricultural,Permanent Crop / Crop Rotation,,Sui Generis / Pmdt 6
+LA02OC,"Land, Agricultural, Permanent Crop / Crop Rotation, Orchard",L,A,2,OC,Land,Agricultural,Permanent Crop / Crop Rotation,Orchard,
+LB,"Land, Ancillary Building",L,B,,,Land,Ancillary Building,,,
+LB99AV,"Land, Ancillary Building, , Aviary / Dovecot / Cage",L,B,99,AV,Land,Ancillary Building,,Aviary / Dovecot / Cage,
+LB99BD,"Land, Ancillary Building, , Bandstand",L,B,99,BD,Land,Ancillary Building,,Bandstand,
+LB99PI,"Land, Ancillary Building, , Pavilion / Changing Room",L,B,99,PI,Land,Ancillary Building,,Pavilion / Changing Room,
+LB99SV,"Land, Ancillary Building, , Sports Viewing Structure",L,B,99,SV,Land,Ancillary Building,,Sports Viewing Structure,
+LC,"Land, Burial Ground",L,C,,,Land,Burial Ground,,,
+LC01,"Land, Burial Ground, Historic / Disused Cemetery / Graveyard",L,C,1,,Land,Burial Ground,Historic / Disused Cemetery / Graveyard,,Sui Generis
+LD,"Land, Development",L,D,,,Land,Development,,,
+LD01,"Land, Development, Development Site",L,D,1,,Land,Development,Development Site,,
+LD01CC,"Land, Development, Development Site, Commercial Construction Site",L,D,1,CC,Land,Development,Development Site,Commercial Construction Site,
+LD01CO,"Land, Development, Development Site, Community Construction Site",L,D,1,CO,Land,Development,Development Site,Community Construction Site,
+LD01RN,"Land, Development, Development Site, Residential Construction Site",L,D,1,RN,Land,Development,Development Site,Residential Construction Site,
+LD01TC,"Land, Development, Development Site, Transport Construction Site",L,D,1,TC,Land,Development,Development Site,Transport Construction Site,
+LF,"Land, Forestry",L,F,,,Land,Forestry,,,
+LF02,"Land, Forestry, Forest / Arboretum / Pinetum (Managed / Unmanaged)",L,F,2,,Land,Forestry,Forest / Arboretum / Pinetum (Managed / Unmanaged),,Sui Generis
+LF02AU,"Land, Forestry, Forest / Arboretum / Pinetum (Managed / Unmanaged), Arboretum",L,F,2,AU,Land,Forestry,Forest / Arboretum / Pinetum (Managed / Unmanaged),Arboretum,
+LF03,"Land, Forestry, Woodland",L,F,3,,Land,Forestry,Woodland,,Sui Generis
+LL,"Land, Allotment",L,L,,,Land,Allotment,,,
+LM,"Land, Amenity",L,M,,,Land,Amenity,,,
+LM01,"Land, Amenity, Landscaped Roundabout",L,M,1,,Land,Amenity,Landscaped Roundabout,,Sui Generis
+LM02,"Land, Amenity, Verge / Central Reservation",L,M,2,,Land,Amenity,Verge / Central Reservation,,
+LM02NV,"Land, Amenity, Verge / Central Reservation, Natural Central Reservation",L,M,2,NV,Land,Amenity,Verge / Central Reservation,Natural Central Reservation,
+LM02VE,"Land, Amenity, Verge / Central Reservation, Natural Verge",L,M,2,VE,Land,Amenity,Verge / Central Reservation,Natural Verge,
+LM03,"Land, Amenity, Maintained Amenity Land",L,M,3,,Land,Amenity,Maintained Amenity Land,,Sui Generis
+LM04,"Land, Amenity, Maintained Surfaced Area",L,M,4,,Land,Amenity,Maintained Surfaced Area,,
+LM04MV,"Land, Amenity, Maintained Surfaced Area, Made Central Reservation",L,M,4,MV,Land,Amenity,Maintained Surfaced Area,Made Central Reservation,
+LM04PV,"Land, Amenity, Maintained Surfaced Area, Pavement",L,M,4,PV,Land,Amenity,Maintained Surfaced Area,Pavement,
+LO,"Land, Open Space",L,O,,,Land,Open Space,,,
+LO01,"Land, Open Space, Heath / Moorland",L,O,1,,Land,Open Space,Heath / Moorland,,Sui Generis
+LP,"Land, Park",L,P,,,Land,Park,,,
+LP01,"Land, Park, Public Park / Garden",L,P,1,,Land,Park,Public Park / Garden,,D2
+LP02,"Land, Park, Public Open Space / Nature Reserve",L,P,2,,Land,Park,Public Open Space / Nature Reserve,,D2
+LP03,"Land, Park, Playground",L,P,3,,Land,Park,Playground,,D2
+LP03PA,"Land, Park, Playground, Play Area",L,P,3,PA,Land,Park,Playground,Play Area,
+LP03PD,"Land, Park, Playground, Paddling Pool",L,P,3,PD,Land,Park,Playground,Paddling Pool,
+LP04,"Land, Park, Private Park / Garden",L,P,4,,Land,Park,Private Park / Garden,,Sui Generis
+LU,"Land, Unused Land",L,U,,,Land,Unused Land,,,
+LU01,"Land, Unused Land, Vacant / Derelict Land",L,U,1,,Land,Unused Land,Vacant / Derelict Land,,
+LW,"Land, Water",L,W,,,Land,Water,,,
+LW01,"Land, Water, Lake / Reservoir",L,W,1,,Land,Water,Lake / Reservoir,,Sui Generis
+LW01BP,"Land, Water, Lake / Reservoir, Balancing Pond",L,W,1,BP,Land,Water,Lake / Reservoir,Balancing Pond,
+LW01BV,"Land, Water, Lake / Reservoir, Buried Reservoir",L,W,1,BV,Land,Water,Lake / Reservoir,Buried Reservoir,
+LW02,"Land, Water, Named Pond",L,W,2,,Land,Water,Named Pond,,Sui Generis
+LW02DE,"Land, Water, Named Pond, Dew Pond",L,W,2,DE,Land,Water,Named Pond,Dew Pond,
+LW02DP,"Land, Water, Named Pond, Decoy Pond",L,W,2,DP,Land,Water,Named Pond,Decoy Pond,
+LW02IW,"Land, Water, Named Pond, Static Water",L,W,2,IW,Land,Water,Named Pond,Static Water,
+LW03,"Land, Water, Waterway",L,W,3,,Land,Water,Waterway,,Sui Generis
+LW03LR,"Land, Water, Waterway, Leats / Races",L,W,3,LR,Land,Water,Waterway,Leats / Races,
+LW03DR,"Land, Water, Waterway, Drain",L,W,3,DR,Land,Water,Waterway,Drain,
+M,Military,M,,,,Military,,,,
+MA,"Military, Army",M,A,,,Military,Army,,,Sui Generis
+MA99AR,"Military, Army, , Army Military Range",M,A,99,AR,Military,Army,,Army Military Range,
+MA99AS,"Military, Army, , Army Site",M,A,99,AS,Military,Army,,Army Site,
+MA99AT,"Military, Army, , Army Military Training",M,A,99,AT,Military,Army,,Army Military Training,
+MA99AG,"Military, Army, , Army Military Storage",M,A,99,AG,Military,Army,,Army Military Storage,
+MB,"Military, Ancillary Building",M,B,,,Military,Ancillary Building,,,
+MB99TG,"Military, Ancillary Building, , Military Target",M,B,99,TG,Military,Ancillary Building,,Military Target,
+MF,"Military, Air Force",M,F,,,Military,Air Force,,,Sui Generis
+MF99UG,"Military, Air Force, , Air Force Military Storage",M,F,99,UG,Military,Air Force,,Air Force Military Storage,
+MF99UR,"Military, Air Force, , Air Force Military Range",M,F,99,UR,Military,Air Force,,Air Force Military Range,
+MF99US,"Military, Air Force, , Air Force Site",M,F,99,US,Military,Air Force,,Air Force Site,
+MF99UT,"Military, Air Force, , Air Force Military Training",M,F,99,UT,Military,Air Force,,Air Force Military Training,
+MG,"Military, Defence Estates",M,G,,,Military,Defence Estates,,,B1 / Sui Generis
+MN,"Military, Navy",M,N,,,Military,Navy,,,Sui Generis
+MN99VG,"Military, Navy, , Naval Military Storage",M,N,99,VG,Military,Navy,,Naval Military Storage,
+MN99VR,"Military, Navy, , Naval Military Range",M,N,99,VR,Military,Navy,,Naval Military Range,
+MN99VS,"Military, Navy, , Naval Site",M,N,99,VS,Military,Navy,,Naval Site,
+MN99VT,"Military, Navy, , Naval Military Training",M,N,99,VT,Military,Navy,,Naval Military Training,
+O,Other,O,,,,Other,,,,
+OA,"Other, Aid To Navigation",O,A,,,Other,Aid To Navigation,,,
+OA01,"Other, Aid To Navigation, Aid To Aeronautical Navigation",O,A,1,,Other,Aid To Navigation,Aid To Aeronautical Navigation,,
+OA01AL,"Other, Aid To Navigation, Aid To Aeronautical Navigation, Aeronautical Navigation Beacon / Light",O,A,1,AL,Other,Aid To Navigation,Aid To Aeronautical Navigation,Aeronautical Navigation Beacon / Light,
+OA01LL,"Other, Aid To Navigation, Aid To Aeronautical Navigation, Landing Light",O,A,1,LL,Other,Aid To Navigation,Aid To Aeronautical Navigation,Landing Light,
+OA01SQ,"Other, Aid To Navigation, Aid To Aeronautical Navigation, Signal Square",O,A,1,SQ,Other,Aid To Navigation,Aid To Aeronautical Navigation,Signal Square,
+OA01WK,"Other, Aid To Navigation, Aid To Aeronautical Navigation, Wind Sock / Wind Tee",O,A,1,WK,Other,Aid To Navigation,Aid To Aeronautical Navigation,Wind Sock / Wind Tee,
+OA02,"Other, Aid To Navigation, Aid To Nautical Navigation",O,A,2,,Other,Aid To Navigation,Aid To Nautical Navigation,,
+OA02DM,"Other, Aid To Navigation, Aid To Nautical Navigation, Daymark",O,A,2,DM,Other,Aid To Navigation,Aid To Nautical Navigation,Daymark,
+OA02FG,"Other, Aid To Navigation, Aid To Nautical Navigation, Fog Horn Warning",O,A,2,FG,Other,Aid To Navigation,Aid To Nautical Navigation,Fog Horn Warning,
+OA02NL,"Other, Aid To Navigation, Aid To Nautical Navigation, Nautical Navigation Beacon / Light",O,A,2,NL,Other,Aid To Navigation,Aid To Nautical Navigation,Nautical Navigation Beacon / Light,
+OA03,"Other, Aid To Navigation, Aid To Road Navigation",O,A,3,,Other,Aid To Navigation,Aid To Road Navigation,,
+OA03GP,"Other, Aid To Navigation, Aid To Road Navigation, Guide Post",O,A,3,GP,Other,Aid To Navigation,Aid To Road Navigation,Guide Post,
+OC,"Other, Coastal Protection / Flood Prevention",O,C,,,Other,Coastal Protection / Flood Prevention,,,
+OC01,"Other, Coastal Protection / Flood Prevention, Boulder Wall / Sea Wall",O,C,1,,Other,Coastal Protection / Flood Prevention,Boulder Wall / Sea Wall,,
+OC02,"Other, Coastal Protection / Flood Prevention, Flood Gate / Flood Sluice Gate / Flood Valve",O,C,2,,Other,Coastal Protection / Flood Prevention,Flood Gate / Flood Sluice Gate / Flood Valve,,
+OC03,"Other, Coastal Protection / Flood Prevention, Groyne",O,C,3,,Other,Coastal Protection / Flood Prevention,Groyne,,
+OC04,"Other, Coastal Protection / Flood Prevention, Rip-Rap",O,C,4,,Other,Coastal Protection / Flood Prevention,Rip-Rap,,
+OE,"Other, Emergency Support",O,E,,,Other,Emergency Support,,,
+OE01,"Other, Emergency Support, Beach Office / First Aid Facility",O,E,1,,Other,Emergency Support,Beach Office / First Aid Facility,,
+OE02,"Other, Emergency Support, Emergency Telephone (Non Motorway)",O,E,2,,Other,Emergency Support,Emergency Telephone (Non Motorway),,
+OE03,"Other, Emergency Support, Fire Alarm Structure / Fire Observation Tower / Fire Beater Facility",O,E,3,,Other,Emergency Support,Fire Alarm Structure / Fire Observation Tower / Fire Beater Facility,,
+OE04,"Other, Emergency Support, Emergency Equipment Point / Emergency Siren / Warning Flag",O,E,4,,Other,Emergency Support,Emergency Equipment Point / Emergency Siren / Warning Flag,,
+OE05,"Other, Emergency Support, Lifeguard Facility",O,E,5,,Other,Emergency Support,Lifeguard Facility,,
+OE06,"Other, Emergency Support, LIfe / Belt / Buoy / Float / Jacket / Safety Rope",O,E,6,,Other,Emergency Support,LIfe / Belt / Buoy / Float / Jacket / Safety Rope,,
+OF,"Other, Street Furniture",O,F,,,Other,Street Furniture,,,
+OG,"Other, Agricultural Support Objects",O,G,,,Other,Agricultural Support Objects,,,
+OG01,"Other, Agricultural Support Objects, Fish Ladder / Lock / Pen / Trap",O,G,1,,Other,Agricultural Support Objects,Fish Ladder / Lock / Pen / Trap,,
+OG02,"Other, Agricultural Support Objects, Livestock Pen / Dip",O,G,2,,Other,Agricultural Support Objects,Livestock Pen / Dip,,
+OG03,"Other, Agricultural Support Objects, Currick",O,G,3,,Other,Agricultural Support Objects,Currick,,
+OG04,"Other, Agricultural Support Objects, Slurry Bed / Pit",O,G,4,,Other,Agricultural Support Objects,Slurry Bed / Pit,,
+OH,"Other, Historical Site / Object",O,H,,,Other,Historical Site / Object,,,
+OH01,"Other, Historical Site / Object, Historic Structure / Object",O,H,1,,Other,Historical Site / Object,Historic Structure / Object,,
+OI,"Other, Industrial Support",O,I,,,Other,Industrial Support,,,
+OI01,"Other, Industrial Support, Adit / Incline / Level",O,I,1,,Other,Industrial Support,Adit / Incline / Level,,
+OI02,"Other, Industrial Support, Caisson / Dry Dock / Grid",O,I,2,,Other,Industrial Support,Caisson / Dry Dock / Grid,,
+OI03,"Other, Industrial Support, Channel / Conveyor / Conduit / Pipe",O,I,3,,Other,Industrial Support,Channel / Conveyor / Conduit / Pipe,,
+OI04,"Other, Industrial Support, Chimney / Flue",O,I,4,,Other,Industrial Support,Chimney / Flue,,
+OI05,"Other, Industrial Support, Crane / Hoist / Winch / Material Elevator",O,I,5,,Other,Industrial Support,Crane / Hoist / Winch / Material Elevator,,
+OI06,"Other, Industrial Support, Flare Stack",O,I,6,,Other,Industrial Support,Flare Stack,,
+OI07,"Other, Industrial Support, Hopper / Silo / Cistern / Tank",O,I,7,,Other,Industrial Support,Hopper / Silo / Cistern / Tank,,
+OI08,"Other, Industrial Support, Grab / Skip / Other Industrial Waste Machinery / Discharging",O,I,8,,Other,Industrial Support,Grab / Skip / Other Industrial Waste Machinery / Discharging,,
+OI09,"Other, Industrial Support, Kiln / Oven / Smelter",O,I,9,,Other,Industrial Support,Kiln / Oven / Smelter,,
+OI10,"Other, Industrial Support, Manhole / Shaft",O,I,10,,Other,Industrial Support,Manhole / Shaft,,
+OI11,"Other, Industrial Support, Industrial Overflow / Sluice / Valve / Valve Housing",O,I,11,,Other,Industrial Support,Industrial Overflow / Sluice / Valve / Valve Housing,,
+OI12,"Other, Industrial Support, Cooling Tower",O,I,12,,Other,Industrial Support,Cooling Tower,,
+OI13,"Other, Industrial Support, Solar Panel / Waterwheel",O,I,13,,Other,Industrial Support,Solar Panel / Waterwheel,,
+OI14,"Other, Industrial Support, Telephone Pole / Post",O,I,14,,Other,Industrial Support,Telephone Pole / Post,,
+OI15,"Other, Industrial Support, Electricity Distribution Pole / Pylon",O,I,15,,Other,Industrial Support,Electricity Distribution Pole / Pylon,,
+ON,"Other, Significant Natural Object",O,N,,,Other,Significant Natural Object,,,
+ON01,"Other, Significant Natural Object, Boundary / Significant / Historic Tree / Pollard",O,N,1,,Other,Significant Natural Object,Boundary / Significant / Historic Tree / Pollard,,
+ON02,"Other, Significant Natural Object, Boundary / Significant Rock / Boulder",O,N,2,,Other,Significant Natural Object,Boundary / Significant Rock / Boulder,,
+ON03,"Other, Significant Natural Object, Natural Hole (Blow / Shake / Swallow)",O,N,3,,Other,Significant Natural Object,Natural Hole (Blow / Shake / Swallow),,
+OO,"Other, Ornamental / Cultural Object",O,O,,,Other,Ornamental / Cultural Object,,,
+OO02,"Other, Ornamental / Cultural Object, Mausoleum / Tomb / Grave",O,O,2,,Other,Ornamental / Cultural Object,Mausoleum / Tomb / Grave,,
+OO03,"Other, Ornamental / Cultural Object, Simple Ornamental Object",O,O,3,,Other,Ornamental / Cultural Object,Simple Ornamental Object,,
+OO04,"Other, Ornamental / Cultural Object, Maze",O,O,4,,Other,Ornamental / Cultural Object,Maze,,
+OP,"Other, Sport / Leisure Support",O,P,,,Other,Sport / Leisure Support,,,
+OP01,"Other, Sport / Leisure Support, Butt / Hide",O,P,1,,Other,Sport / Leisure Support,Butt / Hide,,
+OP02,"Other, Sport / Leisure Support, Gallop / Ride",O,P,2,,Other,Sport / Leisure Support,Gallop / Ride,,
+OP03,"Other, Sport / Leisure Support, Miniature Railway",O,P,3,,Other,Sport / Leisure Support,Miniature Railway,,
+OR,"Other, Royal Mail Infrastructure",O,R,,,Other,Royal Mail Infrastructure,,,
+OR01,"Other, Royal Mail Infrastructure, Postal Box",O,R,1,,Other,Royal Mail Infrastructure,Postal Box,,
+OR02,"Other, Royal Mail Infrastructure, Postal Delivery Box / Pouch",O,R,2,,Other,Royal Mail Infrastructure,Postal Delivery Box / Pouch,,
+OR03,"Other, Royal Mail Infrastructure, PO Box",O,R,3,,Other,Royal Mail Infrastructure,PO Box,,
+OR04,"Other, Royal Mail Infrastructure, Additional Mail / Packet Addressee",O,R,4,,Other,Royal Mail Infrastructure,Additional Mail / Packet Addressee,,
+OS,"Other, Scientific / Observation Support",O,S,,,Other,Scientific / Observation Support,,,
+OS01,"Other, Scientific / Observation Support, Meteorological Station / Equipment",O,S,1,,Other,Scientific / Observation Support,Meteorological Station / Equipment,,
+OS02,"Other, Scientific / Observation Support, Radar / Satellite Infrastructure",O,S,2,,Other,Scientific / Observation Support,Radar / Satellite Infrastructure,,
+OS03,"Other, Scientific / Observation Support, Telescope / Observation Infrastructure / Astronomy",O,S,3,,Other,Scientific / Observation Support,Telescope / Observation Infrastructure / Astronomy,,
+OT,"Other, Transport Support",O,T,,,Other,Transport Support,,,
+OT01,"Other, Transport Support, Cattle Grid / Ford",O,T,1,,Other,Transport Support,Cattle Grid / Ford,,
+OT02,"Other, Transport Support, Elevator / Escalator / Steps",O,T,2,,Other,Transport Support,Elevator / Escalator / Steps,,
+OT03,"Other, Transport Support, Footbridge / Walkway",O,T,3,,Other,Transport Support,Footbridge / Walkway,,
+OT04,"Other, Transport Support, Pole / Post / Bollard (Restricting Vehicular Access)",O,T,4,,Other,Transport Support,Pole / Post / Bollard (Restricting Vehicular Access),,
+OT05,"Other, Transport Support, Subway / Underpass",O,T,5,,Other,Transport Support,Subway / Underpass,,
+OT06,"Other, Transport Support, Customs Inspection Facility",O,T,6,,Other,Transport Support,Customs Inspection Facility,,
+OT07,"Other, Transport Support, Lay-By",O,T,7,,Other,Transport Support,Lay-By,,
+OT08,"Other, Transport Support, Level Crossing",O,T,8,,Other,Transport Support,Level Crossing,,
+OT09,"Other, Transport Support, Mail Pick Up",O,T,9,,Other,Transport Support,Mail Pick Up,,
+OT10,"Other, Transport Support, Railway Pedestrian Crossing",O,T,10,,Other,Transport Support,Railway Pedestrian Crossing,,
+OT11,"Other, Transport Support, Railway Buffer",O,T,11,,Other,Transport Support,Railway Buffer,,
+OT12,"Other, Transport Support, Rail Drag",O,T,12,,Other,Transport Support,Rail Drag,,
+OT13,"Other, Transport Support, Rail Infrastructure Services",O,T,13,,Other,Transport Support,Rail Infrastructure Services,,
+OT14,"Other, Transport Support, Rail Kilometre Distance Marker",O,T,14,,Other,Transport Support,Rail Kilometre Distance Marker,,
+OT15,"Other, Transport Support, Railway Lighting",O,T,15,,Other,Transport Support,Railway Lighting,,
+OT16,"Other, Transport Support, Rail Mile Distance Marker",O,T,16,,Other,Transport Support,Rail Mile Distance Marker,,
+OT17,"Other, Transport Support, Railway Turntable",O,T,17,,Other,Transport Support,Railway Turntable,,
+OT18,"Other, Transport Support, Rail Weighbridge",O,T,18,,Other,Transport Support,Rail Weighbridge,,
+OT19,"Other, Transport Support, Rail Signalling",O,T,19,,Other,Transport Support,Rail Signalling,,
+OT20,"Other, Transport Support, Railway Traverse",O,T,20,,Other,Transport Support,Railway Traverse,,
+OT21,"Other, Transport Support, Goods Tramway",O,T,21,,Other,Transport Support,Goods Tramway,,
+OT22,"Other, Transport Support, Road Drag",O,T,22,,Other,Transport Support,Road Drag,,
+OT23,"Other, Transport Support, Vehicle Dip",O,T,23,,Other,Transport Support,Vehicle Dip,,
+OT24,"Other, Transport Support, Road Turntable",O,T,24,,Other,Transport Support,Road Turntable,,
+OT25,"Other, Transport Support, Road Mile Distance Marker",O,T,25,,Other,Transport Support,Road Mile Distance Marker,,
+OT26,"Other, Transport Support, Road Kilometre Distance Marker",O,T,26,,Other,Transport Support,Road Kilometre Distance Marker,,
+OT27,"Other, Transport Support, Road Infrastructure Services",O,T,27,,Other,Transport Support,Road Infrastructure Services,,
+OU,"Other, Unsupported Site",O,U,,,Other,Unsupported Site,,,
+OU01,"Other, Unsupported Site, Cycle Parking Facility",O,U,1,,Other,Unsupported Site,Cycle Parking Facility,,
+OU04,"Other, Unsupported Site, Picnic / Barbeque Site",O,U,4,,Other,Unsupported Site,Picnic / Barbeque Site,,
+OU05,"Other, Unsupported Site, Travelling Persons Site",O,U,5,,Other,Unsupported Site,Travelling Persons Site,,
+OU08,"Other, Unsupported Site, Shelter (Not Including Bus Shelter)",O,U,8,,Other,Unsupported Site,Shelter (Not Including Bus Shelter),,
+P,Parent Shell,P,,,,Parent Shell,,,,
+PP,"Parent Shell, Property Shell",P,P,,,Parent Shell,Property Shell,,,
+PS,"Parent Shell, Street Record",P,S,,,Parent Shell,Street Record,,,
+R,Residential,R,,,,Residential,,,,
+RB,"Residential, Ancillary Building",R,B,,,Residential,Ancillary Building,,,
+RC,"Residential, Car Park Space",R,C,,,Residential,Car Park Space,,,
+RC01,"Residential, Car Park Space, Allocated Parking",R,C,1,,Residential,Car Park Space,Allocated Parking,,Sui Generis
+RD,"Residential, Dwelling",R,D,,,Residential,Dwelling,,,
+RD01,"Residential, Dwelling, Caravan",R,D,1,,Residential,Dwelling,Caravan,,C3
+RD02,"Residential, Dwelling, Detached",R,D,2,,Residential,Dwelling,Detached,,C3
+RD03,"Residential, Dwelling, Semi-Detached",R,D,3,,Residential,Dwelling,Semi-Detached,,C3
+RD04,"Residential, Dwelling, Terraced",R,D,4,,Residential,Dwelling,Terraced,,C3
+RD06,"Residential, Dwelling, Self Contained Flat (Includes Maisonette / Apartment)",R,D,6,,Residential,Dwelling,Self Contained Flat (Includes Maisonette / Apartment),,C3
+RD07,"Residential, Dwelling, House Boat",R,D,7,,Residential,Dwelling,House Boat,,Sui Generis
+RD08,"Residential, Dwelling, Sheltered Accommodation",R,D,8,,Residential,Dwelling,Sheltered Accommodation,,C3 / C4
+RD10,"Residential, Dwelling, Privately Owned Holiday Caravan / Chalet",R,D,10,,Residential,Dwelling,Privately Owned Holiday Caravan / Chalet,,C3
+RG,"Residential, Garage",R,G,,,Residential,Garage,,,
+RG02,"Residential, Garage, Lock-Up Garage / Garage Court",R,G,2,,Residential,Garage,Lock-Up Garage / Garage Court,,Sui Generis
+RH,"Residential, House In Multiple Occupation",R,H,,,Residential,House In Multiple Occupation,,,
+RH01,"Residential, House In Multiple Occupation, HMO Parent",R,H,1,,Residential,House In Multiple Occupation,HMO Parent,,Sui Generis / C4
+RH02,"Residential, House In Multiple Occupation, HMO Bedsit / Other Non Self Contained Accommodation",R,H,2,,Residential,House In Multiple Occupation,HMO Bedsit / Other Non Self Contained Accommodation,,Sui Generis / C4
+RH03,"Residential, House In Multiple Occupation, HMO Not Further Divided",R,H,3,,Residential,House In Multiple Occupation,HMO Not Further Divided,,Sui Generis / C4
+RI,"Residential, Residential Institution",R,I,,,Residential,Residential Institution,,,
+RI01,"Residential, Residential Institution, Care / Nursing Home",R,I,1,,Residential,Residential Institution,Care / Nursing Home,,C2 / C2A / C3 / C4
+RI02,"Residential, Residential Institution, Communal Residence",R,I,2,,Residential,Residential Institution,Communal Residence,,C2 / C3 / C4
+RI02NC,"Residential, Residential Institution, Communal Residence, Non-Commercial Lodgings",R,I,2,NC,Residential,Residential Institution,Communal Residence,Non-Commercial Lodgings,
+RI02RC,"Residential, Residential Institution, Communal Residence, Religious Community",R,I,2,RC,Residential,Residential Institution,Communal Residence,Religious Community,
+RI03,"Residential, Residential Institution, Residential Education",R,I,3,,Residential,Residential Institution,Residential Education,,C2
+U,Unclassified,U,,,,Unclassified,,,,
+UC,"Unclassified, Awaiting Classification",U,C,,,Unclassified,Awaiting Classification,,,
+UP,"Unclassified, Pending Internal Investigation",U,P,,,Unclassified,Pending Internal Investigation,,,
+X,Dual Use,X,,,,Dual Use,,,,
+Z,Object of Interest,Z,,,,Object of Interest,,,,
+ZA,"Object of Interest, Archaeological Dig Site",Z,A,,,Object of Interest,Archaeological Dig Site,,,Sui Generis
+ZM,"Object of Interest, Monument",Z,M,,,Object of Interest,Monument,,,
+ZM01,"Object of Interest, Monument, Obelisk / Milestone / Standing Stone",Z,M,1,,Object of Interest,Monument,Obelisk / Milestone / Standing Stone,,Sui Generis
+ZM01OB,"Object of Interest, Monument, Obelisk / Milestone / Standing Stone, Obelisk",Z,M,1,OB,Object of Interest,Monument,Obelisk / Milestone / Standing Stone,Obelisk,
+ZM01ST,"Object of Interest, Monument, Obelisk / Milestone / Standing Stone, Standing Stone",Z,M,1,ST,Object of Interest,Monument,Obelisk / Milestone / Standing Stone,Standing Stone,
+ZM02,"Object of Interest, Monument, Memorial / Market Cross",Z,M,2,,Object of Interest,Monument,Memorial / Market Cross,,Sui Generis
+ZM03,"Object of Interest, Monument, Statue",Z,M,3,,Object of Interest,Monument,Statue,,Sui Generis
+ZM04,"Object of Interest, Monument, Castle / Historic Ruin",Z,M,4,,Object of Interest,Monument,Castle / Historic Ruin,,Sui Generis
+ZM05,"Object of Interest, Monument, Other Structure",Z,M,5,,Object of Interest,Monument,Other Structure,,Sui Generis
+ZM05BS,"Object of Interest, Monument, Other Structure, Boundary Stone",Z,M,5,BS,Object of Interest,Monument,Other Structure,Boundary Stone,
+ZM05PN,"Object of Interest, Monument, Other Structure, Permanent Art Display / Sculpture",Z,M,5,PN,Object of Interest,Monument,Other Structure,Permanent Art Display / Sculpture,
+ZM05CE,"Object of Interest, Monument, Other Structure, Cascade / Fountain",Z,M,5,CE,Object of Interest,Monument,Other Structure,Cascade / Fountain,
+ZM05WI,"Object of Interest, Monument, Other Structure, Windmill (Inactive)",Z,M,5,WI,Object of Interest,Monument,Other Structure,Windmill (Inactive),
+ZS,"Object of Interest, Stately Home",Z,S,,,Object of Interest,Stately Home,,,C3 / Sui Generis
+ZU,"Object of Interest, Underground Feature",Z,U,,,Object of Interest,Underground Feature,,,
+ZU01,"Object of Interest, Underground Feature, Cave",Z,U,1,,Object of Interest,Underground Feature,Cave,,
+ZU04,"Object of Interest, Underground Feature, Pothole / Natural Hole",Z,U,4,,Object of Interest,Underground Feature,Pothole / Natural Hole,,
+ZV,"Object of Interest, Other Underground Feature",Z,V,,,Object of Interest,Other Underground Feature,,,
+ZV01,"Object of Interest, Other Underground Feature, Cellar",Z,V,1,,Object of Interest,Other Underground Feature,Cellar,,
+ZV02,"Object of Interest, Other Underground Feature, Disused Mine",Z,V,2,,Object of Interest,Other Underground Feature,Disused Mine,,Sui Generis
+ZV02MI,"Object of Interest, Other Underground Feature, Disused Mine, Mineral Mining / Inactive",Z,V,2,MI,Object of Interest,Other Underground Feature,Disused Mine,Mineral Mining / Inactive,
+ZV02OI,"Object of Interest, Other Underground Feature, Disused Mine, Oil And / Gas Extraction/ Inactive",Z,V,2,OI,Object of Interest,Other Underground Feature,Disused Mine,Oil And / Gas Extraction/ Inactive,
+ZV02QI,"Object of Interest, Other Underground Feature, Disused Mine, Mineral Quarrying And / Open Extraction / Inactive",Z,V,2,QI,Object of Interest,Other Underground Feature,Disused Mine,Mineral Quarrying And / Open Extraction / Inactive,
+ZV03,"Object of Interest, Other Underground Feature, Well / Spring",Z,V,3,,Object of Interest,Other Underground Feature,Well / Spring,,Sui Generis
+ZV03SG,"Object of Interest, Other Underground Feature, Well / Spring, Spring",Z,V,3,SG,Object of Interest,Other Underground Feature,Well / Spring,Spring,
+ZV03WL,"Object of Interest, Other Underground Feature, Well / Spring, Well",Z,V,3,WL,Object of Interest,Other Underground Feature,Well / Spring,Well,
+ZW,"Object of Interest, Place Of Worship",Z,W,,,Object of Interest,Place Of Worship,,,D1
+ZW99AB,"Object of Interest, Place Of Worship, , Abbey",Z,W,99,AB,Object of Interest,Place Of Worship,,Abbey,
+ZW99CA,"Object of Interest, Place Of Worship, , Cathedral",Z,W,99,CA,Object of Interest,Place Of Worship,,Cathedral,
+ZW99CH,"Object of Interest, Place Of Worship, , Church",Z,W,99,CH,Object of Interest,Place Of Worship,,Church,
+ZW99CP,"Object of Interest, Place Of Worship, , Chapel",Z,W,99,CP,Object of Interest,Place Of Worship,,Chapel,
+ZW99GU,"Object of Interest, Place Of Worship, , Gurdwara",Z,W,99,GU,Object of Interest,Place Of Worship,,Gurdwara,
+ZW99KH,"Object of Interest, Place Of Worship, , Kingdom Hall",Z,W,99,KH,Object of Interest,Place Of Worship,,Kingdom Hall,
+ZW99MQ,"Object of Interest, Place Of Worship, , Mosque",Z,W,99,MQ,Object of Interest,Place Of Worship,,Mosque,
+ZW99MT,"Object of Interest, Place Of Worship, , Minster",Z,W,99,MT,Object of Interest,Place Of Worship,,Minster,
+ZW99SU,"Object of Interest, Place Of Worship, , Stupa",Z,W,99,SU,Object of Interest,Place Of Worship,,Stupa,
+ZW99SY,"Object of Interest, Place Of Worship, , Synagogue",Z,W,99,SY,Object of Interest,Place Of Worship,,Synagogue,
+ZW99TP,"Object of Interest, Place Of Worship, , Temple",Z,W,99,TP,Object of Interest,Place Of Worship,,Temple,
+ZW99LG,"Object of Interest, Place Of Worship, , Lych Gate",Z,W,99,LG,Object of Interest,Place Of Worship,,Lych Gate,

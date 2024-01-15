@@ -81,11 +81,9 @@ resource "aws_alb" "qlik_sense" {
   security_groups    = [aws_security_group.qlik_sense_alb.id]
   subnets            = data.aws_subnet.subnets.*.id
   idle_timeout       = 4000
-
   lifecycle {
     prevent_destroy = true
   }
-
   access_logs {
     bucket  = aws_s3_bucket.qlik_alb_logs[0].id
     enabled = true
