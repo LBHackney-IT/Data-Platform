@@ -9,7 +9,7 @@ BEGIN
     );
     -- Load data from S3 into the staging table
     EXECUTE format(
-        'COPY %I.%I_staging FROM %L FORMAT AS PARQUET {iam_role} %L;',
+        'COPY %I.%I_staging FROM %L FORMAT AS PARQUET iam_role %L;',
         {schema_name},
         {table_name},
         {s3_path},
