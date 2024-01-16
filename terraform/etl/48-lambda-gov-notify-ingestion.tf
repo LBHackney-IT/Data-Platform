@@ -28,6 +28,29 @@ resource "aws_iam_policy" "housing_landing_zone_access" {
   name   = "housing_landing_zone_access"
   policy = data.aws_iam_policy_document.housing_landing_zone_access.json
 }
+data "aws_iam_policy_document" "gov_notify_lambda_logs" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "gov_notify_lambda_logs" {
+  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  name   = "gov_notify_lambda_logs"
+  policy = data.aws_iam_policy_document.gov_notify_lambda_logs.json
+}
+
+resource "aws_iam_role_policy_attachment" "gov_notify_lambda_logs" {
+  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  role       = aws_iam_role.housing_gov_notify_ingestion[0].name
+  policy_arn = aws_iam_policy.gov_notify_lambda_logs[0].arn
+}
 
 data "aws_iam_policy_document" "lambda_assume_role" {
   statement {
