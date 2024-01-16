@@ -97,3 +97,25 @@ resource "aws_iam_role_policy_attachment" "housing_gov_notify_lambda_invoke" {
   role       = aws_iam_role.housing_gov_notify_ingestion[0].name
   policy_arn = aws_iam_policy.housing_gov_notify_lambda_execution[0].arn
 }
+
+data "aws_iam_policy_document" "gov_notify_lambda_secret_access" {
+  statement {
+    actions = [
+      "secretsmanager:GetSecretValue",
+    ]
+    effect    = "Allow"
+    resources = ["arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:housing/gov-notify*"]
+  }
+}
+
+resource "aws_iam_policy" "gov_notify_lambda_secret_access" {
+  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  name   = "gov_notify_lambda_secret_access"
+  policy = data.aws_iam_policy_document.gov_notify_lambda_secret_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "gov_notify_lambda_secret_access" {
+  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  role       = aws_iam_role.housing_gov_notify_ingestion[0].name
+  policy_arn = aws_iam_policy.gov_notify_lambda_secret_access[0].arn
+}
