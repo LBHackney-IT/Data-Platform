@@ -18,8 +18,8 @@ resource "null_resource" "run_install_requirements" {
 }
 
 resource "aws_lambda_layer_version" "lambda_layer" {
-  filename            = fileexists(var.layer_zip_path)
-  source_code_hash    = fileexists((filebase64sha256(var.layer_zip_path)))
+  filename            = var.layer_zip_file
+  source_code_hash    = fileexists("${path.module}/../../../lambdas/${local.lambda_name_underscore}/${var.layer_zip_file}") ? fileexists("${path.module}/../../../lambdas/${local.lambda_name_underscore}/${var.layer_zip_file}") : ""
   layer_name          = var.layer_name
   compatible_runtimes = var.compatible_runtimes
 }

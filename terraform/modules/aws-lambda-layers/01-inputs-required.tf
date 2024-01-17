@@ -3,8 +3,8 @@ variable "lambda_name" {
   description = "Name of the Lambda Function"
 }
 
-variable "layer_zip_path" {
-  description = "Path to the lambda layer zip file"
+variable "layer_zip_file" {
+  description = "The name of the zip file filename.zip"
   type        = string
 }
 
