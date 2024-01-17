@@ -720,3 +720,27 @@ data "aws_iam_policy_document" "glue_access_to_watermarks_table" {
   }
 
 }
+
+//Redshfift
+
+data "aws_iam_policy_document" "redshift_department_read_access" {
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "redshift:DescribeClusters",
+      "redshift:DescribeClusterSnapshots",
+      "redshift:DescribeEvents",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqlworkbench:GetUserInfo",
+      "sqlworkbench:GetAccountInfo"
+    ]
+    resources = ["*"]
+  }
+}
