@@ -6,7 +6,7 @@ module "lambda_layer_1" {
   identifier_prefix   = local.short_identifier_prefix
   layer_zip_file      = "layer1.zip"
   layer_name          = "panas-2-1-4-layer"
-  compatible_runtimes = ["python3.11"]
+  compatible_runtimes = ["python3.9"]
 }
 
 module "lambda_layer_2" {
@@ -17,7 +17,7 @@ module "lambda_layer_2" {
   identifier_prefix   = local.short_identifier_prefix
   layer_zip_file      = "layer2.zip"
   layer_name          = "requests-2-31-0-and-httplib-0-22-0-layer"
-  compatible_runtimes = ["python3.11"]
+  compatible_runtimes = ["python3.9"]
 }
 
 module "lambda_layer_3" {
@@ -28,7 +28,7 @@ module "lambda_layer_3" {
   identifier_prefix   = local.short_identifier_prefix
   layer_zip_file      = "layer3.zip"
   layer_name          = "notifications-python-client-9-0-0-layer"
-  compatible_runtimes = ["python3.11"]
+  compatible_runtimes = ["python3.9"]
 }
 
 module "lambda_layer_4" {
@@ -39,7 +39,7 @@ module "lambda_layer_4" {
   identifier_prefix   = local.short_identifier_prefix
   layer_zip_file      = "layer4.zip"
   layer_name          = "numpy-1-26-3-layer"
-  compatible_runtimes = ["python3.11"]
+  compatible_runtimes = ["python3.9"]
 }
 
 module "lambda_layer_5" {
@@ -50,5 +50,5 @@ module "lambda_layer_5" {
   identifier_prefix   = local.short_identifier_prefix
   layer_zip_file      = "layer5.zip"
   layer_name          = "google-apis-layer"
-  compatible_runtimes = ["python3.11"]
+  compatible_runtimes = ["python3.9"]
 }
