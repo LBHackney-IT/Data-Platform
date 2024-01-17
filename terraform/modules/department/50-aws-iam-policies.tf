@@ -731,6 +731,8 @@ data "aws_iam_policy_document" "redshift_department_read_access" {
       "redshift:DescribeClusters",
       "redshift:DescribeClusterSnapshots",
       "redshift:DescribeEvents",
+      "redshift-serverless:ListNamespaces",
+      "reshift-serverless:ListWorkgroups"
     ]
     resources = ["*"]
   }
@@ -738,8 +740,10 @@ data "aws_iam_policy_document" "redshift_department_read_access" {
   statement {
     effect = "Allow"
     actions = [
+      "sqlworkbench:GetAccountSettings",
+      "sqlworkbench:GetAccountInfo",
       "sqlworkbench:GetUserInfo",
-      "sqlworkbench:GetAccountInfo"
+      "sqlworkbench:GetUserWorkspaceSettings"
     ]
     resources = ["*"]
   }
