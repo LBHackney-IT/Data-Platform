@@ -1,11 +1,11 @@
 """Subs list for address cleaning"""
 
 full_address_regex_clean = [[",", ""],
-                      ["\(", " "],
-                      ["\)", " "],
-                      [" +", " "],
-                      [" +", " "],
-                      [" ?- ?$", ""]]
+                            ["\(", " "],
+                            ["\)", " "],
+                            [" +", " "],
+                            [" +", " "],
+                            [" ?- ?$", ""]]
 
 full_address_regex_streets = [[" st$", " street"],
                               [" rd ", " road "],

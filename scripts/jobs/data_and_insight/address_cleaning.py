@@ -1,5 +1,8 @@
 import argparse
 import pyspark.sql.functions as F
+
+from scripts.helpers.helpers import create_pushdown_predicate_for_max_date_partition_value, PARTITION_KEYS, \
+    add_import_time_columns
 from scripts.jobs.env_context import DEFAULT_MODE_AWS, LOCAL_MODE, ExecutionContextProvider
 import scripts.helpers.address_cleaning_inputs as inputs
 
@@ -9,15 +12,19 @@ def main():
 
     parser.add_argument("--execution_mode", default=DEFAULT_MODE_AWS, choices=[DEFAULT_MODE_AWS, LOCAL_MODE], type=str,
                         required=False, metavar="set --execution_mode=local to run locally")
-    parser.add_argument("--source_data_path", type=str, required=True,
-                        metavar=f"set --source_data_path=path of the dataset")
+    parser.add_argument("--source_catalog_database_active_person_records", type=str, required=True,
+                        metavar=f"set --source_catalog_database_active_person_records=catalog database")
+    parser.add_argument("--source_catalog_table_active_person_records", type=str, required=True,
+                        metavar=f"set --source_catalog_table_active_person_records=catalog table")
     parser.add_argument(f"--output_path", type=str, required=False,
                         metavar=f"set --output=path to write the result")
 
-    source_data_path_arg = "source_data_path"
+    source_data_catalog_arg = "source_catalog_database_active_person_records"
+    source_data_table_arg = "source_catalog_table_active_person_records"
     output_path_arg = "output_path"
 
-    glue_args = [source_data_path_arg,
+    glue_args = [source_data_catalog_arg,
+                 source_data_table_arg,
                  output_path_arg]
 
     local_args, _ = parser.parse_known_args()
@@ -28,12 +35,18 @@ def main():
         spark = execution_context.spark_session
 
         # set up paths
-        source_data_path = execution_context.get_input_args(source_data_path_arg)
+        source_data_catalog = execution_context.get_input_args(source_data_catalog_arg)
+        source_data_table = execution_context.get_input_args(source_data_table_arg)
         output_path = execution_context.get_input_args(output_path_arg)
 
         # read in all data needed
         logger.info(f'Read in data needed... source_df')
-        source_df = spark.read.parquet(source_data_path)
+
+        source_df = execution_context.get_dataframe(name_space=source_data_catalog,
+                                                    table_name=source_data_table,
+                                                    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
+                                                        source_data_catalog,
+                                                        source_data_table, 'import_date'))
 
         source_df = source_df["source", "source_id", "uprn", "full_address"]
         source_df = source_df.withColumn("clean_full_address", source_df["full_address"])
@@ -106,7 +119,12 @@ def main():
 
         # output data
         logger.info('output data')
-        source_df.write.parquet(f'{output_path}cleaned_address_data/', mode='overwrite')
+        source_df = add_import_time_columns(source_df)
+
+        execution_context.save_dataframe(source_df,
+                                         f'{output_path}',
+                                         *PARTITION_KEYS,
+                                         save_mode='overwrite')
 
 
 if __name__ == '__main__':
