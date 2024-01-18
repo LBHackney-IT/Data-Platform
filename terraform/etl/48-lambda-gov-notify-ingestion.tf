@@ -19,6 +19,7 @@ data "aws_iam_policy_document" "housing_landing_zone_access" {
     resources = [
       module.landing_zone_data_source.bucket_arn,
       "${module.landing_zone_data_source.bucket_arn}/housing/*",
+      module.landing_zone_data_source.kms_key_arn
     ]
   }
 }
