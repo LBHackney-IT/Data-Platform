@@ -5,7 +5,6 @@ locals {
 }
 
 resource "null_resource" "run_install_requirements" {
-  count = var.install_requirements ? 1 : 0
   triggers = {
     dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
   }

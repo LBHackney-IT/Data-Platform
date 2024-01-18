@@ -21,9 +21,3 @@ variable "environment_variables" {
   description = "Environment Variables to pass to the Lambda Function"
   default     = null
 }
-
-variable "install_requirements" {
-  type        = bool
-  description = "Whether to create and install requirements.txt for the Lambda Function"
-  default     = false
-}
