@@ -31,7 +31,7 @@ module "ingest_mtfh_rentsense_tables" {
     "--number_of_workers"   = local.number_of_workers_for_mtfh_ingestion
     "--worker_type"         = local.worker_type
     "--enable-job-insights" = "true"
-    "--enable-auto-scaling" = "true"
+    "--enable-auto-scaling" = "false"
   }
 
   crawler_details = {
