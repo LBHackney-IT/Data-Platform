@@ -4,7 +4,7 @@ import pyspark.sql.functions as F
 from scripts.helpers.helpers import create_pushdown_predicate_for_max_date_partition_value, PARTITION_KEYS, \
     add_import_time_columns
 from scripts.jobs.env_context import DEFAULT_MODE_AWS, LOCAL_MODE, ExecutionContextProvider
-import scripts.helpers.address_cleaning_inputs as inputs
+import scripts.jobs.data_and_insight.address_cleaning_inputs as inputs
 
 
 def main():
