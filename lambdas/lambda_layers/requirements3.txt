@@ -1,0 +1,1 @@
+notifications-python-client==9.0.0
