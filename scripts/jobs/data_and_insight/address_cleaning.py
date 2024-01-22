@@ -4,7 +4,8 @@ import pyspark.sql.functions as F
 from scripts.helpers.helpers import create_pushdown_predicate_for_max_date_partition_value, PARTITION_KEYS, \
     add_import_time_columns
 from scripts.jobs.env_context import DEFAULT_MODE_AWS, LOCAL_MODE, ExecutionContextProvider
-import scripts.jobs.data_and_insight.address_cleaning_inputs as inputs
+from scripts.helpers.address_cleaning_inputs import full_address_regex_clean, full_address_regex_streets, \
+    full_address_regex_subs, clean_trim_address_regex_subs
 
 
 def main():
@@ -54,7 +55,7 @@ def main():
         logger.info('address line formatting - remove commas and extra spaces')
         source_df = source_df.withColumn("clean_full_address", F.lower(F.col("clean_full_address")))
 
-        for reg in inputs.full_address_regex_clean:
+        for reg in full_address_regex_clean:
             source_df = source_df.withColumn("clean_full_address",
                                              F.regexp_replace(F.col("clean_full_address"), reg[0], reg[1]))
 
@@ -90,12 +91,12 @@ def main():
 
         logger.info(
             'for \'street\': we only replace st if it is at the end of the string, if not there is a risk of confusion with saint')
-        for reg in inputs.full_address_regex_streets:
+        for reg in full_address_regex_streets:
             source_df = source_df.withColumn("clean_full_address",
                                              F.regexp_replace(F.col("clean_full_address"), reg[0], reg[1]))
 
         logger.info('for \'subbuilding\': replace abbreviations')
-        for reg in inputs.full_address_regex_subs:
+        for reg in full_address_regex_subs:
             source_df = source_df.withColumn("clean_full_address",
                                              F.regexp_replace(F.col("clean_full_address"), reg[0], reg[1]))
 
@@ -108,7 +109,7 @@ def main():
         logger.info('Add new column for trimmed version of clean_full_address')
         source_df = source_df.withColumn("clean_trim_address", source_df["clean_full_address"])
 
-        for reg in inputs.clean_trim_address_regex_subs:
+        for reg in clean_trim_address_regex_subs:
             source_df = source_df.withColumn("clean_trim_address",
                                              F.regexp_replace(F.col("clean_trim_address"), reg[0], reg[1]))
 
