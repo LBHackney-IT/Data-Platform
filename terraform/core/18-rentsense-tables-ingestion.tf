@@ -1,5 +1,6 @@
 locals {
   number_of_workers_for_mtfh_rentsense_ingestion = 16
+  worker_type                                    = "G.1X"
 }
 
 module "ingest_mtfh_rentsense_tables" {
@@ -16,7 +17,7 @@ module "ingest_mtfh_rentsense_tables" {
   helper_module_key              = aws_s3_object.helpers.key
   glue_version                   = "4.0"
   glue_job_timeout               = "300"
-  glue_job_worker_type           = "G.1X"
+  glue_job_worker_type           = local.worker_type
   pydeequ_zip_key                = aws_s3_object.pydeequ.key
   number_of_workers_for_glue_job = local.number_of_workers_for_mtfh_rentsense_ingestion
   glue_scripts_bucket_id         = module.glue_scripts.bucket_id
@@ -28,8 +29,9 @@ module "ingest_mtfh_rentsense_tables" {
     "--role_arn"            = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
     "--s3_target"           = "s3://${module.landing_zone.bucket_id}/mtfh/"
     "--number_of_workers"   = local.number_of_workers_for_mtfh_ingestion
+    "--worker_type"         = local.worker_type
     "--enable-job-insights" = "true"
-    "--enable-auto-scaling" = "true"
+    "--enable-auto-scaling" = "false"
   }
 
   crawler_details = {

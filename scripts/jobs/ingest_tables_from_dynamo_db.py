@@ -20,18 +20,22 @@ s3_target = get_glue_env_var("s3_target")
 table_names = get_glue_env_var("table_names").split(",")
 role_arn = get_glue_env_var("role_arn")
 number_of_workers = int(get_glue_env_var("number_of_workers"))
+worker_type = get_glue_env_var("worker_type")
 
 # this is the number of partitions to use whilst reading, default 1, max 1000000
-# Recommened calculation for splits, if using standard workers is: splits =  (8 * numWorkers - 12)
-# Recommened calculation for splits, if using standard G.1X is: splits =  8 * (numWorkers - 1)
-number_of_splits = 8 * number_of_workers - 12
-
+# Recommened calculation for splits, if using G.1X is: splits =  4 * (numWorkers - 1)
+# Recommened calculation for splits, if using G.2X workers is: splits = 8 * (numWorkers - 1)
+# ref: https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect-dynamodb-home.html
+if worker_type == "G.2X":
+    number_of_splits = 8 * (number_of_workers - 1)
+else:
+    number_of_splits = 4 * (number_of_workers - 1)
 
 for table_name in table_names:
     logger.info(f"Starting import for table {table_name}")
     read_dynamo_db_options = {
         "dynamodb.input.tableName": table_name,
-        "dynamodb.splits": f"{number_of_splits}" , 
+        "dynamodb.splits": f"{number_of_splits}", 
         "dynamodb.sts.roleArn": role_arn,
     }
 
