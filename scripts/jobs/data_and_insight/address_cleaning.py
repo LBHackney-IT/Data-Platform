@@ -50,6 +50,9 @@ def main():
                                                         source_data_catalog,
                                                         source_data_table, 'import_date'))
 
+        source_df = source_df["source", "source_id", "uprn", "title", "first_name", "middle_name", "last_name", "name",
+        "date_of_birth", "post_code", "address_line_1", "address_line_2", "address_line_3", "address_line_4",
+        "full_address", "source_filter", "is_duplicated"]
         source_df = source_df.withColumn("clean_full_address", source_df["full_address"])
 
         logger.info('address line formatting - remove commas and extra spaces')
