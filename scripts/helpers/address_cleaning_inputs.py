@@ -1,6 +1,8 @@
-"""Subs list for address cleaning"""
+"""Regex substitution lists for address cleaning"""
 
-full_address_regex_clean = [[",\s*", ""],
+full_address_regex_locality = [["(london)?\s*,?\s*(hackney)?\s*,?\s*(london)?$", ""]]
+
+full_address_regex_clean = [[",\s*", " "],
                             ["\(", " "],
                             ["\)", " "],
                             [" +", " "],

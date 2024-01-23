@@ -4,7 +4,8 @@ import pyspark.sql.functions as F
 from scripts.helpers.helpers import create_pushdown_predicate_for_max_date_partition_value, PARTITION_KEYS, \
     add_import_time_columns
 from scripts.jobs.env_context import DEFAULT_MODE_AWS, LOCAL_MODE, ExecutionContextProvider
-from scripts.helpers.address_cleaning_inputs import full_address_regex_clean, full_address_regex_streets, \
+from scripts.helpers.address_cleaning_inputs import full_address_regex_locality, full_address_regex_clean, \
+    full_address_regex_streets, \
     full_address_regex_subs, clean_trim_address_regex_subs
 
 
@@ -49,7 +50,9 @@ def main():
                                                         source_data_catalog,
                                                         source_data_table, 'import_date'))
 
-        source_df = source_df["source", "source_id", "uprn", "full_address"]
+        source_df = source_df["source", "source_id", "uprn", "title", "first_name", "middle_name", "last_name", "name",
+        "date_of_birth", "post_code", "address_line_1", "address_line_2", "address_line_3", "address_line_4",
+        "full_address", "source_filter", "is_duplicated"]
         source_df = source_df.withColumn("clean_full_address", source_df["full_address"])
 
         logger.info('address line formatting - remove commas and extra spaces')
@@ -61,33 +64,11 @@ def main():
 
         source_df = source_df.withColumn("clean_full_address", F.trim(F.col("clean_full_address")))
 
-        logger.info('address line formatting - remove LONDON at the end (dont do this for out of London matching)')
-        source_df = source_df.withColumn("clean_full_address", F.trim(F.col("clean_full_address")))
-        source_df = source_df.withColumn("address_length", F.length(F.col("clean_full_address")))
-        source_df = source_df.withColumn("clean_full_address",
-                                         F.when(F.col("clean_full_address").endswith(" london"),
-                                                F.expr("substring(clean_full_address, 1, address_length -7)"))
-                                         .otherwise(F.col("clean_full_address")))
-
         logger.info(
-            'address line formatting - remove HACKNEY at the end (dont necessarily this for out of borough matching)')
-        source_df = source_df.withColumn("clean_full_address", F.trim(F.col("clean_full_address")))
-        source_df = source_df.withColumn("address_length", F.length(F.col("clean_full_address")))
-        source_df = source_df.withColumn("clean_full_address",
-                                         F.when(F.col("clean_full_address").endswith(" hackney"),
-                                                F.expr("substring(clean_full_address, 1, address_length -8)"))
-                                         .otherwise(F.col("clean_full_address")))
-
-        # rerun for london to catch when address has '... london hackney'
-        logger.info('address line formatting - rerun remove LONDON at the end')
-        source_df = source_df.withColumn("clean_full_address", F.trim(F.col("clean_full_address")))
-        source_df = source_df.withColumn("address_length", F.length(F.col("clean_full_address")))
-        source_df = source_df.withColumn("clean_full_address",
-                                         F.when(F.col("clean_full_address").endswith(" london"),
-                                                F.expr("substring(clean_full_address, 1, address_length -7)"))
-                                         .otherwise(F.col("clean_full_address")))
-
-        source_df = source_df.drop("address_length")
+            'address line formatting - remove LONDON and HACKNEY at the end (dont do this for out of London matching)')
+        for reg in full_address_regex_locality:
+            source_df = source_df.withColumn("clean_full_address",
+                                             F.regexp_replace(F.col("clean_full_address"), reg[0], reg[1]))
 
         logger.info(
             'for \'street\': we only replace st if it is at the end of the string, if not there is a risk of confusion with saint')
