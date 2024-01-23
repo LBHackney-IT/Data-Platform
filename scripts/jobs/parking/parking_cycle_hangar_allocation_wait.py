@@ -76,25 +76,26 @@ that are on the waiting list. The code has been amended to use
 Tom's hangar list
 
 19/10/2023 - Create Query
+test
 *******************************************************************************************************************/
 /************************************************************
 Create a comparison between Toms Hangar list and EStreet
 ************************************************************/
 With TomHangar as (
     SELECT 
-        asset_no, asset_type, street_or_estate, zone, status, key_number, fob, location_description,
-        road, postcode, date_installed, easting, northing, road_or_pavement,
+        hangar_corral_number as asset_no, asset_type, street_or_estate, zone, status, key_number, fob, location_description,
+        road_name, postcode, date_installed, easting, northing, road_or_pavement,
         case
-            When asset_no like '%Bikehangar_1577%'    Then '1577'           
-            When asset_no like '%Bikehangar_H1439%'   Then 'H1439'
-            When asset_no like '%Bikehangar_H1440%'   Then 'Hangar_H1440'
-            When asset_no like '%Bikehangar_1435%'    Then 'Bikehangar_H1435'
-            ELSE replace(asset_no, ' ','_')
+            When hangar_corral_number like '%Bikehangar_1577%'    Then '1577'           
+            When hangar_corral_number like '%Bikehangar_H1439%'   Then 'H1439'
+            When hangar_corral_number like '%Bikehangar_H1440%'   Then 'Hangar_H1440'
+            When hangar_corral_number like '%Bikehangar_1435%'    Then 'Bikehangar_H1435'
+            ELSE replace(hangar_corral_number, ' ','_')
         END as HangarID
     from parking_parking_ops_cycle_hangar_list
     WHERE import_date = (Select MAX(import_date) 
                         from parking_parking_ops_cycle_hangar_list)
-    AND asset_type = 'Hangar' AND status = 'Active '),
+    AND asset_type = 'Hangar' AND lower(status) like '%active%'),
     
 Hanger as (
     SELECT hanger_id,
