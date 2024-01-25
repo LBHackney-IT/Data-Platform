@@ -48,6 +48,7 @@ Temp SQL that formats the cycle hangar managment records For pivot report
 05/07/2023 - rewrite to remove Calendar data
 24/01/2024 - change date_fixed to repair_date because field names have been changed 
                 in google
+25/01/2024 - add checks for blank sign off month/year!
 *********************************************************************************/
 WITH Defect_Basic as (
 SELECT
@@ -87,14 +88,14 @@ SELECT
     time_taken, hangar_or_corral,
     /* Add the collection of signoff month & year */
     CASE
-        When sign_off_year != '1899'        Then sign_off_month
+        When sign_off_year != '1899' AND AND sign_off_month != '' Then sign_off_month
         ELSE CASE
                 When repair_date like '%/%'Then substr(repair_date, 4, 2)
                 ELSE substr(cast(repair_date as string),6, 2)
             END 
     END as sign_off_month,   
     CASE
-        When sign_off_year != '1899'        Then sign_off_year
+        When sign_off_year != '1899' AND sign_off_year != '' Then sign_off_year
         ELSE CASE
                 When repair_date like '%/%'Then substr(repair_date, 7, 4)
                 ELSE substr(cast(repair_date as string),1, 4)
