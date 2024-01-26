@@ -49,6 +49,7 @@ Temp SQL that formats the cycle hangar managment records For pivot report
 24/01/2024 - change date_fixed to repair_date because field names have been changed 
                 in google
 25/01/2024 - add checks for blank sign off month/year!
+26/01/2024 - remove duplicated records
 *********************************************************************************/
 WITH Defect_Basic as (
 SELECT
@@ -230,19 +231,27 @@ Format_Report as (
     UNION ALL
     SELECT
         Month_repair_date, Category, '' as Total_Met_Fail, KPI
-    FROM Total_Percentage)
+    FROM Total_Percentage),
+    
+Data_Dedupe as (
+SELECT  *,
+        ROW_NUMBER() OVER ( PARTITION BY month_repair_date, category, total_met_fail
+        ORDER BY month_repair_date, category, total_met_fail DESC) row_num
+FROM Format_Report)
 /********************************************************************************
 Ouput data
 ********************************************************************************/
 SELECT
-    *,
+    Month_repair_date, Category,Total_Met_Fail, Total,
+    
     current_timestamp()                            as ImportDateTime,
     replace(cast(current_date() as string),'-','') as import_date,
     
     cast(Year(current_date) as string)    as import_year, 
     cast(month(current_date) as string)   as import_month, 
     cast(day(current_date) as string)     as import_day
-FROM Format_Report
+FROM Data_Dedupe
+WHERE row_num = 1
 """
 SQL_node1658765472050 = sparkSqlQuery(
     glueContext,
