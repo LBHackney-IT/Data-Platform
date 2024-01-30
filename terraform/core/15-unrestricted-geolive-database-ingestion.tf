@@ -11,7 +11,7 @@ module "boundaries_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "boundaries"
-  job_schedule                = "cron(50 1 ? * MON *)"
+  job_schedule                = "cron(10 10 ? * SUN *)"
 }
 
 module "boundaries_geolive_ingestion_job" {
@@ -61,7 +61,7 @@ module "recycling_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "recycling"
-  job_schedule                = "cron(10 2 ? * MON *)"
+  job_schedule                = "cron(10 11 ? * SUN *)"
 }
 
 module "recycling_boundaries_geolive_ingestion_job" {
@@ -111,7 +111,7 @@ module "health_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "health"
-  job_schedule                = "cron(20 2 ? * MON *)"
+  job_schedule                = "cron(10 12 ? * SUN *)"
 }
 
 module "health_boundaries_geolive_ingestion_job" {
@@ -161,7 +161,7 @@ module "education_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "education"
-  job_schedule                = "cron(30 2 ? * MON *)"
+  job_schedule                = "cron(10 13 ? * SUN *)"
 }
 
 module "education_boundaries_geolive_ingestion_job" {
@@ -211,7 +211,7 @@ module "housing_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-boundaries"
   schema_name                 = "housing"
-  job_schedule                = "cron(40 2 ? * MON *)"
+  job_schedule                = "cron(10 14 ? * SUN *)"
 }
 
 module "housing_boundaries_geolive_ingestion_job" {
