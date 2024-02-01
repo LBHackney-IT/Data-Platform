@@ -52,5 +52,11 @@ RUN mkdir -p /app/layer5/python && \
     cd /app/layer5 && \
     zip -r /app/layer5.zip .
 
-
+# Copy the sixth requirements.txt to the container
+COPY requirements6.txt /app/requirements6.txt
+# Install Python dependencies for the sixth layer
+RUN mkdir -p /app/layer6/python && \
+    pip install -t /app/layer6/python -r requirements6.txt && \
+    cd /app/layer6 && \
+    zip -r /app/layer6.zip .
 
