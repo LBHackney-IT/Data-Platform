@@ -18,6 +18,8 @@ copy: run
 	docker cp $(CONTAINER_NAME):/app/layer4.zip ./layer4.zip
 	docker cp $(CONTAINER_NAME):/app/layer5.zip ./layer5.zip
 	docker cp $(CONTAINER_NAME):/app/layer6.zip ./layer6.zip
+	docker cp $(CONTAINER_NAME):/app/layer7.zip ./layer7.zip
+
 stop: 
 	docker stop $(CONTAINER_NAME)
 
