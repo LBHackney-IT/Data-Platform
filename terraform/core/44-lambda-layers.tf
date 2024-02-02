@@ -63,3 +63,14 @@ module "lambda_layer_6" {
   layer_name          = "urllib3-1-26-18-layer"
   compatible_runtimes = ["python3.9"]
 }
+
+module "lambda_layer_7" {
+  count               = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  source              = "../modules/aws-lambda-layers/"
+  lambda_name         = "lambda_layers"
+  tags                = module.tags.values
+  identifier_prefix   = local.short_identifier_prefix
+  layer_zip_file      = "layer7.zip"
+  layer_name          = "s3fs-2023-12-2-layer"
+  compatible_runtimes = ["python3.9"]
+}

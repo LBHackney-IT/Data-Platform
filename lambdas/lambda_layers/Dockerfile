@@ -60,3 +60,10 @@ RUN mkdir -p /app/layer6/python && \
     cd /app/layer6 && \
     zip -r /app/layer6.zip .
 
+# Copy the seventh requirements.txt to the container
+COPY requirements7.txt /app/requirements7.txt
+# Install Python dependencies for the seventh layer
+RUN mkdir -p /app/layer7/python && \
+    pip install -t /app/layer7/python -r requirements7.txt && \
+    cd /app/layer7 && \
+    zip -r /app/layer7.zip .
