@@ -89,7 +89,7 @@ SELECT
     time_taken, hangar_or_corral,
     /* Add the collection of signoff month & year */
     CASE
-        When sign_off_year != '1899' AND AND sign_off_month != '' Then sign_off_month
+        When sign_off_year != '1899' AND sign_off_month != '' Then sign_off_month
         ELSE CASE
                 When repair_date like '%/%'Then substr(repair_date, 4, 2)
                 ELSE substr(cast(repair_date as string),6, 2)
