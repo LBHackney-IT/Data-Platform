@@ -29,7 +29,7 @@ module "ingest_mtfh_rentsense_tables" {
     "--role_arn"            = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
     "--s3_target"           = "s3://${module.landing_zone.bucket_id}/mtfh/"
     "--enable-job-insights" = "true"
-    "--enable-auto-scaling" = "false"
+    "--enable-auto-scaling" = "true"
   }
 
   crawler_details = {
