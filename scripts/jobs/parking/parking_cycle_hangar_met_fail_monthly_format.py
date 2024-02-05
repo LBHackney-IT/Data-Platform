@@ -1,11 +1,19 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS, create_pushdown_predicate_for_max_date_partition_value
+
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    create_pushdown_predicate_for_max_date_partition_value,
+    get_glue_env_var,
+    get_latest_partitions,
+)
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -265,7 +273,7 @@ SQL_node1658765472050 = sparkSqlQuery(
 
 # Script generated for node Amazon S3
 AmazonS3_node1658765590649 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Cycle_Hangar_MET_FAIL_Monthly_Format/",
+    path=f"s3://dataplatform-{environment}-refined-zone/parking/liberator/Parking_Cycle_Hangar_MET_FAIL_Monthly_Format/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=PARTITION_KEYS,
@@ -273,7 +281,7 @@ AmazonS3_node1658765590649 = glueContext.getSink(
     transformation_ctx="AmazonS3_node1658765590649",
 )
 AmazonS3_node1658765590649.setCatalogInfo(
-    catalogDatabase="dataplatform-stg-liberator-refined-zone",
+    catalogDatabase=f"dataplatform-{environment}-liberator-refined-zone",
     catalogTableName="Parking_Cycle_Hangar_MET_FAIL_Monthly_Format",
 )
 AmazonS3_node1658765590649.setFormat("glueparquet", compression="snappy")
