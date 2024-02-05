@@ -24,8 +24,6 @@ logger = glue_context.get_logger()
 s3_target = get_glue_env_var("s3_target")
 table_names = get_glue_env_var("table_names").split(",")
 role_arn = get_glue_env_var("role_arn")
-number_of_workers = int(get_glue_env_var("number_of_workers"))
-worker_type = get_glue_env_var("worker_type")
 
 for table_name in table_names:
     logger.info(f"Starting import for table {table_name}")
