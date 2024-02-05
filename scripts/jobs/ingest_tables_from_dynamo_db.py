@@ -30,8 +30,11 @@ worker_type = get_glue_env_var("worker_type")
 for table_name in table_names:
     logger.info(f"Starting import for table {table_name}")
     read_dynamo_db_options = {
-        "dynamodb.input.tableName": table_name,
-        "dynamodb.splits": f"{number_of_splits}",
+        "dynamodb.export": "ddb",
+        "dynamodb.tableArn": (
+            f"arn:aws:dynamodb:eu-west-2:{role_arn.split(':')[4]}:table/{table_name}"
+        ),
+        "dynamodb.simplifyDDBJson": "true",
         "dynamodb.sts.roleArn": role_arn,
     }
 
@@ -42,9 +45,10 @@ for table_name in table_names:
     )
 
     data_frame = source_dynamic_frame.toDF()
-    data_frame = data_frame.na.drop(
-        "all"
-    )  # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
+
+    # Drop all rows where all values are null NOTE: must be done before
+    # add_import_time_columns
+    data_frame = data_frame.na.drop("all")
     data_frame_with_import_columns = add_import_time_columns(data_frame)
 
     dynamic_frame_to_write = DynamicFrame.fromDF(
