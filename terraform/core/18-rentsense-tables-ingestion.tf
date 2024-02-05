@@ -28,8 +28,6 @@ module "ingest_mtfh_rentsense_tables" {
     "--table_names"         = "TenureInformation,Persons,ContactDetails,Assets,Accounts,EqualityInformation,HousingRegister,HousingRepairsOnline,PatchesAndAreas,Processes,Notes", # This is a comma delimited list of Dynamo DB table names to be imported
     "--role_arn"            = data.aws_ssm_parameter.role_arn_to_access_housing_tables.value
     "--s3_target"           = "s3://${module.landing_zone.bucket_id}/mtfh/"
-    "--number_of_workers"   = local.number_of_workers_for_mtfh_ingestion
-    "--worker_type"         = local.worker_type
     "--enable-job-insights" = "true"
     "--enable-auto-scaling" = "false"
   }
