@@ -44,8 +44,8 @@ for table_name in table_names:
 
     data_frame = source_dynamic_frame.toDF()
 
-    # Drop all rows where all values are null NOTE: must be done before
-    # add_import_time_columns
+    # Drop all rows where all values are null
+    # NOTE: must be done before add_import_time_columns
     data_frame = data_frame.na.drop("all")
     data_frame_with_import_columns = add_import_time_columns(data_frame)
 
