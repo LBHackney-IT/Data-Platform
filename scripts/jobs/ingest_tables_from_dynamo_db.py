@@ -1,63 +1,67 @@
 import sys
+
+from awsglue.context import GlueContext
+from awsglue.dynamicframe import DynamicFrame
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue.dynamicframe import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, PARTITION_KEYS
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    add_import_time_columns,
+    get_glue_env_var,
+)
 
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 
 sc = SparkContext()
 glue_context = GlueContext(sc)
 job = Job(glue_context)
-job.init(args['JOB_NAME'], args)
+job.init(args["JOB_NAME"], args)
 logger = glue_context.get_logger()
 
 s3_target = get_glue_env_var("s3_target")
 table_names = get_glue_env_var("table_names").split(",")
 role_arn = get_glue_env_var("role_arn")
-number_of_workers = int(get_glue_env_var("number_of_workers"))
-worker_type = get_glue_env_var("worker_type")
-
-# this is the number of partitions to use whilst reading, default 1, max 1000000
-# Recommened calculation for splits, if using G.1X is: splits =  4 * (numWorkers - 1)
-# Recommened calculation for splits, if using G.2X workers is: splits = 8 * (numWorkers - 1)
-# ref: https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect-dynamodb-home.html
-if worker_type == "G.2X":
-    number_of_splits = 8 * (number_of_workers - 1)
-else:
-    number_of_splits = 4 * (number_of_workers - 1)
 
 for table_name in table_names:
     logger.info(f"Starting import for table {table_name}")
     read_dynamo_db_options = {
-        "dynamodb.input.tableName": table_name,
-        "dynamodb.splits": f"{number_of_splits}", 
+        "dynamodb.export": "ddb",
+        "dynamodb.tableArn": (
+            f"arn:aws:dynamodb:eu-west-2:{role_arn.split(':')[4]}:table/{table_name}"
+        ),
+        "dynamodb.simplifyDDBJson": "true",
         "dynamodb.sts.roleArn": role_arn,
     }
 
     source_dynamic_frame = glue_context.create_dynamic_frame.from_options(
         connection_type="dynamodb",
         connection_options=read_dynamo_db_options,
-        tranformation_ctx=f"{table_name}_source_data"
+        tranformation_ctx=f"{table_name}_source_data",
     )
 
     data_frame = source_dynamic_frame.toDF()
-    data_frame = data_frame.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
+
+    # Drop all rows where all values are null
+    # NOTE: must be done before add_import_time_columns
+    data_frame = data_frame.na.drop("all")
     data_frame_with_import_columns = add_import_time_columns(data_frame)
 
-    dynamic_frame_to_write = DynamicFrame.fromDF(data_frame_with_import_columns, glue_context, f"{table_name}_output_data")
+    dynamic_frame_to_write = DynamicFrame.fromDF(
+        data_frame_with_import_columns, glue_context, f"{table_name}_output_data"
+    )
 
     glue_context.write_dynamic_frame.from_options(
         frame=dynamic_frame_to_write,
         connection_type="s3",
         format="parquet",
-        connection_options={ "path": f"{s3_target}/{table_name}", "partitionKeys": PARTITION_KEYS },
-        transformation_ctx=f"{table_name}_output_data"
+        connection_options={
+            "path": f"{s3_target}/{table_name}",
+            "partitionKeys": PARTITION_KEYS,
+        },
+        transformation_ctx=f"{table_name}_output_data",
     )
 
 job.commit()
-
