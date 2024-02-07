@@ -14,6 +14,7 @@ resource "aws_lambda_function" "lambda" {
   s3_key           = var.s3_key
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
+  layers           = var.layers
 
   dynamic "environment" {
     for_each = local.environment_map

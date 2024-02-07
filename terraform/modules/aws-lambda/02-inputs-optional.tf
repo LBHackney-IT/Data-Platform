@@ -86,3 +86,9 @@ variable "lambda_role_arn" {
   description = "ARN of the IAM Role to use for the Lambda Function"
   default     = null
 }
+
+variable "layers" {
+  type        = list(string)
+  description = "List of ARNs for Lambda Layers to attach to the Lambda Function"
+  default     = []
+}
