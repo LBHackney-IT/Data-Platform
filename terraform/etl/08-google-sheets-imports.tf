@@ -719,7 +719,7 @@ module "parking_spreadsheet_parking_ops_suspension_data" {
   google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
   google_sheets_document_id       = "1GuT2vu5p3KIKc85gsj5w99oeODgnlJs2w8l79RM9-fc"
-  google_sheets_worksheet_name    = "Suspension_Data"
+  google_sheets_worksheet_name    = "jobs"
   department                      = module.department_parking_data_source
   dataset_name                    = "parking_ops_suspension_data"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
