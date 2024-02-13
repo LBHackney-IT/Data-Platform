@@ -1,28 +1,42 @@
 import sys
+import time
+from typing import Dict
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from awsglue.dynamicframe import DynamicFrame
+from scripts.helpers.helpers import get_glue_env_var
 
-def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
+def sparkSqlQuery(glue_context: GlueContext, query: str, mapping: Dict[str, DynamicFrame], transformation_ctx: str) -> DynamicFrame:
+    """
+    Executes a SQL query using Spark SQL and returns the result as a DynamicFrame.
+    """
     for alias, frame in mapping.items():
         frame.toDF().createOrReplaceTempView(alias)
-    result = spark.sql(query)
-    return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
+    result = glue_context.spark_session.sql(query)
+    return DynamicFrame.fromDF(result, glue_context, transformation_ctx)
 
-
+start_time = time.time()
+# Parsing script arguments
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
+
+# Initialize Spark and Glue contexts
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
+
+# Retrieve environment variable
 environment = get_glue_env_var("environment")
+print(f"preparing the environment variable {(time.time() - start_time)/60:.2f} minutes")
+
 
 # Script generated for node raw_zone_liberator_pcn_tickets
+# Load data from Glue Catalog tables
+start_time = time.time()
 raw_zone_liberator_pcn_tickets_node1666105465609 = (
     glueContext.create_dynamic_frame.from_catalog(
         database="dataplatform-"+environment+"-liberator-raw-zone",
@@ -30,15 +44,23 @@ raw_zone_liberator_pcn_tickets_node1666105465609 = (
         transformation_ctx="raw_zone_liberator_pcn_tickets_node1666105465609",
     )
 )
+print(f"loading raw_zone_liberator_pcn_tickets_node1666105465609 {(time.time() - start_time)/60:.2f} minutes")
+
 
 # Script generated for node raw_zone_liberator_pcn_audit
+# Load data from Glue Catalog tables
+start_time = time.time()
 raw_zone_liberator_pcn_audit_node1 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_pcn_audit",
     transformation_ctx="raw_zone_liberator_pcn_audit_node1",
 )
+print(f"loading raw_zone_liberator_pcn_audit_node1 {(time.time() - start_time)/60:.2f} minutes")
+
 
 # Script generated for node ApplyMapping
+# Define and execute SQL query on loaded data
+start_time = time.time()
 SqlQuery0 = """
 /*
 Takes data from Liberator raw zone for PCN print monitoring for the previous day of the import_date
@@ -125,6 +147,8 @@ left join liberator_pcn_tickets on pcna_ticket_ref = ticketserialnumber and pcna
 
 
 """
+
+# Execute the SQL query to do the transformation
 ApplyMapping_node2 = sparkSqlQuery(
     glueContext,
     query=SqlQuery0,
@@ -134,8 +158,11 @@ ApplyMapping_node2 = sparkSqlQuery(
     },
     transformation_ctx="ApplyMapping_node2",
 )
+print(f"executing ApplyMapping_node2 {(time.time() - start_time)/60:.2f} minutes")
 
 # Script generated for node S3 bucket
+# Instantiate a Glue sink for writing data to an S3 bucket
+start_time = time.time()
 S3bucket_node3 = glueContext.getSink(
     path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_pcn_daily_print_monitoring/",
     connection_type="s3",
@@ -145,10 +172,17 @@ S3bucket_node3 = glueContext.getSink(
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )
+
+# Set the catalog information for the data being written. This includes specifying the database and table in the Glue Data Catalog.
 S3bucket_node3.setCatalogInfo(
     catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",
     catalogTableName="parking_pcn_daily_print_monitoring",
 )
+# Set the format of the data files (Parquet) to be written to the S3 bucket.
 S3bucket_node3.setFormat("glueparquet")
+# Write the data frame to the S3 bucket using the configurations defined above.
 S3bucket_node3.writeFrame(ApplyMapping_node2)
+print(f"writing S3bucket_node3 {(time.time() - start_time)/60:.2f} minutes")
+# Commit the job to finalize the write operation and ensure that all resources are properly released.
 job.commit()
+
