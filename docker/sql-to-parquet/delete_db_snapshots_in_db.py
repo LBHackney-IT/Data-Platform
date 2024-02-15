@@ -12,7 +12,12 @@ print("Found ", len(snapshots), " snapshots")
 
 for snapshot in snapshots:
   snapshot_id = snapshot['DBSnapshotIdentifier']
-  print("Deleting snapshot ", snapshot_id)
-  rds.delete_db_snapshot(
-    DBSnapshotIdentifier=snapshot_id
-  )
+
+  if snapshot_id.startswith('awsbackup'):
+    print("Skipping snapshot ", snapshot_id)
+    continue
+  else:
+    print("Deleting snapshot ", snapshot_id)
+    rds.delete_db_snapshot(
+      DBSnapshotIdentifier=snapshot_id
+    )
