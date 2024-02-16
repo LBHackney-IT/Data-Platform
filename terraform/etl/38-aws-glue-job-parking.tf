@@ -1499,7 +1499,7 @@ module "parking_suspensions_processed_with_finyear" {
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_suspensions_processed"
+  script_name                    = "parking_suspensions_processed_with_finyear"
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "format suspensions processed within financial year"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
