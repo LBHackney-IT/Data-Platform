@@ -1,3 +1,9 @@
+locals {
+  govnotify_tables                = ["notifications", "received_text_messages"]
+  create_govnotify_resource_count = 1
+}
+
+
 data "aws_iam_policy_document" "housing_landing_zone_access" {
   statement {
     actions = [
@@ -65,7 +71,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 
 data "aws_iam_policy_document" "housing_gov_notify_lambda_execution" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "lambda:InvokeFunction"
     ]
@@ -105,7 +111,9 @@ data "aws_iam_policy_document" "gov_notify_lambda_secret_access" {
       "secretsmanager:GetSecretValue",
     ]
     effect    = "Allow"
-    resources = ["arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:housing/gov-notify*"]
+    resources = [
+      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:housing/gov-notify*"
+    ]
   }
 }
 
@@ -120,3 +128,48 @@ resource "aws_iam_role_policy_attachment" "gov_notify_lambda_secret_access" {
   role       = aws_iam_role.housing_gov_notify_ingestion[0].name
   policy_arn = aws_iam_policy.gov_notify_lambda_secret_access[0].arn
 }
+
+
+module "gov-notify-ingestion-housing-repairs" {
+  count                          = !local.is_production_environment ? 1 : 0
+  source                         = "../modules/aws-lambda"
+  tags                           = module.tags.values
+  lambda_name                    = "govnotify_api_ingestion_repairs"
+  identifier_prefix              = local.short_identifier_prefix
+  handler                        = "main.lambda_handler"
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
+  s3_key                         = "govnotify_api_ingestion_repairs.zip"
+  lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_repairs"
+  lambda_output_path             = "../../lambdas/govnotify_api_ingestion_repairs.zip"
+  environment_variables          = {
+    API_SECRET_NAME       = "${local.short_identifier_prefix}gov-notify_live_api_key"
+    OUTPUT_S3_FOLDER      = module.landing_zone_data_source
+    TARGET_S3_BUCKET_NAME = "housing/govnotify/damp_and_mould/"
+  }
+  layers = [
+    "arn:aws:lambda:eu-west-2:120038763019:layer:notifications-python-client-9-0-0-layer:1",
+    "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13"
+  ]
+}
+
+resource "aws_cloudwatch_event_rule" "govnotify_housing_repairs_trigger_event" {
+  count               = local.create_govnotify_resource_count
+  name                = "${local.short_identifier_prefix}govnotify_housing_repairs_trigger_event"
+  description         = "Trigger event for GovNotify Housing API ingestion"
+  schedule_expression = "cron(0 0 * * ? *)"
+  is_enabled          = local.is_production_environment ? true : false
+  tags                = module.tags.values
+}
+
+resource "aws_cloudwatch_event_target" "govnotify_housing_repairs_trigger_event_target" {
+  count     = local.create_govnotify_resource_count
+  rule      = aws_cloudwatch_event_rule.govnotify_housing_repairs_trigger_event[0].name
+  target_id = "govnotify-housing-repairs-trigger-event-target"
+  arn       = module.gov-notify-ingestion-housing-repairs[0].arn
+  input     = <<EOF
+  {
+   "table_names": ${jsonencode(local.govnotify_tables)}
+  }
+  EOF
+}
+
