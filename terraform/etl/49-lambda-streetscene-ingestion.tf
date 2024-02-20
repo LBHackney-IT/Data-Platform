@@ -1,3 +1,7 @@
+locals {
+  create_street_systems_resource_count = !local.is_production_environment ? 1 : 0
+}
+
 data "aws_iam_policy_document" "streetscene_street_systems_landing_zone_access" {
   statement {
     actions = [
