@@ -141,7 +141,7 @@ module "street-systems-api-ingestion" {
   }
   layers = [
     "arn:aws:lambda:eu-west-2:120038763019:layer:requests-2-31-0-and-httplib-0-22-0-layer:1",
-    "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:12",
+    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:AWSSDKPandas-Python39:12",
     "arn:aws:lambda:eu-west-2:120038763019:layer:urllib3-1-26-18-layer:1",
     "arn:aws:lambda:eu-west-2:120038763019:layer:s3fs-2023-12-2-layer:1"
   ]
