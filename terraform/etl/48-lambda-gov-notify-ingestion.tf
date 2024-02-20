@@ -142,7 +142,7 @@ module "gov-notify-ingestion-housing-repairs" {
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_repairs"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_repairs.zip"
   environment_variables          = {
-    API_SECRET_NAME       = "${local.short_identifier_prefix}gov-notify_live_api_key"
+    API_SECRET_NAME       = "housing/gov-notify_live_api_key"
     OUTPUT_S3_FOLDER      = module.landing_zone_data_source
     TARGET_S3_BUCKET_NAME = "housing/govnotify/damp_and_mould/"
   }
@@ -165,7 +165,7 @@ resource "aws_cloudwatch_event_target" "govnotify_housing_repairs_trigger_event_
   count     = local.create_govnotify_resource_count
   rule      = aws_cloudwatch_event_rule.govnotify_housing_repairs_trigger_event[0].name
   target_id = "govnotify-housing-repairs-trigger-event-target"
-  arn       = module.gov-notify-ingestion-housing-repairs[0].arn
+  arn       = module.gov-notify-ingestion-housing-repairs[0].lambda_function_arn
   input     = <<EOF
   {
    "table_names": ${jsonencode(local.govnotify_tables)}
