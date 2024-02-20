@@ -1,4 +1,5 @@
 import sys
+import time
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -11,6 +12,12 @@ environment = get_glue_env_var("environment")
 
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
+    """
+    Define a function to execute SQL queries using Spark SQL
+    Register each DynamicFrame as a temporary view to use in the SQL query
+    Execute the SQL query
+    Convert the result back to a DynamicFrame
+    """
     for alias, frame in mapping.items():
         frame.toDF().createOrReplaceTempView(alias)
     result = spark.sql(query)
@@ -18,6 +25,8 @@ def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFra
 
 
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
+
+# Initialize Spark and Glue contexts
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
@@ -25,6 +34,10 @@ job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
 
 # Script generated for node liberator_pcn_payments
+# Load various datasets from the Glue Catalog, applying a pushdown predicate to filter data based on 'import_date'
+# Each dataset corresponds to a different aspect of PCN data, such as payments, bailiff actions, tickets, etc.
+start_time = time.time()
+
 liberator_pcn_payments_node1624544303612 = (
     glueContext.create_dynamic_frame.from_catalog(
         database="dataplatform-" + environment + "-liberator-raw-zone",
@@ -34,6 +47,8 @@ liberator_pcn_payments_node1624544303612 = (
     )
 )
 
+
+# Repeat the process for the other datasets
 # Script generated for node Amazon S3
 AmazonS3_node1632737645295 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
@@ -90,8 +105,11 @@ liberator_pcn_appeals_node1624617107363 = glueContext.create_dynamic_frame.from_
     transformation_ctx="liberator_pcn_appeals_node1624617107363",
     push_down_predicate=create_pushdown_predicate("import_date",1)
 )
+print(f"loading data {(time.time() - start_time)/60:.2f} minutes")
 
 # Script generated for node ApplyMapping
+# Define a SQL query to denormalise PCN data, combining information from various sources into a single record per PCN
+start_time = time.time()
 SqlQuery0 = """
 /*************************************************************************************************************************
 Parking_PCN_Denormalisation
@@ -308,6 +326,8 @@ LEFT JOIN KeyWorker_Dispute as I ON A.ticketserialnumber = I.ticketserialnumber 
 WHERE A.ticketserialnumber not IN ('QZ01017688','QZ08427983','QZ99999990','QZ00887560') AND
       A.import_Date = (Select MAX(import_date) from liberator_pcn_tickets)
 """
+
+# Execute the SQL query defined above, passing the loaded DynamicFrames as mappings to be used in the query
 ApplyMapping_node2 = sparkSqlQuery(
     glueContext,
     query=SqlQuery0,
@@ -323,8 +343,12 @@ ApplyMapping_node2 = sparkSqlQuery(
     },
     transformation_ctx="ApplyMapping_node2",
 )
+print(f"transform and mapping based on SQL query {(time.time() - start_time)/60:.2f} minutes")
 
 # Script generated for node PCN_DeNormalisation
+# Configure the output sink to write the transformed data to an S3 bucket in Parquet format
+# The data is partitioned by import date components for efficient storage and query performance
+start_time = time.time()
 PCN_DeNormalisation_node3 = glueContext.getSink(
     path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/PCNFOIDetails_PCN_FOI_FULL/",
     connection_type="s3",
@@ -333,10 +357,15 @@ PCN_DeNormalisation_node3 = glueContext.getSink(
     enableUpdateCatalog=True,
     transformation_ctx="PCN_DeNormalisation_node3",
 )
+# Set catalog information for the output data, specifying the database and table name in the Glue Data Catalog
 PCN_DeNormalisation_node3.setCatalogInfo(
     catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
     catalogTableName="PCNFOIDetails_PCN_FOI_FULL",
 )
+# spefify the output as parquet format
 PCN_DeNormalisation_node3.setFormat("glueparquet")
+# Write the transformed data frame to the specified S3 path
 PCN_DeNormalisation_node3.writeFrame(ApplyMapping_node2)
+print(f"writing to S3 bucket {(time.time() - start_time)/60:.2f} minutes")
+
 job.commit()

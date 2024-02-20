@@ -147,8 +147,9 @@ resource "aws_cloudwatch_event_rule" "glue_failure_notification_event_rule" {
 }
 
 resource "aws_cloudwatch_event_target" "glue_job_failure_lambda_trigger" {
-  rule = aws_cloudwatch_event_rule.glue_failure_notification_event_rule.name
-  arn  = aws_lambda_function.glue_failure_notification_lambda.arn
+  count = local.is_production_environment ? 1 : 0
+  rule  = aws_cloudwatch_event_rule.glue_failure_notification_event_rule.name
+  arn   = aws_lambda_function.glue_failure_notification_lambda.arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch" {

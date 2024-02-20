@@ -1,6 +1,6 @@
 locals {
   lambda_name_underscore = replace(var.lambda_name, "-", "_")
-  command                = "make all"
+  command                = "make all LAYER_FILE=${var.layer_zip_file}"
   environment_map        = var.environment_variables == null ? [] : [var.environment_variables]
 }
 
