@@ -137,13 +137,13 @@ module "gov-notify-ingestion-housing-repairs" {
   lambda_name                    = "govnotify_api_ingestion_repairs"
   identifier_prefix              = local.short_identifier_prefix
   handler                        = "main.lambda_handler"
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
   s3_key                         = "govnotify_api_ingestion_repairs.zip"
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_repairs"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_repairs.zip"
   environment_variables          = {
     API_SECRET_NAME       = "housing/gov-notify_live_api_key"
-    OUTPUT_S3_FOLDER      = module.landing_zone_data_source
+    OUTPUT_S3_FOLDER      = "${module.landing_zone_data_source.bucket_arn}/housing/*"
     TARGET_S3_BUCKET_NAME = "housing/govnotify/damp_and_mould/"
   }
   layers = [
