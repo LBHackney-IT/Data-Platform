@@ -160,6 +160,7 @@ resource "aws_cloudwatch_event_rule" "street_systems_api_trigger_event" {
   tags                = module.tags.values
 }
 
+
 resource "aws_cloudwatch_event_target" "street_systems_api_trigger_event_target" {
   count     = local.create_street_systems_resource_count
   rule      = aws_cloudwatch_event_rule.street_systems_api_trigger_event[0].name
