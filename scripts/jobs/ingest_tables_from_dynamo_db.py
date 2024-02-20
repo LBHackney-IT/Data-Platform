@@ -24,6 +24,8 @@ logger = glue_context.get_logger()
 s3_target = get_glue_env_var("s3_target")
 table_names = get_glue_env_var("table_names").split(",")
 role_arn = get_glue_env_var("role_arn")
+s3_export_bucket = get_glue_env_var("s3_export_bucket")
+bucket_owner = get_glue_env_var("bucket_owner")
 
 for table_name in table_names:
     logger.info(f"Starting import for table {table_name}")
@@ -34,6 +36,9 @@ for table_name in table_names:
         ),
         "dynamodb.simplifyDDBJson": "true",
         "dynamodb.sts.roleArn": role_arn,
+        "dynamodb.s3.bucket": s3_export_bucket,
+        "dynamodb.s3.prefix": f"mtfh/{table_name}_json_export/",
+        "dynamodb.s3.bucketOwner": bucket_owner,
     }
 
     source_dynamic_frame = glue_context.create_dynamic_frame.from_options(
