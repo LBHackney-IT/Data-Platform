@@ -150,7 +150,6 @@ module "street-systems-api-ingestion" {
     "arn:aws:lambda:eu-west-2:120038763019:layer:s3fs-2023-12-2-layer:1"
   ]
 }
-
 resource "aws_cloudwatch_event_rule" "street_systems_api_trigger_event" {
   count               = local.create_street_systems_resource_count
   name                = "${local.short_identifier_prefix}street_systems_api_trigger_event_target"
@@ -159,7 +158,6 @@ resource "aws_cloudwatch_event_rule" "street_systems_api_trigger_event" {
   is_enabled          = local.is_production_environment ? true : false
   tags                = module.tags.values
 }
-
 
 resource "aws_cloudwatch_event_target" "street_systems_api_trigger_event_target" {
   count     = local.create_street_systems_resource_count
