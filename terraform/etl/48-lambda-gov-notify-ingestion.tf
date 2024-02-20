@@ -131,7 +131,7 @@ resource "aws_iam_role_policy_attachment" "gov_notify_lambda_secret_access" {
 
 
 module "gov-notify-ingestion-housing-repairs" {
-  count                          = !local.is_production_environment ? 1 : 0
+  count                          = local.create_govnotify_resource_count
   source                         = "../modules/aws-lambda"
   tags                           = module.tags.values
   lambda_name                    = "govnotify_api_ingestion_repairs"
