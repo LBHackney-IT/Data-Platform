@@ -62,7 +62,6 @@ class TestGlueAlarmsHandler(TestCase):
                 "CreatedOn": "2023-01-11T13:51:06Z",
                 "LastModifiedOn": "2023-01-11T13:51:06Z",
                 "MaxRetries": 0,
-                "AllocatedCapacity": 0.0,
                 "ExecutionProperty": {
                     "MaxConcurrentRuns": 1
                 },
@@ -76,11 +75,10 @@ class TestGlueAlarmsHandler(TestCase):
                 "Connections": {
                     "Connections": ["test_connection"],
                 },
-                "MaxCapacity": 0.0,
-                "Timeout": 0,
+                "Timeout": 360,
                 "SecurityConfiguration": "test_security_configuration",
                 "WorkerType": "Standard",
-                "NumberOfWorkers": 0,
+                "NumberOfWorkers": 10,
                 "GlueVersion": "test_glue_version",
             }
         }
