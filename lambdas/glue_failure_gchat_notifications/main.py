@@ -25,21 +25,32 @@ def format_message(event) -> dict:
         )
     }
 
+def get_max_retries(job_name, glue_client=None) -> int:
+    glue_client = glue_client or boto3.client("glue")
+    response = glue_client.get_job(JobName=job_name)
+    return response["Job"]["MaxRetries"]
 
-def lambda_handler(event=None, lambda_context=None, secretsManagerClient=None):
+
+def lambda_handler(event=None, lambda_context=None, secretsManagerClient=None, glueClient=None):
     secret_name = getenv("SECRET_NAME")
     secrets_manager_client = secretsManagerClient or boto3.client("secretsmanager")
+    glue_client = glueClient or boto3.client("glue")
 
-    secret = secrets_manager_client.get_secret_value(SecretId=secret_name)
-
-    webhook_url = secret["SecretString"]
-    message = format_message(event)
-    message_headers = {"Content-Type": "application/json; charset=UTF-8"}
-    http = urllib3.PoolManager()
-
-    http.request("POST", webhook_url, body=json.dumps(message), headers=message_headers)
-
-    logger.info("Alert sent successfully")
+    max_retires = get_max_retries(event["detail"]["jobName"], glue_client)
+    if event["detail"]["Attempt"] < max_retires:
+        logger.info("Glue job failed, but it is still within the max retries")
+        return
+    else:
+        secret = secrets_manager_client.get_secret_value(SecretId=secret_name)
+    
+        webhook_url = secret["SecretString"]
+        message = format_message(event)
+        message_headers = {"Content-Type": "application/json; charset=UTF-8"}
+        http = urllib3.PoolManager()
+    
+        http.request("POST", webhook_url, body=json.dumps(message), headers=message_headers)
+    
+        logger.info("Alert sent successfully")
 
 
 if __name__ == "__main__":
