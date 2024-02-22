@@ -151,6 +151,7 @@ class TestGlueAlarmsHandler(TestCase):
         )
 
     @mock.patch.dict(os.environ, mock_env_vars)
+    @mock.patch("lambda_alarms_handler.main.urllib3.PoolManager", spec=True)
     def test_sends_message_after_max_retries_reached(self):
         self.get_job_response["Job"]["MaxRetries"] = 1
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
@@ -169,3 +170,4 @@ class TestGlueAlarmsHandler(TestCase):
 
         self.secretsmanager_client_stubber.assert_no_pending_responses()
         self.glue_client_stubber.assert_no_pending_responses()
+        
