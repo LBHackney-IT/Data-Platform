@@ -5,7 +5,11 @@ from unittest import TestCase, mock
 
 import botocore.session
 from botocore.stub import Stubber
-from glue_failure_gchat_notifications.main import format_message, lambda_handler
+from glue_failure_gchat_notifications.main import (
+    format_message,
+    lambda_handler,
+    get_max_retries,
+)
 
 
 class TestGlueAlarmsHandler(TestCase):
@@ -52,7 +56,10 @@ class TestGlueAlarmsHandler(TestCase):
             },
         }
 
-        self.glue_client = self.boto_session.create_client("glue", region_name="test-region-2")
+        self.glue_client = self.boto_session.create_client(
+            "glue",
+            region_name="test-region-2",
+        )
         self.glue_client_stubber = Stubber(self.glue_client)
 
         self.get_job_response = {
@@ -82,7 +89,6 @@ class TestGlueAlarmsHandler(TestCase):
                 "GlueVersion": "test_glue_version",
             }
         }
-
 
         self.secret_name = "test_secret_name"
 
@@ -184,4 +190,15 @@ class TestGlueAlarmsHandler(TestCase):
         )
 
         mock_urllib_poolmanager.assert_not_called()
-        
+
+    def test_get_max_retries_returns_correct_max_retries(self):
+        expected_max_retries = 0
+
+        self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.activate()
+
+        actual_max_retries = get_max_retries(
+            "test job name", self.glue_client
+        )
+
+        self.assertEqual(expected_max_retries, actual_max_retries)
