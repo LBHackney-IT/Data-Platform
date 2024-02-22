@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from json import dumps
 from unittest import TestCase, mock
+from urllib.parse import quote
 
 import botocore.session
 from botocore.stub import Stubber
@@ -38,6 +39,9 @@ class TestGlueAlarmsHandler(TestCase):
         }
 
         self.job_name = "test job name"
+        self.event_time = "2024-01-11T13:51:06Z"
+        self.job_created_on = "2023-01-11T13:51:06Z"
+        self.job_last_modified_on = "2023-01-12T13:51:06Z"
 
         self.cloudwatch_event = {
             "version": "0",
@@ -45,7 +49,7 @@ class TestGlueAlarmsHandler(TestCase):
             "detail-type": "Glue Job State Change",
             "source": "aws.glue",
             "account": "test_account",
-            "time": "2024-01-11T13:51:06Z",
+            "time": self.event_time,
             "region": "test-region-2",
             "resources": [],
             "detail": {
@@ -68,8 +72,8 @@ class TestGlueAlarmsHandler(TestCase):
             "Job": {
                 "Name": self.job_name,
                 "Role": "test_role",
-                "CreatedOn": "2023-01-11T13:51:06Z",
-                "LastModifiedOn": "2023-01-12T13:51:06Z",
+                "CreatedOn": self.job_created_on,
+                "LastModifiedOn": self.job_last_modified_on,
                 "MaxRetries": 0,
                 "ExecutionProperty": {
                     "MaxConcurrentRuns": 1
@@ -117,11 +121,12 @@ class TestGlueAlarmsHandler(TestCase):
         self.secretsmanager_client_stubber.assert_no_pending_responses()
 
     def test_format_message_returns_correct_message(self):
+        job_name_html_encoded = quote(self.job_name)
         expected_message = {
             "text": (
-                "2023-01-11T13:51:06Z \nGlue failure detected for job: *test job name*"
+                f"{self.event_time} \nGlue failure detected for job: *{self.job_name}*"
                 " \nrun:"
-                " https://test-region-2.console.aws.amazon.com/gluestudio/home?region=test-region-2#/job/test%20job%20name/run/test_run_id123"
+                f" https://test-region-2.console.aws.amazon.com/gluestudio/home?region=test-region-2#/job/{job_name_html_encoded}/run/test_run_id123"
                 " \nError message: An error occurred while running the job."
             )
         }
