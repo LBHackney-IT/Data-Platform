@@ -36,7 +36,7 @@ def lambda_handler(event=None, lambda_context=None, secretsManagerClient=None, g
     secrets_manager_client = secretsManagerClient or boto3.client("secretsmanager")
     glue_client = glueClient or boto3.client("glue")
 
-    max_retires = get_max_retries(event["detail"]["JobName"], glue_client)
+    max_retires = get_max_retries(event["detail"]["jobName"], glue_client)
     if event["detail"]["attempt"] < max_retires:
         logger.info("Glue job failed, but it is still within the max retries")
         return
