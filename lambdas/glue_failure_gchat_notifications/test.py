@@ -52,7 +52,7 @@ class TestGlueAlarmsHandler(TestCase):
             },
         }
 
-        self.glue_client = self.boto_session.create_client("glue")
+        self.glue_client = self.boto_session.create_client("glue", region_name="test-region-2")
         self.glue_client_stubber = Stubber(self.glue_client)
 
         self.get_job_response = {
@@ -151,3 +151,23 @@ class TestGlueAlarmsHandler(TestCase):
             body=dumps(format_message(self.cloudwatch_event)),
             headers=expected_headers,
         )
+
+    @mock.patch.dict(os.environ, mock_env_vars)
+    def test_sends_message_after_max_retries_reached(self):
+        self.get_job_response["Job"]["MaxRetries"] = 1
+        self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.activate()
+
+        self.secretsmanager_client_stubber.add_response(
+            "get_secret_value", self.response
+        )
+        self.secretsmanager_client_stubber.activate()
+
+        lambda_handler(
+            event=self.cloudwatch_event,
+            secretsManagerClient=self.secretsmanager_client,
+            glueClient=self.glue_client,
+        )
+
+        self.secretsmanager_client_stubber.assert_no_pending_responses()
+        self.glue_client_stubber.assert_no_pending_responses()
