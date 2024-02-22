@@ -74,6 +74,7 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
     "--job-bookmark-option"       = "job-bookmark-enable"
     "--s3_prefix"                 = "housing/"
     "--glue_database_name_target" = module.department_housing.raw_zone_catalog_database_name
+    "--session_name"              = "export_dynamo_db_table"
   }
 
   crawler_details = {
