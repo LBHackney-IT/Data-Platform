@@ -152,15 +152,12 @@ class TestGlueAlarmsHandler(TestCase):
 
     @mock.patch.dict(os.environ, mock_env_vars)
     @mock.patch("lambda_alarms_handler.main.urllib3.PoolManager", spec=True)
-    def test_sends_message_after_max_retries_reached(self):
-        self.get_job_response["Job"]["MaxRetries"] = 1
+    def test_does_not_call_poolmanager_on_urllib3_if_attempt_is_less_than_max_retries(
+        self, mock_urllib_poolmanager
+    ):
+        self.get_job_response["Job"]["MaxRetries"] = 3
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
         self.glue_client_stubber.activate()
-
-        self.secretsmanager_client_stubber.add_response(
-            "get_secret_value", self.response
-        )
-        self.secretsmanager_client_stubber.activate()
 
         lambda_handler(
             event=self.cloudwatch_event,
@@ -168,6 +165,4 @@ class TestGlueAlarmsHandler(TestCase):
             glueClient=self.glue_client,
         )
 
-        self.secretsmanager_client_stubber.assert_no_pending_responses()
-        self.glue_client_stubber.assert_no_pending_responses()
-        
+        mock_urllib_poolmanager.assert_not_called()
