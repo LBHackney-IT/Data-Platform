@@ -34,7 +34,7 @@ for table_name in table_names:
         "dynamodb.tableArn": (
             f"arn:aws:dynamodb:eu-west-2:{role_arn.split(':')[4]}:table/{table_name}"
         ),
-        "dynamodb.simplifyDDBJson": "true",
+        "dynamodb.simplifyDDBJson": True,
         "dynamodb.sts.roleArn": role_arn,
         "dynamodb.s3.bucket": s3_export_bucket,
         "dynamodb.s3.prefix": f"mtfh/{table_name}_json_export/",
