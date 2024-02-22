@@ -48,8 +48,43 @@ class TestGlueAlarmsHandler(TestCase):
                 "state": "FAILED",
                 "jobRunId": "test_run_id123",
                 "message": "An error occurred while running the job.",
+                "attempt": 1,
             },
         }
+
+        self.glue_client = self.boto_session.create_client("glue")
+        self.glue_client_stubber = Stubber(self.glue_client)
+
+        self.get_job_response = {
+            "Job": {
+                "Name": "test job name",
+                "Role": "test_role",
+                "CreatedOn": "2023-01-11T13:51:06Z",
+                "LastModifiedOn": "2023-01-11T13:51:06Z",
+                "MaxRetries": 0,
+                "AllocatedCapacity": 0.0,
+                "ExecutionProperty": {
+                    "MaxConcurrentRuns": 1
+                },
+                "Command": {
+                    "Name": "test_name",
+                    "ScriptLocation": "test_location",
+                },
+                "DefaultArguments": {
+                    "test_argument": "test_value",
+                },
+                "Connections": {
+                    "Connections": ["test_connection"],
+                },
+                "MaxCapacity": 0.0,
+                "Timeout": 0,
+                "SecurityConfiguration": "test_security_configuration",
+                "WorkerType": "Standard",
+                "NumberOfWorkers": 0,
+                "GlueVersion": "test_glue_version",
+            }
+        }
+
 
         self.secret_name = "test_secret_name"
 
@@ -64,8 +99,13 @@ class TestGlueAlarmsHandler(TestCase):
         )
         self.secretsmanager_client_stubber.activate()
 
+        self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.activate()
+
         lambda_handler(
-            self.cloudwatch_event, secretsManagerClient=self.secretsmanager_client
+            event=self.cloudwatch_event,
+            secretsManagerClient=self.secretsmanager_client,
+            glueClient=self.glue_client,
         )
 
         self.secretsmanager_client_stubber.assert_no_pending_responses()
@@ -96,8 +136,13 @@ class TestGlueAlarmsHandler(TestCase):
         )
         self.secretsmanager_client_stubber.activate()
 
+        self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.activate()
+
         lambda_handler(
-            event=self.cloudwatch_event, secretsManagerClient=self.secretsmanager_client
+            event=self.cloudwatch_event,
+            secretsManagerClient=self.secretsmanager_client,
+            glueClient=self.glue_client,
         )
 
         mock_pool_manager.request.assert_called_once_with(
