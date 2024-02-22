@@ -37,17 +37,19 @@ class TestGlueAlarmsHandler(TestCase):
             "CreatedDate": datetime(2022, 1, 1),
         }
 
+        self.job_name = "test job name"
+
         self.cloudwatch_event = {
             "version": "0",
             "id": "test_id",
             "detail-type": "Glue Job State Change",
             "source": "aws.glue",
             "account": "test_account",
-            "time": "2023-01-11T13:51:06Z",
+            "time": "2024-01-11T13:51:06Z",
             "region": "test-region-2",
             "resources": [],
             "detail": {
-                "jobName": "test job name",
+                "jobName": self.job_name,
                 "severity": "ERROR",
                 "state": "FAILED",
                 "jobRunId": "test_run_id123",
@@ -64,10 +66,10 @@ class TestGlueAlarmsHandler(TestCase):
 
         self.get_job_response = {
             "Job": {
-                "Name": "test job name",
+                "Name": self.job_name,
                 "Role": "test_role",
                 "CreatedOn": "2023-01-11T13:51:06Z",
-                "LastModifiedOn": "2023-01-11T13:51:06Z",
+                "LastModifiedOn": "2023-01-12T13:51:06Z",
                 "MaxRetries": 0,
                 "ExecutionProperty": {
                     "MaxConcurrentRuns": 1
@@ -198,7 +200,7 @@ class TestGlueAlarmsHandler(TestCase):
         self.glue_client_stubber.activate()
 
         actual_max_retries = get_max_retries(
-            "test job name", self.glue_client
+            self.job_name, self.glue_client
         )
 
         self.assertEqual(expected_max_retries, actual_max_retries)
