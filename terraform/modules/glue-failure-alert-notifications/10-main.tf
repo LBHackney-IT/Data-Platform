@@ -52,7 +52,8 @@ data "aws_iam_policy_document" "lambda" {
 
   statement {
     actions = [
-      "glue:GetJob"
+      "glue:GetJob",
+      "glue:GetJobRun",
     ]
     effect    = "Allow"
     resources = ["*"]
