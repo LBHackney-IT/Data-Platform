@@ -220,11 +220,11 @@ class TestGlueAlarmsHandler(TestCase):
 
     @mock.patch.dict(os.environ, mock_env_vars)
     @mock.patch("lambda_alarms_handler.main.urllib3.PoolManager", spec=True)
-    def test_does_not_call_poolmanager_on_urllib3_if_attempt_is_equal_to_max_retries(
+    def test_does_not_call_poolmanager_on_urllib3_if_attempt_is_less_than_max_retries(
         self, mock_urllib_poolmanager
     ):
         self.get_job_response["Job"]["MaxRetries"] = 1
-        self.get_job_run_response["JobRun"]["Attempt"] = 1
+        self.get_job_run_response["JobRun"]["Attempt"] = 0
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
         self.glue_client_stubber.add_response("get_job_run", self.get_job_run_response)
         self.glue_client_stubber.activate()
