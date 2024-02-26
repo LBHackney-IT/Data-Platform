@@ -145,6 +145,7 @@ class TestGlueAlarmsHandler(TestCase):
         self.secretsmanager_client_stubber.activate()
 
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.add_response("get_job_run", self.get_job_run_response)
         self.glue_client_stubber.activate()
 
         lambda_handler(
@@ -183,6 +184,7 @@ class TestGlueAlarmsHandler(TestCase):
         self.secretsmanager_client_stubber.activate()
 
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.add_response("get_job_run", self.get_job_run_response)
         self.glue_client_stubber.activate()
 
         lambda_handler(
@@ -205,6 +207,7 @@ class TestGlueAlarmsHandler(TestCase):
     ):
         self.get_job_response["Job"]["MaxRetries"] = 3
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.add_response("get_job_run", self.get_job_run_response)
         self.glue_client_stubber.activate()
 
         lambda_handler(
