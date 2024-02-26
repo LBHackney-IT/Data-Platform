@@ -7,7 +7,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
 
 def sparkSqlQuery(glue_context: GlueContext, query: str, mapping: Dict[str, DynamicFrame], transformation_ctx: str) -> DynamicFrame:
     """
@@ -42,6 +42,7 @@ raw_zone_liberator_pcn_tickets_node1666105465609 = (
         database="dataplatform-"+environment+"-liberator-raw-zone",
         table_name="liberator_pcn_tickets",
         transformation_ctx="raw_zone_liberator_pcn_tickets_node1666105465609",
+        push_down_predicate=create_pushdown_predicate("import_date",1)
     )
 )
 print(f"loading raw_zone_liberator_pcn_tickets_node1666105465609 {(time.time() - start_time)/60:.2f} minutes")
@@ -54,6 +55,7 @@ raw_zone_liberator_pcn_audit_node1 = glueContext.create_dynamic_frame.from_catal
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_pcn_audit",
     transformation_ctx="raw_zone_liberator_pcn_audit_node1",
+    push_down_predicate=create_pushdown_predicate("import_date",1)
 )
 print(f"loading raw_zone_liberator_pcn_audit_node1 {(time.time() - start_time)/60:.2f} minutes")
 
@@ -180,8 +182,16 @@ S3bucket_node3.setCatalogInfo(
 )
 # Set the format of the data files (Parquet) to be written to the S3 bucket.
 S3bucket_node3.setFormat("glueparquet")
+
 # Write the data frame to the S3 bucket using the configurations defined above.
-S3bucket_node3.writeFrame(ApplyMapping_node2)
+# Convert DynamicFrame to DataFrame and coalesce into a single partition
+# based on my review the each day's data is less than 400kb with a single parquet file
+coalescedDF = ApplyMapping_node2.toDF().coalesce(1)
+# Convert back to DynamicFrame
+coalescedDynamicFrame = DynamicFrame.fromDF(coalescedDF, glueContext, "coalescedDF")
+# Write the coalesced DynamicFrame to the S3 bucket
+S3bucket_node3.writeFrame(coalescedDynamicFrame)
+
 print(f"writing S3bucket_node3 {(time.time() - start_time)/60:.2f} minutes")
 # Commit the job to finalize the write operation and ensure that all resources are properly released.
 job.commit()
