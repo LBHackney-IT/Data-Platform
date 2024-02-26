@@ -8,9 +8,9 @@ import botocore.session
 from botocore.stub import Stubber
 from glue_failure_gchat_notifications.main import (
     format_message,
-    lambda_handler,
     get_max_retries,
     get_run_attempt,
+    lambda_handler,
 )
 
 
@@ -76,9 +76,7 @@ class TestGlueAlarmsHandler(TestCase):
                 "CreatedOn": self.job_created_on,
                 "LastModifiedOn": self.job_last_modified_on,
                 "MaxRetries": 0,
-                "ExecutionProperty": {
-                    "MaxConcurrentRuns": 1
-                },
+                "ExecutionProperty": {"MaxConcurrentRuns": 1},
                 "Command": {
                     "Name": "test_name",
                     "ScriptLocation": "test_location",
@@ -112,8 +110,13 @@ class TestGlueAlarmsHandler(TestCase):
                     "test_argument": "test_value",
                 },
                 "ErrorMessage": "An error occurred while running the job.",
-                "PredecessorRuns": ["test_predecessor_run"],
-                "AllocatedCapacity": 10.0,
+                "PredecessorRuns": [
+                    {
+                        "JobName": self.job_name,
+                        "RunId": "test_run_id",
+                    }
+                ],
+                "AllocatedCapacity": 10,
                 "ExecutionTime": 100,
                 "Timeout": 360,
                 "MaxCapacity": 10.0,
@@ -127,7 +130,6 @@ class TestGlueAlarmsHandler(TestCase):
                 "GlueVersion": "test_glue_version",
             }
         }
-
 
         self.secret_name = "test_secret_name"
 
@@ -238,9 +240,7 @@ class TestGlueAlarmsHandler(TestCase):
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
         self.glue_client_stubber.activate()
 
-        actual_max_retries = get_max_retries(
-            self.job_name, self.glue_client
-        )
+        actual_max_retries = get_max_retries(self.job_name, self.glue_client)
 
         self.assertEqual(expected_max_retries, actual_max_retries)
 
