@@ -98,7 +98,7 @@ class TestGlueAlarmsHandler(TestCase):
         self.get_job_run_response = {
             "JobRun": {
                 "Id": self.test_run_id,
-                "Attempt": 1,
+                "Attempt": 0,
                 "PreviousRunId": "test_previous_run_id",
                 "TriggerName": "test_trigger_name",
                 "JobName": self.job_name,
