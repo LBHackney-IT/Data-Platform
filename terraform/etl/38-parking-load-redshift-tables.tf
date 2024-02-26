@@ -39,6 +39,7 @@ resource "aws_iam_role" "parking_redshift_copier" {
 }
 
 data "aws_iam_policy_document" "redshift_list_and_get_s3" {
+  count = local.is_live_environment && !local.is_production_environment ? 1 : 0
   statement {
     actions = [
       "s3:ListBucket",
@@ -54,7 +55,7 @@ data "aws_iam_policy_document" "redshift_list_and_get_s3" {
 resource "aws_iam_policy" "redshift_list_and_get_s3" {
   count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
   name   = "redshift_list_and_get_s3"
-  policy = data.aws_iam_policy_document.redshift_list_and_get_s3.json
+  policy = data.aws_iam_policy_document.redshift_list_and_get_s3[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "redshift_list_and_get_s3" {
@@ -63,15 +64,10 @@ resource "aws_iam_role_policy_attachment" "redshift_list_and_get_s3" {
   policy_arn = aws_iam_policy.redshift_list_and_get_s3[0].arn
 }
 
-resource "aws_redshift_cluster_iam_roles" "parking_redshift_copier" {
-  count              = local.is_live_environment && !local.is_production_environment ? 1 : 0
-  cluster_identifier = module.redshift[0].cluster_id
-  iam_role_arns      = [aws_iam_role.parking_redshift_copier[0].arn]
-}
-
 # IAM policies and role for lambda executor
 
 data "aws_iam_policy_document" "lambda_redshift_policy" {
+  count = local.is_live_environment && !local.is_production_environment ? 1 : 0
   statement {
     actions = [
       "redshift-data:ExecuteStatement",
@@ -100,7 +96,7 @@ data "aws_iam_policy_document" "lambda_redshift_policy" {
 resource "aws_iam_policy" "lambda_policy" {
   count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
   name   = "lambda_redshift_policy"
-  policy = data.aws_iam_policy_document.lambda_redshift_policy.json
+  policy = data.aws_iam_policy_document.lambda_redshift_policy[0].json
 }
 
 resource "aws_iam_role" "lambda_role" {

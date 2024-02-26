@@ -84,7 +84,9 @@ resource "aws_redshift_parameter_group" "require_ssl" {
 
   tags = var.tags
 }
-
+locals {
+  iam_role_arns = length(var.additional_iam_roles) > 0 ? concat([aws_iam_role.redshift_role.arn], var.additional_iam_roles) : [aws_iam_role.redshift_role.arn]
+}
 resource "aws_redshift_cluster" "redshift_cluster" {
   cluster_identifier           = "${var.identifier_prefix}-redshift-cluster"
   database_name                = "data_platform"
@@ -94,7 +96,7 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   cluster_type                 = "multi-node"
   number_of_nodes              = 3
   cluster_parameter_group_name = aws_redshift_parameter_group.require_ssl.name
-  iam_roles                    = [aws_iam_role.redshift_role.arn]
+  iam_roles                    = local.iam_role_arns
   cluster_subnet_group_name    = aws_redshift_subnet_group.redshift.name
   publicly_accessible          = false
   final_snapshot_identifier    = "${var.identifier_prefix}-redshift-cluster-final"
@@ -124,11 +126,11 @@ resource "aws_redshift_subnet_group" "redshift" {
 }
 
 data "aws_secretsmanager_secret" "redshift_ingress_rules" {
-    name = "${var.identifier_prefix}-manually-managed-value-redshift-ingress-rules"
+  name = "${var.identifier_prefix}-manually-managed-value-redshift-ingress-rules"
 }
 
-data "aws_secretsmanager_secret_version" "redshift_ingress_rules"{
-    secret_id = data.aws_secretsmanager_secret.redshift_ingress_rules.id
+data "aws_secretsmanager_secret_version" "redshift_ingress_rules" {
+  secret_id = data.aws_secretsmanager_secret.redshift_ingress_rules.id
 }
 
 locals {
@@ -150,17 +152,17 @@ resource "aws_security_group" "redshift_cluster_security_group" {
 
   ingress {
     description = "Allows cidr based inbound traffic"
-    from_port = 5439
-    to_port = 5439
-    protocol = "tcp"
+    from_port   = 5439
+    to_port     = 5439
+    protocol    = "tcp"
     cidr_blocks = local.redshift_ingress_rules["cidr_blocks"]
   }
 
   ingress {
-    description = "Allows security group based inbound traffic"
-    from_port = 5439
-    to_port = 5439
-    protocol = "tcp"
+    description     = "Allows security group based inbound traffic"
+    from_port       = 5439
+    to_port         = 5439
+    protocol        = "tcp"
     security_groups = local.redshift_ingress_rules["security_groups"]
   }
 
