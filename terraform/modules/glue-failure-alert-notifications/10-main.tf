@@ -49,6 +49,14 @@ data "aws_iam_policy_document" "lambda" {
     effect    = "Allow"
     resources = ["arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.current.account_id}:secret:${var.secret_name}*"]
   }
+
+  statement {
+    actions = [
+      "glue:GetJob"
+    ]
+    effect    = "Allow"
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "lambda" {
