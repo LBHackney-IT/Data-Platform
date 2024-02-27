@@ -14,8 +14,6 @@ from notifications_python_client.notifications import NotificationsAPIClient
 from notifications_python_client.errors import HTTPError
 import pandas as pd
 
-from helpers import api_queries, api_queries_dict
-
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -128,6 +126,15 @@ def lambda_handler(event, context):
     api_key = api_secret_json.get("api_key_live")
     client = initialise_notification_client(api_key)
 
+    # GovNotify queries to retrieve
+    api_queries = ['notifications', 'received_text_messages']
+    api_queries_dict = {
+        'notifications': {'query': client.get_all_notifications(include_jobs=True),
+                          'file_name': 'notifications'},
+        'received_text_messages': {'query': client.get_received_texts(),
+                                   'file_name': 'received_text_messages'}
+    }
+
     logger.info(f"Get API responses...")
     for api_query in api_queries:
         query = api_queries_dict.get(api_query).get('query')
@@ -147,4 +154,3 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
     lambda_handler("event", "lambda_context")
-
