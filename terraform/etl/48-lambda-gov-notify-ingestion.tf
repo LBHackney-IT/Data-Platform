@@ -147,8 +147,9 @@ module "gov-notify-ingestion-housing-repairs" {
     TARGET_S3_BUCKET_NAME = "housing/govnotify/damp_and_mould/"
   }
   layers = [
+    "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13",
     "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:notifications-python-client-9-0-0-layer:1",
-    "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13"
+    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:urllib3-1-26-18-layer:1"
   ]
 }
 
