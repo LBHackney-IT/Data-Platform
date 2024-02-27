@@ -15,6 +15,7 @@ module "redshift" {
   refined_zone_kms_key_arn = module.refined_zone_data_source.kms_key_arn
   trusted_zone_kms_key_arn = module.trusted_zone_data_source.kms_key_arn
   secrets_manager_key      = data.aws_kms_key.secrets_manager_key.arn
+  additional_iam_roles     = local.is_production_environment ? [] : [aws_iam_role.parking_redshift_copier[0].arn]
 }
 
 // Configuration of redshift external schemas, users & granting permissions
@@ -240,7 +241,7 @@ locals {
 
   redshift_roles = [
     {
-      role_name = local.unrestricted_data_role_name
+      role_name                  = local.unrestricted_data_role_name
       schemas_to_grant_access_to = local.unrestricted_schemas
     },
     {
@@ -255,7 +256,7 @@ locals {
       ]
     },
     {
-      role_name  = "${module.department_parking_data_source.identifier_snake_case}_ro"
+      role_name = "${module.department_parking_data_source.identifier_snake_case}_ro"
       schemas_to_grant_access_to = [
         replace(module.department_parking_data_source.raw_zone_catalog_database_name, "-", "_"),
         "parking_raw_zone_liberator",
@@ -270,7 +271,7 @@ locals {
       ]
     },
     {
-      role_name  = "${module.department_finance_data_source.identifier_snake_case}_ro"
+      role_name = "${module.department_finance_data_source.identifier_snake_case}_ro"
       schemas_to_grant_access_to = [
         replace(module.department_finance_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_finance_data_source.refined_zone_catalog_database_name, "-", "_"),
@@ -278,10 +279,10 @@ locals {
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
-      ] 
+      ]
     },
     {
-      role_name  = "${module.department_data_and_insight_data_source.identifier_snake_case}_ro"
+      role_name = "${module.department_data_and_insight_data_source.identifier_snake_case}_ro"
       schemas_to_grant_access_to = [
         replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_"),
@@ -342,10 +343,10 @@ locals {
         "${module.department_revenues_data_source.identifier_snake_case}_ro",
         "${module.department_environmental_services_data_source.identifier_snake_case}_ro",
         "${module.department_housing_data_source.identifier_snake_case}_ro"
-      ] 
+      ]
     },
     {
-      role_name  = "${module.department_env_enforcement_data_source.identifier_snake_case}_ro"
+      role_name = "${module.department_env_enforcement_data_source.identifier_snake_case}_ro"
       schemas_to_grant_access_to = [
         replace(module.department_env_enforcement_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_env_enforcement_data_source.refined_zone_catalog_database_name, "-", "_"),
@@ -353,10 +354,10 @@ locals {
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
-      ] 
+      ]
     },
     {
-      role_name  = "${module.department_planning_data_source.identifier_snake_case}_ro"
+      role_name = "${module.department_planning_data_source.identifier_snake_case}_ro"
       schemas_to_grant_access_to = [
         replace(module.department_planning_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_planning_data_source.refined_zone_catalog_database_name, "-", "_"),
@@ -364,10 +365,10 @@ locals {
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
-      ] 
+      ]
     },
     {
-      role_name  = "${module.department_sandbox_data_source.identifier_snake_case}_ro"
+      role_name = "${module.department_sandbox_data_source.identifier_snake_case}_ro"
       schemas_to_grant_access_to = [
         replace(module.department_sandbox_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_sandbox_data_source.refined_zone_catalog_database_name, "-", "_"),
@@ -375,10 +376,10 @@ locals {
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
-      ] 
+      ]
     },
     {
-      role_name  = "${module.department_benefits_and_housing_needs_data_source.identifier_snake_case}_ro"
+      role_name = "${module.department_benefits_and_housing_needs_data_source.identifier_snake_case}_ro"
       schemas_to_grant_access_to = [
         replace(module.department_benefits_and_housing_needs_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_benefits_and_housing_needs_data_source.refined_zone_catalog_database_name, "-", "_"),
@@ -386,10 +387,10 @@ locals {
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
-      ] 
+      ]
     },
     {
-      role_name  = "${module.department_revenues_data_source.identifier_snake_case}_ro"
+      role_name = "${module.department_revenues_data_source.identifier_snake_case}_ro"
       schemas_to_grant_access_to = [
         replace(module.department_revenues_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_revenues_data_source.refined_zone_catalog_database_name, "-", "_"),
@@ -397,10 +398,10 @@ locals {
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
-      ] 
+      ]
     },
     {
-      role_name  = "${module.department_environmental_services_data_source.identifier_snake_case}_ro"
+      role_name = "${module.department_environmental_services_data_source.identifier_snake_case}_ro"
       schemas_to_grant_access_to = [
         replace(module.department_environmental_services_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_environmental_services_data_source.refined_zone_catalog_database_name, "-", "_"),
@@ -408,10 +409,10 @@ locals {
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
-      ] 
+      ]
     },
     {
-      role_name  = "${module.department_housing_data_source.identifier_snake_case}_ro"
+      role_name = "${module.department_housing_data_source.identifier_snake_case}_ro"
       schemas_to_grant_access_to = [
         replace(module.department_housing_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.refined_zone_catalog_database_name, "-", "_"),
@@ -419,7 +420,7 @@ locals {
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
-      ] 
+      ]
     }
   ]
 }

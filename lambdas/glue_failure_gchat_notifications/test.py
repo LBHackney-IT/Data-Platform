@@ -8,8 +8,9 @@ import botocore.session
 from botocore.stub import Stubber
 from glue_failure_gchat_notifications.main import (
     format_message,
-    lambda_handler,
     get_max_retries,
+    get_run_attempt,
+    lambda_handler,
 )
 
 
@@ -42,6 +43,7 @@ class TestGlueAlarmsHandler(TestCase):
         self.event_time = "2024-01-11T13:51:06Z"
         self.job_created_on = "2023-01-11T13:51:06Z"
         self.job_last_modified_on = "2023-01-12T13:51:06Z"
+        self.test_run_id = "test_run_id123"
 
         self.cloudwatch_event = {
             "version": "0",
@@ -56,9 +58,8 @@ class TestGlueAlarmsHandler(TestCase):
                 "jobName": self.job_name,
                 "severity": "ERROR",
                 "state": "FAILED",
-                "jobRunId": "test_run_id123",
+                "jobRunId": self.test_run_id,
                 "message": "An error occurred while running the job.",
-                "attempt": 1,
             },
         }
 
@@ -75,9 +76,7 @@ class TestGlueAlarmsHandler(TestCase):
                 "CreatedOn": self.job_created_on,
                 "LastModifiedOn": self.job_last_modified_on,
                 "MaxRetries": 0,
-                "ExecutionProperty": {
-                    "MaxConcurrentRuns": 1
-                },
+                "ExecutionProperty": {"MaxConcurrentRuns": 1},
                 "Command": {
                     "Name": "test_name",
                     "ScriptLocation": "test_location",
@@ -96,6 +95,42 @@ class TestGlueAlarmsHandler(TestCase):
             }
         }
 
+        self.get_job_run_response = {
+            "JobRun": {
+                "Id": self.test_run_id,
+                "Attempt": 0,
+                "PreviousRunId": "test_previous_run_id",
+                "TriggerName": "test_trigger_name",
+                "JobName": self.job_name,
+                "StartedOn": "2024-01-11T13:51:06Z",
+                "LastModifiedOn": "2024-01-11T13:55:06Z",
+                "CompletedOn": "2024-01-11T13:58:06Z",
+                "JobRunState": "FAILED",
+                "Arguments": {
+                    "test_argument": "test_value",
+                },
+                "ErrorMessage": "An error occurred while running the job.",
+                "PredecessorRuns": [
+                    {
+                        "JobName": self.job_name,
+                        "RunId": "test_run_id",
+                    }
+                ],
+                "AllocatedCapacity": 10,
+                "ExecutionTime": 100,
+                "Timeout": 360,
+                "MaxCapacity": 10.0,
+                "WorkerType": "Standard",
+                "NumberOfWorkers": 10,
+                "SecurityConfiguration": "test_security_configuration",
+                "LogGroupName": "test_log_group_name",
+                "NotificationProperty": {
+                    "NotifyDelayAfter": 100,
+                },
+                "GlueVersion": "test_glue_version",
+            }
+        }
+
         self.secret_name = "test_secret_name"
 
     @mock.patch.dict(os.environ, mock_env_vars)
@@ -110,6 +145,7 @@ class TestGlueAlarmsHandler(TestCase):
         self.secretsmanager_client_stubber.activate()
 
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.add_response("get_job_run", self.get_job_run_response)
         self.glue_client_stubber.activate()
 
         lambda_handler(
@@ -148,6 +184,7 @@ class TestGlueAlarmsHandler(TestCase):
         self.secretsmanager_client_stubber.activate()
 
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.add_response("get_job_run", self.get_job_run_response)
         self.glue_client_stubber.activate()
 
         lambda_handler(
@@ -170,6 +207,7 @@ class TestGlueAlarmsHandler(TestCase):
     ):
         self.get_job_response["Job"]["MaxRetries"] = 3
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.add_response("get_job_run", self.get_job_run_response)
         self.glue_client_stubber.activate()
 
         lambda_handler(
@@ -182,12 +220,13 @@ class TestGlueAlarmsHandler(TestCase):
 
     @mock.patch.dict(os.environ, mock_env_vars)
     @mock.patch("lambda_alarms_handler.main.urllib3.PoolManager", spec=True)
-    def test_does_not_call_poolmanager_on_urllib3_if_attempt_is_equal_to_max_retries(
+    def test_does_not_call_poolmanager_on_urllib3_if_attempt_is_less_than_max_retries(
         self, mock_urllib_poolmanager
     ):
         self.get_job_response["Job"]["MaxRetries"] = 1
-        self.cloudwatch_event["detail"]["attempt"] = 1
+        self.get_job_run_response["JobRun"]["Attempt"] = 0
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
+        self.glue_client_stubber.add_response("get_job_run", self.get_job_run_response)
         self.glue_client_stubber.activate()
 
         lambda_handler(
@@ -204,8 +243,18 @@ class TestGlueAlarmsHandler(TestCase):
         self.glue_client_stubber.add_response("get_job", self.get_job_response)
         self.glue_client_stubber.activate()
 
-        actual_max_retries = get_max_retries(
-            self.job_name, self.glue_client
-        )
+        actual_max_retries = get_max_retries(self.job_name, self.glue_client)
 
         self.assertEqual(expected_max_retries, actual_max_retries)
+
+    def test_get_run_attempt_returns_correct_run_attempt(self):
+        expected_run_attempt = 0
+
+        self.glue_client_stubber.add_response("get_job_run", self.get_job_run_response)
+        self.glue_client_stubber.activate()
+
+        actual_run_attempt = get_run_attempt(
+            self.job_name, self.test_run_id, self.glue_client
+        )
+
+        self.assertEqual(expected_run_attempt, actual_run_attempt)
