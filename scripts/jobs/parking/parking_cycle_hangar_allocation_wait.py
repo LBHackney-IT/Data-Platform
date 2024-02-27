@@ -91,7 +91,7 @@ Create a comparison between Toms Hangar list and EStreet
 ************************************************************/
 With TomHangar as (
     SELECT 
-        asset_no as asset_no, asset_type, street_or_estate, zone, status, key_number, fob, location_description,
+        asset_no, asset_type, street_or_estate, zone, status, key_number, fob, location_description,
         road_name, postcode, date_installed, easting, northing, road_or_pavement,
         case
             When asset_no like '%Bikehangar_1577%'    Then '1577'           
