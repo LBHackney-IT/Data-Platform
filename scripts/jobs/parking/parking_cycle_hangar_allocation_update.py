@@ -1,11 +1,19 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS, create_pushdown_predicate_for_max_date_partition_value
+
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    create_pushdown_predicate_for_max_date_partition_value,
+    get_glue_env_var,
+    get_latest_partitions,
+)
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -90,14 +98,14 @@ Create a comparison between Toms Hangar list and EStreet
 ************************************************************/
 With TomHangar as (
     SELECT 
-        hangar_corral_number as asset_no, asset_type, street_or_estate, zone, status, key_number, fob, location_description,
+        asset_no as asset_no, asset_type, street_or_estate, zone, status, key_number, fob, location_description,
         road_name, postcode, date_installed, easting, northing, road_or_pavement,
         case
-            When hangar_corral_number like '%Bikehangar_1577%'    Then '1577'           
-            When hangar_corral_number like '%Bikehangar_H1439%'   Then 'H1439'
-            When hangar_corral_number like '%Bikehangar_H1440%'   Then 'Hangar_H1440'
-            When hangar_corral_number like '%Bikehangar_1435%'    Then 'Bikehangar_H1435'
-            ELSE replace(hangar_corral_number, ' ','_')
+            When asset_no like '%Bikehangar_1577%'    Then '1577'           
+            When asset_no like '%Bikehangar_H1439%'   Then 'H1439'
+            When asset_no like '%Bikehangar_H1440%'   Then 'Hangar_H1440'
+            When asset_no like '%Bikehangar_1435%'    Then 'Bikehangar_H1435'
+            ELSE replace(asset_no, ' ','_')
         END as HangarID
     from parking_parking_ops_cycle_hangar_list
     WHERE import_date = (Select MAX(import_date) 
@@ -312,7 +320,9 @@ SQL_node1658765472050 = sparkSqlQuery(
 
 # Script generated for node Amazon S3
 AmazonS3_node1658765590649 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/parking_cycle_hangar_allocation_update/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/parking_cycle_hangar_allocation_update/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=PARTITION_KEYS,
