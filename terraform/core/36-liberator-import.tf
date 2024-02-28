@@ -10,7 +10,7 @@ module "liberator_data_storage" {
 }
 
 module "liberator_dump_to_rds_snapshot" {
-  count                      = 1
+  count                      = local.is_live_environment ? 1 : 0
   source                     = "../modules/sql-to-rds-snapshot"
   tags                       = module.tags.values
   project                    = var.project
@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 }
 
 module "liberator_rds_snapshot_to_s3" {
-  count                          = 1
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/rds-snapshot-to-s3"
   tags                           = module.tags.values
   identifier_prefix              = local.identifier_prefix
