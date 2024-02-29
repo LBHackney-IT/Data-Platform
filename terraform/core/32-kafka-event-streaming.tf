@@ -26,12 +26,12 @@ module "kafka_event_streaming" {
     "arn:aws:iam::364864573329:role/mtfh-reporting-data-listener/development/mtfh-reporting-data-listener-lambdaExecutionRole"
   ]
 
-  datahub_actions_security_group_id       = module.datahub[0].datahub_actions_security_group_id
-  datahub_gms_security_group_id           = module.datahub[0].datahub_gms_service_security_group_id
-  datahub_mae_consumer_security_group_id  = module.datahub[0].datahub_mae_security_group_id
-  datahub_mce_consumer_security_group_id  = module.datahub[0].datahub_mce_security_group_id
-  datahub_kafka_setup_security_group_id   = module.datahub[0].datahub_kafka_setup_security_group_id
-  kafka_tester_lambda_security_group_id   = lower(var.environment) != "prod" ? module.kafka_test_lambda[0].security_group_id : ""
+  datahub_actions_security_group_id      = module.datahub[0].datahub_actions_security_group_id
+  datahub_gms_security_group_id          = module.datahub[0].datahub_gms_service_security_group_id
+  datahub_mae_consumer_security_group_id = module.datahub[0].datahub_mae_security_group_id
+  datahub_mce_consumer_security_group_id = module.datahub[0].datahub_mce_security_group_id
+  datahub_kafka_setup_security_group_id  = module.datahub[0].datahub_kafka_setup_security_group_id
+  kafka_tester_lambda_security_group_id  = lower(var.environment) != "prod" ? module.kafka_test_lambda[0].security_group_id : ""
 }
 
 module "kafka_test_lambda" {
@@ -50,6 +50,6 @@ module "kafka_test_lambda" {
   lambda_environment_variables = {
     "TARGET_KAFKA_BROKERS" = module.kafka_event_streaming[0].cluster_config.bootstrap_brokers_tls
     "SCHEMA_REGISTRY_URL"  = module.kafka_event_streaming[0].schema_registry_url
-    
+
   }
 }

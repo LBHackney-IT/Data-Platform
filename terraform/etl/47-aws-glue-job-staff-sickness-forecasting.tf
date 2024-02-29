@@ -36,7 +36,7 @@ module "staff_sickness_forecast_refined" {
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/hr-and-od/staff-sickness/"
     configuration      = null
     table_prefix       = null
-    Grouping           = {
+    Grouping = {
       TableLevelConfiguration = 2
     }
   }

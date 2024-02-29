@@ -1,6 +1,6 @@
 data "aws_iam_policy_document" "pre_production_data_cleanup_task_role" {
-  count  = !local.is_production_environment && local.is_live_environment ? 1 : 0
-  
+  count = !local.is_production_environment && local.is_live_environment ? 1 : 0
+
   statement {
     effect = "Allow"
     actions = [

@@ -10,7 +10,7 @@ variable "identifier_prefix" {
 
 variable "lambda_name" {
   description = "Name of the lambda"
-  type = string
+  type        = string
 }
 
 variable "project" {

@@ -11,7 +11,7 @@ terraform {
       version = "~> 4.0"
       configuration_aliases = [
         aws.aws_sandbox_account
-     ]
+      ]
     }
   }
 }

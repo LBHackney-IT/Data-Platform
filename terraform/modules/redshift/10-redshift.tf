@@ -124,11 +124,11 @@ resource "aws_redshift_subnet_group" "redshift" {
 }
 
 data "aws_secretsmanager_secret" "redshift_ingress_rules" {
-    name = "${var.identifier_prefix}-manually-managed-value-redshift-ingress-rules"
+  name = "${var.identifier_prefix}-manually-managed-value-redshift-ingress-rules"
 }
 
-data "aws_secretsmanager_secret_version" "redshift_ingress_rules"{
-    secret_id = data.aws_secretsmanager_secret.redshift_ingress_rules.id
+data "aws_secretsmanager_secret_version" "redshift_ingress_rules" {
+  secret_id = data.aws_secretsmanager_secret.redshift_ingress_rules.id
 }
 
 locals {
@@ -150,17 +150,17 @@ resource "aws_security_group" "redshift_cluster_security_group" {
 
   ingress {
     description = "Allows cidr based inbound traffic"
-    from_port = 5439
-    to_port = 5439
-    protocol = "tcp"
+    from_port   = 5439
+    to_port     = 5439
+    protocol    = "tcp"
     cidr_blocks = local.redshift_ingress_rules["cidr_blocks"]
   }
 
   ingress {
-    description = "Allows security group based inbound traffic"
-    from_port = 5439
-    to_port = 5439
-    protocol = "tcp"
+    description     = "Allows security group based inbound traffic"
+    from_port       = 5439
+    to_port         = 5439
+    protocol        = "tcp"
     security_groups = local.redshift_ingress_rules["security_groups"]
   }
 
