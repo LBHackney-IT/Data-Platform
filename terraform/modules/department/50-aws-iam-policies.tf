@@ -449,6 +449,16 @@ data "aws_iam_policy_document" "secrets_manager_read_only" {
       var.secrets_manager_kms_key.arn
     ]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:PassRole",
+    ]
+    resources = [
+      "arn:aws:iam::34566344452:role/dataplatform-stg-glue-data-and-insight",
+    ]
+  }
 }
 
 resource "aws_iam_policy" "secrets_manager_read_only" {
