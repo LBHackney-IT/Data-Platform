@@ -24,6 +24,7 @@ module "glue-failure-alert-notifications" {
   lambda_name                    = "glue-failure-gchat-notifications"
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   cloudwatch_event_pattern       = jsonencode(local.glue_failure_cloudwatch_event_pattern)
+  timeout                        = 10
 
   secret_name             = "${local.short_identifier_prefix}glue-failure-gchat-webhook-url"
   secrets_manager_kms_key = aws_kms_key.secrets_manager_key
