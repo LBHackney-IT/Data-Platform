@@ -41,7 +41,7 @@ Select distinct vrm as canx_vrm
 from pcnfoidetails_pcn_foi_full where import_date = (select max(import_date) from pcnfoidetails_pcn_foi_full) and (upper(cancellationgroup) like '%RINGER%' or upper(cancellationreason) like '%RINGER%') 
 )
 Select cancelled_vrm.*, concat(substr(Cast(pcnissuedate as varchar(10)),1, 7), '-01') as MonthYear 
-,progressionstage ,debttype ,pcn ,pcnissuedate ,pcnissuedatetime ,street_location ,whereonlocation ,zone ,usrn ,contraventioncode ,contraventionsuffix  ,vrm ,vehiclemake ,vehiclemodel ,vehiclecolour
+,progressionstage ,debttype ,pcn ,pcnissuedate ,pcnissuedatetime ,street_location ,whereonlocation ,zone ,usrn ,contraventioncode ,contraventionsuffix  ,vrm ,vehiclemake ,vehiclemodel ,vehiclecolour,corresp_dispute_flag ,registered_keeper_address ,current_ticket_address
 
 /*for partiion*/
 
