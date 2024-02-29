@@ -12,7 +12,7 @@ variable "bucket_arn" {
 
 variable "email_list" {
   description = "A comma separated list of email addresses to subscribe to the SNS topic"
-  default = ""
+  default     = ""
 }
 
 variable "lambda_artefact_storage_bucket" {

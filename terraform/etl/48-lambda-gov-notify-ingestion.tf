@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 
 data "aws_iam_policy_document" "housing_gov_notify_lambda_execution" {
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "lambda:InvokeFunction"
     ]
@@ -110,7 +110,7 @@ data "aws_iam_policy_document" "gov_notify_lambda_secret_access" {
     actions = [
       "secretsmanager:GetSecretValue",
     ]
-    effect    = "Allow"
+    effect = "Allow"
     resources = [
       "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:housing/gov-notify*"
     ]
@@ -143,7 +143,7 @@ module "gov-notify-ingestion-housing-repairs" {
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_repairs"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_repairs.zip"
   runtime                        = "python3.9"
-  environment_variables          = {
+  environment_variables = {
     API_SECRET_NAME       = "housing/gov-notify_live_api_key"
     OUTPUT_S3_FOLDER      = "dataplatform-stg-landing-zone"
     TARGET_S3_BUCKET_NAME = "housing/govnotify/damp_and_mould/"

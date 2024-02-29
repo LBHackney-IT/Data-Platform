@@ -138,7 +138,7 @@ resource "aws_glue_crawler" "refined_zone_parking_liberator_crawler" {
   database_name = aws_glue_catalog_database.refined_zone_liberator.name
   name          = "${local.identifier_prefix}-refined-zone-liberator"
   role          = data.aws_iam_role.glue_role.arn
-  schedule      = local.is_production_environment  || !local.is_live_environment ? null : "cron(30 8 * * ? *)"
+  schedule      = local.is_production_environment || !local.is_live_environment ? null : "cron(30 8 * * ? *)"
 
   s3_target {
     path       = "s3://${module.refined_zone_data_source.bucket_id}/parking/liberator/"

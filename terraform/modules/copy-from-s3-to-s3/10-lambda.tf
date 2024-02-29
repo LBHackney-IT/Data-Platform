@@ -110,13 +110,13 @@ resource "null_resource" "lambda_builder" {
 }
 
 locals {
-   # This ensures that this data resource will not be evaluated until
-    # after the null_resource has been created.
-    lambda_exporter_id = null_resource.lambda_builder.id
+  # This ensures that this data resource will not be evaluated until
+  # after the null_resource has been created.
+  lambda_exporter_id = null_resource.lambda_builder.id
 
-    # This value gives us something to implicitly depend on
-    # in the archive_file below.
-    source_dir         = "${path.module}/lambda"
+  # This value gives us something to implicitly depend on
+  # in the archive_file below.
+  source_dir = "${path.module}/lambda"
 }
 
 data "archive_file" "lambda_source_code" {

@@ -53,7 +53,7 @@ locals {
     "complaint_sources",
     "file_closure_reasons",
     "enforcement_case_statuses"
-]
+  ]
 
   table_list = join(",", concat(local.tascomi_table_names, local.tascomi_static_tables))
 

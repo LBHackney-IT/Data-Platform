@@ -2,11 +2,11 @@ locals {
   lambda_name_underscore = replace(lower(var.lambda_name), "/[^a-zA-Z0-9]+/", "_")
   # This ensures that this data resource will not be evaluated until
   # after the null_resource has been created.
-  lambda_exporter_id     = null_resource.run_install_requirements.id
+  lambda_exporter_id = null_resource.run_install_requirements.id
 
   # This value gives us something to implicitly depend on
   # in the archive_file below.
-  source_dir             = "../../lambdas/${local.lambda_name_underscore}"
+  source_dir = "../../lambdas/${local.lambda_name_underscore}"
 }
 
 data "aws_iam_policy_document" "lambda_assume_role" {

@@ -1,9 +1,9 @@
 resource "aws_kms_key" "lambda_failure_notifications_kms_key" {
-  tags = var.tags
-  description = "${var.project} - ${var.environment} - lambda-failure-notification-${var.identifier_prefix} KMS Key"
+  tags                    = var.tags
+  description             = "${var.project} - ${var.environment} - lambda-failure-notification-${var.identifier_prefix} KMS Key"
   deletion_window_in_days = 10
-  enable_key_rotation = true
-  policy = data.aws_iam_policy_document.lambda_failure_notifications_kms_key_policy.json  
+  enable_key_rotation     = true
+  policy                  = data.aws_iam_policy_document.lambda_failure_notifications_kms_key_policy.json
 }
 
 resource "aws_kms_alias" "lambda_failure_notifications_kms_key_alias" {
@@ -29,14 +29,14 @@ data "aws_iam_policy_document" "lambda_failure_notifications_kms_key_policy" {
 
   statement {
     actions = [
-        "kms:Decrypt",
-        "kms:GenerateDataKey"
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
     ]
 
     principals {
       identifiers = ["cloudwatch.amazonaws.com"]
-      type       = "Service"   
-    }   
+      type        = "Service"
+    }
 
     resources = ["*"]
   }

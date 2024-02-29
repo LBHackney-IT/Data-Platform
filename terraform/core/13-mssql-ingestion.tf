@@ -147,7 +147,7 @@ module "academy_glue_job" {
   number_of_workers_for_glue_job  = local.number_of_glue_workers
   max_concurrent_runs_of_glue_job = length(local.academy_table_filters)
   job_parameters = {
-    "--BOOKMARK_CONTEXT" = ""
+    "--BOOKMARK_CONTEXT"            = ""
     "--source_data_database"        = module.academy_mssql_database_ingestion[0].ingestion_database_name
     "--s3_ingestion_bucket_target"  = "s3://${module.landing_zone.bucket_id}/academy/"
     "--s3_ingestion_details_target" = "s3://${module.landing_zone.bucket_id}/academy/ingestion-details/"
