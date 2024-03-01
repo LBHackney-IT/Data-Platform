@@ -137,6 +137,8 @@ module "street-systems-api-ingestion" {
   s3_key                         = "street-systems-api-ingestion.zip"
   lambda_source_dir              = "../../lambdas/street-systems-api-ingestion"
   lambda_output_path             = "../../lambdas/street-systems-api-ingestion.zip"
+  runtime                        = "python3.9"
+  lambda_role_arn                = "arn:aws:iam::120038763019:role/streetscene_street_systems_ingestion_lambda_role"
   environment_variables          = {
     API_SECRET_NAME       = "/data-and-insight/streets_systems_api_key"
     OUTPUT_S3_FOLDER      = "${module.landing_zone_data_source.bucket_arn}/streetscene/*"
