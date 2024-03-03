@@ -5,7 +5,13 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS, create_pushdown_predicate_for_max_date_partition_value
+from scripts.helpers.helpers import (
+    get_glue_env_var,
+    get_latest_partitions,
+    PARTITION_KEYS,
+    create_pushdown_predicate_for_max_date_partition_value,
+    create_pushdown_predicate,
+)
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -29,6 +35,7 @@ liberator_license_party_node1628255463015 = (
         database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_licence_party",
         transformation_ctx="liberator_license_party_node1628255463015",
+        push_down_predicate=create_pushdown_predicate("import_date", 1),
     )
 )
 
@@ -38,6 +45,7 @@ liberator_hangar_details_node1628254576316 = (
         database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_hangar_details",
         transformation_ctx="liberator_hangar_details_node1628254576316",
+        push_down_predicate=create_pushdown_predicate("import_date", 1),
     )
 )
 
@@ -47,6 +55,7 @@ liberator_hangar_types_node1628254679074 = (
         database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_hangar_types",
         transformation_ctx="liberator_hangar_types_node1628254679074",
+        push_down_predicate=create_pushdown_predicate("import_date", 1),
     )
 )
 
@@ -56,6 +65,7 @@ liberator_hangar_allocations_node1628254680802 = (
         database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_hangar_allocations",
         transformation_ctx="liberator_hangar_allocations_node1628254680802",
+        push_down_predicate=create_pushdown_predicate("import_date", 1),
     )
 )
 

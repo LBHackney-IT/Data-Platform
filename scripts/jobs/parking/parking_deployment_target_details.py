@@ -6,7 +6,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
 environment = get_glue_env_var("environment")
 
 
@@ -29,6 +29,7 @@ AmazonS3_node1632912445458 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
     table_name="calendar",
     transformation_ctx="AmazonS3_node1632912445458",
+    push_down_predicate=create_pushdown_predicate("import_date", 1),
 )
 
 # Script generated for node Amazon S3
@@ -36,6 +37,7 @@ AmazonS3_node1633593610551 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
     table_name="ceo_visit_req_timings",
     transformation_ctx="AmazonS3_node1633593610551",
+    push_down_predicate=create_pushdown_predicate("import_date", 1),
 )
 
 # Script generated for node Amazon S3
@@ -43,6 +45,7 @@ AmazonS3_node1633593851886 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="parking_ceo_on_street",
     transformation_ctx="AmazonS3_node1633593851886",
+    push_down_predicate=create_pushdown_predicate("import_date", 1),
 )
 
 # Script generated for node Amazon S3
@@ -50,6 +53,7 @@ AmazonS3_node1633594330463 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
     table_name="ceo_beat_visit_requirements",
     transformation_ctx="AmazonS3_node1633594330463",
+    push_down_predicate=create_pushdown_predicate("import_date", 1),
 )
 
 # Script generated for node ApplyMapping
