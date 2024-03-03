@@ -137,10 +137,12 @@ module "street-systems-api-ingestion" {
   s3_key                         = "street-systems-api-ingestion.zip"
   lambda_source_dir              = "../../lambdas/street-systems-api-ingestion"
   lambda_output_path             = "../../lambdas/street-systems-api-ingestion.zip"
+  runtime                        = "python3.9"
+  lambda_role_arn                = aws_iam_role.streetscene_street_systems_ingestion[0].arn
   environment_variables          = {
     API_SECRET_NAME       = "/data-and-insight/streets_systems_api_key"
-    OUTPUT_S3_FOLDER      = "${module.landing_zone_data_source.bucket_arn}/streetscene/*"
-    TARGET_S3_BUCKET_NAME = "streetscene/traffic-counters/"
+    OUTPUT_S3_FOLDER      = module.raw_zone_data_source.bucket_id
+    TARGET_S3_BUCKET_NAME = "streetscene/traffic-counters/street-systems"
     API_URL = "https://flask-customer-api.ki8kabg62o4fg.eu-west-2.cs.amazonlightsail.com"
   }
   layers = [
