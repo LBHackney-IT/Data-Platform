@@ -2,7 +2,7 @@ locals {
   create_street_systems_resource_count = !local.is_production_environment ? 1 : 0
 }
 
-data "aws_iam_policy_document" "streetscene_street_systems_landing_zone_access" {
+data "aws_iam_policy_document" "streetscene_street_systems_raw_zone_access" {
   statement {
     actions = [
       "s3:AbortMultipartUpload",
@@ -21,17 +21,17 @@ data "aws_iam_policy_document" "streetscene_street_systems_landing_zone_access" 
     ]
 
     resources = [
-      module.landing_zone_data_source.bucket_arn,
-      "${module.landing_zone_data_source.bucket_arn}/streetscene/*",
-      module.landing_zone_data_source.kms_key_arn
+      module.raw_zone_data_source.bucket_arn,
+      "${module.raw_zone_data_source.bucket_arn}/streetscene/*",
+      module.raw_zone_data_source.kms_key_arn
     ]
   }
 }
 
-resource "aws_iam_policy" "streetscene_street_systems_landing_zone_access" {
+resource "aws_iam_policy" "streetscene_street_systems_raw_zone_access" {
   count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
-  name   = "streetscene_street_systems_landing_zone_access"
-  policy = data.aws_iam_policy_document.streetscene_street_systems_landing_zone_access.json
+  name   = "streetscene_street_systems_raw_zone_access"
+  policy = data.aws_iam_policy_document.streetscene_street_systems_raw_zone_access.json
 }
 
 data "aws_iam_policy_document" "streetscene_street_systems_lambda_logs" {
@@ -95,7 +95,7 @@ resource "aws_iam_role" "streetscene_street_systems_ingestion" {
 resource "aws_iam_role_policy_attachment" "streetscene_street_systems_ingestion" {
   count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
   role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
-  policy_arn = aws_iam_policy.streetscene_street_systems_landing_zone_access[0].arn
+  policy_arn = aws_iam_policy.streetscene_street_systems_raw_zone_access[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "streetscene_lambda_invoke" {
