@@ -2,7 +2,7 @@ import unittest
 from io import StringIO
 import xml.etree.ElementTree as ET
 import csv
-from main import xml_to_csv
+from team_times.main import xml_to_csv
 
 
 class TestXMLToCSVConversion(unittest.TestCase):
