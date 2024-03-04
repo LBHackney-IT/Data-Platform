@@ -156,6 +156,7 @@ def lambda_handler(event, context):
     # out_df = out_df[['sensor_name', 'unit', 'variable', 'timestamp', 'reading']]
     # out_df['timestamp'] = pd.to_datetime(out_df['timestamp'])
     out_df['dt'] = pd.to_datetime(out_df['dt'])
+    out_df['dt'] = out_df['dt'].astype('datetime64[us]')
     print(out_df)
 
     s3_client = boto3.client('s3')
