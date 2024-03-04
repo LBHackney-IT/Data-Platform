@@ -145,8 +145,8 @@ module "gov-notify-ingestion-housing-repairs" {
   runtime                        = "python3.9"
   environment_variables          = {
     API_SECRET_NAME       = "housing/gov-notify_live_api_key"
-    OUTPUT_S3_FOLDER      = "dataplatform-stg-landing-zone"
-    TARGET_S3_BUCKET_NAME = "housing/govnotify/damp_and_mould/"
+    TARGET_S3_BUCKET      = "dataplatform-stg-landing-zone"
+    TARGET_S3_FOLDER = "housing/govnotify/damp_and_mould/"
   }
   layers = [
     "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13",
