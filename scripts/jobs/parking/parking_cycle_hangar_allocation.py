@@ -12,6 +12,7 @@ from scripts.helpers.helpers import (
     create_pushdown_predicate_for_max_date_partition_value,
     get_glue_env_var,
     get_latest_partitions,
+    create_pushdown_predicate,
 )
 
 
@@ -36,6 +37,7 @@ AmazonS3_node1658997944648 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
     table_name="parking_parking_ops_cycle_hangar_list",
     transformation_ctx="AmazonS3_node1658997944648",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -43,6 +45,7 @@ AmazonS3_node1697705005761 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_llpg",
     transformation_ctx="AmazonS3_node1697705005761",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -50,6 +53,7 @@ AmazonS3_node1697704537304 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="parking_cycle_hangars_denormalisation",
     transformation_ctx="AmazonS3_node1697704537304",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -57,6 +61,7 @@ AmazonS3_node1697705499200 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_hangar_allocations",
     transformation_ctx="AmazonS3_node1697705499200",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -64,6 +69,7 @@ AmazonS3_node1697704672904 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_hangar_waiting_list",
     transformation_ctx="AmazonS3_node1697704672904",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -71,6 +77,7 @@ AmazonS3_node1697704891824 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_licence_party",
     transformation_ctx="AmazonS3_node1697704891824",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node SQL
