@@ -29,7 +29,7 @@ S3bucketRawliberator_permit_fta_node1 = glueContext.create_dynamic_frame.from_ca
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_fta",
     transformation_ctx="S3bucketRawliberator_permit_fta_node1",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3 - raw - liberator_permit_renewals
@@ -38,7 +38,7 @@ AmazonS3rawliberator_permit_renewals_node1643219669907 = (
         database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_permit_renewals",
         transformation_ctx="AmazonS3rawliberator_permit_renewals_node1643219669907",
-        push_down_predicate=create_pushdown_predicate("import_date", 1),
+        push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 )
 
@@ -47,7 +47,7 @@ AmazonS3refineddc_liberator_latest_permit_status_node1643219673143 = glueContext
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="dc_liberator_latest_permit_status",
     transformation_ctx="AmazonS3refineddc_liberator_latest_permit_status_node1643219673143",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node ApplyMapping

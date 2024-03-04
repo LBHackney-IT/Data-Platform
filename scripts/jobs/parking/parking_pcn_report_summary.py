@@ -63,7 +63,7 @@ DataSource0 = glueContext.create_dynamic_frame.from_catalog(
     database = "dataplatform-" + environment + "-liberator-refined-zone",
     table_name = "pcnfoidetails_pcn_foi_full",
     transformation_ctx = "DataSource0",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 ## @type: SqlCode
 ## @args: [sqlAliases = {"pcnfoidetails_pcn_foi_full": DataSource0}, sqlName = SqlQuery0, transformation_ctx = "Transform0"]

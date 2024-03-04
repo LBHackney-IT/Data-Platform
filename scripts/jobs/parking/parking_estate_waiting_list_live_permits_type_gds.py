@@ -30,7 +30,7 @@ S3bucketraw_zoneliberator_permit_estate_wl_node1 = (
         database="dataplatform-" + environment + "-liberator-raw-zone",
         table_name="liberator_permit_estate_wl",
         transformation_ctx="S3bucketraw_zoneliberator_permit_estate_wl_node1",
-        push_down_predicate=create_pushdown_predicate("import_date", 1),
+        push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 )
 
@@ -39,7 +39,7 @@ AmazonS3parking_permit_denormalised_gds_street_llpg_node1640271444228 = glueCont
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="parking_permit_denormalised_gds_street_llpg",
     transformation_ctx="AmazonS3parking_permit_denormalised_gds_street_llpg_node1640271444228",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node ApplyMapping

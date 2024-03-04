@@ -32,7 +32,7 @@ S3bucket_node1 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_permit_status",
     transformation_ctx="S3bucket_node1",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node ApplyMapping

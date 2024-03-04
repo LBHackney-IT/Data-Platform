@@ -29,7 +29,7 @@ AmazonS3_node1627053246341 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_suspension_change",
     transformation_ctx="AmazonS3_node1627053246341",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -37,7 +37,7 @@ AmazonS3_node1627053109317 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_activity",
     transformation_ctx="AmazonS3_node1627053109317",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -45,7 +45,7 @@ AmazonS3_node1627053334221 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_suspension",
     transformation_ctx="AmazonS3_node1627053334221",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -53,7 +53,7 @@ AmazonS3_node1625732651466 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_status",
     transformation_ctx="AmazonS3_node1625732651466",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node ApplyMapping

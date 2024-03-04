@@ -29,7 +29,7 @@ AmazonS3_node1625732038443 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="parking_cedar_payments",
     transformation_ctx="AmazonS3_node1625732038443",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -37,7 +37,7 @@ AmazonS3_node1631887639199 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
     table_name="calendar",
     transformation_ctx="AmazonS3_node1631887639199",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node ApplyMapping

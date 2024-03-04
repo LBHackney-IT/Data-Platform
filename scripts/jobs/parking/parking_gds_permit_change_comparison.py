@@ -30,7 +30,7 @@ S3liberator_refinedparking_permit_denormalised_gds_street_llpg_node1 = glueConte
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="parking_permit_denormalised_gds_street_llpg",
     transformation_ctx="S3liberator_refinedparking_permit_denormalised_gds_street_llpg_node1",
-    push_down_predicate=create_pushdown_predicate("import_date", 1),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node ApplyMapping
