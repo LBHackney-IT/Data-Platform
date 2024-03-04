@@ -94,6 +94,7 @@ resource "aws_lambda_function" "lambda" {
   s3_bucket         = var.lambda_artefact_storage_bucket
   s3_key            = "${local.lambda_name_underscore}.zip"
   s3_object_version = aws_s3_object.lambda.version_id
+  timeout           = var.timeout
   environment {
     variables = var.lambda_environment_variables
   }

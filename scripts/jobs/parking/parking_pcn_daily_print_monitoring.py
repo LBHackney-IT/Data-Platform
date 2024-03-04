@@ -42,7 +42,7 @@ raw_zone_liberator_pcn_tickets_node1666105465609 = (
         database="dataplatform-"+environment+"-liberator-raw-zone",
         table_name="liberator_pcn_tickets",
         transformation_ctx="raw_zone_liberator_pcn_tickets_node1666105465609",
-        push_down_predicate=create_pushdown_predicate("import_date",1)
+        push_down_predicate=create_pushdown_predicate("import_date",7)
     )
 )
 print(f"loading raw_zone_liberator_pcn_tickets_node1666105465609 {(time.time() - start_time)/60:.2f} minutes")
@@ -55,7 +55,7 @@ raw_zone_liberator_pcn_audit_node1 = glueContext.create_dynamic_frame.from_catal
     database="dataplatform-"+environment+"-liberator-raw-zone",
     table_name="liberator_pcn_audit",
     transformation_ctx="raw_zone_liberator_pcn_audit_node1",
-    push_down_predicate=create_pushdown_predicate("import_date",1)
+    push_down_predicate=create_pushdown_predicate("import_date",7)
 )
 print(f"loading raw_zone_liberator_pcn_audit_node1 {(time.time() - start_time)/60:.2f} minutes")
 

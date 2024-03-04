@@ -449,6 +449,16 @@ data "aws_iam_policy_document" "secrets_manager_read_only" {
       var.secrets_manager_kms_key.arn
     ]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:PassRole",
+    ]
+    resources = [
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.identifier_prefix}-glue-data-and-insight"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "secrets_manager_read_only" {

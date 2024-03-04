@@ -6,7 +6,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var
+from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
 environment = get_glue_env_var("environment")
 
 
@@ -29,6 +29,7 @@ AmazonS3_node1627053246341 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_suspension_change",
     transformation_ctx="AmazonS3_node1627053246341",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -36,6 +37,7 @@ AmazonS3_node1627053109317 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_activity",
     transformation_ctx="AmazonS3_node1627053109317",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -43,6 +45,7 @@ AmazonS3_node1627053334221 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_suspension",
     transformation_ctx="AmazonS3_node1627053334221",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -50,6 +53,7 @@ AmazonS3_node1625732651466 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_status",
     transformation_ctx="AmazonS3_node1625732651466",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node ApplyMapping
