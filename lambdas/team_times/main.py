@@ -1,4 +1,5 @@
 import csv
+import logging
 import os
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -6,19 +7,23 @@ from io import StringIO
 
 import boto3
 import requests
+from botocore.exceptions import ClientError
 
 s3_client = boto3.client("s3")
 secrets_manager_client = boto3.client("secretsmanager", region_name="eu-west-2")
 
 
 def get_secret(secret_name, secrets_manager_client=None):
-    client = secrets_manager_client or boto3.client("secretsmanager")
+    client = secrets_manager_client or boto3.client(
+        "secretsmanager", region_name="eu-west-2"
+    )
     try:
         get_secret_value_response = client.get_secret_value(SecretId=secret_name)
-    except Exception as e:
-        raise e
+    except ClientError as e:
+        logging.error(f"Failed to retrieve secret {secret_name}: {e}")
+        return None
     else:
-        return get_secret_value_response["SecretString"]
+        return get_secret_value_response.get("SecretString", None)
 
 
 def save_xml_to_s3(xml_data, bucket_name, object_name, s3_client=None):
