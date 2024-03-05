@@ -1,8 +1,8 @@
 import csv
 import os
-import re
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from io import StringIO
 
 import boto3
 import requests
