@@ -35,7 +35,7 @@ def save_csv_to_s3(csv_data, bucket_name, object_name, s3_client=None):
 
 def xml_to_csv(xml_data):
     root = ET.fromstring(xml_data)
-    csv_data = io.StringIO()
+    csv_data = StringIO()
     writer = csv.writer(csv_data)
     headers = [
         "USERID",
