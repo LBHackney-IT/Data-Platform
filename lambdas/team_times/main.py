@@ -97,10 +97,12 @@ def main():
     api_endpoint = os.getenv("API_ENDPOINT")
     secret_name = os.getenv("API_SECRET_NAME")
     data_frequency = os.getenv("FREQUENCY", "D")
-    api_key = get_secret(secret_name)
+    api_key = get_secret(secret_name, secrets_manager_client)
     date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 
-    make_api_request_and_process_data(api_endpoint, api_key, date, data_frequency)
+    make_api_request_and_process_data(
+        api_endpoint, api_key, date, data_frequency, s3_client
+    )
 
 
 if __name__ == "__main__":
