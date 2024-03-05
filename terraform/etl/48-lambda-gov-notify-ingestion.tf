@@ -1,6 +1,6 @@
 locals {
   govnotify_tables                = ["notifications", "received_text_messages"]
-  create_govnotify_resource_count = !local.is_production_environment ? 1 : 0
+  create_govnotify_resource_count = local.is_live_environment ? 1 : 0
 }
 
 
