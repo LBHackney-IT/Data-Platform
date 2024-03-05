@@ -1,5 +1,5 @@
 module "lambda_layer_1" {
-  count               = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count               = local.is_live_environment ? 1 : 0
   source              = "../modules/aws-lambda-layers/"
   lambda_name         = "lambda_layers"
   tags                = module.tags.values
@@ -10,7 +10,7 @@ module "lambda_layer_1" {
 }
 
 module "lambda_layer_2" {
-  count               = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count               = local.is_live_environment ? 1 : 0
   source              = "../modules/aws-lambda-layers/"
   lambda_name         = "lambda_layers"
   tags                = module.tags.values
@@ -21,7 +21,7 @@ module "lambda_layer_2" {
 }
 
 module "lambda_layer_3" {
-  count               = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count               = local.is_live_environment ? 1 : 0
   source              = "../modules/aws-lambda-layers/"
   lambda_name         = "lambda_layers"
   tags                = module.tags.values
@@ -32,7 +32,7 @@ module "lambda_layer_3" {
 }
 
 module "lambda_layer_4" {
-  count               = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count               = local.is_live_environment ? 1 : 0
   source              = "../modules/aws-lambda-layers/"
   lambda_name         = "lambda_layers"
   tags                = module.tags.values
@@ -43,7 +43,7 @@ module "lambda_layer_4" {
 }
 
 module "lambda_layer_5" {
-  count               = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count               = local.is_live_environment ? 1 : 0
   source              = "../modules/aws-lambda-layers/"
   lambda_name         = "lambda_layers"
   tags                = module.tags.values
@@ -54,7 +54,7 @@ module "lambda_layer_5" {
 }
 
 module "lambda_layer_6" {
-  count               = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count               = local.is_live_environment ? 1 : 0
   source              = "../modules/aws-lambda-layers/"
   lambda_name         = "lambda_layers"
   tags                = module.tags.values
@@ -65,7 +65,7 @@ module "lambda_layer_6" {
 }
 
 module "lambda_layer_7" {
-  count               = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count               = local.is_live_environment ? 1 : 0
   source              = "../modules/aws-lambda-layers/"
   lambda_name         = "lambda_layers"
   tags                = module.tags.values

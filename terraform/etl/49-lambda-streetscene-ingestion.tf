@@ -1,5 +1,5 @@
 locals {
-  create_street_systems_resource_count = !local.is_production_environment ? 1 : 0
+  create_street_systems_resource_count = local.is_live_environment ? 1 : 0
 }
 
 data "aws_iam_policy_document" "streetscene_street_systems_raw_zone_access" {
@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "streetscene_street_systems_raw_zone_access" {
 }
 
 resource "aws_iam_policy" "streetscene_street_systems_raw_zone_access" {
-  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count  = local.is_live_environment ? 1 : 0
   name   = "streetscene_street_systems_raw_zone_access"
   policy = data.aws_iam_policy_document.streetscene_street_systems_raw_zone_access.json
 }
@@ -47,13 +47,13 @@ data "aws_iam_policy_document" "streetscene_street_systems_lambda_logs" {
 }
 
 resource "aws_iam_policy" "streetscene_street_systems_lambda_logs" {
-  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count  = local.is_live_environment ? 1 : 0
   name   = "streetscene_street_systems_lambda_logs"
   policy = data.aws_iam_policy_document.streetscene_street_systems_lambda_logs.json
 }
 
 resource "aws_iam_role_policy_attachment" "streetscene_street_systems_lambda_logs" {
-  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count      = local.is_live_environment ? 1 : 0
   role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
   policy_arn = aws_iam_policy.streetscene_street_systems_lambda_logs[0].arn
 }
@@ -81,25 +81,25 @@ data "aws_iam_policy_document" "streetscene_street_systems_lambda_execution" {
 }
 
 resource "aws_iam_policy" "streetscene_street_systems_lambda_execution" {
-  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count  = local.is_live_environment ? 1 : 0
   name   = "streetscene_street_systems_lambda_execution"
   policy = data.aws_iam_policy_document.streetscene_street_systems_lambda_execution.json
 }
 
 resource "aws_iam_role" "streetscene_street_systems_ingestion" {
-  count              = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count              = local.is_live_environment ? 1 : 0
   name               = "streetscene_street_systems_ingestion_lambda_role"
   assume_role_policy = data.aws_iam_policy_document.streetscene_street_systems_lambda_assume_role.json
 }
 
 resource "aws_iam_role_policy_attachment" "streetscene_street_systems_ingestion" {
-  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count      = local.is_live_environment ? 1 : 0
   role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
   policy_arn = aws_iam_policy.streetscene_street_systems_raw_zone_access[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "streetscene_lambda_invoke" {
-  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count      = local.is_live_environment ? 1 : 0
   role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
   policy_arn = aws_iam_policy.streetscene_street_systems_lambda_execution[0].arn
 }
@@ -115,19 +115,19 @@ data "aws_iam_policy_document" "streetscene_street_systems_lambda_secret_access"
 }
 
 resource "aws_iam_policy" "streetscene_street_systems_lambda_secret_access" {
-  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count  = local.is_live_environment ? 1 : 0
   name   = "streetscene_street_systems_lambda_secret_access"
   policy = data.aws_iam_policy_document.streetscene_street_systems_lambda_secret_access.json
 }
 
 resource "aws_iam_role_policy_attachment" "streetscene_street_systems_lambda_secret_access" {
-  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count      = local.is_live_environment ? 1 : 0
   role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
   policy_arn = aws_iam_policy.streetscene_street_systems_lambda_secret_access[0].arn
 }
 
 module "street-systems-api-ingestion" {
-  count                          = !local.is_production_environment ? 1 : 0
+  count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/aws-lambda"
   lambda_name                    = "street-systems-export"
   identifier_prefix              = local.short_identifier_prefix
@@ -146,10 +146,10 @@ module "street-systems-api-ingestion" {
     API_URL = "https://flask-customer-api.ki8kabg62o4fg.eu-west-2.cs.amazonlightsail.com"
   }
   layers = [
-    "arn:aws:lambda:eu-west-2:120038763019:layer:requests-2-31-0-and-httplib-0-22-0-layer:1",
+    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:requests-2-31-0-and-httplib-0-22-0-layer:1",
     "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:12",
-    "arn:aws:lambda:eu-west-2:120038763019:layer:s3fs-2023-12-2-layer:1",
-    "arn:aws:lambda:eu-west-2:120038763019:layer:urllib3-1-26-18-layer:1"
+    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:s3fs-2023-12-2-layer:1",
+    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:urllib3-1-26-18-layer:1"
   ]
 }
 resource "aws_cloudwatch_event_rule" "street_systems_api_trigger_event" {
