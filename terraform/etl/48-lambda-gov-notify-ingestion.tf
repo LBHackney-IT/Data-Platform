@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "housing_landing_zone_access" {
 }
 
 resource "aws_iam_policy" "housing_landing_zone_access" {
-  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count  = local.create_govnotify_resource_count
   name   = "housing_landing_zone_access"
   policy = data.aws_iam_policy_document.housing_landing_zone_access.json
 }
@@ -48,13 +48,13 @@ data "aws_iam_policy_document" "gov_notify_lambda_logs" {
 }
 
 resource "aws_iam_policy" "gov_notify_lambda_logs" {
-  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count  = local.create_govnotify_resource_count
   name   = "gov_notify_lambda_logs"
   policy = data.aws_iam_policy_document.gov_notify_lambda_logs.json
 }
 
 resource "aws_iam_role_policy_attachment" "gov_notify_lambda_logs" {
-  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count      = local.create_govnotify_resource_count
   role       = aws_iam_role.housing_gov_notify_ingestion[0].name
   policy_arn = aws_iam_policy.gov_notify_lambda_logs[0].arn
 }
@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 
 data "aws_iam_policy_document" "housing_gov_notify_lambda_execution" {
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "lambda:InvokeFunction"
     ]
@@ -82,25 +82,25 @@ data "aws_iam_policy_document" "housing_gov_notify_lambda_execution" {
 }
 
 resource "aws_iam_policy" "housing_gov_notify_lambda_execution" {
-  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count  = local.create_govnotify_resource_count
   name   = "housing_gov_notify_lambda_execution"
   policy = data.aws_iam_policy_document.housing_gov_notify_lambda_execution.json
 }
 
 resource "aws_iam_role" "housing_gov_notify_ingestion" {
-  count              = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count              = local.create_govnotify_resource_count
   name               = "housing_gov_notify_ingestion_lambda_role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
 resource "aws_iam_role_policy_attachment" "housing_gov_notify_ingestion" {
-  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count      = local.create_govnotify_resource_count
   role       = aws_iam_role.housing_gov_notify_ingestion[0].name
   policy_arn = aws_iam_policy.housing_landing_zone_access[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "housing_gov_notify_lambda_invoke" {
-  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count      = local.create_govnotify_resource_count
   role       = aws_iam_role.housing_gov_notify_ingestion[0].name
   policy_arn = aws_iam_policy.housing_gov_notify_lambda_execution[0].arn
 }
@@ -110,7 +110,7 @@ data "aws_iam_policy_document" "gov_notify_lambda_secret_access" {
     actions = [
       "secretsmanager:GetSecretValue",
     ]
-    effect    = "Allow"
+    effect = "Allow"
     resources = [
       "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:housing/gov-notify*"
     ]
@@ -118,13 +118,13 @@ data "aws_iam_policy_document" "gov_notify_lambda_secret_access" {
 }
 
 resource "aws_iam_policy" "gov_notify_lambda_secret_access" {
-  count  = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count  = local.create_govnotify_resource_count
   name   = "gov_notify_lambda_secret_access"
   policy = data.aws_iam_policy_document.gov_notify_lambda_secret_access.json
 }
 
 resource "aws_iam_role_policy_attachment" "gov_notify_lambda_secret_access" {
-  count      = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count      = local.create_govnotify_resource_count
   role       = aws_iam_role.housing_gov_notify_ingestion[0].name
   policy_arn = aws_iam_policy.gov_notify_lambda_secret_access[0].arn
 }
@@ -135,7 +135,7 @@ module "gov-notify-ingestion-housing-repairs" {
   source                         = "../modules/aws-lambda"
   tags                           = module.tags.values
   lambda_name                    = "govnotify_api_ingestion_repairs"
-  lambda_role_arn                = "arn:aws:iam::120038763019:role/housing_gov_notify_ingestion_lambda_role"
+  lambda_role_arn                = aws_iam_role.housing_gov_notify_ingestion[0].arn
   identifier_prefix              = local.short_identifier_prefix
   handler                        = "main.lambda_handler"
   lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
@@ -143,9 +143,9 @@ module "gov-notify-ingestion-housing-repairs" {
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_repairs"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_repairs.zip"
   runtime                        = "python3.9"
-  environment_variables          = {
-    API_SECRET_NAME       = "housing/gov-notify_live_api_key"
-    TARGET_S3_BUCKET      = module.landing_zone_data_source.bucket_id
+  environment_variables = {
+    API_SECRET_NAME  = "housing/gov-notify_live_api_key"
+    TARGET_S3_BUCKET = module.landing_zone_data_source.bucket_id
     TARGET_S3_FOLDER = "housing/govnotify/damp_and_mould/"
   }
   layers = [
