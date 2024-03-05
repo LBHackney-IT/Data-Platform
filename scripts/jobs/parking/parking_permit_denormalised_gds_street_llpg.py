@@ -34,7 +34,8 @@ S3bucketrefinedparking_permit_denormalised_data_node1 = (
         database="dataplatform-"+environment+"-liberator-refined-zone",
         table_name="parking_permit_denormalised_data",
         transformation_ctx="S3bucketrefinedparking_permit_denormalised_data_node1",
-        push_down_predicate=create_pushdown_predicate("import_date", 7),
+        #teporarily removed while table partitions are fixed
+        #push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 )
 
@@ -62,7 +63,6 @@ AmazonS3parkingrawltn_london_fields_node1657536241729 = (
         database="parking-raw-zone",
         table_name="ltn_london_fields",
         transformation_ctx="AmazonS3parkingrawltn_london_fields_node1657536241729",
-        push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 )
 
