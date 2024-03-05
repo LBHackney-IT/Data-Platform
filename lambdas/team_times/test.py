@@ -1,7 +1,8 @@
-import unittest
-from io import StringIO
-import xml.etree.ElementTree as ET
 import csv
+import unittest
+import xml.etree.ElementTree as ET
+from io import StringIO
+
 from team_times.main import xml_to_csv
 
 
@@ -10,11 +11,11 @@ class TestXMLToCSVConversion(unittest.TestCase):
         xml_data = """<?xml version="1.0" encoding="utf-8"?>
 <TimeSheet>
     <Employee>
-        <USERID>921</USERID>
-        <DEPARTMENT>Parking Services</DEPARTMENT>
-        <NAME>tom</NAME>
-        <SURNAME>tiddy</SURNAME>
-        <EMAIL>tom.tiddy@kjhfdg.com</EMAIL>
+        <USERID>12345</USERID>
+        <DEPARTMENT>Postal Services</DEPARTMENT>
+        <NAME>postman</NAME>
+        <SURNAME>pat</SURNAME>
+        <EMAIL>postman.pat@example.com</EMAIL>
         <STAFFTYPE>Permanent</STAFFTYPE>
         <SUBMITTED>True</SUBMITTED>
         <DATE>28/02/2024</DATE>
@@ -51,11 +52,11 @@ class TestXMLToCSVConversion(unittest.TestCase):
         ]
         writer.writerow(headers)
         row = [
-            "921",
-            "Parking Services",
-            "tom",
-            "tiddy",
-            "tom.tiddy@kjhfdg.com",
+            "12345",
+            "Postal Services",
+            "postman",
+            "pat",
+            "postman.pat@example.com",
             "Permanent",
             "True",
             "28/02/2024",
