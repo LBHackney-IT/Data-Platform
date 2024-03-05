@@ -36,8 +36,6 @@ AmazonS3_node1633593610551 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
     table_name="ceo_visit_req_timings",
     transformation_ctx="AmazonS3_node1633593610551",
-    #teporarily removed while table partitions are fixed
-    #push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
@@ -54,8 +52,6 @@ AmazonS3_node1633594330463 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
     table_name="ceo_beat_visit_requirements",
     transformation_ctx="AmazonS3_node1633594330463",
-    #teporarily removed while table partitions are fixed
-    #push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node ApplyMapping
