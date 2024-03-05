@@ -1,12 +1,14 @@
+import csv
 import os
+import re
+import xml.etree.ElementTree as ET
+from datetime import datetime
+
 import boto3
 import requests
-import csv
-from datetime import datetime
-import xml.etree.ElementTree as ET
 
 s3_client = boto3.client("s3")
-secrets_manager_client = boto3.client("secretsmanager")
+secrets_manager_client = boto3.client("secretsmanager", region_name="eu-west-2")
 
 
 def get_secret(secret_name, secrets_manager_client=None):
@@ -64,7 +66,9 @@ def xml_to_csv(xml_data):
     return csv_data
 
 
-def make_api_request_and_process_data(api_endpoint, api_key, date, data_frequency, s3_client):
+def make_api_request_and_process_data(
+    api_endpoint, api_key, date, data_frequency, s3_client
+):
     data = {"apiKey": api_key, "D": date, "E": data_frequency}
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     response = requests.post(api_endpoint, data=data, headers=headers)
