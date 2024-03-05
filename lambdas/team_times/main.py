@@ -98,7 +98,7 @@ def make_api_request_and_process_data(
         print("Error:", response.status_code, response.text)
 
 
-def main():
+def main(event, context):
     api_endpoint = os.getenv("API_ENDPOINT")
     secret_name = os.getenv("API_SECRET_NAME")
     data_frequency = os.getenv("FREQUENCY", "D")
