@@ -115,8 +115,8 @@ def lambda_handler(event, context):
     api_secret_name = getenv("API_SECRET_NAME")
     region_name = getenv("AWS_REGION")
 
-    output_s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
-    output_folder = getenv("OUTPUT_S3_FOLDER")
+    output_s3_bucket = getenv("TARGET_S3_BUCKET")
+    output_folder = getenv("TARGET_S3_FOLDER")
 
     output_folder = add_date_partition_key_to_s3_prefix(output_folder)
 

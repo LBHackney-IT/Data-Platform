@@ -1,3 +1,4 @@
+from calendar import c
 import sys
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
@@ -5,7 +6,12 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from scripts.helpers.helpers import (
+    get_glue_env_var,
+    get_latest_partitions,
+    PARTITION_KEYS,
+    create_pushdown_predicate,
+)
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -28,6 +34,7 @@ S3bucketrefinedparking_permit_denormalised_data_node1 = (
         database="dataplatform-"+environment+"-liberator-refined-zone",
         table_name="parking_permit_denormalised_data",
         transformation_ctx="S3bucketrefinedparking_permit_denormalised_data_node1",
+        push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 )
 
@@ -37,6 +44,7 @@ AmazonS3rawliberator_permit_llpg_node1657535904691 = (
         database="dataplatform-"+environment+"-liberator-raw-zone",
         table_name="liberator_permit_llpg",
         transformation_ctx="AmazonS3rawliberator_permit_llpg_node1657535904691",
+        push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 )
 
@@ -45,6 +53,7 @@ AmazonS3unrestricted_address_api_dbo_hackney_address_node1657535910004 = glueCon
     database="dataplatform-"+environment+"-raw-zone-unrestricted-address-api",
     table_name="unrestricted_address_api_dbo_hackney_address",
     transformation_ctx="AmazonS3unrestricted_address_api_dbo_hackney_address_node1657535910004",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3 - parking raw - ltn_london_fields
@@ -53,6 +62,7 @@ AmazonS3parkingrawltn_london_fields_node1657536241729 = (
         database="parking-raw-zone",
         table_name="ltn_london_fields",
         transformation_ctx="AmazonS3parkingrawltn_london_fields_node1657536241729",
+        push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 )
 
