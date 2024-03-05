@@ -25,5 +25,7 @@ The ReadMe commands are mostly based on the Linux system (Ubuntu or Mac). If you
 
 Then, it's all good, you can `make init` and `make plan` in the root folder.
 
-**Error: **
+**Error:**
 1. Provider configuration not present: If you encounter VPC issues, make sure to initialise your workspace and select your workspace.
+- `aws-vault exec hackney-dataplatform-development -- terraform workspace new "{your_first_name}"`
+- `aws-vault exec hackney-dataplatform-development -- terraform workspace select "{your_first_name}"`
