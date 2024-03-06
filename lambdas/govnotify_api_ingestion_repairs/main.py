@@ -111,12 +111,14 @@ def add_date_partition_key_to_s3_prefix(s3_prefix):
 def lambda_handler(event, context):
     logger.info(f"Set up S3 client...")
     s3_client = boto3.client('s3')
+    glue_client = boto3.client('glue')
 
     api_secret_name = getenv("API_SECRET_NAME")
     region_name = getenv("AWS_REGION")
 
     output_s3_bucket = getenv("TARGET_S3_BUCKET")
     output_folder = getenv("TARGET_S3_FOLDER")
+    crawler = getenv("CRAWLER_NAME")
 
     output_folder = add_date_partition_key_to_s3_prefix(output_folder)
 
@@ -148,8 +150,11 @@ def lambda_handler(event, context):
         # Upload the json string and parquet buffer to S3
         upload_to_s3(output_s3_bucket, s3_client, json_str, f'{output_folder}json/{file_name}.json')
         s3_client.upload_fileobj(parquet_buffer, output_s3_bucket, f'{output_folder}parquet/{file_name}.parquet')
-
         logger.info(f"Responses written as json and parquet to {output_s3_bucket}/{output_folder}{file_name}")
+
+    # Crawl all the parquet data in S3
+    glue_client.start_crawler(Name=crawler)
+    logger.info(f"S3 parquet files crawled and written to housing landing zone data catalog")
 
 
 if __name__ == "__main__":

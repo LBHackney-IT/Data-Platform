@@ -144,9 +144,11 @@ module "gov-notify-ingestion-housing-repairs" {
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_repairs.zip"
   runtime                        = "python3.9"
   environment_variables = {
+
     API_SECRET_NAME  = "housing/gov-notify_live_api_key"
     TARGET_S3_BUCKET = module.landing_zone_data_source.bucket_id
     TARGET_S3_FOLDER = "housing/govnotify/damp_and_mould/"
+    CRAWLER_NAME = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing to Raw"
   }
   layers = [
     "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13",
@@ -175,4 +177,15 @@ resource "aws_cloudwatch_event_target" "govnotify_housing_repairs_trigger_event_
   }
   EOF
 }
+
+resource "aws_glue_crawler" "govnotify_housing_repairs_landing_to_raw" {
+  database_name = "${local.identifier_prefix}-landing-zone-database"
+  name          = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing to Raw"
+  role          = data.aws_iam_role.glue_role.arn
+  tags          = module.tags.values
+  s3_target {
+    path = "s3://${module.landing_zone_data_source.bucket_id}/housing/govnotify/damp_and_mould/parquet/"
+  }
+}
+
 
