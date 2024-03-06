@@ -181,7 +181,7 @@ resource "aws_glue_crawler" "govnotify_housing_repairs_landing_to_raw" {
   database_name = "${local.identifier_prefix}-landing-zone-database"
   name          = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing to Raw"
   role          = aws_iam_role.housing_gov_notify_ingestion[0].name
-
+  tags          = module.tags.values
   s3_target {
     path = "s3://${module.landing_zone_data_source.bucket_id}/housing/govnotify/damp_and_mould/parquet/"
   }
