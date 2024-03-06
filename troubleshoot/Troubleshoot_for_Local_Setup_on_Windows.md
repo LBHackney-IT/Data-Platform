@@ -21,9 +21,14 @@ The ReadMe commands are mostly based on the Linux system (Ubuntu or Mac). If you
 
 **Pre-check:**
 1. Make sure you have the "google_service_account_creds.json" file in the root directory.
+- Option (1)  `gcloud auth application-default login && copy C:\{PC_username}\WayneGreeff\AppData\Roaming\gcloud\application_default_credentials.json D:\test\Data-Platform\google_service_account_creds.json /y` Replace the destination {D:\test\} with your root directory of the Data-Platform folder.
+- Option (2) `gcloud auth application-default login; if ($?) { Copy-Item -Path 'C:\Users\{PC_username}\AppData\Roaming\gcloud\application_default_credentials.json' -Destination 'C:\Users\{PC_username}\Data-Platform\google_service_account_creds.json' -Force }` the desination is your root directory of the Data-Platform folder.
+
 2. Make sure Pre-replace has been done.
 
 Then, it's all good, you can `make init` and `make plan` in the root folder.
 
-**Error: **
+**Error:**
 1. Provider configuration not present: If you encounter VPC issues, make sure to initialise your workspace and select your workspace.
+- `aws-vault exec hackney-dataplatform-development -- terraform workspace new "{your_first_name}"`
+- `aws-vault exec hackney-dataplatform-development -- terraform workspace select "{your_first_name}"`
