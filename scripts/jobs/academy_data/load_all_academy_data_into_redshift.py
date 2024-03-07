@@ -76,7 +76,7 @@ def main(schema: str, catalog: str, table_mapping: Dict[str, str], iam_role: str
 
             s3_location = get_s3_location(table['Name'], base_s3_url)
             copy_sql = copy_command(schema, new_table_name, s3_location, iam_role)
-            print(copy_sql) #  print statements are for debugging
+            # print(copy_sql) #  print statements are for debugging
             try:
                 rs_command(copy_sql, fetch_results=False, allow_commit=True)
                 print(f"Data for {datetime.today().strftime('%Y%m%d')} copied successfully into table {new_table_name}.")
