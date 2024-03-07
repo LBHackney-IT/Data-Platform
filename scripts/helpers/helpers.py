@@ -648,7 +648,7 @@ def rs_command(query: str, fetch_results: bool = False, allow_commit: bool = Tru
     Returns:
         Optional[List[Dict]]: A list of dictionaries representing rows returned by the query if fetch_results is True; otherwise None.
     """
-    creds = get_secret('/data-and-insight/redshift-serverless-connection', 'eu-west-2')
+    creds = get_secret_dict('/data-and-insight/redshift-serverless-connection', 'eu-west-2')
     try:
         # Connection setup
         conn = psycopg2.connect(
