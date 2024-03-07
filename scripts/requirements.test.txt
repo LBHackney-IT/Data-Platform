@@ -2,3 +2,4 @@ pytest-watch
 freezegun
 pytest-mock
 pydeequ
+psycopg2-binary==2.8.6 # used to connect with redshift
