@@ -61,9 +61,18 @@ data "aws_iam_policy_document" "database_migration_custom_policy" {
     ]
   }
 
+  // only allow to get secret value with name starting from "/data-and-insight/*"
   statement {
     effect    = "Allow"
     actions   = ["secretsmanager:GetSecretValue"]
     resources = ["arn:aws:secretsmanager:${var.aws_deploy_region}:${var.aws_deploy_account_id}:secret:/${module.department_data_and_insight.identifier}/*"]
   }
+
+  // Need extract glue data cataglue info for database migration,
+  // but grant it full access so far (glue itself has very low risk).
+  statement {
+    effect    = "Allow"
+    actions   = ["glue:*"] 
+    resources = ["*"]
+  }  
 }
