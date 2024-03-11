@@ -1,14 +1,15 @@
 import time
 from datetime import datetime
 from typing import List, Dict, Any
-from utils import rs_command, get_secret
 import boto3
+from scripts.helpers.helpers import rs_command, get_secret_dict, get_glue_env_var
 
+environment = get_glue_env_var("environment")
 
 def get_all_tables(glue_client: Any, database_name: str, pattern: str = '') -> List[Dict]:
     """Retrieve all table metadata from Glue catalog for a specific database."""
     tables = []
-    paginator = glue_client.get_paginator('get_tables')
+    paginator = glue_client.get_paginator('get_tables') # Without paginator, only get 100 tables
     for page in paginator.paginate(DatabaseName=database_name):
         for table in page['TableList']:
             if pattern in table['Name']:
@@ -51,7 +52,7 @@ def get_s3_location(glue_table_name: str, base_s3_url: str) -> str:
 
 def process_load_tables(schema: str, catalog: str, table_mapping: Dict[str, str], iam_role: str, base_s3_url: str) -> None:
     """Main function to process and load tables."""
-    creds = get_secret('data-and-insight', 'eu-west-2') # this need to change to the new role "database_migration" access id and access key;
+    creds = get_secret_dict('/data-and-insight/database-migration-access-id-and-secret-key', 'eu-west-2') 
     glue_client = boto3.client('glue', region_name='eu-west-2', aws_access_key_id=creds['accessKeyId'], aws_secret_access_key=creds['secretAccessKey'])
 
     for original_pattern, new_prefix in table_mapping.items():
@@ -95,8 +96,8 @@ def main():
             'lbhaliverbviews_core_ct': 'ct',
             'lbhaliverbviews_core_sy': 'sy'
         },
-        iam_role='arn:aws:iam::120038763019:role/dataplatform-stg-redshift-serverless-role',
-        base_s3_url = "s3://dataplatform-stg-raw-zone/revenues/"
+        iam_role=f'arn:aws:iam::120038763019:role/dataplatform-{environment}-redshift-serverless-role',
+        base_s3_url = f"s3://dataplatform-{environment}-raw-zone/revenues/"
     )
 
     # for all tables under nndr
@@ -108,8 +109,8 @@ def main():
             'lbhaliverbviews_core_nr': 'nr',
             'lbhaliverbviews_core_sy': 'sy'
         },
-        iam_role='arn:aws:iam::120038763019:role/dataplatform-stg-redshift-serverless-role',
-        base_s3_url = "s3://dataplatform-stg-raw-zone/revenues/"
+        iam_role=f'arn:aws:iam::120038763019:role/dataplatform-{environment}-redshift-serverless-role',
+        base_s3_url = f"s3://dataplatform-{environment}-raw-zone/revenues/"
     )
 
     # for all tables under hben
@@ -125,8 +126,8 @@ def main():
             'lbhaliverbviews_core_ctproperty': 'ctproperty',
             'lbhaliverbviews_core_cttransaction': 'cttransaction',
         },
-        iam_role='arn:aws:iam::120038763019:role/dataplatform-stg-redshift-serverless-role',
-        base_s3_url = "s3://dataplatform-stg-raw-zone/revenues/"
+        iam_role=f'arn:aws:iam::120038763019:role/dataplatform-{environment}-redshift-serverless-role',
+        base_s3_url = f"s3://dataplatform-{environment}-raw-zone/revenues/"
     )
     process_load_tables(
         schema='hben', # Redshift schema
@@ -135,8 +136,8 @@ def main():
         table_mapping= {
             'lbhaliverbviews_core_hb': 'hb',
         },
-        iam_role='arn:aws:iam::120038763019:role/dataplatform-stg-redshift-serverless-role',
-        base_s3_url = "s3://dataplatform-stg-raw-zone/benefits-housing-needs/" # note the path change
+        iam_role=f'arn:aws:iam::120038763019:role/dataplatform-{environment}-redshift-serverless-role',
+        base_s3_url = f"s3://dataplatform-{environment}-raw-zone/benefits-housing-needs/" # note the path change
     )
 
 if __name__ == "__main__":
