@@ -1,4 +1,4 @@
 setuptools
 wheel
 boto3
-psycopg2-binary==2.8.6 # used to connect with redshift
+redshift-connector==2.1.0 # used to connect with redshift
