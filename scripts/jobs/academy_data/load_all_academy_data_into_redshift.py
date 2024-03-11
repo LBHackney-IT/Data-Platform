@@ -49,7 +49,7 @@ def get_s3_location(glue_table_name: str, base_s3_url: str) -> str:
     year, month, day = today.year, str(today.month).zfill(2), str(today.day).zfill(2)
     return f"{base_s3_url}{glue_table_name}/import_year={year}/import_month={month}/import_day={day}/import_date={year}{month}{day}/"
 
-def main(schema: str, catalog: str, table_mapping: Dict[str, str], iam_role: str, base_s3_url: str) -> None:
+def process_load_tables(schema: str, catalog: str, table_mapping: Dict[str, str], iam_role: str, base_s3_url: str) -> None:
     """Main function to process and load tables."""
     creds = get_secret('data-and-insight', 'eu-west-2') # this need to change to the new role "database_migration" access id and access key;
     glue_client = boto3.client('glue', region_name='eu-west-2', aws_access_key_id=creds['accessKeyId'], aws_secret_access_key=creds['secretAccessKey'])
@@ -87,7 +87,7 @@ def main(schema: str, catalog: str, table_mapping: Dict[str, str], iam_role: str
 
 if __name__ == "__main__":
     # for all tables under ctax
-    main(
+    process_load_tables(
         schema='ctax', # Redshift schema
         catalog='revenues-raw-zone', # Glue catalog database
         # map the table names in Glue catalog to names in Redshift
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     )
 
     # for all tables under nndr
-    main(
+    process_load_tables(
         schema='nndr', # Redshift schema
         catalog='revenues-raw-zone', # Glue catalog database
         # map the table names in Glue catalog to names in Redshift
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     )
 
     # for all tables under hben
-    main(
+    process_load_tables(
         schema='hben', # Redshift schema
         catalog='revenues-raw-zone', # Glue catalog database
         # map the table names in Glue catalog to names in Redshift
@@ -128,7 +128,7 @@ if __name__ == "__main__":
         iam_role='arn:aws:iam::120038763019:role/dataplatform-stg-redshift-serverless-role',
         base_s3_url = "s3://dataplatform-stg-raw-zone/revenues/"
     )
-    main(
+    process_load_tables(
         schema='hben', # Redshift schema
         catalog='bens-housing-needs-raw-zone', # Glue catalog database
         # map the table names in Glue catalog to names in Redshift
