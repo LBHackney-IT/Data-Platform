@@ -2,3 +2,5 @@ pytest-watch
 freezegun
 pytest-mock
 pydeequ
+# add redshift connector here to pass CI / Test Python Jobs & Lambda Functions
+redshift-connector==2.1.0 # used to connect with redshift
