@@ -37,7 +37,6 @@ AmazonS3_node1647531223393 = glueContext.create_dynamic_frame.from_catalog(
     database="parking-raw-zone",
     table_name="school_street_uprn",
     transformation_ctx="AmazonS3_node1647531223393",
-    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node ApplyMapping

@@ -71,7 +71,8 @@ on:
         required: true
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN:
         required: true
-
+      TERRAFORM_SECRET_TOKEN:
+        required: true
 jobs:
   deploy:
     name: Terraform State Unlock
@@ -79,6 +80,10 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v3
+
+      - name: Set Github Auth
+        run: git config --global url."https://oauth2:${{ secrets.TERRAFORM_SECRET_TOKEN}}@github.com".insteadOf https://github.com
+        shell: bash
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2.0.3
@@ -134,4 +139,5 @@ jobs:
           aws_deploy_iam_role_name: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           copy_liberator_to_pre_prod_lambda_execution_role: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
           pre_production_liberator_data_storage_kms_key_arn: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
+          terraform_secret_token: ${{ secrets.TERRAFORM_SECRET_TOKEN }}
           branch: "main"
