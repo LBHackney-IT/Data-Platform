@@ -34,6 +34,7 @@ AmazonS3Refinedpcnfoidetails_pcn_foi_full_node1708021619806 = glueContext.create
 SqlQuery0 = """
 /*Open PCNs linked to VRMs cancelled due to being a Ringer or Clone
 Created: 15/02/2024
+11/03/2024 - added extracted post codes and bailiff fields to output 
 
 */
 With cancelled_vrm as (
