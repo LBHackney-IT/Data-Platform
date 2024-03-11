@@ -168,7 +168,7 @@ resource "aws_s3_object" "copy_tables_landing_to_raw_backdated" {
 
 resource "aws_s3_object" "load_all_academy_data_into_redshift" {
   bucket      = module.glue_scripts_data_source.bucket_id
-  key         = "scripts/academy_data/load_all_academy_data_into_redshift.py"
+  key         = "scripts/load_all_academy_data_into_redshift.py"
   acl         = "private"
   source      = "../../scripts/jobs/academy_data/load_all_academy_data_into_redshift.py"
   source_hash = filemd5("../../scripts/jobs/academy_data/load_all_academy_data_into_redshift.py")
