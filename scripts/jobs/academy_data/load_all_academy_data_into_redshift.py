@@ -85,7 +85,7 @@ def process_load_tables(schema: str, catalog: str, table_mapping: Dict[str, str]
 
             time.sleep(1)  # Sleep to mitigate risk of overwhelming the cluster
 
-if __name__ == "__main__":
+def main():
     # for all tables under ctax
     process_load_tables(
         schema='ctax', # Redshift schema
@@ -139,3 +139,5 @@ if __name__ == "__main__":
         base_s3_url = "s3://dataplatform-stg-raw-zone/benefits-housing-needs/" # note the path change
     )
 
+if __name__ == "__main__":
+    main()
