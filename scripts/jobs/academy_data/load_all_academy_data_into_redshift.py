@@ -5,6 +5,8 @@ import boto3
 from scripts.helpers.helpers import rs_command, get_secret_dict, get_glue_env_var
 
 environment = get_glue_env_var("environment")
+role_arn = get_glue_env_var("role_arn")
+base_s3_url = get_glue_env_var("base_s3_url")
 
 def get_all_tables(glue_client: Any, database_name: str, pattern: str = '') -> List[Dict]:
     """Retrieve all table metadata from Glue catalog for a specific database."""
@@ -96,8 +98,8 @@ def main():
             'lbhaliverbviews_core_ct': 'ct',
             'lbhaliverbviews_core_sy': 'sy'
         },
-        iam_role=f'arn:aws:iam::120038763019:role/dataplatform-{environment}-redshift-serverless-role',
-        base_s3_url = f"s3://dataplatform-{environment}-raw-zone/revenues/"
+        iam_role=role_arn,
+        base_s3_url = base_s3_url
     )
 
     # for all tables under nndr
@@ -109,8 +111,8 @@ def main():
             'lbhaliverbviews_core_nr': 'nr',
             'lbhaliverbviews_core_sy': 'sy'
         },
-        iam_role=f'arn:aws:iam::120038763019:role/dataplatform-{environment}-redshift-serverless-role',
-        base_s3_url = f"s3://dataplatform-{environment}-raw-zone/revenues/"
+        iam_role=role_arn,
+        base_s3_url = base_s3_url
     )
 
     # for all tables under hben
@@ -126,8 +128,8 @@ def main():
             'lbhaliverbviews_core_ctproperty': 'ctproperty',
             'lbhaliverbviews_core_cttransaction': 'cttransaction',
         },
-        iam_role=f'arn:aws:iam::120038763019:role/dataplatform-{environment}-redshift-serverless-role',
-        base_s3_url = f"s3://dataplatform-{environment}-raw-zone/revenues/"
+        iam_role=role_arn,
+        base_s3_url = base_s3_url
     )
     process_load_tables(
         schema='hben', # Redshift schema
@@ -136,7 +138,7 @@ def main():
         table_mapping= {
             'lbhaliverbviews_core_hb': 'hb',
         },
-        iam_role=f'arn:aws:iam::120038763019:role/dataplatform-{environment}-redshift-serverless-role',
+        iam_role=role_arn,
         base_s3_url = f"s3://dataplatform-{environment}-raw-zone/benefits-housing-needs/" # note the path change
     )
 
