@@ -10,8 +10,7 @@ import boto3
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as F, DataFrame
 from pyspark.sql.types import StringType, StructType, IntegerType
-import psycopg2
-import psycopg2.extras
+import redshift_connector
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 PARTITION_KEYS_SNAPSHOT = ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']
@@ -650,36 +649,38 @@ def rs_command(query: str, fetch_results: bool = False, allow_commit: bool = Tru
     """
     creds = get_secret_dict('/data-and-insight/redshift-serverless-connection', 'eu-west-2')
     try:
-        # Connection setup
-        conn = psycopg2.connect(
-            "dbname='academy' "
-            f"user={creds['user']} "
-            f"host={creds['host']} "
-            f"password={creds['password']} "
-            "port='5439'"
+        # Connects to Redshift cluster using AWS credentials
+        conn = redshift_connector.connect(
+            host=creds['host'],
+            database='academy',
+            user=creds['user'],
+            password=creds['password']
         )
-        # Setting autocommit to True bypasses the transaction block for commands that cannot run inside one.
-        conn.autocommit = True  # Add this line to handle commands like CREATE EXTERNAL TABLE
-        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
+        # Following the DB-API specification, autocommit is off by default. 
+        # https://pypi.org/project/redshift-connector/
+        if allow_commit:
+            # Add this line to handle commands like CREATE EXTERNAL TABLE
+            conn.autocommit = True
+
+        cursor = conn.cursor()
+
         # Execute the query
-        cur.execute(query)
+        cursor.execute(query)
         
         # Fetch the results if required
         if fetch_results:
-            result = cur.fetchall()
+            result = cursor.fetchall()
             return [dict(row) for row in result] if result else []
         elif allow_commit:
             # Commit the transaction only if allowed and needed
             conn.commit()
 
-    except psycopg2.DatabaseError as e:
-        raise e
-    except Exception as e:
+    except redshift_connector.Error as e:
         raise e
     finally:
-        if cur:
-            cur.close()
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
     return None  # Return None if fetch_results is False or if there's an error
