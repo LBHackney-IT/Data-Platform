@@ -34,6 +34,7 @@ AmazonS3Refinedpcnfoidetails_pcn_foi_full_node1708021619806 = glueContext.create
 SqlQuery0 = """
 /*Open PCNs linked to VRMs cancelled due to being a Ringer or Clone
 Created: 15/02/2024
+11/03/2024 - added extracted post codes and bailiff fields to output 
 
 */
 With cancelled_vrm as (
@@ -42,6 +43,15 @@ from pcnfoidetails_pcn_foi_full where import_date = (select max(import_date) fro
 )
 Select cancelled_vrm.*, concat(substr(Cast(pcnissuedate as varchar(10)),1, 7), '-01') as MonthYear 
 ,progressionstage ,debttype ,pcn ,pcnissuedate ,pcnissuedatetime ,street_location ,whereonlocation ,zone ,usrn ,contraventioncode ,contraventionsuffix  ,vrm ,vehiclemake ,vehiclemodel ,vehiclecolour,corresp_dispute_flag ,registered_keeper_address ,current_ticket_address
+
+/*Registered extracted post codes*/
+,case when length(regexp_extract(registered_keeper_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})') ) = 0 or regexp_extract(registered_keeper_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})') is null or  regexp_extract(registered_keeper_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})') like '' or  regexp_extract(registered_keeper_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})') like ' '  then 'No Address' else regexp_extract(registered_keeper_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})')  end
+as reg_add_extracted_post_code
+
+/*Current extracted post codes*/
+,case when length(regexp_extract(current_ticket_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})') ) = 0 or regexp_extract(current_ticket_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})') is null or regexp_extract(current_ticket_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})') like '' or regexp_extract(current_ticket_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})') like ' ' then 'No Address' else regexp_extract(current_ticket_address, '([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})') end
+as curr_add_extracted_post_code
+,bailiff
 
 /*for partiion*/
 
