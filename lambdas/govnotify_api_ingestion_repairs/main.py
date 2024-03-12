@@ -153,7 +153,7 @@ def lambda_handler(event, context):
         logger.info(f"Responses written as json and parquet to {output_s3_bucket}/{output_folder}{file_name}")
 
     # Crawl all the parquet data in S3
-    glue_client.start_crawler(Name=crawler)
+    glue_client.start_crawler(Name=crawler) # must have this in prod
     logger.info(f"S3 parquet files crawled and written to housing landing zone data catalog")
 
 
