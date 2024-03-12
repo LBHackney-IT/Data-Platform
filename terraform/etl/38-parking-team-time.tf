@@ -139,23 +139,23 @@ data "aws_iam_policy_document" "team_times_lambda_invoke" {
 data "aws_iam_policy_document" "team_times_lambda_assignment" {
   count       = !local.is_production_environment ? 1 : 0
   source_policy_documents = [
-    data.aws_iam_policy_document.team_times_lambda_ssm_access.json,
-    data.aws_iam_policy_document.team_times_lambda_s3_write_access.json,
-    data.aws_iam_policy_document.team_times_lambda_logs.json,
-    data.aws_iam_policy_document.team_times_lambda_invoke.json
+    data.aws_iam_policy_document.team_times_lambda_ssm_access[0].json,
+    data.aws_iam_policy_document.team_times_lambda_s3_write_access[0].json,
+    data.aws_iam_policy_document.team_times_lambda_logs[0].json,
+    data.aws_iam_policy_document.team_times_lambda_invoke[0].json
   ]
 }
 
 resource "aws_iam_policy" "team_times_lambda_execution" {
   count  = !local.is_production_environment ? 1 : 0
   name   = "team_times_lambda_execution"
-  policy = data.aws_iam_policy_document.team_times_lambda_assignment.json
+  policy = data.aws_iam_policy_document.team_times_lambda_assignment[0].json
 }
 
 resource "aws_iam_role" "team_times_lambda_execution" {
   count              = !local.is_production_environment ? 1 : 0
   name               = "team_times_lambda_execution"
-  assume_role_policy = data.aws_iam_policy_document.team_times_lambda_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.team_times_lambda_assume_role[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "team_times_lambda_assignment" {
