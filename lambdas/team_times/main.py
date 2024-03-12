@@ -96,7 +96,7 @@ def make_api_request_and_process_data(
         print("Error:", response.status_code, response.text)
 
 
-def main(event=None, context=None, s3_client=None, ssm_client=None)
+def main(event=None, context=None, s3_client=None, ssm_client=None):
     s3_client = s3_client or boto3.client("s3")
     ssm_client = ssm_client or boto3.client("ssm", region_name="eu-west-2")
     
