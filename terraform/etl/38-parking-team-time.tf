@@ -48,6 +48,7 @@ resource "aws_ssm_parameter" "team_times_api_enpoint" {
 }
 
 data "aws_iam_policy_document" "team_times_lambda_assume_role" {
+  count       = !local.is_production_environment ? 1 : 0
   statement {
     actions = ["sts:AssumeRole"]
     effect  = "Allow"
@@ -59,6 +60,7 @@ data "aws_iam_policy_document" "team_times_lambda_assume_role" {
 }
 
 data "aws_iam_policy_document" "team_times_lambda_ssm_access" {
+  count       = !local.is_production_environment ? 1 : 0
   statement {
     actions = [
       "ssm:DescribeParameters",
@@ -74,6 +76,7 @@ data "aws_iam_policy_document" "team_times_lambda_ssm_access" {
 }
 
 data "aws_iam_policy_document" "team_times_lambda_s3_write_access" {
+  count       = !local.is_production_environment ? 1 : 0
   statement {
     actions = [
       "s3:AbortMultipartUpload",
@@ -110,6 +113,7 @@ data "aws_iam_policy_document" "team_times_lambda_s3_write_access" {
 }
 
 data "aws_iam_policy_document" "team_times_lambda_logs" {
+  count       = !local.is_production_environment ? 1 : 0
   statement {
     actions = [
       "logs:CreateLogGroup",
@@ -122,6 +126,7 @@ data "aws_iam_policy_document" "team_times_lambda_logs" {
 }
 
 data "aws_iam_policy_document" "team_times_lambda_invoke" {
+  count       = !local.is_production_environment ? 1 : 0
   statement {
     actions = ["lambda:InvokeFunction"]
     effect  = "Allow"
@@ -132,6 +137,7 @@ data "aws_iam_policy_document" "team_times_lambda_invoke" {
 } 
 
 data "aws_iam_policy_document" "team_times_lambda_assignment" {
+  count       = !local.is_production_environment ? 1 : 0
   source_policy_documents = [
     data.aws_iam_policy_document.team_times_lambda_ssm_access.json,
     data.aws_iam_policy_document.team_times_lambda_s3_write_access.json,
