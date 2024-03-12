@@ -10,20 +10,18 @@ import requests
 from botocore.exceptions import ClientError
 
 s3_client = boto3.client("s3")
-secrets_manager_client = boto3.client("secretsmanager", region_name="eu-west-2")
+ssm_client = boto3.client("ssm", region_name="eu-west-2")
 
 
-def get_secret(secret_name, secrets_manager_client=None):
-    client = secrets_manager_client or boto3.client(
-        "secretsmanager", region_name="eu-west-2"
-    )
+def get_parameter(parameter_name, ssm_client=None):
+    client = ssm_client or boto3.client("ssm", region_name="eu-west-2")
     try:
-        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
+        get_parameter_response = client.get_parameter(Name=parameter_name, WithDecryption=True)
     except ClientError as e:
-        logging.error(f"Failed to retrieve secret {secret_name}: {e}")
+        logging.error(f"Failed to retrieve parameter {parameter_name}: {e}")
         return None
     else:
-        return get_secret_value_response.get("SecretString", None)
+        return get_parameter_response.get("Parameter", {}).get("Value", None)
 
 
 def save_xml_to_s3(xml_data, bucket_name, object_name, s3_client=None):
@@ -98,11 +96,15 @@ def make_api_request_and_process_data(
         print("Error:", response.status_code, response.text)
 
 
-def main(event=None, context=None):
-    api_endpoint = os.getenv("API_ENDPOINT")
-    secret_name = os.getenv("API_SECRET_NAME")
+def main(event=None, context=None, s3_client=None, ssm_client=None)
+    s3_client = s3_client or boto3.client("s3")
+    ssm_client = ssm_client or boto3.client("ssm", region_name="eu-west-2")
+    
+    api_endpoint_parameter_name = os.getenv("API_ENDPOINT")
+    api_secret_parameter_name = os.getenv("SECRET_NAME")
     data_frequency = os.getenv("FREQUENCY", "D")
-    api_key = get_secret(secret_name, secrets_manager_client)
+    api_key = get_parameter(api_secret_parameter_name, ssm_client)
+    api_endpoint = get_parameter(api_endpoint_parameter_name, ssm_client)
     date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 
     make_api_request_and_process_data(
@@ -111,4 +113,4 @@ def main(event=None, context=None):
 
 
 if __name__ == "__main__":
-    main()
+    main("event", "lambda_context")
