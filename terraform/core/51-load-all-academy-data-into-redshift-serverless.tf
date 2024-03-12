@@ -19,7 +19,8 @@ module "load_all_academy_data_into_redshift" {
   schedule                       = "cron(15 7 ? * MON-FRI *)"
   job_parameters = {
     "--environment"                      = var.environment
-    "--role_arn"                         = module.redshift_serverless[0].redshift_serverless_role_arn
+    # This is the ARN of the IAM role used by Redshift Serverless. We have count in redshift-serverless module so we need to use index 0 to get the ARN.
+    "--role_arn"                         = try(module.redshift_serverless[0].redshift_serverless_role_arn, "") 
     "--enable-auto-scaling"              = "false"
     "--job-bookmark-option"              = "job-bookmark-disable"
     "--base_s3_url"                      = "${module.raw_zone.bucket_url}/revenues/"
