@@ -1,14 +1,16 @@
 import datetime
 import re
+import json
 import sys
 import unicodedata
 import logging
-from typing import Dict, Optional
+from typing import List, Dict, Optional, Any
 
 import boto3
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as F, DataFrame
 from pyspark.sql.types import StringType, StructType, IntegerType
+import redshift_connector
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 PARTITION_KEYS_SNAPSHOT = ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']
@@ -609,3 +611,76 @@ def initialise_job(args: Dict[str, str], job, logger: Optional[logging.Logger] =
     except Exception as e:
         logger.error(f"Failed to initialise job: {e}")
         raise
+
+def get_secret_dict(secret_name: str, region_name: str = 'eu-west-2') -> Dict[str, Any]:
+    """
+    Retrieves and returns the secret value associated with the given secret name from AWS Secrets Manager.
+    Returns: Dict[str, Any]: The secret value, decoded and converted into a dictionary.
+    """
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    get_secret_value_response = client.get_secret_value(
+        SecretId=secret_name
+    )
+
+    # Check if the secret is stored as a string and convert it from JSON to a dictionary
+    if 'SecretString' in get_secret_value_response:
+        secret_string = get_secret_value_response['SecretString']
+        return json.loads(secret_string)
+    # If the secret is stored as binary data, decode it from ASCII and convert from JSON to a dictionary
+    else:
+        secret_binary = get_secret_value_response['SecretBinary'].decode('ascii')
+        return json.loads(secret_binary)
+
+def rs_command(query: str, fetch_results: bool = False, allow_commit: bool = True) -> Optional[List[Dict]]:
+    """Executes a SQL query against a Redshift database, optionally fetching results.
+
+    Args:
+        query (str): The SQL query to execute.
+        fetch_results (bool): Whether to fetch and return the query results (default False).
+        allow_commit (bool): Whether to allow committing the transaction (default True).
+
+    Returns:
+        Optional[List[Dict]]: A list of dictionaries representing rows returned by the query if fetch_results is True; otherwise None.
+    """
+    creds = get_secret_dict('/data-and-insight/redshift-serverless-connection', 'eu-west-2')
+    try:
+        # Connects to Redshift cluster using AWS credentials
+        conn = redshift_connector.connect(
+            host=creds['host'],
+            database='academy',
+            user=creds['user'],
+            password=creds['password']
+        )
+        
+        # Following the DB-API specification, autocommit is off by default. 
+        # https://pypi.org/project/redshift-connector/
+        if allow_commit:
+            # Add this line to handle commands like CREATE EXTERNAL TABLE
+            conn.autocommit = True
+
+        cursor = conn.cursor()
+
+        # Execute the query
+        cursor.execute(query)
+        
+        # Fetch the results if required
+        if fetch_results:
+            result = cursor.fetchall()
+            return [dict(row) for row in result] if result else []
+        elif allow_commit:
+            # Commit the transaction only if allowed and needed
+            conn.commit()
+
+    except redshift_connector.Error as e:
+        raise e
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+    return None  # Return None if fetch_results is False or if there's an error
