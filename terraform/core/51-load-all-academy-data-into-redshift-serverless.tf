@@ -19,10 +19,10 @@ module "load_all_academy_data_into_redshift" {
   schedule                       = "cron(15 7 ? * MON-FRI *)"
   job_parameters = {
     "--environment"                      = var.environment
-    "--role_arn"                         = module.redshift_serverless.redshift_serverless_role_arn
+    "--role_arn"                         = module.redshift_serverless[0].redshift_serverless_role_arn
     "--enable-auto-scaling"              = "false"
     "--job-bookmark-option"              = "job-bookmark-disable"
-    "--base_s3_url"                      = "${module.raw_zone.bucket_url}/revenues"
+    "--base_s3_url"                      = "${module.raw_zone.bucket_url}/revenues/"
     "--conf"                             = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
