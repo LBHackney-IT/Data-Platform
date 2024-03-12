@@ -16,7 +16,7 @@ module "load_all_academy_data_into_redshift" {
   glue_job_worker_type            = "G.1X"
   number_of_workers_for_glue_job  = 2
   glue_job_timeout                = 220
-  schedule                       = "cron(15 7 ? * MON-FRI *)"
+  schedule                       = "cron(20 7 ? * MON-FRI *)"
   job_parameters = {
     "--environment"                      = var.environment
     "--role_arn"                         = "arn:aws:iam::${var.aws_api_account_id}:role/dataplatform-${var.environment}-redshift-serverless-role",
