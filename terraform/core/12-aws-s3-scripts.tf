@@ -101,3 +101,11 @@ resource "aws_s3_object" "parking_copy_ringgo_sftp_data_to_raw" {
   source      = "../../scripts/jobs/parking/parking_copy_ringgo_sftp_data_to_raw.py"
   source_hash = filemd5("../../scripts/jobs/parking/parking_copy_ringgo_sftp_data_to_raw.py")
 }
+
+resource "aws_s3_object" "load_all_academy_data_into_redshift" {
+  bucket      = module.glue_scripts_data_source.bucket_id
+  key         = "scripts/load_all_academy_data_into_redshift.py"
+  acl         = "private"
+  source      = "../../scripts/jobs/academy_data/load_all_academy_data_into_redshift.py"
+  source_hash = filemd5("../../scripts/jobs/academy_data/load_all_academy_data_into_redshift.py")
+}
