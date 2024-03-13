@@ -32,7 +32,7 @@ import json
 import sys
 import unicodedata
 import logging
-from typing import List, Dict, Optional, Any
+from typing import Dict, Optional, Any
 
 import boto3
 from awsglue.utils import getResolvedOptions
