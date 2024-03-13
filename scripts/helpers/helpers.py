@@ -1,16 +1,44 @@
+"""
+This module provides a set of helper functions designed to facilitate common data
+processing, transformation, and interaction tasks within AWS Glue jobs, with an
+emphasis on working with PySpark DataFrames and AWS S3. It includes functions for:
+
+- Cleaning and normalising column names in DataFrames to ensure consistency and
+  compatibility with downstream processing and storage systems.
+- Adding timestamp and partition columns to DataFrames to support time-based data
+  organization and querying.
+- Interacting with the AWS Glue Data Catalog to retrieve metadata, resolve job
+  parameters, and dynamically work with database tables and their partitions.
+- Managing AWS S3 operations such as listing subfolders, moving or copying files, and
+  clearing target folders to organize and maintain data pipelines efficiently.
+- Handling secrets securely by retrieving sensitive information from AWS Secrets
+  Manager.
+- Utility functions for calculating differences between dates while considering
+  business days and bank holidays, supporting complex date-based logic within data
+  processing workflows.
+
+  ### Warning for module contributors ###
+  Do not import additional libraries or modules in this file that are not included in
+  AWS Glue. A list of available packages can be found here:
+  https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-python-libraries.html
+  Doing so may cause issues for existing Glue jobs that import functions from this
+  module.
+"""
+
+
 import datetime
 import re
 import json
 import sys
 import unicodedata
 import logging
-from typing import List, Dict, Optional, Any
+from typing import Dict, Optional, Any
 
 import boto3
 from awsglue.utils import getResolvedOptions
 from pyspark.sql import functions as F, DataFrame
 from pyspark.sql.types import StringType, StructType, IntegerType
-#import redshift_connector
+
 
 PARTITION_KEYS = ['import_year', 'import_month', 'import_day', 'import_date']
 PARTITION_KEYS_SNAPSHOT = ['snapshot_year', 'snapshot_month', 'snapshot_day', 'snapshot_date']
@@ -635,52 +663,3 @@ def get_secret_dict(secret_name: str, region_name: str = 'eu-west-2') -> Dict[st
     else:
         secret_binary = get_secret_value_response['SecretBinary'].decode('ascii')
         return json.loads(secret_binary)
-
-#def rs_command(query: str, fetch_results: bool = False, allow_commit: bool = True) -> Optional[List[Dict]]:
-#    """Executes a SQL query against a Redshift database, optionally fetching results.
-#
-#    Args:
-#        query (str): The SQL query to execute.
-#        fetch_results (bool): Whether to fetch and return the query results (default False).
-#        allow_commit (bool): Whether to allow committing the transaction (default True).
-#
-#    Returns:
-#        Optional[List[Dict]]: A list of dictionaries representing rows returned by the query if fetch_results is True; otherwise None.
-#    """
-#    creds = get_secret_dict('/data-and-insight/redshift-serverless-connection', 'eu-west-2')
-#    try:
-#        # Connects to Redshift cluster using AWS credentials
-#        conn = redshift_connector.connect(
-#            host=creds['host'],
-#            database='academy',
-#            user=creds['user'],
-#            password=creds['password']
-#        )
-#        
-#        # Following the DB-API specification, autocommit is off by default. 
-#        # https://pypi.org/project/redshift-connector/
-#        if allow_commit:
-#            # Add this line to handle commands like CREATE EXTERNAL TABLE
-#            conn.autocommit = True
-#
-#        cursor = conn.cursor()
-#
-#        # Execute the query
-#        cursor.execute(query)
-#        
-#        # Fetch the results if required
-#        if fetch_results:
-#            result = cursor.fetchall()
-#            return [dict(row) for row in result] if result else []
-#        elif allow_commit:
-#            # Commit the transaction only if allowed and needed
-#            conn.commit()
-#
-#    except redshift_connector.Error as e:
-#        raise e
-#    finally:
-#        if cursor:
-#            cursor.close()
-#        if conn:
-#            conn.close()
-#    return None  # Return None if fetch_results is False or if there's an error
