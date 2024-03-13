@@ -1,24 +1,28 @@
 """
-This module provides a set of helper functions designed to facilitate common data processing, 
-transformation, and interaction tasks within AWS Glue jobs, with an emphasis on working with PySpark DataFrames 
-and AWS S3. It includes functions for:
+This module provides a set of helper functions designed to facilitate common data
+processing, transformation, and interaction tasks within AWS Glue jobs, with an
+emphasis on working with PySpark DataFrames and AWS S3. It includes functions for:
 
-- Cleaning and normalising column names in DataFrames to ensure consistency and compatibility with downstream 
-  processing and storage systems.
-- Adding timestamp and partition columns to DataFrames to support time-based data organization and querying.
-- Interacting with the AWS Glue Data Catalog to retrieve metadata, resolve job parameters, and dynamically 
-  work with database tables and their partitions.
-- Managing AWS S3 operations such as listing subfolders, moving or copying files, and clearing target folders 
-  to organize and maintain data pipelines efficiently.
-- Handling secrets securely by retrieving sensitive information from AWS Secrets Manager.
-- Utility functions for calculating differences between dates while considering business days and bank holidays, 
-  supporting complex date-based logic within data processing workflows.
+- Cleaning and normalising column names in DataFrames to ensure consistency and
+  compatibility with downstream processing and storage systems.
+- Adding timestamp and partition columns to DataFrames to support time-based data
+  organization and querying.
+- Interacting with the AWS Glue Data Catalog to retrieve metadata, resolve job
+  parameters, and dynamically work with database tables and their partitions.
+- Managing AWS S3 operations such as listing subfolders, moving or copying files, and
+  clearing target folders to organize and maintain data pipelines efficiently.
+- Handling secrets securely by retrieving sensitive information from AWS Secrets
+  Manager.
+- Utility functions for calculating differences between dates while considering
+  business days and bank holidays, supporting complex date-based logic within data
+  processing workflows.
 
   ### Warning for module contributors ###
-  Do not import additional libraries or modules in this file that are not included in AWS Glue. A list of
-  available packages can be found here:
+  Do not import additional libraries or modules in this file that are not included in
+  AWS Glue. A list of available packages can be found here:
   https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-python-libraries.html
-  Doing so may cause issues for existing Glue jobs that import functions from this module.
+  Doing so may cause issues for existing Glue jobs that import functions from this
+  module.
 """
 
 
