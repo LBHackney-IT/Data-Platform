@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 
 data "aws_iam_policy_document" "housing_gov_notify_lambda_execution" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "lambda:InvokeFunction"
     ]
@@ -110,7 +110,7 @@ data "aws_iam_policy_document" "gov_notify_lambda_secret_access" {
     actions = [
       "secretsmanager:GetSecretValue",
     ]
-    effect = "Allow"
+    effect    = "Allow"
     resources = [
       "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:housing/gov-notify*"
     ]
@@ -129,6 +129,28 @@ resource "aws_iam_role_policy_attachment" "gov_notify_lambda_secret_access" {
   policy_arn = aws_iam_policy.gov_notify_lambda_secret_access[0].arn
 }
 
+# Define a IAM Policy Document for Glue StartCrawler Permissions:
+data "aws_iam_policy_document" "gov_notify_glue_crawler" {
+  statement {
+    actions   = ["glue:StartCrawler"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+}
+
+# create a New IAM Policy Resource:
+resource "aws_iam_policy" "gov_notify_glue_crawler" {
+  count  = local.create_govnotify_resource_count
+  name   = "gov_notify_glue_crawler_access"
+  policy = data.aws_iam_policy_document.gov_notify_glue_crawler.json
+}
+
+# attach the gov_notify_glue_crawler to the housing_gov_notify_ingestion_lambda_role by creating a new aws_iam_role_policy_attachment resource.
+resource "aws_iam_role_policy_attachment" "gov_notify_glue_crawler" {
+  count      = local.create_govnotify_resource_count
+  role       = aws_iam_role.housing_gov_notify_ingestion[0].name
+  policy_arn = aws_iam_policy.gov_notify_glue_crawler[0].arn
+}
 
 module "gov-notify-ingestion-housing-repairs" {
   count                          = local.create_govnotify_resource_count
@@ -143,12 +165,12 @@ module "gov-notify-ingestion-housing-repairs" {
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_repairs"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_repairs.zip"
   runtime                        = "python3.9"
-  environment_variables = {
+  environment_variables          = {
 
     API_SECRET_NAME  = "housing/gov-notify_live_api_key"
     TARGET_S3_BUCKET = module.landing_zone_data_source.bucket_id
     TARGET_S3_FOLDER = "housing/govnotify/damp_and_mould/"
-    CRAWLER_NAME = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing to Raw"
+    CRAWLER_NAME     = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing to Raw"
   }
   layers = [
     "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13",
