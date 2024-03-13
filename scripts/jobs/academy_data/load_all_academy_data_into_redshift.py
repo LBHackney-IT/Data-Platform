@@ -1,13 +1,63 @@
 import time
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import boto3
 from scripts.helpers.helpers import get_secret_dict, get_glue_env_var
 from scripts.helpers.redshift_helpers import rs_command
+import redshift_connector
 
 environment = get_glue_env_var("environment")
 role_arn = get_glue_env_var("role_arn")
 base_s3_url = get_glue_env_var("base_s3_url")
+
+def rs_command(query: str, fetch_results: bool = False, allow_commit: bool = True, database_name: str = 'academy') -> Optional[List[Dict]]:
+   """Executes a SQL query against a Redshift database, optionally fetching results.
+
+   Args:
+       query (str): The SQL query to execute.
+       fetch_results (bool): Whether to fetch and return the query results (default False).
+       allow_commit (bool): Whether to allow committing the transaction (default True).
+       database_name: Name of the database to connect to, defaults to 'academy'.
+
+   Returns:
+       Optional[List[Dict]]: A list of dictionaries representing rows returned by the query if fetch_results is True; otherwise None.
+   """
+   creds = get_secret_dict('/data-and-insight/redshift-serverless-connection', 'eu-west-2')
+   try:
+       # Connects to Redshift cluster using AWS credentials
+       conn = redshift_connector.connect(
+           host=creds['host'],
+           database=database_name,
+           user=creds['user'],
+           password=creds['password']
+       )
+       
+       # autocommit is off by default. 
+       if allow_commit:
+           # Add this line to handle commands like CREATE EXTERNAL TABLE
+           conn.autocommit = True
+
+       cursor = conn.cursor()
+
+       # Execute the query
+       cursor.execute(query)
+       
+       # Fetch the results if required
+       if fetch_results:
+           result = cursor.fetchall()
+           return [dict(row) for row in result] if result else []
+       elif allow_commit:
+           # Commit the transaction only if allowed and needed
+           conn.commit()
+
+   except redshift_connector.Error as e:
+       raise e
+   finally:
+       if cursor:
+           cursor.close()
+       if conn:
+           conn.close()
+   return None  # Return None if fetch_results is False or if there's an error
 
 def get_all_tables(glue_client: Any, database_name: str, pattern: str = '') -> List[Dict]:
     """Retrieve all table metadata from Glue catalog for a specific database."""
@@ -105,9 +155,8 @@ def main():
 
     # for all tables under nndr
     process_load_tables(
-        schema='nndr', # Redshift schema
-        catalog='revenues-raw-zone', # Glue catalog database
-        # map the table names in Glue catalog to names in Redshift
+        schema='nndr', 
+        catalog='revenues-raw-zone',
         table_mapping= {
             'lbhaliverbviews_core_nr': 'nr',
             'lbhaliverbviews_core_sy': 'sy'
@@ -118,9 +167,8 @@ def main():
 
     # for all tables under hben
     process_load_tables(
-        schema='hben', # Redshift schema
-        catalog='revenues-raw-zone', # Glue catalog database
-        # map the table names in Glue catalog to names in Redshift
+        schema='hben', 
+        catalog='revenues-raw-zone', 
         table_mapping= {
             'lbhaliverbviews_core_sy': 'sy',
             'lbhaliverbviews_core_ctaccount': 'ctaccount',
@@ -133,9 +181,8 @@ def main():
         base_s3_url = base_s3_url
     )
     process_load_tables(
-        schema='hben', # Redshift schema
-        catalog='bens-housing-needs-raw-zone', # Glue catalog database
-        # map the table names in Glue catalog to names in Redshift
+        schema='hben', 
+        catalog='bens-housing-needs-raw-zone', 
         table_mapping= {
             'lbhaliverbviews_core_hb': 'hb',
         },
