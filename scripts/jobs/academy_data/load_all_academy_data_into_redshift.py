@@ -2,7 +2,8 @@ import time
 from datetime import datetime
 from typing import List, Dict, Any
 import boto3
-from scripts.helpers.helpers import rs_command, get_secret_dict, get_glue_env_var
+from scripts.helpers.helpers import get_secret_dict, get_glue_env_var
+from scripts.helpers.redshift_helpers import rs_command
 
 environment = get_glue_env_var("environment")
 role_arn = get_glue_env_var("role_arn")
