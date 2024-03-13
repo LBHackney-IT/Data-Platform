@@ -1,9 +1,9 @@
 module "load_all_academy_data_into_redshift" {
   count = local.is_live_environment ? 1 : 0
   tags  = module.tags.values
-  source                    = "../modules/aws-glue-job"
-  is_live_environment       = local.is_live_environment
-  is_production_environment = local.is_production_environment
+  source                          = "../modules/aws-glue-job"
+  is_live_environment             = local.is_live_environment
+  is_production_environment       = local.is_production_environment
   job_name                        = "${local.short_identifier_prefix}load_all_academy_data_into_redshift"
   script_s3_object_key            = aws_s3_object.load_all_academy_data_into_redshift.key
   pydeequ_zip_key                 = aws_s3_object.pydeequ.key
@@ -16,9 +16,9 @@ module "load_all_academy_data_into_redshift" {
   glue_job_worker_type            = "G.1X"
   number_of_workers_for_glue_job  = 2
   glue_job_timeout                = 220
-  schedule                       = "cron(15 7 ? * MON-FRI *)"
+  schedule                        = "cron(15 7 ? * MON-FRI *)"
   job_parameters = {
-    "--additional-python-modules" = "redshift_connector==2.1.0"
+    "--additional-python-modules"        = "redshift_connector==2.1.0"
     "--environment"                      = var.environment
     # This is the ARN of the IAM role used by Redshift Serverless. We have count in redshift-serverless module so we need to use index 0 to get the ARN.
     "--role_arn"                         = try(module.redshift_serverless[0].redshift_serverless_role_arn, "") 
