@@ -12,54 +12,32 @@ def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFra
         frame.toDF().createOrReplaceTempView(alias)
     result = spark.sql(query)
     return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
-
-
-args = getResolvedOptions(sys.argv, ["JOB_NAME"])
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
-job.init(args["JOB_NAME"], args)
+job.init(args['JOB_NAME'], args)
 environment = get_glue_env_var("environment")
 
-# Script generated for node Amazon S3 - Liberator_pcn_ic
-AmazonS3Liberator_pcn_ic_node1631812698045 = (
-    glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-"+environment+"-liberator-raw-zone",
-        table_name="liberator_pcn_ic",
-        transformation_ctx="AmazonS3Liberator_pcn_ic_node1631812698045",
-    )
-)
-
-# Script generated for node S3 bucket - pcnfoidetails_pcn_foi_full
-S3bucketpcnfoidetails_pcn_foi_full_node1 = (
-    glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-"+environment+"-liberator-refined-zone",
-        table_name="pcnfoidetails_pcn_foi_full",
-        transformation_ctx="S3bucketpcnfoidetails_pcn_foi_full_node1",
-    )
-)
+# Script generated for node Amazon S3 - parking-raw-zone - eta_decision_records
+AmazonS3parkingrawzoneeta_decision_records_node1710437294390 = glueContext.create_dynamic_frame.from_catalog(database="parking-raw-zone", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="parking_eta_decision_records", transformation_ctx="AmazonS3parkingrawzoneeta_decision_records_node1710437294390")
 
 # Script generated for node Amazon S3 - liberator_pcn_tickets
-AmazonS3liberator_pcn_tickets_node1637153316033 = (
-    glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-"+environment+"-liberator-raw-zone",
-        table_name="liberator_pcn_tickets",
-        transformation_ctx="AmazonS3liberator_pcn_tickets_node1637153316033",
-    )
-)
+AmazonS3liberator_pcn_tickets_node1710437296212 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-liberator-raw-zone", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="liberator_pcn_tickets", transformation_ctx="AmazonS3liberator_pcn_tickets_node1710437296212")
 
-# Script generated for node Amazon S3 - parking-raw-zone - parking_eta_decision_records
-AmazonS3parkingrawzoneparking_eta_decision_records_node1645806323578 = glueContext.create_dynamic_frame.from_catalog(
-    database="parking-raw-zone",
-    table_name="parking_eta_decision_records",
-    transformation_ctx="AmazonS3parkingrawzoneparking_eta_decision_records_node1645806323578",
-)
+# Script generated for node S3 bucket - pcnfoidetails_pcn_foi_full
+S3bucketpcnfoidetails_pcn_foi_full_node1710437298848 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-liberator-refined-zone", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="pcnfoidetails_pcn_foi_full", transformation_ctx="S3bucketpcnfoidetails_pcn_foi_full_node1710437298848")
 
-# Script generated for node ApplyMapping
-SqlQuery0 = """
+# Script generated for node Amazon S3 - Liberator_pcn_ic
+AmazonS3Liberator_pcn_ic_node1710437299826 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-liberator-raw-zone", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="liberator_pcn_ic", transformation_ctx="AmazonS3Liberator_pcn_ic_node1710437299826")
+
+# Script generated for node SQL Query
+SqlQuery0 = '''
 /*23/03/2022 - created feed
 07/04/2022 - added field for pcn stacking/grouping if pcn disputed/eta or not - added flage for HQ records as 'HQ_SiDEM_PCN' - updated join to match pcns with end special chars
+13/03/2024 - changed eta_decision_records table to parking-raw_zone as previously change glue job failed after deployment
+
 */
 
 With er as (
@@ -497,33 +475,12 @@ from er
 left join eta_recs on substr(eta_recs.etar_pcn, 1, 10)  =  substr(er.er_pcn, 1, 10)
 left join Disputes on Disputes.ticketserialnumber =  substr(er.er_pcn, 1, 10)
 left join pcn on substr(er.er_pcn, 1, 10) = pcn.pcn
-"""
-ApplyMapping_node2 = sparkSqlQuery(
-    glueContext,
-    query=SqlQuery0,
-    mapping={
-        "liberator_pcn_ic": AmazonS3Liberator_pcn_ic_node1631812698045,
-        "pcnfoidetails_pcn_foi_full": S3bucketpcnfoidetails_pcn_foi_full_node1,
-        "liberator_pcn_tickets": AmazonS3liberator_pcn_tickets_node1637153316033,
-        "eta_decision_records": AmazonS3parkingrawzoneparking_eta_decision_records_node1645806323578,
-    },
-    transformation_ctx="ApplyMapping_node2",
-)
+'''
+SQLQuery_node1710437254730 = sparkSqlQuery(glueContext, query = SqlQuery0, mapping = {"eta_decision_records":AmazonS3parkingrawzoneeta_decision_records_node1710437294390, "liberator_pcn_tickets":AmazonS3liberator_pcn_tickets_node1710437296212, "pcnfoidetails_pcn_foi_full":S3bucketpcnfoidetails_pcn_foi_full_node1710437298848, "liberator_pcn_ic":AmazonS3Liberator_pcn_ic_node1710437299826}, transformation_ctx = "SQLQuery_node1710437254730")
 
-# Script generated for node S3 bucket
-S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_eta_decision_records_pcn_dispute_gds/",
-    connection_type="s3",
-    updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
-    compression="snappy",
-    enableUpdateCatalog=True,
-    transformation_ctx="S3bucket_node3",
-)
-S3bucket_node3.setCatalogInfo(
-    catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",
-    catalogTableName="parking_eta_decision_records_pcn_dispute_gds",
-)
-S3bucket_node3.setFormat("glueparquet")
-S3bucket_node3.writeFrame(ApplyMapping_node2)
+# Script generated for node target - parking_eta_decision_records_pcn_dispute_gds
+targetparking_eta_decision_records_pcn_dispute_gds_node1710437308388 = glueContext.getSink(path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_eta_decision_records_pcn_dispute_gds/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=["import_year", "import_month", "import_day", "import_date"], enableUpdateCatalog=True, transformation_ctx="targetparking_eta_decision_records_pcn_dispute_gds_node1710437308388")
+targetparking_eta_decision_records_pcn_dispute_gds_node1710437308388.setCatalogInfo(catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",catalogTableName="parking_eta_decision_records_pcn_dispute_gds")
+targetparking_eta_decision_records_pcn_dispute_gds_node1710437308388.setFormat("glueparquet", compression="snappy")
+targetparking_eta_decision_records_pcn_dispute_gds_node1710437308388.writeFrame(SQLQuery_node1710437254730)
 job.commit()
