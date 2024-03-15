@@ -202,12 +202,19 @@ resource "aws_cloudwatch_event_target" "govnotify_housing_repairs_trigger_event_
 
 resource "aws_glue_crawler" "govnotify_housing_repairs_landing_zone" {
   database_name = "${local.identifier_prefix}-landing-zone-database"
-  name          = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing Zone"
+  name          = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing Zone ${local.govnotify_tables[count.index]}"
   role          = data.aws_iam_role.glue_role.arn
   tags          = module.tags.values
-  s3_target {
-    path = "s3://${module.landing_zone_data_source.bucket_id}/housing/govnotify/damp_and_mould/parquet/"
-  }
-}
+  table_prefix  = "${local.govnotify_tables[count.index]}_"
 
+  s3_target {
+    path = "s3://${module.landing_zone_data_source.bucket_id}/housing/govnotify/damp_and_mould/${local.govnotify_tables[count.index]}/"
+  }
+  configuration = jsonencode({
+    Version  = 1.0
+    Grouping = {
+      TableLevelConfiguration = 6
+    }
+  })
+}
 
