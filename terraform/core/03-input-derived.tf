@@ -33,6 +33,8 @@ data "aws_caller_identity" "api_account" {
   provider = aws.aws_api_account
 }
 
+data "aws_region" "current" {}
+
 locals {
   glue_crawler_excluded_blobs = [
     "*.json",

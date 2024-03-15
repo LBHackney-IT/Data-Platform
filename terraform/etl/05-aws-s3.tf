@@ -165,3 +165,4 @@ resource "aws_s3_object" "copy_tables_landing_to_raw_backdated" {
   source      = "../../scripts/jobs/copy_tables_landing_to_raw_backdated.py"
   source_hash = filemd5("../../scripts/jobs/copy_tables_landing_to_raw_backdated.py")
 }
+
