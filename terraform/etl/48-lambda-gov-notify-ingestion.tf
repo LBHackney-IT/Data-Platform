@@ -204,13 +204,13 @@ resource "aws_glue_crawler" "govnotify_housing_repairs_landing_zone" {
   for_each = { for idx, source in local.govnotify_tables : idx => source }
 
   database_name = "${local.identifier_prefix}-landing-zone-database"
-  name          = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing Zone ${each.key}"
+  name          = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing Zone ${each.value}"
   role          = data.aws_iam_role.glue_role.arn
   tags          = module.tags.values
-  table_prefix  = "${each.key}_"
+  table_prefix  = "${each.value}_"
 
   s3_target {
-    path = "s3://${module.landing_zone_data_source.bucket_id}/housing/govnotify/damp_and_mould/${each.key}/"
+    path = "s3://${module.landing_zone_data_source.bucket_id}/housing/govnotify/damp_and_mould/${each.value}/"
   }
   configuration = jsonencode({
     Version  = 1.0
