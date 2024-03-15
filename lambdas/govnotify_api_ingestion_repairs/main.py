@@ -120,8 +120,6 @@ def lambda_handler(event, context):
     output_folder = getenv("TARGET_S3_FOLDER")
     crawler = getenv("CRAWLER_NAME")
 
-    output_folder = add_date_partition_key_to_s3_prefix(output_folder)
-
     logger.info(f"Get API secret...")
     api_secret_string = get_api_secret(api_secret_name, region_name)
     api_secret_json = json.loads(api_secret_string)
@@ -143,18 +141,21 @@ def lambda_handler(event, context):
         response = get_response(query)
         file_name = api_queries_dict.get(api_query).get('file_name')
 
+        output_folder_json = add_date_partition_key_to_s3_prefix(f'{output_folder}{file_name}/json/')
+        output_folder_parquet = add_date_partition_key_to_s3_prefix(f'{output_folder}{file_name}/parquet/')
+
         json_str = prepare_json(response=response)
         parquet_buffer = json_to_parquet(response=response, label=file_name)
         parquet_buffer.seek(0)
 
         # Upload the json string and parquet buffer to S3
-        upload_to_s3(output_s3_bucket, s3_client, json_str, f'{output_folder}json/{file_name}.json')
-        s3_client.upload_fileobj(parquet_buffer, output_s3_bucket, f'{output_folder}parquet/{file_name}.parquet')
-        logger.info(f"Responses written as json and parquet to {output_s3_bucket}/{output_folder}{file_name}")
+        upload_to_s3(output_s3_bucket, s3_client, json_str, f'{output_folder_json}{file_name}.json')
+        s3_client.upload_fileobj(parquet_buffer, output_s3_bucket, f'{output_folder_parquet}{file_name}.parquet')
+        logger.info(f"Responses written as json and parquet to {output_s3_bucket}/{output_folder}")
 
-    # Crawl all the parquet data in S3
-    glue_client.start_crawler(Name=crawler) # must have this in prod
-    logger.info(f"S3 parquet files crawled and written to housing landing zone data catalog")
+        # Crawl all the parquet data in S3
+        glue_client.start_crawler(Name=f'{crawler} {file_name}')
+        logger.info(f"S3 {file_name} files crawled and written to housing landing zone data catalog")
 
 
 if __name__ == "__main__":
