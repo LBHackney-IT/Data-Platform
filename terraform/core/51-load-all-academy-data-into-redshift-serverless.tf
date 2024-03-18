@@ -52,7 +52,7 @@ module "load_all_academy_data_into_redshift" {
   number_of_workers_for_glue_job  = 2
   glue_job_timeout                = 220
   schedule                        = "cron(15 7 ? * MON-FRI *)"
-  jdbc_connections                = [module.database_ingestion_via_jdbc_connection[0].jdbc_connection_name]
+  # jdbc_connections                = [module.database_ingestion_via_jdbc_connection[0].jdbc_connection_name]
   job_parameters = {
     "--additional-python-modules"        = "botocore==1.27.59, redshift_connector==2.1.0"
     "--environment"                      = var.environment
