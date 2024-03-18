@@ -46,6 +46,7 @@ resource "aws_glue_connection" "database_ingestion_via_jdbc_connection" {
 resource "aws_security_group" "ingestion_database_connection" {
   name   = "${local.short_identifier_prefix}redshift-serverless-glue-connection"
   vpc_id = data.aws_subnet.network[local.instance_subnet_id].vpc_id
+  tags   = module.tags.values
 }
 
 resource "aws_security_group_rule" "ingestion_database_connection_allow_tcp_ingress" {
