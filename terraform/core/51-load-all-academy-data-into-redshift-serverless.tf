@@ -37,7 +37,7 @@ locals {
 
 
 
-resource "aws_glue_connection" "jdbc_database_ingestion" {
+resource "aws_glue_connection" "database_ingestion_via_jdbc_connection" {
   count                        = local.is_live_environment && !local.is_production_environment ? 1 : 0
   name                         = "${local.short_identifier_prefix}redshift-serverless-connection-${data.aws_subnet.network[local.instance_subnet_id].availability_zone}"
   description = "JDBC connection for Redshift Serverless"
