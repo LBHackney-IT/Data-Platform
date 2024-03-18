@@ -10,7 +10,7 @@ locals {
   redshift_serverless_credentials = jsondecode(data.aws_secretsmanager_secret_version.redshift_serverless_connection.secret_string)
 }
 
-# Option 1: using existing model, it works well, but launch so many other resources
+# Option 1: using existing module, it works well, but launch so many other resources
 # module "database_ingestion_via_jdbc_connection" {
 #   count                        = local.is_live_environment && !local.is_production_environment ? 1 : 0
 #   tags                         = module.tags.values
