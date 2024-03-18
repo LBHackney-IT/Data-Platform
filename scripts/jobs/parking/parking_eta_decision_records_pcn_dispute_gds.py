@@ -484,3 +484,4 @@ targetparking_eta_decision_records_pcn_dispute_gds_node1710437308388.setCatalogI
 targetparking_eta_decision_records_pcn_dispute_gds_node1710437308388.setFormat("glueparquet", compression="snappy")
 targetparking_eta_decision_records_pcn_dispute_gds_node1710437308388.writeFrame(SQLQuery_node1710437254730)
 job.commit()
+
