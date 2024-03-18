@@ -56,7 +56,7 @@ module "load_all_academy_data_into_redshift" {
   job_parameters = {
     "--additional-python-modules"        = "botocore==1.27.59, redshift_connector==2.1.0"
     "--environment"                      = var.environment
-    # This is the ARN of the IAM role used by Redshift Serverless. We have count in redshift-serverless module so we need to use index 0 to get the ARN.
+    # This is the ARN of the IAM role used by Redshift Serverless. We have count in redshift-serverless module so index 0 is to get the ARN.
     "--role_arn"                         = try(module.redshift_serverless[0].redshift_serverless_role_arn, "") 
     "--enable-auto-scaling"              = "false"
     "--job-bookmark-option"              = "job-bookmark-disable"
