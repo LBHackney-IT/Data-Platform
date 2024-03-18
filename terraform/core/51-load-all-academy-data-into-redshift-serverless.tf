@@ -1,10 +1,3 @@
-variable "database_name" {
-  description = "The name of the database to connect to"
-  type        = string
-  default     = "academy" 
-}
-
-
 data "aws_secretsmanager_secret" "redshift_serverless_connection" {
   name = "/data-and-insight/redshift-serverless-connection"
 }
@@ -17,23 +10,17 @@ locals {
   redshift_serverless_credentials = jsondecode(data.aws_secretsmanager_secret_version.redshift_serverless_connection.secret_string)
 }
 
-output "redshift_serverless_credentials" {
-  value     = local.redshift_serverless_credentials
-  sensitive = true
+module "database_ingestion_via_jdbc_connection" {
+  count                        = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  tags                         = module.tags.values
+  source                       = "../modules/database-ingestion-via-jdbc-connection"
+  name                         = "redshift-serverless-connection"
+  jdbc_connection_url          = "jdbc:redshift://${local.redshift_serverless_credentials["host"]}:${local.redshift_serverless_credentials["port"]}/${local.redshift_serverless_credentials["database_name"]}"
+  jdbc_connection_description  = "JDBC connection for Redshift Serverless"
+  jdbc_connection_subnet       = data.aws_subnet.network[local.instance_subnet_id]
+  database_secret_name         = "/data-and-insight/redshift-serverless-connection"
+  identifier_prefix            = local.short_identifier_prefix
 }
-# module "database_ingestion_via_jdbc_connection" {
-#   count                        = local.is_live_environment && !local.is_production_environment ? 1 : 0
-#   tags                         = module.tags.values
-#   source                       = "./Data-Platform/terraform/modules/database-ingestion-via-jdbc-connection"
-#   name                         = "redshift-serverless-connection"
-#   jdbc_connection_url          = "jdbc:redshift://${local.redshift_serverless_credentials["host"]}:${local.redshift_serverless_credentials["port"]}/${var.database_name}"
-#   jdbc_connection_description  = "JDBC connection for Redshift Serverless"
-#   jdbc_connection_subnet       = data.aws_subnet.network[local.instance_subnet_id]
-#   database_secret_name         = "/data-and-insight/redshift-serverless-connection"
-#   identifier_prefix            = local.short_identifier_prefix
-#   database_username            = local.redshift_serverless_credentials["user"]
-#   database_password            = local.redshift_serverless_credentials["password"]
-# }
 
 
 
@@ -56,7 +43,7 @@ module "load_all_academy_data_into_redshift" {
   number_of_workers_for_glue_job  = 2
   glue_job_timeout                = 220
   schedule                        = "cron(15 7 ? * MON-FRI *)"
-  # jdbc_connections                = [module.database_ingestion_via_jdbc_connection[0].jdbc_connection_name]
+  jdbc_connections                = [module.database_ingestion_via_jdbc_connection[0].jdbc_connection_name]
   job_parameters = {
     "--additional-python-modules"        = "botocore==1.27.59, redshift_connector==2.1.0"
     "--environment"                      = var.environment

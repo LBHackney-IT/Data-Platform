@@ -29,7 +29,7 @@ def rs_command(query: str, fetch_results: bool = False, allow_commit: bool = Tru
         conn = redshift_connector.connect(
             host=creds['host'],
             database=database_name,
-            user=creds['user'],
+            user=creds['username'],
             password=creds['password']
         )
         
