@@ -1,15 +1,16 @@
-# data "aws_secretsmanager_secret" "redshift_serverless_connection" {
-#   name = "/data-and-insight/redshift-serverless-connection"
-# }
+data "aws_secretsmanager_secret" "redshift_serverless_connection" {
+  name = "/data-and-insight/redshift-serverless-connection"
+}
 
-# data "aws_secretsmanager_secret_version" "redshift_serverless_connection" {
-#   secret_id = data.aws_secretsmanager_secret.redshift_serverless_connection.id
-# }
+data "aws_secretsmanager_secret_version" "redshift_serverless_connection" {
+  secret_id = data.aws_secretsmanager_secret.redshift_serverless_connection.id
+}
 
-# locals {
-#   redshift_serverless_credentials = jsondecode(data.aws_secretsmanager_secret_version.redshift_serverless_connection.secret_string)
-# }
+locals {
+  redshift_serverless_credentials = jsondecode(data.aws_secretsmanager_secret_version.redshift_serverless_connection.secret_string)
+}
 
+# Option 1: using existing model, it works well, but launch so many other resources
 # module "database_ingestion_via_jdbc_connection" {
 #   count                        = local.is_live_environment && !local.is_production_environment ? 1 : 0
 #   tags                         = module.tags.values
@@ -101,7 +102,8 @@ module "load_all_academy_data_into_redshift" {
   number_of_workers_for_glue_job  = 2
   glue_job_timeout                = 220
   schedule                        = "cron(15 7 ? * MON-FRI *)"
-  jdbc_connections                = [module.database_ingestion_via_jdbc_connection[0].name]
+  # jdbc_connections                = [module.database_ingestion_via_jdbc_connection[0].name]
+  jdbc_connections                = [aws_glue_connection.database_ingestion_via_jdbc_connection[0].name]
   job_parameters = {
     "--additional-python-modules"        = "botocore==1.27.59, redshift_connector==2.1.0"
     "--environment"                      = var.environment
