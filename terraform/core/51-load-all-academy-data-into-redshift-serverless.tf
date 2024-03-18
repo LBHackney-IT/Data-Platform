@@ -1,22 +1,26 @@
-# variable "database_name" {
-#   description = "The name of the database to connect to"
-#   type        = string
-#   default     = "academy" 
-# }
+variable "database_name" {
+  description = "The name of the database to connect to"
+  type        = string
+  default     = "academy" 
+}
 
 
-# data "aws_secretsmanager_secret" "redshift_serverless_connection" {
-#   name = "/data-and-insight/redshift-serverless-connection"
-# }
+data "aws_secretsmanager_secret" "redshift_serverless_connection" {
+  name = "/data-and-insight/redshift-serverless-connection"
+}
 
-# data "aws_secretsmanager_secret_version" "redshift_serverless_connection" {
-#   secret_id = data.aws_secretsmanager_secret.redshift_serverless_connection.id
-# }
+data "aws_secretsmanager_secret_version" "redshift_serverless_connection" {
+  secret_id = data.aws_secretsmanager_secret.redshift_serverless_connection.id
+}
 
-# locals {
-#   redshift_serverless_credentials = jsondecode(data.aws_secretsmanager_secret_version.redshift_serverless_connection.secret_string)
-# }
+locals {
+  redshift_serverless_credentials = jsondecode(data.aws_secretsmanager_secret_version.redshift_serverless_connection.secret_string)
+}
 
+output "redshift_serverless_credentials" {
+  value     = local.redshift_serverless_credentials
+  sensitive = true
+}
 # module "database_ingestion_via_jdbc_connection" {
 #   count                        = local.is_live_environment && !local.is_production_environment ? 1 : 0
 #   tags                         = module.tags.values
