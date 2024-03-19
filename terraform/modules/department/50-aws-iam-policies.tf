@@ -750,8 +750,8 @@ data "aws_iam_policy_document" "redshift_department_read_access" {
 }
 
 
-// Glue Agents can pass their role to Secrets Manager for notebook use
-data "aws_iam_policy_document" "glue_pass_role_to_secrets_manager_for_notebook_use" {
+// Glue job runner pass role to glue for notebook use
+data "aws_iam_policy_document" "glue_runner_pass_role_to_glue_for_notebook_use" {
   statement {
     effect = "Allow"
     actions = [
@@ -768,8 +768,8 @@ data "aws_iam_policy_document" "glue_pass_role_to_secrets_manager_for_notebook_u
   }
 }
 
-resource "aws_iam_policy" "glue_pass_role_to_secrets_manager_for_notebook_use" {
+resource "aws_iam_policy" "glue_runner_pass_role_to_glue_for_notebook_use" {
   tags   = var.tags
-  name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-pass-role-to-secrets-manager-for-notebook-use")
-  policy = data.aws_iam_policy_document.glue_pass_role_to_secrets_manager_for_notebook_use.json
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-runner-pass-role-to-glue-for-notebook-use")
+  policy = data.aws_iam_policy_document.glue_runner_pass_role_to_glue_for_notebook_use.json
 }
