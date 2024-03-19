@@ -763,7 +763,7 @@ data "aws_iam_policy_document" "glue_pass_role_to_secrets_manager_for_notebook_u
     condition {
       test     = "StringEquals"
       variable = "iam:PassedToService"
-      values   = ["secretsmanager.amazonaws.com"]
+      values   = ["glue.amazonaws.com"]
     }
   }
 }
