@@ -769,8 +769,7 @@ data "aws_iam_policy_document" "glue_pass_role_to_secrets_manager_for_notebook_u
 }
 
 resource "aws_iam_policy" "glue_pass_role_to_secrets_manager_for_notebook_use" {
-  tags = var.tags
-
+  tags   = var.tags
   name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-pass-role-to-secrets-manager-for-notebook-use")
   policy = data.aws_iam_policy_document.glue_pass_role_to_secrets_manager_for_notebook_use.json
 }
