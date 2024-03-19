@@ -87,3 +87,9 @@ resource "aws_iam_role_policy_attachment" "glue_access_to_watermarks_table" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.glue_access_to_watermarks_table.arn
 }
+
+resource "aws_iam_role_policy_attachment" "glue_pass_role_to_secrets_manager_for_notebook_use" {
+  count      = var.environment == "Prod" ? 0 : 1
+  role       = aws_iam_role.glue_agent.name
+  policy_arn = aws_iam_policy.glue_pass_role_to_secrets_manager_for_notebook_use.arn
+}
