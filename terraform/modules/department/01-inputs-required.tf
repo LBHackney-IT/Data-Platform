@@ -9,7 +9,7 @@ variable "is_live_environment" {
 }
 
 variable "environment" {
-  description = "Environment e.g. Dev, Stg, Prod, Mgmt."
+  description = "Environment e.g. stg, prod."
   type        = string
 }
 

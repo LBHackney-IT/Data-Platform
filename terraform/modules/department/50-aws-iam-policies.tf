@@ -449,16 +449,6 @@ data "aws_iam_policy_document" "secrets_manager_read_only" {
       var.secrets_manager_kms_key.arn
     ]
   }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "iam:PassRole",
-    ]
-    resources = [
-      "arn:aws:iam::34566344452:role/dataplatform-stg-glue-data-and-insight"
-    ]
-  }
 }
 
 resource "aws_iam_policy" "secrets_manager_read_only" {
@@ -757,4 +747,29 @@ data "aws_iam_policy_document" "redshift_department_read_access" {
     ]
     resources = ["*"]
   }
+}
+
+
+// Glue job runner pass role to glue for notebook use
+data "aws_iam_policy_document" "glue_runner_pass_role_to_glue_for_notebook_use" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:PassRole"
+    ]
+    resources = [
+      aws_iam_role.glue_agent.arn
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values   = ["glue.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "glue_runner_pass_role_to_glue_for_notebook_use" {
+  tags   = var.tags
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-runner-pass-role-to-glue-for-notebook-use")
+  policy = data.aws_iam_policy_document.glue_runner_pass_role_to_glue_for_notebook_use.json
 }
