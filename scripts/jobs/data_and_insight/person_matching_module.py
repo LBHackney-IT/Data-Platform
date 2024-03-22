@@ -16,7 +16,7 @@ from pyspark.ml.feature import StringIndexer, OneHotEncoder, VectorAssembler
 from pyspark.ml.functions import vector_to_array
 from pyspark.ml.tuning import ParamGridBuilder, CrossValidator, CrossValidatorModel
 from pyspark.sql import DataFrame, SparkSession, Column
-from pyspark.sql.functions import to_date, col, lit, broadcast, udf, when, substring, lower, concat_ws, soundex, \
+from pyspark.sql.functions import to_date, col, lit, length, broadcast, udf, when, substring, lower, concat_ws, soundex, \
     regexp_replace, trim, split, struct, arrays_zip, array, array_sort
 from pyspark.sql.pandas.functions import pandas_udf
 from pyspark.sql.types import StructType, StructField, StringType, DateType, BooleanType, DoubleType
@@ -275,24 +275,22 @@ def prepare_clean_housing_data(person_reshape: DataFrame, assets_reshape: DataFr
     Returns:
         A prepared and cleaned dataframe containing housing tenancy data.
     """
-    # print(tenure_reshape.show())
-    tenure_reshape = tenure_reshape.filter(tenure_reshape["isterminated"] == False)
+    tenure_reshape = tenure_reshape.filter((tenure_reshape["endoftenuredate"].isNull()) | (
+                tenure_reshape["endoftenuredate"].cast(DateType()) > current_date()))
 
     assets_reshape = assets_reshape.filter(assets_reshape['assettype'] == 'Dwelling')
 
     person_reshape = person_reshape.filter(
-        (person_reshape["type"].isin(["Secure", "Introductory", "Mense Profit Ac", "Leasehold (RTB)"]))
-        & (person_reshape["enddate"].isNull()))
+        (person_reshape["type"].isin(
+            ["Secure", "Introductory", "Leasehold (RTB)", "Mense Profit Ac", "Mesne Profit Ac"]))
+        & (person_reshape["enddate"].isNull())
+        & (person_reshape["person_type"].isin(["Tenant", "HouseholdMember"])))
 
     housing = person_reshape \
         .join(assets_reshape, person_reshape["assetid"] == assets_reshape["asset_id"], how="left") \
         .join(tenure_reshape, person_reshape["person_id"] == tenure_reshape["person_id"], how="left") \
         .withColumn("source", lit("housing")) \
         .withColumn("extracted_name", extract_name_udf(col("member_fullname"))) \
-        .withColumn("entity_type",
-                    when(lower(col("member_type")) == "person", lit("Person"))
-                    .when(lower(col("member_type")) == "organisation", lit("Business"))
-                    .otherwise(lit("Unknown"))) \
         .withColumn("title",
                     when((col("extracted_name.title").isNull()) |
                          (lower(col("extracted_name.title")) == lower(col("preferredTitle"))),
@@ -311,8 +309,8 @@ def prepare_clean_housing_data(person_reshape: DataFrame, assets_reshape: DataFr
         .withColumnRenamed("addressline3", "address_line_3") \
         .withColumnRenamed("addressline4", "address_line_4") \
         .withColumnRenamed("placeOfBirth", "place_of_birth") \
-        .select(col("source"), person_reshape["person_id"], person_reshape["uprn"], col("entity_type"),
-                col("title"),
+        .filter((length(col("first_name")) > 0) | (length(col("last_name")) > 0)) \
+        .select(col("source"), person_reshape["person_id"], person_reshape["uprn"], col("title"),
                 col("first_name"), col("middle_name"), col("last_name"), col("date_of_birth"),
                 col("post_code"), col("address_line_1"), col("address_line_2"), col("address_line_3"),
                 col("address_line_4"), person_reshape["type"])
@@ -347,8 +345,6 @@ def standardize_housing_data(housing_cleaned: DataFrame) -> DataFrame:
         A housing DataFrame with all the standard columns listed above.
     """
     housing = housing_cleaned \
-        .filter(col("entity_type") == "Person") \
-        .drop(col("entity_type")) \
         .withColumnRenamed("person_id", "source_id") \
         .withColumnRenamed("type", "source_filter") \
         .withColumn("title", categorise_title(lower(col("title")))) \
@@ -515,14 +511,14 @@ def standardize_council_tax_data(council_tax_cleaned: DataFrame) -> DataFrame:
 def prepare_clean_housing_benefit_data(hb_member_df: DataFrame,
                                        hb_household_df: DataFrame,
                                        hb_rent_assessment_df: DataFrame,
-                                       hb_tax_calc_stmt_df: DataFrame) -> DataFrame:
+                                       hb_ctax_assessment_df: DataFrame) -> DataFrame:
     """A function to prepare and clean housing benefit data. Data comes from multiple sources. This function is specific
     to this particular data source. For a new data source please add a new function.
     Args:
         hb_member_df: DataFrame,
         hb_household_df: DataFrame,
         hb_rent_assessment_df: DataFrame,
-        hb_tax_calc_stmt_df: DataFrame
+        hb_ctax_assessment_df: DataFrame
     Returns:
         A DataFrame after preparing and cleaning housing benefit data from multiple tables.
     """
@@ -547,22 +543,26 @@ def prepare_clean_housing_benefit_data(hb_member_df: DataFrame,
                 col("address_line_3"), col("address_line_4"), col("post_code"), col("uprn"))
 
     housing_benefit_rent_assessment = hb_rent_assessment_df \
-        .filter((col("from_date") < col("import_datetime")) & (col("to_date") > col("import_datetime"))) \
-        .select(col("claim_id"))
+        .withColumn("source_filter", when((col("dhp_ind") == 1) & (col("type_ind") > 1), "DHP").otherwise("HB")) \
+        .filter((col("from_date") < col("import_datetime")) & (col("to_date") > col("import_datetime"))
+                & ((col("type_ind") == 1) | (col("dhp_ind") == 1)) & (col("model_amt") > 0)) \
+        .select(col("claim_id"), col("source_filter"))
 
-    housing_benefit_tax_calc_stmt = hb_tax_calc_stmt_df \
-        .filter((col("from_date") < col("import_datetime")) & (col("to_date") > col("import_datetime"))) \
-        .select(col("claim_id"))
+    housing_benefit_ctax_assessment = hb_ctax_assessment_df \
+        .withColumn("source_filter", lit("CTS")) \
+        .filter((col("from_date") < col("import_datetime")) & (col("to_date") > col("import_datetime"))
+                & (col("model_amt") > 0) & ((col("type_ind") == 1) | (col("dhp_ind") == 1))) \
+        .select(col("claim_id"), col("source_filter"))
 
-    housing_benefit_rent_tax = housing_benefit_rent_assessment.union(housing_benefit_tax_calc_stmt)
+    housing_benefit_rent_ctax = housing_benefit_rent_assessment.union(housing_benefit_ctax_assessment)
 
     housing_benefit_household_claims = housing_benefit_household \
-        .join(housing_benefit_rent_tax, ["claim_id"])
+        .join(housing_benefit_rent_ctax, ["claim_id"])
 
-    housing_benefit_cleaned = housing_benefit_member.join(housing_benefit_household_claims, ["claim_house_id"]) \
+    housing_benefit_cleaned = housing_benefit_household_claims.join(housing_benefit_member, ["claim_house_id"]) \
         .withColumn("source", lit("housing_benefit")) \
-        .withColumn("source_filter", lit("housing_benefit")) \
-        .select(col("source"), col("claim_person_ref"), col("uprn"), col("entity_type"), col("title"),
+        .withColumn("source_id", col("claim_id")) \
+        .select(col("source"), col("claim_person_ref"), col("uprn"), col("title"),
                 col("first_name"), col("middle_name"), col("last_name"), col("date_of_birth"), col("gender"),
                 col("post_code"), col("address_line_1"), col("address_line_2"), col("address_line_3"),
                 col("address_line_4"), col("source_filter"))
@@ -600,8 +600,6 @@ def standardize_housing_benefit_data(housing_benefit_cleaned: DataFrame) -> Data
         A housing benefit DataFrame with all the standard columns listed above.
     """
     housing_benefit = housing_benefit_cleaned \
-        .filter(col("entity_type") == "Person") \
-        .drop(col("entity_type")) \
         .withColumn("source_id", col("claim_person_ref")) \
         .withColumn("title", categorise_title(lower(col("title")))) \
         .withColumn("first_name", standardize_name(col("first_name"))) \
