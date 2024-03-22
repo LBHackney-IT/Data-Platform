@@ -30,12 +30,12 @@ from great_expectations.dataset import SparkDFDataset
 from pyspark.sql.functions import col, when
 
 from scripts.jobs.env_context import DEFAULT_MODE_AWS, LOCAL_MODE, ExecutionContextProvider
-from scripts.jobs.data_and_insight.person_matching_module import remove_deceased,\
-    prepare_clean_council_tax_data, standardize_council_tax_data,\
+from scripts.jobs.data_and_insight.person_matching_module import remove_deceased, \
+    prepare_clean_council_tax_data, standardize_council_tax_data, \
     prepare_clean_housing_benefit_data, standardize_housing_benefit_data, \
     prepare_clean_parking_permit_data, standardize_parking_permit_data, prepare_clean_housing_data, \
     standardize_housing_data
-from scripts.helpers.helpers import add_import_time_columns, PARTITION_KEYS,\
+from scripts.helpers.helpers import add_import_time_columns, PARTITION_KEYS, \
     create_pushdown_predicate_for_latest_written_partition, \
     create_pushdown_predicate_for_max_date_partition_value
 
@@ -208,10 +208,11 @@ def main():
                                                                     source_catalog_table_hb_rent_assessment,
                                                                     'import_date'))
         hb_ctax_assessment_df = execution_context.get_dataframe(name_space=source_catalog_database_housing_benefit,
-                                                              table_name=source_catalog_table_hb_ctax_assessment,
-                                                              push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                                  source_catalog_database_housing_benefit,
-                                                                  source_catalog_table_hb_ctax_assessment, 'import_date'))
+                                                                table_name=source_catalog_table_hb_ctax_assessment,
+                                                                push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
+                                                                    source_catalog_database_housing_benefit,
+                                                                    source_catalog_table_hb_ctax_assessment,
+                                                                    'import_date'))
 
         housing_benefit_cleaned = prepare_clean_housing_benefit_data(hb_member_df,
                                                                      hb_household_df,
