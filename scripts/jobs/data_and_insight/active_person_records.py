@@ -60,7 +60,7 @@ def main():
     source_catalog_table_hb_member_glue_arg = "source_catalog_table_hb_member"
     source_catalog_table_hb_household_glue_arg = "source_catalog_table_hb_household"
     source_catalog_table_hb_rent_assessment_glue_arg = "source_catalog_table_hb_rent_assessment"
-    source_catalog_table_hb_tax_calc_stmt_glue_arg = "source_catalog_table_hb_tax_calc_stmt"
+    source_catalog_table_hb_ctax_assessment_glue_arg = "source_catalog_table_hb_ctax_assessment"
     source_catalog_database_parking_glue_arg = "source_catalog_database_parking"
     source_catalog_table_parking_permit_glue_arg = "source_catalog_table_parking_permit"
     output_path_glue_arg = "output_path"
@@ -79,7 +79,7 @@ def main():
                  source_catalog_table_hb_member_glue_arg,
                  source_catalog_table_hb_household_glue_arg,
                  source_catalog_table_hb_rent_assessment_glue_arg,
-                 source_catalog_table_hb_tax_calc_stmt_glue_arg,
+                 source_catalog_table_hb_ctax_assessment_glue_arg,
                  source_catalog_database_parking_glue_arg,
                  source_catalog_table_parking_permit_glue_arg,
                  output_path_glue_arg
@@ -188,8 +188,8 @@ def main():
         source_catalog_table_hb_household = execution_context.get_input_args(source_catalog_table_hb_household_glue_arg)
         source_catalog_table_hb_rent_assessment = execution_context.get_input_args(
             source_catalog_table_hb_rent_assessment_glue_arg)
-        source_catalog_table_hb_tax_calc_stmt = execution_context.get_input_args(
-            source_catalog_table_hb_tax_calc_stmt_glue_arg)
+        source_catalog_table_hb_ctax_assessment = execution_context.get_input_args(
+            source_catalog_table_hb_ctax_assessment_glue_arg)
 
         hb_member_df = execution_context.get_dataframe(name_space=source_catalog_database_housing_benefit,
                                                        table_name=source_catalog_table_hb_member,
@@ -207,16 +207,16 @@ def main():
                                                                     source_catalog_database_housing_benefit,
                                                                     source_catalog_table_hb_rent_assessment,
                                                                     'import_date'))
-        hb_tax_calc_stmt_df = execution_context.get_dataframe(name_space=source_catalog_database_housing_benefit,
-                                                              table_name=source_catalog_table_hb_tax_calc_stmt,
+        hb_ctax_assessment_df = execution_context.get_dataframe(name_space=source_catalog_database_housing_benefit,
+                                                              table_name=source_catalog_table_hb_ctax_assessment,
                                                               push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
                                                                   source_catalog_database_housing_benefit,
-                                                                  source_catalog_table_hb_tax_calc_stmt, 'import_date'))
+                                                                  source_catalog_table_hb_ctax_assessment, 'import_date'))
 
         housing_benefit_cleaned = prepare_clean_housing_benefit_data(hb_member_df,
                                                                      hb_household_df,
                                                                      hb_rent_assessment_df,
-                                                                     hb_tax_calc_stmt_df)
+                                                                     hb_ctax_assessment_df)
         housing_benefit_cleaned = remove_deceased(housing_benefit_cleaned)
         housing_benefit = standardize_housing_benefit_data(housing_benefit_cleaned)
         logger.info(f'Housing benefit df cleaned and standardised')
