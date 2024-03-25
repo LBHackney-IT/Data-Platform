@@ -17,7 +17,7 @@ from pyspark.ml.functions import vector_to_array
 from pyspark.ml.tuning import ParamGridBuilder, CrossValidator, CrossValidatorModel
 from pyspark.sql import DataFrame, SparkSession, Column
 from pyspark.sql.functions import to_date, col, lit, length, broadcast, udf, when, substring, lower, concat_ws, soundex, \
-    regexp_replace, trim, split, struct, arrays_zip, array, array_sort
+    regexp_replace, trim, split, struct, arrays_zip, array, array_sort, current_date
 from pyspark.sql.pandas.functions import pandas_udf
 from pyspark.sql.types import StructType, StructField, StringType, DateType, BooleanType, DoubleType
 
