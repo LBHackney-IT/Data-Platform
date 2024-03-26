@@ -61,7 +61,7 @@ resource "aws_glue_trigger" "active_persons_records_refined_trigger" {
   name     = "${local.short_identifier_prefix}Active Person Records to Refined Ingestion Trigger"
   tags     = module.department_data_and_insight_data_source.tags
   type     = "SCHEDULED"
-  schedule = "cron(0 22 * * ? *)"
+  schedule = "cron(0 22 * * 1-5 *)"
   enabled  = local.is_production_environment
   count    = local.active_persons_environment_count
 
