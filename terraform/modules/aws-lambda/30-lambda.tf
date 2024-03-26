@@ -57,7 +57,7 @@ resource "aws_s3_object" "lambda" {
   key        = var.s3_key
   source     = data.archive_file.lambda.output_path
   acl        = "private"
-  # Add a metadata attribute to create a traceable record of the version of the file uploaded to S3
+  # Add a metadata to track the change of the uploaded lambda zip file based on its checksum 
   metadata = {
     last_updated = data.archive_file.lambda.output_base64sha256
   }
