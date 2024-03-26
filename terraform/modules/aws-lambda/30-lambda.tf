@@ -5,7 +5,7 @@ locals {
 }
 
 resource "aws_lambda_function" "lambda" {
-  function_name    = lower("${var.identifier_prefix}-${var.lambda_name}")
+  function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   role             = var.lambda_role_arn == null ? aws_iam_role.lambda_role.arn : var.lambda_role_arn
   handler          = var.handler
   runtime          = var.runtime
@@ -57,5 +57,9 @@ resource "aws_s3_object" "lambda" {
   key        = var.s3_key
   source     = data.archive_file.lambda.output_path
   acl        = "private"
+  # Add a metadata to track the change of the uploaded lambda zip file based on its checksum 
+  metadata = {
+    last_updated = data.archive_file.lambda.output_base64sha256
+  }
   depends_on = [data.archive_file.lambda]
 }
