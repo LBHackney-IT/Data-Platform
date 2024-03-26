@@ -5,7 +5,7 @@ locals {
 }
 
 resource "aws_lambda_function" "lambda" {
-  function_name    = lower("${var.identifier_prefix}-${var.lambda_name}")
+  function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   role             = var.lambda_role_arn == null ? aws_iam_role.lambda_role.arn : var.lambda_role_arn
   handler          = var.handler
   runtime          = var.runtime
