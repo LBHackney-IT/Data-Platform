@@ -2,6 +2,7 @@
 Script to call the GovNotify API to retrieve data. Writes response as a
 JSON string and Parquet file into the landing zone.
 """
+
 from datetime import datetime
 from io import BytesIO
 import json
