@@ -1,5 +1,6 @@
 locals {
-  create_street_systems_resource_count = local.is_live_environment ? 1 : 0
+  create_street_systems_resource_count = local.is_live_environment ? 1 : 0,
+  traffic_counters_tables                = ["street-systems"]
 }
 
 data "aws_iam_policy_document" "streetscene_street_systems_raw_zone_access" {
@@ -193,7 +194,7 @@ resource "aws_cloudwatch_event_target" "street_systems_api_trigger_event_target"
 }
 
 resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
-  for_each = { for idx, source in local.govnotify_tables : idx => source }
+  for_each = { for idx, source in local.traffic_counters_tables : idx => source }
 
   database_name = "${local.identifier_prefix}-raw-zone-database"
   name          = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone ${each.value}"
@@ -202,7 +203,7 @@ resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
   table_prefix  = "${each.value}_"
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/streetscene/traffic-counters/street-systems/${each.value}/"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/streetscene/traffic-counters/${each.value}/"
   }
   configuration = jsonencode({
     Version  = 1.0

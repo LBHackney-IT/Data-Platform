@@ -172,7 +172,7 @@ def lambda_handler(event, context):
     write_dataframe_to_s3_parquet(s3_client, s3_bucket, output_folder_name, out_df, output_filename)
 
     # Crawl all the parquet data in S3
-    glue_client = boto3.client('glue')
+    glue_client = boto3.client('glue',region_name='eu-west-2')
     glue_client.start_crawler(Name=f'{crawler}')
 
 
