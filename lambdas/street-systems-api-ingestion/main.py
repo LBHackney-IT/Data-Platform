@@ -118,6 +118,7 @@ def lambda_handler(event, context):
     #s3_bucket = 'dataplatform-stg-raw-zone'
     s3_bucket = getenv("OUTPUT_S3_FOLDER")
     output_folder_name = getenv("TARGET_S3_BUCKET_NAME")
+    crawler = getenv("CRAWLER_NAME")
     #output_folder_name = 'streetscene/streets-systems'
     output_filename = 'output'
 
@@ -127,12 +128,13 @@ def lambda_handler(event, context):
     username = api_credentials.get("user")
     secret = api_credentials.get("secret")
 
+
     print(f'username retrieved from secret manager: {username}')
 
     # accepted_classes = ['person','car','pc','head']
     locations = "all"  # <-- you can put a list of locations or just ask for 'all'
 
-    from_s = (datetime.datetime.utcnow() - datetime.timedelta(hours=2)).strftime("%Y-%m-%d %H:00:00")
+    from_s = (datetime.datetime.utcnow() - datetime.timedelta(hours=24)).strftime("%Y-%m-%d %H:00:00")
     to_s = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
     outputs = []
@@ -168,6 +170,10 @@ def lambda_handler(event, context):
     # with s3.open('s3://dataplatform-stg-landing-zone/data-and-insight/streets-systems/output.parquet', 'wb') as f:
     #     out_df.to_parquet(f)
     write_dataframe_to_s3_parquet(s3_client, s3_bucket, output_folder_name, out_df, output_filename)
+
+    # Crawl all the parquet data in S3
+    glue_client = boto3.client('glue',region_name='eu-west-2')
+    glue_client.start_crawler(Name=f'{crawler}')
 
 
 if __name__ == "__main__":

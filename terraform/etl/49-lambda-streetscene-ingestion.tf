@@ -1,5 +1,6 @@
 locals {
   create_street_systems_resource_count = local.is_live_environment ? 1 : 0
+  traffic_counters_tables                = ["street-systems"]
 }
 
 data "aws_iam_policy_document" "streetscene_street_systems_raw_zone_access" {
@@ -126,6 +127,29 @@ resource "aws_iam_role_policy_attachment" "streetscene_street_systems_lambda_sec
   policy_arn = aws_iam_policy.streetscene_street_systems_lambda_secret_access[0].arn
 }
 
+# Define a IAM Policy Document for Glue StartCrawler Permissions:
+data "aws_iam_policy_document" "streetscene_street_systems_glue_crawler" {
+  statement {
+    actions   = ["glue:StartCrawler"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+}
+
+# create a New IAM Policy Resource:
+resource "aws_iam_policy" "streetscene_street_systems_glue_crawler" {
+  count  = local.create_street_systems_resource_count
+  name   = "streetscene_street_systems_glue_crawler_access"
+  policy = data.aws_iam_policy_document.streetscene_street_systems_glue_crawler.json
+}
+
+# attach the gov_notify_glue_crawler to the lambda_role by creating a new aws_iam_role_policy_attachment resource.
+resource "aws_iam_role_policy_attachment" "streetscene_street_systems_glue_crawler" {
+  count      = local.create_street_systems_resource_count
+  role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
+  policy_arn = aws_iam_policy.streetscene_street_systems_glue_crawler[0].arn
+}
+
 module "street-systems-api-ingestion" {
   count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/aws-lambda"
@@ -144,6 +168,7 @@ module "street-systems-api-ingestion" {
     OUTPUT_S3_FOLDER      = module.raw_zone_data_source.bucket_id
     TARGET_S3_BUCKET_NAME = "streetscene/traffic-counters/street-systems"
     API_URL = "https://flask-customer-api.ki8kabg62o4fg.eu-west-2.cs.amazonlightsail.com"
+    CRAWLER_NAME     = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone"
   }
   layers = [
     "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:requests-2-31-0-and-httplib-0-22-0-layer:1",
@@ -166,6 +191,26 @@ resource "aws_cloudwatch_event_target" "street_systems_api_trigger_event_target"
   rule      = aws_cloudwatch_event_rule.street_systems_api_trigger_event[0].name
   target_id = "street_systems_api_trigger_event_target"
   arn       = module.street-systems-api-ingestion[0].lambda_function_arn
+}
+
+resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
+  for_each = { for idx, source in local.traffic_counters_tables : idx => source }
+
+  database_name = "${local.identifier_prefix}-raw-zone-database"
+  name          = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone ${each.value}"
+  role          = data.aws_iam_role.glue_role.arn
+  tags          = module.tags.values
+  table_prefix  = "${each.value}_"
+
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/streetscene/traffic-counters/${each.value}/"
+  }
+  configuration = jsonencode({
+    Version  = 1.0
+    Grouping = {
+      TableLevelConfiguration = 6
+    }
+  })
 }
 
 
