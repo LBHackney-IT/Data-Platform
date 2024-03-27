@@ -134,7 +134,7 @@ def lambda_handler(event, context):
     # accepted_classes = ['person','car','pc','head']
     locations = "all"  # <-- you can put a list of locations or just ask for 'all'
 
-    from_s = (datetime.datetime.utcnow() - datetime.timedelta(hours=2)).strftime("%Y-%m-%d %H:00:00")
+    from_s = (datetime.datetime.utcnow() - datetime.timedelta(hours=24)).strftime("%Y-%m-%d %H:00:00")
     to_s = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
     outputs = []
