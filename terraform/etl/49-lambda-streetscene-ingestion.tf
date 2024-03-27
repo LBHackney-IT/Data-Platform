@@ -142,7 +142,7 @@ resource "aws_iam_policy" "streetscene_street_systems_glue_crawler" {
   policy = data.aws_iam_policy_document.streetscene_street_systems_glue_crawler.json
 }
 
-# attach the gov_notify_glue_crawler to the housing_gov_notify_ingestion_lambda_role by creating a new aws_iam_role_policy_attachment resource.
+# attach the gov_notify_glue_crawler to the lambda_role by creating a new aws_iam_role_policy_attachment resource.
 resource "aws_iam_role_policy_attachment" "streetscene_street_systems_glue_crawler" {
   count      = local.create_street_systems_resource_count
   role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
