@@ -1,5 +1,5 @@
 locals {
-  create_street_systems_resource_count = local.is_live_environment ? 1 : 0,
+  create_street_systems_resource_count = local.is_live_environment ? 1 : 0
   traffic_counters_tables                = ["street-systems"]
 }
 
