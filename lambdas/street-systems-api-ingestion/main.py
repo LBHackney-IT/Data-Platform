@@ -118,6 +118,7 @@ def lambda_handler(event, context):
     #s3_bucket = 'dataplatform-stg-raw-zone'
     s3_bucket = getenv("OUTPUT_S3_FOLDER")
     output_folder_name = getenv("TARGET_S3_BUCKET_NAME")
+    crawler = getenv("CRAWLER_NAME")
     #output_folder_name = 'streetscene/streets-systems'
     output_filename = 'output'
 
@@ -126,6 +127,7 @@ def lambda_handler(event, context):
     api_credentials = json.loads(api_credentials_response['SecretString'])
     username = api_credentials.get("user")
     secret = api_credentials.get("secret")
+
 
     print(f'username retrieved from secret manager: {username}')
 
@@ -168,6 +170,9 @@ def lambda_handler(event, context):
     # with s3.open('s3://dataplatform-stg-landing-zone/data-and-insight/streets-systems/output.parquet', 'wb') as f:
     #     out_df.to_parquet(f)
     write_dataframe_to_s3_parquet(s3_client, s3_bucket, output_folder_name, out_df, output_filename)
+
+    # Crawl all the parquet data in S3
+    s3_client.start_crawler(Name=f'{crawler}')
 
 
 if __name__ == "__main__":

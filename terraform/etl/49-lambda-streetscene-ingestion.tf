@@ -167,6 +167,7 @@ module "street-systems-api-ingestion" {
     OUTPUT_S3_FOLDER      = module.raw_zone_data_source.bucket_id
     TARGET_S3_BUCKET_NAME = "streetscene/traffic-counters/street-systems"
     API_URL = "https://flask-customer-api.ki8kabg62o4fg.eu-west-2.cs.amazonlightsail.com"
+    CRAWLER_NAME     = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone"
   }
   layers = [
     "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:requests-2-31-0-and-httplib-0-22-0-layer:1",
