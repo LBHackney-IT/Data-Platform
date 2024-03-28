@@ -2,6 +2,7 @@ import sys
 import boto3
 import time
 from datetime import datetime
+
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
