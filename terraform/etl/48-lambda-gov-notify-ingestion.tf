@@ -179,6 +179,7 @@ module "gov-notify-ingestion-housing-repairs" {
   ]
 }
 
+# Create a CloudWatch Event Rule to trigger the GovNotify Housing Repairs Lambda function.
 resource "aws_cloudwatch_event_rule" "govnotify_housing_repairs_trigger_event" {
   count               = local.create_govnotify_resource_count
   name                = "${local.short_identifier_prefix}govnotify_housing_repairs_trigger_event"
@@ -188,6 +189,16 @@ resource "aws_cloudwatch_event_rule" "govnotify_housing_repairs_trigger_event" {
   tags                = module.tags.values
 }
 
+# Create a Lambda Permission to allow CloudWatch to invoke the GovNotify Housing Repairs Lambda function.
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify" {
+  statement_id  = "AllowCloudWatchToInvokeGovNotifyFunction"
+  action        = "lambda:InvokeFunction"
+  function_name = module.gov-notify-ingestion-housing-repairs[0].lambda_function_arn
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.govnotify_housing_repairs_trigger_event[0].arn
+}
+
+# Create a CloudWatch Event Target to trigger the GovNotify Housing Repairs Lambda function.
 resource "aws_cloudwatch_event_target" "govnotify_housing_repairs_trigger_event_target" {
   count     = local.create_govnotify_resource_count
   rule      = aws_cloudwatch_event_rule.govnotify_housing_repairs_trigger_event[0].name
@@ -198,6 +209,7 @@ resource "aws_cloudwatch_event_target" "govnotify_housing_repairs_trigger_event_
    "table_names": ${jsonencode(local.govnotify_tables)}
   }
   EOF
+  depends_on = [module.gov-notify-ingestion-housing-repairs, aws_lambda_permission.allow_cloudwatch_to_call_govnotify]
 }
 
 resource "aws_glue_crawler" "govnotify_housing_repairs_landing_zone" {
