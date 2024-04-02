@@ -5,7 +5,12 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+from scripts.helpers.helpers import (
+    get_glue_env_var,
+    get_latest_partitions,
+    create_pushdown_predicate,
+    PARTITION_KEYS,
+)
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -28,6 +33,7 @@ AmazonS3Liberator_pcn_ic_node1631812698045 = (
         database="dataplatform-"+environment+"-liberator-raw-zone",
         table_name="liberator_pcn_ic",
         transformation_ctx="AmazonS3Liberator_pcn_ic_node1631812698045",
+        push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 )
 
@@ -37,6 +43,7 @@ S3bucketpcnfoidetails_pcn_foi_full_node1 = (
         database="dataplatform-"+environment+"-liberator-refined-zone",
         table_name="pcnfoidetails_pcn_foi_full",
         transformation_ctx="S3bucketpcnfoidetails_pcn_foi_full_node1",
+        push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 )
 
@@ -46,6 +53,7 @@ AmazonS3liberator_pcn_tickets_node1637153316033 = (
         database="dataplatform-"+environment+"-liberator-raw-zone",
         table_name="liberator_pcn_tickets",
         transformation_ctx="AmazonS3liberator_pcn_tickets_node1637153316033",
+        push_down_predicate=create_pushdown_predicate("import_date", 7),
     )
 )
 
@@ -54,6 +62,7 @@ AmazonS3parkingrawzoneparking_eta_decision_records_node1645806323578 = glueConte
     database="parking-raw-zone",
     table_name="parking_eta_decision_records",
     transformation_ctx="AmazonS3parkingrawzoneparking_eta_decision_records_node1645806323578",
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node ApplyMapping
