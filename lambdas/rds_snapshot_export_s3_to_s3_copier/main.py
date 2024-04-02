@@ -91,10 +91,7 @@ def lambda_handler(event, context) -> None:
 
     source_bucket = os.environ["SOURCE_BUCKET"]
     target_bucket = os.environ["TARGET_BUCKET"]
-    if "SOURCE_PREFIX" in os.environ:
-        source_prefix = os.environ["SOURCE_PREFIX"]
-    else:
-        source_prefix = ""
+
     if "TARGET_PREFIX" in os.environ:
         target_prefix = os.environ["TARGET_PREFIX"] + "/"
     else:
