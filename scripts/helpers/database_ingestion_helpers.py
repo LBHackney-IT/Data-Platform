@@ -34,7 +34,7 @@ def update_table_ingestion_details(
     table_ingestion_details: List[Dict[str, Union[str, int, None]]],
     table_name: str,
     minutes_taken: int,
-    error: bool,
+    error: str,
     error_details: Optional[str],
     run_datetime: Optional[datetime] = None,
     row_count: Optional[int] = None,
@@ -48,7 +48,7 @@ def update_table_ingestion_details(
     - table_ingestion_details: A list of dictionaries with details of table ingestions.
     - table_name: The name of the table.
     - minutes_taken: The number of minutes the ingestion took.
-    - error: Boolean indicating if there was an error during ingestion.
+    - error: str the allowed value are 'False' and 'True', indicating if there was an error during ingestion.
     - error_details: Optional string detailing the error if any.
     - run_datetime: Optional datetime when the ingestion run occurred. Defaults to current datetime if not provided.
     - row_count: Optional number of rows ingested.
