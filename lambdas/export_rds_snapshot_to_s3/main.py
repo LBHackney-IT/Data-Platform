@@ -5,6 +5,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 rds = boto3.client("rds")
 
 BUCKET_NAME = os.environ["BUCKET_NAME"]
