@@ -1,5 +1,4 @@
 import os
-import ast
 
 import boto3
 
@@ -101,11 +100,10 @@ def lambda_handler(event, context) -> None:
     else:
         target_prefix = ""
 
-    event = ast.literal_eval(event)
     snapshot_id = event["detail"]["SourceIdentifier"]
 
     s3_copy_folder(
-        s3, source_bucket, source_prefix, target_bucket, target_prefix, snapshot_id
+        s3, source_bucket, snapshot_id, target_bucket, target_prefix, snapshot_id
     )
 
     if "WORKFLOW_NAME" in os.environ:
