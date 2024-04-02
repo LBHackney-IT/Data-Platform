@@ -1,6 +1,5 @@
 import logging
 import os
-import ast
 
 import boto3
 from botocore.exceptions import ClientError
@@ -13,13 +12,11 @@ def lambda_handler(event, context):
     print("## EVENT")
     print(event)
 
+    snapshot_identifier = event["detail"]["SourceIdentifier"]
+    source_arn = event["detail"]["SourceArn"]
     bucket_name = os.environ["BUCKET_NAME"]
     iam_role_arn = os.environ["IAM_ROLE_ARN"]
     kms_key_id = os.environ["KMS_KEY_ID"]
-
-    event = ast.literal_eval(event)
-    snapshot_identifier = event["detail"]["SourceIdentifier"]
-    source_arn = event["detail"]["SourceArn"]
 
     try:
         rds.start_export_task(
