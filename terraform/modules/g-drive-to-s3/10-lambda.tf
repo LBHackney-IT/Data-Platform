@@ -97,21 +97,37 @@ resource "aws_iam_role_policy_attachment" "g_drive_to_s3_copier_lambda" {
   policy_arn = aws_iam_policy.g_drive_to_s3_copier_lambda.arn
 }
 
-data "archive_file" "g_drive_to_s3_copier_lambda" {
+
+data "archive_file" "lambda" {
   type        = "zip"
-  source_dir  = "../../lambdas/g_drive_to_s3"
-  output_path = "../../lambdas/g_drive_to_s3.zip"
+  source_dir  = var.lambda_source_dir
+  output_path = var.lambda_output_path
+  depends_on  = [null_resource.run_install_requirements]
+}
+
+resource "null_resource" "run_install_requirements" {
+  # Fileset used to make sure only run if there are files in the source dir
+  count = length(fileset(var.lambda_source_dir, "**/*")) > 0 ? 1 : 0
+  triggers = {
+    dir_sha1 = sha1(join("", [for f in fileset(var.lambda_source_dir, "**/*") : filesha1("${var.lambda_source_dir}/${f}")]))
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = "echo Installing requirements..."
+    working_dir = var.lambda_source_dir
+  }
 }
 
 resource "aws_s3_object" "g_drive_to_s3_copier_lambda" {
-  bucket      = var.lambda_artefact_storage_bucket
-  key         = "g_drive_to_s3.zip"
-  source      = data.archive_file.g_drive_to_s3_copier_lambda.output_path
-  acl         = "private"
-  source_hash = data.archive_file.g_drive_to_s3_copier_lambda.output_md5
-  depends_on = [
-    data.archive_file.g_drive_to_s3_copier_lambda
-  ]
+  bucket = var.lambda_artefact_storage_bucket
+  key    = "${var.lambda_name_underscore}.zip"
+  source = data.archive_file.lambda.output_path
+  acl    = "private"
+  metadata = {
+    last_updated = data.archive_file.lambda.output_base64sha256
+  }
+  depends_on = [data.archive_file.lambda]
 }
 
 resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
@@ -123,7 +139,7 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   function_name    = lower("${var.identifier_prefix}g-drive-${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_object.g_drive_to_s3_copier_lambda.key
-  source_code_hash = data.archive_file.g_drive_to_s3_copier_lambda.output_base64sha256
+  source_code_hash = data.archive_file.lambda.output_base64sha256
   timeout          = local.lambda_timeout
   memory_size      = local.lambda_memory_size
 

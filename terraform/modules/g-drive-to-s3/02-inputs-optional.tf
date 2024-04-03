@@ -15,3 +15,22 @@ variable "ingestion_schedule_enabled" {
   type        = bool
   default     = true
 }
+
+
+variable "lambda_source_dir" {
+  description = "Directory containing the Lambda Function source code"
+  type        = string
+  default     = "../../lambdas/g_drive_to_s3"
+}
+
+variable "lambda_output_path" {
+  description = "Path to the Lambda artefact zip file"
+  type        = string
+  default     = "../../lambdas/g_drive_to_s3.zip"
+}
+
+variable "lambda_name_underscore" {
+  description = "Name of the Lambda function"
+  type        = string
+  default     = "g_drive_to_s3"
+}
