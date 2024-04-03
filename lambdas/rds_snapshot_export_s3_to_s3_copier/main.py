@@ -2,6 +2,8 @@ import os
 
 import boto3
 
+glue = boto3.client("glue")
+
 
 def get_date_time(source_identifier: str) -> tuple[str, str, str, str]:
     """
@@ -103,9 +105,16 @@ def lambda_handler(event, context) -> None:
         s3, source_bucket, snapshot_id, target_bucket, target_prefix, snapshot_id
     )
 
-    if "WORKFLOW_NAME" in os.environ:
+    if "backdated" in snapshot_id.split("-"):
+        print("## Backdated Workflow")
+        workflow_name = os.environ["BACKDATED_WORKFLOW_NAME"]
+        year, month, day, date = get_date_time(snapshot_id)
+        glue.update_workflow(
+            Name=workflow_name, DefaultRunProperties={"import_date": date}
+        )
+        start_workflow_run(workflow_name, glue)
+    elif "WORKFLOW_NAME" in os.environ:
         workflow_name = os.environ["WORKFLOW_NAME"]
-        glue = boto3.client("glue")
         start_workflow_run(workflow_name, glue)
 
 
