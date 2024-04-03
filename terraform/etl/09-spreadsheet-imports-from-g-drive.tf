@@ -866,3 +866,38 @@ module "parking_cycle_hangar_denormalised_backfill" {
     }
   }
 }
+module "parking_max_user_records" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1STwKL-idm48rSQfMQ4pmqnJd9mYqyRqs"
+  glue_job_name                  = "parking_max_user_records"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "max_user_source_records/max_user_journey_report_08_november_2022_30_june_2023_UTF8.csv"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
+  enable_bookmarking             = false
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "parking_max_user_journey_report"
+    }
+  }
+}
