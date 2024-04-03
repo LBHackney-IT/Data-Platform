@@ -114,7 +114,7 @@ resource "null_resource" "run_install_requirements" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command     = "echo Installing requirements..."
+    command     = "make install-requirements"
     working_dir = var.lambda_source_dir
   }
 }
