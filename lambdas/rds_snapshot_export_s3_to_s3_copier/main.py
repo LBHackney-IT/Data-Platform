@@ -82,7 +82,7 @@ def s3_copy_folder(
             try:
                 s3_client.copy_object(**copy_object_params)
             except Exception as e:
-                logger.error(f"Error in copying object: {e}")
+                logger.error(f"Error in copying object to s3: {e}")
 
 
 def start_workflow_run(workflow_name: str, glue_client):
