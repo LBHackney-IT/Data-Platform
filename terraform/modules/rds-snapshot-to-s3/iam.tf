@@ -218,7 +218,8 @@ data "aws_iam_policy_document" "rds_snapshot_s3_to_s3_copier_role_policy" {
 
   statement {
     actions = [
-      "glue:StartWorkflowRun"
+      "glue:StartWorkflowRun",
+      "glue:UpdateWorkflow"
     ]
     effect = "Allow"
     resources = [

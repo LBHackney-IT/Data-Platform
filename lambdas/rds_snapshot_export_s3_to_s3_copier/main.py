@@ -1,6 +1,14 @@
 import os
+import logging
+import re
 
 import boto3
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+s3_client = boto3.client("s3")
+glue_client = boto3.client("glue")
 
 
 def get_date_time(source_identifier: str) -> tuple[str, str, str, str]:
@@ -10,11 +18,17 @@ def get_date_time(source_identifier: str) -> tuple[str, str, str, str]:
     Args:
         source_identifier (str): source identifier taken from the
         event, as implemented this will include datetime for the snapshot as
-        applicable in the form rds:sql-to-parquet-yy-mm-dd-hhmmss
+        applicable in the form rds:sql-to-parquet-yy-mm-dd-hhmmss or
+        rds:sql-to-parquet-yy-mm-dd-hhmmss-backdated
 
     Returns:
         tuple(str, str, str, str): year, month, day, date
     """
+
+    pattern = r"^rds:sql-to-parquet-(\d{2})-(\d{2})-(\d{2})-(\d{6})(-backdated)?$"
+
+    if not re.match(pattern, source_identifier):
+        raise ValueError("Invalid source identifier format")
 
     split_identifier = source_identifier.split("-")
     day = split_identifier[5]
@@ -68,7 +82,7 @@ def s3_copy_folder(
             try:
                 s3_client.copy_object(**copy_object_params)
             except Exception as e:
-                print(e)
+                logger.error(f"Error in copying object to s3: {e}")
 
 
 def start_workflow_run(workflow_name: str, glue_client):
@@ -81,13 +95,12 @@ def start_workflow_run(workflow_name: str, glue_client):
     try:
         glue_client.start_workflow_run(Name=workflow_name)
     except Exception as e:
-        print(e)
+        logger.error(f"Error starting workflow {workflow_name}: {e}")
 
 
 def lambda_handler(event, context) -> None:
-    print("## EVENT")
-    print(event)
-    s3 = boto3.client("s3")
+    logger.info("## EVENT")
+    logger.info(event)
 
     source_bucket = os.environ["SOURCE_BUCKET"]
     target_bucket = os.environ["TARGET_BUCKET"]
@@ -100,13 +113,20 @@ def lambda_handler(event, context) -> None:
     snapshot_id = event["detail"]["SourceIdentifier"]
 
     s3_copy_folder(
-        s3, source_bucket, snapshot_id, target_bucket, target_prefix, snapshot_id
+        s3_client, source_bucket, snapshot_id, target_bucket, target_prefix, snapshot_id
     )
 
-    if "WORKFLOW_NAME" in os.environ:
+    if "backdated" in snapshot_id.split("-"):
+        logger.info(f"## Backdated Workflow for snapshot id: {snapshot_id}")
+        workflow_name = os.environ["BACKDATED_WORKFLOW_NAME"]
+        _, _, _, date = get_date_time(snapshot_id)
+        glue_client.update_workflow(
+            Name=workflow_name, DefaultRunProperties={"import_date": date}
+        )
+        start_workflow_run(workflow_name, glue_client)
+    elif "WORKFLOW_NAME" in os.environ:
         workflow_name = os.environ["WORKFLOW_NAME"]
-        glue = boto3.client("glue")
-        start_workflow_run(workflow_name, glue)
+        start_workflow_run(workflow_name, glue_client)
 
 
 if __name__ == "__main__":

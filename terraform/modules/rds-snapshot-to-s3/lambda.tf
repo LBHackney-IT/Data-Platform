@@ -32,10 +32,11 @@ module "rds_snapshot_s3_to_s3_copier" {
   identifier_prefix              = var.identifier_prefix
   tags                           = var.tags
   environment_variables = {
-    "SOURCE_BUCKET" = var.rds_export_bucket_id
-    "TARGET_BUCKET" = var.target_bucket_id
-    "SOURCE_PREFIX" = var.source_prefix
-    "TARGET_PREFIX" = var.target_prefix
-    "WORKFLOW_NAME" = var.workflow_name
+    "SOURCE_BUCKET"           = var.rds_export_bucket_id
+    "TARGET_BUCKET"           = var.target_bucket_id
+    "SOURCE_PREFIX"           = var.source_prefix
+    "TARGET_PREFIX"           = var.target_prefix
+    "WORKFLOW_NAME"           = var.workflow_name
+    "BACKDATED_WORKFLOW_NAME" = var.backdated_workflow_name
   }
 }
