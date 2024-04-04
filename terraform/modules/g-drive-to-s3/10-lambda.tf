@@ -109,7 +109,7 @@ resource "null_resource" "run_install_requirements" {
   # Fileset used to make sure only run if there are files in the source dir
   count = length(fileset("${path.module}/../../../lambdas/g_drive_to_s3", "**/*")) > 0 ? 1 : 0
   triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/g_drive_to_s3/**") : filesha1("${path.module}/${f}")]))
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/g_drive_to_s3/*") : filesha1("${path.module}/${f}")]))
   }
 
   provisioner "local-exec" {
