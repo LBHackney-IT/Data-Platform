@@ -119,7 +119,7 @@ def lambda_handler(event, context) -> None:
     if "backdated" in snapshot_id.split("-"):
         print("## Backdated Workflow")
         workflow_name = os.environ["BACKDATED_WORKFLOW_NAME"]
-        year, month, day, date = get_date_time(snapshot_id)
+        _, _, _, date = get_date_time(snapshot_id)
         glue_client.update_workflow(
             Name=workflow_name, DefaultRunProperties={"import_date": date}
         )
