@@ -38,4 +38,5 @@ module "rds_snapshot_s3_to_s3_copier" {
     "TARGET_PREFIX"           = var.target_prefix
     "WORKFLOW_NAME"           = var.workflow_name
     "BACKDATED_WORKFLOW_NAME" = var.backdated_workflow_name
+  }
 }
