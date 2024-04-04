@@ -100,28 +100,28 @@ resource "aws_iam_role_policy_attachment" "g_drive_to_s3_copier_lambda" {
 
 data "archive_file" "lambda" {
   type        = "zip"
-  source_dir  = var.lambda_source_dir
-  output_path = var.lambda_output_path
+  source_dir  =  "../../lambdas/g_drive_to_s3"
+  output_path = "../../lambdas/g_drive_to_s3.zip"
   depends_on  = [null_resource.run_install_requirements]
 }
 
 resource "null_resource" "run_install_requirements" {
   # Fileset used to make sure only run if there are files in the source dir
-  count = length(fileset(var.lambda_source_dir, "**/*")) > 0 ? 1 : 0
+  count = length(fileset("${path.module}/../../../lambdas/g_drive_to_s3", "**/*")) > 0 ? 1 : 0
   triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset(var.lambda_source_dir, "**/*") : filesha1("${var.lambda_source_dir}/${f}")]))
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/g_drive_to_s3/**") : filesha1("${path.module}/${f}")]))
   }
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command     = "echo Installing requirements..."
-    working_dir = var.lambda_source_dir
+    command     = "make install-requirements"
+    working_dir = "${path.module}/../../../lambdas/g_drive_to_s3/"
   }
 }
 
 resource "aws_s3_object" "g_drive_to_s3_copier_lambda" {
   bucket = var.lambda_artefact_storage_bucket
-  key    = "${var.lambda_name_underscore}.zip"
+  key    = "g_drive_to_s3.zip"
   source = data.archive_file.lambda.output_path
   acl    = "private"
   metadata = {
