@@ -82,7 +82,7 @@ def s3_copy_folder(
             try:
                 s3_client.copy_object(**copy_object_params)
             except Exception as e:
-                print(e)
+                logger.error(f"Error in copying object: {e}")
 
 
 def start_workflow_run(workflow_name: str, glue_client):
@@ -95,12 +95,12 @@ def start_workflow_run(workflow_name: str, glue_client):
     try:
         glue_client.start_workflow_run(Name=workflow_name)
     except Exception as e:
-        print(e)
+        logger.error(f"Error starting workflow {workflow_name}: {e}")
 
 
 def lambda_handler(event, context) -> None:
-    print("## EVENT")
-    print(event)
+    logger.info("## EVENT")
+    logger.info(event)
 
     source_bucket = os.environ["SOURCE_BUCKET"]
     target_bucket = os.environ["TARGET_BUCKET"]
@@ -117,7 +117,7 @@ def lambda_handler(event, context) -> None:
     )
 
     if "backdated" in snapshot_id.split("-"):
-        print("## Backdated Workflow")
+        logger.info(f"## Backdated Workflow for snapshot id: {snapshot_id}")
         workflow_name = os.environ["BACKDATED_WORKFLOW_NAME"]
         _, _, _, date = get_date_time(snapshot_id)
         glue_client.update_workflow(
