@@ -1,7 +1,7 @@
 .PHONY: install-requirements
 
 install-requirements:
-	rm -rf venv/
+	sudo apt-get install python3-venv
 	python3 -m venv venv
 	# the requirements are generated so that the packages
 	# could be downloaded and packaged up for the lambda
