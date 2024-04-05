@@ -110,11 +110,11 @@ resource "null_resource" "run_install_requirements" {
     dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/g_drive_to_s3/*") : filesha1("${path.module}/${f}")]))
   }
 
-  provisioner "local-exec" {
-    interpreter = ["bash", "-c"]
-    command     = "make install-requirements"
-    working_dir = "${path.module}/../../../lambdas/g_drive_to_s3/"
-  }
+#   provisioner "local-exec" {
+#     interpreter = ["bash", "-c"]
+#     command     = "make install-requirements"
+#     working_dir = "${path.module}/../../../lambdas/g_drive_to_s3/"
+#   }
 }
 
 resource "aws_s3_object" "g_drive_to_s3_copier_lambda" {
@@ -138,6 +138,7 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_object.g_drive_to_s3_copier_lambda.key
   source_code_hash = data.archive_file.lambda.output_base64sha256
+  layers           = ["arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:layer:google-apis-layer:1"]
   timeout          = local.lambda_timeout
   memory_size      = local.lambda_memory_size
 
