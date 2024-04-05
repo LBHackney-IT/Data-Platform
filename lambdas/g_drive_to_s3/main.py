@@ -8,7 +8,7 @@ from os import path, getenv, mkdir, listdir, rmdir, remove
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from oauth2client.service_account import ServiceAccountCredentials
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from datetime import datetime
 
 
@@ -65,7 +65,7 @@ def run_glue_workflows():
             print(e)
 
 def lambda_handler(event, lambda_context):
-    load_dotenv()
+    # load_dotenv()
 
     google_service_account_credentials_secret_arn = getenv("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_SECRET_ARN")
 
