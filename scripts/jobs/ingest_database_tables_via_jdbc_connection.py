@@ -1,6 +1,8 @@
 import sys
 import boto3
 import time
+from datetime import datetime
+
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -22,6 +24,8 @@ spark = glue_context.spark_session
 job = Job(glue_context)
 job.init(args['JOB_NAME'], args)
 
+job_run_id = args['JOB_RUN_ID'] # Get the job run id for logging purposes
+
 source_catalog_database = get_glue_env_var('source_data_database', '')
 s3_ingestion_bucket_target = get_glue_env_var('s3_ingestion_bucket_target', '')
 s3_ingestion_details_target = get_glue_env_var('s3_ingestion_details_target', '')
@@ -37,6 +41,7 @@ num_copied_tables = 0
 
 for table in database_tables:
     start = time.time()
+    run_start_time = datetime.now() # Get the start time of the run for logging purposes
     logger.info(f"Reading in table: {table}, preparing to write table to s3. Timer started")
     try:
         source_ddf = glue_context.create_dynamic_frame.from_catalog(
@@ -47,6 +52,7 @@ for table in database_tables:
 
         data_frame = source_ddf.toDF()
         data_frame = data_frame.na.drop('all') # Drop all rows where all values are null NOTE: must be done before add_import_time_columns
+        row_count = data_frame.count()  # Capture row count of the DataFrame for logging purposes
         data_frame_with_import_columns = add_import_time_columns(data_frame)
 
         dynamic_frame_to_write = DynamicFrame.fromDF(data_frame_with_import_columns, glue_context, f"{table}_output_data")
@@ -68,12 +74,24 @@ for table in database_tables:
         num_copied_tables += 1
         logger.info(f'Copied: {num_copied_tables} tables')
         table_ingestion_details = update_table_ingestion_details(table_ingestion_details=table_ingestion_details,
-                                                                    table_name=table, minutes_taken=minutes_taken, error='False', error_details='None')
+                                                                 table_name=table,
+                                                                 minutes_taken=minutes_taken,
+                                                                 error='False',
+                                                                 error_details='None',
+                                                                 run_datetime=run_start_time,
+                                                                 row_count=row_count,
+                                                                 run_id=job_run_id)
 
     except Exception as e:
         logger.info(f"Failed to ingest table: {table}, error: {e}")
         table_ingestion_details = update_table_ingestion_details(table_ingestion_details=table_ingestion_details,
-                                                                    table_name=table, minutes_taken=0, error='True', error_details=e)
+                                                                 table_name=table, 
+                                                                 minutes_taken=0, 
+                                                                 error='True', 
+                                                                 error_details=str(e),
+                                                                 run_datetime=run_start_time, 
+                                                                 row_count=0, 
+                                                                 run_id=job_run_id)
 
 table_ingestion_details_df = spark_session.createDataFrame([Row(**i) for i in table_ingestion_details])
 table_ingestion_details_ddf = DynamicFrame.fromDF(table_ingestion_details_df, glue_context, "table_ingestion_details")
