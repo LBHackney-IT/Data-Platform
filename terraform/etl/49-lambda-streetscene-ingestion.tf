@@ -1,65 +1,82 @@
 locals {
   create_street_systems_resource_count = local.is_live_environment ? 1 : 0
-  traffic_counters_tables                = ["street-systems"]
-}
-
-data "aws_iam_policy_document" "streetscene_street_systems_raw_zone_access" {
-  statement {
-    actions = [
-      "s3:AbortMultipartUpload",
-      "s3:DescribeJob",
-      "s3:Get*",
-      "s3:List*",
-      "s3:PutObject",
-      "kms:ListAliases",
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey",
-      "kms:CreateGrant",
-      "kms:RetireGrant"
-    ]
-
-    resources = [
-      module.raw_zone_data_source.bucket_arn,
-      "${module.raw_zone_data_source.bucket_arn}/streetscene/*",
-      module.raw_zone_data_source.kms_key_arn
-    ]
+  traffic_counters_tables                = ["street-systems"] # more table names can be added here
+  lambda_layers = [
+  "requests-2-31-0-and-httplib-0-22-0-layer",
+  "panas-2-1-4-layer",
+  "s3fs-2023-12-2-layer",
+  "urllib3-1-26-18-layer"
+  ]
+  iam_policy_documents = {
+    streetscene_street_systems_raw_zone_access = {
+      actions = [
+        "s3:AbortMultipartUpload",
+        "s3:DescribeJob",
+        "s3:Get*",
+        "s3:List*",
+        "s3:PutObject",
+        "kms:ListAliases",
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey",
+        "kms:CreateGrant",
+        "kms:RetireGrant"
+      ],
+      resources = [
+        module.raw_zone_data_source.bucket_arn,
+        "${module.raw_zone_data_source.bucket_arn}/streetscene/*",
+        module.raw_zone_data_source.kms_key_arn
+      ]
+    },
+    streetscene_street_systems_lambda_logs = {
+      actions = [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ],
+      resources = ["*"]
+    },
+    streetscene_street_systems_lambda_execution = {
+      actions = [
+        "lambda:InvokeFunction"
+      ],
+      resources = ["*"]
+    },
+    streetscene_street_systems_lambda_secret_access = {
+      actions = [
+        "secretsmanager:GetSecretValue",
+      ],
+      resources = [
+        "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:/data-and-insight/streets_systems_api_key*"
+      ]
+    },
+    streetscene_street_systems_glue_crawler = {
+      actions = ["glue:StartCrawler"],
+      resources = ["*"]
+    }
   }
 }
 
-resource "aws_iam_policy" "streetscene_street_systems_raw_zone_access" {
-  count  = local.is_live_environment ? 1 : 0
-  name   = "streetscene_street_systems_raw_zone_access"
-  policy = data.aws_iam_policy_document.streetscene_street_systems_raw_zone_access.json
-}
-
-data "aws_iam_policy_document" "streetscene_street_systems_lambda_logs" {
-  statement {
-    actions = [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
+# Create the lambda execution policies
+resource "aws_iam_policy" "streetscene_policies" {
+  for_each = local.create_street_systems_resource_count > 0 ? local.iam_policy_documents : {}
+  name   = each.key
+  policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = each.value.actions
+        Resource = each.value.resources
+      },
     ]
-    effect    = "Allow"
-    resources = ["*"]
-  }
+  })
 }
 
-resource "aws_iam_policy" "streetscene_street_systems_lambda_logs" {
-  count  = local.is_live_environment ? 1 : 0
-  name   = "streetscene_street_systems_lambda_logs"
-  policy = data.aws_iam_policy_document.streetscene_street_systems_lambda_logs.json
-}
-
-resource "aws_iam_role_policy_attachment" "streetscene_street_systems_lambda_logs" {
-  count      = local.is_live_environment ? 1 : 0
-  role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
-  policy_arn = aws_iam_policy.streetscene_street_systems_lambda_logs[0].arn
-}
-
-data "aws_iam_policy_document" "streetscene_street_systems_lambda_assume_role" {
+# Assume Role Policy (a must for creating IAM roles)
+data "aws_iam_policy_document" "lambda_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
@@ -69,91 +86,25 @@ data "aws_iam_policy_document" "streetscene_street_systems_lambda_assume_role" {
   }
 }
 
-data "aws_iam_policy_document" "streetscene_street_systems_lambda_execution" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "lambda:InvokeFunction"
-    ]
-    resources = [
-      "*"
-    ]
-  }
-}
-
-resource "aws_iam_policy" "streetscene_street_systems_lambda_execution" {
-  count  = local.is_live_environment ? 1 : 0
-  name   = "streetscene_street_systems_lambda_execution"
-  policy = data.aws_iam_policy_document.streetscene_street_systems_lambda_execution.json
-}
-
+# IAM Role for Lambda
 resource "aws_iam_role" "streetscene_street_systems_ingestion" {
-  count              = local.is_live_environment ? 1 : 0
+  count              = local.create_street_systems_resource_count
   name               = "streetscene_street_systems_ingestion_lambda_role"
-  assume_role_policy = data.aws_iam_policy_document.streetscene_street_systems_lambda_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
-resource "aws_iam_role_policy_attachment" "streetscene_street_systems_ingestion" {
-  count      = local.is_live_environment ? 1 : 0
+# Attach execution policies to the lambda role
+resource "aws_iam_role_policy_attachment" "streetscene_policy_attachments" {
+  for_each   = aws_iam_policy.streetscene_policies
   role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
-  policy_arn = aws_iam_policy.streetscene_street_systems_raw_zone_access[0].arn
+  policy_arn = each.value.arn
 }
 
-resource "aws_iam_role_policy_attachment" "streetscene_lambda_invoke" {
-  count      = local.is_live_environment ? 1 : 0
-  role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
-  policy_arn = aws_iam_policy.streetscene_street_systems_lambda_execution[0].arn
-}
-
-data "aws_iam_policy_document" "streetscene_street_systems_lambda_secret_access" {
-  statement {
-    actions = [
-      "secretsmanager:GetSecretValue",
-    ]
-    effect    = "Allow"
-    resources = ["arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:/data-and-insight/streets_systems_api_key*"]
-  }
-}
-
-resource "aws_iam_policy" "streetscene_street_systems_lambda_secret_access" {
-  count  = local.is_live_environment ? 1 : 0
-  name   = "streetscene_street_systems_lambda_secret_access"
-  policy = data.aws_iam_policy_document.streetscene_street_systems_lambda_secret_access.json
-}
-
-resource "aws_iam_role_policy_attachment" "streetscene_street_systems_lambda_secret_access" {
-  count      = local.is_live_environment ? 1 : 0
-  role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
-  policy_arn = aws_iam_policy.streetscene_street_systems_lambda_secret_access[0].arn
-}
-
-# Define a IAM Policy Document for Glue StartCrawler Permissions:
-data "aws_iam_policy_document" "streetscene_street_systems_glue_crawler" {
-  statement {
-    actions   = ["glue:StartCrawler"]
-    effect    = "Allow"
-    resources = ["*"]
-  }
-}
-
-# create a New IAM Policy Resource:
-resource "aws_iam_policy" "streetscene_street_systems_glue_crawler" {
-  count  = local.create_street_systems_resource_count
-  name   = "streetscene_street_systems_glue_crawler_access"
-  policy = data.aws_iam_policy_document.streetscene_street_systems_glue_crawler.json
-}
-
-# attach the gov_notify_glue_crawler to the lambda_role by creating a new aws_iam_role_policy_attachment resource.
-resource "aws_iam_role_policy_attachment" "streetscene_street_systems_glue_crawler" {
-  count      = local.create_street_systems_resource_count
-  role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
-  policy_arn = aws_iam_policy.streetscene_street_systems_glue_crawler[0].arn
-}
-
-module "street-systems-api-ingestion" {
-  count                          = local.is_live_environment ? 1 : 0
+# Lambda Function
+module "street_systems_api_ingestion" {
+  count                          = local.create_street_systems_resource_count
   source                         = "../modules/aws-lambda"
-  lambda_name                    = "street-systems-export"
+  lambda_name                    = "street_systems_export"
   identifier_prefix              = local.short_identifier_prefix
   tags                           = module.tags.values
   handler                        = "main.lambda_handler"
@@ -171,12 +122,12 @@ module "street-systems-api-ingestion" {
     CRAWLER_NAME     = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone"
   }
   layers = [
-    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:requests-2-31-0-and-httplib-0-22-0-layer:1",
-    "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:12",
-    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:s3fs-2023-12-2-layer:1",
-    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:urllib3-1-26-18-layer:1"
+    # no where in the etl directory reference aws-lambda-layers module, so can't use layer ARNs from its output
+    for layer in local.lambda_layers: "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:${layer}:1"
   ]
 }
+
+# Cloudwatch Event Rule
 resource "aws_cloudwatch_event_rule" "street_systems_api_trigger_event" {
   count               = local.create_street_systems_resource_count
   name                = "${local.short_identifier_prefix}street_systems_api_trigger_event_target"
@@ -186,18 +137,35 @@ resource "aws_cloudwatch_event_rule" "street_systems_api_trigger_event" {
   tags                = module.tags.values
 }
 
+# Permission to allow CloudWatch to invoke Lambda function (a must for triggering lambda function)
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_street_systems" {
+  count         = local.create_street_systems_resource_count
+  statement_id  = "AllowCloudWatchToInvokeGovNotifyFunction"
+  action        = "lambda:InvokeFunction"
+  function_name = module.street_systems_api_ingestion[0].lambda_function_arn
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.street_systems_api_trigger_event[0].arn
+}
+
+# Cloudwatch Event Target to trigger Lambda function
 resource "aws_cloudwatch_event_target" "street_systems_api_trigger_event_target" {
   count     = local.create_street_systems_resource_count
   rule      = aws_cloudwatch_event_rule.street_systems_api_trigger_event[0].name
   target_id = "street_systems_api_trigger_event_target"
-  arn       = module.street-systems-api-ingestion[0].lambda_function_arn
-}
+  arn       = module.street_systems_api_ingestion[0].lambda_function_arn
+  input     = <<EOF
+  {
+  "table_names": ${jsonencode(local.traffic_counters_tables)}
+  }
+  EOF
+  depends_on = [module.street_systems_api_ingestion[0], aws_lambda_permission.allow_cloudwatch_to_call_street_systems[0]]
+ }
 
+# Glue Crawler to crawl the raw zone data
 resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
   for_each = { for idx, source in local.traffic_counters_tables : idx => source }
-
   database_name = "${local.identifier_prefix}-raw-zone-database"
-  name          = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone ${each.value}"
+  name          = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone" # Must same as the CRAWLER_NAME in lambda
   role          = data.aws_iam_role.glue_role.arn
   tags          = module.tags.values
   table_prefix  = "${each.value}_"
