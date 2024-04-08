@@ -139,8 +139,9 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   s3_key           = aws_s3_object.g_drive_to_s3_copier_lambda.key
   source_code_hash = data.archive_file.lambda.output_base64sha256
   layers           = [
-    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:layer:urllib3-1-26-18-layer:1",
-    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:layer:google-apis-layer:1"]
+    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:layer:google-apis-layer:1",
+    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:layer:urllib3-1-26-18-layer:1"
+    ]
   timeout          = local.lambda_timeout
   memory_size      = local.lambda_memory_size
 
