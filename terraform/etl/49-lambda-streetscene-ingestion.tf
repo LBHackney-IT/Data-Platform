@@ -76,7 +76,7 @@ resource "aws_iam_policy" "streetscene_policies" {
 }
 
 # Assume Role Policy (a must for creating IAM roles)
-data "aws_iam_policy_document" "lambda_assume_role" {
+data "aws_iam_policy_document" "streetscene_lambda_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
@@ -90,7 +90,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 resource "aws_iam_role" "streetscene_street_systems_ingestion" {
   count              = local.create_street_systems_resource_count
   name               = "streetscene_street_systems_ingestion_lambda_role"
-  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.streetscene_lambda_assume_role.json
 }
 
 # Attach execution policies to the lambda role
