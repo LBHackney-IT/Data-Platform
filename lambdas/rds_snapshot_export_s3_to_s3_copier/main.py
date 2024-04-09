@@ -18,14 +18,14 @@ def get_date_time(source_identifier: str) -> tuple[str, str, str, str]:
     Args:
         source_identifier (str): source identifier taken from the
         event, as implemented this will include datetime for the snapshot as
-        applicable in the form rds:sql-to-parquet-yy-mm-dd-hhmmss or
-        rds:sql-to-parquet-yy-mm-dd-hhmmss-backdated
+        applicable in the form sql-to-parquet-yy-mm-dd-hhmmss or
+        sql-to-parquet-yy-mm-dd-hhmmss-backdated
 
     Returns:
         tuple(str, str, str, str): year, month, day, date
     """
 
-    pattern = r"^rds:sql-to-parquet-(\d{2})-(\d{2})-(\d{2})-(\d{6})(-backdated)?$"
+    pattern = r"^sql-to-parquet-(\d{2})-(\d{2})-(\d{2})-(\d{6})(-backdated)?$"
 
     if not re.match(pattern, source_identifier):
         raise ValueError("Invalid source identifier format")
