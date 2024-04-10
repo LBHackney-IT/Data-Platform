@@ -48,13 +48,15 @@ resource "aws_glue_trigger" "housing_mtfh_case_notes_enriched_to_refined_trigger
 
 }
 
-crawler_details = {
-  database_name      = module.department_housing_data_source.refined_zone_catalog_database_name
-  name               = "${local.short_identifier_prefix}Housing MTFH case notes enrichment to refined"
-  role               = data.aws_iam_role.glue_role.arn
-  s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/housing/mtfh-case-notes-enriched/"
-  tags               = module.tags.values
-  configuration      = jsonencode({
+resource "aws_glue_crawler" "housing_mtfh_case_notes_enriched_to_refined" {
+  database_name = module.department_housing_data_source.refined_zone_catalog_database_name
+  name          = "${local.short_identifier_prefix}Housing MTFH case notes enrichment to refined"
+  role          = data.aws_iam_role.glue_role.arn
+  s3_target {
+    path = "s3://${module.refined_zone_data_source.bucket_id}/housing/mtfh-case-notes-enriched/"
+  }
+  tags          = module.tags.values
+  configuration = jsonencode({
     Version  = 1.0
     Grouping = {
       TableLevelConfiguration = 8
