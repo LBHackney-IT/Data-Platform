@@ -716,7 +716,7 @@ module "calendar" {
   glue_job_name                  = "calendar"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "unmatched_citypay_batches/Calendar Apr 2024.csv"
+  input_file_name                = "Calendar/Calendar Apr 2024.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
