@@ -4,14 +4,32 @@ import logging
 import pandas as pd
 import spacy
 from spacy.cli import download
+
 download("en_core_web_sm")
 from spacy.lang import punctuation
 from spacy.lang.en.stop_words import STOP_WORDS
 
-from scripts.helpers.text_analysis_helpers import get_date_today_formatted, add_import_time_columns, get_s3_location, \
-    PARTITION_KEYS, get_glue_env_var
+from scripts.helpers.text_analysis_helpers import get_date_today_formatted_python, add_import_time_columns_pandas, \
+    get_s3_location, PARTITION_KEYS
+from scripts.helpers.helpers import get_glue_env_var, PARTITION_KEYS
 from scripts.helpers.housing_mmh_vulnerability_keywords import damp_mould, health, children, elderly, disabled, finance, \
     death, home, immigration, crime, asb, domestic_violence, word_lists
+
+STOP_WORDS |= {"hackney", "tnt", "tenant", "tenancy", "london", "lbh", "borough", "housing", "monday", "2020",
+               "2021", "2023", "intro", "introductory", "property", "team", "email", "date", "tnts", "called",
+               "completed", "application"}
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# parameters
+glue_client = boto3.client('glue')
+s3_location_mmh = get_glue_env_var("s3_source_mtfh_notes")
+mmh_case_notes = get_glue_env_var('source_table_mtfh_notes')
+s3_location_tenure = get_glue_env_var('s3_source_tenure')
+tenure_reshaped = get_glue_env_var('source_table_tenure')
+s3_output_location = get_glue_env_var('s3_output_path')
 
 
 def remove_punctuation(text):
@@ -30,18 +48,6 @@ def find_keyword(text):
 
 
 def main():
-    # Set up logging
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
-
-    # parameters
-    glue_client = boto3.client('glue')
-    s3_location_mmh = get_glue_env_var("s3_source_mtfh_notes")
-    mmh_case_notes = get_glue_env_var('source_table_mtfh_notes')
-    s3_location_tenure = get_glue_env_var('s3_source_tenure')
-    tenure_reshaped = get_glue_env_var('source_table_tenure')
-    s3_output_location = get_glue_env_var('s3_output_path')
-
     # load in datasets
     tenure_path = get_s3_location(tenure_reshaped, s3_location_tenure)
     mmh_casenotes_path = get_s3_location(mmh_case_notes, s3_location_mmh)
@@ -51,7 +57,7 @@ def main():
     # tidy up columns
     mmh_df['create_date'] = pd.to_datetime(mmh_df['createdAt'], utc=True).dt.date
     mmh_df = mmh_df[['targetId', 'create_date', 'description', 'categorisation']]
-    mmh_df = mmh_df.loc[mmh_df['create_date'] >= (get_date_today_formatted() - timedelta(days=730))]
+    mmh_df = mmh_df.loc[mmh_df['create_date'] >= (get_date_today_formatted_python() - timedelta(days=730))]
     mmh_df.description = mmh_df['description'].astype(str)
     mmh_df.tenancy_id = mmh_df['targetId'].astype(str)
     mmh_df['all_notes'] = mmh_df.groupby(['targetId'])['description'].transform(lambda x: '\n'.join(x))
@@ -78,10 +84,6 @@ def main():
     mmh_notes_df.all_notes = mmh_notes_df['all_notes'].astype('str').str.strip().str.lower().str.replace('\n', ' ')
 
     # load spacy dictionary, punctuation and stopwords
-    STOP_WORDS |= {"hackney", "tnt", "tenant", "tenancy", "london", "lbh", "borough", "housing", "monday", "2020",
-                   "2021",
-                   "2023", "intro", "introductory", "property", "team", "email", "date", "tnts", "called", "completed",
-                   "application"}
     nlp = spacy.load("en_core_web_sm")
 
     mmh_notes_df['all_notes_no_punct'] = mmh_notes_df['all_notes'].apply(lambda text: remove_punctuation(text))
@@ -99,7 +101,7 @@ def main():
 
     # write to s3
     mmh_notes_df = mmh_notes_df.drop(columns={'all_notes_no_punct', 'all_notes_no_punct_no_stop'})
-    mmh_notes_df = add_import_time_columns(mmh_notes_df)
+    mmh_notes_df = add_import_time_columns_pandas(mmh_notes_df)
     mmh_notes_df.to_parquet(path=s3_output_location, partition_cols=PARTITION_KEYS)
     glue_client.start_crawler(Name='Housing MTFH case notes enriched to refined')
     logger.info(f'Refined casenotes written to {s3_output_location}')
