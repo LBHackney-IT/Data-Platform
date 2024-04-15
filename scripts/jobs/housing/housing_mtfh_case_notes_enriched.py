@@ -9,14 +9,26 @@ from spacy.lang.en.stop_words import STOP_WORDS
 from scripts.helpers.text_analysis_helpers import get_date_today_formatted_python, add_import_time_columns_pandas, \
     get_s3_location
 from scripts.helpers.helpers import get_glue_env_var, PARTITION_KEYS
-from scripts.helpers.housing_mmh_vulnerability_keywords import word_lists, damp_mould, health, children, elderly, \
-    disabled, finance, \
-    death, home, immigration, crime, asb, domestic_violence
+from scripts.helpers.housing_mmh_vulnerability_keywords import damp_mould, health, children, elderly, \
+    disabled, finance, death, home, immigration, crime, asb, domestic_violence
 
 STOP_WORDS |= {"hackney", "tnt", "tenant", "tenancy", "london", "lbh", "borough", "housing", "monday", "2020",
                "2021", "2023", "intro", "introductory", "property", "team", "email", "date", "tnts", "called",
                "completed", "application"}
 punctuation = string.punctuation
+
+word_lists = [['damp_mould', damp_mould],
+              ['children', children],
+              ['elderly', elderly],
+              ['disabled', disabled],
+              ['finance', finance],
+              ['health', health],
+              ['death', death],
+              ['home', home],
+              ['immigration', immigration],
+              ['crime', crime],
+              ['asb', asb],
+              ['domestic_violence', domestic_violence]]
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
