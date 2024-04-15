@@ -1,23 +1,22 @@
-import boto3
-from datetime import datetime, timedelta, timezone, date
+from datetime import timedelta
 import logging
-import pandas as pd
-import spacy
-from spacy.cli import download
+import string
 
-download("en_core_web_sm")
-from spacy.lang import punctuation
+import boto3
+import pandas as pd
 from spacy.lang.en.stop_words import STOP_WORDS
 
 from scripts.helpers.text_analysis_helpers import get_date_today_formatted_python, add_import_time_columns_pandas, \
-    get_s3_location, PARTITION_KEYS
+    get_s3_location
 from scripts.helpers.helpers import get_glue_env_var, PARTITION_KEYS
-from scripts.helpers.housing_mmh_vulnerability_keywords import damp_mould, health, children, elderly, disabled, finance, \
-    death, home, immigration, crime, asb, domestic_violence, word_lists
+from scripts.helpers.housing_mmh_vulnerability_keywords import word_lists, damp_mould, health, children, elderly, \
+    disabled, finance, \
+    death, home, immigration, crime, asb, domestic_violence
 
 STOP_WORDS |= {"hackney", "tnt", "tenant", "tenancy", "london", "lbh", "borough", "housing", "monday", "2020",
                "2021", "2023", "intro", "introductory", "property", "team", "email", "date", "tnts", "called",
                "completed", "application"}
+punctuation = string.punctuation
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -82,9 +81,6 @@ def main():
     mmh_notes_df = mmh_notes_df[['tenancy_id', 'start_tenure_date', 'uprn', 'num_case_notes', 'all_notes']].reset_index(
         drop=True)
     mmh_notes_df.all_notes = mmh_notes_df['all_notes'].astype('str').str.strip().str.lower().str.replace('\n', ' ')
-
-    # load spacy dictionary, punctuation and stopwords
-    nlp = spacy.load("en_core_web_sm")
 
     mmh_notes_df['all_notes_no_punct'] = mmh_notes_df['all_notes'].apply(lambda text: remove_punctuation(text))
 
