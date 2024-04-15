@@ -29,33 +29,38 @@ module "housing_mtfh_case_notes_enriched_to_refined" {
     "--s3_source_tenure"                 = module.department_housing_data_source.refined_zone_catalog_database_name
     "--source_table_tenure"              = "tenure_reshape"
     "--s3_output_path"                   = "s3://${module.refined_zone_data_source.bucket_id}/housing/mtfh-case-notes-enriched/"
-    crawler_details                      = {
-      database_name = module.department_housing_data_source.refined_zone_catalog_database_name
-      name          = "${local.short_identifier_prefix}Housing MTFH case notes enrichment to refined"
-      role          = data.aws_iam_role.glue_role.arn
-      tags          = module.tags.values
-      configuration = jsonencode({
-        Version  = 1.0
-        Grouping = {
-          TableLevelConfiguration = 8
-        }
-      })
 
-    }
+  }
+
+  script_name = "housing_mtfh_case_notes_enriched"
+
+  crawler_details = {
+    database_name = module.department_housing_data_source.refined_zone_catalog_database_name
+    name          = "${local.short_identifier_prefix}Housing MTFH case notes enrichment to refined"
+    role          = data.aws_iam_role.glue_role.arn
+    tags          = module.tags.values
+    configuration = jsonencode({
+      Version  = 1.0
+      Grouping = {
+        TableLevelConfiguration = 8
+      }
+    })
+
   }
 }
 
+
 # Triggers for ingestion
 resource "aws_glue_trigger" "housing_mtfh_case_notes_enriched_to_refined_trigger" {
-  name     = "${local.short_identifier_prefix}Housing MTFH case notes enrichment to refined trigger"
-  tags     = module.department_housing_data_source.tags
-  type     = "SCHEDULED"
-  schedule = "cron(0 10 * * ? *)"
-  enabled  = local.is_production_environment
-  count    = local.housing_mtfh_case_notes_enriched_to_refined_environment_count
+name = "${local.short_identifier_prefix}Housing MTFH case notes enrichment to refined trigger"
+tags = module.department_housing_data_source.tags
+type = "SCHEDULED"
+schedule = "cron(0 10 * * ? *)"
+enabled = local.is_production_environment
+count = local.housing_mtfh_case_notes_enriched_to_refined_environment_count
 
-  actions {
-    job_name = module.housing_mtfh_case_notes_enriched_to_refined[0].job_name
-  }
+actions {
+job_name = module.housing_mtfh_case_notes_enriched_to_refined[0].job_name
+}
 
 }
