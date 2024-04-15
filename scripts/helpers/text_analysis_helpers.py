@@ -1,6 +1,4 @@
-import sys
 from datetime import datetime, date
-from awsglue.utils import getResolvedOptions
 
 
 def add_import_time_columns_pandas(df):
@@ -37,4 +35,3 @@ def get_s3_location(glue_table_name: str, base_s3_url: str) -> str:
     today = datetime.today()
     year, month, day = today.year, str(today.month).zfill(2), str(today.day).zfill(2)
     return f"{base_s3_url}{glue_table_name}/import_year={year}/import_month={month}/import_day={day}/import_date={year}{month}{day}/"
-
