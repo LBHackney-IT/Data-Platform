@@ -35,7 +35,7 @@ resource "aws_cloudwatch_event_rule" "s3_event_rule" {
       "eventSource" : ["s3.amazonaws.com"],
       "eventName" : ["PutObject", "CompleteMultipartUpload"],
       "requestParameters" : {
-        "bucketName" : [aws_s3_bucket.my_bucket.bucket]
+        "bucketName" : [var.landing_zone_bucket_id]
       }
     }
   })
