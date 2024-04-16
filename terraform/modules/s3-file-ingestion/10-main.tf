@@ -26,4 +26,27 @@ module "csv_landing_to_raw_glue_job" {
   }
 }
 
+resource "aws_cloudwatch_event_rule" "s3_event_rule" {
+  name = "s3 file ingestion - ${local.file_ingestions[count.index].table_name}"
+  event_pattern = jsonencode({
+    "source" : ["aws.s3"],
+    "detail-type" : ["AWS API Call via CloudTrail"],
+    "detail" : {
+      "eventSource" : ["s3.amazonaws.com"],
+      "eventName" : ["PutObject", "CompleteMultipartUpload"],
+      "requestParameters" : {
+        "bucketName" : [aws_s3_bucket.my_bucket.bucket]
+      }
+    }
+  })
+}
 
+module "filter_and_trigger_lambda" {
+  source                         = "../modules/aws-lambda"
+  description                    = "Lambda function to filter s3 upload events and trigger Glue jobs"
+  lambda_name                    = "${var.identifier_prefix}${var.department.identifier}-s3-ingestion-filter-and-trigger"
+  handler                        = "lambda_function.lambda_handler"
+  lambda_artefact_storage_bucket = var.lambda_artefact_storage_bucket
+  s3_key                         = var.lambda_s3_key
+  lamdba_source_dir              = "${path.module}/../../../lambdas/s3-ingestion-filter-and-trigger"
+}
