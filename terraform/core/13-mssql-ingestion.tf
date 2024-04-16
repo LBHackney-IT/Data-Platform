@@ -278,7 +278,7 @@ resource "aws_cloudwatch_event_rule" "academy_state_machine_trigger" {
 }
 
 resource "aws_cloudwatch_event_target" "academy_state_machine_trigger" {
-  count    = local.academy_state_machine_count
+  count    = local.is_production_environment ? 1 : 0
   rule     = aws_cloudwatch_event_rule.academy_state_machine_trigger[0].name
   arn      = module.academy_state_machine[0].arn
   role_arn = aws_iam_role.academy_cloudwatch_execution_role[0].arn
