@@ -6,6 +6,7 @@ locals {
 
 resource "aws_lambda_function" "lambda" {
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
+  description      = var.description
   role             = var.lambda_role_arn == null ? aws_iam_role.lambda_role.arn : var.lambda_role_arn
   handler          = var.handler
   runtime          = var.runtime
@@ -15,6 +16,7 @@ resource "aws_lambda_function" "lambda" {
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
   layers           = var.layers
+
 
   dynamic "environment" {
     for_each = local.environment_map
@@ -53,10 +55,10 @@ resource "null_resource" "run_install_requirements" {
 }
 
 resource "aws_s3_object" "lambda" {
-  bucket     = var.lambda_artefact_storage_bucket
-  key        = var.s3_key
-  source     = data.archive_file.lambda.output_path
-  acl        = "private"
+  bucket = var.lambda_artefact_storage_bucket
+  key    = var.s3_key
+  source = data.archive_file.lambda.output_path
+  acl    = "private"
   # Add a metadata to track the change of the uploaded lambda zip file based on its checksum 
   metadata = {
     last_updated = data.archive_file.lambda.output_base64sha256
