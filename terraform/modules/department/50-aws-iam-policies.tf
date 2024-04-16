@@ -191,7 +191,7 @@ data "aws_iam_policy_document" "s3_department_access" {
     resources = [
       var.landing_zone_bucket.bucket_arn,
       "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
-      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/g-drive/*"
+      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/g-drive/*",
       "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
 
       var.raw_zone_bucket.bucket_arn,
