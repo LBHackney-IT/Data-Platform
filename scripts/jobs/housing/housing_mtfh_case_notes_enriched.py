@@ -111,7 +111,7 @@ def main():
     mmh_notes_df = mmh_notes_df.drop(columns={'all_notes_no_punct', 'all_notes_no_punct_no_stop'})
     mmh_notes_df = add_import_time_columns_pandas(mmh_notes_df)
     mmh_notes_df.to_parquet(path=s3_output_location, partition_cols=PARTITION_KEYS)
-    glue_client.start_crawler(Name='Housing MTFH case notes enriched to refined')
+    glue_client.start_crawler(Name='housing-mtfh-case-notes-enriched-to-refined')
     logger.info(f'Refined casenotes written to {s3_output_location}')
 
 
