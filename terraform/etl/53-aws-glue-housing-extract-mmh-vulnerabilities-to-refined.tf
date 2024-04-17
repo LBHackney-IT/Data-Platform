@@ -1,8 +1,10 @@
 module "housing_mtfh_case_notes_enriched_to_refined" {
-  count                          = is_live_environment ? 1 : 0
-  source                         = "../modules/aws-glue-job"
-  is_production_environment      = local.is_production_environment
-  is_live_environment            = local.is_live_environment
+  source                    = "../modules/aws-glue-job"
+  is_production_environment = local.is_production_environment
+  is_live_environment       = local.is_live_environment
+
+  count = local.is_live_environment ? 1 : 0
+
   department                     = module.department_housing_data_source
   job_name                       = "${local.short_identifier_prefix}Housing MTFH case notes enriched to refined"
   script_s3_object_key           = aws_s3_object.housing_mtfh_case_notes_enriched_to_refined.key
