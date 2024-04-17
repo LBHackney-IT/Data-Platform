@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "aws-sdk": "^2.881.0",
-    "lambda-git": "^0.1.3"
-  }
-}
