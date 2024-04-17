@@ -1,9 +1,5 @@
-locals {
-  housing_mtfh_case_notes_enriched_to_refined_environment_count = local.is_live_environment ? 1 : 0
-
-}
 module "housing_mtfh_case_notes_enriched_to_refined" {
-  count                          = local.housing_mtfh_case_notes_enriched_to_refined_environment_count
+  count                          = is_live_environment ? 1 : 0
   source                         = "../modules/aws-glue-job"
   is_production_environment      = local.is_production_environment
   is_live_environment            = local.is_live_environment
@@ -16,8 +12,10 @@ module "housing_mtfh_case_notes_enriched_to_refined" {
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  trigger_enabled                = local.is_production_environment
   number_of_workers_for_glue_job = 2
   glue_job_worker_type           = "G.1X"
+  schedule                       = "cron(* 10 ? * MON-SAT *)"
   glue_version                   = "4.0"
   job_parameters                 = {
     "--job-bookmark-option"              = "job-bookmark-enable"
@@ -31,38 +29,19 @@ module "housing_mtfh_case_notes_enriched_to_refined" {
     "--s3_output_path"                   = "s3://${module.refined_zone_data_source.bucket_id}/housing/mtfh-case-notes-enriched/"
 
   }
-
-  script_name = "housing_mtfh_case_notes_enriched"
-
+  script_name     = "housing_mtfh_case_notes_enriched"
   crawler_details = {
-    database_name = module.department_housing_data_source.refined_zone_catalog_database_name
-    name          = "${local.short_identifier_prefix}Housing MTFH case notes enrichment to refined"
-    role          = data.aws_iam_role.glue_role.arn
+    database_name      = module.department_housing_data_source.refined_zone_catalog_database_name
+    name               = "${local.short_identifier_prefix}Housing MTFH case notes enrichment to refined"
+    role               = data.aws_iam_role.glue_role.arn
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/housing/mtfh-case-notes-enriched/"
     table_prefix       = null
-    tags          = module.tags.values
-    configuration = jsonencode({
+    tags               = module.tags.values
+    configuration      = jsonencode({
       Version  = 1.0
       Grouping = {
         TableLevelConfiguration = 8
       }
     })
-
   }
-}
-
-
-# Triggers for ingestion
-resource "aws_glue_trigger" "housing_mtfh_case_notes_enriched_to_refined_trigger" {
-name = "${local.short_identifier_prefix}Housing MTFH case notes enrichment to refined trigger"
-tags = module.department_housing_data_source.tags
-type = "SCHEDULED"
-schedule = "cron(0 10 * * ? *)"
-enabled = local.is_production_environment
-count = local.housing_mtfh_case_notes_enriched_to_refined_environment_count
-
-actions {
-job_name = module.housing_mtfh_case_notes_enriched_to_refined[0].job_name
-}
-
 }
