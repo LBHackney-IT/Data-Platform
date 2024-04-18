@@ -43,21 +43,6 @@ tenure_reshaped = get_glue_env_var('source_table_tenure')
 s3_output_location = get_glue_env_var('s3_output_path')
 
 
-def remove_punctuation(text):
-    return text.translate(str.maketrans('', '', punctuation))
-
-
-def remove_stopwords(text):
-    return " ".join([word for word in str(text).split() if word not in STOP_WORDS])
-
-
-def find_keyword(text):
-    if any(word in word_lists for word in text.split()):
-        return 1
-    else:
-        return 0
-
-
 def main():
     # load in datasets
     tenure_path = get_s3_location(tenure_reshaped, s3_location_tenure)
@@ -92,23 +77,33 @@ def main():
     mmh_notes_df = mmh_notes_df.drop_duplicates(subset=['tenancy_id'])
     mmh_notes_df = mmh_notes_df[['tenancy_id', 'start_tenure_date', 'uprn', 'num_case_notes', 'all_notes']].reset_index(
         drop=True)
-    mmh_notes_df.all_notes = mmh_notes_df['all_notes'].astype('str').str.strip().str.lower().str.replace('\n', ' ')
+    mmh_notes_df.all_notes = mmh_notes_df['all_notes'].astype('str').str.strip().str.lower().str.replace(r'\n', ' ')
 
-    mmh_notes_df['all_notes_no_punct'] = mmh_notes_df['all_notes'].apply(lambda text: remove_punctuation(text))
+    # remove punctuation and stopwords
+    def remove_punctuation(text):
+        return text.translate(str.maketrans('', '', punctuation))
 
-    mmh_notes_df['all_notes_no_punct_no_stop'] = mmh_notes_df.all_notes_no_punct.apply(
-        lambda text: remove_stopwords(text))
+    mmh_notes_df['all_notes_cleaned'] = mmh_notes_df['all_notes'].apply(lambda text: remove_punctuation(text))
+
+    def remove_stopwords(text):
+        return " ".join([word for word in str(text).split() if word not in STOP_WORDS])
+
+    mmh_notes_df['all_notes_cleaned'] = mmh_notes_df.all_notes_cleaned.apply(lambda text: remove_stopwords(text))
+
+    # find and flag keywords for each identified vulnerability
+    def find_keyword(text):
+        if any(word in word_list for word in text.split()):
+            return 1
+        else:
+            return 0
 
     for words in word_lists:
-        print(words[0])
         word_list = words[1]
-        print(word_list)
-        mmh_notes_df[f"flag_{words[0]}"] = mmh_notes_df['all_notes_no_punct_no_stop'].apply(find_keyword)
+        mmh_notes_df[f"flag_{words[0]}"] = mmh_notes_df['all_notes_cleaned'].apply(find_keyword)
 
     logger.info(mmh_notes_df.sample(10))
 
-    # write to s3
-    mmh_notes_df = mmh_notes_df.drop(columns={'all_notes_no_punct', 'all_notes_no_punct_no_stop'})
+    # write to s3 and run crawler
     mmh_notes_df = add_import_time_columns_pandas(mmh_notes_df)
     mmh_notes_df.to_parquet(path=s3_output_location, partition_cols=PARTITION_KEYS)
     glue_client.start_crawler(Name='housing-mtfh-case-notes-enriched-to-refined')

@@ -24,9 +24,9 @@ module "housing_mtfh_case_notes_enriched_to_refined" {
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
     "--additional-python-modules"        = "spacy==3.7.4"
-    "--s3_source_mtfh_notes"             = "s3://dataplatform-stg-raw-zone/housing/"
+    "--s3_source_mtfh_notes"             = "s3://${module.raw_zone_data_source.bucket_id}/housing/"
     "--source_table_mtfh_notes"          = "mtfh_notes"
-    "--s3_source_tenure"                 = "s3://dataplatform-stg-refined-zone/housing/mtfh/"
+    "--s3_source_tenure"                 = "s3://${module.refined_zone_data_source.bucket_id}/housing/mtfh/"
     "--source_table_tenure"              = "tenure_reshape"
     "--s3_output_path"                   = "s3://${module.refined_zone_data_source.bucket_id}/housing/mtfh-case-notes-enriched/"
 
