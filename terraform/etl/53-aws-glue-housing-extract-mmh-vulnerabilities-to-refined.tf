@@ -17,7 +17,7 @@ module "housing_mtfh_case_notes_enriched_to_refined" {
   trigger_enabled                = local.is_production_environment
   number_of_workers_for_glue_job = 2
   glue_job_worker_type           = "G.1X"
-  schedule                       = "cron(* 10 ? * MON-SAT *)"
+  schedule                       = "cron(* 10 * * MON-SAT *)"
   glue_version                   = "4.0"
   job_parameters                 = {
     "--job-bookmark-option"              = "job-bookmark-enable"
