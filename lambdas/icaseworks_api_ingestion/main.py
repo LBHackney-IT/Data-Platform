@@ -93,11 +93,17 @@ def retrieve_credentials_from_secrets_manager(secrets_manager_client, secret_nam
     )
     return response
 
+def find_tracking_date():
+    today = datetime.datetime.utcnow().date()
+    # Take only yesterday's data
+    date_to_track_from = today - datetime.timedelta(days=1)
+    logger.info(f"Date to track from: {date_to_track_from}")
+    return date_to_track_from
+
 
 def lambda_handler(event, lambda_context):
     load_dotenv()
     s3_bucket = getenv("TARGET_S3_BUCKET_NAME")
-    output_folder_name = getenv("OUTPUT_FOLDER")
     glue_trigger_name = getenv("TRIGGER_NAME")
     url = "https://hackney.icasework.com/token"
 
@@ -156,22 +162,19 @@ def lambda_handler(event, lambda_context):
         # {"name":"Corrective Actions", "id":122443},
         # {"name":"Compensation", "id":122442},
         # {"name":"Case Contacts", "id":122542},
-        {"name": "Cases received", "id": 122109}
+        {"name": "Cases received","output_location":"icaseworks", "id": 122109}
     ]
 
-    today = datetime.datetime.utcnow().date()
-    # Take only yesterday's data
-    date_to_track_from = today - datetime.timedelta(days=1)
-    logger.info(f"Date to track from: {date_to_track_from}")
 
     s3_client = boto3.client('s3')
 
     for report_details in report_tables:
+        call_date = find_tracking_date()
         logger.info(f'Pulling report for {report_details["name"]}')
         case_id_report_id = report_details["id"]
-        case_id_list = get_icaseworks_report_from(case_id_report_id, date_to_track_from, auth_headers, auth_payload)
+        case_id_list = get_icaseworks_report_from(case_id_report_id, call_date, auth_headers, auth_payload)
         report_details["data"] = case_id_list
-        write_dataframe_to_s3(s3_client, report_details["data"], s3_bucket, output_folder_name, report_details["name"])
+        write_dataframe_to_s3(s3_client, report_details["data"], s3_bucket, report_details["output_location"], report_details["name"])
         logger.info(f'Finished writing report for {report_details["name"]} to S3')
 
     # Trigger glue job to copy from landing to raw and convert to parquet
