@@ -12,6 +12,22 @@ from scripts.helpers.helpers import get_glue_env_var, PARTITION_KEYS
 from scripts.helpers.housing_mmh_vulnerability_keywords import damp_mould, health, children, elderly, \
     disabled, finance, death, home, immigration, crime, asb, domestic_violence
 
+
+def remove_punctuation(text):
+    return text.translate(str.maketrans('', '', punctuation))
+
+
+def remove_stopwords(text):
+    return " ".join([word for word in str(text).split() if word not in STOP_WORDS])
+
+
+def find_keyword(text, word_list):
+    if any(word in word_list for word in text.split()):
+        return 1
+    else:
+        return 0
+
+
 STOP_WORDS |= {"hackney", "tnt", "tenant", "tenancy", "london", "lbh", "borough", "housing", "monday", "2020",
                "2021", "2023", "intro", "introductory", "property", "team", "email", "date", "tnts", "called",
                "completed", "application"}
@@ -43,21 +59,6 @@ tenure_reshaped = get_glue_env_var('source_table_tenure')
 s3_output_location = get_glue_env_var('s3_output_path')
 
 
-def remove_punctuation(text):
-    return text.translate(str.maketrans('', '', punctuation))
-
-
-def remove_stopwords(text):
-    return " ".join([word for word in str(text).split() if word not in STOP_WORDS])
-
-
-def find_keyword(text):
-    if any(word in word_lists for word in text.split()):
-        return 1
-    else:
-        return 0
-
-
 def main():
     # load in datasets
     tenure_path = get_s3_location(tenure_reshaped, s3_location_tenure)
@@ -73,7 +74,6 @@ def main():
     mmh_df.tenancy_id = mmh_df['targetId'].astype(str)
     mmh_df['all_notes'] = mmh_df.groupby(['targetId'])['description'].transform(lambda x: '\n'.join(x))
     tenure_df['start_tenure_date'] = pd.to_datetime(tenure_df['startOfTenureDate'])
-    # tenure_df['uprn'] = tenure_df['uprn'].replace('', 999999).astype('int64')
     tenure_df['tenancy_id'] = tenure_df['tenancy_id'].astype('str')
     tenure_df['description'] = tenure_df['description'].astype('str')
 
@@ -92,26 +92,24 @@ def main():
     mmh_notes_df = mmh_notes_df.drop_duplicates(subset=['tenancy_id'])
     mmh_notes_df = mmh_notes_df[['tenancy_id', 'start_tenure_date', 'uprn', 'num_case_notes', 'all_notes']].reset_index(
         drop=True)
-    mmh_notes_df.all_notes = mmh_notes_df['all_notes'].astype('str').str.strip().str.lower().str.replace('\n', ' ')
+    mmh_notes_df.all_notes = mmh_notes_df['all_notes'].astype('str').str.strip().str.lower().str.replace(r'\n', ' ')
 
-    mmh_notes_df['all_notes_no_punct'] = mmh_notes_df['all_notes'].apply(lambda text: remove_punctuation(text))
+    # remove punctuation and stopwords
+    mmh_notes_df['all_notes_cleaned'] = mmh_notes_df['all_notes'].apply(lambda text: remove_punctuation(text))
+    mmh_notes_df['all_notes_cleaned'] = mmh_notes_df.all_notes_cleaned.apply(lambda text: remove_stopwords(text))
 
-    mmh_notes_df['all_notes_no_punct_no_stop'] = mmh_notes_df.all_notes_no_punct.apply(
-        lambda text: remove_stopwords(text))
-
+    # find and flag keywords for each identified vulnerability
     for words in word_lists:
-        print(words[0])
         word_list = words[1]
-        print(word_list)
-        mmh_notes_df[f"flag_{words[0]}"] = mmh_notes_df['all_notes_no_punct_no_stop'].apply(find_keyword)
+        mmh_notes_df[f"flag_{words[0]}"] = mmh_notes_df['all_notes_cleaned'].apply(
+            lambda text, word_list=word_list: find_keyword(text, word_list))
 
     logger.info(mmh_notes_df.sample(10))
 
-    # write to s3
-    mmh_notes_df = mmh_notes_df.drop(columns={'all_notes_no_punct', 'all_notes_no_punct_no_stop'})
+    # write to s3 and run crawler
     mmh_notes_df = add_import_time_columns_pandas(mmh_notes_df)
     mmh_notes_df.to_parquet(path=s3_output_location, partition_cols=PARTITION_KEYS)
-    glue_client.start_crawler(Name='Housing MTFH case notes enriched to refined')
+    glue_client.start_crawler(Name='housing-mtfh-case-notes-enriched-to-refined')
     logger.info(f'Refined casenotes written to {s3_output_location}')
 
 

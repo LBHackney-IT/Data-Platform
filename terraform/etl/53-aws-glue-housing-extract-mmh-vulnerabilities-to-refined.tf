@@ -24,9 +24,9 @@ module "housing_mtfh_case_notes_enriched_to_refined" {
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
     "--additional-python-modules"        = "spacy==3.7.4"
-    "--s3_source_mtfh_notes"             = module.department_housing_data_source.raw_zone_catalog_database_name
+    "--s3_source_mtfh_notes"             = "s3://${module.raw_zone_data_source.bucket_id}/housing/"
     "--source_table_mtfh_notes"          = "mtfh_notes"
-    "--s3_source_tenure"                 = module.department_housing_data_source.refined_zone_catalog_database_name
+    "--s3_source_tenure"                 = "s3://${module.refined_zone_data_source.bucket_id}/housing/mtfh/"
     "--source_table_tenure"              = "tenure_reshape"
     "--s3_output_path"                   = "s3://${module.refined_zone_data_source.bucket_id}/housing/mtfh-case-notes-enriched/"
 
@@ -34,7 +34,6 @@ module "housing_mtfh_case_notes_enriched_to_refined" {
   script_name     = "housing_mtfh_case_notes_enriched"
   crawler_details = {
     database_name      = module.department_housing_data_source.refined_zone_catalog_database_name
-    name               = "${local.short_identifier_prefix}Housing MTFH case notes enrichment to refined"
     role               = data.aws_iam_role.glue_role.arn
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/housing/mtfh-case-notes-enriched/"
     table_prefix       = null
