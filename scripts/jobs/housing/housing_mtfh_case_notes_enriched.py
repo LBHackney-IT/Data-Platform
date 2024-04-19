@@ -102,7 +102,7 @@ def main():
     for words in word_lists:
         word_list = words[1]
         mmh_notes_df[f"flag_{words[0]}"] = mmh_notes_df['all_notes_cleaned'].apply(
-            lambda text: find_keyword(text, word_list))
+            lambda text, word_list=word_list: find_keyword(text, word_list))
 
     logger.info(mmh_notes_df.sample(10))
 
