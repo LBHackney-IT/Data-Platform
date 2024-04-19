@@ -12,6 +12,22 @@ from scripts.helpers.helpers import get_glue_env_var, PARTITION_KEYS
 from scripts.helpers.housing_mmh_vulnerability_keywords import damp_mould, health, children, elderly, \
     disabled, finance, death, home, immigration, crime, asb, domestic_violence
 
+
+def remove_punctuation(text):
+    return text.translate(str.maketrans('', '', punctuation))
+
+
+def remove_stopwords(text):
+    return " ".join([word for word in str(text).split() if word not in STOP_WORDS])
+
+
+def find_keyword(text, word_list):
+    if any(word in word_list for word in text.split()):
+        return 1
+    else:
+        return 0
+
+
 STOP_WORDS |= {"hackney", "tnt", "tenant", "tenancy", "london", "lbh", "borough", "housing", "monday", "2020",
                "2021", "2023", "intro", "introductory", "property", "team", "email", "date", "tnts", "called",
                "completed", "application"}
@@ -58,7 +74,6 @@ def main():
     mmh_df.tenancy_id = mmh_df['targetId'].astype(str)
     mmh_df['all_notes'] = mmh_df.groupby(['targetId'])['description'].transform(lambda x: '\n'.join(x))
     tenure_df['start_tenure_date'] = pd.to_datetime(tenure_df['startOfTenureDate'])
-    # tenure_df['uprn'] = tenure_df['uprn'].replace('', 999999).astype('int64')
     tenure_df['tenancy_id'] = tenure_df['tenancy_id'].astype('str')
     tenure_df['description'] = tenure_df['description'].astype('str')
 
@@ -80,26 +95,14 @@ def main():
     mmh_notes_df.all_notes = mmh_notes_df['all_notes'].astype('str').str.strip().str.lower().str.replace(r'\n', ' ')
 
     # remove punctuation and stopwords
-    def remove_punctuation(text):
-        return text.translate(str.maketrans('', '', punctuation))
-
     mmh_notes_df['all_notes_cleaned'] = mmh_notes_df['all_notes'].apply(lambda text: remove_punctuation(text))
-
-    def remove_stopwords(text):
-        return " ".join([word for word in str(text).split() if word not in STOP_WORDS])
-
     mmh_notes_df['all_notes_cleaned'] = mmh_notes_df.all_notes_cleaned.apply(lambda text: remove_stopwords(text))
 
     # find and flag keywords for each identified vulnerability
-    def find_keyword(text):
-        if any(word in word_list for word in text.split()):
-            return 1
-        else:
-            return 0
-
     for words in word_lists:
         word_list = words[1]
-        mmh_notes_df[f"flag_{words[0]}"] = mmh_notes_df['all_notes_cleaned'].apply(find_keyword)
+        mmh_notes_df[f"flag_{words[0]}"] = mmh_notes_df['all_notes_cleaned'].apply(
+            lambda text: find_keyword(text, word_list))
 
     logger.info(mmh_notes_df.sample(10))
 
