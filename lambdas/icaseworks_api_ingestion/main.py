@@ -165,21 +165,29 @@ def lambda_handler(event, lambda_context):
         {"name": "Cases received","output_location":"icaseworks", "id": 122109}
     ]
 
+    errors = []
 
     s3_client = boto3.client('s3')
 
     for report_details in report_tables:
-        call_date = find_tracking_date()
-        logger.info(f'Pulling report for {report_details["name"]}')
-        case_id_report_id = report_details["id"]
-        case_id_list = get_icaseworks_report_from(case_id_report_id, call_date, auth_headers, auth_payload)
-        report_details["data"] = case_id_list
-        write_dataframe_to_s3(s3_client, report_details["data"], s3_bucket, report_details["output_location"], report_details["name"])
-        logger.info(f'Finished writing report for {report_details["name"]} to S3')
+        try:
+            call_date = find_tracking_date()
+            logger.info(f'Pulling report for {report_details["name"]}')
+            case_id_report_id = report_details["id"]
+            case_id_list = get_icaseworks_report_from(case_id_report_id, call_date, auth_headers, auth_payload)
+            report_details["data"] = case_id_list
+            write_dataframe_to_s3(s3_client, report_details["data"], s3_bucket, report_details["output_location"], report_details["name"])
+            logger.info(f'Finished writing report for {report_details["name"]} to S3')
+        except Exception as e:
+            # Record the error along with the table index for debugging
+            errors.append((report_details, str(e)))
 
     # Trigger glue job to copy from landing to raw and convert to parquet
     glue_client = boto3.client('glue')
     start_glue_trigger(glue_client, glue_trigger_name)
+
+    if errors:
+        raise Exception(f"Errors")
 
 def single_digit_to_zero_prefixed_string(value):
     return str(value) if value > 9 else '0' + str(value)
