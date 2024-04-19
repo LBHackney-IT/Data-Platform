@@ -26,7 +26,8 @@ locals {
 
     resources = [
       module.refined_zone.bucket_arn,
-      "${module.refined_zone.bucket_arn}/housing/rentsense/export/*"
+      "${module.refined_zone.bucket_arn}/housing/rentsense/export/*",
+      "${module.refined_zone.bucket_arn}/housing/rentsense-ft/export/*"
     ]
 
     principals = {
