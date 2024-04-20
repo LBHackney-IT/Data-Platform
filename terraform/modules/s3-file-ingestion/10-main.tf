@@ -27,7 +27,8 @@ module "csv_landing_to_raw_glue_job" {
 }
 
 resource "aws_cloudwatch_event_rule" "s3_event_rule" {
-  name = "s3 file ingestion - ${local.file_ingestions[count.index].table_name}"
+  count = length(local.file_ingestions)
+  name  = "s3 file ingestion - ${local.file_ingestions[count.index].table_name}"
   event_pattern = jsonencode({
     "source" : ["aws.s3"],
     "detail-type" : ["AWS API Call via CloudTrail"],
