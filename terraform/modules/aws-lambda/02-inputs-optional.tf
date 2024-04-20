@@ -92,3 +92,9 @@ variable "layers" {
   description = "List of ARNs for Lambda Layers to attach to the Lambda Function"
   default     = []
 }
+
+variable "description" {
+  type        = string
+  description = "Description of the Lambda Function"
+  default     = ""
+}
