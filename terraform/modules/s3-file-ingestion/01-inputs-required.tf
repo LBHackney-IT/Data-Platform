@@ -84,3 +84,13 @@ variable "spreadsheet_import_script_key" {
   description = "Spreadsheet import script key"
   type        = string
 }
+
+variable "lambda_artefact_storage_bucket" {
+  description = "Lambda artefact storage bucket"
+  type        = string
+}
+
+variable "lambda_s3_key" {
+  description = "Lambda S3 key"
+  type        = string
+}
