@@ -17,3 +17,4 @@ module "parking_csv_import" {
   department                     = module.department_parking_data_source
   lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
   lambda_s3_key                  = "s3-ingestion-filter-and-trigger.zip"
+}
