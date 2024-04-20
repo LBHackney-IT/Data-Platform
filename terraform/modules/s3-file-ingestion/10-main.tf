@@ -48,5 +48,5 @@ module "filter_and_trigger_lambda" {
   handler                        = "lambda_function.lambda_handler"
   lambda_artefact_storage_bucket = var.lambda_artefact_storage_bucket
   s3_key                         = var.lambda_s3_key
-  lamdba_source_dir              = "${path.module}/../../../lambdas/s3-ingestion-filter-and-trigger"
+  lambda_source_dir              = "${path.module}/../../../lambdas/s3-ingestion-filter-and-trigger"
 }
