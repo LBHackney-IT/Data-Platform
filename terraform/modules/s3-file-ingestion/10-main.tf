@@ -42,7 +42,7 @@ resource "aws_cloudwatch_event_rule" "s3_event_rule" {
 }
 
 module "filter_and_trigger_lambda" {
-  source                         = "../modules/aws-lambda"
+  source                         = "../aws-lambda"
   description                    = "Lambda function to filter s3 upload events and trigger Glue jobs"
   lambda_name                    = "${var.identifier_prefix}${var.department.identifier}-s3-ingestion-filter-and-trigger"
   handler                        = "lambda_function.lambda_handler"
