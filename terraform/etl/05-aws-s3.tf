@@ -166,3 +166,10 @@ resource "aws_s3_object" "copy_tables_landing_to_raw_backdated" {
   source_hash = filemd5("../../scripts/jobs/copy_tables_landing_to_raw_backdated.py")
 }
 
+resource "aws_s3_object" "housing_mtfh_case_notes_enriched_to_refined" {
+  bucket      = module.glue_scripts_data_source.bucket_id # this is glue_scripts_data_source in etl folder
+  key         = "scripts/housing_mtfh_case_notes_enriched.py"
+  acl         = "private"
+  source      = "../../scripts/jobs/housing/housing_mtfh_case_notes_enriched.py"
+  source_hash = filemd5("../../scripts/jobs/housing/housing_mtfh_case_notes_enriched.py")
+}
