@@ -1,34 +1,37 @@
 import json
-import logging
-import os
 
 import boto3
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+ssm = boto3.client("ssm")
+sns = boto3.client("sns")
 
 
-def lambda_handler(event, context):
-    topic_arn = os.environ["TOPIC_ARN"]
-    sns = boto3.client("sns")
+def get_topic_mappings(parameter_name, ssm=None):
+    ssm = ssm or boto3.client("ssm")
 
-    logger.info("## event")
-    logger.info(event)
+    try:
+        response = ssm.get_parameter(Name=parameter_name, WithDecryption=False)
+        parameter_value = response["Parameter"]["Value"]
+        topic_mappings = json.loads(parameter_value)
+        return topic_mappings
+    except Exception as e:
+        print(f"Error retrieving or parsing SSM parameter: {e}")
+        return {}
 
-    bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
-    file_key = event["Records"][0]["s3"]["object"]["key"]
-    event_time = event["Records"][0]["eventTime"]
 
-    message = f"File uploaded: {file_key} to bucket: {bucket_name} at: {event_time}"
-    subject = f"New File Uploaded to S3: {bucket_name}/{file_key}"
+def handler(event, context):
+    path_to_topic = get_topic_mappings(ssm)
 
-    sns.publish(
-        TopicArn=topic_arn,
-        Message=message,
-        Subject=subject,
-    )
+    for record in event["Records"]:
+        bucket = record["s3"]["bucket"]["name"]
+        key = record["s3"]["object"]["key"]
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps("Email notification sent successfully!"),
-    }
+        for path, topic_arn in path_to_topic.items():
+            if key.startswith(path):
+                message = {"bucket": bucket, "key": key}
+                sns.publish(
+                    TopicArn=topic_arn,
+                    Message=json.dumps({"default": json.dumps(message)}),
+                    MessageStructure="json",
+                )
+                break
