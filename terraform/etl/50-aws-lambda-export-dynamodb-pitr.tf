@@ -1,5 +1,5 @@
 locals {
-  mtfh_tables                    = ["TenureInformation", "Persons", "ContactDetails", "Assets", "Accounts", "EqualityInformation", "HousingRegister", "HousingRepairsOnline", "PatchesAndAreas", "Processes", "Notes"]
+  mtfh_tables                    = ["ActivityHistory", "TenureInformation", "Persons", "ContactDetails", "Assets", "Accounts", "EqualityInformation", "HousingRegister", "HousingRepairsOnline", "PatchesAndAreas", "Processes", "Notes"]
   create_mtfh_sfn_resource_count = 1
 }
 
