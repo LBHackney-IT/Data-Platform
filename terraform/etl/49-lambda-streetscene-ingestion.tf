@@ -3,7 +3,8 @@ locals {
   traffic_counters_tables                = ["street-systems"] # more table names can be added here
   lambda_layers = [
   "requests-2-31-0-and-httplib-0-22-0-layer",
-  "panas-2-1-4-layer",
+  # AWS self-managed Pandas layer (aka awswrangler)
+  "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:12",
   "s3fs-2023-12-2-layer",
   "urllib3-1-26-18-layer"
   ]
@@ -122,8 +123,13 @@ module "street_systems_api_ingestion" {
     CRAWLER_NAME     = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone"
   }
   layers = [
-    # no where in the etl directory reference aws-lambda-layers module, so can't use layer ARNs from its output
-    for layer in local.lambda_layers: "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:${layer}:1"
+    # No where in the etl directory reference aws-lambda-layers module, so can't use layer ARNs from its output
+    # "strcontains" doesn't support for current version Terraform, so use regex to checks if the string layer contains the substring "arn:aws:".
+    # It returns true if the substring is found, and false otherwise
+    for layer in local.lambda_layers: 
+      can(regex("arn:aws:", layer)) ?
+        layer : 
+        "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:${layer}:1"
   ]
 }
 
