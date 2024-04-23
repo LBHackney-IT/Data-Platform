@@ -124,9 +124,9 @@ module "street_systems_api_ingestion" {
   }
   layers = [
     # No where in the etl directory reference aws-lambda-layers module, so can't use layer ARNs from its output
-    # "contains" checks if the string layer contains the substring "arn:aws:". It returns true if the substring is found, and false otherwise
+    # "strcontains" checks if the string layer contains the substring "arn:aws:". It returns true if the substring is found, and false otherwise
     for layer in local.lambda_layers: 
-      contains(layer, "arn:aws:") ? 
+      strcontains(layer, "arn:aws:") ? 
         layer : 
         "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:${layer}:1"
   ]
