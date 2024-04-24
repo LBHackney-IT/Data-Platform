@@ -110,18 +110,18 @@ def add_date_partition_key_to_s3_prefix(s3_prefix):
 
 
 def lambda_handler(event, context):
-    logger.info(f"Set up S3 client...")
+    logger.info("Set up S3 client...")
     s3_client = boto3.client('s3')
     glue_client = boto3.client('glue')
 
     api_secret_name = getenv("API_SECRET_NAME")
     region_name = getenv("AWS_REGION")
 
-    output_s3_bucket = getenv("TARGET_S3_BUCKET")
+    output_s3_bucket_landing = getenv("TARGET_S3_BUCKET_LANDING")
     output_folder = getenv("TARGET_S3_FOLDER")
-    crawler = getenv("CRAWLER_NAME")
+    crawler_landing = getenv("CRAWLER_NAME_LANDING")
 
-    logger.info(f"Get API secret...")
+    logger.info("Get API secret...")
     api_secret_string = get_api_secret(api_secret_name, region_name)
     api_secret_json = json.loads(api_secret_string)
     api_key = api_secret_json.get("api_key_live")
@@ -136,7 +136,7 @@ def lambda_handler(event, context):
                                    'file_name': 'received_text_messages'}
     }
 
-    logger.info(f"Get API responses...")
+    logger.info("Get API responses...")
     for api_query in api_queries:
         query = api_queries_dict.get(api_query).get('query')
         response = get_response(query)
@@ -150,12 +150,12 @@ def lambda_handler(event, context):
         parquet_buffer.seek(0)
 
         # Upload the json string and parquet buffer to S3
-        upload_to_s3(output_s3_bucket, s3_client, json_str, f'{output_folder_json}{file_name}.json')
-        s3_client.upload_fileobj(parquet_buffer, output_s3_bucket, f'{output_folder_parquet}{file_name}.parquet')
-        logger.info(f"Responses written as json and parquet to {output_s3_bucket}/{output_folder}")
+        upload_to_s3(output_s3_bucket_landing, s3_client, json_str, f'{output_folder_json}{file_name}.json')
+        s3_client.upload_fileobj(parquet_buffer, output_s3_bucket_landing, f'{output_folder_parquet}{file_name}.parquet')
+        logger.info(f"Responses written as json and parquet to {output_s3_bucket_landing}/{output_folder}")
 
         # Crawl all the parquet data in S3
-        glue_client.start_crawler(Name=f'{crawler} {file_name}')
+        glue_client.start_crawler(Name=f'{crawler_landing} {file_name}')
         logger.info(f"S3 {file_name} files crawled and written to housing landing zone data catalog")
 
 

@@ -4,7 +4,7 @@ locals {
 }
 
 
-data "aws_iam_policy_document" "housing_landing_zone_access" {
+data "aws_iam_policy_document" "housing_s3_access" {
   statement {
     actions = [
       "s3:AbortMultipartUpload",
@@ -25,15 +25,18 @@ data "aws_iam_policy_document" "housing_landing_zone_access" {
     resources = [
       module.landing_zone_data_source.bucket_arn,
       "${module.landing_zone_data_source.bucket_arn}/housing/*",
-      module.landing_zone_data_source.kms_key_arn
+      module.landing_zone_data_source.kms_key_arn,
+      module.raw_zone_data_source.bucket_arn,
+      "${module.raw_zone_data_source.bucket_arn}/housing/*",
+      module.raw_zone_data_source.kms_key_arn
     ]
   }
 }
 
-resource "aws_iam_policy" "housing_landing_zone_access" {
+resource "aws_iam_policy" "housing_s3_access" {
   count  = local.create_govnotify_resource_count
-  name   = "housing_landing_zone_access"
-  policy = data.aws_iam_policy_document.housing_landing_zone_access.json
+  name   = "housing_s3_access"
+  policy = data.aws_iam_policy_document.housing_s3_access.json
 }
 data "aws_iam_policy_document" "gov_notify_lambda_logs" {
   statement {
@@ -96,7 +99,7 @@ resource "aws_iam_role" "housing_gov_notify_ingestion" {
 resource "aws_iam_role_policy_attachment" "housing_gov_notify_ingestion" {
   count      = local.create_govnotify_resource_count
   role       = aws_iam_role.housing_gov_notify_ingestion[0].name
-  policy_arn = aws_iam_policy.housing_landing_zone_access[0].arn
+  policy_arn = aws_iam_policy.housing_s3_access[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "housing_gov_notify_lambda_invoke" {
@@ -168,9 +171,11 @@ module "gov-notify-ingestion-housing-repairs" {
   environment_variables          = {
 
     API_SECRET_NAME  = "housing/gov-notify_live_api_key"
-    TARGET_S3_BUCKET = module.landing_zone_data_source.bucket_id
+    TARGET_S3_BUCKET_LANDING = module.landing_zone_data_source.bucket_id
     TARGET_S3_FOLDER = "housing/govnotify/damp_and_mould/"
-    CRAWLER_NAME     = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing Zone"
+    CRAWLER_NAME_LANDING    = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing Zone"
+    TARGET_S3_BUCKET_RAW = module.raw_zone_data_source.bucket_id
+    CRAWLER_NAME_RAW    = "${local.short_identifier_prefix}GovNotify Housing Repairs Raw Zone"
   }
   layers = [
     "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13",
