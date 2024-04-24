@@ -73,7 +73,7 @@ resource "aws_iam_policy" "s3_event_to_sns_lambda" {
 
 resource "aws_iam_policy_attachment" "s3_event_to_sns_lambda" {
   name       = "s3-event-to-sns-lambda"
-  role       = module.s3_event_to_sns_lambda.lambda_iam_role
+  roles      = module.s3_event_to_sns_lambda.lambda_iam_role
   policy_arn = aws_iam_policy.s3_event_to_sns_lambda.arn
 }
 
@@ -147,8 +147,9 @@ resource "aws_iam_policy" "sns_topic_to_trigger_glue_job_lambda" {
   policy   = data.aws_iam_policy_document.sns_topic_to_trigger_glue_job_lambda[each.key].json
 }
 
-resource "aws_iam_role_policy_attachment" "sns_topic_to_trigger_glue_job_lambda" {
+resource "aws_iam_policy_attachment" "sns_topic_to_trigger_glue_job_lambda" {
   for_each   = local.config_map
-  role       = module.sns_topic_to_trigger_glue_job_lambda[each.key].lambda_iam_role_arn
+  name       = "${each.key}-sns-topic-to-trigger-glue-job-lambda"
+  roles      = module.sns_topic_to_trigger_glue_job_lambda[each.key].lambda_iam_role_arn
   policy_arn = aws_iam_policy.sns_topic_to_trigger_glue_job_lambda[each.key].arn
 }
