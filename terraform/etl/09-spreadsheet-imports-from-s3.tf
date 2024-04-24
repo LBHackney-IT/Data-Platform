@@ -124,6 +124,13 @@ module "sns_topic_to_trigger_glue_job_lambda" {
   }
 }
 
+resource "aws_sns_topic_subscription" "sns_topic_subscription" {
+  for_each  = local.config_map
+  topic_arn = aws_sns_topic.sns_topic[each.key].arn
+  protocol  = "lambda"
+  endpoint  = module.sns_topic_to_trigger_glue_job_lambda[each.key].lambda_arn
+}
+
 data "aws_iam_policy_document" "sns_topic_to_trigger_glue_job_lambda" {
   for_each = local.config_map
   statement {
