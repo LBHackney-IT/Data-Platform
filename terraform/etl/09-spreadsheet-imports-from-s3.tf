@@ -150,6 +150,6 @@ resource "aws_iam_policy" "sns_topic_to_trigger_glue_job_lambda" {
 resource "aws_iam_policy_attachment" "sns_topic_to_trigger_glue_job_lambda" {
   for_each   = local.config_map
   name       = "${each.key}-sns-topic-to-trigger-glue-job-lambda"
-  roles      = [module.sns_topic_to_trigger_glue_job_lambda[each.key].lambda_iam_role_arn]
+  roles      = [module.sns_topic_to_trigger_glue_job_lambda[each.key].lambda_iam_role]
   policy_arn = aws_iam_policy.sns_topic_to_trigger_glue_job_lambda[each.key].arn
 }
