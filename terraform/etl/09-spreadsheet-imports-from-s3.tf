@@ -71,8 +71,9 @@ resource "aws_iam_policy" "s3_event_to_sns_lambda" {
   tags   = module.tags.values
 }
 
-resource "aws_iam_role_policy_attachment" "s3_event_to_sns_lambda" {
-  role       = module.s3_event_to_sns_lambda.lambda_iam_role_arn
+resource "aws_iam_policy_attachment" "s3_event_to_sns_lambda" {
+  name       = "s3-event-to-sns-lambda"
+  role       = module.s3_event_to_sns_lambda.lambda_iam_role
   policy_arn = aws_iam_policy.s3_event_to_sns_lambda.arn
 }
 
@@ -128,7 +129,7 @@ resource "aws_sns_topic_subscription" "sns_topic_subscription" {
   for_each  = local.config_map
   topic_arn = aws_sns_topic.sns_topic[each.key].arn
   protocol  = "lambda"
-  endpoint  = module.sns_topic_to_trigger_glue_job_lambda[each.key].lambda_arn
+  endpoint  = module.sns_topic_to_trigger_glue_job_lambda[each.key].lambda_function_arn
 }
 
 data "aws_iam_policy_document" "sns_topic_to_trigger_glue_job_lambda" {
@@ -136,7 +137,7 @@ data "aws_iam_policy_document" "sns_topic_to_trigger_glue_job_lambda" {
   statement {
     actions   = ["glue:StartJobRun"]
     effect    = "Allow"
-    resources = [each.value.glue_job_name]
+    resources = [module.s3_file_updload_landing_to_raw_glue_job[each.key].glue_job_arn]
   }
 }
 
