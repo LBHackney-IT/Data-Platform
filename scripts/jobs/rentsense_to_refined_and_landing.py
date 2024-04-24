@@ -1,4 +1,5 @@
 from datetime import date
+import sys
 
 import boto3
 from awsglue.context import GlueContext
@@ -6,12 +7,12 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.transforms import DropFields
 from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
-from pyspark.sql.functions import *
+from pyspark.context import SparkContext
 import pyspark.sql.functions as F
+from pyspark.sql.functions import col, lit, to_date,  date_sub, current_date, trim
 
-from scripts.helpers.helpers import move_file, rename_file, get_latest_partitions_optimized, create_pushdown_predicate, \
-    add_import_time_columns, PARTITION_KEYS, parse_json_into_dataframe, table_exists_in_catalog, clear_target_folder, \
-    copy_file
+from scripts.helpers.helpers import move_file, rename_file, get_latest_partitions_optimized, \
+    add_import_time_columns, PARTITION_KEYS, clear_target_folder, copy_file
 
 if __name__ == "__main__":
 
@@ -294,7 +295,6 @@ if __name__ == "__main__":
         'SMS': 'Text message sent',
         'ACB': 'Actual Cost Breakdown Sent',
         'TAA': 'TA New Account checks',
-        'RAP': 'Outcome of rent arrears panel',
         'PLA': 'Pre legal action visit',
         'PEO': 'Pre eviction contact outcome',
         'AAD': 'Pre notice interview',
@@ -320,7 +320,6 @@ if __name__ == "__main__":
         'RT3': 'RETURNED BY LEWIS DEBT AGENCY',
         'INV': 'ACTION ON HOLD',
         'MHB': 'HB INVESTIGATION PENDING',
-        'RT4': 'Returned by Credit Gee',
         'MW0': 'MW Pre Arrears',
         'MW1': 'MW Letter Action 1',
         'MW2': 'MW Letter Action 2',
@@ -505,7 +504,7 @@ if __name__ == "__main__":
                                      'leftanti')  # remove the paymentreference in the other dataset
 
     accounts = accounts_s.union(accounts_int)
-    accounts.select(col("startOfTenureDate"), to_date(col("startOfTenureDate"), "yyyy-MM-dd").alias("date")) \
+    accounts.select(col("startOfTenureDate"), F.to_date(col("startOfTenureDate"), "yyyy-MM-dd").alias("date")) \
         .drop("startOfTenureDate").withColumnRenamed("date", "startOfTenureDate")
 
     accounts = accounts.drop("uh_ten_ref")
@@ -750,8 +749,8 @@ if __name__ == "__main__":
     # Balances
     ten = accounts.select('uh_ten_ref', 'paymentreference')
 
-    bals = balance.withColumn("BalanceDate", F.to_date(F.col("import_date"), "yyyyMMdd")) \
-        .withColumn("paymentreference2", F.trim(F.col("RentAccount")))
+    bals = balance.withColumn("BalanceDate", to_date(col("import_date"), "yyyyMMdd")) \
+        .withColumn("paymentreference2", F.trim(col("RentAccount")))
 
     balances = ten.join(bals, ten.paymentreference == bals.paymentreference2, "inner")
     balances = balances.selectExpr("paymentreference as PaymentReference",
@@ -795,12 +794,12 @@ if __name__ == "__main__":
     # Actions
     ten = accounts.select('uh_ten_ref', 'paymentreference')
 
-    actions = df9.withColumn("uh_ten_ref1", F.trim(F.col("tag_ref"))) \
-        .withColumn("ActionDate", F.to_date(F.col("action_date"), "yyyy-MM-dd"))
+    actions = df9.withColumn("uh_ten_ref1", F.trim(col("tag_ref"))) \
+        .withColumn("ActionDate", F.to_date(col("action_date"), "yyyy-MM-dd"))
     actions = actions.filter(
-        (F.col("action_date") > date_sub(current_date(), 180)) & (F.col("action_date") < current_date()))
+        (F.col("action_date") > date_sub(current_date(), 180)) & (col("action_date") < current_date()))
     actions = ten.join(actions, ten.uh_ten_ref == actions.uh_ten_ref1, "inner")
-    actions = actions.withColumn("code_lookup", F.trim(F.col("action_code"))) \
+    actions = actions.withColumn("code_lookup", trim(col("action_code"))) \
         .replace(to_replace=mapAction, subset=['code_lookup'])
 
     actions = actions.selectExpr("paymentreference as PaymentReference",
@@ -848,7 +847,7 @@ if __name__ == "__main__":
     # Transactions
     ten = accounts.select('uh_ten_ref', 'paymentreference')
 
-    df11 = df10.filter((F.col("post_date") > date_sub(current_date(), 180)) & (F.col("post_date") < current_date()))
+    df11 = df10.filter((F.col("post_date") > F.date_sub(F.current_date(), 180)) & (col("post_date") < F.current_date()))
     df11 = df11.withColumn("TransactionID", F.monotonically_increasing_id()) \
         .withColumn("code_lookup", F.trim(F.col("trans_type"))) \
         .replace(to_replace=mapTransactions, subset=['code_lookup'])
