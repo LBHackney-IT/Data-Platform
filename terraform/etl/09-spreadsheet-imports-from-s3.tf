@@ -39,7 +39,7 @@ module "s3_event_to_sns_lambda" {
   lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
   s3_key                         = "map-s3-event-to-sns-topic.zip"
   lambda_source_dir              = "${path.module}/../../lambdas/map_s3_event_to_sns_topic"
-  runtime                        = "python3.10"
+  runtime                        = "python3.9"
   environment_variables = {
     "PARAMATER_NAME" = aws_ssm_parameter.s3_event_to_sns_topic_mapping.name
   }
@@ -61,6 +61,7 @@ data "aws_iam_policy_document" "s3_event_to_sns_lambda" {
 resource "aws_iam_policy" "s3_event_to_sns_lambda" {
   name   = "s3-event-to-sns-lambda"
   policy = data.aws_iam_policy_document.s3_event_to_sns_lambda.json
+  tags   = module.tags.values
 }
 
 resource "aws_iam_role_policy_attachment" "s3_event_to_sns_lambda" {
@@ -72,6 +73,7 @@ resource "aws_ssm_parameter" "s3_event_to_sns_topic_mapping" {
   name  = "department_s3_event_to_sns_topic_mapping"
   type  = "String"
   value = jsonencode(local.path_topic_mapping)
+  tags  = module.tags.values
 }
 
 resource "aws_sns_topic" "sns_topic" {
@@ -108,7 +110,7 @@ module "sns_topic_to_trigger_glue_job_lambda" {
   lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
   s3_key                         = "sns-topic-to-trigger-glue-job.zip"
   lambda_source_dir              = "${path.module}/../../lambdas/start_s3_file_ingestion_glue_job_from_sns_topic"
-  runtime                        = "python3.10"
+  runtime                        = "python3.9"
   environment_variables = {
     "GLUE_JOB_NAME" = local.glue_job_name[count.index]
   }
