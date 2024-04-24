@@ -1,19 +1,14 @@
 locals {
+  config_files = fileset("../../s3_file_ingestion_config/", "*.yml")
   configs = {
-    parking = {
-      paths = [
-        "parking/g-drive/"
-      ]
-      department_module = module.department_parking_data_source
-    },
-    housing = {
-      paths = [
-        "housing/g-drive/"
-      ]
-      department_module = module.department_housing_data_source
-    }
+    for file in local.config_files :
+        replace(file, ".yml", "") => yamldecode(file("../../file_ingestion_config/${file}"))
   }
-
+  
+   department_module_map = {
+    parking = module.department_parking_data_source
+    housing = module.department_housing_data_source
+   }
   config_map = {
     for department, config in local.configs : department => {
       department                  = department
@@ -21,8 +16,41 @@ locals {
       department_module           = config.department_module
       glue_job_name               = "${department}-s3-file-upload-landing-to-raw"
       sns_to_glue_job_lambda_name = "${department}-s3-file-upload-sns-trigger-glue-job"
+      # "$or" requires there to be at least two conditions
+      event_pattern = length(config.paths) > 1 ? jsonencode({
+        "source" : ["aws.s3"],
+        "detail" : {
+          "bucket" : {
+            "name" : module.landing_zone_data_source.bucket_id
+          },
+          "object" : {
+            "$or" : [
+              for path in config.paths : {
+                "key" : [{ "prefix" : path }]
+              }
+            ]
+          },
+          "reason" : "PutObject"
+        }
+        }) : jsonencode({
+        "source" : ["aws.s3"],
+        "detail" : {
+          "bucket" : {
+            "name" : module.landing_zone_data_source.bucket_id
+          },
+          "object" : {
+            "key" : [
+              {
+                "prefix" : config.paths[0]
+              }
+            ]
+          },
+          "reason" : "PutObject"
+        }
+      })
     }
   }
+
 
   path_department_pairs = flatten([
     for department, config in local.configs : [
@@ -31,62 +59,30 @@ locals {
         department = department
       }
     ]
-  ])
+    ]
+  )
 
   path_topic_mapping = {
     for pair in local.path_department_pairs : pair.path => aws_sns_topic.sns_topic[pair.department].arn
   }
 }
 
-module "s3_event_to_sns_lambda" {
-  source                         = "../modules/aws-lambda"
-  lambda_name                    = "s3-event-to-sns"
-  handler                        = "main.handler"
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
-  s3_key                         = "map-s3-event-to-sns-topic.zip"
-  lambda_source_dir              = "../../lambdas/map_s3_event_to_sns_topic"
-  lambda_output_path             = "../../lambdas/map_s3_event_to_sns_topic.zip"
-  runtime                        = "python3.9"
-  environment_variables = {
-    "PARAMATER_NAME" = aws_ssm_parameter.s3_event_to_sns_topic_mapping.name
-  }
+resource "aws_cloudwatch_event_rule" "s3_event_to_sns_lambda" {
+  for_each      = local.config_map
+  name          = "${each.value.department}-s3-event-to-sns-topic"
+  event_pattern = each.value.event_pattern
 }
 
-data "aws_iam_policy_document" "s3_event_to_sns_lambda" {
-  statement {
-    actions   = ["ssm:GetParameter"]
-    effect    = "Allow"
-    resources = [aws_ssm_parameter.s3_event_to_sns_topic_mapping.arn]
-  }
-  statement {
-    actions   = ["sns:Publish"]
-    effect    = "Allow"
-    resources = values(local.path_topic_mapping)
-  }
-}
-
-resource "aws_iam_policy" "s3_event_to_sns_lambda" {
-  name   = "s3-event-to-sns-lambda"
-  policy = data.aws_iam_policy_document.s3_event_to_sns_lambda.json
-  tags   = module.tags.values
-}
-
-resource "aws_iam_policy_attachment" "s3_event_to_sns_lambda" {
-  name       = "s3-event-to-sns-lambda"
-  roles      = [module.s3_event_to_sns_lambda.lambda_iam_role]
-  policy_arn = aws_iam_policy.s3_event_to_sns_lambda.arn
-}
-
-resource "aws_ssm_parameter" "s3_event_to_sns_topic_mapping" {
-  name  = "department_s3_event_to_sns_topic_mapping"
-  type  = "String"
-  value = jsonencode(local.path_topic_mapping)
-  tags  = module.tags.values
+resource "aws_cloudwatch_event_target" "sns_topic_to_trigger_glue_job_lambda" {
+  for_each  = local.config_map
+  rule      = aws_cloudwatch_event_rule.s3_event_to_sns_lambda[each.key].name
+  target_id = "${each.key}-sns-topic-to-trigger-glue-job-lambda"
+  arn       = module.sns_topic_to_trigger_glue_job_lambda[each.key].lambda_function_arn
 }
 
 resource "aws_sns_topic" "sns_topic" {
-  for_each = toset(keys(local.configs))
-  name     = "${each.value}-s3-landing-file-upload"
+  for_each = local.config_map
+  name     = "${each.value.department}-s3-landing-file-upload"
 }
 
 module "s3_file_updload_landing_to_raw_glue_job" {
@@ -143,7 +139,7 @@ data "aws_iam_policy_document" "sns_topic_to_trigger_glue_job_lambda" {
 
 resource "aws_iam_policy" "sns_topic_to_trigger_glue_job_lambda" {
   for_each = local.config_map
-  name     = "sns-topic-to-trigger-glue-job-lambda"
+  name     = "${each.key}-sns-topic-to-trigger-glue-job-lambda"
   policy   = data.aws_iam_policy_document.sns_topic_to_trigger_glue_job_lambda[each.key].json
 }
 
