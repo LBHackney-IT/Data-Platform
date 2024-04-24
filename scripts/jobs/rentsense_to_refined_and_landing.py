@@ -359,9 +359,25 @@ if __name__ == "__main__":
             'IC2': 'Income Collection Letter 2',
             'RMD': 'Missing Data',
             'WPA': 'Warrant of Possession',
-            'BLI': 'Informal Agreement Breach Letter Sent'
+            'BLI': 'Informal Agreement Breach Letter Sent',
+            'TEN' : 'New Tenancy Letter Sent',
+            'HCO' : 'Home Contents Insurance',
+            'REQ' : 'Rent Refund Request Received',
+            'RHB' : 'Refund request sent to HB for approval',
+            'RRF' : 'Renf request refused',
+            'RRP' : 'Refund request processed',
+            'DDB' : 'Standing request ',
+            'DDB' : 'Debt Advice Ongoing',
+            'SLC' : 'Solicitor Intervention',
+            'LEG' : 'Case with internal Legal Team',
+            'CPN' : 'Ongoing internal Complaint',
+            'CDH' : 'Credit Due to Housing Benefit overpayment',
+            'TDD' : 'Termination Date Dispute refer to Housing Officer',
+            'SUP' : 'Change of tenancy',
+            'TRR' : 'Suspense payments',
+            'CTE' : 'Payment transfer between rent accounts'
         }
-    
+            
      
     mapPatch =  {
             'P11' : 'Patch 11',
