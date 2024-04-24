@@ -3,7 +3,7 @@ locals {
   traffic_counters_tables                = ["street-systems"]
 }
 
-data "aws_iam_policy_document" "streetscene_street_systems_raw_zone_access" {
+data "aws_iam_policy_document" "streetscene_street_systems_access" {
   statement {
     actions = [
       "s3:AbortMultipartUpload",
@@ -24,15 +24,18 @@ data "aws_iam_policy_document" "streetscene_street_systems_raw_zone_access" {
     resources = [
       module.raw_zone_data_source.bucket_arn,
       "${module.raw_zone_data_source.bucket_arn}/streetscene/*",
-      module.raw_zone_data_source.kms_key_arn
+      module.raw_zone_data_source.kms_key_arn,
+      module.landing_zone_data_source.bucket_arn,
+      "${module.landing_zone_data_source.bucket_arn}/streetscene/*",
+      module.landing_zone_data_source.kms_key_arn,
     ]
   }
 }
 
-resource "aws_iam_policy" "streetscene_street_systems_raw_zone_access" {
+resource "aws_iam_policy" "streetscene_street_systems_access" {
   count  = local.is_live_environment ? 1 : 0
-  name   = "streetscene_street_systems_raw_zone_access"
-  policy = data.aws_iam_policy_document.streetscene_street_systems_raw_zone_access.json
+  name   = "streetscene_street_systems_access"
+  policy = data.aws_iam_policy_document.streetscene_street_systems_access.json
 }
 
 data "aws_iam_policy_document" "streetscene_street_systems_lambda_logs" {
@@ -96,7 +99,7 @@ resource "aws_iam_role" "streetscene_street_systems_ingestion" {
 resource "aws_iam_role_policy_attachment" "streetscene_street_systems_ingestion" {
   count      = local.is_live_environment ? 1 : 0
   role       = aws_iam_role.streetscene_street_systems_ingestion[0].name
-  policy_arn = aws_iam_policy.streetscene_street_systems_raw_zone_access[0].arn
+  policy_arn = aws_iam_policy.streetscene_street_systems_access[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "streetscene_lambda_invoke" {
@@ -166,9 +169,10 @@ module "street-systems-api-ingestion" {
   environment_variables          = {
     API_SECRET_NAME       = "/data-and-insight/streets_systems_api_key"
     OUTPUT_S3_FOLDER      = module.raw_zone_data_source.bucket_id
+    LANDING_S3_FOLDER     = module.landing_zone_data_source.bucket_id
     TARGET_S3_BUCKET_NAME = "streetscene/traffic-counters/street-systems"
     API_URL = "https://flask-customer-api.ki8kabg62o4fg.eu-west-2.cs.amazonlightsail.com"
-    CRAWLER_NAME     = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone"
+    CRAWLER_NAME_RAW     = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone"
   }
   layers = [
     "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:requests-2-31-0-and-httplib-0-22-0-layer:1",
@@ -196,7 +200,7 @@ resource "aws_cloudwatch_event_target" "street_systems_api_trigger_event_target"
 resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
   for_each = { for idx, source in local.traffic_counters_tables : idx => source }
 
-  database_name = "${local.identifier_prefix}-raw-zone-database"
+  database_name = "streetscene-raw-zone-database"
   name          = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone ${each.value}"
   role          = data.aws_iam_role.glue_role.arn
   tags          = module.tags.values
