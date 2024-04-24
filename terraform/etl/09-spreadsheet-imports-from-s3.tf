@@ -137,7 +137,7 @@ data "aws_iam_policy_document" "sns_topic_to_trigger_glue_job_lambda" {
   statement {
     actions   = ["glue:StartJobRun"]
     effect    = "Allow"
-    resources = [module.s3_file_updload_landing_to_raw_glue_job[each.key].glue_job_arn]
+    resources = [module.s3_file_updload_landing_to_raw_glue_job[each.key].job_arn]
   }
 }
 
