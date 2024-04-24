@@ -110,7 +110,7 @@ def add_date_partition_key_to_s3_prefix(s3_prefix):
 
 
 def lambda_handler(event, context):
-    logger.info(f"Set up S3 client...")
+    logger.info("Set up S3 client...")
     s3_client = boto3.client('s3')
     glue_client = boto3.client('glue')
 
@@ -121,7 +121,7 @@ def lambda_handler(event, context):
     output_folder = getenv("TARGET_S3_FOLDER")
     crawler_landing = getenv("CRAWLER_NAME_LANDING")
 
-    logger.info(f"Get API secret...")
+    logger.info("Get API secret...")
     api_secret_string = get_api_secret(api_secret_name, region_name)
     api_secret_json = json.loads(api_secret_string)
     api_key = api_secret_json.get("api_key_live")
@@ -136,7 +136,7 @@ def lambda_handler(event, context):
                                    'file_name': 'received_text_messages'}
     }
 
-    logger.info(f"Get API responses...")
+    logger.info("Get API responses...")
     for api_query in api_queries:
         query = api_queries_dict.get(api_query).get('query')
         response = get_response(query)
