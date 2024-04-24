@@ -4,32 +4,38 @@ locals {
       paths = [
         "parking/g-drive/"
       ]
-      data_source = module.department_parking_data_source
+      department_module = module.department_parking_data_source
     },
     housing = {
       paths = [
         "housing/g-drive/"
       ]
-      data_source = module.department_housing_data_source
+      department_module = module.department_housing_data_source
     }
   }
 
-  config_list = [
-    for department, config in local.configs : {
-      department  = department
-      paths       = config.paths
-      data_source = config.data_source
+  config_map = {
+    for department, config in local.configs : department => {
+      department                  = department
+      paths                       = config.paths
+      department_module           = config.department_module
+      glue_job_name               = "${department}-s3-file-upload-landing-to-raw"
+      sns_to_glue_job_lambda_name = "${department}-s3-file-upload-sns-trigger-glue-job"
     }
-  ]
+  }
 
-  path_topic_mapping = merge([
-    for department, config in local.configs :
-    { for path in config.paths : path => aws_sns_topic.sns_topic[path].arn }
-  ]...)
+  path_department_pairs = flatten([
+    for department, config in local.configs : [
+      for path in config.paths : {
+        path       = path,
+        department = department
+      }
+    ]
+  ])
 
-  glue_job_name = { for key in keys(local.configs) : key => "${key}-s3-file-upload-landing-to-raw" }
-
-  sns_to_glue_job_lambda_name = { for key in keys(local.configs) : key => "${key}-s3-file-upload-sns-trigger-glue-job" }
+  path_topic_mapping = {
+    for pair in local.path_department_pairs : pair.path => aws_sns_topic.sns_topic[pair.department].arn
+  }
 }
 
 module "s3_event_to_sns_lambda" {
@@ -38,8 +44,8 @@ module "s3_event_to_sns_lambda" {
   handler                        = "main.handler"
   lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
   s3_key                         = "map-s3-event-to-sns-topic.zip"
-  lambda_source_dir              = "${path.module}/../../lambdas/map_s3_event_to_sns_topic"
-  lambda_output_path             = "${path.module}/../../lambdas/map_s3_event_to_sns_topic.zip"
+  lambda_source_dir              = "../../lambdas/map_s3_event_to_sns_topic"
+  lambda_output_path             = "../../lambdas/map_s3_event_to_sns_topic.zip"
   runtime                        = "python3.9"
   environment_variables = {
     "PARAMATER_NAME" = aws_ssm_parameter.s3_event_to_sns_topic_mapping.name
@@ -83,15 +89,15 @@ resource "aws_sns_topic" "sns_topic" {
 }
 
 module "s3_file_updload_landing_to_raw_glue_job" {
-  count                           = length(local.configs)
+  for_each                        = local.config_map
   source                          = "../modules/aws-glue-job"
   is_live_environment             = local.is_live_environment
   is_production_environment       = local.is_production_environment
-  job_name                        = local.glue_job_name[count.index]
+  job_name                        = each.value.glue_job_name
   helper_module_key               = data.aws_s3_object.helpers.key
   pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
-  department                      = local.config_list[count.index].data_source
+  department                      = each.value.department_module
   script_s3_object_key            = aws_s3_object.spreadsheet_import_script.key
   max_concurrent_runs_of_glue_job = 10
   tags                            = module.tags.values
@@ -104,37 +110,37 @@ module "s3_file_updload_landing_to_raw_glue_job" {
 }
 
 module "sns_topic_to_trigger_glue_job_lambda" {
-  count                          = length(local.configs)
+  for_each                       = local.config_map
   source                         = "../modules/aws-lambda"
-  lambda_name                    = local.sns_to_glue_job_lambda_name[count.index]
+  lambda_name                    = each.value.sns_to_glue_job_lambda_name
   handler                        = "main.handler"
   lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
   s3_key                         = "sns-topic-to-trigger-glue-job.zip"
-  lambda_source_dir              = "${path.module}/../../lambdas/start_s3_file_ingestion_glue_job_from_sns_topic"
-  lambda_output_path             = "${path.module}/../../lambdas/start_s3_file_ingestion_glue_job_from_sns_topic.zip"
+  lambda_source_dir              = "../../lambdas/start_s3_file_ingestion_glue_job_from_sns_topic"
+  lambda_output_path             = "../../lambdas/start_s3_file_ingestion_glue_job_from_sns_topic.zip"
   runtime                        = "python3.9"
   environment_variables = {
-    "GLUE_JOB_NAME" = local.glue_job_name[count.index]
+    "GLUE_JOB_NAME" = each.value.glue_job_name
   }
 }
 
 data "aws_iam_policy_document" "sns_topic_to_trigger_glue_job_lambda" {
-  count = length(local.configs)
+  for_each = local.config_map
   statement {
     actions   = ["glue:StartJobRun"]
     effect    = "Allow"
-    resources = [module.s3_file_updload_landing_to_raw_glue_job[count.index].job_arn]
+    resources = [each.value.glue_job_name]
   }
 }
 
 resource "aws_iam_policy" "sns_topic_to_trigger_glue_job_lambda" {
-  count  = length(local.configs)
-  name   = "sns-topic-to-trigger-glue-job-lambda"
-  policy = data.aws_iam_policy_document.sns_topic_to_trigger_glue_job_lambda[count.index].json
+  for_each = local.config_map
+  name     = "sns-topic-to-trigger-glue-job-lambda"
+  policy   = data.aws_iam_policy_document.sns_topic_to_trigger_glue_job_lambda[each.key].json
 }
 
 resource "aws_iam_role_policy_attachment" "sns_topic_to_trigger_glue_job_lambda" {
-  count      = length(local.configs)
-  role       = module.sns_topic_to_trigger_glue_job_lambda[count.index].lambda_iam_role_arn
-  policy_arn = aws_iam_policy.sns_topic_to_trigger_glue_job_lambda[count.index].arn
+  for_each   = local.config_map
+  role       = module.sns_topic_to_trigger_glue_job_lambda[each.key].lambda_iam_role_arn
+  policy_arn = aws_iam_policy.sns_topic_to_trigger_glue_job_lambda[each.key].arn
 }
