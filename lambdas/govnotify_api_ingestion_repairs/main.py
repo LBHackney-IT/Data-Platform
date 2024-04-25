@@ -182,6 +182,7 @@ def lambda_handler(event, context):
         parquet_buffer_raw.seek(0)
         s3_client.upload_fileobj(parquet_buffer_raw, output_s3_bucket_raw,
                                  f'{output_folder_parquet}{file_name}.parquet')
+        glue_client.start_crawler(Name=f'{crawler_raw} {file_name}')
 
     logger.info("Job finished")
 
