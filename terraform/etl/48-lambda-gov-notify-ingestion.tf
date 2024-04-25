@@ -240,11 +240,11 @@ resource "aws_glue_crawler" "govnotify_housing_repairs_landing_zone" {
 resource "aws_glue_crawler" "govnotify_housing_repairs_raw_zone" {
   for_each = { for idx, source in local.govnotify_tables : idx => source }
 
-  database_name = "${local.identifier_prefix}-raw-zone-database"
+  database_name = module.department_housing_data_source.raw_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}GovNotify Housing Repairs Raw Zone ${each.value}"
   role          = data.aws_iam_role.glue_role.arn
   tags          = module.tags.values
-  table_prefix  = "${each.value}_"
+  table_prefix  = null
 
   s3_target {
     path = "s3://${module.raw_zone_data_source.bucket_id}/housing/govnotify/damp_and_mould/${each.value}/"
@@ -252,7 +252,7 @@ resource "aws_glue_crawler" "govnotify_housing_repairs_raw_zone" {
   configuration = jsonencode({
     Version  = 1.0
     Grouping = {
-      TableLevelConfiguration = 6
+      TableLevelConfiguration = 5
     }
   })
 }
