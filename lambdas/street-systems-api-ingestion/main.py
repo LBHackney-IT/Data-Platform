@@ -120,8 +120,8 @@ def upload_to_s3(s3_bucket_name, s3_client, file_content, file_name):
 def lambda_handler(event, context):
     # Get api api credentials from secrets manager
     secret_name = getenv("API_SECRET_NAME")
-    url= getenv("API_URL")
-    token = ' '
+    url = getenv("API_URL")
+    token = ''
     s3_bucket = getenv("OUTPUT_S3_FOLDER")
     output_folder_name = getenv("TARGET_S3_BUCKET_NAME")
     crawler_raw = getenv("CRAWLER_NAME")
