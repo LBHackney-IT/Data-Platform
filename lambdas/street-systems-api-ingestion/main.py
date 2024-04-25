@@ -122,7 +122,7 @@ def lambda_handler(event, context):
     token = ''
     s3_bucket = getenv("OUTPUT_S3_FOLDER")
     output_folder_name = getenv("TARGET_S3_BUCKET_NAME")
-    crawler = getenv("CRAWLER_NAME")
+    crawler_raw = getenv("CRAWLER_NAME")
     output_filename = 'output'
 
     secrets_manager_client = boto3.client('secretsmanager')
@@ -170,7 +170,7 @@ def lambda_handler(event, context):
 
     # Crawl all the parquet data in S3
     glue_client = boto3.client('glue',region_name='eu-west-2')
-    glue_client.start_crawler(Name=f'{crawler}')
+    glue_client.start_crawler(Name=f'{crawler_raw}')
 
 
 if __name__ == "__main__":
