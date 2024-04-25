@@ -1,5 +1,5 @@
 locals {
-  create_street_systems_resource_count = local.is_live_environment ? 1 : 0
+  create_street_systems_resource_count =  create_street_systems_resource_count =  local.is_live_environment && !local.is_production_environment ? 1 : 0
   traffic_counters_tables                = ["street-systems"] # more table names can be added here
   lambda_layers = [
   "requests-2-31-0-and-httplib-0-22-0-layer",
