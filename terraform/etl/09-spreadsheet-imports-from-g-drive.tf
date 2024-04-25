@@ -923,7 +923,7 @@ module "cycle_hangar_fees" {
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
   google_drive_document_id       = "1xmxfwMqGHw-HJR0yi1dfPVFFkx_rxHmc"
-  glue_job_name                  = "bailiff_return"
+  glue_job_name                  = "cycle_hangar_fees"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "cycle_hangar_fees/cycle_hangar_fees_25_04_2024.csv"
