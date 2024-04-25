@@ -27,9 +27,9 @@ if __name__ == "__main__":
     s3_export_bucket_target = 's3://' + s3_landing + '/housing_export/rentsense'
 
     today = date.today()
-    export_target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
-    export_target_source = f"housing/rentsense/export/%s" % today.strftime("%Y%m%d")
-    target_path = f"housing_export/rentsense/%s" % today.strftime("%Y%m%d")
+    export_target_path = "housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
+    export_target_source = "housing/rentsense/export/%s" % today.strftime("%Y%m%d")
+    target_path = "housing_export/rentsense/%s" % today.strftime("%Y%m%d")
     s3 = boto3.client("s3")
 
     # start the Spark session and the logger
@@ -357,7 +357,7 @@ if __name__ == "__main__":
         'RHB': 'Refund request sent to HB for approval',
         'RRF': 'Renf request refused',
         'RRP': 'Refund request processed',
-        'DDB': 'Standing request ',
+        # 'DDB': 'Standing request ',
         'DDB': 'Debt Advice Ongoing',
         'SLC': 'Solicitor Intervention',
         'LEG': 'Case with internal Legal Team',
@@ -459,11 +459,11 @@ if __name__ == "__main__":
         transformation_ctx="sow2b_dbo_ssminitransaction_source")
     df10 = get_latest_partitions_optimized(df10)
 
-    patch = glueContext.create_data_frame.from_catalog(
-        database=source_raw_database,
-        table_name="property_rent_patches",
-        transformation_ctx="property_rent_patches_source")
-    patch = get_latest_partitions_optimized(patch)
+    # patch = glueContext.create_data_frame.from_catalog(
+    #     database=source_raw_database,
+    #     table_name="property_rent_patches",
+    #     transformation_ctx="property_rent_patches_source")
+    # patch = get_latest_partitions_optimized(patch)
 
     patch_officer = glueContext.create_data_frame.from_catalog(
         database=source_raw_database,
@@ -586,10 +586,10 @@ if __name__ == "__main__":
                             "partitionKeys": ['import_date']},
         transformation_ctx="target_data_to_write")
 
-    filename = f"/rent.accounts%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.accounts%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/accounts", filename)
     move_file(s3_bucket, "housing/rentsense/gzip/accounts/", export_target_path,
-              f"rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"))
+              "rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"))
 
     copy_file(s3_bucket, export_target_source, filename, s3_landing, target_path, filename)
 
@@ -646,12 +646,12 @@ if __name__ == "__main__":
                             "partitionKeys": ['import_date']},
         transformation_ctx="target_data_to_write")
 
-    filename = f"/rent.arrangements%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.arrangements%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/arrangements", filename)
 
     # move file to export folder
     move_file(s3_bucket, "housing/rentsense/gzip/arrangements/", export_target_path,
-              f"rent.arrangements%s.csv.gz" % today.strftime("%Y%m%d"))
+              "rent.arrangements%s.csv.gz" % today.strftime("%Y%m%d"))
 
     copy_file(s3_bucket, export_target_source, filename, s3_landing, target_path, filename)
 
@@ -738,11 +738,11 @@ if __name__ == "__main__":
                             "partitionKeys": ['import_date']},
         transformation_ctx="target_data_to_write")
 
-    filename = f"/rent.tenants%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.tenants%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/tenants", filename)
 
     move_file(s3_bucket, "housing/rentsense/gzip/tenants/", export_target_path,
-              f"rent.tenants%s.csv.gz" % today.strftime("%Y%m%d"))
+              "rent.tenants%s.csv.gz" % today.strftime("%Y%m%d"))
 
     copy_file(s3_bucket, export_target_source, filename, s3_landing, target_path, filename)
 
@@ -783,11 +783,11 @@ if __name__ == "__main__":
                             "partitionKeys": ['import_date']},
         transformation_ctx="target_data_to_write")
 
-    filename = f"/rent.balances%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.balances%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/balances", filename)
 
     move_file(s3_bucket, "housing/rentsense/gzip/balances/", export_target_path,
-              f"rent.balances%s.csv.gz" % today.strftime("%Y%m%d"))
+              "rent.balances%s.csv.gz" % today.strftime("%Y%m%d"))
 
     copy_file(s3_bucket, export_target_source, filename, s3_landing, target_path, filename)
 
@@ -835,12 +835,12 @@ if __name__ == "__main__":
                             "partitionKeys": ['import_date']},
         transformation_ctx="target_data_to_write")
 
-    filename = f"/rent.actions%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.actions%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/actions", filename)
 
     # move file to export folder
     move_file(s3_bucket, "housing/rentsense/gzip/actions/", export_target_path,
-              f"rent.actions%s.csv.gz" % today.strftime("%Y%m%d"))
+              "rent.actions%s.csv.gz" % today.strftime("%Y%m%d"))
 
     copy_file(s3_bucket, export_target_source, filename, s3_landing, target_path, filename)
 
@@ -890,11 +890,11 @@ if __name__ == "__main__":
                             "partitionKeys": ['import_date']},
         transformation_ctx="target_data_to_write")
 
-    filename = f"/rent.transactions%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.transactions%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/transactions", filename)
 
     move_file(s3_bucket, "housing/rentsense/gzip/transactions/", export_target_path,
-              f"rent.transactions%s.csv.gz" % today.strftime("%Y%m%d"))
+              "rent.transactions%s.csv.gz" % today.strftime("%Y%m%d"))
 
     copy_file(s3_bucket, export_target_source, filename, s3_landing, target_path, filename)
 
