@@ -9,7 +9,7 @@ from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
 from pyspark.context import SparkContext
 import pyspark.sql.functions as F
-from pyspark.sql.functions import col, lit, to_date,  date_sub, current_date, trim
+from pyspark.sql.functions import col, lit, to_date, date_sub, current_date, trim
 
 from scripts.helpers.helpers import move_file, rename_file, get_latest_partitions_optimized, \
     add_import_time_columns, PARTITION_KEYS, clear_target_folder, copy_file
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         'RHB': 'Housing Benefit',
         'RIT': 'Internal Transfer',
         'RML': 'MW Loan Payment',
-        'ROB': '\Opening Balance',
+        'ROB': 'Opening Balance',
         'RPD': 'Prompt Pay. Discount',
         'RPO': 'Postal Order',
         'RPY': 'PayPoint/Post Office',
