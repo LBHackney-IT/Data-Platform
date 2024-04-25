@@ -8,8 +8,9 @@ locals {
   "s3fs-2023-12-2-layer",
   "urllib3-1-26-18-layer"
   ]
+
   iam_policy_documents = {
-    streetscene_street_systems_raw_zone_access = {
+    streetscene_street_systems_access = {
       actions = [
         "s3:AbortMultipartUpload",
         "s3:DescribeJob",
@@ -28,7 +29,10 @@ locals {
       resources = [
         module.raw_zone_data_source.bucket_arn,
         "${module.raw_zone_data_source.bucket_arn}/streetscene/*",
-        module.raw_zone_data_source.kms_key_arn
+        module.raw_zone_data_source.kms_key_arn,
+        module.landing_zone_data_source.bucket_arn,
+        "${module.landing_zone_data_source.bucket_arn}/streetscene/*",
+        module.landing_zone_data_source.kms_key_arn,
       ]
     },
     streetscene_street_systems_lambda_logs = {
@@ -118,9 +122,10 @@ module "street_systems_api_ingestion" {
   environment_variables          = {
     API_SECRET_NAME       = "/data-and-insight/streets_systems_api_key"
     OUTPUT_S3_FOLDER      = module.raw_zone_data_source.bucket_id
+    LANDING_S3_FOLDER     = module.landing_zone_data_source.bucket_id
     TARGET_S3_BUCKET_NAME = "streetscene/traffic-counters/street-systems"
     API_URL = "https://flask-customer-api.ki8kabg62o4fg.eu-west-2.cs.amazonlightsail.com"
-    CRAWLER_NAME     = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone"
+    CRAWLER_NAME_RAW     = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone"
   }
   layers = [
     # No where in the etl directory reference aws-lambda-layers module, so can't use layer ARNs from its output
@@ -170,7 +175,7 @@ resource "aws_cloudwatch_event_target" "street_systems_api_trigger_event_target"
 # Glue Crawler to crawl the raw zone data
 resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
   for_each = { for idx, source in local.traffic_counters_tables : idx => source }
-  database_name = "${local.identifier_prefix}-raw-zone-database"
+  database_name = "streetscene-raw-zone-database"
   name          = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone" # Must same as the CRAWLER_NAME in lambda
   role          = data.aws_iam_role.glue_role.arn
   tags          = module.tags.values
