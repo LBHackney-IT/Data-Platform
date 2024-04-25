@@ -1,6 +1,8 @@
 """
-Script to call the GovNotify API to retrieve data. Writes response as a
-JSON string and Parquet file into the landing zone.
+Script to call the GovNotify API to retrieve data and write to S3.
+Retrieved data is written to S3 Landing as a json string and parquet file.
+Data is then normalised and written to s3 Raw for use by analysts.
+Both zones are crawled so that data is exposed in the Glue data catalog.
 """
 
 from datetime import datetime
@@ -68,7 +70,7 @@ def upload_to_s3(s3_bucket_name, s3_client, file_content, file_name):
     Upload file content to AWS S3.
 
     Args:
-        s3_bucket_name ():
+        s3_bucket_name (): Name of S3 bucket.
         s3_client (boto3.client): S3 client instance.
         file_content (bytes): File content as bytes.
         file_name (str): Name of the file in S3.
@@ -87,13 +89,29 @@ def json_to_parquet(response, label):
     """
 
     Args:
-        response (dict):
-        label ():
+        response (dict): dict containing response from API
+        label (str): Name of the api endpoint 'table' retrieved.
 
     Returns:
+        parquet buffer object
 
     """
     df = pd.DataFrame.from_dict(response[label])
+    parquet_buffer = BytesIO()
+    df.to_parquet(parquet_buffer, index=False, engine='pyarrow')
+    return parquet_buffer
+
+
+def json_to_parquet_normalised(response, label):
+    """
+    Args:
+        response (json str): json string containing json response from API
+        label (str): Name of the api endpoint 'table' retrieved.
+    return:
+        parquet buffer object
+    """
+    data = json.loads(response)
+    df = pd.json_normalize(data[label], max_level=1)
     parquet_buffer = BytesIO()
     df.to_parquet(parquet_buffer, index=False, engine='pyarrow')
     return parquet_buffer
@@ -118,8 +136,10 @@ def lambda_handler(event, context):
     region_name = getenv("AWS_REGION")
 
     output_s3_bucket_landing = getenv("TARGET_S3_BUCKET_LANDING")
+    output_s3_bucket_raw = getenv("TARGET_S3_BUCKET_RAW")
     output_folder = getenv("TARGET_S3_FOLDER")
     crawler_landing = getenv("CRAWLER_NAME_LANDING")
+    crawler_raw = getenv("CRAWLER_NAME_RAW")
 
     logger.info("Get API secret...")
     api_secret_string = get_api_secret(api_secret_name, region_name)
@@ -145,18 +165,26 @@ def lambda_handler(event, context):
         output_folder_json = add_date_partition_key_to_s3_prefix(f'{output_folder}{file_name}/json/')
         output_folder_parquet = add_date_partition_key_to_s3_prefix(f'{output_folder}{file_name}/parquet/')
 
+        # convert response to json formatted string
         json_str = prepare_json(response=response)
-        parquet_buffer = json_to_parquet(response=response, label=file_name)
-        parquet_buffer.seek(0)
 
-        # Upload the json string and parquet buffer to S3
+        # Upload the json string to landing only
         upload_to_s3(output_s3_bucket_landing, s3_client, json_str, f'{output_folder_json}{file_name}.json')
-        s3_client.upload_fileobj(parquet_buffer, output_s3_bucket_landing, f'{output_folder_parquet}{file_name}.parquet')
-        logger.info(f"Responses written as json and parquet to {output_s3_bucket_landing}/{output_folder}")
 
-        # Crawl all the parquet data in S3
+        # Upload parquet buffer to both S3 landing and raw; run crawler
+        parquet_buffer_landing = json_to_parquet(response=response, label=file_name)
+        parquet_buffer_landing.seek(0)
+        s3_client.upload_fileobj(parquet_buffer_landing, output_s3_bucket_landing,
+                                 f'{output_folder_parquet}{file_name}.parquet')
         glue_client.start_crawler(Name=f'{crawler_landing} {file_name}')
-        logger.info(f"S3 {file_name} files crawled and written to housing landing zone data catalog")
+
+        parquet_buffer_raw = json_to_parquet_normalised(response=json_str, label=file_name)
+        parquet_buffer_raw.seek(0)
+        s3_client.upload_fileobj(parquet_buffer_raw, output_s3_bucket_raw,
+                                 f'{output_folder_parquet}{file_name}.parquet')
+        glue_client.start_crawler(Name=f'{crawler_raw} {file_name}')
+
+    logger.info("Job finished")
 
 
 if __name__ == "__main__":
