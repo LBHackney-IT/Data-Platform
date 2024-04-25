@@ -17,6 +17,7 @@ from os import getenv
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def retrieve_credentials_from_secrets_manager(secrets_manager_client, secret_name):
     response = secrets_manager_client.get_secret_value(
         SecretId=secret_name,
@@ -79,6 +80,7 @@ def filter_data(resp_json, accepted_classes):
             filtered.append(filtered_1)
     return filtered
 
+
 def write_dataframe_to_s3_parquet(s3_client, s3_bucket, output_folder, df, filename):
     filename = re.sub('[^a-zA-Z0-9]+', '-', filename).lower()
     current_date = datetime.datetime.now()
@@ -112,11 +114,11 @@ def upload_to_s3(s3_bucket_name, s3_client, file_content, file_name):
         s3_client.put_object(Bucket=s3_bucket_name, Key=file_name, Body=file_content)
         logger.info("Uploaded {file_name} to S3")
     except Exception as e:
-        logger.error("Error uploading {file_name} to S3: {str(e)}")
+        logger.error(f"Error uploading {file_name} to S3: {e}")
 
 
 def lambda_handler(event, context):
-    # Get api api credentials from secrets manager
+    #Get api api credentials from secrets manager
     secret_name = getenv("API_SECRET_NAME")
     url= getenv("API_URL")
     token = ''
@@ -131,7 +133,6 @@ def lambda_handler(event, context):
     username = api_credentials.get("user")
     secret = api_credentials.get("secret")
 
-
     print(f'username retrieved from secret manager: {username}')
 
     # accepted_classes = ['person','car','pc','head']
@@ -140,7 +141,6 @@ def lambda_handler(event, context):
     from_s = (datetime.datetime.utcnow() - datetime.timedelta(hours=24)).strftime("%Y-%m-%d %H:00:00")
     to_s = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
-    outputs = []
     # connect to API
     resp = get_data(url=url, user=username, token=token, location=locations, from_s=from_s, to_s=to_s)
 
@@ -169,7 +169,7 @@ def lambda_handler(event, context):
     write_dataframe_to_s3_parquet(s3_client, s3_bucket, output_folder_name, out_df, output_filename)
 
     # Crawl all the parquet data in S3
-    glue_client = boto3.client('glue',region_name='eu-west-2')
+    glue_client = boto3.client('glue', region_name='eu-west-2')
     glue_client.start_crawler(Name=f'{crawler_raw}')
 
 
