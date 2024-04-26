@@ -77,6 +77,7 @@ Parking_cycle_hangar_denormalisation_update
 The SQL creates the denormalised cycle hangar data (remove the duplicates). This is an updated code from Phil
 
 07/12/2023 - create SQL
+26/04/2024 - change the de-dupe from party_id to space
 ***************************************************************************************************************************/
 WITH HangarTypes as (
    SELECT id, type_name, hanger_class, cost, cost_per,import_year, import_month, import_day
@@ -128,7 +129,7 @@ HangarAllocBefore AS
 HangarAlloc AS 
         (SELECT *,
                 ROW_NUMBER()
-                OVER (PARTITION BY HANGER_ID, PARTY_ID
+                OVER (PARTITION BY HANGER_ID, SPACE
                 ORDER BY  ID DESC) AS RW
         FROM HangarAllocBefore
         WHERE ROW =1),
