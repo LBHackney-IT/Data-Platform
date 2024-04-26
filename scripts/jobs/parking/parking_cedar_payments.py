@@ -54,6 +54,7 @@ This query summerises the Cedar Parking payments, into Parking and Cycle Hanger 
 19/11/2021 - change code to tidy date formating
 01/12/2021 - add where statement when collecting parking_payments 
                and set import_date to string
+26/04/2024 - add further code to de-dupe the calendar data
 ****************************************************************************************************************/
 WITH Cedar_Payments as (
 SELECT 
@@ -66,7 +67,7 @@ SELECT
 FROM cedar_parking_payments
 WHERE import_Date = (Select MAX(import_date) from cedar_parking_payments)),
 
-ICalendar as (
+Before_ICalendar as (
    SELECT
       CAST(CASE
          When date like '%/%'Then substr(date, 7, 4)||'-'||substr(date, 4,2)||'-'||substr(date, 1,2)
@@ -77,11 +78,15 @@ ICalendar as (
       dow,
       fin_year,
       fin_year_startdate,
-      fin_year_enddate,
-      
-      ROW_NUMBER() OVER ( PARTITION BY date ORDER BY  date, import_date DESC) row_num
+      fin_year_enddate
    FROM calendar),
 
+/* 26/04/2024 - new code to de-dupe the calendar data */
+ICalendar as (
+    Select *,
+        ROW_NUMBER() OVER ( PARTITION BY date ORDER BY  date DESC) row_num
+    FROM Before_ICalendar),
+    
 Cedar_Summary as (
 SELECT 
    PayMonthYear, CASE When Description != 'Cycle Hangar' Then 'Parking' Else 'Cycle Hangar' END as PaymentType,
