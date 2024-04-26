@@ -67,7 +67,7 @@ HangarAllocBefore AS
 HangarAlloc AS 
         (SELECT *,
                 ROW_NUMBER()
-                OVER (PARTITION BY HANGER_ID, PARTY_ID
+                OVER (PARTITION BY HANGER_ID, SPACE
                 ORDER BY  ID DESC) AS RW
         FROM HangarAllocBefore
         WHERE ROW =1),
