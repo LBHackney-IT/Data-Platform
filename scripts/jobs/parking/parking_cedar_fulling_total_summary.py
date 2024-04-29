@@ -53,9 +53,10 @@ The SQL as been created to create monthly values & % difference between last fin
 18/11/2021 - add code to format the calendar date and to identify payments beore last year
 02/12/2021 - change import_date to string
 19/04/2022 - change calculation of the current/past/etc Fin Year
+29/04/2024 add additional de-dupe for the calendar year
 *************************************************************************************************************************/
 /*** Format the date because Calendar data imported with different date formats!!! ***/
-With CalendarFormat as (
+With BeforeCalendarFormat as (
    SELECT
       CAST(CASE
          When date like '%/%'Then substr(date, 7, 4)||'-'||substr(date, 4,2)||'-'||substr(date, 1,2)
@@ -66,9 +67,14 @@ With CalendarFormat as (
       dow,
       fin_year,
       fin_year_startdate,
-      fin_year_enddate,
-      ROW_NUMBER() OVER ( PARTITION BY date ORDER BY date DESC) R1
+      fin_year_enddate
    FROM calendar),
+
+/* 29/04/2024 - new code to de-dupe the calendar data */
+CalendarFormat as (
+    Select *,
+        ROW_NUMBER() OVER ( PARTITION BY date ORDER BY date DESC) R1
+    FROM BeforeCalendarFormat),
 
 LatestYear as (
 SELECT MAX(fin_year) as LYear from CalendarFormat
