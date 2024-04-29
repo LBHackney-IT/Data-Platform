@@ -1,6 +1,6 @@
 module "copy_from_s3_to_s3" {
-  source  = "../modules/copy-from-s3-to-s3"
-  tags    = module.tags.values
+  source = "../modules/copy-from-s3-to-s3"
+  tags   = module.tags.values
 
   is_live_environment            = local.is_live_environment
   environment                    = local.environment
@@ -23,8 +23,8 @@ module "copy_from_s3_to_s3" {
 }
 
 module "copy_from_s3_to_s3_ft" {
-  source  = "../modules/copy-from-s3-to-s3"
-  tags    = module.tags.values
+  source = "../modules/copy-from-s3-to-s3"
+  tags   = module.tags.values
 
   is_live_environment            = local.is_live_environment
   environment                    = local.environment
