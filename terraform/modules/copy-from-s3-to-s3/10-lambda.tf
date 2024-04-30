@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "copy_from_s3_to_s3_lambda_assume_role" {
 resource "aws_iam_role" "copy_from_s3_to_s3" {
   tags = var.tags
 
-  name               = lower("${var.identifier_prefix}-copy-from-s3-to-s3")
+  name               = lower("${var.identifier_prefix}-${var.lambda_name}-lambda")
   assume_role_policy = data.aws_iam_policy_document.copy_from_s3_to_s3_lambda_assume_role.json
 }
 
@@ -110,13 +110,13 @@ resource "null_resource" "lambda_builder" {
 }
 
 locals {
-   # This ensures that this data resource will not be evaluated until
-    # after the null_resource has been created.
-    lambda_exporter_id = null_resource.lambda_builder.id
+  # This ensures that this data resource will not be evaluated until
+  # after the null_resource has been created.
+  lambda_exporter_id = null_resource.lambda_builder.id
 
-    # This value gives us something to implicitly depend on
-    # in the archive_file below.
-    source_dir         = "${path.module}/lambda"
+  # This value gives us something to implicitly depend on
+  # in the archive_file below.
+  source_dir = "${path.module}/lambda"
 }
 
 data "archive_file" "lambda_source_code" {
