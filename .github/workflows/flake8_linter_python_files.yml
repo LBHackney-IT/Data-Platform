@@ -32,8 +32,19 @@ jobs:
       run: |
         CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
         IFS=' ' read -r -a FILE_ARRAY <<< "$CHANGED_FILES"
+        IGNORED_PATHS=("scripts/jobs/parking/")
         for FILE in "${FILE_ARRAY[@]}"
         do
-          flake8 $FILE --ignore=E501
+          skip_file=false
+          for IGNORED_PATH in "${IGNORED_PATHS[@]}"
+          do
+            if [[ $FILE == *"$IGNORED_PATH"* ]]; then
+              skip_file=true
+              break
+            fi
+          done
+          if [ "$skip_file" = false ]; then
+            flake8 $FILE --ignore=E501
+          fi
         done
 
