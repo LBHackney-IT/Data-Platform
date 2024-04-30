@@ -127,7 +127,7 @@ data "archive_file" "lambda_source_code" {
 
 resource "aws_s3_object" "copy_from_s3_to_s3_lambda" {
   bucket      = var.lambda_artefact_storage_bucket.bucket_id
-  key         = "${var}.zip"
+  key         = "${var.lambda_name}.zip"
   source      = data.archive_file.lambda_source_code.output_path
   acl         = "private"
   source_hash = data.archive_file.lambda_source_code.output_md5
