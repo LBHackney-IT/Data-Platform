@@ -33,7 +33,7 @@ module "copy_from_s3_to_s3_ft" {
   identifier_prefix              = local.identifier_prefix
   short_identifier_prefix        = local.short_identifier_prefix
   lambda_artefact_storage_bucket = module.lambda_artefact_storage
-  runtime                        = "nodejs20.x"
+  runtime                        = "nodejs18.x"
   lambda_execution_cron_schedule = "cron(0 8 * * ? *)"
   origin_bucket                  = module.refined_zone
   origin_path                    = "housing/rentsense-ft/export/"
