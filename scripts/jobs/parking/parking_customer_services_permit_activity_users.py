@@ -1,30 +1,40 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+
+from scripts.helpers.helpers import get_glue_env_var
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
         frame.toDF().createOrReplaceTempView(alias)
     result = spark.sql(query)
     return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+
+
+args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
-job.init(args['JOB_NAME'], args)
+job.init(args["JOB_NAME"], args)
 environment = get_glue_env_var("environment")
 
 # Script generated for node Amazon S3 - liberator_permit_activity
-AmazonS3liberator_permit_activity_node1715091109305 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-liberator-raw-zone", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="liberator_permit_activity", transformation_ctx="AmazonS3liberator_permit_activity_node1715091109305")
+AmazonS3liberator_permit_activity_node1715091109305 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-" + environment + "-liberator-raw-zone",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
+    table_name="liberator_permit_activity",
+    transformation_ctx="AmazonS3liberator_permit_activity_node1715091109305",
+)
 
 # Script generated for node SQL Query - parking_customer_services_permit_activity_users
-SqlQuery0 = '''
+SqlQuery0 = """
 /*Parking Customer Services - Permit Activity summarised for specific users by 
 - Actvity Financial year
 - Actvity Month year 
@@ -715,12 +725,35 @@ act_data.fy
 order by 
 act_data.fy desc
 ,act_data.act_MonthYear desc
-'''
-SQLQueryparking_customer_services_permit_activity_users_node1715091122327 = sparkSqlQuery(glueContext, query = SqlQuery0, mapping = {"liberator_permit_activity":AmazonS3liberator_permit_activity_node1715091109305}, transformation_ctx = "SQLQueryparking_customer_services_permit_activity_users_node1715091122327")
+"""
+SQLQueryparking_customer_services_permit_activity_users_node1715091122327 = sparkSqlQuery(
+    glueContext,
+    query=SqlQuery0,
+    mapping={
+        "liberator_permit_activity": AmazonS3liberator_permit_activity_node1715091109305
+    },
+    transformation_ctx="SQLQueryparking_customer_services_permit_activity_users_node1715091122327",
+)
 
 # Script generated for node Amazon S3 - parking_customer_services_permit_activity_users
-AmazonS3parking_customer_services_permit_activity_users_node1715091127108 = glueContext.getSink(path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_customer_services_permit_activity_users/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=["import_year", "import_month", "import_day", "import_date"], enableUpdateCatalog=True, transformation_ctx="AmazonS3parking_customer_services_permit_activity_users_node1715091127108")
-AmazonS3parking_customer_services_permit_activity_users_node1715091127108.setCatalogInfo(catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",catalogTableName="parking_customer_services_permit_activity_users")
-AmazonS3parking_customer_services_permit_activity_users_node1715091127108.setFormat("glueparquet", compression="snappy")
-AmazonS3parking_customer_services_permit_activity_users_node1715091127108.writeFrame(SQLQueryparking_customer_services_permit_activity_users_node1715091122327)
+AmazonS3parking_customer_services_permit_activity_users_node1715091127108 = glueContext.getSink(
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/parking_customer_services_permit_activity_users/",
+    connection_type="s3",
+    updateBehavior="UPDATE_IN_DATABASE",
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
+    enableUpdateCatalog=True,
+    transformation_ctx="AmazonS3parking_customer_services_permit_activity_users_node1715091127108",
+)
+AmazonS3parking_customer_services_permit_activity_users_node1715091127108.setCatalogInfo(
+    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
+    catalogTableName="parking_customer_services_permit_activity_users",
+)
+AmazonS3parking_customer_services_permit_activity_users_node1715091127108.setFormat(
+    "glueparquet", compression="snappy"
+)
+AmazonS3parking_customer_services_permit_activity_users_node1715091127108.writeFrame(
+    SQLQueryparking_customer_services_permit_activity_users_node1715091122327
+)
 job.commit()
