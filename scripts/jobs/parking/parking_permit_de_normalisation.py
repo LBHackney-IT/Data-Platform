@@ -97,6 +97,7 @@ This query outputs a de-normalised Permits data
 23/08/2021 - Update code for Approvals/address/etc.
 18/10/2021 - Add the USRN from the Permit LLPG table
 25/11/2021 - debug as this code no longer works (rework Calendar)
+08/05/2024 - change de-dupe of calendar
 ****************************************************************************************************************/
 /*** Obtain the Permits start/finish for FTA and renewals ***/
 With PermitStartFinishBEFORE as (
@@ -131,7 +132,7 @@ PermitStartFinish as (
                              ORDER BY permit_reference, application_date DESC) as row_num
 FROM PermitStartFinishBEFORE),
 /***************************************************************************************************************/
-CalendarFormat as (
+Before_CalendarFormat as (
    SELECT
       CAST(CASE
          When date like '%/%'Then substr(date, 7, 4)||'-'||substr(date, 4,2)||'-'||substr(date, 1,2)
@@ -142,10 +143,15 @@ CalendarFormat as (
       dow,
       fin_year,
       fin_year_startdate,
-      fin_year_enddate,
-      ROW_NUMBER() OVER ( PARTITION BY date 
-                       ORDER BY  date, import_date DESC) row_num
+      fin_year_enddate
    FROM calendar),
+   
+/*** 08/05/2024 change to de-dupe the dates fully ***/
+CalendarFormat as (
+    Select *,
+          ROW_NUMBER() OVER ( PARTITION BY date 
+                       ORDER BY  date, import_date DESC) row_num
+    FROM Before_CalendarFormat),
 
 CalendarMAX as (
    Select MAX(fin_year) as Max_Fin_Year 
