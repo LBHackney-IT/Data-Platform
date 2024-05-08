@@ -3,7 +3,6 @@ import sys
 from awsglue import DynamicFrame
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 
@@ -737,9 +736,7 @@ SQLQueryparking_customer_services_permit_activity_users_node1715091122327 = spar
 
 # Script generated for node Amazon S3 - parking_customer_services_permit_activity_users
 AmazonS3parking_customer_services_permit_activity_users_node1715091127108 = glueContext.getSink(
-    path="s3://dataplatform-"
-    + environment
-    + "-refined-zone/parking/liberator/parking_customer_services_permit_activity_users/",
+    path=f"s3://dataplatform-{environment}-liberator-refined-zone/parking/liberator/parking_customer_services_permit_activity_users/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],
@@ -747,7 +744,7 @@ AmazonS3parking_customer_services_permit_activity_users_node1715091127108 = glue
     transformation_ctx="AmazonS3parking_customer_services_permit_activity_users_node1715091127108",
 )
 AmazonS3parking_customer_services_permit_activity_users_node1715091127108.setCatalogInfo(
-    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
+    catalogDatabase=f"dataplatform-{environment}-liberator-refined-zone",
     catalogTableName="parking_customer_services_permit_activity_users",
 )
 AmazonS3parking_customer_services_permit_activity_users_node1715091127108.setFormat(
