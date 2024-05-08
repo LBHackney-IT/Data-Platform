@@ -46,35 +46,49 @@ Parking_Cedar_Backing_Data_Summary
 This query summerises the Cedar backing data 
 
 08/11/2021 - create the query
+08/05/2024 - update for different backing data date format and calendar format
 ****************************************************************************************************************/
 /*** Collect & Format the backing data ***/
 WITH CedarBackingData as (
-SELECT
-   CAST(substr(trandate, 7, 4)||'-'||substr(trandate, 4, 2)||'-'||'01' as date) as IssueMonthYear,
-   reftype, sub_reftype, cast(REPLACE(REPLACE(financialvalue, '£',''),',','') as decimal(15,2)) as financialvalue
-FROM cedar_backing_data
-Where import_Date = (Select MAX(import_date) from cedar_backing_data)),
+    SELECT
+        CAST(CASE 
+            When trandate like '%/%'Then
+                substr(trandate, 7, 4)||'-'||substr(trandate, 4, 2)||'-'||'01'
+            ELSE 
+                substr(trandate, 1, 8)||'01'
+        END as date) as IssueMonthYear,
+       reftype, sub_reftype, cast(REPLACE(REPLACE(financialvalue, '£',''),',','') as decimal(15,2)) as financialvalue
+    FROM cedar_backing_data
+    Where import_Date = (Select MAX(import_date) from cedar_backing_data)),
 
+Before_ICalendar as (
+    SELECT
+       CAST(
+            CASE
+                When date like '%/%'Then
+                    substr(date, 7, 4)||'-'||substr(date, 4, 2)||'-'||substr(date, 1, 2)
+                ELSE date
+       END as date) as Date,
+       dow,
+       fin_year, fin_year_startdate, fin_year_enddate
+    FROM calendar),
+    
+/** 08/05/2024 - Add de-dupe of calendar **/
 ICalendar as (
-SELECT
-   CAST(CASE
-      When substr(date, 7, 4) IN ('2019','2020') Then substr(date, 7, 4)||'-'||substr(date, 4, 2)||'-'||substr(date, 1, 2)
-      ELSE substr(date, 1, 10)
-   END as date) as Date,
-   dow,
-   fin_year, fin_year_startdate, fin_year_enddate
-FROM calendar),
-
+    Select *,
+        ROW_NUMBER() OVER ( PARTITION BY date ORDER BY date DESC) R1
+    FROM Before_ICalendar),
+    
 LatestYear as (
   SELECT MAX(fin_year) as LYear from Calendar),
 
 /*** Summerise the data ***/
 Payment_Summary as (
-SELECT
-   IssueMonthYear, reftype, sub_reftype, SUM(financialvalue) as Total_Payments
-FROM CedarBackingData
-GROUP BY IssueMonthYear, reftype, sub_reftype
-ORDER BY IssueMonthYear, reftype, sub_reftype)
+    SELECT
+       IssueMonthYear, reftype, sub_reftype, SUM(financialvalue) as Total_Payments
+    FROM CedarBackingData
+    GROUP BY IssueMonthYear, reftype, sub_reftype
+    ORDER BY IssueMonthYear, reftype, sub_reftype)
 
 /*** OUTPUT THE DATA ***/
 SELECT A.*,
@@ -103,7 +117,7 @@ SELECT A.*,
     day(current_date)     as import_day    
 
 FROM Payment_Summary as A
-LEFT JOIN ICalendar as B ON A.IssueMonthYear = date
+LEFT JOIN ICalendar as B ON A.IssueMonthYear = date AND R1 = 1
 """
 ApplyMapping_node2 = sparkSqlQuery(
     glueContext,
