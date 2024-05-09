@@ -84,10 +84,12 @@ data "aws_iam_policy_document" "copy_from_s3_to_s3_lambda" {
   }
 }
 
+resource "random_uuid" "lambda_uuid" {}
+
 resource "aws_iam_policy" "copy_from_s3_to_s3_lambda" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-copy-from-s3-to-s3-lambda")
+  name   = "${lower("${var.identifier_prefix}-copy-from-s3-to-s3-lambda-${random_uuid.lambda_uuid.result}")}"
   policy = data.aws_iam_policy_document.copy_from_s3_to_s3_lambda.json
 }
 
