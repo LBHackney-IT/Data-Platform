@@ -18,10 +18,11 @@
     "default": {
         "avro": {
             "hashes": [
-                "sha256:f123623ecc648d0e20ce14f8ed85162140c13cc4b108865d1b2529fbfa06c008"
+                "sha256:3393bb5139f9cf0791d205756ce1e39a5b58586af5b153d6a3b5a199610e9d17"
             ],
             "index": "pypi",
-            "version": "==1.11.1"
+            "markers": "python_version >= '3.6'",
+            "version": "==1.11.3"
         },
         "certifi": {
             "hashes": [
