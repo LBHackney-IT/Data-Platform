@@ -68,7 +68,7 @@ HangarAlloc AS
         (SELECT *,
                 ROW_NUMBER()
                 OVER (PARTITION BY HANGER_ID, SPACE
-                ORDER BY  ID DESC) AS RW
+                ORDER BY DATE_OF_ALLOCATION DESC, FEE_DUE_DATE DESC, ID DESC) AS RW
         FROM HangarAllocBefore
         WHERE ROW =1),
 
