@@ -78,6 +78,7 @@ The SQL creates the denormalised cycle hangar data (remove the duplicates). This
 
 07/12/2023 - create SQL
 26/04/2024 - change the de-dupe from party_id to space
+10/05/2024 - change the HangarAlloc ORDER BY from ID to DATE_OF_ALLOCATION DESC, FEE_DUE_DATE DESC, ID DESC
 ***************************************************************************************************************************/
 WITH HangarTypes as (
    SELECT id, type_name, hanger_class, cost, cost_per,import_year, import_month, import_day
@@ -130,7 +131,7 @@ HangarAlloc AS
         (SELECT *,
                 ROW_NUMBER()
                 OVER (PARTITION BY HANGER_ID, SPACE
-                ORDER BY  ID DESC) AS RW
+                ORDER BY DATE_OF_ALLOCATION DESC, FEE_DUE_DATE DESC, ID DESC) AS RW
         FROM HangarAllocBefore
         WHERE ROW =1),
 
