@@ -388,6 +388,8 @@ module "lambda_artefact_storage" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Lambda Artefact Storage"
   bucket_identifier = "dp-lambda-artefact-storage"
+  versioning_enabled = false
+  expire_objects_days = 60  
 }
 
 module "spark_ui_output_storage" {
