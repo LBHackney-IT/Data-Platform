@@ -87,7 +87,7 @@ data "aws_iam_policy_document" "copy_from_s3_to_s3_lambda" {
 resource "aws_iam_policy" "copy_from_s3_to_s3_lambda" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-copy-from-s3-to-s3-lambda")
+  name   = lower("${var.identifier_prefix}-${var.lambda_name}-lambda")
   policy = data.aws_iam_policy_document.copy_from_s3_to_s3_lambda.json
 }
 
@@ -122,12 +122,12 @@ locals {
 data "archive_file" "lambda_source_code" {
   type        = "zip"
   source_dir  = local.source_dir
-  output_path = "${path.module}/copy-from-s3-to-s3.zip"
+  output_path = "${path.module}/${var.lambda_name}.zip"
 }
 
 resource "aws_s3_object" "copy_from_s3_to_s3_lambda" {
   bucket      = var.lambda_artefact_storage_bucket.bucket_id
-  key         = "copy-from-s3-to-s3.zip"
+  key         = "${var.lambda_name}.zip"
   source      = data.archive_file.lambda_source_code.output_path
   acl         = "private"
   source_hash = data.archive_file.lambda_source_code.output_md5
