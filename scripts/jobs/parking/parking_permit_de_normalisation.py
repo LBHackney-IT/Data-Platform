@@ -143,7 +143,8 @@ Before_CalendarFormat as (
       dow,
       fin_year,
       fin_year_startdate,
-      fin_year_enddate
+      fin_year_enddate,
+      import_date
    FROM calendar),
    
 /*** 08/05/2024 change to de-dupe the dates fully ***/
