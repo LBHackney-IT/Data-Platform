@@ -390,6 +390,8 @@ module "lambda_artefact_storage" {
   bucket_identifier = "dp-lambda-artefact-storage"
   versioning_enabled = false
   expire_objects_days = 60  
+  expire_noncurrent_objects_days = 30
+  abort_multipart_days = 30  
 }
 
 module "spark_ui_output_storage" {
