@@ -124,3 +124,16 @@ variable "bucket_key_policy_statements" {
 
   default = []
 }
+
+
+variable "versioning_enabled" {
+  description = "Enable versioning for the S3 bucket"
+  type        = bool
+  default     = true
+}
+
+variable "expire_objects_days" {
+  description = "Number of days after which to expire objects. Set to null to disable."
+  type        = number
+  default     = null
+}

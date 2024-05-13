@@ -124,8 +124,22 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket" {
 resource "aws_s3_bucket_versioning" "bucket" {
   bucket = aws_s3_bucket.bucket.id
   versioning_configuration {
-    status     = "Enabled"
+    status = var.versioning_enabled ? "Enabled" : "Suspended"
     mfa_delete = "Disabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
+  count  = var.expire_objects_days != null ? 1 : 0
+  bucket = aws_s3_bucket.bucket.id
+
+  rule {
+    id     = "expire-older-objects"
+    status = "Enabled"
+
+    expiration {
+      days = var.expire_objects_days
+    }
   }
 }
 
