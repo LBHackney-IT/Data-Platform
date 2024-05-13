@@ -402,6 +402,8 @@ module "spark_ui_output_storage" {
   bucket_identifier = "spark-ui-output-storage"
   versioning_enabled = false
   expire_objects_days = 60
+  expire_noncurrent_objects_days = 30
+  abort_multipart_days = 30
 }
 
 # This bucket is used for storing certificates used in Looker Studio connections.
