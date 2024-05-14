@@ -484,7 +484,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "addresses_api_rds
 }
 
 
-module "spark_ui_output_storage" {
+module "airflow" {
   source            = "../modules/s3-bucket"
   tags              = module.tags.values
   project           = var.project
