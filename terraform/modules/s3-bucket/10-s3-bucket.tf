@@ -140,6 +140,15 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
     expiration {
       days = var.expire_objects_days
     }
+
+    noncurrent_version_expiration {
+      noncurrent_days = var.expire_noncurrent_objects_days
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = var.abort_multipart_days
+    }
+
   }
 }
 
