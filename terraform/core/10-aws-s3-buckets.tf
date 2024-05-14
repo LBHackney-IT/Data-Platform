@@ -391,6 +391,17 @@ module "lambda_artefact_storage" {
   versioning_enabled = false
 }
 
+module "airflow" {
+  source            = "../modules/s3-bucket"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "airflow"
+  bucket_identifier = "airflow"
+  versioning_enabled = false
+}
+
 module "spark_ui_output_storage" {
   source            = "../modules/s3-bucket"
   tags              = module.tags.values
