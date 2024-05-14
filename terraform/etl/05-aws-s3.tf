@@ -52,6 +52,12 @@ module "spark_ui_output_storage_data_source" {
   bucket_identifier = "spark-ui-output-storage"
 }
 
+module "airflow" {
+  source            = "../modules/data-sources/s3-bucket"
+  identifier_prefix = local.identifier_prefix
+  bucket_identifier = "airflow"
+}
+
 module "noiseworks_data_storage_data_source" {
   source            = "../modules/data-sources/s3-bucket"
   identifier_prefix = local.identifier_prefix
