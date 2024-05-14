@@ -405,6 +405,17 @@ module "spark_ui_output_storage" {
   abort_multipart_days = 30
 }
 
+module "airflow" {
+  source            = "../modules/s3-bucket"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "airflow"
+  bucket_identifier = "airflow"
+  versioning_enabled = false
+}
+
 # This bucket is used for storing certificates used in Looker Studio connections.
 # The generated certificate/private key isn't special/used for auth.
 resource "aws_s3_bucket" "ssl_connection_resources" {
@@ -481,16 +492,4 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "addresses_api_rds
   }
 
   provider = aws.aws_api_account
-}
-
-
-module "airflow" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "airflow"
-  bucket_identifier = "airflow"
-  versioning_enabled = false
 }
