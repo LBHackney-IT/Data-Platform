@@ -9,10 +9,10 @@ from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
 from pyspark.context import SparkContext
 import pyspark.sql.functions as F
-from pyspark.sql.functions import col, lit, to_date, date_sub, current_date, trim,substring,to_timestamp, date_format
+from pyspark.sql.functions import col, lit, to_date, date_sub, current_date,  substring, to_timestamp, date_format
 
 from scripts.helpers.helpers import move_file, rename_file, get_latest_partitions_optimized, \
-    add_import_time_columns, PARTITION_KEYS, clear_target_folder, copy_file
+    add_import_time_columns, PARTITION_KEYS, clear_target_folder
 
 if __name__ == "__main__":
 
@@ -535,17 +535,15 @@ if __name__ == "__main__":
     accounts2 = accounts.join(bals_filter, accounts.paymentreference == bals_filter.paymentreference2, "right")
 
     accounts2 = accounts2.filter("paymentreference is not null") \
-                         .filter(col('patch').like('%Patch%'))\
-                         .withColumn("TenancyEndDate", F.to_date(substring("endoftenuredate", 1, 10), "yyyy-MM-dd")) 
-                         
-                    #     .withColumn("TenancyEndDate", F.to_date(F.to_timestamp(col("endoftenuredate"), "M/d/yyyy H:mm")))
+        .filter(col('patch').like('%Patch%')) \
+        .withColumn("TenancyEndDate", F.to_date(substring("endoftenuredate", 1, 10), "yyyy-MM-dd"))
 
-
+    #     .withColumn("TenancyEndDate", F.to_date(F.to_timestamp(col("endoftenuredate"), "M/d/yyyy H:mm")))
 
     accounts3 = accounts2.selectExpr("paymentreference as AccountReference",
                                      "description as TenureType",
                                      "tenure_code as TenureTypeCode",
-                                    # "endoftenuredate as TenancyEndDate",
+                                     # "endoftenuredate as TenancyEndDate",
                                      "TenancyEndDate",
                                      "'Hackney' as LocalAuthority",
                                      "HousingOfficerName",
@@ -568,8 +566,8 @@ if __name__ == "__main__":
     accounts5 = accounts4.join(case_priorities, accounts4.tenancy_ref == case_priorities.tenancy_ref2, "left")
 
     accounts6 = accounts5.selectExpr("AccountReference as AccountReference",
-                                    # "TenureType",
-                                   #  "TenureTypeCode",
+                                     # "TenureType",
+                                     #  "TenureTypeCode",
                                      "max_date as TenancyStartDate",
                                      "TenancyEndDate",
                                      "LocalAuthority",
@@ -577,11 +575,11 @@ if __name__ == "__main__":
                                      "Patch",
                                      "'Hackney' as Region",
                                      #   "import_date as import_date",
-                                   #  "tenancy_ref as TenReference",
+                                     #  "tenancy_ref as TenReference",
                                      "Case when BreathingSpace=1 then 'TRUE' else 'FALSE' end as BreathingSpace",
-                                   #  "is_paused_until as BreathingSpaceEndDate",
+                                     #  "is_paused_until as BreathingSpaceEndDate",
                                      "'N' as Deceased"
-                                   #  "previousweekbalance"
+                                     #  "previousweekbalance"
                                      )
 
     accounts7 = accounts6.filter("AccountReference is not null")
@@ -593,7 +591,7 @@ if __name__ == "__main__":
 
     # create the accounts table referenced in the other extracts
 
-    #accounts = accounts3
+    # accounts = accounts3
 
     dynamic_frame = DynamicFrame.fromDF(accounts10.repartition(1), glueContext, "target_data_to_write")
 
@@ -621,7 +619,6 @@ if __name__ == "__main__":
     # rename file
     filename = "/rent.formeraccounts%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense-ft/gzip/formeraccounts", filename)
-
 
     # move file to export folder
     move_file(s3_bucket, "housing/rentsense-ft/gzip/formeraccounts/", export_target_path,
@@ -652,13 +649,13 @@ if __name__ == "__main__":
                          "AgreementStartDate as StartDate",
                          "AgreementEndDate1 as EndDate",
                          "frequency as PaymentFrequency",
-                        "AgreementCode as ArrangementCode",
-                       #  "initial_payment_date as FirstInstallmentDueDate",
-                        # "AgreementCreatedDate",
+                         "AgreementCode as ArrangementCode",
+                         #  "initial_payment_date as FirstInstallmentDueDate",
+                         # "AgreementCreatedDate",
                          "Amount as PaymentAmount"
-                      #   "uh_ten_ref as TenReference",
-                       #  "import_date"
-                       )
+                         #   "uh_ten_ref as TenReference",
+                         #  "import_date"
+                         )
 
     arr = arr.distinct()
     arr = add_import_time_columns(arr)
@@ -756,7 +753,7 @@ if __name__ == "__main__":
     tens = tens.join(cor, tens.person_id == cor.pid4, "left")
 
     tens = tens.selectExpr("paymentreference as AccountReference",
-                          # "Title",
+                           # "Title",
                            "case when length(TenantFirstName)=0 then '.' else TenantFirstName end as FirstName",
                            "case when length(TenantSurName)=0 then '.' else TenantSurName end as Surname",
                            #     "TenantSurName",
@@ -771,10 +768,10 @@ if __name__ == "__main__":
                            "PostCode as PropertyPostCode",
                            "Email as PrimaryEmailAddress",
                            "'' as SecondaryEmailAddress"
-                          # "PropertyType",
-                          # "uh_ten_ref as TenReference",
-                          # "import_date"
-                          )
+                           # "PropertyType",
+                           # "uh_ten_ref as TenReference",
+                           # "import_date"
+                           )
 
     tens = tens.distinct()
 
@@ -826,9 +823,9 @@ if __name__ == "__main__":
     balances = balances.selectExpr("paymentreference as AccountReference",
                                    "previousweekbalance as CurrentBalance",
                                    "BalanceDate"
-                                  # "uh_ten_ref as TenReference",
-                                  #  "import_date"
-                                  )
+                                   # "uh_ten_ref as TenReference",
+                                   #  "import_date"
+                                   )
 
     balances = balances.distinct()
 
@@ -888,10 +885,10 @@ if __name__ == "__main__":
                                  "action_code as ActionCode",
                                  "code_lookup as ActionDescription",
                                  "ActionDate"
-                                # "action_no as ActionSeq",
-                                # "uh_ten_ref as TenReference",
-                                #"import_date"
-                                )
+                                 # "action_no as ActionSeq",
+                                 # "uh_ten_ref as TenReference",
+                                 # "import_date"
+                                 )
 
     actions = add_import_time_columns(actions)
 
@@ -941,20 +938,20 @@ if __name__ == "__main__":
     trans = df11.withColumn("uh_ten_ref1", F.trim(F.col("tag_ref")))
 
     trans = ten.join(trans, ten.uh_ten_ref == trans.uh_ten_ref1, "inner")
-    
-    trans1 =trans.withColumn("timestamp", to_timestamp("post_date", "yyyy-MM-dd HH:mm:ss.S"))\
-                 .withColumn("iso8601_format", date_format("timestamp", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"))
+
+    trans1 = trans.withColumn("timestamp", to_timestamp("post_date", "yyyy-MM-dd HH:mm:ss.S")) \
+        .withColumn("iso8601_format", date_format("timestamp", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"))
 
     trans = trans1.selectExpr("paymentreference as AccountReference",
-                             "TransactionID",
-                             "iso8601_format as TransactionDate",
-                             "iso8601_format as TransactionPostDate",
-                             "trans_type as TransactionCode",
-                             "real_value as TransactionAmount",
-                             "code_lookup as TransactionDescription"
-                            # "uh_ten_ref as TenReference",
-                            # "import_date"
-                             )
+                              "TransactionID",
+                              "iso8601_format as TransactionDate",
+                              "iso8601_format as TransactionPostDate",
+                              "trans_type as TransactionCode",
+                              "real_value as TransactionAmount",
+                              "code_lookup as TransactionDescription"
+                              # "uh_ten_ref as TenReference",
+                              # "import_date"
+                              )
 
     trans = trans.distinct()
 
