@@ -990,7 +990,7 @@ if __name__ == "__main__":
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
 
-    #Clear the refined folder so there are no files
+    # Clear the refined folder so there are no files
     # exist2 = s3.list_objects_v2(Bucket = s3_bucket ,Prefix ='housing/rentsense/export/')  # list the files
     # if 'Contents' in exist2:
     #     clear_target_folder(s3_bucket_target+'/export')
