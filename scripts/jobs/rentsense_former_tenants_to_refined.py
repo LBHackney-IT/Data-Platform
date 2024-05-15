@@ -9,7 +9,7 @@ from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
 from pyspark.context import SparkContext
 import pyspark.sql.functions as F
-from pyspark.sql.functions import col, lit, to_date, date_sub, current_date,  substring, to_timestamp, date_format
+from pyspark.sql.functions import col, lit, to_date, date_sub, current_date, substring, to_timestamp, date_format
 
 from scripts.helpers.helpers import move_file, rename_file, get_latest_partitions_optimized, \
     add_import_time_columns, PARTITION_KEYS, clear_target_folder
@@ -990,7 +990,7 @@ if __name__ == "__main__":
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
 
-    ##Clear the refined folder so there are no files
+    #Clear the refined folder so there are no files
     # exist2 = s3.list_objects_v2(Bucket = s3_bucket ,Prefix ='housing/rentsense/export/')  # list the files
     # if 'Contents' in exist2:
     #     clear_target_folder(s3_bucket_target+'/export')
