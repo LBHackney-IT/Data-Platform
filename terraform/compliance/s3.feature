@@ -11,6 +11,7 @@ Feature: S3
   @exclude_module.glue_scripts.aws_s3_bucket.bucket
   @exclude_module.glue_temp_storage.aws_s3_bucket.bucket
   @exclude_module.lambda_artefact_storage.aws_s3_bucket.bucket
+  @exclude_module.airflow.aws_s3_bucket.bucket
   @exclude_module.lambda_artefact_storage_for_api_account.aws_s3_bucket.bucket
   @exclude_module.landing_zone.aws_s3_bucket.bucket
   @exclude_module.liberator_data_storage.aws_s3_bucket.bucket
