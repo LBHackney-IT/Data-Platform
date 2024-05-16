@@ -91,7 +91,7 @@ that are on the waiting list. The code has been amended to use
 Tom's hangar list
 
 19/10/2023 - Create Query
-test
+15/05/2024 - amend to NOT filter out records with NO address (i.e. not matching the Party_ID)
 *******************************************************************************************************************/
 /************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -176,7 +176,7 @@ Cycle_Hangar_Wait_List as (
     LEFT JOIN LLPG          as C ON B.uprn = cast(C.UPRN as string)
     LEFT JOIN Street_Rec    as D ON C.USRN = D.USRN
     LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id  AND row_num = 1
-    WHERE row1= 1 AND E.party_id is NULL and D.Address2 is not NULL),
+    WHERE row1= 1 AND E.party_id is NULL),
 
 /************************************************************
 Waiting List CREATED
