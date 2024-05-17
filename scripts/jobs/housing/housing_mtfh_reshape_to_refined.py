@@ -75,8 +75,14 @@ def process_table(
         clear_target_folder(s3_bucket_target + table_path)
         write_dynamic_frame(s3_bucket_target, glue_context, dynamic_frame, table_path)
     except Exception as e:
-        logger.error(f"Error processing table {table_name}: {str(e)}")
-        failed_tables.append(f"{table_name} failed with error: {str(e)}")
+        error_type = type(e).__name__
+        error_message = str(e)
+        logger.error(
+            f"Error processing table {table_name}: {error_type} - {error_message}"
+        )
+        failed_tables.append(
+            f"{table_name} failed with error: {error_type} - {error_message}"
+        )
 
 
 def transform_tenureinformation(glue_context, spark, table_view):
