@@ -1,17 +1,17 @@
 import sys
+
 import boto3
-from pyspark.context import SparkContext
+import pyspark.sql.functions as F
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
-from awsglue.transforms import *
-from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
-from pyspark.sql.functions import *
-import pyspark.sql.functions as F
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from pyspark.sql.functions import arrays_zip, col, concat_ws, element_at, when
+
 from scripts.helpers.helpers import (
-    get_glue_env_var,
-    PARTITION_KEYS,
     create_pushdown_predicate_for_max_date_partition_value,
+    get_glue_env_var,
 )
 
 
@@ -65,10 +65,10 @@ if __name__ == "__main__":
 
     # tenancy
     ten = spark.sql(
-        f"""
+        """
     SELECT *
     FROM mtfh_tenureinformation a
-         where  import_date=(select max(import_date) from mtfh_tenureinformation) 
+         where  import_date=(select max(import_date) from mtfh_tenureinformation)
        """
     )
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
         element_at("legacyreferences", 2).value.alias("saffron_pay_ref"),
     )
 
-    ten = ten.withColumn("endoftenuredate", ten.endOfTenureDate.string.cast("string"))
+    ten = ten.withColumn("endoftenuredate", ten.endOfTenureDate)
 
     ten2 = (
         ten.withColumn("members", F.explode_outer("householdmembers"))
@@ -227,10 +227,10 @@ if __name__ == "__main__":
 
     # Persons table
     df2 = spark.sql(
-        f"""
+        """
     SELECT *
     FROM mtfh_persons a
-         where  import_date=(select max(import_date) from mtfh_persons) 
+         where  import_date=(select max(import_date) from mtfh_persons)
        """
     )
 
@@ -249,7 +249,7 @@ if __name__ == "__main__":
         when(per.person_type.isNull(), per.persontypes2).otherwise(per.person_type),
     )
 
-    per = per.withColumn("endDate", per.tenure.endDate.string.cast("string"))
+    per = per.withColumn("endDate", per.tenure.endDate)
 
     per = (
         per.select(
@@ -262,7 +262,7 @@ if __name__ == "__main__":
             "placeOfBirth",
             "isOrganisation",
             "reason",
-            "tenure.id",  ##needs to be renamed
+            "tenure.id",  # needs to be renamed
             "tenure.uprn",
             "tenure.propertyReference",
             "tenure.paymentReference",
@@ -271,7 +271,7 @@ if __name__ == "__main__":
             "tenure.assetId",
             "tenure.type",
             "tenure.assetFullAddress",
-            ##      "person_type",
+            # "person_type",
             "new_person_type",
             "import_year",
             "import_month",
@@ -309,10 +309,10 @@ if __name__ == "__main__":
 
     # contact details
     cont = spark.sql(
-        f"""
+        """
     SELECT *
     FROM mtfh_contactdetails a
-         where  import_date=(select max(import_date) from mtfh_contactdetails) 
+         where  import_date=(select max(import_date) from mtfh_contactdetails)
        """
     )
 
@@ -365,10 +365,10 @@ if __name__ == "__main__":
 
     # asset output
     ass = spark.sql(
-        f"""
+        """
     SELECT *
     FROM mtfh_assets a
-         where  import_date=(select max(import_date) from mtfh_assets)  
+         where  import_date=(select max(import_date) from mtfh_assets)
        """
     )
 
