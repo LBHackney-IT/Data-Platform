@@ -11,7 +11,6 @@ from pyspark.context import SparkContext
 from pyspark.sql.functions import *
 
 from scripts.helpers.helpers import (
-    PARTITION_KEYS,
     create_pushdown_predicate_for_max_date_partition_value,
     get_glue_env_var,
 )
