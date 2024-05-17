@@ -69,7 +69,7 @@ if __name__ == "__main__":
         """
     SELECT *
     FROM mtfh_tenureinformation a
-         where  import_date=(select max(import_date) from mtfh_tenureinformation) 
+         where  import_date=(select max(import_date) from mtfh_tenureinformation)
        """
     )
 
@@ -231,7 +231,7 @@ if __name__ == "__main__":
         """
     SELECT *
     FROM mtfh_persons a
-         where  import_date=(select max(import_date) from mtfh_persons) 
+         where  import_date=(select max(import_date) from mtfh_persons)
        """
     )
 
@@ -263,7 +263,7 @@ if __name__ == "__main__":
             "placeOfBirth",
             "isOrganisation",
             "reason",
-            "tenure.id",  ##needs to be renamed
+            "tenure.id",  # needs to be renamed
             "tenure.uprn",
             "tenure.propertyReference",
             "tenure.paymentReference",
@@ -272,7 +272,7 @@ if __name__ == "__main__":
             "tenure.assetId",
             "tenure.type",
             "tenure.assetFullAddress",
-            ##      "person_type",
+            # "person_type",
             "new_person_type",
             "import_year",
             "import_month",
@@ -313,7 +313,7 @@ if __name__ == "__main__":
         """
     SELECT *
     FROM mtfh_contactdetails a
-         where  import_date=(select max(import_date) from mtfh_contactdetails) 
+         where  import_date=(select max(import_date) from mtfh_contactdetails)
        """
     )
 
@@ -369,7 +369,7 @@ if __name__ == "__main__":
         """
     SELECT *
     FROM mtfh_assets a
-         where  import_date=(select max(import_date) from mtfh_assets)  
+         where  import_date=(select max(import_date) from mtfh_assets)
        """
     )
 
