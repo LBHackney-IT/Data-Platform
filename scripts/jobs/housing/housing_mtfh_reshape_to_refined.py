@@ -1,17 +1,19 @@
 import sys
+
 import boto3
-from pyspark.context import SparkContext
+import pyspark.sql.functions as F
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
-from awsglue.job import Job
+from pyspark.context import SparkContext
 from pyspark.sql.functions import *
-import pyspark.sql.functions as F
+
 from scripts.helpers.helpers import (
-    get_glue_env_var,
     PARTITION_KEYS,
     create_pushdown_predicate_for_max_date_partition_value,
+    get_glue_env_var,
 )
 
 
