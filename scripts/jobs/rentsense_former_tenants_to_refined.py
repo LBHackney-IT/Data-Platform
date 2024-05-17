@@ -459,12 +459,6 @@ if __name__ == "__main__":
         transformation_ctx="sow2b_dbo_ssminitransaction_source")
     df10 = get_latest_partitions_optimized(df10)
 
-    # patch = glueContext.create_data_frame.from_catalog(
-    #     database=source_raw_database,
-    #     table_name="property_rent_patches",
-    #     transformation_ctx="property_rent_patches_source")
-    # patch = get_latest_partitions_optimized(patch)
-
     patch_officer = glueContext.create_data_frame.from_catalog(
         database=source_raw_database,
         table_name="rent_officer_patch_mapping",
@@ -529,7 +523,7 @@ if __name__ == "__main__":
 
     bals_filter = balance.withColumn("BalanceDate", F.to_date(F.col("import_date"), "yyyyMMdd")) \
         .withColumn("paymentreference2", F.trim(F.col("RentAccount"))) \
-        .filter(col("previousweekbalance") != 0.00) \
+        .filter(col("previousweekbalance") != 0) \
         .withColumnRenamed("import_date", "bal_date")
 
     accounts2 = accounts.join(bals_filter, accounts.paymentreference == bals_filter.paymentreference2, "right")
@@ -590,9 +584,6 @@ if __name__ == "__main__":
     accounts10 = add_import_time_columns(accounts9)
 
     # create the accounts table referenced in the other extracts
-
-    # accounts = accounts3
-
     dynamic_frame = DynamicFrame.fromDF(accounts10.repartition(1), glueContext, "target_data_to_write")
 
     # save out the data
