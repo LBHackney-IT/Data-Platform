@@ -78,7 +78,7 @@ if __name__ == "__main__":
         element_at("legacyreferences", 2).value.alias("saffron_pay_ref"),
     )
 
-    ten = ten.withColumn("endoftenuredate", ten.endOfTenureDate.string.cast("string"))
+    ten = ten.withColumn("endoftenuredate", ten.endOfTenureDate)
 
     ten2 = (
         ten.withColumn("members", F.explode_outer("householdmembers"))
@@ -249,7 +249,7 @@ if __name__ == "__main__":
         when(per.person_type.isNull(), per.persontypes2).otherwise(per.person_type),
     )
 
-    per = per.withColumn("endDate", per.tenure.endDate.string.cast("string"))
+    per = per.withColumn("endDate", per.tenure.endDate)
 
     per = (
         per.select(
