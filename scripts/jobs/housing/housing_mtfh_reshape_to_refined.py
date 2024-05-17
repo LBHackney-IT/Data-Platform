@@ -40,8 +40,8 @@ def load_table_view(source_catalog_database, table_name, glueContext):
     df.createOrReplaceTempView(table_name)
 
 
-def write_dynamic_frame(s3_bucket_target, glueContext, dynamic_frame, table_path):
-    glueContext.write_dynamic_frame.from_options(
+def write_dynamic_frame(s3_bucket_target, glue_context, dynamic_frame, table_path):
+    glue_context.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
         format="parquet",
