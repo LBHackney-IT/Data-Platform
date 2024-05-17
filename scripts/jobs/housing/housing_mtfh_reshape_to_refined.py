@@ -1,7 +1,6 @@
 import sys
 
 import boto3
-import pyspark.sql.functions as F
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
