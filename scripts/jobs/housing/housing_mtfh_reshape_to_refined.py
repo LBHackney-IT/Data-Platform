@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     # tenancy
     ten = spark.sql(
-        f"""
+        """
     SELECT *
     FROM mtfh_tenureinformation a
          where  import_date=(select max(import_date) from mtfh_tenureinformation) 
@@ -229,7 +229,7 @@ if __name__ == "__main__":
 
     # Persons table
     df2 = spark.sql(
-        f"""
+        """
     SELECT *
     FROM mtfh_persons a
          where  import_date=(select max(import_date) from mtfh_persons) 
@@ -311,7 +311,7 @@ if __name__ == "__main__":
 
     # contact details
     cont = spark.sql(
-        f"""
+        """
     SELECT *
     FROM mtfh_contactdetails a
          where  import_date=(select max(import_date) from mtfh_contactdetails) 
@@ -367,7 +367,7 @@ if __name__ == "__main__":
 
     # asset output
     ass = spark.sql(
-        f"""
+        """
     SELECT *
     FROM mtfh_assets a
          where  import_date=(select max(import_date) from mtfh_assets)  
