@@ -59,7 +59,10 @@ resource "aws_iam_role_policy" "mwaa_role_policy" {
           "s3:GetBucketPublicAccessBlock"
         ],
         Effect   = "Allow",
-        Resource = "*"
+        Resource = [
+          module.mwaa_bucket.bucket_arn,
+          "${module.mwaa_bucket.bucket_arn}/*"
+        ]
       }
     ]
   })
