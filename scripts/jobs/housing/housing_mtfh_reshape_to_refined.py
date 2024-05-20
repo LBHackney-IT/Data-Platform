@@ -6,7 +6,14 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from pyspark.sql.functions import arrays_zip, col, concat_ws, explode_outer, when
+from pyspark.sql.functions import (
+    arrays_zip,
+    col,
+    concat_ws,
+    element_at,
+    explode_outer,
+    when,
+)
 
 from scripts.helpers.helpers import (
     create_pushdown_predicate_for_max_date_partition_value,
@@ -67,10 +74,10 @@ def process_table(
     failed_tables,
 ):
     try:
-        load_table_view(source_catalog_database, table_name, glueContext)
-        transformed_df = transformation_function(glueContext, spark, table_name)
+        load_table_view(source_catalog_database, table_name, glue_context)
+        transformed_df = transformation_function(glue_context, spark, table_name)
         dynamic_frame = DynamicFrame.fromDF(
-            transformed_df.repartition(1), glueContext, "target_data_to_write"
+            transformed_df.repartition(1), glue_context, "target_data_to_write"
         )
         clear_target_folder(s3_bucket_target + table_path)
         write_dynamic_frame(s3_bucket_target, glue_context, dynamic_frame, table_path)
