@@ -61,7 +61,7 @@ def write_dynamic_frame(s3_bucket_target, glue_context, dynamic_frame, table_pat
                 "import_date",
             ],
         },
-        transformation_ctx=f"target_data_to_write{target_path}",
+        transformation_ctx=f"target_data_to_write{table_path}",
     )
 
 
