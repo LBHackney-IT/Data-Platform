@@ -6,14 +6,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from pyspark.sql.functions import (
-    arrays_zip,
-    col,
-    concat_ws,
-    element_at,
-    explode_outer,
-    when,
-)
+from pyspark.sql.functions import arrays_zip, col, concat_ws, explode_outer, when
 
 from scripts.helpers.helpers import (
     create_pushdown_predicate_for_max_date_partition_value,
