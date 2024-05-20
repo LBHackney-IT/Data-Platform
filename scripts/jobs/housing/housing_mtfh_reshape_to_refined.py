@@ -66,16 +66,18 @@ def write_dynamic_frame(s3_bucket_target, glue_context, dynamic_frame, table_pat
 
 
 def process_table(
-    glue_context,
+    source_catalog_database,
     table_name,
+    glue_context,
     transformation_function,
+    spark_session,
     s3_bucket_target,
     table_path,
     failed_tables,
 ):
     try:
         load_table_view(source_catalog_database, table_name, glue_context)
-        transformed_df = transformation_function(glue_context, spark, table_name)
+        transformed_df = transformation_function(spark_session)
         dynamic_frame = DynamicFrame.fromDF(
             transformed_df.repartition(1), glue_context, "target_data_to_write"
         )
@@ -92,12 +94,12 @@ def process_table(
         )
 
 
-def transform_tenureinformation(glue_context, spark, table_view):
-    max_date = spark.sql(
+def transform_tenureinformation(spark_session):
+    max_date = spark_session.sql(
         "SELECT max(import_date) as max_date FROM mtfh_tenureinformation"
     ).collect()[0]["max_date"]
 
-    ten = spark.sql(
+    ten = spark_session.sql(
         f"""
         SELECT *, element_at(legacyreferences, 1).value as uh_ten_ref, element_at(legacyreferences, 2).value as saffron_pay_ref
         FROM mtfh_tenureinformation
@@ -170,12 +172,14 @@ def transform_tenureinformation(glue_context, spark, table_view):
     return ten
 
 
-def transform_persons(glue_context, spark, table_view):
-    max_date = spark.sql(
+def transform_persons(spark_session):
+    max_date = spark_session.sql(
         "SELECT max(import_date) as max_date FROM mtfh_persons"
     ).collect()[0]["max_date"]
 
-    df2 = spark.sql(f"SELECT * FROM mtfh_persons WHERE import_date = '{max_date}'")
+    df2 = spark_session.sql(
+        f"SELECT * FROM mtfh_persons WHERE import_date = '{max_date}'"
+    )
 
     per = (
         df2.withColumn("combined", arrays_zip("tenures", "persontypes"))
@@ -221,12 +225,12 @@ def transform_persons(glue_context, spark, table_view):
     return per
 
 
-def transform_contactdetails(glue_context, spark, table_view):
-    max_date = spark.sql(
+def transform_contactdetails(spark_session):
+    max_date = spark_session.sql(
         "SELECT max(import_date) as max_date FROM mtfh_contactdetails"
     ).collect()[0]["max_date"]
 
-    cont = spark.sql(
+    cont = spark_session.sql(
         f"SELECT * FROM mtfh_contactdetails WHERE import_date = '{max_date}'"
     )
 
@@ -253,12 +257,12 @@ def transform_contactdetails(glue_context, spark, table_view):
     return cont2
 
 
-def transform_assets(glue_context, spark, table_view):
-    max_date = spark.sql(
+def transform_assets(spark_session):
+    max_date = spark_session.sql(
         "SELECT max(import_date) as max_date FROM mtfh_assets"
     ).collect()[0]["max_date"]
 
-    ass = spark.sql(
+    ass = spark_session.sql(
         f"""
         SELECT *
         FROM mtfh_assets
@@ -389,9 +393,11 @@ if __name__ == "__main__":
 
     for table_name, params in table_transformations.items():
         process_table(
-            glueContext,
+            source_catalog_database,
             table_name,
+            glueContext,
             params["function"],
+            spark,
             s3_bucket_target,
             params["path"],
             failed_tables,
