@@ -13,6 +13,7 @@ resource "aws_iam_role" "mwaa_role" {
       }
     ]
   })
+  tags = module.tags.values
 }
 
 # resource "aws_iam_role_policy" "mwaa_role_policy" {
@@ -71,8 +72,8 @@ resource "aws_iam_role_policy" "mwaa_role_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action = "*",
-        Effect = "Allow",
+        Action   = "*",
+        Effect   = "Allow",
         Resource = "*"
       }
     ]
@@ -122,6 +123,7 @@ resource "aws_security_group" "mwaa_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = module.tags.values
 }
 
 
@@ -147,13 +149,13 @@ resource "aws_security_group" "mwaa_sg" {
 # }
 
 resource "aws_mwaa_environment" "mwaa" {
-  name                 = "data_platform_mwaa_environment"
-  airflow_version      = "2.8.1" # Preinstall python 3.11
-  environment_class    = "mw1.small"
-  execution_role_arn   = aws_iam_role.mwaa_role.arn
-  source_bucket_arn    = module.mwaa_bucket.bucket_arn
-  dag_s3_path          = "dags"
-#   plugins_s3_path      = "plugins"
+  name               = "data_platform_mwaa_environment"
+  airflow_version    = "2.8.1" # Preinstall python 3.11
+  environment_class  = "mw1.small"
+  execution_role_arn = aws_iam_role.mwaa_role.arn
+  source_bucket_arn  = module.mwaa_bucket.bucket_arn
+  dag_s3_path        = "dags"
+  #   plugins_s3_path      = "plugins"
   requirements_s3_path = "requirements/requirements.txt"
   network_configuration {
     security_group_ids = [aws_security_group.mwaa_sg.id]
@@ -188,4 +190,5 @@ resource "aws_mwaa_environment" "mwaa" {
   max_workers           = 5
   min_workers           = 1
   kms_key               = module.mwaa_bucket.kms_key_arn
+  tags                  = module.tags.values
 }
