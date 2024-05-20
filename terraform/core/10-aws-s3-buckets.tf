@@ -381,39 +381,50 @@ module "athena_storage" {
 }
 
 module "lambda_artefact_storage" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Lambda Artefact Storage"
-  bucket_identifier = "dp-lambda-artefact-storage"
+  source             = "../modules/s3-bucket"
+  tags               = module.tags.values
+  project            = var.project
+  environment        = var.environment
+  identifier_prefix  = local.identifier_prefix
+  bucket_name        = "Lambda Artefact Storage"
+  bucket_identifier  = "dp-lambda-artefact-storage"
   versioning_enabled = false
 }
 
 module "airflow" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "airflow"
-  bucket_identifier = "airflow"
+  source             = "../modules/s3-bucket"
+  tags               = module.tags.values
+  project            = var.project
+  environment        = var.environment
+  identifier_prefix  = local.identifier_prefix
+  bucket_name        = "airflow"
+  bucket_identifier  = "airflow"
+  versioning_enabled = false
+}
+
+module "mwaa_bucket" {
+  source             = "../modules/s3-bucket"
+  tags               = module.tags.values
+  project            = var.project
+  environment        = var.environment
+  identifier_prefix  = local.identifier_prefix
+  bucket_name        = "mwaa"
+  bucket_identifier  = "mwaa"
   versioning_enabled = false
 }
 
 module "spark_ui_output_storage" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Spark UI Storage"
-  bucket_identifier = "spark-ui-output-storage"
-  versioning_enabled = false
-  expire_objects_days = 60
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "Spark UI Storage"
+  bucket_identifier              = "spark-ui-output-storage"
+  versioning_enabled             = false
+  expire_objects_days            = 60
   expire_noncurrent_objects_days = 30
-  abort_multipart_days = 30
+  abort_multipart_days           = 30
 }
 
 # This bucket is used for storing certificates used in Looker Studio connections.
