@@ -6,7 +6,7 @@ from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from pyspark.sql.functions import arrays_zip, col, concat_ws, explode_outer, when
+from pyspark.sql import functions as F
 
 from scripts.helpers.helpers import (
     create_pushdown_predicate_for_max_date_partition_value,
@@ -101,8 +101,8 @@ def transform_tenureinformation(spark_session):
     )
 
     ten = (
-        ten.withColumn("members", explode_outer("householdmembers"))
-        .withColumn("notices", explode_outer("notices"))
+        ten.withColumn("members", F.explode_outer("householdmembers"))
+        .withColumn("notices", F.explode_outer("notices"))
         .withColumnRenamed("id", "tenancy_id")
         .selectExpr(
             "tenancy_id",
@@ -156,7 +156,7 @@ def transform_tenureinformation(spark_session):
     ]:
         ten = (
             ten.withColumn(
-                f"{charge_type}_double", col(f"{charge_type}.double").cast("double")
+                f"{charge_type}_double", F.col(f"{charge_type}.double").cast("double")
             )
             .drop(charge_type)
             .withColumnRenamed(f"{charge_type}_double", charge_type)
@@ -175,44 +175,44 @@ def transform_persons(spark_session):
     )
 
     per = (
-        df2.withColumn("combined", arrays_zip("tenures", "persontypes"))
-        .withColumn("combined_exploded", explode_outer("combined"))
-        .withColumn("tenure", col("combined_exploded.tenures"))
-        .withColumn("person_type", col("combined_exploded.persontypes"))
+        df2.withColumn("combined", F.arrays_zip("tenures", "persontypes"))
+        .withColumn("combined_exploded", F.explode_outer("combined"))
+        .withColumn("tenure", F.col("combined_exploded.tenures"))
+        .withColumn("person_type", F.col("combined_exploded.persontypes"))
         .drop("combined", "combined_exploded")
         .withColumnRenamed("id", "person_id")
-        .withColumn("persontypes2", concat_ws(",", col("persontypes")))
+        .withColumn("persontypes2", F.concat_ws(",", F.col("persontypes")))
         .withColumn(
             "new_person_type",
-            when(col("person_type").isNull(), col("persontypes2")).otherwise(
-                col("person_type")
+            F.when(F.col("person_type").isNull(), F.col("persontypes2")).otherwise(
+                F.col("person_type")
             ),
         )
-        .withColumn("endDate", col("tenure.endDate"))
+        .withColumn("endDate", F.col("tenure.endDate"))
         .select(
-            col("person_id"),
-            col("preferredTitle"),
-            col("firstName"),
-            col("middleName"),
-            col("surname"),
-            col("dateOfBirth"),
-            col("placeOfBirth"),
-            col("isOrganisation"),
-            col("reason"),
-            col("tenure.id").alias("tenancy_id"),
-            col("tenure.uprn"),
-            col("tenure.propertyReference"),
-            col("tenure.paymentReference"),
-            col("tenure.startDate"),
-            col("endDate"),
-            col("tenure.assetId"),
-            col("tenure.type"),
-            col("tenure.assetFullAddress"),
-            col("new_person_type").alias("person_type"),
-            col("import_year"),
-            col("import_month"),
-            col("import_day"),
-            col("import_date"),
+            F.col("person_id"),
+            F.col("preferredTitle"),
+            F.col("firstName"),
+            F.col("middleName"),
+            F.col("surname"),
+            F.col("dateOfBirth"),
+            F.col("placeOfBirth"),
+            F.col("isOrganisation"),
+            F.col("reason"),
+            F.col("tenure.id").alias("tenancy_id"),
+            F.col("tenure.uprn"),
+            F.col("tenure.propertyReference"),
+            F.col("tenure.paymentReference"),
+            F.col("tenure.startDate"),
+            F.col("endDate"),
+            F.col("tenure.assetId"),
+            F.col("tenure.type"),
+            F.col("tenure.assetFullAddress"),
+            F.col("new_person_type").alias("person_type"),
+            F.col("import_year"),
+            F.col("import_month"),
+            F.col("import_day"),
+            F.col("import_date"),
         )
     )
     return per
@@ -228,24 +228,25 @@ def transform_contactdetails(spark_session):
     )
 
     cont2 = cont.select(
-        col("id"),
-        col("targetid"),
-        col("createdby.createdAt"),
-        col("contactinformation.contacttype"),
-        col("contactinformation.subtype"),
-        col("contactinformation.value"),
-        col("contactinformation"),
-        col("lastmodified"),
-        col("targettype"),
-        col("isactive"),
-        col("import_datetime"),
-        col("import_timestamp"),
-        col("import_year"),
-        col("import_month"),
-        col("import_day"),
-        col("import_date"),
+        F.col("id"),
+        F.col("targetid"),
+        F.col("createdby.createdAt"),
+        F.col("contactinformation.contacttype"),
+        F.col("contactinformation.subtype"),
+        F.col("contactinformation.value"),
+        F.col("contactinformation"),
+        F.col("lastmodified"),
+        F.col("targettype"),
+        F.col("isactive"),
+        F.col("import_datetime"),
+        F.col("import_timestamp"),
+        F.col("import_year"),
+        F.col("import_month"),
+        F.col("import_day"),
+        F.col("import_date"),
     ).withColumn(
-        "person_id", when(col("targettype") == "person", col("targetid")).otherwise("")
+        "person_id",
+        F.when(F.col("targettype") == "person", F.col("targetid")).otherwise(""),
     )
     return cont2
 
@@ -265,22 +266,22 @@ def transform_assets(spark_session):
 
     ass = ass.withColumnRenamed("id", "asset_id").select(
         "*",
-        col("assetAddress.*"),
-        col("tenure.*"),
-        col("assetManagement.*"),
-        col("assetLocation.*"),
-        col("assetCharacteristics.*"),
+        F.col("assetAddress.*"),
+        F.col("tenure.*"),
+        F.col("assetManagement.*"),
+        F.col("assetLocation.*"),
+        F.col("assetCharacteristics.*"),
     )
 
     ass2 = (
-        ass.withColumn("parentAssets", explode_outer("assetLocation.parentAssets"))
-        .withColumn("parentAssets_name", col("parentAssets.name"))
-        .withColumn("parentAssets_id", col("parentAssets.id"))
-        .withColumn("parentAssets_type", col("parentAssets.type"))
+        ass.withColumn("parentAssets", F.explode_outer("assetLocation.parentAssets"))
+        .withColumn("parentAssets_name", F.col("parentAssets.name"))
+        .withColumn("parentAssets_id", F.col("parentAssets.id"))
+        .withColumn("parentAssets_type", F.col("parentAssets.type"))
     )
 
     estate = (
-        ass2.filter(col("parentAssets_type") == "Estate")
+        ass2.filter(F.col("parentAssets_type") == "Estate")
         .withColumnRenamed("parentAssets_name", "estate_name")
         .withColumnRenamed("parentAssets_id", "estate_id")
     )
@@ -292,7 +293,7 @@ def transform_assets(spark_session):
     )
 
     ass3 = ass3.withColumn(
-        "endoftenuredate", col("tenure.endoftenuredate.string").cast("string")
+        "endoftenuredate", F.col("tenure.endoftenuredate.string").cast("string")
     )
 
     output = ass3.select(
