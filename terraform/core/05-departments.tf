@@ -529,5 +529,5 @@ module "department_children_family_services" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-  google_group_display_name       = "saml-aws-data-platform-collaborator-children-and-families-service@hackney.gov.uk"
+  google_group_display_name       = "saml-aws-data-platform-collaborator-cfs@hackney.gov.uk"
 }
