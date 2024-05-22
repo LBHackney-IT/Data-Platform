@@ -161,12 +161,11 @@ Cycle Hangar allocation details
 Cycle_Hangar_allocation as (
     SELECT 
         *,
-        ROW_NUMBER() OVER ( PARTITION BY party_id
-        ORDER BY party_id, date_of_allocation DESC) row_num
+        ROW_NUMBER() OVER ( PARTITION BY hanger_id, space
+        ORDER BY hanger_id, space, date_of_allocation DESC, fee_due_date DESC) row_num
     FROM liberator_hangar_allocations
     WHERE Import_Date = (Select MAX(Import_Date) from 
-                                liberator_hangar_allocations)
-    AND allocation_status IN ('live')),
+                                liberator_hangar_allocations)),
     
 Street_Rec as (
     SELECT *
@@ -196,8 +195,7 @@ Estreet_Hanger as (
                                     ORDER BY hanger_id, space, hangar_location DESC) H1
     From parking_cycle_hangars_denormalisation_update 
     WHERE import_date = (Select MAX(import_date) 
-            from parking_cycle_hangars_denormalisation_update) and
-    allocation_status = 'live' and key_issued = 'Y'
+            from parking_cycle_hangars_denormalisation_update) and key_issued = 'Y'
     UNION ALL 
     SELECT 'new_only', ' ', 'NEWONLY', 1),
 
