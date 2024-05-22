@@ -64,7 +64,7 @@ resource "aws_kms_alias" "mwaa_key_alias" {
 
 # Create the S3 bucket using the KMS key
 resource "aws_s3_bucket" "mwaa_bucket" {
-  bucket = "dataplatform-${local.short_identifier_prefix}mwaa-bucket"
+  bucket = "${local.identifier_prefix}-mwaa-bucket"
 
   server_side_encryption_configuration {
     rule {
