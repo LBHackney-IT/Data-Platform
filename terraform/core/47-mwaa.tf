@@ -11,7 +11,7 @@ resource "aws_iam_role" "mwaa_role" {
           Service = [
             "airflow-env.amazonaws.com",
             "airflow.amazonaws.com"
-            ]
+          ]
         }
       }
     ]
@@ -121,7 +121,6 @@ resource "aws_security_group_rule" "mwaa_egress" {
 # Create a placeholder file in the S3 bucket, S3 does not support the creation of empty folders
 # To ensure the folders are created otherwise the MWAA environment will fail to create
 resource "aws_s3_bucket_object" "plugins_placeholder" {
-  # bucket  = module.mwaa_bucket.bucket_id
   bucket  = aws_s3_bucket.mwaa_bucket.bucket
   key     = "plugins/.placeholder"
   content = ""
@@ -140,15 +139,15 @@ resource "aws_s3_bucket_object" "requirements_placeholder" {
 }
 
 resource "aws_mwaa_environment" "mwaa" {
-  # count              = local.is_live_environment && !local.is_production_environment ? 1 : 0
-  name               = "${local.identifier_prefix}mwaa-environment"
-  airflow_version    = "2.8.1" # Preinstall python 3.11
-  environment_class  = "mw1.small"
-  execution_role_arn = aws_iam_role.mwaa_role.arn
-  source_bucket_arn = aws_s3_bucket.mwaa_bucket.arn
-  dag_s3_path       = "dags"
-  # plugins_s3_path      = "plugins" # Optional
-  # requirements_s3_path = "requirements/requirements.txt" # Optional
+  count                = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  name                 = "${local.identifier_prefix}-mwaa-environment"
+  airflow_version      = "2.8.1" # latest MWAA on 2024-05-22, preinstall python 3.11
+  environment_class    = "mw1.small"
+  execution_role_arn   = aws_iam_role.mwaa_role.arn
+  source_bucket_arn    = aws_s3_bucket.mwaa_bucket.arn
+  dag_s3_path          = "dags"
+  plugins_s3_path      = "plugins/plugins.zip"           # Optional
+  requirements_s3_path = "requirements/requirements.txt" # Optional
   network_configuration {
     security_group_ids = [aws_security_group.mwaa_sg.id]
     subnet_ids         = slice(data.aws_subnets.network.ids, 0, 2) # Must contain no more than 2 subnet IDs.
@@ -182,6 +181,6 @@ resource "aws_mwaa_environment" "mwaa" {
   max_workers           = 5             # Default 10
   min_workers           = 1             # Default 1
   schedulers            = 2             # Must be between 2 and 5
-  kms_key = aws_kms_key.mwaa_key.arn
-  tags    = module.tags.values
+  kms_key               = aws_kms_key.mwaa_key.arn
+  tags                  = module.tags.values
 }
