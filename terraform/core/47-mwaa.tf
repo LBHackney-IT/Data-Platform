@@ -29,7 +29,7 @@ resource "aws_iam_role_policy" "mwaa_role_policy" {
       {
         Effect   = "Allow",
         Action   = "airflow:PublishMetrics",
-        Resource = "*"
+        Resource = "arn:aws:airflow:*"
       },
       {
         Effect = "Allow",
@@ -54,7 +54,7 @@ resource "aws_iam_role_policy" "mwaa_role_policy" {
           "logs:GetQueryResults",
           "logs:DescribeLogGroups"
         ],
-        Resource = "*"
+        Resource = "arn:aws:logs:*"
       },
       {
         Effect   = "Allow",
