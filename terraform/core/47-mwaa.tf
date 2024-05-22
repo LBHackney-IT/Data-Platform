@@ -95,6 +95,7 @@ resource "aws_security_group" "mwaa_sg" {
   name        = "mwaa_sg"
   description = "Security group for MWAA"
   vpc_id      = data.aws_vpc.network.id
+  tags        = module.tags.values
 }
 
 resource "aws_security_group_rule" "mwaa_ingress" {
@@ -127,26 +128,23 @@ resource "aws_s3_bucket_object" "plugins_placeholder" {
 }
 
 resource "aws_s3_bucket_object" "dags_placeholder" {
-  # bucket  = module.mwaa_bucket.bucket_id
   bucket  = aws_s3_bucket.mwaa_bucket.bucket
   key     = "dags/.placeholder"
   content = ""
 }
 
 resource "aws_s3_bucket_object" "requirements_placeholder" {
-  # bucket  = module.mwaa_bucket.bucket_id
   bucket  = aws_s3_bucket.mwaa_bucket.bucket
   key     = "requirements/.placeholder"
   content = ""
 }
 
 resource "aws_mwaa_environment" "mwaa" {
-  count              = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  # count              = local.is_live_environment && !local.is_production_environment ? 1 : 0
   name               = "dataplatform_${local.short_identifier_prefix}mwaa_environment"
   airflow_version    = "2.8.1" # Preinstall python 3.11
   environment_class  = "mw1.small"
   execution_role_arn = aws_iam_role.mwaa_role.arn
-  # source_bucket_arn  = module.mwaa_bucket.bucket_arn
   source_bucket_arn = aws_s3_bucket.mwaa_bucket.arn
   dag_s3_path       = "dags"
   # plugins_s3_path      = "plugins" # Optional
