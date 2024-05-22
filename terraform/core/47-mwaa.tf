@@ -141,7 +141,7 @@ resource "aws_s3_bucket_object" "requirements_placeholder" {
 
 resource "aws_mwaa_environment" "mwaa" {
   # count              = local.is_live_environment && !local.is_production_environment ? 1 : 0
-  name               = "dataplatform-${local.short_identifier_prefix}mwaa-environment"
+  name               = "${local.identifier_prefix}mwaa-environment"
   airflow_version    = "2.8.1" # Preinstall python 3.11
   environment_class  = "mw1.small"
   execution_role_arn = aws_iam_role.mwaa_role.arn
