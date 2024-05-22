@@ -1,4 +1,6 @@
+from re import S
 import sys
+from typing import Callable
 
 import boto3
 from awsglue.context import GlueContext
@@ -14,7 +16,13 @@ from scripts.helpers.helpers import (
 )
 
 
-def clear_target_folder(s3_bucket_target):
+def clear_target_folder(s3_bucket_target: str):
+    """
+    Clear the target path in S3 by deleting all objects in the folder.
+
+    Args:
+        s3_bucket_target (str): the URI of the target S3 path to clear
+    """
     s3 = boto3.resource("s3")
     folderString = s3_bucket_target.replace("s3://", "")
     bucketName = folderString.split("/")[0]
@@ -24,7 +32,15 @@ def clear_target_folder(s3_bucket_target):
     return
 
 
-def load_table_view(source_catalog_database, table_name, glueContext):
+def load_table_view(source_catalog_database: str, table_name: str, glueContext: GlueContext):
+    """
+    Load a table from the source catalog database into a Spark DataFrame and create a temporary view.
+    
+    Args:
+        source_catalog_database (str): the source catalog database name
+        table_name (str): the table name to load
+        glueContext (GlueContext): the GlueContext object to use for loading the table
+    """
     push_down_predicate_expression = (
         create_pushdown_predicate_for_max_date_partition_value(
             source_catalog_database, table_name, "import_date"
@@ -40,7 +56,16 @@ def load_table_view(source_catalog_database, table_name, glueContext):
     df.createOrReplaceTempView(table_name)
 
 
-def write_dynamic_frame(s3_bucket_target, glue_context, dynamic_frame, table_path):
+def write_dynamic_frame(s3_bucket_target: str, glue_context: GlueContext, dynamic_frame: DynamicFrame, table_path: str):
+    """
+    Write a DynamicFrame to S3 in parquet format.
+
+    Args:
+        s3_bucket_target (str): the URI of the target path in S3
+        glue_context (_type_): the GlueContext object to use for writing the DynamicFrame
+        dynamic_frame (_type_): the DynamicFrame to write
+        table_path (_type_): the prefix to use for the target path in S3
+    """
     glue_context.write_dynamic_frame.from_options(
         frame=dynamic_frame,
         connection_type="s3",
@@ -59,15 +84,28 @@ def write_dynamic_frame(s3_bucket_target, glue_context, dynamic_frame, table_pat
 
 
 def process_table(
-    source_catalog_database,
-    table_name,
-    glue_context,
-    transformation_function,
-    spark_session,
-    s3_bucket_target,
-    table_path,
-    failed_tables,
+    source_catalog_database: str,
+    table_name: str,
+    glue_context: GlueContext,
+    transformation_function: Callable,
+    spark_session: pyspark.sql.session.SparkSession,
+    s3_bucket_target: str,
+    table_path: str,
+    failed_tables: list,
 ):
+    """
+    Process a table by loading it, transforming it, clearing the S3 destination and writing the result to S3.
+
+    Args:
+        source_catalog_database (str): the source catalog database name
+        table_name (str): the table name to process
+        glue_context (GlueContext): the GlueContext object to use for loading and writing the table
+        transformation_function (Callable): the function to use for transforming the table
+        spark_session (pyspark.sql.session.SparkSession): the pyspark.sql.session.SparkSession object to use for transformations
+        s3_bucket_target (str): the URI of the target path in S3
+        table_path (str): the prefix to use for the target path in S3
+        failed_tables (list): a list to append any failed tables to
+    """
     try:
         load_table_view(source_catalog_database, table_name, glue_context)
         transformed_df = transformation_function(spark_session)
@@ -87,7 +125,13 @@ def process_table(
         )
 
 
-def transform_tenureinformation(spark_session):
+def transform_tenureinformation(spark_session: pyspark.sql.session.SparkSession):
+    """
+    Transformation function for the tenureinformation table.
+
+    Args:
+        spark_session (pyspark.sql.session.SparkSession): the pyspark.sql.session.SparkSession object to use for transformations
+    """    
     max_date = spark_session.sql(
         "SELECT max(import_date) as max_date FROM mtfh_tenureinformation"
     ).collect()[0]["max_date"]
@@ -165,7 +209,13 @@ def transform_tenureinformation(spark_session):
     return ten
 
 
-def transform_persons(spark_session):
+def transform_persons(spark_session: pyspark.sql.session.SparkSession):
+    """
+    Transformation function for the persons table.
+
+    Args:
+        spark_session (pyspark.sql.session.SparkSession): the pyspark.sql.session.SparkSession object to use for transformations
+    """    
     max_date = spark_session.sql(
         "SELECT max(import_date) as max_date FROM mtfh_persons"
     ).collect()[0]["max_date"]
@@ -218,7 +268,13 @@ def transform_persons(spark_session):
     return per
 
 
-def transform_contactdetails(spark_session):
+def transform_contactdetails(spark_session: pyspark.sql.session.SparkSession):
+    """
+    Transformation function for the contactdetails table.
+
+    Args:
+        spark_session (pyspark.sql.session.SparkSession): the spark entry point for the transformation
+    """    
     max_date = spark_session.sql(
         "SELECT max(import_date) as max_date FROM mtfh_contactdetails"
     ).collect()[0]["max_date"]
@@ -251,7 +307,7 @@ def transform_contactdetails(spark_session):
     return cont2
 
 
-def transform_assets(spark_session):
+def transform_assets(spark_session: pyspark.sql.session.pyspark.sql.session.SparkSession):
     max_date = spark_session.sql(
         "SELECT max(import_date) as max_date FROM mtfh_assets"
     ).collect()[0]["max_date"]
