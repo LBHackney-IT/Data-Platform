@@ -26,6 +26,8 @@ jobs:
       with:
         files: |
           **.py
+        files_ignore: |
+          scripts/jobs/parking/**/*.py
 
     - name: Lint Changed Python Files
       if: steps.changed-files.outputs.any_changed == 'true'
