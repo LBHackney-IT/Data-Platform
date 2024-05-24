@@ -132,10 +132,11 @@ resource "aws_s3_bucket_object" "dags_placeholder" {
   content = ""
 }
 
-resource "aws_s3_bucket_object" "requirements_placeholder" {
-  bucket  = aws_s3_bucket.mwaa_bucket.bucket
-  key     = "requirements/.placeholder"
-  content = ""
+resource "aws_s3_object" "requirements" {
+  bucket      = aws_s3_bucket.mwaa_bucket.bucket
+  key         = "requirements/requirements.txt"
+  source      = "${path.module}/../../mwaa/requirements.txt"
+  source_hash = filebase64sha256("${path.module}/../../mwaa/requirements.txt")
 }
 
 resource "aws_mwaa_environment" "mwaa" {
