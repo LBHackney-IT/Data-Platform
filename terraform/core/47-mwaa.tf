@@ -184,4 +184,11 @@ resource "aws_mwaa_environment" "mwaa" {
   schedulers            = 2             # Must be between 2 and 5
   kms_key               = aws_kms_key.mwaa_key.arn
   tags                  = module.tags.values
+
+  airflow_configuration_options = {
+    "core.default_timezone"               = "utc"
+    "webserver.warn_deployment_exposure"  = "False"
+    "webserver.auto_refresh"              = "True"
+    "scheduler.min_file_process_interval" = "180"
+  }
 }
