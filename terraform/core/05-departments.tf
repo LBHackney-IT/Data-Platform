@@ -514,7 +514,7 @@ module "department_children_family_services" {
   application                     = local.application_snake
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
-  name                            = "Children Family Services"
+  name                            = "Child Fam Services"
   landing_zone_bucket             = module.landing_zone
   raw_zone_bucket                 = module.raw_zone
   refined_zone_bucket             = module.refined_zone
