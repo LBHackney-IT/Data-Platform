@@ -558,20 +558,20 @@ if __name__ == "__main__":
     accounts5 = accounts4.join(case_priorities, accounts4.tenancy_ref == case_priorities.tenancy_ref2, "left")
 
     accounts6 = accounts5.selectExpr("AccountReference as AccountReference",
-                                 # "TenureType",
-                                 #  "TenureTypeCode",
-                                 # "max_date as TenancyStartDate",
-                                 "TenancyEndDate",
-                                 "LocalAuthority",
-                                 # "HousingOfficerName",
-                                 "Patch",
-                                 "'Hackney' as Region",
-                                 #   "import_date as import_date",
-                                 #  "tenancy_ref as TenReference",
-                                 #  "is_paused_until as BreathingSpaceEndDate",
-                                 "Case when Deceased=1 then 'Y' else 'N' end as Deceased"
-                                 #  "previousweekbalance"
-                                 )
+                                     # "TenureType",
+                                     #  "TenureTypeCode",
+                                     # "max_date as TenancyStartDate",
+                                     "TenancyEndDate",
+                                     "LocalAuthority",
+                                     # "HousingOfficerName",
+                                     "Patch",
+                                     "'Hackney' as Region",
+                                     #   "import_date as import_date",
+                                     #  "tenancy_ref as TenReference",
+                                     #  "is_paused_until as BreathingSpaceEndDate",
+                                     "Case when Deceased=1 then 'Y' else 'N' end as Deceased"
+                                     #  "previousweekbalance"
+                                     )
 
     accounts7 = accounts6.filter("AccountReference is not null")
 
