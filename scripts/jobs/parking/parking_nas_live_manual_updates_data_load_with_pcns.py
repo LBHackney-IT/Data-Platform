@@ -518,7 +518,7 @@ order by parking_nas_live_manual_updates_data_load.timestamp desc
 SQLQuery_node1716380336388 = sparkSqlQuery(glueContext, query = SqlQuery0, mapping = {"pcnfoidetails_pcn_foi_full":LiberatorRefinedpcnfoidetails_pcn_foi_full_node1716380330290, "parking_nas_live_manual_updates_data_load":parking_raw_zoneparking_nas_live_manual_updates_data_load_node1716380310939}, transformation_ctx = "SQLQuery_node1716380336388")
 
 # Script generated for node Amazon S3
-AmazonS3_node1716380345114 = glueContext.getSink(path="s3://dataplatform-stg-refined-zone/parking/liberator/parking_nas_live_manual_updates_data_load_with_pcns/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=["import_year", "import_month", "import_day", "import_date"], enableUpdateCatalog=True, transformation_ctx="AmazonS3_node1716380345114")
+AmazonS3_node1716380345114 = glueContext.getSink(path=f"s3://dataplatform-{environment}-refined-zone/parking/liberator/parking_nas_live_manual_updates_data_load_with_pcns/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=["import_year", "import_month", "import_day", "import_date"], enableUpdateCatalog=True, transformation_ctx="AmazonS3_node1716380345114")
 AmazonS3_node1716380345114.setCatalogInfo(catalogDatabase="parking-refined-zone",catalogTableName="parking_nas_live_manual_updates_data_load_with_pcns")
 AmazonS3_node1716380345114.setFormat("glueparquet", compression="snappy")
 AmazonS3_node1716380345114.writeFrame(SQLQuery_node1716380336388)
