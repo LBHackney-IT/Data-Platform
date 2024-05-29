@@ -549,32 +549,30 @@ if __name__ == "__main__":
 
     accounts4 = accounts3.join(df_agg, accounts3.AccountReference == df_agg.AccountR, "left")
 
-    case_priorities = case_priorities.filter(F.col("is_paused_until") > today)
+    case_priorities = case_priorities.filter(F.col("pause_reason") == "Deceased")
 
-    # filter("is_paused_until>now()")
+    case_priorities = case_priorities.withColumn('Deceased', lit(1))\
+                                 .drop("import_date")\
+                                 .withColumnRenamed("tenancy_ref","tenancy_ref2")
 
-    case_priorities = case_priorities.withColumn('BreathingSpace', lit(1)) \
-        .drop("import_date") \
-        .withColumnRenamed("tenancy_ref", "tenancy_ref2")
-
-    accounts5 = accounts4.join(case_priorities, accounts4.tenancy_ref == case_priorities.tenancy_ref2, "left")
+    accounts5 = accounts4.join(case_priorities,accounts4.tenancy_ref ==  case_priorities.tenancy_ref2,"left")
 
     accounts6 = accounts5.selectExpr("AccountReference as AccountReference",
                                      # "TenureType",
                                      #  "TenureTypeCode",
-                                     "max_date as TenancyStartDate",
+                                     #"max_date as TenancyStartDate",
                                      "TenancyEndDate",
                                      "LocalAuthority",
-                                     "HousingOfficerName",
+                                     #"HousingOfficerName",
                                      "Patch",
                                      "'Hackney' as Region",
                                      #   "import_date as import_date",
                                      #  "tenancy_ref as TenReference",
-                                     "Case when BreathingSpace=1 then 'TRUE' else 'FALSE' end as BreathingSpace",
                                      #  "is_paused_until as BreathingSpaceEndDate",
-                                     "'N' as Deceased"
+                                     "Case when Deceased=1 then 'Y' else 'N' end as Deceased"
                                      #  "previousweekbalance"
                                      )
+
 
     accounts7 = accounts6.filter("AccountReference is not null")
 
