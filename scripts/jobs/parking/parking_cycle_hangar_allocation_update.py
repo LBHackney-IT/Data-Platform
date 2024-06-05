@@ -294,7 +294,7 @@ FROM Output
 SQL_node1658765472050 = sparkSqlQuery(glueContext, query = SqlQuery211, mapping = {"parking_parking_ops_cycle_hangar_list":AmazonS3_node1658997944648, "parking_cycle_hangars_denormalisation":AmazonS3_node1697704537304, "liberator_hangar_waiting_list":AmazonS3_node1697704672904, "liberator_licence_party":AmazonS3_node1697704891824, "liberator_permit_llpg":AmazonS3_node1697705005761, "liberator_hangar_allocations":AmazonS3_node1697705499200, "parking_cycle_hangars_denormalisation_update":AmazonS3_node1701953849263, "liberator_hangar_waiting_list_history":AmazonS3_node1716559486816}, transformation_ctx = "SQL_node1658765472050")
 
 # Script generated for node Amazon S3
-AmazonS3_node1658765590649 = glueContext.getSink(path="s3://dataplatform-" + environment + "-refined-zone/parking/parking_cycle_hangar_allocation_update/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=["import_year", "import_month", "import_day"], enableUpdateCatalog=True, transformation_ctx="AmazonS3_node1658765590649")
+AmazonS3_node1658765590649 = glueContext.getSink(path="s3://dataplatform-" + environment + "-refined-zone/parking/parking_cycle_hangar_allocation_update/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=PARTITION_KEYS, enableUpdateCatalog=True, transformation_ctx="AmazonS3_node1658765590649")
 AmazonS3_node1658765590649.setCatalogInfo(catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",catalogTableName="parking_cycle_hangar_allocation_update")
 AmazonS3_node1658765590649.setFormat("glueparquet", compression="snappy")
 AmazonS3_node1658765590649.writeFrame(SQL_node1658765472050)
