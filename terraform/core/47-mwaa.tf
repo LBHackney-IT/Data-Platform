@@ -82,6 +82,13 @@ resource "aws_iam_role_policy" "mwaa_role_policy" {
           "kms:Encrypt"
         ],
         Resource = aws_kms_key.mwaa_key.arn
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = ["arn:aws:secretsmanager:${var.aws_deploy_region}:${var.aws_deploy_account_id}:secret:airflow/connections/*"]
       }
     ]
   })
@@ -190,5 +197,11 @@ resource "aws_mwaa_environment" "mwaa" {
     "webserver.warn_deployment_exposure"  = "False"
     "webserver.auto_refresh"              = "True"
     "scheduler.min_file_process_interval" = "180"
+    "secrets.backend"                     = "airflow.providers.amazon.aws.secrets.secrets_manager.SecretsManagerBackend"
+    "secrets.backend_kwargs" = jsonencode({
+      "connections_prefix" : "airflow/connections",
+      "variables_prefix" : "airflow/variables",
+      "config_prefix" : "airflow/config"
+    })
   }
 }
