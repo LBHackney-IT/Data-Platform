@@ -33,6 +33,7 @@ case when b.last_update_date is null then 0
 else cast(regexp_replace(b.last_update_date, '-', '') as integer) end as last_update_date, 
 b.postcode_locator,
 cls.classification_code,
+cls.usage_primary,
 cls.usage_description,
 cls.planning_use_class,
 latestorg.organisation,
@@ -65,6 +66,7 @@ b.start_date as blpu_start_date,
 b.end_date as blpu_end_date, 
 b.last_update_date as blpu_last_update_date,
 b.classification_code as blpu_class, 
+b.usage_primary,
 b.usage_description,
 b.planning_use_class,
 false as property_shell,
@@ -77,7 +79,7 @@ cast(l.sao_end_number as integer),
 l.sao_end_suffix,
 cast(l.sao_start_number as integer) as unit_number,
 l.pao_text as pao_text,
-cast(l.pao_start_number as integer),
+cast(l.pao_start_number as integer) as paon_start_num,
 l.pao_start_suffix,
 cast(l.pao_end_number as integer),
 l.pao_end_suffix,
@@ -101,13 +103,13 @@ left join STREETDESC s on s.usrn=l.usrn;
 create_building_number_query = """
 select a.*,  
 (case
-when pao_start_number is not null then pao_start_number else '' end
+when paon_start_num is not null then paon_start_num else '' end
 --case statement for different combinations of the pao start suffixes
 ||case
 when pao_start_suffix is not null then pao_start_suffix else '' end
 --Add a '-' between the start and end of the primary address (e.g. only when pao start and pao end)
 ||case
-when pao_start_number is not null and pao_end_number is not null then '-' else '' end
+when paon_start_num is not null and pao_end_number is not null then '-' else '' end
 --case statement for different combinations of the pao end numbers and pao end suffixes
 ||case
 when pao_end_number is not null then pao_end_number else '' end
@@ -231,6 +233,7 @@ if __name__ == "__main__":
         .option("header", "true") \
         .load(args['blpu_class_lookup_path']) \
         .select(["blpu_class", "usage_description", "planning_use_class"])
+    df_blpu_class_lookup = df_blpu_class_lookup.withColumn("usage_primary", split(col("usage_description"), ",").getItem(0))
 
     df_32 = df_32.join(df_blpu_class_lookup, df_32.CLASSIFICATION_CODE == df_blpu_class_lookup.blpu_class, "left")
 
