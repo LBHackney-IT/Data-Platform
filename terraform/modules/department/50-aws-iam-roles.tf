@@ -75,7 +75,7 @@ resource "aws_iam_role_policy_attachment" "glue_agent_policy_attachment" {
 # IAM user and permission for departmetnal Airflow user
 resource "aws_iam_user" "airflow_user" {
   count = var.departmental_airflow_user ? 1 : 0
-  name  = "${local.department_identifier}_airflow_user"
+  name  = "${local.department_identifier}-airflow-user"
   tags  = var.tags
 }
 
@@ -93,7 +93,7 @@ resource "aws_iam_access_key" "airflow_user_key" {
 # Store Airflow user credentials in Secrets Manager with required format
 resource "aws_secretsmanager_secret" "airflow_user_secret" {
   count = var.departmental_airflow_user ? 1 : 0
-  name  = "${local.department_identifier}_airflow_aws_default"
+  name  = "${local.department_identifier}-airflow-aws-default"
 }
 
 resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
