@@ -30,3 +30,15 @@ variable "notebook_instance" {
   })
   default = null
 }
+
+variable "departmental_airflow_user" {
+  description = "Flag to create departmental Airflow user"
+  type        = bool
+  default     = false
+}
+
+variable "region" {
+  description = "AWS region"
+  type        = string
+  default     = "us-west-2"
+}

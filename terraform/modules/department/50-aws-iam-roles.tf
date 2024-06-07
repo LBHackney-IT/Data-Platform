@@ -1,4 +1,4 @@
-// User Role for staging account - This role is a combination of policies ready to be applied to SSO 
+// User Role for staging account - This role is a combination of policies ready to be applied to SSO
 data "aws_iam_policy_document" "sso_staging_user_policy" {
   override_policy_documents = local.create_notebook ? [
     data.aws_iam_policy_document.s3_department_access.json,
@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "sso_staging_user_policy" {
   ]
 }
 
-// User Role for production account - This role is a combination of policies ready to be applied to SSO 
+// User Role for production account - This role is a combination of policies ready to be applied to SSO
 data "aws_iam_policy_document" "sso_production_user_policy" {
   override_policy_documents = [
     data.aws_iam_policy_document.read_only_s3_department_access.json,
@@ -41,6 +41,7 @@ data "aws_iam_policy_document" "glue_agent_assume_role" {
   }
 }
 
+# Permissions for the departmental glue agent
 resource "aws_iam_role" "glue_agent" {
   tags = var.tags
 
@@ -48,48 +49,60 @@ resource "aws_iam_role" "glue_agent" {
   assume_role_policy = data.aws_iam_policy_document.glue_agent_assume_role.json
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_s3_access" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.s3_access.arn
+
+# Define a map for the policies
+locals {
+  policy_map = {
+    s3_access                                      = aws_iam_policy.s3_access.arn,
+    glue_can_write_to_cloudwatch                   = aws_iam_policy.glue_can_write_to_cloudwatch.arn,
+    glue_scripts_read_only                         = aws_iam_policy.glue_scripts_read_only.arn,
+    secrets_manager_read_only                      = aws_iam_policy.secrets_manager_read_only.arn,
+    full_glue_access                               = aws_iam_policy.full_glue_access.arn,
+    crawler_can_access_jdbc_connection             = aws_iam_policy.crawler_can_access_jdbc_connection.arn,
+    full_s3_access_to_glue_resources               = aws_iam_policy.full_s3_access_to_glue_resources.arn,
+    glue_access_to_watermarks_table                = aws_iam_policy.glue_access_to_watermarks_table.arn,
+    glue_runner_pass_role_to_glue_for_notebook_use = aws_iam_policy.glue_runner_pass_role_to_glue_for_notebook_use.arn,
+  }
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agents_secrets_manager_read_only" {
+# Attach policies to the departmental Glue IAM role
+resource "aws_iam_role_policy_attachment" "glue_agent_policy_attachment" {
+  for_each   = local.policy_map
   role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.glue_can_write_to_cloudwatch.arn
+  policy_arn = each.value
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_scripts_read_only" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.glue_scripts_read_only.arn
+# IAM user and permission for departmetnal Airflow user
+resource "aws_iam_user" "airflow_user" {
+  count = var.departmental_airflow_user ? 1 : 0
+  name  = "${local.department_identifier}_airflow_user"
+  tags  = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_can_write_to_cloudwatch" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.secrets_manager_read_only.arn
+resource "aws_iam_user_policy_attachment" "airflow_user_policy_attachment" {
+  for_each   = var.departmental_airflow_user ? local.policy_map : {}
+  user       = aws_iam_user.airflow_user[0].name
+  policy_arn = each.value
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_full_access" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.full_glue_access.arn
+resource "aws_iam_access_key" "airflow_user_key" {
+  count = var.departmental_airflow_user ? 1 : 0
+  user  = aws_iam_user.airflow_user[0].name
 }
 
-resource "aws_iam_role_policy_attachment" "crawler_can_access_jdbc_connection" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.crawler_can_access_jdbc_connection.arn
+# Store Airflow user credentials in Secrets Manager with required format
+resource "aws_secretsmanager_secret" "airflow_user_secret" {
+  count = var.departmental_airflow_user ? 1 : 0
+  name  = "${local.department_identifier}_airflow_aws_default"
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_has_full_s3_access_to_glue_resources" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.full_s3_access_to_glue_resources.arn
-}
-
-resource "aws_iam_role_policy_attachment" "glue_access_to_watermarks_table" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.glue_access_to_watermarks_table.arn
-}
-
-resource "aws_iam_role_policy_attachment" "glue_runner_pass_role_to_glue_for_notebook_use" {
-  count      = var.environment == "prod" ? 0 : 1
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.glue_runner_pass_role_to_glue_for_notebook_use.arn
+resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
+  count     = var.departmental_airflow_user ? 1 : 0
+  secret_id = aws_secretsmanager_secret.airflow_user_secret[0].id
+  secret_string = jsonencode({
+    conn_type = "aws",
+    login     = aws_iam_access_key.airflow_user_key[0].id,
+    password  = aws_iam_access_key.airflow_user_key[0].secret,
+    extra     = jsonencode({ region_name = var.region })
+  })
 }
