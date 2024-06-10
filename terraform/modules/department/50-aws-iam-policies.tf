@@ -773,3 +773,69 @@ resource "aws_iam_policy" "glue_runner_pass_role_to_glue_for_notebook_use" {
   name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-runner-pass-role-to-glue-for-notebook-use")
   policy = data.aws_iam_policy_document.glue_runner_pass_role_to_glue_for_notebook_use.json
 }
+
+# create a base policy for the departmental airflow user
+data "aws_iam_policy_document" "airflow_base_policy" {
+  statement {
+    sid    = "AirflowLogsPolicy"
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:CreateLogGroup",
+      "logs:PutLogEvents",
+      "logs:GetLogEvents",
+      "logs:GetLogRecord",
+      "logs:GetLogGroupFields",
+      "logs:GetQueryResults",
+      "logs:DescribeLogGroups"
+    ]
+    resources = ["arn:aws:logs:*"]
+  }
+
+  statement {
+    sid    = "AirflowGluePolicy"
+    effect = "Allow"
+    actions = [
+      "glue:GetCrawler",
+      "glue:GetCrawlerMetrics",
+      "glue:GetCrawlers",
+      "glue:ListCrawlers",
+      "glue:StartCrawler",
+      "glue:StopCrawler",
+      "glue:UpdateCrawler",
+      "glue:UpdateCrawlerSchedule"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AirflowAthenaPolicy"
+    effect = "Allow"
+    actions = [
+      "athena:StartQueryExecution",
+      "athena:GetQueryExecution",
+      "athena:GetQueryResults",
+      "athena:ListDatabases",
+      "athena:ListTableMetadata",
+      "athena:GetTableMetadata"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AirflowKmsPolicy"
+    effect = "Allow"
+    actions = [
+      "kms:*"
+    ]
+    # This can be refined later but not urgent
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "airflow_base_policy" {
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-ariflow-base-policy")
+  policy = data.aws_iam_policy_document.airflow_base_policy.json
+}
