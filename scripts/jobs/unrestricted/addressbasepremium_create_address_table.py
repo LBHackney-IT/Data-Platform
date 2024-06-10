@@ -45,7 +45,7 @@ left join XREF xref on xref.uprn=b.uprn
 join_lpi_query = """
 SELECT
 l.lpi_key,
-(case 
+(case
 when l.logical_status = '1' then 'Approved Preferred'
 when l.logical_status = '3' then 'Alternative'
 when l.logical_status = '6' then 'Provisional'
@@ -177,7 +177,7 @@ if __name__ == "__main__":
     logger = glueContext.get_logger()
     job = Job(glueContext)
     job.init(args['JOB_NAME'], args)
-    logger.info(f'The job is starting.')
+    logger.info('The job is starting.')
 
     # Prepare organisation table (DTF type 31) by only keeping the last org for a given UPRN
     logger.info('Preparing Organisation records')
@@ -239,7 +239,7 @@ if __name__ == "__main__":
     df_32.createOrReplaceTempView('CLASSIF')
 
     # Prepare BLPU records (DTF type 21) and join them with wards, orgs and classification
-    logger.info(f'Preparing BLPU records and join them with wards, orgs and classification')
+    logger.info('Preparing BLPU records and join them with wards, orgs and classification')
 
     df_21 = spark.read \
         .format("csv") \
