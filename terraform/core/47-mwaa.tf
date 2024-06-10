@@ -88,7 +88,11 @@ resource "aws_iam_role_policy" "mwaa_role_policy" {
         Action = [
           "secretsmanager:GetSecretValue"
         ],
-        Resource = ["arn:aws:secretsmanager:${var.aws_deploy_region}:${var.aws_deploy_account_id}:secret:airflow/connections/*"]
+        Resource = [
+          "arn:aws:secretsmanager:${var.aws_deploy_region}:${var.aws_deploy_account_id}:secret:airflow/connections/*",
+          "arn:aws:secretsmanager:${var.aws_deploy_region}:${var.aws_deploy_account_id}:secret:airflow/variables/*",
+          "arn:aws:secretsmanager:${var.aws_deploy_region}:${var.aws_deploy_account_id}:secret:airflow/config/*"
+        ]
       }
     ]
   })
