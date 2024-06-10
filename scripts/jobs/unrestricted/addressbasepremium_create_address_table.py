@@ -233,7 +233,8 @@ if __name__ == "__main__":
         .option("header", "true") \
         .load(args['blpu_class_lookup_path']) \
         .select(["blpu_class", "usage_description", "planning_use_class"])
-    df_blpu_class_lookup = df_blpu_class_lookup.withColumn("usage_primary", split(col("usage_description"), ",").getItem(0))
+    df_blpu_class_lookup = df_blpu_class_lookup.withColumn("usage_primary",
+                                                           split(col("usage_description"), ",").getItem(0))
 
     df_32 = df_32.join(df_blpu_class_lookup, df_32.CLASSIFICATION_CODE == df_blpu_class_lookup.blpu_class, "left")
 
