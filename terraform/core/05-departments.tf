@@ -530,4 +530,5 @@ module "department_children_family_services" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-cfs@hackney.gov.uk"
+  departmental_airflow_user       = true
 }
