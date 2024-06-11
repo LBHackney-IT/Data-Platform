@@ -799,11 +799,12 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "glue:GetCrawler",
       "glue:GetCrawlerMetrics",
       "glue:GetCrawlers",
+      "glue:GetDatabase",
       "glue:ListCrawlers",
       "glue:StartCrawler",
       "glue:StopCrawler",
       "glue:UpdateCrawler",
-      "glue:UpdateCrawlerSchedule"
+      "glue:UpdateCrawlerSchedule",
     ]
     resources = ["*"]
   }
@@ -830,6 +831,17 @@ data "aws_iam_policy_document" "airflow_base_policy" {
     ]
     # This can be refined later but not urgent
     resources = ["*"]
+  }
+
+  statement {
+    sid    = "DepartmentPassRole"
+    effect = "Allow"
+    actions = [
+      "iam:PassRole"
+    ]
+    resources = [
+      aws_iam_role.glue_agent.arn
+    ]
   }
 }
 
