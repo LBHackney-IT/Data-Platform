@@ -799,11 +799,12 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "glue:GetCrawler",
       "glue:GetCrawlerMetrics",
       "glue:GetCrawlers",
+      "glue:GetDatabase",
       "glue:ListCrawlers",
       "glue:StartCrawler",
       "glue:StopCrawler",
       "glue:UpdateCrawler",
-      "glue:UpdateCrawlerSchedule"
+      "glue:UpdateCrawlerSchedule",
     ]
     resources = ["*"]
   }
