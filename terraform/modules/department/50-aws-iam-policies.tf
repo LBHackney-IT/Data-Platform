@@ -832,17 +832,6 @@ data "aws_iam_policy_document" "airflow_base_policy" {
     # This can be refined later but not urgent
     resources = ["*"]
   }
-
-  statement {
-    sid    = "DepartmentPassRole"
-    effect = "Allow"
-    actions = [
-      "iam:PassRole"
-    ]
-    resources = [
-      aws_iam_role.glue_agent.arn
-    ]
-  }
 }
 
 resource "aws_iam_policy" "airflow_base_policy" {
