@@ -132,24 +132,27 @@ resource "aws_security_group_rule" "mwaa_egress" {
   description       = "Allow all outbound traffic"
 }
 
-# Create a placeholder file in the S3 bucket, S3 does not support the creation of empty folders
-# To ensure the folders are created otherwise the MWAA environment will fail to create
+# Create an empty placeholder folder in the S3 bucket
+# Otherwise the MWAA environment will fail to create
 resource "aws_s3_object" "plugins_placeholder" {
-  bucket  = aws_s3_bucket.mwaa_bucket.bucket
-  key     = "plugins/.placeholder"
-  content = ""
+  bucket       = aws_s3_bucket.mwaa_bucket.bucket
+  key          = "plugins/"
+  content_type = "application/x-directory"
+  acl          = "private"
 }
 
 resource "aws_s3_object" "dags_placeholder" {
-  bucket  = aws_s3_bucket.mwaa_bucket.bucket
-  key     = "dags/.placeholder"
-  content = ""
+  bucket       = aws_s3_bucket.mwaa_bucket.bucket
+  key          = "dags/"
+  content_type = "application/x-directory"
+  acl          = "private"
 }
 
 resource "aws_s3_object" "requirements_placeholder" {
-  bucket  = aws_s3_bucket.mwaa_bucket.bucket
-  key     = "requirements/.placeholder"
-  content = ""
+  bucket       = aws_s3_bucket.mwaa_bucket.bucket
+  key          = "requirements/"
+  content_type = "application/x-directory"
+  acl          = "private"
 }
 
 resource "aws_mwaa_environment" "mwaa" {
