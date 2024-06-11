@@ -124,7 +124,7 @@ resource "aws_iam_access_key" "airflow_user_key" {
 # Store airflow user credentials in Secrets Manager with required format
 resource "aws_secretsmanager_secret" "airflow_user_secret" {
   count = var.departmental_airflow_user ? 1 : 0
-  name  = "${local.department_identifier}-airflow-aws-default"
+  name  = "airflow/connections/${local.department_identifier}-airflow-aws-default"
 }
 
 resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
