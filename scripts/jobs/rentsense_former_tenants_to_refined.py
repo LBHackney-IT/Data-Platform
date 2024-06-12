@@ -4,7 +4,6 @@ import sys
 import boto3
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
-from awsglue.transforms import DropFields
 from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
 from pyspark.context import SparkContext
@@ -12,7 +11,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.functions import col, lit, to_date, date_sub, current_date, substring, to_timestamp, date_format
 from io import BytesIO
 
-from scripts.helpers.helpers import move_file, rename_file, get_latest_partitions_optimized, \
+from scripts.helpers.helpers import get_latest_partitions_optimized, \
     add_import_time_columns, PARTITION_KEYS, clear_target_folder
 
 if __name__ == "__main__":
@@ -553,8 +552,8 @@ if __name__ == "__main__":
     case_priorities = case_priorities.filter(F.col("pause_reason") == "Deceased")
 
     case_priorities = case_priorities.withColumn('Deceased', lit(1)) \
-                                     .drop("import_date") \
-                                     .withColumnRenamed("tenancy_ref", "tenancy_ref2")
+        .drop("import_date") \
+        .withColumnRenamed("tenancy_ref", "tenancy_ref2")
 
     accounts5 = accounts4.join(case_priorities, accounts4.tenancy_ref == case_priorities.tenancy_ref2, "left")
 
@@ -593,11 +592,11 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formeraccounts', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    output = accounts9.toPandas()        
+    output = accounts9.toPandas()
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)        
-    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formeraccounts.xml")
+    xml_buffer.seek(0)
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formeraccounts.xml")
 
     # Arrangements
 
@@ -645,11 +644,11 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formerarrangements', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    output = output.toPandas()        
+    output = output.toPandas()
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)        
-    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formerarrangements.xml")
+    xml_buffer.seek(0)
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formerarrangements.xml")
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
 
@@ -736,7 +735,7 @@ if __name__ == "__main__":
 
     tens = tens.fillna({'FirstName': '.', 'SurName': '.', 'PropertyAddress': '.'})
     output = tens
-    
+
     tens = add_import_time_columns(tens)
 
     dynamic_frame = DynamicFrame.fromDF(tens.repartition(1), glueContext, "target_data_to_write")
@@ -750,12 +749,12 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formertenants', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    output = output.toPandas()        
+    output = output.toPandas()
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)        
-    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formertenants.xml")
-    
+    xml_buffer.seek(0)
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formertenants.xml")
+
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
 
@@ -792,12 +791,12 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formerbalances', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    output = output.toPandas()        
+    output = output.toPandas()
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)        
-    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formerbalances.xml")
-    
+    xml_buffer.seek(0)
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formerbalances.xml")
+
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
 
@@ -839,11 +838,11 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formeractions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    output = output.toPandas()        
+    output = output.toPandas()
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)        
-    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formeractions.xml")
+    xml_buffer.seek(0)
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formeractions.xml")
 
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
@@ -892,11 +891,11 @@ if __name__ == "__main__":
         transformation_ctx="target_data_to_write")
 
     # xml
-    output = output.toPandas()        
+    output = output.toPandas()
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)        
-    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formertransactions.xml")
+    xml_buffer.seek(0)
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formertransactions.xml")
 
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
