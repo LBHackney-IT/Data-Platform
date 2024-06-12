@@ -70,6 +70,21 @@ resource "aws_security_group" "qlik_sense" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  # Ingress rules for SMB from FME to Qlik
+  ingress {
+    from_port   = 139
+    to_port     = 139
+    protocol    = "tcp"
+    cidr_blocks = ["10.151.11.27/32"]  # Replace with specific IP ranges for better security
+  }
+
+  ingress {
+    from_port   = 445
+    to_port     = 445
+    protocol    = "tcp"
+    cidr_blocks = ["10.151.11.27/32"]  # Replace with specific IP ranges for better security
+  }
+
   ingress {
     description      = "Allow inbound HTTP traffic"
     from_port        = 80
