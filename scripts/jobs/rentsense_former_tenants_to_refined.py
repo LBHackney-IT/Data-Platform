@@ -10,6 +10,7 @@ from awsglue.job import Job
 from pyspark.context import SparkContext
 import pyspark.sql.functions as F
 from pyspark.sql.functions import col, lit, to_date, date_sub, current_date, substring, to_timestamp, date_format
+from io import BytesIO
 
 from scripts.helpers.helpers import move_file, rename_file, get_latest_partitions_optimized, \
     add_import_time_columns, PARTITION_KEYS, clear_target_folder
@@ -592,28 +593,11 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formeraccounts', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    dynamic_frame = DropFields.apply(dynamic_frame,
-                                     paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month',
-                                            'import_day'])
-
-    parquet_data = glueContext.write_dynamic_frame.from_options(
-        frame=dynamic_frame,
-        connection_type="s3",
-        format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target + '/gzip/formeraccounts', "compression": "gzip",
-                            "partitionKeys": ['import_date']},
-        transformation_ctx="target_data_to_write")
-
-    # rename file
-    filename = "/rent.formeraccounts%s.csv.gz" % today.strftime("%Y%m%d")
-    rename_file(s3_bucket, "housing/rentsense-ft/gzip/formeraccounts", filename)
-
-    # move file to export folder
-    move_file(s3_bucket, "housing/rentsense-ft/gzip/formeraccounts/", export_target_path,
-              "rent.formeraccounts%s.csv.gz" % today.strftime("%Y%m%d"))
-
-    # copy file to landing folder
-    # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
+    output = accounts9.toPandas()        
+    xml_buffer = BytesIO()
+    output.to_xml(xml_buffer, parser='etree')
+    xml_buffer.seek(0)        
+    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formeraccounts.xml")
 
     # Arrangements
 
@@ -646,6 +630,7 @@ if __name__ == "__main__":
                          )
 
     arr = arr.distinct()
+    ouput = arr
     arr = add_import_time_columns(arr)
     arr = arr.filter(col("AgreementEndDate").isNull())
 
@@ -660,25 +645,11 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formerarrangements', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    dynamic_frame = DropFields.apply(dynamic_frame,
-                                     paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month',
-                                            'import_day'])
-
-    parquet_data = glueContext.write_dynamic_frame.from_options(
-        frame=dynamic_frame,
-        connection_type="s3",
-        format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target + '/gzip/formerarrangements', "compression": "gzip",
-                            "partitionKeys": ['import_date']},
-        transformation_ctx="target_data_to_write")
-
-    filename = "/rent.formerarrangements%s.csv.gz" % today.strftime("%Y%m%d")
-    rename_file(s3_bucket, "housing/rentsense-ft/gzip/formerarrangements", filename)
-
-    # move file to export folder
-    move_file(s3_bucket, "housing/rentsense-ft/gzip/formerarrangements/", export_target_path,
-              "rent.formerarrangements%s.csv.gz" % today.strftime("%Y%m%d"))
-
+    output = output.toPandas()        
+    xml_buffer = BytesIO()
+    output.to_xml(xml_buffer, parser='etree')
+    xml_buffer.seek(0)        
+    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formerarrangements.xml")
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
 
@@ -764,7 +735,8 @@ if __name__ == "__main__":
     tens = tens.distinct()
 
     tens = tens.fillna({'FirstName': '.', 'SurName': '.', 'PropertyAddress': '.'})
-
+    output = tens
+    
     tens = add_import_time_columns(tens)
 
     dynamic_frame = DynamicFrame.fromDF(tens.repartition(1), glueContext, "target_data_to_write")
@@ -778,24 +750,14 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formertenants', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    dynamic_frame = DropFields.apply(dynamic_frame,
-                                     paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month',
-                                            'import_day'])
-
-    parquet_data = glueContext.write_dynamic_frame.from_options(
-        frame=dynamic_frame,
-        connection_type="s3",
-        format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target + '/gzip/formertenants', "compression": "gzip",
-                            "partitionKeys": ['import_date']},
-        transformation_ctx="target_data_to_write")
-
-    filename = "/rent.formertenants%s.csv.gz" % today.strftime("%Y%m%d")
-    rename_file(s3_bucket, "housing/rentsense-ft/gzip/formertenants", filename)
-
-    # move file to export folder
-    move_file(s3_bucket, "housing/rentsense-ft/gzip/formertenants/", export_target_path,
-              "rent.formertenants%s.csv.gz" % today.strftime("%Y%m%d"))
+    output = output.toPandas()        
+    xml_buffer = BytesIO()
+    output.to_xml(xml_buffer, parser='etree')
+    xml_buffer.seek(0)        
+    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formertenants.xml")
+    
+    # copy file to landing folder
+    # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
 
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
@@ -816,6 +778,7 @@ if __name__ == "__main__":
                                    )
 
     balances = balances.distinct()
+    output = balances
 
     balances = add_import_time_columns(balances)
 
@@ -829,27 +792,12 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formerbalances', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    dynamic_frame = DropFields.apply(dynamic_frame,
-                                     paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month',
-                                            'import_day'])
-    # gzip_version
-
-    parquet_data = glueContext.write_dynamic_frame.from_options(
-        frame=dynamic_frame,
-        connection_type="s3",
-        format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target + '/gzip/formerbalances', "compression": "gzip",
-                            "partitionKeys": ['import_date']},
-        transformation_ctx="target_data_to_write")
-
-    filename = "/rent.formerbalances%s.csv.gz" % today.strftime("%Y%m%d")
-    rename_file(s3_bucket, "housing/rentsense-ft/gzip/formerbalances", filename)
-
-    # move file to export folder
-
-    move_file(s3_bucket, "housing/rentsense-ft/gzip/formerbalances/", export_target_path,
-              "rent.formerbalances%s.csv.gz" % today.strftime("%Y%m%d"))
-
+    output = output.toPandas()        
+    xml_buffer = BytesIO()
+    output.to_xml(xml_buffer, parser='etree')
+    xml_buffer.seek(0)        
+    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formerbalances.xml")
+    
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
 
@@ -878,6 +826,7 @@ if __name__ == "__main__":
                                  # "import_date"
                                  )
 
+    output = actions
     actions = add_import_time_columns(actions)
 
     dynamic_frame = DynamicFrame.fromDF(actions.repartition(1), glueContext, "target_data_to_write")
@@ -890,25 +839,11 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formeractions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    # gzip_version
-    dynamic_frame = DropFields.apply(dynamic_frame,
-                                     paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month',
-                                            'import_day'])
-
-    parquet_data = glueContext.write_dynamic_frame.from_options(
-        frame=dynamic_frame,
-        connection_type="s3",
-        format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target + '/gzip/formeractions', "compression": "gzip",
-                            "partitionKeys": ['import_date']},
-        transformation_ctx="target_data_to_write")
-
-    filename = "/rent.formeractions%s.csv.gz" % today.strftime("%Y%m%d")
-    rename_file(s3_bucket, "housing/rentsense-ft/gzip/formeractions", filename)
-
-    # move file to export folder
-    move_file(s3_bucket, "housing/rentsense-ft/gzip/formeractions/", export_target_path,
-              "rent.formeractions%s.csv.gz" % today.strftime("%Y%m%d"))
+    output = output.toPandas()        
+    xml_buffer = BytesIO()
+    output.to_xml(xml_buffer, parser='etree')
+    xml_buffer.seek(0)        
+    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formeractions.xml")
 
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
@@ -942,6 +877,7 @@ if __name__ == "__main__":
                               )
 
     trans = trans.distinct()
+    output = trans
 
     trans = add_import_time_columns(trans)
 
@@ -955,25 +891,12 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/transactions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    # gzip_version
-    dynamic_frame = DropFields.apply(dynamic_frame,
-                                     paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month',
-                                            'import_day'])
-
-    parquet_data = glueContext.write_dynamic_frame.from_options(
-        frame=dynamic_frame,
-        connection_type="s3",
-        format="csv", format_options={"separator": ","},
-        connection_options={"path": s3_bucket_target + '/gzip/formertransactions', "compression": "gzip",
-                            "partitionKeys": ['import_date']},
-        transformation_ctx="target_data_to_write")
-
-    filename = "/rent.formertransactions%s.csv.gz" % today.strftime("%Y%m%d")
-    rename_file(s3_bucket, "housing/rentsense-ft/gzip/formertransactions", filename)
-
-    # move file to export folder
-    move_file(s3_bucket, "housing/rentsense-ft/gzip/formertransactions/", export_target_path,
-              "rent.formertransactions%s.csv.gz" % today.strftime("%Y%m%d"))
+    # xml
+    output = output.toPandas()        
+    xml_buffer = BytesIO()
+    output.to_xml(xml_buffer, parser='etree')
+    xml_buffer.seek(0)        
+    s3.upload_fileobj(xml_buffer, s3_bucket ,"housing/rentsense-ft/gzip/formertransactions.xml")
 
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
