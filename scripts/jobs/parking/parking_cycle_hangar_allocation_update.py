@@ -60,6 +60,7 @@ Tom's hangar list
 23/01/2024 - update code to add changes made to the base Google sheet
 20/05/2024 - amend to NOT filter out records with NO address (i.e. not matching the Party_ID)
 30/05/2024 - rewrite to use the History data
+13/06/2024 - slight aendments because of my cock-up!
 *******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -132,10 +133,18 @@ Cycle Hangar allocation details
 Cycle_Hangar_allocation as (
     SELECT 
         *,
-        ROW_NUMBER() OVER ( PARTITION BY party_id ORDER BY party_id) row_num
+        /* 13/06 change order by to include ID */
+        ROW_NUMBER() OVER ( PARTITION BY party_id ORDER BY party_id, id) row_num
     FROM liberator_hangar_allocations
     WHERE Import_Date = (Select MAX(Import_Date) from 
                             liberator_hangar_allocations)),
+                            
+/** 13/06 total the alloctaion deatils obtain above */
+Alloc_Total as (
+    SELECT hanger_id, count(*) as total_alloc 
+    FROM Cycle_Hangar_allocation
+    WHERE row_num = 1 
+    GROUP BY hanger_id),
 
 Street_Rec as (
     SELECT *
@@ -206,11 +215,12 @@ Wait_total as (
     WHERE H2 = 1
     GROUP BY hanger_id),
 
+/* 13/06 - correctly use the allocated total against the list of Hangars from Tom */
 allocated_Total as (
-    SELECT hanger_id, hangar_location, count(*) as Total_Allocated
-    FROM Estreet_Hanger
-    WHERE H1 = 1
-    GROUP BY hanger_id,hangar_location),
+    SELECT DISTINCT A.hanger_id, A.hangar_location, total_alloc as Total_Allocated
+    FROM Estreet_Hanger as A
+    LEFT JOIN Alloc_Total as B ON A.hanger_id = B.hanger_id
+    WHERE H1 = 1),
 
 Full_Hangar_Data as (
     SELECT 
