@@ -800,6 +800,8 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "glue:GetCrawlerMetrics",
       "glue:GetCrawlers",
       "glue:GetDatabase",
+      "glue:GetTable",
+      "glue:GetPartitions",
       "glue:ListCrawlers",
       "glue:StartCrawler",
       "glue:StopCrawler",
