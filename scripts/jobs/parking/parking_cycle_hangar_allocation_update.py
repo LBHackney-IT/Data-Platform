@@ -61,6 +61,7 @@ Tom's hangar list
 20/05/2024 - amend to NOT filter out records with NO address (i.e. not matching the Party_ID)
 30/05/2024 - rewrite to use the History data
 13/06/2024 - slight aendments because of my cock-up!
+14/06/2024 - make additional changes because the cycle hangar key_id & space have been swapped
 *******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -134,12 +135,17 @@ Cycle_Hangar_allocation as (
     SELECT 
         *,
         /* 13/06 change order by to include ID */
-        ROW_NUMBER() OVER ( PARTITION BY party_id ORDER BY party_id, id) row_num
+        /* 14/06 change again to hangar_id and space because there are some hangars with multiple spaces
+        allocated to the same Party_id. UPPER(space) because there are records with lowercase space field */
+        ROW_NUMBER() OVER ( PARTITION BY hanger_id, upper(space) ORDER BY hanger_id, upper(space), id DESC) row_num
     FROM liberator_hangar_allocations
-    WHERE Import_Date = (Select MAX(Import_Date) from 
-                            liberator_hangar_allocations)),
+    WHERE Import_Date = (Select MAX(Import_Date) from liberator_hangar_allocations)
+    /* 14/06 change to exclude those records where keys have not been issued AND
+    remove those records where the Space and Key ID fields have been switched??? also
+    remove those records with null in the space field????*/
+    AND key_issued = 'Y' AND length(key_id) > 2 AND space != 'null'),
                             
-/** 13/06 total the alloctaion deatils obtain above */
+/** 13/06 total the alloctaion details obtain above */
 Alloc_Total as (
     SELECT hanger_id, count(*) as total_alloc 
     FROM Cycle_Hangar_allocation
