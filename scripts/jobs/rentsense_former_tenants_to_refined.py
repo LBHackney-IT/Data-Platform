@@ -596,7 +596,7 @@ if __name__ == "__main__":
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
     xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formeraccounts.xml")
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formeraccounts.xml")
 
     # Arrangements
 
@@ -629,7 +629,7 @@ if __name__ == "__main__":
                          )
 
     arr = arr.distinct()
-    ouput = arr
+    output = arr
     arr = add_import_time_columns(arr)
     arr = arr.filter(col("AgreementEndDate").isNull())
 
@@ -648,7 +648,7 @@ if __name__ == "__main__":
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
     xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formerarrangements.xml")
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formerarrangements.xml")
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
 
@@ -753,7 +753,7 @@ if __name__ == "__main__":
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
     xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formertenants.xml")
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formertenants.xml")
 
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
@@ -795,7 +795,7 @@ if __name__ == "__main__":
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
     xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formerbalances.xml")
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formerbalances.xml")
 
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
@@ -842,7 +842,7 @@ if __name__ == "__main__":
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
     xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formeractions.xml")
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formeractions.xml")
 
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
@@ -895,7 +895,7 @@ if __name__ == "__main__":
     xml_buffer = BytesIO()
     output.to_xml(xml_buffer, parser='etree')
     xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/gzip/formertransactions.xml")
+    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formertransactions.xml")
 
     # copy file to landing folder
     # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
