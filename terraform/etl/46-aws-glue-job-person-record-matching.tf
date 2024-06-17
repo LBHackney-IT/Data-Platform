@@ -32,7 +32,7 @@ module "electoral_register_refined" {
     s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/data-and-insight/electoral-register/"
     configuration      = null
     table_prefix       = null
-    Grouping           = {
+    Grouping = {
       TableLevelConfiguration = 3
     }
   }

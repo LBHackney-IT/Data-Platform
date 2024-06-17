@@ -38,7 +38,7 @@ module "active_persons_records_refined" {
     "--source_catalog_table_ctax_non_liability_person" = "lbhaliverbviews_core_ctnon_liab"
     "--source_catalog_table_ctax_occupation"           = "lbhaliverbviews_core_ctoccupation"
     "--source_catalog_table_hb_member"                 = "lbhaliverbviews_core_hbmember"
-    "--source_catalog_table_hb_ctax_assessment"          = "lbhaliverbviews_core_hbctaxass"
+    "--source_catalog_table_hb_ctax_assessment"        = "lbhaliverbviews_core_hbctaxass"
     "--source_catalog_table_hb_household"              = "lbhaliverbviews_core_hbhousehold"
     "--source_catalog_table_hb_rent_assessment"        = "lbhaliverbviews_core_hbrentass"
     "--source_catalog_table_parking_permit"            = "parking_permit_denormalised_data"

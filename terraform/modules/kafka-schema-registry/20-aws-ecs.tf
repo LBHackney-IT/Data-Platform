@@ -134,7 +134,7 @@ resource "aws_security_group" "schema_registry_service" {
     to_port         = 8081
     protocol        = "TCP"
     security_groups = [var.schema_registry_alb_security_group_id]
-  } 
+  }
 
   tags = merge(var.tags, {
     "Name" : "Schema Registry ECS Service"

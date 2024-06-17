@@ -15,7 +15,7 @@ resource "aws_cloudwatch_log_metric_filter" "metric_filter" {
 resource "aws_cloudwatch_metric_alarm" "lambda_metric_alarm" {
   alarm_name          = aws_cloudwatch_log_metric_filter.metric_filter.name
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = "1" 
+  evaluation_periods  = "1"
   metric_name         = aws_cloudwatch_log_metric_filter.metric_filter.name
   namespace           = "DataPlatform"
   period              = "300"

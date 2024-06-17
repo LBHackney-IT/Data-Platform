@@ -749,6 +749,24 @@ data "aws_iam_policy_document" "redshift_department_read_access" {
   }
 }
 
+// MWAA Access
+
+data "aws_iam_policy_document" "mwaa_department_web_server_access" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "airflow:ListEnvironments",
+      "airflow:GetEnvironment",
+      "airflow:ListTagsForResource",
+      "airflow:CreateWebLoginToken"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+
 
 // Glue job runner pass role to glue for notebook use
 data "aws_iam_policy_document" "glue_runner_pass_role_to_glue_for_notebook_use" {

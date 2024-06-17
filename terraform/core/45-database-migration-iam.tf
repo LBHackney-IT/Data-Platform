@@ -72,7 +72,7 @@ data "aws_iam_policy_document" "database_migration_custom_policy" {
   // but grant it full access so far (glue itself has very low risk).
   statement {
     effect    = "Allow"
-    actions   = ["glue:*"] 
+    actions   = ["glue:*"]
     resources = ["*"]
-  }  
+  }
 }

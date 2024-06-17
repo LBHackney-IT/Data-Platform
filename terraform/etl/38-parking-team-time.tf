@@ -10,13 +10,13 @@ module "team_times_ingestion" {
   s3_key                         = "team_times.zip"
   lambda_role_arn                = aws_iam_role.team_times_lambda_execution[0].arn
   environment_variables = {
-    API_ENDPOINT = aws_ssm_parameter.team_times_api_enpoint[0].name,
-    SECRET_NAME  = aws_ssm_parameter.team_times_api_key[0].name,
-    FREQUENCY    = "D",
+    API_ENDPOINT    = aws_ssm_parameter.team_times_api_enpoint[0].name,
+    SECRET_NAME     = aws_ssm_parameter.team_times_api_key[0].name,
+    FREQUENCY       = "D",
     XML_BUCKET_NAME = module.landing_zone_data_source.bucket_id,
     CSV_BUCKET_NAME = module.raw_zone_data_source.bucket_id,
-    XML_PREFIX = "parking/team_times",
-    CSV_PREFIX = "parking/team_times"
+    XML_PREFIX      = "parking/team_times",
+    CSV_PREFIX      = "parking/team_times"
   }
   tags = module.tags.values
 }
@@ -48,7 +48,7 @@ resource "aws_ssm_parameter" "team_times_api_enpoint" {
 }
 
 data "aws_iam_policy_document" "team_times_lambda_assume_role" {
-  count       = !local.is_production_environment ? 1 : 0
+  count = !local.is_production_environment ? 1 : 0
   statement {
     actions = ["sts:AssumeRole"]
     effect  = "Allow"
@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "team_times_lambda_assume_role" {
 }
 
 data "aws_iam_policy_document" "team_times_lambda_ssm_access" {
-  count       = !local.is_production_environment ? 1 : 0
+  count = !local.is_production_environment ? 1 : 0
   statement {
     actions = [
       "ssm:DescribeParameters",
@@ -76,7 +76,7 @@ data "aws_iam_policy_document" "team_times_lambda_ssm_access" {
 }
 
 data "aws_iam_policy_document" "team_times_lambda_s3_write_access" {
-  count       = !local.is_production_environment ? 1 : 0
+  count = !local.is_production_environment ? 1 : 0
   statement {
     actions = [
       "s3:AbortMultipartUpload",
@@ -113,7 +113,7 @@ data "aws_iam_policy_document" "team_times_lambda_s3_write_access" {
 }
 
 data "aws_iam_policy_document" "team_times_lambda_logs" {
-  count       = !local.is_production_environment ? 1 : 0
+  count = !local.is_production_environment ? 1 : 0
   statement {
     actions = [
       "logs:CreateLogGroup",
@@ -126,7 +126,7 @@ data "aws_iam_policy_document" "team_times_lambda_logs" {
 }
 
 data "aws_iam_policy_document" "team_times_lambda_invoke" {
-  count       = !local.is_production_environment ? 1 : 0
+  count = !local.is_production_environment ? 1 : 0
   statement {
     actions = ["lambda:InvokeFunction"]
     effect  = "Allow"
@@ -134,10 +134,10 @@ data "aws_iam_policy_document" "team_times_lambda_invoke" {
       module.team_times_ingestion[0].lambda_function_arn
     ]
   }
-} 
+}
 
 data "aws_iam_policy_document" "team_times_lambda_assignment" {
-  count       = !local.is_production_environment ? 1 : 0
+  count = !local.is_production_environment ? 1 : 0
   source_policy_documents = [
     data.aws_iam_policy_document.team_times_lambda_ssm_access[0].json,
     data.aws_iam_policy_document.team_times_lambda_s3_write_access[0].json,

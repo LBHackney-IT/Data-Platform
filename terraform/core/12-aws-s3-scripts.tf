@@ -77,7 +77,7 @@ resource "aws_s3_object" "vonage_landing_to_raw" {
   source      = "../../scripts/jobs/customer_services/vonage_landing_to_raw.py"
   source_hash = filemd5("../../scripts/jobs/customer_services/vonage_landing_to_raw.py")
 }
-  
+
 resource "aws_s3_object" "hackney_bank_holiday" {
   bucket      = module.raw_zone.bucket_id
   key         = "unrestricted/util/hackney_bank_holiday.csv"

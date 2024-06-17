@@ -34,7 +34,7 @@ resource "aws_secretsmanager_secret" "sandbox_db_credentials" {
   provider = aws.aws_sandbox_account
 
   recovery_window_in_days = 0
-  name = "/database-credentials/${var.identifier_prefix}-rds-snapshot-to-s3-sandbox-db"
+  name                    = "/database-credentials/${var.identifier_prefix}-rds-snapshot-to-s3-sandbox-db"
 }
 
 resource "aws_secretsmanager_secret_version" "sandbox_db_credentials" {
@@ -62,7 +62,7 @@ data "aws_secretsmanager_secret_version" "sandbox_db_credentials" {
 resource "aws_db_subnet_group" "sandbox_db_subnet_group" {
   provider   = aws.aws_sandbox_account
   name       = "${var.identifier_prefix}-sandbox-db-subnet-group"
-  subnet_ids = var.aws_sandbox_subnet_ids 
+  subnet_ids = var.aws_sandbox_subnet_ids
 }
 
 data "aws_iam_policy_document" "key_policy" {

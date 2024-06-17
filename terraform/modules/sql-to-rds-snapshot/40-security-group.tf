@@ -1,8 +1,8 @@
 resource "aws_security_group" "snapshot_db" {
-  name                   = var.instance_name
-  description            = "Restrict access to snapshot database"
-  vpc_id                 = var.vpc_id
-  tags                   = var.tags
+  name        = var.instance_name
+  description = "Restrict access to snapshot database"
+  vpc_id      = var.vpc_id
+  tags        = var.tags
 }
 
 resource "aws_security_group_rule" "allow_all_outbound_traffic" {

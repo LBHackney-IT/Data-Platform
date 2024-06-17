@@ -75,27 +75,27 @@ variable "glue_database_name" {
 
 variable "datahub_gms_security_group_id" {
   description = "Security group id of Datahub GMS"
-  type = string
+  type        = string
 }
 
 variable "datahub_mae_consumer_security_group_id" {
   description = "Security group id of Datahub MAE consumer"
-  type = string
+  type        = string
 }
 
 variable "datahub_mce_consumer_security_group_id" {
   description = "Security group id of Datahub MCE consumer"
-  type = string
+  type        = string
 }
 
 variable "datahub_actions_security_group_id" {
   description = "Security group id of Datahub Actions"
-  type = string
+  type        = string
 }
 
 variable "kafka_tester_lambda_security_group_id" {
   description = "Security group id of the kafka tester lambda"
-  type = string
+  type        = string
 }
 
 variable "datahub_kafka_setup_security_group_id" {

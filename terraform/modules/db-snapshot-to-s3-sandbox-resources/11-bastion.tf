@@ -53,11 +53,11 @@ resource "aws_iam_instance_profile" "bastion" {
 }
 
 resource "aws_security_group" "bastion" {
-  provider    = aws.aws_sandbox_account
-  name        = "${var.identifier_prefix}-sandbox-bastion"
-  description = "Restrict traffic to bastion host"
-  vpc_id      = var.aws_sandbox_vpc_id
-  tags        = var.tags
+  provider               = aws.aws_sandbox_account
+  name                   = "${var.identifier_prefix}-sandbox-bastion"
+  description            = "Restrict traffic to bastion host"
+  vpc_id                 = var.aws_sandbox_vpc_id
+  tags                   = var.tags
   revoke_rules_on_delete = true
 }
 
@@ -73,14 +73,14 @@ resource "aws_security_group_rule" "bastion_egress" {
 }
 
 resource "aws_security_group_rule" "bastion_egress_to_systems_manager" {
-  provider                 = aws.aws_sandbox_account
-  description              = "Allow outbound to Systems Manager"
-  type                     = "egress"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "TCP"
-  cidr_blocks              = ["0.0.0.0/0"]
-  security_group_id        = aws_security_group.bastion.id
+  provider          = aws.aws_sandbox_account
+  description       = "Allow outbound to Systems Manager"
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "TCP"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.bastion.id
 }
 
 resource "aws_instance" "bastion" {

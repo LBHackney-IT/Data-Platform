@@ -124,7 +124,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket" {
 resource "aws_s3_bucket_versioning" "bucket" {
   bucket = aws_s3_bucket.bucket.id
   versioning_configuration {
-    status = var.versioning_enabled ? "Enabled" : "Suspended"
+    status     = var.versioning_enabled ? "Enabled" : "Suspended"
     mfa_delete = "Disabled"
   }
 }

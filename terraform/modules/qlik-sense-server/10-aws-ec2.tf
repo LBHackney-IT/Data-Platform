@@ -75,14 +75,14 @@ resource "aws_security_group" "qlik_sense" {
     from_port   = 139
     to_port     = 139
     protocol    = "tcp"
-    cidr_blocks = ["10.151.11.27/32"]  # Replace with specific IP ranges for better security
+    cidr_blocks = ["10.151.11.27/32"] # Replace with specific IP ranges for better security
   }
 
   ingress {
     from_port   = 445
     to_port     = 445
     protocol    = "tcp"
-    cidr_blocks = ["10.151.11.27/32"]  # Replace with specific IP ranges for better security
+    cidr_blocks = ["10.151.11.27/32"] # Replace with specific IP ranges for better security
   }
 
   ingress {
