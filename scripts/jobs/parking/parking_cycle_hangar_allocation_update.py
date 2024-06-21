@@ -62,6 +62,7 @@ Tom's hangar list
 30/05/2024 - rewrite to use the History data
 13/06/2024 - slight aendments because of my cock-up!
 14/06/2024 - make additional changes because the cycle hangar key_id & space have been swapped
+19/06/2024 - trim the allocated space, there are leading spaces in the field!!!
 *******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -137,7 +138,8 @@ Cycle_Hangar_allocation as (
         /* 13/06 change order by to include ID */
         /* 14/06 change again to hangar_id and space because there are some hangars with multiple spaces
         allocated to the same Party_id. UPPER(space) because there are records with lowercase space field */
-        ROW_NUMBER() OVER ( PARTITION BY hanger_id, upper(space) ORDER BY hanger_id, upper(space), id DESC) row_num
+        /* 19/06 trim the space */
+        ROW_NUMBER() OVER ( PARTITION BY hanger_id, trim(upper(space)) ORDER BY hanger_id, trim(upper(space)), id DESC) row_num
     FROM liberator_hangar_allocations
     WHERE Import_Date = (Select MAX(Import_Date) from liberator_hangar_allocations)
     /* 14/06 change to exclude those records where keys have not been issued AND
