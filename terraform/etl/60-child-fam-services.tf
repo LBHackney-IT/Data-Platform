@@ -30,7 +30,7 @@ resource "aws_glue_crawler" "allocations_refined_tables" {
   database_name = module.department_children_family_services_data_source.refined_zone_catalog_database_name
 
   s3_target {
-    path = "s3://${module.refined_zone_data_source.bucket_id}/${module.department_children_family_services_data_source.identifier}/allocations/"
+    path = "s3://${module.refined_zone_data_source.bucket_id}/${module.department_children_family_services_data_source.identifier}/mosaic/"
   }
 
   configuration = jsonencode({
