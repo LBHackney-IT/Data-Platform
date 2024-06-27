@@ -1,18 +1,78 @@
-from datetime import date
+import gzip
 import sys
-
-import boto3
-from awsglue.context import GlueContext
-from awsglue.dynamicframe import DynamicFrame
-from awsglue.utils import getResolvedOptions
-from awsglue.job import Job
-from pyspark.context import SparkContext
-import pyspark.sql.functions as F
-from pyspark.sql.functions import col, lit, to_date, date_sub, current_date, substring, to_timestamp, date_format
+from datetime import date, datetime
 from io import BytesIO
 
-from scripts.helpers.helpers import get_latest_partitions_optimized, \
-    add_import_time_columns, PARTITION_KEYS, clear_target_folder
+import boto3
+import pyspark.sql.functions as F
+from awsglue.context import GlueContext
+from awsglue.dynamicframe import DynamicFrame
+from awsglue.job import Job
+from awsglue.transforms import DropFields
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from pyspark.sql.functions import (
+    col,
+    current_date,
+    date_format,
+    date_sub,
+    lit,
+    substring,
+    to_date,
+    to_timestamp,
+)
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    add_import_time_columns,
+    clear_target_folder,
+    get_latest_partitions_optimized,
+)
+
+
+def export_dynamic_frame_as_xml_gzip(dynamic_frame: DynamicFrame, s3_bucket: str, target_path: str,
+                                     file_name: str) -> None:
+    """
+    Export a DynamicFrame to an XML file, compress it using gzip, and upload to S3.
+
+    Args:
+        dynamic_frame (DynamicFrame): The Glue DynamicFrame to be exported.
+        s3_bucket (str): The target S3 bucket.
+        target_path (str): The target path in the S3 bucket.
+        file_name (str): The name of the file to be saved.
+
+    Returns:
+        None
+    """
+    # Remove the partition fields
+    dynamic_frame = DropFields.apply(dynamic_frame,
+                                     paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month',
+                                            'import_day', 'import_date'])
+
+    # Convert dynamic frame to Spark DataFrame
+    spark_df = dynamic_frame.toDF()
+
+    # Spark DataFrame to Pandas DataFrame
+    pandas_df = spark_df.toPandas()
+
+    # Convert Pandas DataFrame to XML string
+    xml_string = pandas_df.to_xml(index=False, parser='etree')
+
+    # Compress the XML string using gzip
+    xml_buffer = BytesIO()
+    with gzip.GzipFile(fileobj=xml_buffer, mode='w') as gz_file:
+        gz_file.write(xml_string.encode('utf-8'))
+
+    # Seek to the beginning of the buffer
+    xml_buffer.seek(0)
+
+    today = datetime.today()
+    year, month, day = today.year, str(today.month).zfill(2), str(today.day).zfill(2)
+    today = f"{year}{month}{day}"
+
+    # Upload the gzipped XML file to S3
+    s3_client = boto3.client("s3")
+    s3_client.upload_fileobj(xml_buffer, s3_bucket, f"{target_path}/rent.{file_name}{today}.xml.gz")
+
 
 if __name__ == "__main__":
 
@@ -29,8 +89,10 @@ if __name__ == "__main__":
     today = date.today()
     export_target_path = "housing/rentsense-ft/export/%s/" % today.strftime("%Y%m%d")
     export_target_source = "housing/rentsense-ft/export/%s" % today.strftime("%Y%m%d")
-    target_path = "housing_export/rentsense-ft/%s" % today.strftime("%Y%m%d")
+    #  target_path = "housing_export/rentsense-ft/%s" % today.strftime("%Y%m%d")
+    target_path = "housing/rentsense-ft/export/%s" % today.strftime("%Y%m%d")
     s3 = boto3.client("s3")
+    # s3_bucket_target = export_target_source
 
     # start the Spark session and the logger
     glueContext = GlueContext(SparkContext.getOrCreate())
@@ -592,11 +654,8 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formeraccounts', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    output = accounts9.toPandas()
-    xml_buffer = BytesIO()
-    output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formeraccounts.xml")
+    # Export to .xml.gzip
+    export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formeraccounts")
 
     # Arrangements
 
@@ -644,13 +703,7 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formerarrangements', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    output = output.toPandas()
-    xml_buffer = BytesIO()
-    output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formerarrangements.xml")
-    # copy file to landing folder
-    # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
+    export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formerarrangements")
 
     # Tenants
     tens = accounts2.filter("member_is_responsible like true")
@@ -749,17 +802,7 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formertenants', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    output = output.toPandas()
-    xml_buffer = BytesIO()
-    output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formertenants.xml")
-
-    # copy file to landing folder
-    # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
-
-    # copy file to landing folder
-    # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
+    export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formertenants")
 
     # Balances
     ten = accounts2.select('uh_ten_ref', 'paymentreference')
@@ -791,21 +834,17 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formerbalances', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    output = output.toPandas()
-    xml_buffer = BytesIO()
-    output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formerbalances.xml")
-
-    # copy file to landing folder
-    # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
+    export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formerbalances")
 
     # Actions
 
     ten = accounts2.select('uh_ten_ref', 'paymentreference')
 
     actions = df9.withColumn("uh_ten_ref1", F.trim(F.col("tag_ref"))) \
-        .withColumn("ActionDate", F.to_date(F.col("action_date"), "yyyy-MM-dd"))
+        .withColumn("timestamp", to_timestamp("action_date", "yyyy-MM-dd HH:mm:ss.S")) \
+        .withColumn("ActionDate", date_format("timestamp", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"))
+
+    # .withColumn("ActionDate", F.to_date(F.col("action_date"), "yyyy-MM-dd"))
 
     actions = actions.filter(
         (F.col("action_date") > date_sub(current_date(), 180)) & (F.col("action_date") < current_date()))
@@ -818,7 +857,7 @@ if __name__ == "__main__":
     actions = actions.selectExpr("paymentreference as AccountReference",
                                  #  "tag_ref",
                                  "action_code as ActionCode",
-                                 "code_lookup as ActionDescription",
+                                 # "code_lookup as ActionDescription",
                                  "ActionDate"
                                  # "action_no as ActionSeq",
                                  # "uh_ten_ref as TenReference",
@@ -838,14 +877,7 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formeractions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    output = output.toPandas()
-    xml_buffer = BytesIO()
-    output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formeractions.xml")
-
-    # copy file to landing folder
-    # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
+    export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formeractions")
 
     # Transactions
 
@@ -890,22 +922,6 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/transactions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
-    # xml
-    output = output.toPandas()
-    xml_buffer = BytesIO()
-    output.to_xml(xml_buffer, parser='etree')
-    xml_buffer.seek(0)
-    s3.upload_fileobj(xml_buffer, s3_bucket, "housing/rentsense-ft/export/formertransactions.xml")
-
-    # copy file to landing folder
-    # copy_file(s3_bucket,export_target_source,filename,s3_landing,target_path, filename)
-
-    # Clear the refined folder so there are no files
-    # exist2 = s3.list_objects_v2(Bucket = s3_bucket ,Prefix ='housing/rentsense/export/')  # list the files
-    # if 'Contents' in exist2:
-    #     clear_target_folder(s3_bucket_target+'/export')
-    #     logger.info(f"Deleted refined export zone target area")
-    # else:
-    #     logger.info(f"Couldn't find data in refined export zone to delete")
+    export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formertransactions")
 
     job.commit()
