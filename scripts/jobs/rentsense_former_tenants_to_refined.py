@@ -43,8 +43,10 @@ def export_dynamic_frame_as_xml_gzip(dynamic_frame: DynamicFrame, s3_bucket: str
     Returns:
         None
     """
-    #Remove the partition fields
-    dynamic_frame = DropFields.apply(dynamic_frame,paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month','import_day','import_date'])
+    # Remove the partition fields
+    dynamic_frame = DropFields.apply(dynamic_frame,
+                                     paths=['import_datetime', 'import_timestamp', 'import_year', 'import_month',
+                                            'import_day', 'import_date'])
 
     # Convert dynamic frame to Spark DataFrame
     spark_df = dynamic_frame.toDF()
