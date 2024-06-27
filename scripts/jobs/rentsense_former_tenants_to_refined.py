@@ -1,6 +1,5 @@
 import gzip
 import sys
-import xml.etree.ElementTree as ET
 from datetime import date, datetime
 from io import BytesIO
 
@@ -12,7 +11,6 @@ from awsglue.job import Job
 from awsglue.transforms import DropFields
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     col,
     current_date,
