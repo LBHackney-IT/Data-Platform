@@ -469,21 +469,25 @@ if __name__ == "__main__":
         database=source_catalog_database,
         table_name="person_reshape",
         transformation_ctx="person_reshape_source")
+    df = get_latest_partitions_optimized(df)
 
     df2 = glueContext.create_data_frame.from_catalog(
         database=source_catalog_database,
         table_name="tenure_reshape",
         transformation_ctx="tenure_reshape_source")
+    df2 = get_latest_partitions_optimized(df2)
 
     df3 = glueContext.create_data_frame.from_catalog(
         database=source_catalog_database,
         table_name="assets_reshape",
         transformation_ctx="assets_reshape_source")
+    df3 = get_latest_partitions_optimized(df3)
 
     df4 = glueContext.create_data_frame.from_catalog(
         database=source_catalog_database,
         table_name="contacts_reshape",
         transformation_ctx="contacts_reshape_source")
+    df4 = get_latest_partitions_optimized(df4)
 
     df5 = glueContext.create_data_frame.from_catalog(
         database=source_raw_database,
