@@ -858,17 +858,25 @@ if __name__ == "__main__":
     actions = actions.withColumn("code_lookup", F.trim(F.col("action_code"))) \
         .replace(to_replace=mapAction, subset=['code_lookup'])
 
-    actions = actions.selectExpr("paymentreference as AccountReference",
-                                 #  "tag_ref",
-                                 "action_code as ActionCode",
-                                 # "code_lookup as ActionDescription",
-                                 "ActionDate"
-                                 # "action_no as ActionSeq",
-                                 # "uh_ten_ref as TenReference",
-                                 # "import_date"
-                                 )
+    max_action = (actions
+                  .groupBy("paymentreference")
+                  .agg(F.max("ActionDate").alias("max_date"))) \
+        .withColumnRenamed("paymentreference", "payref")
 
-    output = actions
+    actions1 = actions.join(max_action, actions.paymentreference == max_action.payref, "inner")
+
+    latest = actions1.filter("max_date=ActionDate")
+
+    actions = latest.selectExpr("paymentreference as AccountReference",
+                                "action_code as ActionCode",
+                                "ActionDate"
+                                )
+
+    actions = actions.distinct()
+
+    dynamic_frame = DynamicFrame.fromDF(actions, glueContext, "target_data_to_write")
+    export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formeractions")
+
     actions = add_import_time_columns(actions)
 
     dynamic_frame = DynamicFrame.fromDF(actions.repartition(1), glueContext, "target_data_to_write")
@@ -880,8 +888,6 @@ if __name__ == "__main__":
         format="parquet",
         connection_options={"path": s3_bucket_target + '/formeractions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
-
-    export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formeractions")
 
     # Transactions
 
