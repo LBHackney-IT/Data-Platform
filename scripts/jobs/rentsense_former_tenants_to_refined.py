@@ -861,7 +861,7 @@ if __name__ == "__main__":
     max_action = (actions
                   .groupBy("paymentreference")
                   .agg(F.max("ActionDate").alias("max_date")))\
-                  .withColumnRenamed("paymentreference", "payref")
+                    .withColumnRenamed("paymentreference", "payref")
 
     actions1 = actions.join(max_action, actions.paymentreference == max_action.payref, "inner")
 
@@ -869,11 +869,7 @@ if __name__ == "__main__":
 
     actions = latest.selectExpr("paymentreference as AccountReference",
                                 "action_code as ActionCode",
-                                 # "code_lookup as ActionDescription",
                                 "ActionDate"
-                                 # "action_no as ActionSeq",
-                                 # "uh_ten_ref as TenReference",
-                                 # "import_date"
                                  )
     
     actions = actions.distinct()
