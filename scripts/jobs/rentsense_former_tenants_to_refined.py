@@ -860,8 +860,8 @@ if __name__ == "__main__":
 
     max_action = (actions
                   .groupBy("paymentreference")
-                  .agg(F.max("ActionDate").alias("max_date")))\
-                    .withColumnRenamed("paymentreference", "payref")
+                  .agg(F.max("ActionDate").alias("max_date"))) \
+        .withColumnRenamed("paymentreference", "payref")
 
     actions1 = actions.join(max_action, actions.paymentreference == max_action.payref, "inner")
 
@@ -870,8 +870,8 @@ if __name__ == "__main__":
     actions = latest.selectExpr("paymentreference as AccountReference",
                                 "action_code as ActionCode",
                                 "ActionDate"
-                                 )
-    
+                                )
+
     actions = actions.distinct()
 
     dynamic_frame = DynamicFrame.fromDF(actions, glueContext, "target_data_to_write")
