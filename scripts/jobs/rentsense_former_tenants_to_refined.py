@@ -858,7 +858,7 @@ if __name__ == "__main__":
     actions = actions.withColumn("code_lookup", F.trim(F.col("action_code"))) \
         .replace(to_replace=mapAction, subset=['code_lookup'])
     
-    max_action= (actions
+    max_action = (actions
               .groupBy("paymentreference")
               .agg(F.max("ActionDate").alias("max_date")))\
               .withColumnRenamed("paymentreference", "payref")
