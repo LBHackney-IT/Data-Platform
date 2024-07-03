@@ -863,7 +863,7 @@ if __name__ == "__main__":
               .agg(F.max("ActionDate").alias("max_date")))\
               .withColumnRenamed("paymentreference", "payref")
 
-    actions1 = actions.join(max_action, actions.paymentreference == max_action.payref , "inner")
+    actions1 = actions.join(max_action, actions.paymentreference == max_action.payref, "inner")
     
     latest = actions1.filter("max_date=ActionDate")
    
