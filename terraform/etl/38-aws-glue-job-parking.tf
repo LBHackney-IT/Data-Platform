@@ -1584,3 +1584,26 @@ module "parking_nas_live_manual_updates_data_load_with_pcns" {
     "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
+module "parking_nas_live_manual_updates_with_pcns_box23" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_nas_live_manual_updates_with_pcns_box23"
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_nas_live_manual_updates_data_load_with_pcns"
+  triggered_by_job               = module.parking_nas_live_manual_updates_data_load_with_pcns.job_name
+  job_description                = "Hackney Parking NAS Live ETA data linked lib PCN and box 2 n 3"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
+  }
+}
