@@ -101,6 +101,7 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   publicly_accessible          = false
   final_snapshot_identifier    = "${var.identifier_prefix}-redshift-cluster-final"
   vpc_security_group_ids       = [aws_security_group.redshift_cluster_security_group.id]
+  preferred_maintenance_window = var.preferred_maintenance_window
   tags                         = var.tags
 }
 
