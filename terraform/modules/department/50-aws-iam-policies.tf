@@ -852,6 +852,19 @@ data "aws_iam_policy_document" "airflow_base_policy" {
     # This can be refined later but not urgent
     resources = ["*"]
   }
+
+  statement {
+    sid    = "AirflowEcsPolicy"
+    effect = "Allow"
+    actions = [
+      "ecs:*"
+    ]
+    resources = [
+      "arn:aws:ecs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:task/*",
+      "arn:aws:ecs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:task-definition/*",
+      "arn:aws:ecs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cluster/*"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "airflow_base_policy" {
