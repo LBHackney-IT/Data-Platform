@@ -805,24 +805,26 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "logs:GetQueryResults",
       "logs:DescribeLogGroups"
     ]
-    resources = ["arn:aws:logs:*"]
+    resources = ["*"]
   }
 
   statement {
     sid    = "AirflowGluePolicy"
     effect = "Allow"
     actions = [
-      "glue:GetCrawler",
-      "glue:GetCrawlerMetrics",
-      "glue:GetCrawlers",
-      "glue:GetDatabase",
+      "glue:UpdateCrawlerSchedule",
+      "glue:UpdateCrawler",
+      "glue:StopCrawler",
+      "glue:StartCrawler",
+      "glue:ListCrawlers",
       "glue:GetTable",
       "glue:GetPartitions",
-      "glue:ListCrawlers",
-      "glue:StartCrawler",
-      "glue:StopCrawler",
-      "glue:UpdateCrawler",
-      "glue:UpdateCrawlerSchedule",
+      "glue:GetDatabase",
+      "glue:GetCrawlers",
+      "glue:GetCrawlerMetrics",
+      "glue:GetCrawler",
+      "glue:CreateTable",
+      "glue:DeleteTable"
     ]
     resources = ["*"]
   }
