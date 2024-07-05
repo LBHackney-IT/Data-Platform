@@ -865,6 +865,17 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "arn:aws:ecs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cluster/*"
     ]
   }
+
+  statement {
+    sid    = "AirflowPassRolePolicy"
+    effect = "Allow"
+    actions = [
+      "iam:PassRole"
+    ]
+    resources = [
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "airflow_base_policy" {
