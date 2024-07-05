@@ -96,6 +96,17 @@ resource "aws_iam_role_policy" "mwaa_role_policy" {
           "arn:aws:secretsmanager:${var.aws_deploy_region}:${var.aws_deploy_account_id}:secret:airflow/variables/*",
           "arn:aws:secretsmanager:${var.aws_deploy_region}:${var.aws_deploy_account_id}:secret:airflow/config/*"
         ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "ecs:*"
+        ],
+        Resource = [
+          "arn:aws:ecs:${var.aws_deploy_region}:${var.aws_deploy_account_id}:task/*",
+          "arn:aws:ecs:${var.aws_deploy_region}:${var.aws_deploy_account_id}:task-definition/*",
+          "arn:aws:ecs:${var.aws_deploy_region}:${var.aws_deploy_account_id}:cluster/*"
+        ]
       }
     ]
   })
