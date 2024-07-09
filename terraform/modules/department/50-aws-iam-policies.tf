@@ -873,8 +873,14 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "iam:PassRole"
     ]
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*"
+      # A temporary solution (using mannually created role - test_hackney_ecs), we should replace with the actual terrafomed ecs task role
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/test_hackney_ecs"
     ]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values   = ["ecs-tasks.amazonaws.com"]
+    }
   }
 }
 
