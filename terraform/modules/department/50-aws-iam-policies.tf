@@ -865,6 +865,23 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "arn:aws:ecs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cluster/*"
     ]
   }
+
+  statement {
+    sid    = "AirflowPassRolePolicy"
+    effect = "Allow"
+    actions = [
+      "iam:PassRole"
+    ]
+    resources = [
+      # A temporary solution (using mannually created role - test_hackney_ecs), we should replace with the actual terrafomed ecs task role
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/test_hackney_ecs"
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values   = ["ecs-tasks.amazonaws.com"]
+    }
+  }
 }
 
 resource "aws_iam_policy" "airflow_base_policy" {
