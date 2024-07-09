@@ -929,7 +929,7 @@ if __name__ == "__main__":
         frame=dynamic_frame,
         connection_type="s3",
         format="parquet",
-        connection_options={"path": s3_bucket_target + '/transactions', "partitionKeys": PARTITION_KEYS},
+        connection_options={"path": s3_bucket_target + '/formertransactions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
     export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formertransactions")
