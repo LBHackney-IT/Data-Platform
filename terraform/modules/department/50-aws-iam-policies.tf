@@ -820,10 +820,12 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "glue:GetTable",
       "glue:GetPartitions",
       "glue:GetDatabase",
+      "glue:GetDatabases",
       "glue:GetCrawlers",
       "glue:GetCrawlerMetrics",
       "glue:GetCrawler",
       "glue:CreateTable",
+      "glue:UpdateTable",
       "glue:DeleteTable"
     ]
     resources = ["*"]
