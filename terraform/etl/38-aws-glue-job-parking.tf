@@ -234,7 +234,7 @@ module "parking_vouchers_approved_summary_gds" {
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   script_name                    = "parking_vouchers_approved_summary_gds"
-  triggered_by_job               = module.parking_dc_liberator_latest_permit_status.job_name
+  triggered_by_job               = module.parking_voucher_de_normalised.job_name
   job_description                = "Summary of voucher applications approved by FY, Month year, cpz and cpz name for use in GDS"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   number_of_workers_for_glue_job = 10
