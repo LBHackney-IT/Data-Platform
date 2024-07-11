@@ -7,7 +7,7 @@ resource "aws_kms_key" "kms_key" {
 }
 
 resource "aws_s3_bucket" "terraform_state_storage" {
-  tags = module.tags.values
+  tags = merge(module.tags.values, { S3Backup = true })
 
   bucket = lower("${var.project}-terraform-state")
 
