@@ -954,7 +954,7 @@ module "parking_visitor_voucher_qtrly_review" {
     "--environment"         = var.environment
   }
 }
-# MRB 25-07-2022 Job created   
+# MRB 25-07-2022 Job created
 module "Parking_Ringgo_Review-copy" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -976,7 +976,7 @@ module "Parking_Ringgo_Review-copy" {
     "--environment"         = var.environment
   }
 }
-# MRB 08-08-2022 Job created   
+# MRB 08-08-2022 Job created
 module "Parking_Permit_Diesel_Trends_Bought_in_Month" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1119,7 +1119,7 @@ module "parking_correspondence_performance_qa_with_totals_gds" {
   }
 }
 
-# MRB 22-11-2022 Job created 
+# MRB 22-11-2022 Job created
 module "parking_defect_met_fail" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1164,7 +1164,7 @@ module "parking_match_pcn_permit_vrm_llpg_nlpg_postcodes" {
     "--environment"         = var.environment
   }
 }
-# MRB 17-04-2023 Job created 
+# MRB 17-04-2023 Job created
 module "parking_defect_met_fail_monthly_format" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1236,7 +1236,7 @@ module "parking_cycle_hangar_waiting_list" {
     "--environment"         = var.environment
   }
 }
-# MRB 17-07-2023 Job created 
+# MRB 17-07-2023 Job created
 module "parking_permit_street_stress" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1259,7 +1259,7 @@ module "parking_permit_street_stress" {
     "--environment"         = var.environment
   }
 }
-# MRB 14-08-2023 Job created 
+# MRB 14-08-2023 Job created
 module "parking_permit_street_stress_with_cpz" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1305,7 +1305,7 @@ module "parking_correspondence_performance_records_with_pcn_downtime" {
     "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
-# MRB 25-10-2023 Job created 
+# MRB 25-10-2023 Job created
 module "parking_cycle_hangar_allocation" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1626,5 +1626,6 @@ module "parking_vouchers_approved_summary_gds_lbh" {
   job_parameters = {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
