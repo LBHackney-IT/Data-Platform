@@ -20,25 +20,26 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 environment = get_glue_env_var("environment")
 
-# Script generated for node Amazon S3 - raw-zone-unrestricted-address-api - unrestricted_address_api_dbo_hackney_address
-AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-raw-zone-unrestricted-address-api", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="unrestricted_address_api_dbo_hackney_address", transformation_ctx="AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032")
-
 # Script generated for node Amazon S3 liberator-raw-zone - liberator_permit_llpg
 AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-liberator-raw-zone", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="liberator_permit_llpg", transformation_ctx="AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559")
 
 # Script generated for node Amazon S3 - liberator-refined-zone - parking_voucher_de_normalised
 AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-liberator-refined-zone", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="parking_voucher_de_normalised", transformation_ctx="AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376")
 
+# Script generated for node Amazon S3 - raw-zone-unrestricted-address-api - unrestricted_address_api_dbo_hackney_address
+AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-raw-zone-unrestricted-address-api", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="unrestricted_address_api_dbo_hackney_address", transformation_ctx="AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032")
+
 # Script generated for node SQL Query
 SqlQuery0 = '''
 /*
-03/07/2024 - updated vouchers approved version two using vouchers denormalised table
-09/07/2024 - breakdown by household, street, zone, lbh versions.  This is the CPZ version
+03/07/2024 - updated vouchers approved version two using the vouchers denormalised table
+09/07/2024 - breakdown by household, street, zone, lbh versions.  This is the LBH version
 
 Source tables:
 "dataplatform-stg-liberator-refined-zone".parking_voucher_de_normalised
 "dataplatform-stg-liberator-raw-zone".liberator_permit_llpg
 "dataplatform-stg-raw-zone-unrestricted-address-api".unrestricted_address_api_dbo_hackney_address
+
 
 */
 with vou as (
@@ -377,9 +378,7 @@ where (ADDRESS1 like 'Street Record' or ADDRESS1 like 'STREET RECORD') and liber
 select distinct 
 
 vou.fy
-,vou.cpz
-,vou.cpz_name
-,vou.zone_name
+
 ,vou.mon_yr_app_date
 ,vou.month_year_application_date
 ,vou.approved_status_flag
@@ -437,9 +436,7 @@ vou.approved_status_flag = 1
 
 group by
 vou.fy
-,vou.cpz
-,vou.cpz_name
-,vou.zone_name
+
 ,vou.mon_yr_app_date
 ,vou.month_year_application_date
 ,vou.approved_status_flag
@@ -460,15 +457,12 @@ vou.month_year_application_date desc
 ,vou.PermitType asc --voucherType asc
 ,vou.voucher_period asc
 ,vou.voucher_type_category asc
-,vou.cpz
---,vou.cpz_name
---,vou.zone_name
 '''
 SQLQuery_node1720617258366 = sparkSqlQuery(glueContext, query = SqlQuery0, mapping = {"parking_voucher_de_normalised":AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376, "liberator_permit_llpg":AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559, "unrestricted_address_api_dbo_hackney_address":AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032}, transformation_ctx = "SQLQuery_node1720617258366")
 
 # Script generated for node Amazon S3 - parking_vouchers_approved_summary_gds
-AmazonS3parking_vouchers_approved_summary_gds_node1720617264938 = glueContext.getSink(path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_vouchers_approved_summary_gds/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=["import_year", "import_month", "import_day", "import_date"], enableUpdateCatalog=True, transformation_ctx="AmazonS3parking_vouchers_approved_summary_gds_node1720617264938")
-AmazonS3parking_vouchers_approved_summary_gds_node1720617264938.setCatalogInfo(catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",catalogTableName="parking_vouchers_approved_summary_gds")
+AmazonS3parking_vouchers_approved_summary_gds_node1720617264938 = glueContext.getSink(path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_vouchers_approved_summary_gds_lbh/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=["import_year", "import_month", "import_day", "import_date"], enableUpdateCatalog=True, transformation_ctx="AmazonS3parking_vouchers_approved_summary_gds_node1720617264938")
+AmazonS3parking_vouchers_approved_summary_gds_node1720617264938.setCatalogInfo(catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",catalogTableName="parking_vouchers_approved_summary_gds_lbh")
 AmazonS3parking_vouchers_approved_summary_gds_node1720617264938.setFormat("glueparquet", compression="snappy")
 AmazonS3parking_vouchers_approved_summary_gds_node1720617264938.writeFrame(SQLQuery_node1720617258366)
 job.commit()

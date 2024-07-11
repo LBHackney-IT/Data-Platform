@@ -954,7 +954,7 @@ module "parking_visitor_voucher_qtrly_review" {
     "--environment"         = var.environment
   }
 }
-# MRB 25-07-2022 Job created   
+# MRB 25-07-2022 Job created
 module "Parking_Ringgo_Review-copy" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -976,7 +976,7 @@ module "Parking_Ringgo_Review-copy" {
     "--environment"         = var.environment
   }
 }
-# MRB 08-08-2022 Job created   
+# MRB 08-08-2022 Job created
 module "Parking_Permit_Diesel_Trends_Bought_in_Month" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1119,7 +1119,7 @@ module "parking_correspondence_performance_qa_with_totals_gds" {
   }
 }
 
-# MRB 22-11-2022 Job created 
+# MRB 22-11-2022 Job created
 module "parking_defect_met_fail" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1164,7 +1164,7 @@ module "parking_match_pcn_permit_vrm_llpg_nlpg_postcodes" {
     "--environment"         = var.environment
   }
 }
-# MRB 17-04-2023 Job created 
+# MRB 17-04-2023 Job created
 module "parking_defect_met_fail_monthly_format" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1236,7 +1236,7 @@ module "parking_cycle_hangar_waiting_list" {
     "--environment"         = var.environment
   }
 }
-# MRB 17-07-2023 Job created 
+# MRB 17-07-2023 Job created
 module "parking_permit_street_stress" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1259,7 +1259,7 @@ module "parking_permit_street_stress" {
     "--environment"         = var.environment
   }
 }
-# MRB 14-08-2023 Job created 
+# MRB 14-08-2023 Job created
 module "parking_permit_street_stress_with_cpz" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1305,7 +1305,7 @@ module "parking_correspondence_performance_records_with_pcn_downtime" {
     "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
-# MRB 25-10-2023 Job created 
+# MRB 25-10-2023 Job created
 module "parking_cycle_hangar_allocation" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1598,6 +1598,28 @@ module "parking_nas_live_manual_updates_with_pcns_box23" {
   job_description                = "Hackney Parking NAS Live ETA data linked lib PCN and box 2 n 3"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled                = local.is_production_environment
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
+  }
+}
+module "parking_vouchers_approved_summary_gds_lbh" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_vouchers_approved_summary_gds_lbh"
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_vouchers_approved_summary_gds_lbh"
+  triggered_by_job               = module.parking_voucher_de_normalised.job_name
+  job_description                = "Summary of denormalised voucher approved by FY, Month year for LBH, for use in GDS"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   number_of_workers_for_glue_job = 10
   glue_job_worker_type           = "G.1X"
   glue_version                   = "4.0"
