@@ -359,11 +359,11 @@ module "Ringgo_Daily_Transactions" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1Xyw59q5x6PbTw6L_-87eWXuTpK75vFJf"
+  google_drive_document_id       = "1pL9_8j995zZWrRXuj2sSWYleS9EHwif1"
   glue_job_name                  = "Ringgo Daily Transactions"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Ringgo_Daily/ringgo_may_2024.csv"
+  input_file_name                = "Ringgo_Daily/ringgo_june_2024.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
