@@ -65,6 +65,7 @@ Parking spaces (Shared use, Resident, etc) and the number of extant Permits
 16/03/2023 - Create SQL
 01/08/2023 - rewrite to obtain the CPZ
 15/08/2023 - change because Zone does not exist in the Parkmap data
+12/07/2024 - add permit reference to the Permits filter 
 *********************************************************************************/
 /** Get all of the addresses in HAckney **/
 With LLPG as (
@@ -149,7 +150,7 @@ Permits as (
         A.address_line_1, A.address_line_2, A.address_line_3, 
         A.postcode, A.cpz, A.cpz_name,
         B.usrn, B.Street,
-        ROW_NUMBER() OVER ( PARTITION BY A.email_address_of_applicant  
+        ROW_NUMBER() OVER ( PARTITION BY A.email_address_of_applicant, permit_reference  
                                 ORDER BY A.email_address_of_applicant, A.permit_type DESC) r1
     FROM parking_permit_denormalised_data as A
     LEFT JOIN LLPG_FULL as B ON A.uprn = cast(B.uprn as string)
