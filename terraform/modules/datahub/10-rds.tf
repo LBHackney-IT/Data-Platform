@@ -1,7 +1,7 @@
 resource "aws_db_instance" "datahub" {
   allocated_storage       = 15
   engine                  = "mysql"
-  engine_version          = "5.7"
+  engine_version          = "8.0"
   instance_class          = "db.t3.micro"
   username                = "datahub"
   identifier              = replace("${var.short_identifier_prefix}datahub", "-", "")
@@ -13,6 +13,7 @@ resource "aws_db_instance" "datahub" {
   backup_retention_period = 14
   backup_window           = "22:00-22:31"
   maintenance_window      = "Wed:23:13-Wed:23:43"
+  ca_cert_identifier      = "rds-ca-rsa2048-g1"
   tags                    = var.tags
 }
 
