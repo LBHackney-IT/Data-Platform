@@ -14,6 +14,7 @@ resource "aws_db_instance" "datahub" {
   backup_window               = "22:00-22:31"
   maintenance_window          = "Wed:23:13-Wed:23:43"
   ca_cert_identifier          = "rds-ca-rsa2048-g1"
+  apply_immediately           = true
   allow_major_version_upgrade = true
   tags                        = var.tags
 }
