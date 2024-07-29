@@ -63,6 +63,7 @@ Tom's hangar list
 13/06/2024 - slight aendments because of my cock-up!
 14/06/2024 - make additional changes because the cycle hangar key_id & space have been swapped
 19/06/2024 - trim the allocated space, there are leading spaces in the field!!!
+29/07/2024 - change collection of tom's hangars to add an additional status
 *******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -81,7 +82,7 @@ With TomHangar as (
     from parking_parking_ops_cycle_hangar_list
     WHERE import_date = (Select MAX(import_date) 
                     from parking_parking_ops_cycle_hangar_list)
-    AND asset_type = 'Hangar' AND lower(status) like '%active%'),
+    AND asset_type = 'Hangar' AND AND lower(status) IN ('active', 'estate locked gate issue')),
     
 Hanger as (
     SELECT HangarID as hanger_id,
