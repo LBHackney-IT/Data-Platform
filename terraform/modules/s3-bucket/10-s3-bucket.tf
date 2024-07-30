@@ -106,7 +106,7 @@ data "aws_iam_policy_document" "allow_ssl_requests_only" {
     effect  = "Deny"
     actions = ["s3:*"]
     principals {
-      type        = "*"
+      type        = "AWS"
       identifiers = ["*"]
     }
     resources = [
