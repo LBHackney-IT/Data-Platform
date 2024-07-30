@@ -100,6 +100,34 @@ data "aws_iam_policy_document" "bucket_policy_document" {
   }
 }
 
+data "aws_iam_policy_document" "allow_ssl_requests_only" {
+  statement {
+    sid     = "AllowSSLRequestsOnly"
+    effect  = "Deny"
+    actions = ["s3:*"]
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    resources = [
+      aws_s3_bucket.bucket.arn,
+      "${aws_s3_bucket.bucket.arn}/*",
+    ]
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "bucket" {
+  source_policy_documents = [
+    data.aws_iam_policy_document.bucket_policy_document.json,
+    data.aws_iam_policy_document.allow_ssl_requests_only.json
+  ]
+}
+
 resource "aws_s3_bucket" "bucket" {
   tags = var.tags
 
@@ -164,31 +192,6 @@ resource "aws_s3_bucket_public_access_block" "block_public_access" {
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket     = aws_s3_bucket.bucket.id
-  policy     = data.aws_iam_policy_document.bucket_policy_document.json
+  policy     = data.aws_iam_policy_document.bucket.json
   depends_on = [aws_s3_bucket_public_access_block.block_public_access]
-}
-
-resource "aws_s3_bucket_policy" "allow_ssl_requests_only" {
-  bucket = aws_s3_bucket.bucket.id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Id      = "AllowSSLRequestsOnly"
-    Statement = [
-      {
-        Sid       = "AllowSSLRequestsOnly"
-        Effect    = "Deny"
-        Principal = "*"
-        Action    = "s3:*"
-        Resource = [
-          aws_s3_bucket.bucket.arn,
-          "${aws_s3_bucket.bucket.arn}/*",
-        ]
-        Condition = {
-          Bool = {
-            "aws:SecureTransport" = "false"
-          }
-        }
-      },
-    ]
-  })
 }
