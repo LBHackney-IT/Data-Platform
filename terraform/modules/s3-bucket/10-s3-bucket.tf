@@ -116,7 +116,7 @@ data "aws_iam_policy_document" "allow_ssl_requests_only" {
     condition {
       test     = "Bool"
       variable = "aws:SecureTransport"
-      values   = ["false"]
+      values   = "false"
     }
   }
 }
