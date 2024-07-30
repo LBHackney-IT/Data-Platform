@@ -124,7 +124,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket" {
 resource "aws_s3_bucket_versioning" "bucket" {
   bucket = aws_s3_bucket.bucket.id
   versioning_configuration {
-    status = var.versioning_enabled ? "Enabled" : "Suspended"
+    status     = var.versioning_enabled ? "Enabled" : "Suspended"
     mfa_delete = "Disabled"
   }
 }
@@ -166,4 +166,29 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket     = aws_s3_bucket.bucket.id
   policy     = data.aws_iam_policy_document.bucket_policy_document.json
   depends_on = [aws_s3_bucket_public_access_block.block_public_access]
+}
+
+resource "aws_s3_bucket_policy" "allow_ssl_requests_only" {
+  bucket = aws_s3_bucket.bucket.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Id      = "AllowSSLRequestsOnly"
+    Statement = [
+      {
+        Sid       = "AllowSSLRequestsOnly"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.bucket.arn,
+          "${aws_s3_bucket.bucket.arn}/*",
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      },
+    ]
+  })
 }
