@@ -82,7 +82,7 @@ With TomHangar as (
     from parking_parking_ops_cycle_hangar_list
     WHERE import_date = (Select MAX(import_date) 
                     from parking_parking_ops_cycle_hangar_list)
-    AND asset_type = 'Hangar' AND AND lower(status) IN ('active', 'estate locked gate issue')),
+    AND asset_type = 'Hangar' AND lower(status) IN ('active', 'estate locked gate issue')),
     
 Hanger as (
     SELECT HangarID as hanger_id,
