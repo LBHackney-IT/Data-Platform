@@ -1408,7 +1408,7 @@ module "parking_cycle_hangar_allocation_update" {
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   script_name                    = "parking_cycle_hangar_allocation_update"
-  triggered_by_crawler           = local.is_live_environment ? module.parking_spreadsheet_parking_ops_cycle_hangar_list[0].crawler_name : 0
+  triggered_by_crawler           = "${local.short_identifier_prefix}parking_cycle_hangars_denormalisation_update"
   job_description                = "Rewrite of cycle hangar allocation using new denormalisation code"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled                = local.is_production_environment
