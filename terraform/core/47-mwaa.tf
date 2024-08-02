@@ -213,7 +213,7 @@ resource "aws_mwaa_environment" "mwaa" {
   tags                  = module.tags.values
 
   airflow_configuration_options = {
-    "core.default_timezone"               = "utc"
+    "core.default_timezone"               = "Europe/London"
     "webserver.warn_deployment_exposure"  = "False"
     "webserver.auto_refresh"              = "True"
     "scheduler.min_file_process_interval" = "180"
