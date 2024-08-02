@@ -213,7 +213,7 @@ resource "aws_mwaa_environment" "mwaa" {
   tags                  = module.tags.values
 
   airflow_configuration_options = {
-    "core.default_timezone"               = "Europe/London"
+    "core.default_timezone"               = "utc"
     "webserver.warn_deployment_exposure"  = "False"
     "webserver.auto_refresh"              = "True"
     "scheduler.min_file_process_interval" = "180"
@@ -223,5 +223,7 @@ resource "aws_mwaa_environment" "mwaa" {
       "variables_prefix" : "airflow/variables",
       "config_prefix" : "airflow/config"
     })
+
+    weekly_maintenance_window_start = "SUN:03:30"
   }
 }
