@@ -64,6 +64,8 @@ Tom's hangar list
 14/06/2024 - make additional changes because the cycle hangar key_id & space have been swapped
 19/06/2024 - trim the allocated space, there are leading spaces in the field!!!
 29/07/2024 - change collection of tom's hangars to add an additional status
+01/08/2024 - summerise ALL of the allocated PartyIDs (not just those that are active now). Use this list
+                to filter out 'allocated' PartyIDs from the Waiting List
 *******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -161,6 +163,14 @@ Street_Rec as (
     WHERE import_date = (Select MAX(import_date) from 
                             liberator_permit_llpg)
     AND address1 = 'STREET RECORD'),
+
+/*** 01/08/2024 Summerise the allocatd Party IDs to prevent duplication below **/
+Summary_Alloca_PartyID as (
+    SELECT party_id,
+        ROW_NUMBER() OVER ( PARTITION BY party_id
+            ORDER BY party_id DESC) R1    
+    FROM Party_ID_Allocation
+    WHERE row_num = 1),
     
 Cycle_Hangar_Wait_List as (
     SELECT
@@ -171,7 +181,8 @@ Cycle_Hangar_Wait_List as (
     LEFT JOIN Licence_Party as B ON A.party_id = B.business_party_id
     LEFT JOIN LLPG          as C ON B.uprn = cast(C.UPRN as string)
     LEFT JOIN Street_Rec    as D ON C.USRN = D.USRN
-    LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id  AND row_num = 1
+    LEFT JOIN Summary_Alloca_PartyID as E ON A.party_id = E.party_id AND R1 = 1 
+    /*LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id  AND row_num = 1  01/08 removed bigger check above*/
     WHERE row1= 1 AND E.party_id is NULL AND status_to not IN ('removed','rejected offer')),
 /************************************************************
 Waiting List CREATED
