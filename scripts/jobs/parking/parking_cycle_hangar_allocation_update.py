@@ -149,6 +149,17 @@ Cycle_Hangar_allocation as (
     remove those records where the Space and Key ID fields have been switched??? also
     remove those records with null in the space field????*/
     AND key_issued = 'Y' AND length(key_id) > 2 AND space != 'null'),
+
+/*** 23/07/2024 - obtain the last party id/hangar allocation details ***/
+Party_ID_Allocation as (
+    SELECT 
+        *,
+        ROW_NUMBER() OVER ( PARTITION BY party_id, hanger_id
+            ORDER BY party_id, hanger_id, id DESC) row_num
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_hangar_allocations
+    WHERE Import_Date = (Select MAX(Import_Date) 
+            from "dataplatform-prod-liberator-raw-zone".liberator_hangar_allocations)
+    AND key_issued = 'Y' AND length(key_id) > 2 AND space != 'null'),
                             
 /** 13/06 total the alloctaion details obtain above */
 Alloc_Total as (
