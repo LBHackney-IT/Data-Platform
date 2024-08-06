@@ -223,5 +223,7 @@ resource "aws_mwaa_environment" "mwaa" {
       "variables_prefix" : "airflow/variables",
       "config_prefix" : "airflow/config"
     })
+
+    weekly_maintenance_window_start = "SUN:03:30"
   }
 }
