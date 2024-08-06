@@ -382,7 +382,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
       "glue:DeleteTrigger",
-      "glue:Get*",
       "glue:List*",
       "glue:ResetJobBookmark",
       "glue:SearchTables",
@@ -403,16 +402,45 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:UpdateTable",
       "glue:CreateTable",
       "glue:DeleteTable",
-      "glue:GetTableVersions",
-      "glue:GetTable",
-      "glue:GetTables",
-      "glue:GetDatabase",
-      "glue:GetDatabases",
       "glue:Query*",
     ]
     resources = ["*"]
   }
 }
+
+// Glue catalog access
+
+data "aws_iam_policy_document" "department_catalog_access" {
+  statement {
+    sid    = "AllowAccessToDepartmentCatalog"
+    effect = "Allow"
+    actions = [
+      "glue:GetDatabase",
+      "glue:GetDatabases",
+      "glue:GetTable",
+      "glue:GetTables",
+      "glue:GetTableVersions",
+      "glue:GetPartitions",
+      "glue:GetPartition",
+      "glue:GetPartitions",
+      "glue:GetPartition"
+    ]
+    resources = concat(
+      [
+        aws_glue_catalog_database.raw_zone_catalog_database.arn,
+        aws_glue_catalog_database.refined_zone_catalog_database.arn,
+        aws_glue_catalog_database.trusted_zone_catalog_database.arn,
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
+      ],
+      var.catalog_access_resources
+    )
+  }
+}
+
+
+
 
 resource "aws_iam_policy" "glue_access" {
   tags = var.tags
