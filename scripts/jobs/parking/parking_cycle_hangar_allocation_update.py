@@ -1,11 +1,19 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS, create_pushdown_predicate_for_max_date_partition_value
+
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    create_pushdown_predicate_for_max_date_partition_value,
+    get_glue_env_var,
+    get_latest_partitions,
+)
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -156,9 +164,9 @@ Party_ID_Allocation as (
         *,
         ROW_NUMBER() OVER ( PARTITION BY party_id, hanger_id
             ORDER BY party_id, hanger_id, id DESC) row_num
-    FROM "dataplatform-prod-liberator-raw-zone".liberator_hangar_allocations
+    FROM liberator_hangar_allocations
     WHERE Import_Date = (Select MAX(Import_Date) 
-            from "dataplatform-prod-liberator-raw-zone".liberator_hangar_allocations)
+            from liberator_hangar_allocations)
     AND key_issued = 'Y' AND length(key_id) > 2 AND space != 'null'),
                             
 /** 13/06 total the alloctaion details obtain above */
