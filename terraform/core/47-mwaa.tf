@@ -205,12 +205,13 @@ resource "aws_mwaa_environment" "mwaa" {
 
   # To view the Airflow UI, set this to PUBLIC_ONLY or create a mechanism to access the VPC endpoint
   # https://docs.aws.amazon.com/mwaa/latest/userguide/t-create-update-environment.html#t-network-failure
-  webserver_access_mode = "PUBLIC_ONLY" # Default is PRIVATE_ONLY
-  max_workers           = 10            # The default for mw1.medium is 10 for mw1.samll is 5
-  min_workers           = 1             # Default 1
-  schedulers            = 2             # Must be between 2 and 5
-  kms_key               = aws_kms_key.mwaa_key.arn
-  tags                  = module.tags.values
+  webserver_access_mode           = "PUBLIC_ONLY" # Default is PRIVATE_ONLY
+  max_workers                     = 10            # The default for mw1.medium is 10 for mw1.samll is 5
+  min_workers                     = 1             # Default 1
+  schedulers                      = 2             # Must be between 2 and 5
+  kms_key                         = aws_kms_key.mwaa_key.arn
+  tags                            = module.tags.values
+  weekly_maintenance_window_start = "SUN:03:30"
 
   airflow_configuration_options = {
     "core.default_timezone"               = "Europe/London"
@@ -223,7 +224,5 @@ resource "aws_mwaa_environment" "mwaa" {
       "variables_prefix" : "airflow/variables",
       "config_prefix" : "airflow/config"
     })
-
-    weekly_maintenance_window_start = "SUN:03:30"
   }
 }
