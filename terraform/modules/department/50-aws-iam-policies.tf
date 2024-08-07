@@ -317,12 +317,56 @@ data "aws_iam_policy_document" "athena_can_write_to_s3" {
   }
 }
 
+// Departmental Athena access policy
+data "aws_iam_policy_document" "athena_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "athena:ListEngineVersions",
+      "athena:ListWorkGroups",
+      "athena:ListDataCatalogs",
+      "athena:ListDatabases",
+      "athena:GetDatabase",
+      "athena:ListTableMetadata",
+      "athena:GetTableMetadata"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "athena:GetWorkGroup",
+      "athena:BatchGetQueryExecution",
+      "athena:GetQueryExecution",
+      "athena:ListQueryExecutions",
+      "athena:StartQueryExecution",
+      "athena:StopQueryExecution",
+      "athena:GetQueryResults",
+      "athena:GetQueryResultsStream",
+      "athena:CreateNamedQuery",
+      "athena:GetNamedQuery",
+      "athena:BatchGetNamedQuery",
+      "athena:ListNamedQueries",
+      "athena:DeleteNamedQuery",
+      "athena:CreatePreparedStatement",
+      "athena:GetPreparedStatement",
+      "athena:ListPreparedStatements",
+      "athena:UpdatePreparedStatement",
+      "athena:DeletePreparedStatement"
+    ]
+    resources = [
+      aws_athena_workgroup.department_workgroup.arn
+    ]
+  }
+}
+
 // Departmental Glue access policy
 data "aws_iam_policy_document" "glue_access" {
   statement {
     effect = "Allow"
     actions = [
-      "athena:*",
       "logs:DescribeLogGroups",
       "tag:GetResources",
       "iam:ListRoles",
