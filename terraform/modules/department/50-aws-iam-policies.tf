@@ -879,8 +879,8 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "iam:PassRole"
     ]
     resources = [
-      # A temporary solution (using mannually created role - test_hackney_ecs), we should replace with the actual terrafomed ecs task role
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/test_hackney_ecs"
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-execution-role",
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-task-role"
     ]
     condition {
       test     = "StringEquals"
