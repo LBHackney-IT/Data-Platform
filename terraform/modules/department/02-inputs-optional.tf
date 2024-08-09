@@ -42,3 +42,9 @@ variable "region" {
   type        = string
   default     = "eu-west-2"
 }
+
+variable "catalog_access_resources" {
+  description = "List of resources that the department should have access to in the Glue Catalog"
+  type        = list(string)
+  default     = []
+}
