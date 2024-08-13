@@ -173,7 +173,7 @@ Party_ID_Allocation as (
 Alloc_Total as (
     SELECT hanger_id, count(*) as total_alloc 
     FROM Cycle_Hangar_allocation
-    WHERE row_num = 1 AND allocation_status not IN ('cancelled', 'key_returned')
+    WHERE row_num = 1 AND allocation_status not IN ('cancelled', 'key_returned','key_not_returned')
     GROUP BY hanger_id),
 
 Street_Rec as (
