@@ -765,7 +765,7 @@ module "nas_live_manual_updates_data_load" {
   google_sheets_worksheet_name    = "nas_live_manual_updates_data_load"
   department                      = module.department_parking_data_source
   dataset_name                    = "nas_live_manual_updates_data_load"
-  google_sheet_import_schedule    = "cron(0 4 ? * * *)"
+  google_sheet_import_schedule    = "cron(0 10 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
