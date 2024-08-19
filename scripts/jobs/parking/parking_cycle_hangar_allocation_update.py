@@ -74,6 +74,7 @@ Tom's hangar list
 29/07/2024 - change collection of tom's hangars to add an additional status
 01/08/2024 - summerise ALL of the allocated PartyIDs (not just those that are active now). Use this list
                 to filter out 'allocated' PartyIDs from the Waiting List
+19/08/2024 - add additional order by for cycle hangar allocation 
 *******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -150,7 +151,7 @@ Cycle_Hangar_allocation as (
         /* 14/06 change again to hangar_id and space because there are some hangars with multiple spaces
         allocated to the same Party_id. UPPER(space) because there are records with lowercase space field */
         /* 19/06 trim the space */
-        ROW_NUMBER() OVER ( PARTITION BY hanger_id, trim(upper(space)) ORDER BY hanger_id, trim(upper(space)), id DESC) row_num
+        ROW_NUMBER() OVER ( PARTITION BY hanger_id, trim(upper(space)) ORDER BY hanger_id, trim(upper(space)), fee_due_date DESC, id DESC) row_num
     FROM liberator_hangar_allocations
     WHERE Import_Date = (Select MAX(Import_Date) from liberator_hangar_allocations)
     /* 14/06 change to exclude those records where keys have not been issued AND
