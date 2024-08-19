@@ -20,6 +20,9 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 environment = get_glue_env_var("environment")
 
+# Script generated for node Amazon S3 - unrestricted_address_api_dbo_hackney_xref
+AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724077428047 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-raw-zone-unrestricted-address-api", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="unrestricted_address_api_dbo_hackney_xref", transformation_ctx="AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724077428047")
+
 # Script generated for node Amazon S3 liberator-raw-zone - liberator_permit_llpg
 AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-liberator-raw-zone", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="liberator_permit_llpg", transformation_ctx="AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559")
 
@@ -32,13 +35,15 @@ AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_addres
 # Script generated for node SQL Query
 SqlQuery0 = '''
 /*
-03/07/2024 - updated vouchers approved version two using the vouchers denormalised table
+03/07/2024 - updated vouchers approved version two
 09/07/2024 - breakdown by household, street, zone, lbh versions.  This is the LBH version
+19/08/2024 - 19/08/2024 - added car free calculations
 
 Source tables:
 "dataplatform-stg-liberator-refined-zone".parking_voucher_de_normalised
 "dataplatform-stg-liberator-raw-zone".liberator_permit_llpg
 "dataplatform-stg-raw-zone-unrestricted-address-api".unrestricted_address_api_dbo_hackney_address
+"dataplatform-stg-raw-zone-unrestricted-address-api".unrestricted_address_api_dbo_hackney_xref
 
 
 */
@@ -373,7 +378,9 @@ where (ADDRESS1 like 'Street Record' or ADDRESS1 like 'STREET RECORD') and liber
 , llpg as (
   SELECT * FROM unrestricted_address_api_dbo_hackney_address where unrestricted_address_api_dbo_hackney_address.import_date = (SELECT max(unrestricted_address_api_dbo_hackney_address.import_date) FROM unrestricted_address_api_dbo_hackney_address) and lpi_logical_status like 'Approved Preferred'
   )
-
+, cfxref as (
+select * from  unrestricted_address_api_dbo_hackney_xref where import_date = (select max(import_date)  from  unrestricted_address_api_dbo_hackney_xref) and xref_name like 'Parking Blacklisted S106' 
+)
 
 select distinct 
 
@@ -427,9 +434,45 @@ vou.fy
 /*Income - Total Paid*/
 ,cast(sum(try_cast(vou.amount as double)) as decimal(15,2)) as total_amount_paid
 
+
+/*Car Free blacklisted properties counters*/
+
+/*Transactions Car Free*/
+,count(  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  concat(vou.application_date,vou.email_address_of_applicant) end) as num_unique_transaction_ref_cfxref
+,count(distinct  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  concat(vou.application_date,vou.email_address_of_applicant) end) as num_distinct_unique_transaction_ref_cfxref
+
+/*Email addresses Car Free*/
+,count( case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  vou.email_address_of_applicant end) as num_email_address_ref
+,count(distinct  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  vou.email_address_of_applicant end) as num_distinct_email_address_ref_cfxref
+
+/*CPZ - Zone Car Free*/
+,count(distinct  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  vou.cpz end) as num_distinct_cpz_cfxref
+,count(distinct  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  vou.cpz_name end) as num_distinct_cpz_name_cfxref
+,count(distinct  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  vou.zone_name end) as num_distinct_zone_name_cfxref
+
+/*Street(USRN), Ward and Household(UPRN) Car Free*/
+,count(distinct  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  SR_ADDRESS2 end) as num_distinct_street_name_cfxref
+,count(distinct  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  SR_WARD_CODE end) as num_distinct_street_ward_name_cfxref
+--,count(distinct vou.uprn) as num_distinct_uprn_households
+,count(distinct  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then vou.uprn end) as num_distinct_uprn_households_cfxref
+,count(distinct  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then street.usrn end) as num_distinct_usrn_cfxref
+
+/*Books, Bookings and Vouchers Car Free*/
+,cast(sum(  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  try_cast(vou.quantity as double) end ) as decimal(15,0)) as total_quantity_books_cfxref
+
+,cast(sum(  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  try_cast(vou.total_num_vouchers_in_book as double) end ) as decimal(15,0)) as total_num_vouchers_in_books_cfxref
+,cast(sum(  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  try_cast(vou.noofbookings as double) end) as decimal(15,0)) as total_num_ebookings_cfxref
+,cast(sum(  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  try_cast(vou.numberofevouchersinsession as double) end ) as decimal(15,0)) as total_num_evouchers_in_session_cfxref
+
+/*Income - Total Paid Car Free*/
+,cast(sum(  case when cfxref.uprn is not null or cast(cfxref.uprn as string) != '' then  try_cast(vou.amount as double) end) as decimal(15,2)) as total_amount_paid_cfxref
+
+
+
 from vou
 left join llpg on cast(llpg.uprn as string) = cast(vou.uprn as string) 
 left join street on cast(street.usrn as string) = cast(llpg.usrn as string)
+left join cfxref on cast(cfxref.uprn as string) = cast(vou.uprn as string) 
 
 Where 
 vou.approved_status_flag = 1
@@ -458,7 +501,7 @@ vou.month_year_application_date desc
 ,vou.voucher_period asc
 ,vou.voucher_type_category asc
 '''
-SQLQuery_node1720617258366 = sparkSqlQuery(glueContext, query = SqlQuery0, mapping = {"parking_voucher_de_normalised":AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376, "liberator_permit_llpg":AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559, "unrestricted_address_api_dbo_hackney_address":AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032}, transformation_ctx = "SQLQuery_node1720617258366")
+SQLQuery_node1720617258366 = sparkSqlQuery(glueContext, query = SqlQuery0, mapping = {"parking_voucher_de_normalised":AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376, "liberator_permit_llpg":AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559, "unrestricted_address_api_dbo_hackney_address":AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032, "unrestricted_address_api_dbo_hackney_xref":AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724077428047}, transformation_ctx = "SQLQuery_node1720617258366")
 
 # Script generated for node Amazon S3 - parking_vouchers_approved_summary_gds
 AmazonS3parking_vouchers_approved_summary_gds_node1720617264938 = glueContext.getSink(path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_vouchers_approved_summary_gds_lbh/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=["import_year", "import_month", "import_day", "import_date"], enableUpdateCatalog=True, transformation_ctx="AmazonS3parking_vouchers_approved_summary_gds_node1720617264938")
