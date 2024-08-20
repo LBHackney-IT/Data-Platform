@@ -75,6 +75,7 @@ Tom's hangar list
 01/08/2024 - summerise ALL of the allocated PartyIDs (not just those that are active now). Use this list
                 to filter out 'allocated' PartyIDs from the Waiting List
 19/08/2024 - add additional order by for cycle hangar allocation 
+20/08/2024 - additional checks for rubbish data!!!!
 *******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -93,18 +94,23 @@ With TomHangar as (
     from parking_parking_ops_cycle_hangar_list
     WHERE import_date = (Select MAX(import_date) 
                     from parking_parking_ops_cycle_hangar_list)
-    AND asset_type = 'Hangar' AND lower(status) IN ('active', 'estate locked gate issue')),
-    
+    AND asset_type = 'Hangar' AND lower(status) IN ('active', 'estate locked gate issue')
+    /** 20-08-2024 add check for blank records **/
+    AND Length(trim(asset_no))> 2),
+
+/** 20-08-2024 get ALL of the data AND check for duplicates **/
 Hanger as (
-    SELECT HangarID as hanger_id,
+    SELECT HangarID as hanger_id, *,
     ROW_NUMBER() OVER ( PARTITION BY HangarID ORDER BY HangarID DESC) H1
     FROM TomHangar),
 
+/** 20/08/2024 I check for duplicates and dont use the data??? change to use**/
 Hangar_Comp as (
     SELECT
-        asset_no, HangarID, B.hanger_id
-    FROM TomHangar as A
-    LEFT JOIN Hanger as B ON A.HangarID = B.hanger_id AND H1 = 1
+        asset_no, HangarID, hanger_id
+    FROM Hanger as A
+    /**LEFT JOIN Hanger as B ON A.HangarID = B.hanger_id AND H1 = 1 remove **/
+    WHERE H1 = 1
     UNION ALL 
     SELECT 'new_only','new_only','new_only'),
 
@@ -280,6 +286,7 @@ Full_Hangar_Data as (
     LEFT JOIN Wait_total as B ON A.hanger_id = B.hanger_id
     LEFT JOIN Wait_List_Earlist_Latest as C ON A.hanger_id = C.hanger_id),
 
+/** 20-08-2024 Use the de-dupe data NOT TomHangar **/
 Hangar_WAit_List as (
     SELECT 
         A.asset_no as Tom_Asset_No, B.hanger_id as HangarID, street_or_estate, zone, location_description, 
@@ -297,9 +304,10 @@ Hangar_WAit_List as (
             ELSE free_spaces
         END as free_spaces,
     Earlist_Registration_Date, Latest_Registration_Date
-    FROM TomHangar as A
+    FROM Hanger as A
     LEFT JOIN Hangar_Comp       as B ON A.asset_no = B.asset_no
-    LEFT JOIN Full_Hangar_Data  as C ON B.hanger_id = C.hanger_id),
+    LEFT JOIN Full_Hangar_Data  as C ON B.hanger_id = C.hanger_id
+    WHERE H1 = 1),
 
 /*** Output the data ***/
 Output as (
