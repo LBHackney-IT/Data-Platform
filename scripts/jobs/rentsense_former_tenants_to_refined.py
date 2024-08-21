@@ -431,40 +431,6 @@ if __name__ == "__main__":
         'CTE': 'Payment transfer between rent accounts'
     }
 
-    mapPatch = {
-        'P11': 'Patch 11',
-        'P12': 'Patch 12',
-        'P17': 'Patch 17',
-        'P2': 'Patch 2',
-        'P20': 'Patch 20',
-        'P3': 'Patch 3',
-        'P6': 'Patch 6',
-        'P8': 'Patch 8',
-        'P18': 'Patch 18',
-        'P10': 'Patch 10',
-        'P15': 'Patch 15',
-        'P16': 'Patch 16',
-        'P19': 'Patch 19',
-        'P22': 'Patch 22',
-        'P5': 'Patch 5',
-        'P1': 'Patch 1',
-        'P13': 'Patch 13',
-        'P14': 'Patch 14',
-        'P21': 'Patch 21',
-        'P4': 'Patch 4',
-        'P7': 'Patch 7',
-        'P9': 'Patch 9',
-        'P01': 'Patch 1',
-        'P02': 'Patch 2',
-        'P03': 'Patch 3',
-        'P04': 'Patch 4',
-        'P05': 'Patch 5',
-        'P06': 'Patch 6',
-        'P07': 'Patch 7',
-        'P08': 'Patch 8',
-        'P09': 'Patch 9'
-    }
-
     df = glueContext.create_data_frame.from_catalog(
         database=source_catalog_database,
         table_name="person_reshape",
@@ -543,22 +509,22 @@ if __name__ == "__main__":
         transformation_ctx="housingfinancedbproduction_case_priorities_source")
     case_priorities = get_latest_partitions_optimized(case_priorities)
 
-    # create the patch information
-    patch_officer = patch_officer.withColumn("patch_number2", F.trim(F.col("patch_number")))
+    # # create the patch information
+    # patch_officer = patch_officer.withColumn("patch_number2", F.trim(F.col("patch_number")))
 
-    patch = dfprop.withColumn("patch2", F.trim(F.col("arr_patch"))) \
-        .withColumn("property_ref", F.trim(F.col("prop_ref"))) \
-        .replace(to_replace=mapPatch, subset=['patch2'])
+    # patch = dfprop.withColumn("patch2", F.trim(F.col("arr_patch"))) \
+    #     .withColumn("property_ref", F.trim(F.col("prop_ref"))) \
+    #     .replace(to_replace=mapPatch, subset=['patch2'])
 
-    patch = patch.join(patch_officer, patch.patch2 == patch_officer.patch_number2, "left")
-    patch = patch.selectExpr("property_ref as prop_ref",
-                             "patch2 as Patch",
-                             "officer_full_name as HousingOfficerName")
-    patch = patch.distinct()
+    # patch = patch.join(patch_officer, patch.patch2 == patch_officer.patch_number2, "left")
+    # patch = patch.selectExpr("property_ref as prop_ref",
+    #                          "patch2 as Patch",
+    #                          "officer_full_name as HousingOfficerName")
+    # patch = patch.distinct()
 
     # data loads - takes all records that have and end date and secure tenancies, intro and mesne tenancies are added after as there are some tenancy ids with both
     accounts = df2.filter("endoftenuredate is not NULL and paymentreference<>''")
-    accounts_s = accounts.where(col("description").isin({"Secure", "Non-Secure"}))
+    accounts_s = accounts.where(col("description").isin({"Secure", "Non-Secure", "Private Garage", "Tenant Garage"}))
     accounts_int = accounts.where(col("description").isin({"Introductory", "Mense Profit Ac"}))
     accounts_int = accounts_int.join(accounts_s, accounts_int.paymentreference == accounts_s.paymentreference,
                                      'leftanti')  # remove the paymentreference in the other dataset
@@ -570,7 +536,7 @@ if __name__ == "__main__":
     accounts = accounts.drop("uh_ten_ref")
 
     accounts = accounts.withColumn("prop_ref", F.trim(F.col("property_reference")))
-    accounts = accounts.join(patch, accounts.prop_ref == patch.prop_ref, "left")
+    # accounts = accounts.join(patch, accounts.prop_ref == patch.prop_ref, "left")
 
     # get the max date to remove dupes
     start_ten = accounts.selectExpr("paymentreference as AccountR",
@@ -595,71 +561,10 @@ if __name__ == "__main__":
     accounts2 = accounts.join(bals_filter, accounts.paymentreference == bals_filter.paymentreference2, "right")
 
     accounts2 = accounts2.filter("paymentreference is not null") \
-        .filter(col('patch').like('%Patch%')) \
         .withColumn("TenancyEndDate", F.to_date(substring("endoftenuredate", 1, 10), "yyyy-MM-dd"))
 
     #     .withColumn("TenancyEndDate", F.to_date(F.to_timestamp(col("endoftenuredate"), "M/d/yyyy H:mm")))
-
-    accounts3 = accounts2.selectExpr("paymentreference as AccountReference",
-                                     "description as TenureType",
-                                     "tenure_code as TenureTypeCode",
-                                     # "endoftenuredate as TenancyEndDate",
-                                     "TenancyEndDate",
-                                     "'Hackney' as LocalAuthority",
-                                     "HousingOfficerName",
-                                     "Patch",
-                                     #     "import_date as import_date",
-                                     "uh_ten_ref as tenancy_ref",
-                                     "PreviousWeekBalance"
-                                     )
-
-    accounts4 = accounts3.join(df_agg, accounts3.AccountReference == df_agg.AccountR, "left")
-
-    case_priorities = case_priorities.filter(F.col("pause_reason") == "Deceased")
-
-    case_priorities = case_priorities.withColumn('Deceased', lit(1)) \
-        .drop("import_date") \
-        .withColumnRenamed("tenancy_ref", "tenancy_ref2")
-
-    accounts5 = accounts4.join(case_priorities, accounts4.tenancy_ref == case_priorities.tenancy_ref2, "left")
-
-    accounts6 = accounts5.selectExpr("AccountReference as AccountReference",
-                                     # "TenureType",
-                                     #  "TenureTypeCode",
-                                     # "max_date as TenancyStartDate",
-                                     "TenancyEndDate",
-                                     "LocalAuthority",
-                                     # "HousingOfficerName",
-                                     "Patch",
-                                     "'Hackney' as Region",
-                                     #   "import_date as import_date",
-                                     #  "tenancy_ref as TenReference",
-                                     #  "is_paused_until as BreathingSpaceEndDate",
-                                     "Case when Deceased=1 then 'Y' else 'N' end as Deceased"
-                                     #  "previousweekbalance"
-                                     )
-
-    accounts7 = accounts6.filter("AccountReference is not null")
-
-    accounts8 = accounts7.distinct()
-
-    accounts9 = accounts8.filter(col('patch').like('%Patch%'))
-    accounts10 = add_import_time_columns(accounts9)
-
-    # create the accounts table referenced in the other extracts
-    dynamic_frame = DynamicFrame.fromDF(accounts10.repartition(1), glueContext, "target_data_to_write")
-
-    # save out the data
-
-    parquet_data = glueContext.write_dynamic_frame.from_options(
-        frame=dynamic_frame,
-        connection_type="s3",
-        format="parquet",
-        connection_options={"path": s3_bucket_target + '/formeraccounts', "partitionKeys": PARTITION_KEYS},
-        transformation_ctx="target_data_to_write")
-
-    # Export to .xml.gzip
-    export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formeraccounts")
+    #        .filter(col('patch').like('%Patch%')) \
 
     # Arrangements
 
@@ -851,7 +756,7 @@ if __name__ == "__main__":
     # .withColumn("ActionDate", F.to_date(F.col("action_date"), "yyyy-MM-dd"))
 
     actions = actions.filter(
-        (F.col("action_date") > date_sub(current_date(), 180)) & (F.col("action_date") < current_date()))
+        (F.col("action_date") > date_sub(current_date(), 365)) & (F.col("action_date") < current_date()))
 
     actions = ten.join(actions, ten.uh_ten_ref == actions.uh_ten_ref1, "inner")
 
@@ -889,11 +794,75 @@ if __name__ == "__main__":
         connection_options={"path": s3_bucket_target + '/formeractions', "partitionKeys": PARTITION_KEYS},
         transformation_ctx="target_data_to_write")
 
+    # Attach the last action as the patch and save out the accounts
+
+    accounts3 = accounts2.join(actions, accounts2.paymentreference == actions.AccountReference, "left")
+
+    accounts3 = accounts3.selectExpr("paymentreference as AccountReference",
+                                     "description as TenureType",
+                                     "tenure_code as TenureTypeCode",
+                                     # "endoftenuredate as TenancyEndDate",
+                                     "TenancyEndDate",
+                                     "'Hackney' as LocalAuthority",
+                                     "'' as HousingOfficerName",
+                                     "ActionCode as Patch",
+                                     #     "import_date as import_date",
+                                     "uh_ten_ref as tenancy_ref",
+                                     "PreviousWeekBalance"
+                                     )
+
+    accounts4 = accounts3.join(df_agg, accounts3.AccountReference == df_agg.AccountR, "left")
+
+    case_priorities = case_priorities.filter(F.col("pause_reason") == "Deceased")
+
+    case_priorities = case_priorities.withColumn('Deceased', lit(1)) \
+        .drop("import_date") \
+        .withColumnRenamed("tenancy_ref", "tenancy_ref2")
+
+    accounts5 = accounts4.join(case_priorities, accounts4.tenancy_ref == case_priorities.tenancy_ref2, "left")
+
+    accounts6 = accounts5.selectExpr("AccountReference as AccountReference",
+                                     # "TenureType",
+                                     #  "TenureTypeCode",
+                                     # "max_date as TenancyStartDate",
+                                     "TenancyEndDate",
+                                     "LocalAuthority",
+                                     # "HousingOfficerName",
+                                     "Patch",
+                                     "'Hackney' as Region",
+                                     #   "import_date as import_date",
+                                     #  "tenancy_ref as TenReference",
+                                     #  "is_paused_until as BreathingSpaceEndDate",
+                                     "Case when Deceased=1 then 'Y' else 'N' end as Deceased"
+                                     #  "previousweekbalance"
+                                     )
+
+    accounts7 = accounts6.filter("AccountReference is not null")
+
+    accounts8 = accounts7.distinct()
+
+    accounts9 = accounts8.filter(col('patch').like('%Patch%'))
+    accounts10 = add_import_time_columns(accounts9)
+
+    # create the accounts table referenced in the other extracts
+    dynamic_frame = DynamicFrame.fromDF(accounts10.repartition(1), glueContext, "target_data_to_write")
+
+    # save out the data
+
+    parquet_data = glueContext.write_dynamic_frame.from_options(
+        frame=dynamic_frame,
+        connection_type="s3",
+        format="parquet",
+        connection_options={"path": s3_bucket_target + '/formeraccounts', "partitionKeys": PARTITION_KEYS},
+        transformation_ctx="target_data_to_write")
+
+    # Export to .xml.gzip
+    export_dynamic_frame_as_xml_gzip(dynamic_frame, s3_bucket, target_path, "formeraccounts")
     # Transactions
 
     ten = accounts2.select('uh_ten_ref', 'paymentreference')
 
-    df11 = df10.filter((F.col("post_date") > date_sub(current_date(), 180)) & (F.col("post_date") < current_date()))
+    df11 = df10.filter((F.col("post_date") > date_sub(current_date(), 365)) & (F.col("post_date") < current_date()))
 
     df11 = df11.withColumn("TransactionID", F.monotonically_increasing_id()) \
         .withColumn("code_lookup", F.trim(F.col("trans_type"))) \
