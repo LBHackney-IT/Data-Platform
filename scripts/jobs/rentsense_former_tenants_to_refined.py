@@ -841,11 +841,10 @@ if __name__ == "__main__":
 
     accounts8 = accounts7.distinct()
 
-    accounts9 = accounts8.filter(col('patch').like('%Patch%'))
-    accounts10 = add_import_time_columns(accounts9)
+    accounts9 = add_import_time_columns(accounts8)
 
     # create the accounts table referenced in the other extracts
-    dynamic_frame = DynamicFrame.fromDF(accounts10.repartition(1), glueContext, "target_data_to_write")
+    dynamic_frame = DynamicFrame.fromDF(accounts9.repartition(1), glueContext, "target_data_to_write")
 
     # save out the data
 
