@@ -71,7 +71,7 @@ and upper(nextprogressionstage) not like 'WRITEOFF'
 
 --and cast(pcnissuedate as date) > cast('2019-12-31' as date) and cast(pcnissuedate as date) < cast('2024-01-01' as date)--Parking Tickets issued between 01/01/2020 and 31/12/2023.
 
-group by vrm_ceo
+group by vrm
 order by vrm_ceo
 )
 , no_resp_cctv as (
