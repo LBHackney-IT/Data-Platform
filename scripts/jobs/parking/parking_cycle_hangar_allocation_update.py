@@ -76,7 +76,8 @@ Tom's hangar list
                 to filter out 'allocated' PartyIDs from the Waiting List
 19/08/2024 - add additional order by for cycle hangar allocation 
 20/08/2024 - additional checks for rubbish data!!!!
-23/07/2024 - look again at the waiting list!
+23/08/2024 - look again at the waiting list!
+28/04/2024 - refine the 'hangar_can_be_filled' field case statement
 *******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -315,8 +316,10 @@ Hangar_WAit_List as (
 Output as (
     SELECT *,
         CASE 
-            When Total_Allocated = 6        Then 'N/A'
-            When Wait_Total >= free_spaces  Then 'Yes'
+            When Total_Allocated = 6                Then 'N/A'
+            /*** 28/08 amend to close the loop of no Wait ttal and free spaces ***/
+            When Wait_Total = 0 AND free_spaces > 0 Then 'Yes'
+            When Wait_Total >= free_spaces          Then 'Yes'
             Else 'No'
         END as hangar_can_be_filled
     FROM Hangar_WAit_List
