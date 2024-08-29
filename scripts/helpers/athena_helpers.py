@@ -15,7 +15,7 @@ def run_query_on_athena(
     fetch_results: bool = True,
 ) -> Optional[List[Dict]]:
     """
-    Executes a SQL query on an AWS Athena database, supporting queries across multiple databases by specifying database names directly within the SQL.
+    Executes a SQL query on an Athena database, supporting queries across multiple databases by specifying database names directly within the SQL.
 
     Parameters:
     -----------
