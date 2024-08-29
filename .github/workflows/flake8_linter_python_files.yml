@@ -1,5 +1,6 @@
 name: Lint Python Files - Flake8
-# flake8 to check the syntax of changed files but ingore E501 error (line too long)
+# flake8 to check the syntax of changed files
+# but ingore E501 error (line too long) and W503 error (line break before binary operator)
 
 on: [push, pull_request]
 
@@ -7,35 +8,34 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0  # Ensure the entire history is fetched
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Ensure the entire history is fetched
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.10'
-    
-    - name: Install Flake8
-      run: pip install flake8
-      
-    - name: Get Changed Files
-      id: changed-files
-      uses: tj-actions/changed-files@v44
-      with:
-        files: |
-          **.py
-        files_ignore: |
-          scripts/jobs/parking/**/*.py
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
 
-    - name: Lint Changed Python Files
-      if: steps.changed-files.outputs.any_changed == 'true'
-      run: |
-        CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
-        IFS=' ' read -r -a FILE_ARRAY <<< "$CHANGED_FILES"
-        for FILE in "${FILE_ARRAY[@]}"
-        do
-          flake8 $FILE --ignore=E501
-        done
+      - name: Install Flake8
+        run: pip install flake8
 
+      - name: Get Changed Files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            **.py
+          files_ignore: |
+            scripts/jobs/parking/**/*.py
+
+      - name: Lint Changed Python Files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
+          IFS=' ' read -r -a FILE_ARRAY <<< "$CHANGED_FILES"
+          for FILE in "${FILE_ARRAY[@]}"
+          do
+            flake8 $FILE --ignore=E501,W503
+          done
