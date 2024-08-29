@@ -57,8 +57,9 @@ def run_query_on_athena(
             if state != "SUCCEEDED":
                 # Handle query failure
                 if (
-                    state == "FAILED"
-                    and "Table does not exist"
+                    state == "FAILED" and 
+                    "Table does not exist" in response["QueryExecution"]["Status"]["StateChangeReason"]
+                ):
                     in response["QueryExecution"]["Status"]["StateChangeReason"]
                 ):
                     return None  # Ignore the error if the table does not exist
