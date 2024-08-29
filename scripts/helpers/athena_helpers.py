@@ -35,8 +35,8 @@ def run_query_on_athena(
         Each dictionary corresponds to a row in the result set, with column names as keys.
         Returns None if fetch_results is False or if the query fails and the table does not exist.
 
-        For the returned "results" (a list of dicts), it can be converted to a pandas DataFrame using the following code:
-        ```python
+        Further processing: For the returned "results", it can be converted to a pandas DataFrame using the following code:
+        ```
         import pandas as pd
         df = pd.DataFrame(results)
         ```
