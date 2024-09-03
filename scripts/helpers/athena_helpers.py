@@ -1,5 +1,7 @@
 import logging
+import re
 import time
+from datetime import datetime
 from typing import Dict, List, Optional
 
 import boto3
@@ -138,3 +140,197 @@ def _fetch_query_results(
             break
 
     return results
+
+
+def generate_s3_partition(base_s3_url: str, execution_date: datetime = None) -> str:
+    """
+    Generate S3 partition for the given execution date or for today if no execution date is provided, based on the base URL.
+
+    Parameters:
+    -----------
+    base_s3_url : str
+        The base S3 URL.
+    execution_date : datetime, optional
+        The execution date from the Airflow task instance. Defaults to None, which uses today's date.
+
+    Returns:
+    --------
+    str
+        The S3 partition path based on the execution date.
+
+    Example:
+    --------
+    >>> base_url = "s3://my-bucket/my-folder"
+    >>> execution_date = datetime(2024, 6, 28)
+    >>> generate_s3_partition(base_url, execution_date)
+    's3://my-bucket/my-folder/import_year=2024/import_month=06/import_day=28/import_date=20240628/'
+
+    >>> generate_s3_partition(base_url)
+    's3://my-bucket/my-folder/import_year=2024/import_month=07/import_day=31/import_date=20240731/'
+    """
+    if execution_date is None:
+        execution_date = datetime.today()
+    year, month, day = (
+        execution_date.year,
+        str(execution_date.month).zfill(2),
+        str(execution_date.day).zfill(2),
+    )
+    return f"{base_s3_url}/import_year={year}/import_month={month}/import_day={day}/import_date={year}{month}{day}/"
+
+
+def empty_s3_path(
+    s3_full_path: str,
+):
+    """
+    Delete all files under a specified S3 full path.
+
+    :param s3_full_path: Full S3 path, e.g., 's3://bucket_name/prefix/to/files/'
+
+    Example usage:
+    s3_full_path = "s3://dataplatform-stg-refined-zone/child-fam-services/mosaic/cp_transform/import_year=2024/import_month=07/import_day=01/import_date=20240701/"
+    empty_s3_path(s3_full_path) to delete all files under the s3_full_path.
+    """
+    client = boto3.client("s3")
+    # Parse the S3 full path
+    match = re.match(r"s3://([^/]+)/(.+)", s3_full_path)
+    if not match:
+        raise ValueError("Invalid S3 path.")
+
+    bucket_name, prefix = match.groups()
+
+    try:
+        # List objects under the specified prefix
+        response = client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+
+        # Check if there are any files to delete
+        if "Contents" not in response:
+            logger.info(f"No files found under prefix {prefix}")
+            return
+
+        # Extract object keys
+        objects_to_delete = [{"Key": obj["Key"]} for obj in response["Contents"]]
+
+        # Delete the objects
+        client.delete_objects(Bucket=bucket_name, Delete={"Objects": objects_to_delete})
+
+        logger.info(f"All files under prefix {prefix} have been deleted.")
+
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+        raise
+
+
+def drop_table(
+    database_name: str, table_name: str, s3_temp_path_for_cache: str
+) -> None:
+    """
+    Drops the existing table if it exists in Athena.
+    """
+    drop_table_query = f"""
+    DROP TABLE IF EXISTS `{database_name}`.`{table_name}`;
+    """
+    run_query_on_athena(
+        query=drop_table_query,
+        database_name=database_name,
+        output_location=s3_temp_path_for_cache,
+        fetch_results=False,
+    )
+    logger.info("Table dropped successfully.")
+
+
+def empty_s3_partition(s3_table_output_location: str) -> None:
+    """
+    Empties the S3 partition for the physical data of the execution date if it exists
+    to avoid duplicate data in the Athena table when re-reunning the ETL.
+    """
+    s3_local_for_physical_date = generate_s3_partition(s3_table_output_location)
+    empty_s3_path(s3_local_for_physical_date)
+    logger.info(f"S3 partition at {s3_local_for_physical_date} emptied successfully.")
+
+
+def create_or_update_table(
+    sql_query_body: str,
+    database_name: str,
+    table_name: str,
+    s3_table_output_location: str,
+    s3_temp_path_for_cache: str,
+) -> None:
+    """
+    Creates or updates an Athena table using the provided SQL query.
+    """
+    create_table_header = f"""
+    CREATE TABLE "{database_name}"."{table_name}"
+    WITH (
+        format = 'PARQUET',
+        write_compression = 'SNAPPY',
+        external_location = '{s3_table_output_location}',
+        partitioned_by = ARRAY['import_year', 'import_month', 'import_day', 'import_date']
+    ) AS
+    """
+    full_query_ctas = create_table_header + sql_query_body
+
+    run_query_on_athena(
+        query=full_query_ctas,
+        database_name=database_name,
+        output_location=s3_temp_path_for_cache,
+        fetch_results=False,
+    )
+    logger.info("Table created or updated successfully.")
+
+
+def repair_table(
+    database_name: str, table_name: str, s3_temp_path_for_cache: str
+) -> None:
+    """
+    Runs MSCK REPAIR TABLE command to add partitions.
+    """
+    repair_table_query = f"""
+    MSCK REPAIR TABLE `{database_name}`.`{table_name}`;
+    """
+    run_query_on_athena(
+        query=repair_table_query,
+        database_name=database_name,
+        output_location=s3_temp_path_for_cache,
+        fetch_results=False,
+    )
+    logger.info("MSCK REPAIR TABLE executed successfully. Partitions added.")
+
+
+def create_update_table_with_partition(
+    environment: str,
+    query_on_athena: str,
+    table_name: str,
+    database_name: str = None,
+    s3_table_output_location: str = None,
+    s3_temp_path_for_cache: str = None,
+) -> None:
+    """
+    Coordinates the dropping, emptying, creating/updating, and repairing of the Athena table with partitions.
+    """
+    # Set default values if not provided (default values are for the parking ETL)
+    if not s3_temp_path_for_cache:
+        s3_temp_path_for_cache = (
+            f"s3://dataplatform-{environment}-athena-storage/parking/temp"
+        )
+    if not database_name:
+        database_name = f"dataplatform-{environment}-liberator-refined-zone"
+    if not s3_table_output_location:
+        s3_table_output_location = f"s3://dataplatform-{environment}-refined-zone/parking/liberator/{table_name}"
+
+    # Replace protoyped athena query environment variables in query
+    query_on_athena = query_on_athena.replace("-stg-", f"-{environment}-").replace(
+        "-prod-", f"-{environment}-"
+    )
+    try:
+        drop_table(database_name, table_name, s3_temp_path_for_cache)
+        empty_s3_partition(s3_table_output_location)
+        create_or_update_table(
+            query_on_athena,
+            database_name,
+            table_name,
+            s3_table_output_location,
+            s3_temp_path_for_cache,
+        )
+        repair_table(database_name, table_name, s3_temp_path_for_cache)
+    except Exception as e:
+        logger.error(f"An error occurred while executing the query: {e}")

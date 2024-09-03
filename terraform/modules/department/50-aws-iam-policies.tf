@@ -528,6 +528,29 @@ resource "aws_iam_policy" "glue_can_write_to_cloudwatch" {
   policy = data.aws_iam_policy_document.glue_can_write_to_cloudwatch.json
 }
 
+resource "aws_iam_policy" "glue_athena_access" {
+  name        = "glue_athena_access"
+  description = "IAM policy to provide AWS Glue access to specific Athena actions"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "athena:StartQueryExecution",
+          "athena:GetQueryExecution",
+          "athena:GetQueryResults",
+          "athena:ListDatabases",
+          "athena:ListTableMetadata",
+          "athena:GetTableMetadata"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+
 // Glue Agent full access
 data "aws_iam_policy_document" "full_glue_access" {
   statement {

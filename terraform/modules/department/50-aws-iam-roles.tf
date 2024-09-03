@@ -49,6 +49,11 @@ resource "aws_iam_role" "glue_agent" {
   assume_role_policy = data.aws_iam_policy_document.glue_agent_assume_role.json
 }
 
+resource "aws_iam_role_policy_attachment" "glue_agent_athena_access" {
+  role       = aws_iam_role.glue_agent.name
+  policy_arn = aws_iam_policy.glue_athena_access.arn
+}
+
 resource "aws_iam_role_policy_attachment" "glue_agent_s3_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.s3_access.arn
