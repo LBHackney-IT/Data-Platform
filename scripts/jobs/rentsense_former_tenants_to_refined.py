@@ -764,9 +764,9 @@ if __name__ == "__main__":
         .replace(to_replace=mapAction, subset=['code_lookup'])
 
     max_action = (actions
-              .groupBy("paymentreference")
-              .agg(F.max("action_no").alias("max_action"))) \
-    .withColumnRenamed("paymentreference", "payref")
+                  .groupBy("paymentreference")
+                  .agg(F.max("action_no").alias("max_action"))) \
+                  .withColumnRenamed("paymentreference", "payref")
 
     actions1 = actions.join(max_action, actions.paymentreference == max_action.payref, "inner")
 
