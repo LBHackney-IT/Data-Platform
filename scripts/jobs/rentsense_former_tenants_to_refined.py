@@ -766,7 +766,7 @@ if __name__ == "__main__":
     max_action = (actions
                   .groupBy("paymentreference")
                   .agg(F.max("action_no").alias("max_action"))) \
-                  .withColumnRenamed("paymentreference", "payref")
+        .withColumnRenamed("paymentreference", "payref")
 
     actions1 = actions.join(max_action, actions.paymentreference == max_action.payref, "inner")
 
