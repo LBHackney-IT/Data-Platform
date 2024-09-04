@@ -764,13 +764,13 @@ if __name__ == "__main__":
         .replace(to_replace=mapAction, subset=['code_lookup'])
 
     max_action = (actions
-                  .groupBy("paymentreference")
-                  .agg(F.max("ActionDate").alias("max_date"))) \
-        .withColumnRenamed("paymentreference", "payref")
+              .groupBy("paymentreference")
+              .agg(F.max("action_no").alias("max_action"))) \
+    .withColumnRenamed("paymentreference", "payref")
 
     actions1 = actions.join(max_action, actions.paymentreference == max_action.payref, "inner")
 
-    latest = actions1.filter("max_date=ActionDate")
+    latest = actions1.filter("max_action=action_no")
 
     actions = latest.selectExpr("paymentreference as AccountReference",
                                 "action_code as ActionCode",
