@@ -3,9 +3,11 @@ import re
 import time
 from datetime import datetime
 from typing import Dict, List, Optional
-from urllib.parse import urlparse
 
 import boto3
+
+# from urllib.parse import urlparse
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -337,43 +339,43 @@ def create_update_table_with_partition(
         logger.error(f"An error occurred while executing the query: {e}")
 
 
-def read_query_content_from_s3(s3_url: str, table_name: str) -> str:
-    """
-    Reads SQL content from S3, matches the file name with table_name (without .sql),
-    and returns the query string content if a match is found.
+# def read_query_content_from_s3(s3_url: str, table_name: str) -> str:
+#     """
+#     Reads SQL content from S3, matches the file name with table_name (without .sql),
+#     and returns the query string content if a match is found.
 
-    :param s3_url: The S3 URL where SQL files are stored (e.g., "s3://bucket-name/path/").
-    :param table_name: The target table name to match with file names.
-    :return: The content of the SQL file as a string if a match is found, otherwise None.
-    """
-    # Extract bucket name and path from url
-    parsed_url = urlparse(s3_url)
-    bucket_name = parsed_url.netloc
-    s3_path = parsed_url.path.lstrip("/")
+#     :param s3_url: The S3 URL where SQL files are stored (e.g., "s3://bucket-name/path/").
+#     :param table_name: The target table name to match with file names.
+#     :return: The content of the SQL file as a string if a match is found, otherwise None.
+#     """
+#     # Extract bucket name and path from url
+#     parsed_url = urlparse(s3_url)
+#     bucket_name = parsed_url.netloc
+#     s3_path = parsed_url.path.lstrip("/")
 
-    s3_client = boto3.client("s3")
+#     s3_client = boto3.client("s3")
 
-    # List all objects in the given S3 path
-    response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=s3_path)
+#     # List all objects in the given S3 path
+#     response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=s3_path)
 
-    if "Contents" not in response:
-        logger.info(f"No files found in {s3_url}")
-        return None
+#     if "Contents" not in response:
+#         logger.info(f"No files found in {s3_url}")
+#         return None
 
-    # Iterate over the files in the S3 path
-    for obj in response["Contents"]:
-        file_key = obj["Key"]
-        file_name = file_key.split("/")[-1]
+#     # Iterate over the files in the S3 path
+#     for obj in response["Contents"]:
+#         file_key = obj["Key"]
+#         file_name = file_key.split("/")[-1]
 
-        # Remove the .sql extension to match with the table name, then get the content
-        if file_name.endswith(".sql"):
-            file_base_name = file_name[:-4]
-            if file_base_name == table_name:
-                logger.info(f"Matching file found for table name: {table_name}")
-                sql_file_object = s3_client.get_object(Bucket=bucket_name, Key=file_key)
-                query_content = sql_file_object["Body"].read().decode("utf-8")
-                logger.info(f"Query content: {query_content}")
-                return query_content
+#         # Remove the .sql extension to match with the table name, then get the content
+#         if file_name.endswith(".sql"):
+#             file_base_name = file_name[:-4]
+#             if file_base_name == table_name:
+#                 logger.info(f"Matching file found for table name: {table_name}")
+#                 sql_file_object = s3_client.get_object(Bucket=bucket_name, Key=file_key)
+#                 query_content = sql_file_object["Body"].read().decode("utf-8")
+#                 logger.info(f"Query content: {query_content}")
+#                 return query_content
 
-    logger.info(f"No matching file found for table name: {table_name}")
-    return None
+#     logger.info(f"No matching file found for table name: {table_name}")
+#     return None

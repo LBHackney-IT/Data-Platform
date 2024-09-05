@@ -547,17 +547,17 @@ resource "aws_iam_policy" "glue_athena_access_and_s3_mwaa_read" {
         ]
         Resource = "*"
       },
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject",
-          "s3:ListBucket"
-        ]
-        Resource = [
-          "arn:aws:s3:::dataplatform-${var.environment}-mwaa-bucket",
-          "arn:aws:s3:::dataplatform-${var.environment}-mwaa-bucket/*"
-        ]
-      }
+      # {
+      #   Effect = "Allow"
+      #   Action = [
+      #     "s3:GetObject",
+      #     "s3:ListBucket"
+      #   ]
+      #   Resource = [
+      #     "arn:aws:s3:::dataplatform-${var.environment}-mwaa-bucket",
+      #     "arn:aws:s3:::dataplatform-${var.environment}-mwaa-bucket/*"
+      #   ]
+      # }
     ]
   })
 }
