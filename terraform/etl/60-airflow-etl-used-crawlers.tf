@@ -45,3 +45,26 @@ resource "aws_glue_crawler" "allocations_refined_tables" {
   })
 
 }
+
+
+resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "${local.short_identifier_prefix}Streetscene Street Systems Raw Zone"
+  role          = data.aws_iam_role.glue_role.arn
+  database_name = "streetscene-raw-zone-database"
+
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/streetscene/traffic-counters/"
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+}
