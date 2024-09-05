@@ -153,7 +153,7 @@ resource "aws_cloudwatch_event_rule" "street_systems_api_trigger_event" {
   is_enabled          = local.is_production_environment ? true : false
   tags                = module.tags.values
 
-  depends_on = [aws_cloudwatch_event_target.street_systems_api_trigger_event_target]
+  # depends_on = [aws_cloudwatch_event_target.street_systems_api_trigger_event_target]
 }
 
 # Permission to allow CloudWatch to invoke Lambda function (a must for triggering lambda function)
@@ -172,14 +172,14 @@ resource "aws_cloudwatch_event_target" "street_systems_api_trigger_event_target"
   rule = aws_cloudwatch_event_rule.street_systems_api_trigger_event[
     0
   ].name
-  target_id  = "street_systems_api_trigger_event_target"
-  arn        = module.street_systems_api_ingestion[0].lambda_function_arn
-  input      = <<EOF
+  target_id = "street_systems_api_trigger_event_target"
+  arn       = module.street_systems_api_ingestion[0].lambda_function_arn
+  input     = <<EOF
   {
   "table_names": ${jsonencode(local.traffic_counters_tables)}
   }
   EOF
-  depends_on = [module.street_systems_api_ingestion[0], aws_lambda_permission.allow_cloudwatch_to_call_street_systems[0]]
+  # depends_on = [module.street_systems_api_ingestion[0], aws_lambda_permission.allow_cloudwatch_to_call_street_systems[0]]
 }
 
 # # Glue Crawler to crawl the raw zone data
