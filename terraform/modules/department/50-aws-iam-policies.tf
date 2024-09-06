@@ -530,7 +530,7 @@ resource "aws_iam_policy" "glue_can_write_to_cloudwatch" {
 
 # Used for parking Glue role to access Athena and the MWAA S3 bucket
 resource "aws_iam_policy" "glue_athena_access_and_s3_mwaa_read" {
-  name        = "glue_athena_access_and_s3_mwaa_read"
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-glue-athena-access-and-s3-mwaa-read")
   description = "Glue access to specific Athena actions and full read access to the MWAA S3 bucket"
   policy = jsonencode({
     Version = "2012-10-17"
