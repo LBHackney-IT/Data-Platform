@@ -49,10 +49,6 @@ resource "aws_iam_role" "glue_agent" {
   assume_role_policy = data.aws_iam_policy_document.glue_agent_assume_role.json
 }
 
-resource "aws_iam_role_policy_attachment" "glue_athena_access_and_s3_mwaa_read" {
-  role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.glue_athena_access_and_s3_mwaa_read.arn
-}
 
 resource "aws_iam_role_policy_attachment" "glue_agent_s3_access" {
   role       = aws_iam_role.glue_agent.name
@@ -64,9 +60,9 @@ resource "aws_iam_role_policy_attachment" "glue_agents_secrets_manager_read_only
   policy_arn = aws_iam_policy.glue_can_write_to_cloudwatch.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_scripts_read_only" {
+resource "aws_iam_role_policy_attachment" "read_glue_scripts_and_mwaa_and_athena" {
   role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.glue_scripts_read_only.arn
+  policy_arn = aws_iam_policy.read_glue_scripts_and_mwaa_and_athena.arn
 }
 
 resource "aws_iam_role_policy_attachment" "glue_agent_glue_can_write_to_cloudwatch" {
