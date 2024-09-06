@@ -556,6 +556,43 @@ resource "aws_iam_policy" "glue_can_write_to_cloudwatch" {
   policy = data.aws_iam_policy_document.glue_can_write_to_cloudwatch.json
 }
 
+<<<<<<< HEAD
+=======
+# Used for parking Glue role to access Athena and the MWAA S3 bucket
+resource "aws_iam_policy" "glue_athena_access_and_s3_mwaa_read" {
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-glue-athena-access-and-s3-mwaa-read")
+  description = "Glue access to specific Athena actions and full read access to the MWAA S3 bucket"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "athena:StartQueryExecution",
+          "athena:GetQueryExecution",
+          "athena:GetQueryResults",
+          "athena:ListDatabases",
+          "athena:ListTableMetadata",
+          "athena:GetTableMetadata"
+        ]
+        Resource = "*"
+      },
+      # {
+      #   Effect = "Allow"
+      #   Action = [
+      #     "s3:GetObject",
+      #     "s3:ListBucket"
+      #   ]
+      #   Resource = [
+      #     "arn:aws:s3:::dataplatform-${var.environment}-mwaa-bucket",
+      #     "arn:aws:s3:::dataplatform-${var.environment}-mwaa-bucket/*"
+      #   ]
+      # }
+    ]
+  })
+}
+
+>>>>>>> ba0380b7f28b99d38ca11af9bb8966ada56fa8eb
 // Glue Agent full access
 data "aws_iam_policy_document" "full_glue_access" {
   statement {
