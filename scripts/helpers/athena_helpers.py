@@ -13,11 +13,25 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def refined_zone_kms_key_by_environment(environment: str) -> str:
+    """
+    Returns the appropriate KMS key ARN based on the environment ('stg' or 'prod').
+    stg kms key alias: dataplatform-stg-s3-refined-zone
+    prod kms key alias : dataplatform-prod-s3-refined-zone
+    """
+    kms_keys = {
+        "stg": "arn:aws:kms:eu-west-2:120038763019:key/670ec494-c7a3-48d8-ae21-2ef85f2c6d21",
+        "prod": "arn:aws:kms:eu-west-2:365719730767:key/756fa17e-b90d-4445-a7f2-8e07ca550bd0",
+    }
+    return kms_keys.get(environment, None)
+
+
 def run_query_on_athena(
     query: str,
     database_name: str,
     output_location: str,
     fetch_results: bool = True,
+    kms_key: str = None,
 ) -> Optional[List[Dict]]:
     """
     Executes a SQL query on an Athena database, supporting queries across multiple databases by specifying database names directly within the SQL.
@@ -32,6 +46,8 @@ def run_query_on_athena(
         The location where the query results (default cache csv files) will be stored.
     fetch_results : bool, optional
         A flag to indicate whether to fetch the query results. Default is True.
+    kms_key: str, optional
+        The KMS key ARN to use for encrypting the query results. Default is None (i.e. Athena Storage kms key).
 
     Returns:
     --------
@@ -48,6 +64,15 @@ def run_query_on_athena(
     """
     # Create a boto3 Athena client using IAM roles/credentials configured in the environment
     client = boto3.client("athena")
+
+    # Define the ResultConfiguration with optional encryption
+    result_configuration = {"OutputLocation": output_location}
+
+    if kms_key:
+        result_configuration["EncryptionConfiguration"] = {
+            "EncryptionOption": "SSE_KMS",
+            "KmsKey": kms_key,
+        }
 
     # Start query execution
     response = client.start_query_execution(
@@ -257,6 +282,7 @@ def create_or_update_table(
     table_name: str,
     s3_table_output_location: str,
     s3_temp_path_for_cache: str,
+    kms_key: str = None,
 ) -> None:
     """
     Creates or updates an Athena table using the provided SQL query.
@@ -277,6 +303,7 @@ def create_or_update_table(
         database_name=database_name,
         output_location=s3_temp_path_for_cache,
         fetch_results=False,
+        kms_key=kms_key,
     )
     logger.info("Table created or updated successfully.")
 
@@ -306,6 +333,7 @@ def create_update_table_with_partition(
     database_name: str = None,
     s3_table_output_location: str = None,
     s3_temp_path_for_cache: str = None,
+    kms_key: str = None,
 ) -> None:
     """
     Coordinates the dropping, emptying, creating/updating, and repairing of the Athena table with partitions.
@@ -319,6 +347,8 @@ def create_update_table_with_partition(
         database_name = f"dataplatform-{environment}-liberator-refined-zone"
     if not s3_table_output_location:
         s3_table_output_location = f"s3://dataplatform-{environment}-refined-zone/parking/liberator/{table_name}"
+    if not kms_key:
+        kms_key = refined_zone_kms_key_by_environment(environment)
 
     # Replace protoyped athena query environment variables in query
     query_on_athena = query_on_athena.replace("-stg-", f"-{environment}-").replace(
@@ -333,6 +363,7 @@ def create_update_table_with_partition(
             table_name,
             s3_table_output_location,
             s3_temp_path_for_cache,
+            kms_key,
         )
         repair_table(database_name, table_name, s3_temp_path_for_cache)
     except Exception as e:
