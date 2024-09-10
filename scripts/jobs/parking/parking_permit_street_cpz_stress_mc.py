@@ -51,7 +51,7 @@ Parkmap as (
             ELSE Zone
         END As Zone
     FROM "parking-raw-zone".geolive_parking_order as A
-    WHERE import_date = format_datetime(current_date, 'yyyyMMdd')
+    WHERE import_date = format_datetime(DATE_ADD('day', -1, current_date), 'yyyyMMdd')
         AND order_type IN (
             'Business bay',
             'Estate permit bay',
@@ -77,7 +77,7 @@ Parkmap as (
             ELSE Zone
         END As Zone
     FROM "parking-raw-zone".geolive_parking_order as A
-    WHERE import_date = format_datetime(current_date, 'yyyyMMdd')
+    WHERE import_date = format_datetime(DATE_ADD('day', -1, current_date), 'yyyyMMdd')
         AND schedule = 'MC.001'
         AND street_name is not NULL
 ),
