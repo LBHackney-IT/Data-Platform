@@ -78,7 +78,7 @@ def run_query_on_athena(
     response = client.start_query_execution(
         QueryString=query,
         QueryExecutionContext={"Database": database_name},
-        ResultConfiguration={"OutputLocation": output_location},
+        ResultConfiguration=result_configuration,
     )
 
     query_execution_id = response["QueryExecutionId"]
