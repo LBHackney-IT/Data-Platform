@@ -14,10 +14,11 @@ table_name = "parking_permit_street_cpz_stress_mc"
 # The exact same query prototyped in pre-prod(stg) orprod Athena
 query_on_athena = """
 /***********************************************************************************
- Parking_Permit_Street_CPZ_Stress
+ Parking_Permit_Street_CPZ_Stress_mc
 
  The SQL builds a list of CPZs and identifies the number of
- Parking spaces (Shared use, Resident, etc) and the number of extant Permits
+ Parking spaces (Shared use, Resident, etc) and the number of extant Permits. This also 
+ collects the Motorcycle spaces & permits
 
  22/08/2024 - Create SQL
  *********************************************************************************/
@@ -51,7 +52,7 @@ Parkmap as (
             ELSE Zone
         END As Zone
     FROM "parking-raw-zone".geolive_parking_order as A
-    WHERE import_date = format_datetime(current_date, 'yyyyMMdd')
+    WHERE import_date = (Select MAX(import_date) from "parking-raw-zone".geolive_parking_order)
         AND order_type IN (
             'Business bay',
             'Estate permit bay',
@@ -77,7 +78,7 @@ Parkmap as (
             ELSE Zone
         END As Zone
     FROM "parking-raw-zone".geolive_parking_order as A
-    WHERE import_date = format_datetime(current_date, 'yyyyMMdd')
+    WHERE import_date = (Select MAX(import_date) from "parking-raw-zone".geolive_parking_order)
         AND schedule = 'MC.001'
         AND street_name is not NULL
 ),
