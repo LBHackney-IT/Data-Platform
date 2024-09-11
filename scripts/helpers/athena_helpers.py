@@ -368,6 +368,7 @@ def create_update_table_with_partition(
         repair_table(database_name, table_name, s3_temp_path_for_cache)
     except Exception as e:
         logger.error(f"An error occurred while executing the query: {e}")
+        raise
 
 
 # def read_query_content_from_s3(s3_url: str, table_name: str) -> str:
