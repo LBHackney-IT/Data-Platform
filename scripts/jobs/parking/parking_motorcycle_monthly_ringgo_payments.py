@@ -9,7 +9,7 @@ from scripts.helpers.helpers import get_glue_env_var
 environment = get_glue_env_var("environment")
 
 # The target table in liberator refined zone
-table_name = "Parking_motorcycle_monthly_ringgo_payments"
+table_name = "parking_motorcycle_monthly_ringgo_payments"
 
 # The exact same query prototyped in pre-prod(stg) orprod Athena
 query_on_athena = """
