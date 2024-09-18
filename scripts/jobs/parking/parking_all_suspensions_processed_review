@@ -9,12 +9,12 @@ from scripts.helpers.helpers import get_glue_env_var
 environment = get_glue_env_var("environment")
 
 # The target table in liberator refined zone
-table_name = "Parking_ALL_Suspensions_Processed_Review"
+table_name = "parking_all_suspensions_processed_review"
 
 # The exact same query prototyped in pre-prod(stg) orprod Athena
 query_on_athena = """
 /*********************************************************************************
-Parking_ALL_Suspensions_Processed_Review
+parking_all_suspensions_processed_review
 
 SQL TO create the ALL of the unique Suspension activities (accept/amend/reject/etc.)
 that have been processed
