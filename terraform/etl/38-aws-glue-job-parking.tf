@@ -1571,7 +1571,7 @@ module "parking_nas_live_manual_updates_data_load_with_pcns" {
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   script_name                    = "parking_nas_live_manual_updates_data_load_with_pcns"
-  triggered_by_job               = module.nas_live_manual_updates_data_load[0].glue_job_name
+  triggered_by_job               = module.parking_pcn_denormalisation.job_name
   job_description                = "Hackney Parking NAS Live ETA data from google form linked to liberator PCN records"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled                = local.is_production_environment
