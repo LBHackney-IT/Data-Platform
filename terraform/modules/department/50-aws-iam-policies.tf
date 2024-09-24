@@ -850,6 +850,7 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "glue:StartCrawler",
       "glue:ListCrawlers",
       "glue:GetTable",
+      "glue:GetTables",
       "glue:GetPartitions",
       "glue:GetDatabase",
       "glue:GetDatabases",
