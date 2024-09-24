@@ -75,7 +75,7 @@ CalendarFormat as (
       fin_year_enddate,
       ROW_NUMBER() OVER ( PARTITION BY calendar.date 
                        ORDER BY  calendar.date, import_date DESC) row_num
-   FROM "parking-raw-zone-manual".calendar),
+   FROM "parking-raw-zone".calendar),
 
 CalendarMAX as (
    Select MAX(fin_year) as Max_Fin_Year 
