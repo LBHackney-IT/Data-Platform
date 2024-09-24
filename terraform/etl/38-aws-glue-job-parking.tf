@@ -381,7 +381,7 @@ module "parking_pcn_ltn_report_summary" {
   }
 }
 
-module "parking_suspension_de-normalised_data" {
+module "parking_suspension_de_normalised_data" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
   is_production_environment      = local.is_production_environment
@@ -1757,7 +1757,7 @@ module "parking_all_suspensions_processed_review" {
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   script_name                    = "parking_all_suspensions_processed_review"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
+  triggered_by_job               = module.parking_suspension_de_normalised_data.job_name
   job_description                = "Review of all Suspension records"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled                = local.is_production_environment
