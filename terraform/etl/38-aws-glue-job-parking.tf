@@ -268,28 +268,6 @@ module "parking_bailiff_allocation" {
   }
 }
 
-module "parking_bailiff_ea_warrant_total" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_bailiff_ea_warrant_total"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_bailiff_ea_warrant_total"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "This job creates the % return figures for the Bailiff data"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
-
 module "parking_bailiff_return" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1305,29 +1283,7 @@ module "parking_correspondence_performance_records_with_pcn_downtime" {
     "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
-# MRB 25-10-2023 Job created
-module "parking_cycle_hangar_allocation" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cycle_hangar_allocation"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cycle_hangar_allocation"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "Identify how many spaces that have been used/free in Cycle Hangars"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+
 module "parking_correspondence_performance_records_with_pcn_downtime_gds" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
