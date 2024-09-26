@@ -9,10 +9,8 @@ from pyspark.context import SparkContext
 
 from scripts.helpers.helpers import (
     PARTITION_KEYS,
-    create_pushdown_predicate_for_max_date_partition_value,
-    get_glue_env_var,
-    get_latest_partitions,
     create_pushdown_predicate,
+    get_glue_env_var,
 )
 
 
@@ -97,26 +95,26 @@ Tom's hangar list
 Create a comparison between Toms Hangar list and EStreet
 ************************************************************/
 With TomHangar as (
-    SELECT 
+    SELECT
         asset_no, asset_type, street_or_estate, zone, status, key_number, fob, location_description,
         road_name, postcode, date_installed, easting, northing, road_or_pavement,
         case
-            When asset_no like '%Bikehangar_1577%'    Then '1577'           
+            When asset_no like '%Bikehangar_1577%'    Then '1577'
             When asset_no like '%Bikehangar_H1439%'   Then 'H1439'
             When asset_no like '%Bikehangar_H1440%'   Then 'Hangar_H1440'
             When asset_no like '%Bikehangar_1435%'    Then 'Bikehangar_H1435'
             ELSE replace(asset_no, ' ','_')
         END as HangarID
     from parking_parking_ops_cycle_hangar_list
-    WHERE import_date = (Select MAX(import_date) 
+    WHERE import_date = (Select MAX(import_date)
                         from parking_parking_ops_cycle_hangar_list)
     AND asset_type = 'Hangar' AND lower(status) like '%active%'),
-    
+
 Hanger as (
     SELECT hanger_id,
     ROW_NUMBER() OVER ( PARTITION BY hanger_id ORDER BY hanger_id DESC) H1
-    From parking_cycle_hangars_denormalisation 
-    WHERE import_date = (Select MAX(import_date) 
+    From parking_cycle_hangars_denormalisation
+    WHERE import_date = (Select MAX(import_date)
                     from parking_cycle_hangars_denormalisation)),
 
 Hangar_Comp as (
@@ -124,7 +122,7 @@ Hangar_Comp as (
         asset_no, HangarID, B.hanger_id
     FROM TomHangar as A
     LEFT JOIN Hanger as B ON A.HangarID = B.hanger_id AND H1 = 1
-    UNION ALL 
+    UNION ALL
     SELECT 'new_only','new_only','new_only'),
 /************************************************************
 Create the Waiting list - unique "party_id"
@@ -133,38 +131,38 @@ waiting_list as (
     SELECT *,
         ROW_NUMBER() OVER ( PARTITION BY party_id, hanger_id ORDER BY party_id, hanger_id DESC) row1
     FROM liberator_hangar_waiting_list
-    WHERE Import_Date = (Select MAX(Import_Date) from 
+    WHERE Import_Date = (Select MAX(Import_Date) from
                                     liberator_hangar_waiting_list)),
 /*** Party List ***/
 Licence_Party as (
-    SELECT * from liberator_licence_party 
-    WHERE Import_Date = (Select MAX(Import_Date) from 
+    SELECT * from liberator_licence_party
+    WHERE Import_Date = (Select MAX(Import_Date) from
                                         liberator_licence_party)),
 /*** STREET ***/
 LLPG as (
     SELECT *
     FROM liberator_permit_llpg
-    WHERE import_date = (Select MAX(import_date) from 
+    WHERE import_date = (Select MAX(import_date) from
                                         liberator_permit_llpg)),
 /*******************************************************************************
 Cycle Hangar allocation details
-*******************************************************************************/ 
+*******************************************************************************/
 Cycle_Hangar_allocation as (
-    SELECT 
+    SELECT
         *,
         ROW_NUMBER() OVER ( PARTITION BY hanger_id, space
         ORDER BY hanger_id, space, date_of_allocation DESC, fee_due_date DESC) row_num
     FROM liberator_hangar_allocations
-    WHERE Import_Date = (Select MAX(Import_Date) from 
+    WHERE Import_Date = (Select MAX(Import_Date) from
                                 liberator_hangar_allocations)),
-    
+
 Street_Rec as (
     SELECT *
     FROM liberator_permit_llpg
-    WHERE import_date = (Select MAX(import_date) from 
+    WHERE import_date = (Select MAX(import_date) from
                                             liberator_permit_llpg)
     AND address1 = 'STREET RECORD'),
-    
+
 Cycle_Hangar_Wait_List as (
     SELECT
         A.party_id, first_name, surname, B.uprn as USER_UPRN,
@@ -182,30 +180,30 @@ Waiting List CREATED
 ************************************************************/
 Estreet_Hanger as (
     SELECT hanger_id, space, hangar_location,
-    ROW_NUMBER() OVER ( PARTITION BY hanger_id, space, hangar_location 
+    ROW_NUMBER() OVER ( PARTITION BY hanger_id, space, hangar_location
                                     ORDER BY hanger_id, space, hangar_location DESC) H1
-    From parking_cycle_hangars_denormalisation 
+    From parking_cycle_hangars_denormalisation
     WHERE import_date = (Select MAX(import_date) from parking_cycle_hangars_denormalisation) and
     key_issued = 'Y'
-    UNION ALL 
+    UNION ALL
     SELECT 'new_only', ' ', 'NEWONLY', 1),
 
 Wait_List_Hangar as (
     SELECT A.party_id, A.hanger_id,
-    ROW_NUMBER() OVER ( PARTITION BY A.party_id, A.hanger_id 
+    ROW_NUMBER() OVER ( PARTITION BY A.party_id, A.hanger_id
                                     ORDER BY A.party_id, A.hanger_id DESC) H2
     FROM liberator_hangar_waiting_list as A
     INNER JOIN Cycle_Hangar_Wait_List as B ON A.party_id = B.party_id
-    WHERE import_date = (Select MAX(import_date) 
+    WHERE import_date = (Select MAX(import_date)
                             FROM liberator_hangar_waiting_list)),
 
 Wait_List_Earlist_Latest as (
     SELECT A.hanger_id, max(A.registration_date) as Max_Date, min(A.registration_date) as Min_Date
     FROM liberator_hangar_waiting_list as A
     INNER JOIN Cycle_Hangar_Wait_List as B ON A.party_id = B.party_id
-    WHERE import_date = (Select MAX(import_date) 
+    WHERE import_date = (Select MAX(import_date)
                                 FROM liberator_hangar_waiting_list)
-    AND A.registration_date not 
+    AND A.registration_date not
             IN ('2000-01-01','1900-12-13','1000-04-02','1100-04-02',
                                 '1200-04-02','1300-04-02','1400-04-02','2000-12-17','1200-03-24')
     GROUP BY A.hanger_id),
@@ -223,14 +221,14 @@ allocated_Total as (
     GROUP BY hanger_id,hangar_location),
 
 Full_Hangar_Data as (
-    SELECT 
+    SELECT
         A.hanger_id, A.hangar_location,
-        CASE 
-            When A.hanger_id = 'new_only' Then 0 
+        CASE
+            When A.hanger_id = 'new_only' Then 0
             ELSE Total_Allocated
         END as Total_Allocated,
-        Wait_Total, 
-        CASE 
+        Wait_Total,
+        CASE
             When A.hanger_id = 'new_only' Then 0
             ELSE ( 6 - Total_Allocated)
         END as free_spaces,
@@ -241,8 +239,8 @@ Full_Hangar_Data as (
     LEFT JOIN Wait_List_Earlist_Latest as C ON A.hanger_id = C.hanger_id),
 
 Hangar_WAit_List as (
-    SELECT 
-        A.asset_no as Tom_Asset_No, B.hanger_id as HangarID, street_or_estate, zone, location_description, 
+    SELECT
+        A.asset_no as Tom_Asset_No, B.hanger_id as HangarID, street_or_estate, zone, location_description,
         postcode, date_installed,
         CASE
             When Total_Allocated is NULL Then 0
@@ -253,7 +251,7 @@ Hangar_WAit_List as (
             ELSE Wait_Total
         END as Wait_Total,
         CASE
-            When free_spaces is NULL Then 6  
+            When free_spaces is NULL Then 6
             ELSE free_spaces
         END as free_spaces,
     Earlist_Registration_Date, Latest_Registration_Date
@@ -264,7 +262,7 @@ Hangar_WAit_List as (
 /*** Output the data ***/
 Output as (
 SELECT *,
-    CASE 
+    CASE
         When Total_Allocated = 6        Then 'N/A'
         When Wait_Total >= free_spaces  Then 'Yes'
         Else 'No'
@@ -275,7 +273,7 @@ UNION ALL
 SELECT A.Tom_Asset_No, A.HangarID, A.street_or_estate, A.zone, A.location_description,
        A.postcode, A.date_installed, A.Total_Allocated, TotalWatch, A.free_spaces,
     C.Earlist_Registration_Date, C.Latest_Registration_Date,
-    CASE 
+    CASE
         When A.Total_Allocated = 6        Then 'N/A'
         When TotalWatch >= A.free_spaces  Then 'Yes'
         Else 'No'
@@ -289,15 +287,14 @@ WHERE A.HangarID is NULL)
 SELECT *,
     CASE
         When hangar_can_be_filled = 'No' Then free_spaces - Wait_Total
-        Else 0 
+        Else 0
     END as Spaces_that_cannot_be_allocated,
-    
-    current_timestamp()                            as ImportDateTime,
-    replace(cast(current_date() as string),'-','') as import_date,
-    
-    cast(Year(current_date) as string)    as import_year, 
-    cast(month(current_date) as string)   as import_month, 
-    cast(day(current_date) as string)     as import_day
+
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
 FROM Output
 """
 SQL_node1658765472050 = sparkSqlQuery(
@@ -318,7 +315,7 @@ SQL_node1658765472050 = sparkSqlQuery(
 AmazonS3_node1658765590649 = glueContext.getSink(
     path="s3://dataplatform-"
     + environment
-    + "-refined-zone/parking/cyclehangarallocationwaitlist/",
+    + "-refined-zone/parking/liberator/cyclehangarallocationwaitlist/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=PARTITION_KEYS,
