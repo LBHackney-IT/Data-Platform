@@ -15,7 +15,7 @@ module "api_vpc_peering_cross_account" {
   requester_aws_assume_role_arn             = local.requester_assume_role_arn
   requester_region                          = var.aws_deploy_region
   requester_vpc_id                          = module.core_vpc.vpc_id
-  requester_allow_remote_vpc_dns_resolution = "true"
+  requester_allow_remote_vpc_dns_resolution = "false"
   accepter_aws_profile                      = "terraform"
   accepter_aws_assume_role_arn              = local.aws_api_accepter_assume_role_arn
   accepter_region                           = var.aws_deploy_region
