@@ -7,7 +7,7 @@ locals {
 
 module "api_vpc_peering_cross_account" {
   tags    = module.tags.values
-  enabled = true
+  enabled = false
 
   source = "git::https://github.com/cloudposse/terraform-aws-vpc-peering-multi-account.git?ref=tags/0.19.1"
   name   = "${local.identifier_prefix}-api-vpc-peering-connection"
