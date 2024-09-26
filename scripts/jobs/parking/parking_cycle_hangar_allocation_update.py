@@ -15,7 +15,7 @@ table_name = "parking_cycle_hangar_allocation_update"
 # The exact same query prototyped in pre-prod(stg) or prod Athena
 query_on_athena = """
 /*******************************************************************************************************************
-parking_cycle_hangar_allocation_update_S1
+parking_cycle_hangar_allocation_update
 
 The SQL details the number of cycle spaces that are occupied
 in each cycle hangar. It also identifies the number of Parties
