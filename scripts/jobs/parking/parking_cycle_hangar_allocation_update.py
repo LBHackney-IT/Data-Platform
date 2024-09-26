@@ -7,12 +7,7 @@ from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 
-from scripts.helpers.helpers import (
-    PARTITION_KEYS,
-    create_pushdown_predicate_for_max_date_partition_value,
-    get_glue_env_var,
-    get_latest_partitions,
-)
+from scripts.helpers.helpers import PARTITION_KEYS, get_glue_env_var
 
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
