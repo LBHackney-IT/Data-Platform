@@ -21,7 +21,7 @@ suite.add_expectation(
 suite.add_expectation(
     gxe.ExpectColumnValuesToMatchRegex(
         column="uprn",
-        regex="^[1-9]\d{10,11}")
+        regex=r"^[1-9]\d{10,11}")
 )
 suite.add_expectation(
     gxe.ExpectColumnValuesToBeInSet(
