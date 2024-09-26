@@ -1,97 +1,20 @@
-import sys
+"""
+Only need to change the table name and the query prototyped on the Athena UI
+by replacing table_name and query_on_athena
+Note: python file name should be the same as the table name
+"""
 
-from awsglue import DynamicFrame
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue.transforms import *
-from awsglue.utils import getResolvedOptions
-from pyspark.context import SparkContext
-
-from scripts.helpers.helpers import PARTITION_KEYS, get_glue_env_var
-
-
-def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
-    for alias, frame in mapping.items():
-        frame.toDF().createOrReplaceTempView(alias)
-    result = spark.sql(query)
-    return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
-
-
-args = getResolvedOptions(sys.argv, ["JOB_NAME"])
-sc = SparkContext()
-glueContext = GlueContext(sc)
-spark = glueContext.spark_session
-job = Job(glueContext)
-job.init(args["JOB_NAME"], args)
+from scripts.helpers.athena_helpers import create_update_table_with_partition
+from scripts.helpers.helpers import get_glue_env_var
 
 environment = get_glue_env_var("environment")
 
-# Script generated for node Amazon S3
-AmazonS3_node1658997944648 = glueContext.create_dynamic_frame.from_catalog(
-    database="parking-raw-zone",
-    push_down_predicate="import_year == year(current_date) AND import_month == lpad(month(current_date), 2, '0') AND  import_day == lpad(day(current_date), 2, '0')",
-    table_name="parking_parking_ops_cycle_hangar_list",
-    transformation_ctx="AmazonS3_node1658997944648",
-)
+# The target table in liberator refined zone
+table_name = "parking_cycle_hangar_allocation_update"
 
-# Script generated for node Amazon S3
-AmazonS3_node1697705005761 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-liberator-raw-zone",
-    push_down_predicate="import_year == year(current_date) AND import_month == lpad(month(current_date), 2, '0') AND  import_day == lpad(day(current_date), 2, '0')",
-    table_name="liberator_permit_llpg",
-    transformation_ctx="AmazonS3_node1697705005761",
-)
-
-# Script generated for node Amazon S3
-AmazonS3_node1697704537304 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-liberator-refined-zone",
-    push_down_predicate="import_year == year(current_date) AND import_month == lpad(month(current_date), 2, '0') AND  import_day == lpad(day(current_date), 2, '0')",
-    table_name="parking_cycle_hangars_denormalisation",
-    transformation_ctx="AmazonS3_node1697704537304",
-)
-
-# Script generated for node Amazon S3
-AmazonS3_node1697705499200 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-liberator-raw-zone",
-    push_down_predicate="import_year == year(current_date) AND import_month == lpad(month(current_date), 2, '0') AND  import_day == lpad(day(current_date), 2, '0')",
-    table_name="liberator_hangar_allocations",
-    transformation_ctx="AmazonS3_node1697705499200",
-)
-
-# Script generated for node Amazon S3
-AmazonS3_node1716559486816 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-liberator-raw-zone",
-    table_name="liberator_hangar_waiting_list_history",
-    transformation_ctx="AmazonS3_node1716559486816",
-)
-
-# Script generated for node Amazon S3
-AmazonS3_node1697704672904 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-liberator-raw-zone",
-    push_down_predicate="import_year == year(current_date) AND import_month == lpad(month(current_date), 2, '0') AND  import_day == lpad(day(current_date), 2, '0')",
-    table_name="liberator_hangar_waiting_list",
-    transformation_ctx="AmazonS3_node1697704672904",
-)
-
-# Script generated for node Amazon S3
-AmazonS3_node1701953849263 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-liberator-refined-zone",
-    push_down_predicate="import_year == year(current_date) AND import_month == lpad(month(current_date), 2, '0') AND  import_day == lpad(day(current_date), 2, '0')",
-    table_name="parking_cycle_hangars_denormalisation_update",
-    transformation_ctx="AmazonS3_node1701953849263",
-)
-
-# Script generated for node Amazon S3
-AmazonS3_node1697704891824 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-" + environment + "-liberator-raw-zone",
-    push_down_predicate="import_year == year(current_date) AND import_month == lpad(month(current_date), 2, '0') AND  import_day == lpad(day(current_date), 2, '0')",
-    table_name="liberator_licence_party",
-    transformation_ctx="AmazonS3_node1697704891824",
-)
-
-# Script generated for node SQL
-SqlQuery211 = """
-/********************************************************************************************************************
+# The exact same query prototyped in pre-prod(stg) or prod Athena
+query_on_athena = """
+/*******************************************************************************************************************
 parking_cycle_hangar_allocation_update
 
 The SQL details the number of cycle spaces that are occupied
@@ -113,7 +36,8 @@ Tom's hangar list
 20/08/2024 - additional checks for rubbish data!!!!
 23/08/2024 - look again at the waiting list!
 28/04/2024 - refine the 'hangar_can_be_filled' field case statement
-*******************************************************************************************************************/
+26/09/2024 - add hangar location.
+******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
 *******************************************************************************/
@@ -128,9 +52,8 @@ With TomHangar as (
             When asset_no like '%Bikehangar_1435%'    Then 'Bikehangar_H1435'
             ELSE replace(asset_no, ' ','_')
         END as HangarID
-    from parking_parking_ops_cycle_hangar_list
-    WHERE import_date = (Select MAX(import_date)
-                    from parking_parking_ops_cycle_hangar_list)
+    from "parking-raw-zone".parking_parking_ops_cycle_hangar_list
+    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     AND asset_type = 'Hangar' AND lower(status) IN ('active', 'estate locked gate issue')
     /** 20-08-2024 add check for blank records **/
     AND Length(trim(asset_no))> 2),
@@ -157,9 +80,8 @@ Obtain the latest Waiting List History
 Wait_History as (
     SELECT A.*,
         ROW_NUMBER() OVER ( PARTITION BY A.party_id,hanger_id ORDER BY A.party_id,hanger_id, updated DESC ) R1
-    FROM liberator_hangar_waiting_list_history as A
-    WHERE Import_Date = (Select MAX(Import_Date) from
-                    liberator_hangar_waiting_list_history)),
+    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_waiting_list_history as A
+    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 /*******************************************************************************
 Create the Waiting list - unique "party_id"
 *******************************************************************************/
@@ -169,21 +91,18 @@ waiting_list as (
         B.party_id as History_party_id, A.hanger_id	as History_hanger_id, B.status_from, B.status_to,
         B.date_from, B.date_to, B.updated, B.created_by, B.registation_date as History_registation_date,
         ROW_NUMBER() OVER ( PARTITION BY A.party_id, A.hanger_id ORDER BY A.party_id, A.hanger_id DESC) row1
-    FROM liberator_hangar_waiting_list as A
+    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_waiting_list as A
     LEFT JOIN Wait_History as B ON A.party_id = B.party_id AND A.hanger_id = B.hanger_id AND B.R1 = 1
-    WHERE A.Import_Date = (Select MAX(Import_Date) from
-                            liberator_hangar_waiting_list)),
+    WHERE A.import_Date = format_datetime(current_date, 'yyyyMMdd')),
 /*** Party List ***/
 Licence_Party as (
-    SELECT * from liberator_licence_party
-    WHERE Import_Date = (Select MAX(Import_Date) from
-                                liberator_licence_party)),
+    SELECT * from "dataplatform-stg-liberator-raw-zone".liberator_licence_party
+    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 /*** STREET ***/
 LLPG as (
     SELECT *
-    FROM liberator_permit_llpg
-    WHERE import_date = (Select MAX(import_date) from
-                                    liberator_permit_llpg)),
+    FROM "dataplatform-stg-liberator-raw-zone".liberator_permit_llpg
+    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 /*******************************************************************************
 Cycle Hangar allocation details
 *******************************************************************************/
@@ -196,8 +115,8 @@ Cycle_Hangar_allocation as (
         /* 19/06 trim the space */
         ROW_NUMBER() OVER ( PARTITION BY hanger_id, trim(upper(space))
             ORDER BY hanger_id, trim(upper(space)), date_of_allocation DESC, fee_due_date DESC, id DESC) row_num
-    FROM liberator_hangar_allocations
-    WHERE Import_Date = (Select MAX(Import_Date) from liberator_hangar_allocations)
+    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_allocations
+    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     /* 14/06 change to exclude those records where keys have not been issued AND
     remove those records where the Space and Key ID fields have been switched??? also
     remove those records with null in the space field????*/
@@ -209,9 +128,8 @@ Party_ID_Allocation as (
         *,
         ROW_NUMBER() OVER ( PARTITION BY party_id, hanger_id
             ORDER BY party_id, hanger_id, id DESC) row_num
-    FROM liberator_hangar_allocations
-    WHERE Import_Date = (Select MAX(Import_Date)
-            from liberator_hangar_allocations)
+    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_allocations
+    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     AND key_issued = 'Y' AND length(key_id) > 2 AND space != 'null'),
 
 /** 13/06 total the alloctaion details obtain above */
@@ -223,9 +141,8 @@ Alloc_Total as (
 
 Street_Rec as (
     SELECT *
-    FROM liberator_permit_llpg
-    WHERE import_date = (Select MAX(import_date) from
-                            liberator_permit_llpg)
+    FROM "dataplatform-stg-liberator-raw-zone".liberator_permit_llpg
+    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     AND address1 = 'STREET RECORD'),
 
 /*** 01/08/2024 Summerise the allocatd Party IDs to prevent duplication below **/
@@ -243,7 +160,7 @@ Cycle_Hangar_Wait_List as (
         ,A.hanger_id, E.party_id Allocated_Party_ID, History_party_id, History_hanger_id, status_to, updated
     FROM waiting_list as A
     LEFT JOIN Licence_Party as B ON A.party_id = B.business_party_id
-    LEFT JOIN LLPG          as C ON B.uprn = cast(C.UPRN as string)
+    LEFT JOIN LLPG          as C ON B.uprn = cast(C.UPRN as varchar)
     LEFT JOIN Street_Rec    as D ON C.USRN = D.USRN
     LEFT JOIN Summary_Alloca_PartyID as E ON A.party_id = E.party_id AND R1 = 1
     /*LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id  AND row_num = 1  01/08 removed bigger check above*/
@@ -277,17 +194,15 @@ Wait_List_Hangar as (
     SELECT A.party_id, A.hanger_id,
     ROW_NUMBER() OVER ( PARTITION BY A.party_id, A.hanger_id
                                     ORDER BY A.party_id, A.hanger_id DESC) H2
-    FROM liberator_hangar_waiting_list as A
+    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_waiting_list as A
     INNER JOIN Cycle_Hangar_Wait_List as B ON A.party_id = B.party_id AND A.hanger_id = B.hanger_id
-    WHERE import_date = (Select MAX(import_date)
-                    FROM liberator_hangar_waiting_list)),
+    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 
 Wait_List_Earlist_Latest as (
     SELECT A.hanger_id, max(A.registration_date) as Max_Date, min(A.registration_date) as Min_Date
-    FROM liberator_hangar_waiting_list as A
+    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_waiting_list as A
     INNER JOIN Cycle_Hangar_Wait_List as B ON A.party_id = B.party_id
-    WHERE import_date = (Select MAX(import_date)
-                    FROM liberator_hangar_waiting_list)
+    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     AND A.registration_date not
             IN ('2000-01-01','1900-12-13','1000-04-02','1100-04-02',
                                 '1200-04-02','1300-04-02','1400-04-02','2000-12-17','1200-03-24')
@@ -328,7 +243,7 @@ Full_Hangar_Data as (
 Hangar_WAit_List as (
     SELECT
         A.asset_no as Tom_Asset_No, B.hanger_id as HangarID, street_or_estate, zone, location_description,
-        postcode, date_installed,
+        hangar_location, postcode, date_installed,
         CASE
             When Total_Allocated is NULL Then 0
             ELSE Total_Allocated
@@ -341,7 +256,7 @@ Hangar_WAit_List as (
             When free_spaces is NULL Then 6
             ELSE free_spaces
         END as free_spaces,
-    Earlist_Registration_Date, Latest_Registration_Date
+        Earlist_Registration_Date, Latest_Registration_Date
     FROM Hanger as A
     LEFT JOIN Hangar_Comp       as B ON A.asset_no = B.asset_no
     LEFT JOIN Full_Hangar_Data  as C ON B.hanger_id = C.hanger_id
@@ -361,7 +276,7 @@ Output as (
     WHERE HangarID is not NULL
     UNION ALL
     SELECT A.Tom_Asset_No, A.HangarID, A.street_or_estate, A.zone, A.location_description,
-       A.postcode, A.date_installed, A.Total_Allocated, TotalWatch, A.free_spaces,
+        A.hangar_location, A.postcode, A.date_installed, A.Total_Allocated, TotalWatch, A.free_spaces,
         C.Earlist_Registration_Date, C.Latest_Registration_Date,
         CASE
             When A.Total_Allocated = 6        Then 'N/A'
@@ -381,44 +296,16 @@ SELECT *,
         Else 0
     END as Spaces_that_cannot_be_allocated,
 
-    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
-    date_format(current_date, 'yyyy') AS import_year,
-    date_format(current_date, 'MM') AS import_month,
-    date_format(current_date, 'dd') AS import_day,
-    date_format(current_date, 'yyyyMMdd') AS import_date
+    format_datetime(CAST(CURRENT_TIMESTAMP AS timestamp),
+                'yyyy-MM-dd HH:mm:ss') AS import_date_timestamp,
+
+    format_datetime(current_date, 'yyyy') AS import_year,
+    format_datetime(current_date, 'MM') AS import_month,
+    format_datetime(current_date, 'dd') AS import_day,
+    format_datetime(current_date, 'yyyyMMdd') AS import_date
 FROM Output
 """
-SQL_node1658765472050 = sparkSqlQuery(
-    glueContext,
-    query=SqlQuery211,
-    mapping={
-        "parking_parking_ops_cycle_hangar_list": AmazonS3_node1658997944648,
-        "parking_cycle_hangars_denormalisation": AmazonS3_node1697704537304,
-        "liberator_hangar_waiting_list": AmazonS3_node1697704672904,
-        "liberator_licence_party": AmazonS3_node1697704891824,
-        "liberator_permit_llpg": AmazonS3_node1697705005761,
-        "liberator_hangar_allocations": AmazonS3_node1697705499200,
-        "parking_cycle_hangars_denormalisation_update": AmazonS3_node1701953849263,
-        "liberator_hangar_waiting_list_history": AmazonS3_node1716559486816,
-    },
-    transformation_ctx="SQL_node1658765472050",
-)
 
-# Script generated for node Amazon S3
-AmazonS3_node1658765590649 = glueContext.getSink(
-    path="s3://dataplatform-"
-    + environment
-    + "-refined-zone/parking/liberator/parking_cycle_hangar_allocation_update/",
-    connection_type="s3",
-    updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=PARTITION_KEYS,
-    enableUpdateCatalog=True,
-    transformation_ctx="AmazonS3_node1658765590649",
+create_update_table_with_partition(
+    environment=environment, query_on_athena=query_on_athena, table_name=table_name
 )
-AmazonS3_node1658765590649.setCatalogInfo(
-    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
-    catalogTableName="parking_cycle_hangar_allocation_update",
-)
-AmazonS3_node1658765590649.setFormat("glueparquet", compression="snappy")
-AmazonS3_node1658765590649.writeFrame(SQL_node1658765472050)
-job.commit()
