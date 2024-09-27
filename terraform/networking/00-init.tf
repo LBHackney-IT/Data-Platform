@@ -1,14 +1,14 @@
 # Core Infrastructure
 provider "aws" {
   region = var.aws_deploy_region
-  
-  dynamic assume_role {
+
+  dynamic "assume_role" {
     for_each = local.environment != "dev" ? [1] : []
 
-      content {
-        role_arn     = "arn:aws:iam::${var.aws_deploy_account_id}:role/${var.aws_deploy_iam_role_name}"
-        session_name = "Terraform"
-      }
+    content {
+      role_arn     = "arn:aws:iam::${var.aws_deploy_account_id}:role/${var.aws_deploy_iam_role_name}"
+      session_name = "Terraform"
+    }
   }
 }
 
@@ -26,7 +26,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "4.60.0"
     }
   }
   backend "s3" {
