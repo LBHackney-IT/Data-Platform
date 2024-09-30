@@ -1,17 +1,20 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
+
 from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    create_pushdown_predicate,
+    create_pushdown_predicate_for_max_date_partition_value,
     get_glue_env_var,
     get_latest_partitions,
-    PARTITION_KEYS,
-    create_pushdown_predicate_for_max_date_partition_value,
-    create_pushdown_predicate,
 )
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -82,7 +85,7 @@ The SQL creates the denormalised cycle hangar data (remove the duplicates). This
 ***************************************************************************************************************************/
 WITH HangarTypes as (
    SELECT id, type_name, hanger_class, cost, cost_per,import_year, import_month, import_day
-   FROM liberator_hangar_types 
+   FROM liberator_hangar_types
    WHERE import_date = (SELECT MAX(import_date) FROM liberator_hangar_types)),
 
 
@@ -107,9 +110,9 @@ HangarDetails AS (
    FROM liberator_hangar_details as A
    WHERE import_date = (SELECT MAX(import_date) FROM liberator_hangar_details)
    ORDER BY  HANGAR_ID),
-        
-        
-HangarAllocBefore AS 
+
+
+HangarAllocBefore AS
         (SELECT ID
               , HANGER_ID
               , KEY_ID
@@ -124,10 +127,10 @@ HangarAllocBefore AS
                                    FEE_DUE_DATE, CREATED_BY
                 ORDER BY  HANGER_ID, KEY_ID, SPACE, PARTY_ID, KEY_ISSUED, DATE_OF_ALLOCATION, ALLOCATION_STATUS, FEE_DUE_DATE, CREATED_BY
                                    DESC) AS ROW
-        FROM liberator_hangar_allocations 
+        FROM liberator_hangar_allocations
          WHERE import_date = (SELECT MAX(import_date) FROM liberator_hangar_allocations)),
-                         
-HangarAlloc AS 
+
+HangarAlloc AS
         (SELECT *,
                 ROW_NUMBER()
                 OVER (PARTITION BY HANGER_ID, SPACE
@@ -139,10 +142,10 @@ licence_party as (
   SELECT party_id, business_party_id, title, first_name, surname,
         address1, address2, address3, postcode, uprn,
         telephone_number
-  FROM liberator_licence_party 
+  FROM liberator_licence_party
   WHERE import_date = (SELECT MAX(import_date) FROM liberator_licence_party)),
-                        
-CycleHangarAllocation AS 
+
+CycleHangarAllocation AS
         (SELECT A.*,
          B.TITLE ,
          B.FIRST_NAME ,
@@ -158,18 +161,17 @@ CycleHangarAllocation AS
          ORDER BY  HANGER_ID, PARTY_ID, KEY_ISSUED, DATE_OF_ALLOCATION)
 
 /*** Output the data ***/
-SELECT 
+SELECT
 	A.ID, HANGER_ID, KEY_ID, SPACE, PARTY_ID, KEY_ISSUED, DATE_OF_ALLOCATION, ALLOCATION_STATUS, FEE_DUE_DATE, CREATED_BY,
        TITLE, FIRST_NAME, SURNAME, ADDRESS1, ADDRESS2, ADDRESS3, POSTCODE, TELEPHONE_NUMBER,
        /** Hangar details **/
        HANGAR_TYPE, IN_SERVICE, MAINTENANCE_KEY, SPACES, HANGAR_LOCATION, USRN, LATITUDE, LONGITUDE, START_OF_LIFE, END_OF_LIFE,
 
-    	current_timestamp()                            as ImportDateTime,
-    	replace(cast(current_date() as string),'-','') as import_date,
-    
-    	cast(Year(current_date) as string)    as import_year, 
-    	cast(month(current_date) as string)   as import_month, 
-    	cast(day(current_date) as string)     as import_day
+        date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+        date_format(current_date, 'yyyy') AS import_year,
+        date_format(current_date, 'MM') AS import_month,
+        date_format(current_date, 'dd') AS import_day,
+        date_format(current_date, 'yyyyMMdd') AS import_date
 FROM CycleHangarAllocation as A
 LEFT JOIN HangarDetails as B ON A.HANGER_ID = B.HANGAR_ID AND B.ROW = 1
 ORDER BY HANGER_ID, SPACE
@@ -188,7 +190,9 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_cycle_hangars_denormalisation_update/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/parking_cycle_hangars_denormalisation_update/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],

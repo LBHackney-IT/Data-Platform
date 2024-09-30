@@ -54,7 +54,7 @@ Temp SQL that formats the cycle hangar managment records For pivot report
 
 09/12/2022 - Create Query
 05/07/2023 - rewrite to remove Calendar data
-24/01/2024 - change date_fixed to repair_date because field names have been changed 
+24/01/2024 - change date_fixed to repair_date because field names have been changed
                 in google
 25/01/2024 - add checks for blank sign off month/year!
 26/01/2024 - remove duplicated records
@@ -64,16 +64,16 @@ SELECT
     ref_no as reference_no, hangar_corral_no,
 
     CAST(CASE
-        When length(reported_date) =4  Then '2022' ||'-0'|| substr(reported_date, 4, 2) 
+        When length(reported_date) =4  Then '2022' ||'-0'|| substr(reported_date, 4, 2)
                                                    ||'-'|| substr(reported_date, 1, 2)
-                                                   
-        When length(reported_date) =5  Then '2022' ||'-'|| substr(reported_date, 4, 2) 
+
+        When length(reported_date) =5  Then '2022' ||'-'|| substr(reported_date, 4, 2)
                                                    ||'-'|| substr(reported_date, 1, 2)
 
         When length(reported_date) =8 Then  '20' || substr(reported_date, 7, 2)||'-'||
                                                     substr(reported_date, 4, 2)||'-'||
                                                     substr(reported_date, 1, 2)
-        
+
         When reported_date like '%/%'Then   substr(reported_date, 7, 4)||'-'||
                                             substr(reported_date, 4, 2)||'-'||
                                             substr(reported_date, 1, 2)
@@ -101,20 +101,20 @@ SELECT
         ELSE CASE
                 When repair_date like '%/%'Then substr(repair_date, 4, 2)
                 ELSE substr(cast(repair_date as string),6, 2)
-            END 
-    END as sign_off_month,   
+            END
+    END as sign_off_month,
     CASE
         When sign_off_year != '1899' AND sign_off_year != '' Then sign_off_year
         ELSE CASE
                 When repair_date like '%/%'Then substr(repair_date, 7, 4)
                 ELSE substr(cast(repair_date as string),1, 4)
-            END 
-    END as sign_off_year    
-    
+            END
+    END as sign_off_year
+
 FROM parking_parking_ops_cycle_hangar_mgt
-WHERE import_date = (Select MAX(import_date) 
+WHERE import_date = (Select MAX(import_date)
                         FROM parking_parking_ops_cycle_hangar_mgt)
-AND length(ltrim(rtrim(reported_date))) > 0 
+AND length(ltrim(rtrim(reported_date))) > 0
 AND met_not_met not IN ('#VALUE!','#N/A')
 AND length(ltrim(rtrim(repair_date)))> 0),
 
@@ -129,7 +129,7 @@ Defect as (
         turn_around_time_week_days, target_turn_around,
         met_not_met,time_taken,hangar_or_corral,
         sign_off_month,sign_off_year
- 
+
     FROM Defect_Basic),
 
 /********************************************************************************
@@ -139,8 +139,8 @@ category_totals as (
 SELECT
     Month_repair_date, met_not_met, count(*) as Total_Met_Fail
 FROM Defect
-WHERE repair_date >= 
-    date_add(cast(substr(cast(current_date 
+WHERE repair_date >=
+    date_add(cast(substr(cast(current_date
                     as string), 1, 8)||'01' as date), -365)
     AND met_not_met = 'Fail'
 GROUP BY Month_repair_date, met_not_met
@@ -148,8 +148,8 @@ UNION ALL
 SELECT
     Month_repair_date, met_not_met, count(*) as Total_Met_Fail
 FROM Defect
-WHERE repair_date >= 
-    date_add(cast(substr(cast(current_date 
+WHERE repair_date >=
+    date_add(cast(substr(cast(current_date
                     as string), 1, 8)||'01' as date), -365)
     AND met_not_met = 'Met'
 GROUP BY Month_repair_date, met_not_met
@@ -157,12 +157,12 @@ UNION ALL
 SELECT
     Month_repair_date, met_not_met, count(*) as Total_Met_Fail
 FROM Defect
-WHERE repair_date >= 
-    date_add(cast(substr(cast(current_date 
+WHERE repair_date >=
+    date_add(cast(substr(cast(current_date
                     as string), 1, 8)||'01' as date), -365)
     AND met_not_met = 'N/A'
 GROUP BY Month_repair_date, met_not_met),
-    
+
 Categories as (
     SELECT distinct
         A.Month_repair_date
@@ -171,23 +171,23 @@ Categories as (
 Obtain and format the totals
 ********************************************************************************/
 Category_Format as (
-SELECT 
+SELECT
     A.Month_repair_date,
     CASE When B.Total_Met_Fail is not NULL Then B.Total_Met_Fail Else 0 END as Total_Fail,
     CASE When C.Total_Met_Fail is not NULL Then C.Total_Met_Fail Else 0 END as Total_Met,
-    CASE When D.Total_Met_Fail is not NULL Then D.Total_Met_Fail Else 0 END as Total_NA   
+    CASE When D.Total_Met_Fail is not NULL Then D.Total_Met_Fail Else 0 END as Total_NA
 FROM category_totals as A
 LEFT JOIN category_totals as B ON A.Month_repair_date = B.Month_repair_date AND
-                                    B.met_not_met = 'Fail'   
+                                    B.met_not_met = 'Fail'
 LEFT JOIN category_totals as C ON A.Month_repair_date = C.Month_repair_date AND
-                                    C.met_not_met = 'Met'                       
+                                    C.met_not_met = 'Met'
 LEFT JOIN category_totals as D ON A.Month_repair_date = D.Month_repair_date AND
                                     D.met_not_met = 'N/A'
-WHERE A.Month_repair_date >= 
-        date_add(cast(substr(cast(current_date 
+WHERE A.Month_repair_date >=
+        date_add(cast(substr(cast(current_date
                         as string), 1, 8)||'01' as date), -365)
     AND A.Month_repair_date <= current_date),
-    
+
 /** De-Dupe the above data **/
 Category_Format_deDupe as (
     SELECT *,
@@ -198,7 +198,7 @@ Category_Format_deDupe as (
 Calculate the monthly totals & %
 ********************************************************************************/
 Total as (
-    SELECT 
+    SELECT
         Month_repair_date,
         'Total' as Category,
         SUM(cast(Total_Met as double) + Total_Fail + Total_NA) as Grand_total
@@ -206,10 +206,10 @@ Total as (
     Where row_num1 = 1
     GROUP BY Month_repair_date),
 Total_Percentage as (
-    SELECT 
+    SELECT
         Month_repair_date,
         'KPI_%' as Category,
-        
+
         (CAST(CASE
             When Total_Met + Total_Fail = 0 AND Total_Met != 0 Then 100
             When Total_Met + Total_Fail = 0 AND Total_Met = 0 Then 0
@@ -240,7 +240,7 @@ Format_Report as (
     SELECT
         Month_repair_date, Category, '' as Total_Met_Fail, KPI
     FROM Total_Percentage),
-    
+
 Data_Dedupe as (
 SELECT  *,
         ROW_NUMBER() OVER ( PARTITION BY month_repair_date, category, total_met_fail
@@ -251,13 +251,12 @@ Ouput data
 ********************************************************************************/
 SELECT
     Month_repair_date, Category,Total_Met_Fail, Total,
-    
-    current_timestamp()                            as ImportDateTime,
-    replace(cast(current_date() as string),'-','') as import_date,
-    
-    cast(Year(current_date) as string)    as import_year, 
-    cast(month(current_date) as string)   as import_month, 
-    cast(day(current_date) as string)     as import_day
+
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
 FROM Data_Dedupe
 WHERE row_num = 1
 """
