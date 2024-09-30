@@ -1,17 +1,20 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
+
 from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    create_pushdown_predicate,
+    create_pushdown_predicate_for_max_date_partition_value,
     get_glue_env_var,
     get_latest_partitions,
-    PARTITION_KEYS,
-    create_pushdown_predicate_for_max_date_partition_value,
-    create_pushdown_predicate,
 )
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -50,8 +53,8 @@ AmazonS3_node1681807784480 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="parking_permit_denormalised_data",
     transformation_ctx="AmazonS3_node1681807784480",
-    #teporarily removed while table partitions are fixed
-    #push_down_predicate=create_pushdown_predicate("import_date", 7),
+    # teporarily removed while table partitions are fixed
+    # push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node SQL
@@ -59,7 +62,7 @@ SqlQuery29 = """
 /***********************************************************************************
 Parking_Permit_Street_Stress
 
-The SQL builds a list of streets and identifies the number of 
+The SQL builds a list of streets and identifies the number of
 Parking spaces (Shared use, Resident, etc) and the number of extant Permits
 
 16/03/2023 - Create SQL
@@ -67,12 +70,12 @@ Parking spaces (Shared use, Resident, etc) and the number of extant Permits
 With LLPG as (
     SELECT *
     FROM liberator_permit_llpg
-    WHERE import_date = (Select MAX(import_date) from 
+    WHERE import_date = (Select MAX(import_date) from
                                             liberator_permit_llpg)),
 Street_Rec as (
     SELECT *
     FROM liberator_permit_llpg
-    WHERE import_date = (Select MAX(import_date) from 
+    WHERE import_date = (Select MAX(import_date) from
                                              liberator_permit_llpg)
     AND address1 = 'STREET RECORD'),
 
@@ -80,63 +83,63 @@ Parkmap as (
     SELECT
         order_type, street_name, no_of_spaces, zone, nsg
     FROM geolive_parking_order
-    WHERE import_date = (Select MAX(import_date) 
+    WHERE import_date = (Select MAX(import_date)
                                    from geolive_parking_order)
-    AND order_type IN ('Business bay', 'Estate permit bay', 'Cashless Shared Use', 'Permit Bay', 
+    AND order_type IN ('Business bay', 'Estate permit bay', 'Cashless Shared Use', 'Permit Bay',
                        'Permit Electric Vehicle', 'Resident bay',
                        'Shared Use - Permit/Chargeable','Disabled')),
 Parkmap_Summary as (
-    SELECT 'Business bay' as order_type, street_name, 
+    SELECT 'Business bay' as order_type, street_name,
     SUM(no_of_spaces) as no_of_spaces
     FROM Parkmap
     WHERE order_type = 'Business bay'
     GROUP BY street_name
     UNION ALL
-    SELECT 'Estate permit bay' as order_type, street_name, 
+    SELECT 'Estate permit bay' as order_type, street_name,
     SUM(no_of_spaces) as no_of_spaces
     FROM Parkmap
     WHERE order_type = 'Estate permit bay'
-    GROUP BY street_name 
+    GROUP BY street_name
     UNION ALL
-    SELECT 'Shared Use' as order_type, street_name, 
+    SELECT 'Shared Use' as order_type, street_name,
     SUM(no_of_spaces) as no_of_spaces
     FROM Parkmap
     WHERE order_type IN ('Cashless Shared Use','Shared Use - Permit/Chargeable')
-    GROUP BY street_name 
+    GROUP BY street_name
     UNION ALL
-    SELECT 'Permit Bay' as order_type, street_name, 
+    SELECT 'Permit Bay' as order_type, street_name,
     SUM(no_of_spaces) as no_of_spaces
     FROM Parkmap
     WHERE order_type IN ('Permit Bay')
     GROUP BY street_name
     UNION ALL
-    SELECT 'Resident bay' as order_type, street_name, 
+    SELECT 'Resident bay' as order_type, street_name,
     SUM(no_of_spaces) as no_of_spaces
     FROM Parkmap
     WHERE order_type IN ('Resident bay')
     GROUP BY street_name
     UNION ALL
-    SELECT 'Disabled' as order_type, street_name, 
+    SELECT 'Disabled' as order_type, street_name,
     SUM(no_of_spaces) as no_of_spaces
     FROM Parkmap
     WHERE order_type IN ('Disabled')
-    GROUP BY street_name    
+    GROUP BY street_name
     ),
 
 Permits as (
     SELECT
-        A.permit_reference, A.email_address_of_applicant, 
-        A.permit_type, C.address2, 
-        address_line_1, address_line_2, address_line_3,postcode, 
+        A.permit_reference, A.email_address_of_applicant,
+        A.permit_type, C.address2,
+        address_line_1, address_line_2, address_line_3,postcode,
         A.uprn,
-        ROW_NUMBER() OVER ( PARTITION BY A.email_address_of_applicant  
+        ROW_NUMBER() OVER ( PARTITION BY A.email_address_of_applicant
         ORDER BY A.email_address_of_applicant, A.permit_type DESC) r1
     FROM parking_permit_denormalised_data as A
     LEFT JOIN LLPG as B ON A.uprn = cast(B.uprn as string)
     LEFT JOIN Street_Rec as C ON B.usrn = C.usrn
-    WHERE A.import_date = (Select MAX(import_date) from 
+    WHERE A.import_date = (Select MAX(import_date) from
                                   parking_permit_denormalised_data)
-    AND current_date between start_date and end_date 
+    AND current_date between start_date and end_date
     AND Permit_type IN ('Business', 'Residents','Companion Badge')
     AND latest_permit_status not IN ('Cancelled','Rejected','RENEW_REJECTED')),
 
@@ -146,21 +149,21 @@ Permits_summ as (
     FROM Permits
     WHERE r1 = 1
     GROUP BY permit_type, address2
-    Order by address2, permit_type),    
+    Order by address2, permit_type),
 
-Output as (  
-    SELECT 
+Output as (
+    SELECT
         A.Address2 as Street, A.currentPermitTotal as Total_Residential_Permits,
-        G.currentPermitTotal as Total_Business_Permits, 
-        I.currentPermitTotal as Total_Companion_Badge_Permits, 
-    
+        G.currentPermitTotal as Total_Business_Permits,
+        I.currentPermitTotal as Total_Companion_Badge_Permits,
+
         B.no_of_spaces as Business_bay_no_of_spaces,
         D.no_of_spaces as Shared_Use_no_of_spaces,
         E.no_of_spaces as Permit_Bay_no_of_spaces,
-        F.no_of_spaces as Resident_bay_no_of_spaces,    
+        F.no_of_spaces as Resident_bay_no_of_spaces,
         H.no_of_spaces as Disabled_bay_no_of_spaces,
 
-        (coalesce(A.currentPermitTotal,0) + coalesce(G.currentPermitTotal, 0) + 
+        (coalesce(A.currentPermitTotal,0) + coalesce(G.currentPermitTotal, 0) +
                                             coalesce(I.currentPermitTotal, 0)) as TotalNoofPermits,
         (coalesce(B.no_of_spaces,0) + coalesce(D.no_of_spaces,0) + coalesce(E.no_of_spaces,0)
                         + coalesce(F.no_of_spaces,0) + coalesce(H.no_of_spaces,0)) as TotalNoOfSpaces
@@ -183,13 +186,12 @@ SELECT
             cast(TotalNoofPermits as decimal(10,4))/TotalNoOfSpaces
         else -1
        END as PercentageStress,
-       
-    current_timestamp()                            as ImportDateTime,
-    replace(cast(current_date() as string),'-','') as import_date,
-    
-    cast(Year(current_date) as string)    as import_year, 
-    cast(month(current_date) as string)   as import_month, 
-    cast(day(current_date) as string)     as import_day
+
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
 FROM Output
 """
 SQL_node1658765472050 = sparkSqlQuery(
@@ -205,7 +207,9 @@ SQL_node1658765472050 = sparkSqlQuery(
 
 # Script generated for node Amazon S3
 AmazonS3_node1658765590649 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_permit_street_stress/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/parking_permit_street_stress/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=PARTITION_KEYS,

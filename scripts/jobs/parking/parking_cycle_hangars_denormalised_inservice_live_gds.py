@@ -1,35 +1,52 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    get_glue_env_var,
+    get_latest_partitions,
+)
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
         frame.toDF().createOrReplaceTempView(alias)
     result = spark.sql(query)
     return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+
+
+args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
-job.init(args['JOB_NAME'], args)
+job.init(args["JOB_NAME"], args)
 environment = get_glue_env_var("environment")
 
 # Script generated for node Amazon S3 -parking_cycle_hangars_denormalisation
-AmazonS3parking_cycle_hangars_denormalisation_node1705433167883 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-liberator-refined-zone", table_name="parking_cycle_hangars_denormalisation", transformation_ctx="AmazonS3parking_cycle_hangars_denormalisation_node1705433167883")
+AmazonS3parking_cycle_hangars_denormalisation_node1705433167883 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-" + environment + "-liberator-refined-zone",
+    table_name="parking_cycle_hangars_denormalisation",
+    transformation_ctx="AmazonS3parking_cycle_hangars_denormalisation_node1705433167883",
+)
 
 # Script generated for node Parking raw zone manual - parking_cycle_hangar_denormalised_backfill
-Parkingrawzonemanualparking_cycle_hangar_denormalised_backfill_node1711467992130 = glueContext.create_dynamic_frame.from_catalog(database="parking-raw-zone", table_name="cycle_hangar_denormalised___backfill", transformation_ctx="Parkingrawzonemanualparking_cycle_hangar_denormalised_backfill_node1711467992130")
+Parkingrawzonemanualparking_cycle_hangar_denormalised_backfill_node1711467992130 = glueContext.create_dynamic_frame.from_catalog(
+    database="parking-raw-zone",
+    table_name="cycle_hangar_denormalised___backfill",
+    transformation_ctx="Parkingrawzonemanualparking_cycle_hangar_denormalised_backfill_node1711467992130",
+)
 
 # Script generated for node SQL Query
-SqlQuery0 = '''
+SqlQuery0 = """
 /*
- Summary data from "dataplatform-prod-liberator-refined-zone".parking_cycle_hangars_denormalisation 
+ Summary data from "dataplatform-prod-liberator-refined-zone".parking_cycle_hangars_denormalisation
  Filtered by (import_day = '01') First of every month
  and ( upper(in_service) like 'Y') Hangar is in service
  and ( allocation_status like 'live') allocation is live
@@ -39,54 +56,54 @@ SqlQuery0 = '''
 */
 
 with cycle_den as (
-select distinct --* 
+select distinct --*
 parking_cycle_hangar_denormalised_backfill.id
-,parking_cycle_hangar_denormalised_backfill.hanger_id	
-,parking_cycle_hangar_denormalised_backfill.key_id	
-,parking_cycle_hangar_denormalised_backfill.space	
-,parking_cycle_hangar_denormalised_backfill.party_id	
-,parking_cycle_hangar_denormalised_backfill.key_issued	
-,parking_cycle_hangar_denormalised_backfill.date_of_allocation	
-,parking_cycle_hangar_denormalised_backfill.allocation_status	
-,parking_cycle_hangar_denormalised_backfill.fee_due_date	
-,parking_cycle_hangar_denormalised_backfill.created_by	
-,parking_cycle_hangar_denormalised_backfill.title	
-,parking_cycle_hangar_denormalised_backfill.first_name	
-,parking_cycle_hangar_denormalised_backfill.surname	
-,parking_cycle_hangar_denormalised_backfill.address1	
-,parking_cycle_hangar_denormalised_backfill.address2	
-,parking_cycle_hangar_denormalised_backfill.address3	
-,parking_cycle_hangar_denormalised_backfill.postcode	
-,parking_cycle_hangar_denormalised_backfill.telephone_number	
-,parking_cycle_hangar_denormalised_backfill.email_address	
-,parking_cycle_hangar_denormalised_backfill.hangar_type	
-,parking_cycle_hangar_denormalised_backfill.in_service	
-,parking_cycle_hangar_denormalised_backfill.maintenance_key	
-,parking_cycle_hangar_denormalised_backfill.spaces	
-,parking_cycle_hangar_denormalised_backfill.hangar_location	
-,parking_cycle_hangar_denormalised_backfill.usrn	
-,parking_cycle_hangar_denormalised_backfill.latitude	
-,parking_cycle_hangar_denormalised_backfill.longitude	
-,parking_cycle_hangar_denormalised_backfill.start_of_life	
-,parking_cycle_hangar_denormalised_backfill.end_of_life	
+,parking_cycle_hangar_denormalised_backfill.hanger_id
+,parking_cycle_hangar_denormalised_backfill.key_id
+,parking_cycle_hangar_denormalised_backfill.space
+,parking_cycle_hangar_denormalised_backfill.party_id
+,parking_cycle_hangar_denormalised_backfill.key_issued
+,parking_cycle_hangar_denormalised_backfill.date_of_allocation
+,parking_cycle_hangar_denormalised_backfill.allocation_status
+,parking_cycle_hangar_denormalised_backfill.fee_due_date
+,parking_cycle_hangar_denormalised_backfill.created_by
+,parking_cycle_hangar_denormalised_backfill.title
+,parking_cycle_hangar_denormalised_backfill.first_name
+,parking_cycle_hangar_denormalised_backfill.surname
+,parking_cycle_hangar_denormalised_backfill.address1
+,parking_cycle_hangar_denormalised_backfill.address2
+,parking_cycle_hangar_denormalised_backfill.address3
+,parking_cycle_hangar_denormalised_backfill.postcode
+,parking_cycle_hangar_denormalised_backfill.telephone_number
+,parking_cycle_hangar_denormalised_backfill.email_address
+,parking_cycle_hangar_denormalised_backfill.hangar_type
+,parking_cycle_hangar_denormalised_backfill.in_service
+,parking_cycle_hangar_denormalised_backfill.maintenance_key
+,parking_cycle_hangar_denormalised_backfill.spaces
+,parking_cycle_hangar_denormalised_backfill.hangar_location
+,parking_cycle_hangar_denormalised_backfill.usrn
+,parking_cycle_hangar_denormalised_backfill.latitude
+,parking_cycle_hangar_denormalised_backfill.longitude
+,parking_cycle_hangar_denormalised_backfill.start_of_life
+,parking_cycle_hangar_denormalised_backfill.end_of_life
 ,parking_cycle_hangar_denormalised_backfill.import_year_original	as import_year
 ,parking_cycle_hangar_denormalised_backfill.import_month_original	as import_month
 ,case when parking_cycle_hangar_denormalised_backfill.import_day_original like '1' then '01' else parking_cycle_hangar_denormalised_backfill.import_day_original end as import_day
 ,parking_cycle_hangar_denormalised_backfill.import_date_original as 	import_date
---parking_cycle_hangar_denormalised_backfill.import_datetime	
---parking_cycle_hangar_denormalised_backfill.import_timestamp	
+--parking_cycle_hangar_denormalised_backfill.import_datetime
+--parking_cycle_hangar_denormalised_backfill.import_timestamp
 --parking_cycle_hangar_denormalised_backfill.import_year	as import_year_backfill
 --parking_cycle_hangar_denormalised_backfill.import_month as	import_month_backfill
 --parking_cycle_hangar_denormalised_backfill.import_day as	import_day_backfill
 --parking_cycle_hangar_denormalised_backfill.import_date as import_date_backfill
 from parking_cycle_hangar_denormalised_backfill --where import_date = (select max(import_date) from "parking-raw-zone-manual".parking_cycle_hangar_denormalised_backfill) --78,148 --83,742  --5,594  before distinct --78,340 --83,742  83,934  5,594  - with import day filter 60,681 --72,394
- where parking_cycle_hangar_denormalised_backfill.import_day_original = '1' 
- and upper(parking_cycle_hangar_denormalised_backfill.in_service) like 'Y' 
+ where parking_cycle_hangar_denormalised_backfill.import_day_original = '1'
+ and upper(parking_cycle_hangar_denormalised_backfill.in_service) like 'Y'
  and parking_cycle_hangar_denormalised_backfill.allocation_status like 'live'
 
 union all
 
-select --* 
+select --*
 cast(id as string) as id
 ,hanger_id
 ,key_id
@@ -121,15 +138,15 @@ cast(id as string) as id
 ,import_day
 ,import_date
 
-from parking_cycle_hangars_denormalisation 
- where parking_cycle_hangars_denormalisation .import_day = '01' 
- and upper(parking_cycle_hangars_denormalisation.in_service) like 'Y' 
+from parking_cycle_hangars_denormalisation
+ where parking_cycle_hangars_denormalisation .import_day = '01'
+ and upper(parking_cycle_hangars_denormalisation.in_service) like 'Y'
  and parking_cycle_hangars_denormalisation.allocation_status like 'live'
 
  )
 
 
-select 
+select
 to_date(cycle_den.import_date, 'yyyyMMdd') as importdate
 ,cycle_den.import_date as original_import_date
 ,cycle_den.hanger_id
@@ -140,7 +157,7 @@ to_date(cycle_den.import_date, 'yyyyMMdd') as importdate
 ,sum(case when (datediff( cast(substr(cycle_den.fee_due_date, 1, 10) as date) , cast(substr(cycle_den.date_of_allocation, 1, 10) as date)   )) < 366 then 1 end) as allocate_due_within_one_year
 ,sum(case when (datediff( cast(substr(cycle_den.fee_due_date, 1, 10) as date) , cast(substr(cycle_den.date_of_allocation, 1, 10) as date)   )) > 365 then 1 end) as allocate_due_more_than_one_year
 ,sum(case when (datediff( cast(substr(cycle_den.fee_due_date, 1, 10) as date) , current_date  )) < 366 then 1 end) as due_within_one_year
-,sum(case when (datediff( cast(substr(cycle_den.fee_due_date, 1, 10) as date) , current_date  )) > 365 then 1 end) as due_more_than_one_year 
+,sum(case when (datediff( cast(substr(cycle_den.fee_due_date, 1, 10) as date) , current_date  )) > 365 then 1 end) as due_more_than_one_year
 
 ,sum(case when  cast(substr(cycle_den.fee_due_date, 1, 10) as date) > current_date then 1 end) as number_due_after_current_date
 ,sum(case when  cast(substr(cycle_den.fee_due_date, 1, 10) as date) < current_date then 1 end) as number_due_before_current_date
@@ -211,15 +228,15 @@ to_date(cycle_den.import_date, 'yyyyMMdd') as importdate
 /*for partiion*/
 
 ,replace(cast(current_date() as string),'-','') as import_date
-,cast(Year(current_date) as string)    as import_year 
-,cast(month(current_date) as string)   as import_month 
+,cast(Year(current_date) as string)    as import_year
+,cast(month(current_date) as string)   as import_month
 ,cast(day(current_date) as string)     as import_day
 
-	
 
- from cycle_den 
+
+ from cycle_den
  where cycle_den.import_day = '01' or  cycle_den.import_day = '1'
- and upper(cycle_den.in_service) like 'Y' 
+ and upper(cycle_den.in_service) like 'Y'
  and cycle_den.allocation_status like 'live'
 
 group by to_date(cycle_den.import_date, 'yyyymmdd') --as importdate
@@ -227,16 +244,40 @@ group by to_date(cycle_den.import_date, 'yyyymmdd') --as importdate
 ,cycle_den.hanger_id
 ,cycle_den.hangar_type
 ,cycle_den.hangar_location
-,replace(cast(current_date() as string),'-','') --as import_date
-,cast(Year(current_date) as string)    --as import_year 
-,cast(month(current_date) as string)   --as import_month 
-,cast(day(current_date) as string)     --as import_day
-'''
-SQLQuery_node1705433170442 = sparkSqlQuery(glueContext, query = SqlQuery0, mapping = {"parking_cycle_hangars_denormalisation":AmazonS3parking_cycle_hangars_denormalisation_node1705433167883, "parking_cycle_hangar_denormalised_backfill":Parkingrawzonemanualparking_cycle_hangar_denormalised_backfill_node1711467992130}, transformation_ctx = "SQLQuery_node1705433170442")
+,date_format(current_date, 'yyyy') AS import_year
+,date_format(current_date, 'MM') AS import_month
+,date_format(current_date, 'dd') AS import_day
+,date_format(current_date, 'yyyyMMdd') AS import_date
+"""
+SQLQuery_node1705433170442 = sparkSqlQuery(
+    glueContext,
+    query=SqlQuery0,
+    mapping={
+        "parking_cycle_hangars_denormalisation": AmazonS3parking_cycle_hangars_denormalisation_node1705433167883,
+        "parking_cycle_hangar_denormalised_backfill": Parkingrawzonemanualparking_cycle_hangar_denormalised_backfill_node1711467992130,
+    },
+    transformation_ctx="SQLQuery_node1705433170442",
+)
 
 # Script generated for node Amazon S3 - parking_cycle_hangars_denormalised_inservice_live_gds
-AmazonS3parking_cycle_hangars_denormalised_inservice_live_gds_node1705433173405 = glueContext.getSink(path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_cycle_hangars_denormalised_inservice_live_gds/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=["import_year", "import_month", "import_day", "import_date"], enableUpdateCatalog=True, transformation_ctx="AmazonS3parking_cycle_hangars_denormalised_inservice_live_gds_node1705433173405")
-AmazonS3parking_cycle_hangars_denormalised_inservice_live_gds_node1705433173405.setCatalogInfo(catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",catalogTableName="parking_cycle_hangars_denormalised_inservice_live_gds")
-AmazonS3parking_cycle_hangars_denormalised_inservice_live_gds_node1705433173405.setFormat("glueparquet", compression="snappy")
-AmazonS3parking_cycle_hangars_denormalised_inservice_live_gds_node1705433173405.writeFrame(SQLQuery_node1705433170442)
+AmazonS3parking_cycle_hangars_denormalised_inservice_live_gds_node1705433173405 = glueContext.getSink(
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/parking_cycle_hangars_denormalised_inservice_live_gds/",
+    connection_type="s3",
+    updateBehavior="UPDATE_IN_DATABASE",
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
+    enableUpdateCatalog=True,
+    transformation_ctx="AmazonS3parking_cycle_hangars_denormalised_inservice_live_gds_node1705433173405",
+)
+AmazonS3parking_cycle_hangars_denormalised_inservice_live_gds_node1705433173405.setCatalogInfo(
+    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
+    catalogTableName="parking_cycle_hangars_denormalised_inservice_live_gds",
+)
+AmazonS3parking_cycle_hangars_denormalised_inservice_live_gds_node1705433173405.setFormat(
+    "glueparquet", compression="snappy"
+)
+AmazonS3parking_cycle_hangars_denormalised_inservice_live_gds_node1705433173405.writeFrame(
+    SQLQuery_node1705433170442
+)
 job.commit()

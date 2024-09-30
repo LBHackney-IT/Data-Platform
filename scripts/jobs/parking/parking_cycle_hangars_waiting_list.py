@@ -1,12 +1,17 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import PARTITION_KEYS, get_glue_env_var, create_pushdown_predicate_for_max_date_partition_value
 
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    create_pushdown_predicate_for_max_date_partition_value,
+    get_glue_env_var,
+)
 
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
@@ -29,7 +34,11 @@ AmazonS3_node1658997944648 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_hangar_waiting_list",
     transformation_ctx="AmazonS3_node1658997944648",
-    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("dataplatform-" + environment + "-liberator-raw-zone", "liberator_hangar_waiting_list", 'import_date')
+    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
+        "dataplatform-" + environment + "-liberator-raw-zone",
+        "liberator_hangar_waiting_list",
+        "import_date",
+    ),
 )
 
 # Script generated for node Amazon S3
@@ -37,7 +46,11 @@ AmazonS3_node1685714415298 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_permit_llpg",
     transformation_ctx="AmazonS3_node1685714415298",
-    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("dataplatform-" + environment + "-liberator-raw-zone", "liberator_permit_llpg", 'import_date')
+    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
+        "dataplatform-" + environment + "-liberator-raw-zone",
+        "liberator_permit_llpg",
+        "import_date",
+    ),
 )
 
 # Script generated for node Amazon S3
@@ -45,7 +58,11 @@ AmazonS3_node1685714634970 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_hangar_allocations",
     transformation_ctx="AmazonS3_node1685714634970",
-    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("dataplatform-" + environment + "-liberator-raw-zone", "liberator_hangar_allocations", 'import_date')
+    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
+        "dataplatform-" + environment + "-liberator-raw-zone",
+        "liberator_hangar_allocations",
+        "import_date",
+    ),
 )
 
 # Script generated for node Amazon S3
@@ -53,8 +70,12 @@ AmazonS3_node1685714303815 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-raw-zone",
     table_name="liberator_licence_party",
     transformation_ctx="AmazonS3_node1685714303815",
-    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value("dataplatform-" + environment + "-liberator-raw-zone", "liberator_licence_party", 'import_date'),
-    additional_options = {"mergeSchema": "true"}
+    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
+        "dataplatform-" + environment + "-liberator-raw-zone",
+        "liberator_licence_party",
+        "import_date",
+    ),
+    additional_options={"mergeSchema": "true"},
 )
 
 # Script generated for node SQL
@@ -100,14 +121,14 @@ Cycle_Hangar_allocation as (
     WHERE Import_Date = (Select MAX(Import_Date) from
                                   liberator_hangar_allocations)
     AND allocation_status IN ('live')),
-   
+
 Street_Rec as (
     SELECT *
     FROM liberator_permit_llpg
     WHERE import_date = (Select MAX(import_date) from
                                        liberator_permit_llpg)
     AND address1 = 'STREET RECORD'),
-   
+
 /** Obtain the unique Party IDs **/
 Party_ID_List as (
     SELECT
@@ -115,7 +136,7 @@ Party_ID_List as (
         B.address1, B.address2, B.address3, B.postcode,
         B.telephone_number, D.Address2 as Street, email_address,
         B.record_created as Date_Registered,
-        C.x, C.y      
+        C.x, C.y
     FROM waiting_list as A
     LEFT JOIN Licence_Party as B ON A.party_id = B.business_party_id
     LEFT JOIN LLPG          as C ON B.uprn = cast(C.UPRN as string)
@@ -132,25 +153,24 @@ Count_Hangar_Details as (
           SUM(CASE
             When registration_type = 'NEWONLY' Then 1
             ELSE 0
-            END) as Newonly_Count,  
+            END) as Newonly_Count,
           SUM(CASE
             When registration_type = 'RESIDENT' Then 1
             ELSE 0
-            END) as Resident_Count      
+            END) as Resident_Count
     FROM waiting_list
     GROUP BY party_id)
- 
+
 SELECT A.*, B.Estate_Count, B.Newonly_Count, B.Resident_Count,
 
-    current_timestamp() as importdatetime,
-    replace(cast(current_date() as string),'-','') as import_date,
-   
-    cast(Year(current_date) as string)    as import_year,
-    cast(month(current_date) as string)   as import_month,
-    cast(day(current_date) as string)     as import_day
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
 
 FROM Party_ID_List as A
-LEFT JOIN Count_Hangar_Details as B ON A.party_id = B.party_id 
+LEFT JOIN Count_Hangar_Details as B ON A.party_id = B.party_id
 """
 SQL_node1658765472050 = sparkSqlQuery(
     glueContext,
@@ -166,7 +186,9 @@ SQL_node1658765472050 = sparkSqlQuery(
 
 # Script generated for node Amazon S3
 AmazonS3_node1658765590649 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/parking_cycle_hangars_waiting_list/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/parking_cycle_hangars_waiting_list/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=PARTITION_KEYS,

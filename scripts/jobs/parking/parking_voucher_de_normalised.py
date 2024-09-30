@@ -1,12 +1,14 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
+from scripts.helpers.helpers import create_pushdown_predicate, get_glue_env_var
+
 environment = get_glue_env_var("environment")
 
 
@@ -72,42 +74,41 @@ WITH Voucher_Data as (
   WHERE import_Date = (Select MAX(import_date) from liberator_permit_voucher)),
 
 Permit_Voucher as (
-   SELECT * FROM liberator_permit_fta  
+   SELECT * FROM liberator_permit_fta
    WHERE import_Date = (Select MAX(import_date) from liberator_permit_fta)
    AND lower(permit_type) like '%voucher%'),
 
 E_Voucher_Sessions as (
-   Select evoucherorderid, count(*) as NoofBookings, 
+   Select evoucherorderid, count(*) as NoofBookings,
    sum(numberofevouchersinsession) as numberofevouchersinsession
    FROM liberator_permit_evouchersession
    WHERE import_Date = (Select MAX(import_date) from liberator_permit_evouchersession)
-   GROUP BY evoucherorderid), 
+   GROUP BY evoucherorderid),
 
 Permit_Print as (
    SELECT
    Permit_reference, Issue_date as printed_date, printed_by,
-   ROW_NUMBER() OVER ( PARTITION BY Permit_reference 
+   ROW_NUMBER() OVER ( PARTITION BY Permit_reference
                                  ORDER BY Permit_reference, Issue_date) R0
    FROM liberator_permit_printing
    Where Import_Date = (Select MAX(Import_Date) from liberator_permit_printing))
 
 
-SELECT 
-   A.permit_reference as Voucher_Ref, B.street,permit_type, amount, uprn, 
+SELECT
+   A.permit_reference as Voucher_Ref, B.street,permit_type, amount, uprn,
    status,application_date, cpz, cpz_name,
-   quantity , forename_of_applicant,surname_of_applicant, 
+   quantity , forename_of_applicant,surname_of_applicant,
    email_address_of_applicant, A.associated_to_order,
    printed_date, printed_by, e_voucher,
    NoofBookings, numberofevouchersinsession,
    voucher_start_number, voucher_end_number,
 
-   current_timestamp()                            as ImportDateTime,
-   replace(cast(current_date() as string),'-','') as import_date,
-    
-   cast(Year(current_date) as string)    as import_year, 
-   cast(month(current_date) as string)   as import_month, 
-   cast(day(current_date) as string)     as import_day
-   
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
+
 FROM Permit_Voucher as A
 LEFT JOIN Voucher_Data as B ON A.permit_reference = B.permit_reference
 LEFT JOIN Permit_Print as C ON A.permit_reference = C.permit_reference AND R0 = 1
@@ -130,7 +131,9 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Voucher_De_Normalised/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_Voucher_De_Normalised/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],
