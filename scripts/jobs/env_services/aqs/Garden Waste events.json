@@ -1,0 +1,107 @@
+{
+  "type": "Join",
+  "properties": {
+    "attributes": [
+      "attributes_itemsTitle",
+      "attributes_itemsSubtitle",
+      "attributes_wasteEventsTrade_640864369cc1a00368a5fb29",
+      "attributes_wasteEventsType",
+      "attributes_eventsEventNumber",
+      "attributes_eventsStartTime",
+      "attributes_eventsEndTime",
+      "attributes_itemsMetadataCreatedBy",
+      "attributes_filesAttachableAttachments"
+    ],
+    "collectionCode": [
+      "Live",
+      "Archive"
+    ],
+    "dodiCode": "designs_wasteEvents",
+    "joinAttributes": [
+      "root.attributes_wasteEventsType.attributes_wasteEventTypesDescription",
+      "root.attributes_filesAttachableAttachments.attributes_filesOriginalName",
+      "root^attributes_eventsAssignableEvents<designs_wasteContainers>^attributes_wasteContainersAssignableWasteContainers<designs_nlpgPremises>.attributes_nlpgPremisesUprn",
+      "root^attributes_eventsAssignableEvents<designs_wasteContainers>^attributes_wasteContainersAssignableWasteContainers<designs_nlpgPremises>.attributes_itemsTitle",
+      "root^attributes_eventsAssignableEvents<designs_wasteContainers>^attributes_wasteContainersAssignableWasteContainers<designs_nlpgPremises>.attributes_premisesBlpuClass",
+      "root^attributes_eventsAssignableEvents<designs_wasteContainers>^attributes_wasteContainersAssignableWasteContainers<designs_nlpgPremises>.attributes_nlpgPremisesEstateID_5fb7b6f7ee8282006625540d",
+      "root^attributes_eventsAssignableEvents<designs_wasteContainers>.attributes_wasteContainersWebformNumber_65b7972fca7fc29892f961d2",
+      "root^attributes_eventsAssignableEvents<designs_wasteContainers>.attributes_wasteContainersSubscriptionStartDate_65b79730ca7fc29892f961d8"
+    ]
+  },
+  "children": [
+    {
+      "type": "And",
+      "children": [
+        {
+          "type": "And",
+          "children": [
+            {
+              "type": "And",
+              "children": [
+                {
+                  "type": "And",
+                  "children": [
+                    {
+                      "type": "StartsWith",
+                      "children": [
+                        {
+                          "type": "Attribute",
+                          "properties": {
+                            "attributeCode": "attributes_premisesBlpuClass",
+                            "path": "root^attributes_eventsAssignableEvents<designs_wasteContainers>^attributes_wasteContainersAssignableWasteContainers<designs_nlpgPremises>"
+                          }
+                        },
+                        {
+                          "type": "String",
+                          "properties": {
+                            "value": [
+                              "RD"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Exists",
+                  "children": [
+                    {
+                      "type": "Attribute",
+                      "properties": {
+                        "attributeCode": "attributes_wasteContainersWebformNumber_65b7972fca7fc29892f961d2",
+                        "path": "root^attributes_eventsAssignableEvents<designs_wasteContainers>"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "GreaterThan",
+          "properties": {
+            "__dataExplorerFilter": "attributes_eventsStartTime"
+          },
+          "children": [
+            {
+              "type": "Attribute",
+              "properties": {
+                "attributeCode": "attributes_eventsStartTime"
+              }
+            },
+            {
+              "type": "DateTime",
+              "properties": {
+                "value": [
+                  "2023-11-20T00:00:00.000Z"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
