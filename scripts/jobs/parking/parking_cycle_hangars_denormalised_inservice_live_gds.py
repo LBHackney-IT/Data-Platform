@@ -227,27 +227,22 @@ to_date(cycle_den.import_date, 'yyyyMMdd') as importdate
 
 /*for partiion*/
 
-,replace(cast(current_date() as string),'-','') as import_date
-,cast(Year(current_date) as string)    as import_year
-,cast(month(current_date) as string)   as import_month
-,cast(day(current_date) as string)     as import_day
-
-
+,date_format(current_date, 'yyyy') AS import_year
+,date_format(current_date, 'MM') AS import_month
+,date_format(current_date, 'dd') AS import_day
+,date_format(current_date, 'yyyyMMdd') AS import_date
 
  from cycle_den
  where cycle_den.import_day = '01' or  cycle_den.import_day = '1'
  and upper(cycle_den.in_service) like 'Y'
  and cycle_den.allocation_status like 'live'
 
-group by to_date(cycle_den.import_date, 'yyyymmdd') --as importdate
-,cycle_den.import_date
+group by
+cycle_den.import_date
 ,cycle_den.hanger_id
 ,cycle_den.hangar_type
 ,cycle_den.hangar_location
-,date_format(current_date, 'yyyy') AS import_year
-,date_format(current_date, 'MM') AS import_month
-,date_format(current_date, 'dd') AS import_day
-,date_format(current_date, 'yyyyMMdd') AS import_date
+,date_format(current_date, 'yyyyMMdd')
 """
 SQLQuery_node1705433170442 = sparkSqlQuery(
     glueContext,
