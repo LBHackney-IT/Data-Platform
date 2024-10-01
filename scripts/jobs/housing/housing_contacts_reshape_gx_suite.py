@@ -44,4 +44,3 @@ suite.add_expectation(
     gxe.ExpectColumnValuesToNotBeNull(
         column='subtype')
 )
-
