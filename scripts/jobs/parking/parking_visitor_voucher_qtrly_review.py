@@ -1,11 +1,17 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    get_glue_env_var,
+    get_latest_partitions,
+)
 
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
@@ -61,20 +67,20 @@ With Calendar_Data as (
       date as Calendar_date, workingday, dow, holiday,fin_year,
       CASE
          When cast(substr(date, 6,2) as int) = 1 Then 'Q4' -- Jan
-         When cast(substr(date, 6,2) as int) = 2 Then 'Q4' -- Feb  
+         When cast(substr(date, 6,2) as int) = 2 Then 'Q4' -- Feb
          When cast(substr(date, 6,2) as int) = 3 Then 'Q4' -- March
-         When cast(substr(date, 6,2) as int) = 4 Then 'Q1' -- Apr    
-         When cast(substr(date, 6,2) as int) = 5 Then 'Q1' -- May  
-         When cast(substr(date, 6,2) as int) = 6 Then 'Q1' -- June  
-         When cast(substr(date, 6,2) as int) = 7 Then 'Q2' -- Jul   
-         When cast(substr(date, 6,2) as int) = 8 Then 'Q2' -- Aug 
+         When cast(substr(date, 6,2) as int) = 4 Then 'Q1' -- Apr
+         When cast(substr(date, 6,2) as int) = 5 Then 'Q1' -- May
+         When cast(substr(date, 6,2) as int) = 6 Then 'Q1' -- June
+         When cast(substr(date, 6,2) as int) = 7 Then 'Q2' -- Jul
+         When cast(substr(date, 6,2) as int) = 8 Then 'Q2' -- Aug
          When cast(substr(date, 6,2) as int) = 9 Then 'Q2' -- Sept
-         When cast(substr(date, 6,2) as int) = 10 Then 'Q3' -- Oct    
-         When cast(substr(date, 6,2) as int) = 11 Then 'Q3' -- Nov 
+         When cast(substr(date, 6,2) as int) = 10 Then 'Q3' -- Oct
+         When cast(substr(date, 6,2) as int) = 11 Then 'Q3' -- Nov
          When cast(substr(date, 6,2) as int) = 12 Then 'Q3' -- Dec
          Else ''
       END as QTR,
-      
+
       ROW_NUMBER() OVER ( PARTITION BY date ORDER BY  date, import_date DESC) row_num
    FROM calendar),
 
@@ -87,7 +93,7 @@ CalendarFormat as (
       END as date) as Format_date, fin_year, QTR
    FROM Calendar_Data
    WHERE row_num = 1),
-   
+
 Latest_Report_Year as (
    SELECT
       /**** Find the Latest Financial Year ***/
@@ -134,34 +140,34 @@ Latest_Report_Year as (
 Obtain the Voucher forecast figures
 ********************************************************************************************/
  Voucher_Forecast as (
-    Select monthyear, one_day, two_hour, estate, 
+    Select monthyear, one_day, two_hour, estate,
       CASE
          When cast(substr(monthyear, 4,2) as int) = 1 Then 'Q4' -- Jan
-         When cast(substr(monthyear, 4,2) as int) = 2 Then 'Q4' -- Feb  
+         When cast(substr(monthyear, 4,2) as int) = 2 Then 'Q4' -- Feb
          When cast(substr(monthyear, 4,2) as int) = 3 Then 'Q4' -- March
-         When cast(substr(monthyear, 4,2) as int) = 4 Then 'Q1' -- Apr    
-         When cast(substr(monthyear, 4,2) as int) = 5 Then 'Q1' -- May  
-         When cast(substr(monthyear, 4,2) as int) = 6 Then 'Q1' -- June  
-         When cast(substr(monthyear, 4,2) as int) = 7 Then 'Q2' -- Jul   
-         When cast(substr(monthyear, 4,2) as int) = 8 Then 'Q2' -- Aug 
+         When cast(substr(monthyear, 4,2) as int) = 4 Then 'Q1' -- Apr
+         When cast(substr(monthyear, 4,2) as int) = 5 Then 'Q1' -- May
+         When cast(substr(monthyear, 4,2) as int) = 6 Then 'Q1' -- June
+         When cast(substr(monthyear, 4,2) as int) = 7 Then 'Q2' -- Jul
+         When cast(substr(monthyear, 4,2) as int) = 8 Then 'Q2' -- Aug
          When cast(substr(monthyear, 4,2) as int) = 9 Then 'Q2' -- Sept
-         When cast(substr(monthyear, 4,2) as int) = 10 Then 'Q3' -- Oct    
-         When cast(substr(monthyear, 4,2) as int) = 11 Then 'Q3' -- Nov 
+         When cast(substr(monthyear, 4,2) as int) = 10 Then 'Q3' -- Oct
+         When cast(substr(monthyear, 4,2) as int) = 11 Then 'Q3' -- Nov
          When cast(substr(monthyear, 4,2) as int) = 12 Then 'Q3' -- Dec
          Else ''
       END as QTR,
       CASE
          When cast(substr(monthyear, 4,2) as int) = 1 Then cast(cast(substr(monthyear, 7,4) as int)-1 as string)--Jan
-         When cast(substr(monthyear, 4,2) as int) = 2 Then cast(cast(substr(monthyear, 7,4) as int)-1 as string)--Feb 
+         When cast(substr(monthyear, 4,2) as int) = 2 Then cast(cast(substr(monthyear, 7,4) as int)-1 as string)--Feb
          When cast(substr(monthyear, 4,2) as int) = 3 Then cast(cast(substr(monthyear, 7,4) as int)-1 as string)--Mar
-         When cast(substr(monthyear, 4,2) as int) = 4 Then substr(monthyear, 7,4) -- Apr    
-         When cast(substr(monthyear, 4,2) as int) = 5 Then substr(monthyear, 7,4) -- May  
-         When cast(substr(monthyear, 4,2) as int) = 6 Then substr(monthyear, 7,4) -- June  
-         When cast(substr(monthyear, 4,2) as int) = 7 Then substr(monthyear, 7,4) -- Jul   
-         When cast(substr(monthyear, 4,2) as int) = 8 Then substr(monthyear, 7,4) -- Aug 
+         When cast(substr(monthyear, 4,2) as int) = 4 Then substr(monthyear, 7,4) -- Apr
+         When cast(substr(monthyear, 4,2) as int) = 5 Then substr(monthyear, 7,4) -- May
+         When cast(substr(monthyear, 4,2) as int) = 6 Then substr(monthyear, 7,4) -- June
+         When cast(substr(monthyear, 4,2) as int) = 7 Then substr(monthyear, 7,4) -- Jul
+         When cast(substr(monthyear, 4,2) as int) = 8 Then substr(monthyear, 7,4) -- Aug
          When cast(substr(monthyear, 4,2) as int) = 9 Then substr(monthyear, 7,4) -- Sept
-         When cast(substr(monthyear, 4,2) as int) = 10 Then substr(monthyear, 7,4) -- Oct    
-         When cast(substr(monthyear, 4,2) as int) = 11 Then substr(monthyear, 7,4) -- Nov 
+         When cast(substr(monthyear, 4,2) as int) = 10 Then substr(monthyear, 7,4) -- Oct
+         When cast(substr(monthyear, 4,2) as int) = 11 Then substr(monthyear, 7,4) -- Nov
          When cast(substr(monthyear, 4,2) as int) = 12 Then substr(monthyear, 7,4) -- Dec
          Else ''
       END as FinYear
@@ -177,14 +183,14 @@ Vouchers as (
                                            substr(application_date, 4, 2)||'-'||substr(application_date, 1, 2)
         ELSE substr(application_date, 1, 10)
     END as date) as application_date, Status, fin_year, QTR,
-    
+
     CASE
        When Permit_Type = 'Estate Visitor Vouchers' Then cast(quantity as decimal) * 10
        When Permit_Type = '1 day visitors vouchers' Then cast(quantity as decimal) * 5
        When Permit_Type = '2 hour visitors vouchers' Then cast(quantity as decimal) * 20
        Else 0
     END as NoOFBooks
-    
+
    from parking_voucher_de_normalised as A
    LEFT JOIN CalendarFormat as B ON cast(substr(A.application_date, 1, 10) as date) = B.Format_date
    Where Import_Date = (Select MAX(Import_Date) from parking_voucher_de_normalised)
@@ -199,7 +205,7 @@ Voucher_Tidy_2019 as (
    from Vouchers
    WHERE Fin_Year = '2019'),
 /********************************************************************************************
-Summerise the 2019 data 
+Summerise the 2019 data
 ********************************************************************************************/
 Voucher_Baseline_2019 as (
    SELECT permit_type, SUM(NoOFBooks) as TotalNo, SUM(NoOFBooks)/4 as QTRTotal
@@ -215,10 +221,10 @@ Voucher_Tidy_Latest as (
    WHERE Fin_Year = (Select LatestReportYear from Latest_Report_Year)),
 
 Voucher_Baseline_Latest as (
-   SELECT permit_type, 
+   SELECT permit_type,
    QTR, fin_year,
    SUM(NoOFBooks) as TotalNo
-   
+
    From Voucher_Tidy_Latest
    WHERE Permit_Type = 'Estate Visitor Vouchers' OR cpz IN ('A', 'D','F','G','G2','H','K','L','N','P','Q','S','U','T')
    GROUP BY permit_type, QTR, fin_year),
@@ -227,30 +233,30 @@ Continue to format the data, obtain & Qtrly total the forecast figures
 ********************************************************************************************/
 Forecast_Qtrly as (
     Select
-        FinYear, QTR, SUM(one_day) as One_Day, 
-        SUM(two_hour) as two_hour, 
+        FinYear, QTR, SUM(one_day) as One_Day,
+        SUM(two_hour) as two_hour,
         SUM(estate) as estate
     From Voucher_Forecast
     Group By FinYear, QTR),
-    
+
 /*** Split for forecats data into each Permit Type ***/
 Format_Forecast as (
     Select
-        FinYear, QTR, 
+        FinYear, QTR,
         '1 day visitors vouchers' as Permit_Type,
         One_Day as ForecastTotal , QtrTotal as Baseline_Qtr
     From Forecast_Qtrly as A
     inner join Voucher_Baseline_2019 as B ON '1 day visitors vouchers' = B.permit_type
     UNION ALL
     Select
-        FinYear, QTR, 
+        FinYear, QTR,
         '2 hour visitors vouchers' as Permit_Type,
         two_hour as ForecastTotal, QtrTotal as Baseline_Qtr
     From Forecast_Qtrly
     inner join Voucher_Baseline_2019 as B ON '2 hour visitors vouchers' = B.permit_type
     UNION ALL
     Select
-        FinYear, QTR, 
+        FinYear, QTR,
         'Estate Visitor Vouchers' as Permit_Type,
         estate as ForecastTotal, QtrTotal as Baseline_Qtr
     From Forecast_Qtrly
@@ -264,11 +270,11 @@ Format_Forecast as (
     From Voucher_Baseline_2019)
 /********************************************************************************************
 Continue to format the data for printing
-********************************************************************************************/ 
-SELECT 
+********************************************************************************************/
+SELECT
     A.finyear, A.qtr, A.Permit_Type,
-    Case 
-        When B.TotalNo is not NULL Then B.TotalNo 
+    Case
+        When B.TotalNo is not NULL Then B.TotalNo
         When A.finyear = '2019'    Then ForecastTotal
     Else 0 End as TotalNo,
     Case
@@ -276,12 +282,11 @@ SELECT
         Else ForecastTotal
     End as ForecastTotal, Baseline_Qtr,
 
-   current_timestamp()                            as ImportDateTime,
-   replace(cast(current_date() as string),'-','') as import_date,
-    
-   cast(Year(current_date) as string)    as import_year, 
-   cast(month(current_date) as string)   as import_month, 
-   cast(day(current_date) as string)     as import_day
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
 FROM Format_Forecast as A
 LEFT JOIN Voucher_Baseline_Latest as B ON A.finyear = B.fin_year AND A.qtr = B.QTR AND A.Permit_Type = B.permit_type
 Order by A.Permit_Type, A.finyear, A.qtr
@@ -300,7 +305,9 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Visitor_Voucher_Qtrly_Review/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_Visitor_Voucher_Qtrly_Review/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=PARTITION_KEYS,
