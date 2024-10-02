@@ -1,0 +1,64 @@
+{
+  "type": "Join",
+  "properties": {
+    "attributes": [
+      "attributes_itemsTitle",
+      "attributes_itemsSubtitle"
+    ],
+    "collectionCode": [
+      "Live",
+      "Archive"
+    ],
+    "dodiCode": "designs_measurementJobWorkItems",
+    "joinAttributes": [
+      "root^attributes_jobsJobWorkItems<designs_bulkWasteJob_65b79521f52d258f3216d794>.attributes_bulkWasteJobCustomerEmail_65cf77f980692fdd30330860",
+      "root^attributes_jobsJobWorkItems<designs_bulkWasteJob_65b79521f52d258f3216d794>.attributes_itemsTitle",
+      "root^attributes_jobsJobWorkItems<designs_bulkWasteJob_65b79521f52d258f3216d794>.attributes_tasksRaisedTime",
+      "root^attributes_jobsJobWorkItems<designs_bulkWasteJob_65b79521f52d258f3216d794>^attributes_tasksAssignableTasks<designs_nlpgPremises>.attributes_nlpgPremisesUprn",
+      "root^attributes_jobsJobWorkItems<designs_bulkWasteJob_65b79521f52d258f3216d794>.attributes_bulkWasteJobFeePaid_65e86575ff5e58df59b570eb"
+    ],
+    "sortInfo": {
+      "attributeCode": "attributes_itemsTitle",
+      "sortOrder": "Descending"
+    }
+  },
+  "children": [
+    {
+      "type": "And",
+      "children": [
+        {
+          "type": "Exists",
+          "children": [
+            {
+              "type": "Attribute",
+              "properties": {
+                "attributeCode": "attributes_bulkWasteJobCollectionType_65e865719566fecca0695939",
+                "path": "root^attributes_jobsJobWorkItems<designs_bulkWasteJob_65b79521f52d258f3216d794>"
+              }
+            }
+          ]
+        },
+        {
+          "type": "GreaterThan",
+          "children": [
+            {
+              "type": "Attribute",
+              "properties": {
+                "attributeCode": "attributes_bulkWasteJobCollectionDate_65e86570ad626d94c8466f08",
+                "path": "root^attributes_jobsJobWorkItems<designs_bulkWasteJob_65b79521f52d258f3216d794>"
+              }
+            },
+            {
+              "type": "Date",
+              "properties": {
+                "value": [
+                  "2024-02-01T00:00:00.000Z"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

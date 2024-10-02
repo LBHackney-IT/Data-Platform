@@ -1,0 +1,45 @@
+{
+  "type": "Join",
+  "properties": {
+    "attributes": [
+      "attributes_itemsTitle",
+      "attributes_itemsSubtitle",
+      "attributes_bulkWasteJobCollectionType_65e865719566fecca0695939",
+      "attributes_bulkWasteJobCollectionDate_65e86570ad626d94c8466f08",
+      "attributes_bulkWasteJobFeePaid_65e86575ff5e58df59b570eb",
+      "attributes_tasksStatus",
+      "attributes_tasksRaisedTime",
+      "attributes_bulkWasteJobIEG4OrderReferenceNo_65e86572e65c967daaee24bb",
+      "attributes_bulkWasteJobCustomerNotes_65b79523737f43ac4be478d3",
+      "attributes_bulkWasteJobCollectionOutcome_65e86579e65c967daaee254f",
+      "attributes_bulkWasteJobCustomerEmail_65cf77f980692fdd30330860",
+      "attributes_bulkWasteJobCustomerName_65cf782a80692fdd30330c1a",
+      "attributes_tasksTeam",
+      "attributes_jobsJobWorkItems",
+      "attributes_bulkWasteJobAssistedCollectionRequired_65e86577ff5e58df59b57150"
+    ],
+    "collectionCode": [
+      "Live",
+      "Archive"
+    ],
+    "dodiCode": "designs_bulkWasteJob_65b79521f52d258f3216d794",
+    "joinAttributes": [
+      "root.attributes_bulkWasteJobCollectionType_65e865719566fecca0695939.attributes_bulkyWasteTypeListType_65b7953d6a6828118c2dd7bb",
+      "root.attributes_tasksStatus.attributes_taskStatusesStatus",
+      "root.attributes_bulkWasteJobCollectionOutcome_65e86579e65c967daaee254f.attributes_collectionOutcomeBulkyCollectionOutcome_635bde1e457784038fdb9b72",
+      "root.attributes_tasksTeam.attributes_teamsTeamName",
+      "root^attributes_tasksAssignableTasks<designs_nlpgPremises>.attributes_premisesBlpuClass",
+      "root^attributes_tasksAssignableTasks<designs_nlpgPremises>.attributes_nlpgPremisesUprn",
+      "root.attributes_jobsJobWorkItems.attributes_itemsTitle",
+      "root^attributes_tasksAssignableTasks<designs_nlpgPremises>.attributes_nlpgPremisesServiceType_5f9beae0a198dd0064e02c1a",
+      "root^attributes_tasksAssignableTasks<designs_nlpgPremises>.attributes_nlpgPremisesServiceType_5f9beae0a198dd0064e02c1a.attributes_dWServiceTypeServiceType_5f9bea46bb524b006572f728",
+      "root^attributes_tasksAssignableTasks<designs_nlpgPremises>.attributes_nlpgPremisesHackneyHousing_65b7946a0f05a973f48dd246",
+      "root^attributes_tasksAssignableTasks<designs_nlpgPremises>.attributes_nlpgPremisesBulkArea_65b7946f001fa0c7789be436",
+      "root^attributes_tasksAssignableTasks<designs_nlpgPremises>.attributes_nlpgPremisesBulkArea_65b7946f001fa0c7789be436.attributes_bulkyWasteAreaListArea_65b7941e2b2b1119502fb20f"
+    ],
+    "sortInfo": {
+      "attributeCode": "attributes_bulkWasteJobCollectionDate_65e86570ad626d94c8466f08",
+      "sortOrder": "Ascending"
+    }
+  }
+}
