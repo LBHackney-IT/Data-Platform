@@ -8,7 +8,7 @@ locals {
 
 
 resource "aws_glue_trigger" "alloy_daily_export" {
-  count   = local.is_live_environment ? length(local.alloy_queries) : 0
+  count   = local.is_production_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
   enabled = local.is_production_environment
 
@@ -29,7 +29,7 @@ module "alloy_api_export_raw_env_services" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
-  count                     = local.is_live_environment ? length(local.alloy_queries) : 0
+  count                     = local.is_production_environment ? length(local.alloy_queries) : 0
 
   job_description = "This job queries the Alloy API and saves the exported csvs to s3"
   department      = module.department_environmental_services_data_source
@@ -57,7 +57,7 @@ module "alloy_api_export_raw_env_services" {
 
 
 resource "aws_glue_trigger" "alloy_export_crawler" {
-  count   = local.is_live_environment ? length(local.alloy_queries) : 0
+  count   = local.is_production_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
   name    = "${local.short_identifier_prefix} Alloy Export Crawler ${local.alloy_query_names_alphanumeric[count.index]}"
   type    = "CONDITIONAL"
@@ -80,7 +80,7 @@ resource "aws_glue_trigger" "alloy_export_crawler" {
 }
 
 resource "aws_glue_crawler" "alloy_export_crawler" {
-  count = local.is_live_environment ? length(local.alloy_queries) : 0
+  count = local.is_production_environment ? length(local.alloy_queries) : 0
   tags  = module.tags.values
 
   database_name = module.department_environmental_services_data_source.raw_zone_catalog_database_name
@@ -112,7 +112,7 @@ module "alloy_raw_to_refined_env_services" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
-  count                     = local.is_live_environment ? length(local.alloy_queries) : 0
+  count                     = local.is_production_environment ? length(local.alloy_queries) : 0
 
   job_description = "This job transforms the daily csv exports and saves them to the refined zone"
   department      = module.department_environmental_services_data_source
@@ -138,7 +138,7 @@ module "alloy_raw_to_refined_env_services" {
 }
 
 resource "aws_glue_trigger" "alloy_refined_crawler" {
-  count   = local.is_live_environment ? length(local.alloy_queries) : 0
+  count   = local.is_production_environment ? length(local.alloy_queries) : 0
   tags    = module.tags.values
   name    = "${local.short_identifier_prefix} Alloy Refined Crawler ${local.alloy_query_names_alphanumeric[count.index]}"
   type    = "CONDITIONAL"
@@ -161,7 +161,7 @@ resource "aws_glue_trigger" "alloy_refined_crawler" {
 }
 
 resource "aws_glue_crawler" "alloy_refined" {
-  count = local.is_live_environment ? length(local.alloy_queries) : 0
+  count = local.is_production_environment ? length(local.alloy_queries) : 0
   tags  = module.tags.values
 
   database_name = module.department_environmental_services_data_source.refined_zone_catalog_database_name
