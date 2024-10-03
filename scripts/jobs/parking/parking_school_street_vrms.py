@@ -65,11 +65,12 @@ Select
 
    excluded_location as SS_Location, status,
 
-    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
-    date_format(current_date, 'yyyy') AS import_year,
-    date_format(current_date, 'MM') AS import_month,
-    date_format(current_date, 'dd') AS import_day,
-    date_format(current_date, 'yyyyMMdd') AS import_date
+   current_timestamp as ImportDateTime,
+
+   import_date,
+   import_year,
+   import_month,
+   import_day
 
    FROM parking_permit_denormalised_gds_street_llpg as A
    INNER JOIN Excluded_UPRNs as B ON A.uprn = B.excluded_uprns
