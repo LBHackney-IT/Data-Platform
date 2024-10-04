@@ -37,6 +37,7 @@ Tom's hangar list
 23/08/2024 - look again at the waiting list!
 28/04/2024 - refine the 'hangar_can_be_filled' field case statement
 26/09/2024 - add hangar location.
+04/10/2024 - add additional checks for the waiting list
 ******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -162,9 +163,9 @@ Cycle_Hangar_Wait_List as (
     LEFT JOIN Licence_Party as B ON A.party_id = B.business_party_id
     LEFT JOIN LLPG          as C ON B.uprn = cast(C.UPRN as varchar)
     LEFT JOIN Street_Rec    as D ON C.USRN = D.USRN
-    LEFT JOIN Summary_Alloca_PartyID as E ON A.party_id = E.party_id AND R1 = 1
-    /*LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id  AND row_num = 1  01/08 removed bigger check above*/
-    WHERE row1= 1 AND E.party_id is NULL AND status_to not IN ('removed','rejected offer')),
+    /*LEFT JOIN Summary_Alloca_PartyID as E ON A.party_id = E.party_id AND R1 = 1*/
+    LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id  AND row_num = 1 
+    WHERE row1= 1 AND E.party_id is NULL AND status_to not IN ('removed','rejected offer','offer accepted')),
 /************************************************************
 Waiting List CREATED
 ************************************************************/
