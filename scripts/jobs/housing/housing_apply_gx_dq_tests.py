@@ -8,33 +8,18 @@ from awsglue.utils import getResolvedOptions
 import great_expectations as gx
 import pandas as pd
 from pyathena import connect
-from scripts.helpers.housing_gx_dq_inputs import gx_dq_housing_config, table_list
+from scripts.helpers.housing_gx_dq_inputs import gx_dq_housing_config, table_list, partition_keys
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-args = getResolvedOptions(sys.argv,
-                          ['region_name',
-                           's3_endpoint',
-                           's3_target_location',
-                           's3_staging_location',
-                           'target_database',
-                           'tables_list',
-                           'gx_docs_bucket',
-                           'gx_docs_prefix'])
-
-region_name = args['region_name']
-s3_endpoint = args['s3_endpoint']
-s3_target_location = args['s3_target_location']
-gx_docs_bucket = args['gx_docs_bucket']
-gx_docs_prefix = args['gx_docs_prefix']
-s3_staging_location = args['s3_staging_location']
-target_database = args['target_database']
-target_table = args['target_table']
+arg_keys = ['region_name', 's3_endpoint', 's3_target_location', 's3_staging_location', 'target_database', 'tables_list',
+            'gx_docs_bucket', 'gx_docs_prefix']
+args = getResolvedOptions(sys.argv, arg_keys)
+locals().update(args)
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
-
     # create GX context
     context = gx.get_context(mode="file")
 
@@ -60,7 +45,7 @@ def main():
     data_source = context.data_sources.add_pandas("pandas")
 
     # create empty dataframe to hold results
-    results_df = pd.DataFrame()
+    table_results_df_list = []
 
     for table in table_list:
         logger.info(f'{table} loading...')
@@ -70,7 +55,7 @@ def main():
         conn = connect(s3_staging_dir=s3_staging_location,
                        region_name=region_name)
 
-        df = pd.read_sql_query(f'{sql_query}', conn)
+        df = pd.read_sql_query(sql_query, conn)
 
         # set up batch
         data_asset = data_source.add_dataframe_asset(name=f'{table}_df_asset')
@@ -104,10 +89,14 @@ def main():
         checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
         results = json.loads(checkpoint_result.describe())
         table_results_df = pd.json_normalize(results['validation_results'][0]['expectations'])
-        results_df = pd.concat([results_df, table_results_df])
+        table_results_df_list.append(table_results_df)
 
-    date_today = datetime.today().strftime('%Y%m%d')
-    results_df['import_date'] = date_today
+    results_df = pd.concat(table_results_df_list)
+
+    results_df['import_year'] = datetime.today().year
+    results_df['import_month'] = datetime.today().month
+    results_df['import_day'] = datetime.today().day
+    results_df['import_date'] = datetime.today().strftime('%Y%m%d')
 
     # write to s3
     wr.s3.to_parquet(
@@ -117,7 +106,7 @@ def main():
         database=target_database,
         table=target_table,
         mode="overwrite_partitions",
-        partition_cols=["import_date"]
+        partition_cols=partition_keys
     )
 
     logger.info(f'GX Data Quality testing results written to {s3_target_location}')
