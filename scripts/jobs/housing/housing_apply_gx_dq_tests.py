@@ -13,8 +13,8 @@ from scripts.helpers.housing_gx_dq_inputs import gx_dq_housing_config, table_lis
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-arg_keys = ['region_name', 's3_endpoint', 's3_target_location', 's3_staging_location', 'target_database', 'tables_list',
-            'gx_docs_bucket', 'gx_docs_prefix']
+arg_keys = ['region_name', 's3_endpoint', 's3_target_location', 's3_staging_location', 'target_database',
+            'target_table', 'tables_list', 'gx_docs_bucket', 'gx_docs_prefix']
 args = getResolvedOptions(sys.argv, arg_keys)
 locals().update(args)
 
@@ -22,9 +22,10 @@ region_name = args['region_name']
 s3_endpoint = args['s3_endpoint']
 s3_target_location = args['s3_target_location']
 s3_staging_location = args['s3_staging_location']
-target_database = args['target_database ']
+target_database = args['target_database']
+target_table = args['target_table']
 tables_list = args['tables_list']
-gx_docs_bucket = args['gx_docs_bucket ']
+gx_docs_bucket = args['gx_docs_bucket']
 gx_docs_prefix = args['gx_docs_prefix']
 
 
