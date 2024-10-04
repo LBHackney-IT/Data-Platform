@@ -9,9 +9,7 @@ import great_expectations as gx
 import pandas as pd
 from pyathena import connect
 from scripts.helpers.housing_gx_dq_inputs import gx_dq_housing_config, table_list
-from housing_person_reshape_gx_suite import suite as person_reshape_suite
-from housing_tenure_reshape_gx_suite import suite as tenure_reshape_suite
-from housing_contacts_reshape_gx_suite import suite as contacts_reshape_suite
+
 
 args = getResolvedOptions(sys.argv,
                           ['region_name',

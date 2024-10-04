@@ -1,3 +1,7 @@
+from housing_person_reshape_gx_suite import suite as person_reshape_suite
+from housing_tenure_reshape_gx_suite import suite as tenure_reshape_suite
+from housing_contacts_reshape_gx_suite import suite as contacts_reshape_suite
+
 gx_dq_housing_config = {'person_reshape': {
     'sql': """SELECT * FROM "housing-refined-zone"."person_reshape" where import_date=(select max(import_date) from "housing-refined-zone"."person_reshape") and enddate is NULL and type in ('Secure', 'Introductory')""",
     'suite': person_reshape_suite},
