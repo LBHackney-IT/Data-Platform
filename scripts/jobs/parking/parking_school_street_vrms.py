@@ -1,12 +1,14 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
+from scripts.helpers.helpers import create_pushdown_predicate, get_glue_env_var
+
 environment = get_glue_env_var("environment")
 
 
@@ -60,21 +62,19 @@ Select
    A.uprn,
    vrm,
    make, model, fuel, engine_capactiy, co2_emission,
-   
+
    excluded_location as SS_Location, status,
-      
+
    current_timestamp as ImportDateTime,
-    
+
    import_date,
-    
-   -- Add the Import date
    import_year,
    import_month,
    import_day
-   
+
    FROM parking_permit_denormalised_gds_street_llpg as A
    INNER JOIN Excluded_UPRNs as B ON A.uprn = B.excluded_uprns
-   Where Import_date = 
+   Where Import_date =
         (Select MAX(Import_date) FROM parking_permit_denormalised_gds_street_llpg)
    AND substr(permit_reference,1,3) IN ('HYR', 'HYG','HYP')
 
@@ -91,7 +91,9 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_School_Street_VRMs/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_School_Street_VRMs/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],

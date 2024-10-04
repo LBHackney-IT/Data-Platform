@@ -1,11 +1,18 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    get_glue_env_var,
+    get_latest_partitions,
+)
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
@@ -45,11 +52,11 @@ of sign off month and year NOT repair_date
 *********************************************************************************/
 With Defect_Basic as (
 SELECT
-    reference_no, 
+    reference_no,
     CAST(CASE
          When reported_date like '%0222%'Then   '2022-'||
                                                 substr(reported_date, 7, 2)||'-'||
-                                                substr(reported_date, 9, 2)   
+                                                substr(reported_date, 9, 2)
 
         When reported_date like '%/%'Then   substr(reported_date, 7, 4)||'-'||
                                             substr(reported_date, 4, 2)||'-'||
@@ -70,29 +77,29 @@ SELECT
     CASE
         When category = 'post'  Then 'Post'
         Else category
-    End as category, 
-    date_wo_sent, 
-    expected_wo_completion_date, target_turn_around, met_not_met, 
-    full_repair_category, 
+    End as category,
+    date_wo_sent,
+    expected_wo_completion_date, target_turn_around, met_not_met,
+    full_repair_category,
     issue, engineer,
     CASE
         When sign_off_year != '1899'        Then sign_off_month
         ELSE CASE
                 When repair_date like '%/%'Then substr(repair_date, 4, 2)
                 ELSE substr(cast(repair_date as string),6, 2)
-            END 
-    END as sign_off_month,   
+            END
+    END as sign_off_month,
     CASE
         When sign_off_year != '1899'        Then sign_off_year
         ELSE CASE
                 When repair_date like '%/%'Then substr(repair_date, 7, 4)
                 ELSE substr(cast(repair_date as string),1, 4)
-            END 
-    END as sign_off_year  
+            END
+    END as sign_off_year
 FROM parking_parking_ops_db_defects_mgt
-WHERE import_date = (Select MAX(import_date) 
+WHERE import_date = (Select MAX(import_date)
                                 FROM parking_parking_ops_db_defects_mgt)
-AND length(ltrim(rtrim(reported_date))) > 0 
+AND length(ltrim(rtrim(reported_date))) > 0
 AND met_not_met not IN ('#VALUE!','#N/A')
 AND length(ltrim(rtrim(repair_date)))> 0),
 
@@ -102,8 +109,8 @@ Defect as (
     SELECT
         reference_no, reported_date, repair_date,
         CAST( sign_off_year||'-'||sign_off_month||'-01' as date) as Month_repair_date,
-        category, date_wo_sent, expected_wo_completion_date, target_turn_around, met_not_met, 
-        full_repair_category, issue, engineer, sign_off_month, sign_off_year         
+        category, date_wo_sent, expected_wo_completion_date, target_turn_around, met_not_met,
+        full_repair_category, issue, engineer, sign_off_month, sign_off_year
     FROM Defect_Basic),
 
 /********************************************************************************
@@ -113,7 +120,7 @@ category_totals as (
 SELECT
     Month_repair_date, category, met_not_met, count(*) as Total_Met_Fail
 FROM Defect
-WHERE repair_date >= 
+WHERE repair_date >=
     date_add(cast(substr(cast(current_date as string), 1, 8)||'01' as date),-365) AND
     met_not_met = 'Fail'
 GROUP BY Month_repair_date, category, met_not_met
@@ -121,7 +128,7 @@ UNION ALL
 SELECT
     Month_repair_date, category, met_not_met, count(*) as Total_Met_Fail
 FROM Defect
-WHERE repair_date >= 
+WHERE repair_date >=
     date_add(cast(substr(cast(current_date as string), 1, 8)||'01' as date),-365) AND
     met_not_met = 'Met'
 GROUP BY Month_repair_date, category, met_not_met
@@ -129,7 +136,7 @@ UNION ALL
 SELECT
     Month_repair_date, category, met_not_met, count(*) as Total_Met_Fail
 FROM Defect
-WHERE repair_date >= 
+WHERE repair_date >=
     date_add(cast(substr(cast(current_date as string), 1, 8)||'01' as date), -365) AND
     met_not_met = 'N/A'
 GROUP BY Month_repair_date, category, met_not_met),
@@ -147,39 +154,39 @@ Categories as (
 Obtain and format the totals
 ********************************************************************************/
 Category_Format as (
-SELECT 
-    A.Month_repair_date, A.category, 
+SELECT
+    A.Month_repair_date, A.category,
     CASE When B.Total_Met_Fail is not NULL Then B.Total_Met_Fail Else 0 END as Total_Fail,
     CASE When C.Total_Met_Fail is not NULL Then C.Total_Met_Fail Else 0 END as Total_Met,
-    CASE When D.Total_Met_Fail is not NULL Then D.Total_Met_Fail Else 0 END as Total_NA   
+    CASE When D.Total_Met_Fail is not NULL Then D.Total_Met_Fail Else 0 END as Total_NA
 FROM Categories as A
 LEFT JOIN category_totals as B ON A.Month_repair_date = B.Month_repair_date AND
                                     A.category = B.category AND B.met_not_met = 'Fail'
 LEFT JOIN category_totals as C ON A.Month_repair_date = C.Month_repair_date AND
-                                    A.category = C.category AND C.met_not_met = 'Met'                       
+                                    A.category = C.category AND C.met_not_met = 'Met'
 LEFT JOIN category_totals as D ON A.Month_repair_date = D.Month_repair_date AND
                                     A.category = D.category AND D.met_not_met = 'N/A'
-WHERE A.Month_repair_date >= 
+WHERE A.Month_repair_date >=
     date_add(cast(substr(cast(current_date as string), 1, 8)||'01' as date),-365)),
 
 /********************************************************************************
 Calculate the KPI %
 ********************************************************************************/
 PDKPI as (
-    SELECT 
+    SELECT
         Month_repair_date,
         'Total_P&D_KPI_%' as Category,
-        (cast((SUM(cast(Total_Met as double)) / 
+        (cast((SUM(cast(Total_Met as double)) /
                     SUM((Total_Met + Total_Fail))) as decimal(8,2))*100) as PD_KPI
     FROM Category_Format
 WHERE category = 'P&D'
 GROUP BY Month_repair_date),
 
 SLPKPI as (
-    SELECT 
+    SELECT
         Month_repair_date,
         'Total_Signs_Lines_Posts_KPI_%' as Category,
-        (cast((SUM(cast(Total_Met as double)) / 
+        (cast((SUM(cast(Total_Met as double)) /
             SUM((Total_Met + Total_Fail))) as decimal(8,2))*100) as Signs_Lines_Posts_KPI
     FROM Category_Format
 WHERE category in ('Lines','Post','Signs')
@@ -188,16 +195,16 @@ GROUP BY Month_repair_date),
 Obtain the category totals & Grand totals
 ********************************************************************************/
 catgory_totals as (
-    SELECT 
-        Month_repair_date, 
+    SELECT
+        Month_repair_date,
         category||' Total' as category,
         SUM(total_met_fail) as Total
     FROM category_totals
     GROUP BY Month_repair_date, category),
 
 grand_totals as (
-    SELECT 
-        Month_repair_date, 
+    SELECT
+        Month_repair_date,
         SUM(total_met_fail) as Total
     FROM category_totals
     GROUP BY Month_repair_date),
@@ -237,25 +244,12 @@ Ouput data
 ********************************************************************************/
 SELECT
     *,
-    current_timestamp()                            as ImportDateTime,
-    replace(cast(current_date() as string),'-','') as import_date,
-    
-    cast(Year(current_date) as string)    as import_year, 
-    cast(month(current_date) as string)   as import_month, 
-    cast(day(current_date) as string)     as import_day
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
 FROM Format_Report
-
-
-
-
-
-
-
-
-
-
-
-
 """
 SQL_node1658765472050 = sparkSqlQuery(
     glueContext,
@@ -268,7 +262,9 @@ SQL_node1658765472050 = sparkSqlQuery(
 
 # Script generated for node Amazon S3
 AmazonS3_node1658765590649 = glueContext.getSink(
-    path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/Parking_Defect_MET_FAIL_Monthly_Format/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_Defect_MET_FAIL_Monthly_Format/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
     partitionKeys=["import_year", "import_month", "import_day", "import_date"],
@@ -277,7 +273,7 @@ AmazonS3_node1658765590649 = glueContext.getSink(
     transformation_ctx="AmazonS3_node1658765590649",
 )
 AmazonS3_node1658765590649.setCatalogInfo(
-    catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",
+    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
     catalogTableName="Parking_Defect_MET_FAIL_Monthly_Format",
 )
 AmazonS3_node1658765590649.setFormat("glueparquet")
