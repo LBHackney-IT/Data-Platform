@@ -1,3 +1,5 @@
+# flake8: noqa: F821
+
 import awswrangler as wr
 from datetime import datetime
 import json
@@ -17,16 +19,6 @@ arg_keys = ['region_name', 's3_endpoint', 's3_target_location', 's3_staging_loca
             'target_table', 'tables_list', 'gx_docs_bucket', 'gx_docs_prefix']
 args = getResolvedOptions(sys.argv, arg_keys)
 locals().update(args)
-
-region_name = args['region_name']
-s3_endpoint = args['s3_endpoint']
-s3_target_location = args['s3_target_location']
-s3_staging_location = args['s3_staging_location']
-target_database = args['target_database']
-target_table = args['target_table']
-tables_list = args['tables_list']
-gx_docs_bucket = args['gx_docs_bucket']
-gx_docs_prefix = args['gx_docs_prefix']
 
 
 def main():
