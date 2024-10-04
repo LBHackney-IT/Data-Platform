@@ -10,4 +10,3 @@ gx_dq_housing_config = {'person_reshape': {
 }
 
 table_list = ['person_reshape', 'tenure_reshape', 'contacts_reshape']
-
