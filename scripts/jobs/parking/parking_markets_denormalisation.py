@@ -1,12 +1,14 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
 
 from scripts.helpers.helpers import get_glue_env_var
+
 environment = get_glue_env_var("environment")
 
 
@@ -80,57 +82,57 @@ This query de-normalises the markets & shopfront data
 Get the Licence (Market & Shopfront) data
 **************************************************************************************************************************/
 With Latest_Business_Before as (
-   SELECT 
-      unique_id, licence_ref, licence_type, licence_address, licence_uprn, red_route, application_date, created_by, 
-      requested_start_date, actual_start_date, 
+   SELECT
+      unique_id, licence_ref, licence_type, licence_address, licence_uprn, red_route, application_date, created_by,
+      requested_start_date, actual_start_date,
       /*** Get a possible End Date ***/
       CASE
          When licence_type IN ('SF-newperm','MARKET-renewperm') Then cast('9999-12-31' as date)
-         When actual_start_date != '' Then 
+         When actual_start_date != '' Then
              CASE
-                When actual_start_date like '%/%'Then 
+                When actual_start_date like '%/%'Then
                              date_add(CAST(substr(actual_start_date, 7,4)||'-'||
                              substr(actual_start_date, 4,2)||'-'||
                              substr(actual_start_date, 1,2) as date), 364)
-   
+
                 ELSE cast(actual_start_date as date) END
-         When requested_start_date != '' Then 
+         When requested_start_date != '' Then
              CASE
-                When requested_start_date like '%/%'Then 
+                When requested_start_date like '%/%'Then
                               date_add(CAST(substr(requested_start_date, 7,4)||'-'||
                               substr(requested_start_date, 4,2)||'-'||
                               substr(requested_start_date, 1,2) as date), 364)
-                ELSE cast(requested_start_date as date) END 
-      
+                ELSE cast(requested_start_date as date) END
+
       END as EndDate,
-  
+
       application_type, requested_width_1, requested_depth_1, requested_width_2,
-      requested_depth_2, requested_width_3, requested_depth_3, actual_width_1, actual_depth_1, actual_width_2, actual_depth_2, 
-      actual_width_3, actual_depth_3, requested_area, actual_area, applicant_name, applicant_address, applicant_uprn, 
-      business_id, business_name, business_address, business_uprn, business_type, business_registration_number, 
+      requested_depth_2, requested_width_3, requested_depth_3, actual_width_1, actual_depth_1, actual_width_2, actual_depth_2,
+      actual_width_3, actual_depth_3, requested_area, actual_area, applicant_name, applicant_address, applicant_uprn,
+      business_id, business_name, business_address, business_uprn, business_type, business_registration_number,
       approved_by, rejected_by,
       /*** Create a Unique_ID by stripping off first characters ***/
       CASE
          When Licence_ref like 'SF%' Then Replace(Licence_ref, 'SF')
          When Licence_Ref like 'MAR%' Then Replace (licence_ref, 'MAR')
       END as Unique_Ref,
-  
+
       /*** Remove carriage return like feed ***/
       REPLACE(REPLACE(approved_notes, '\r',''), '\n','')       as approved_notes,
-      REPLACE(REPLACE(reason_for_rejection, '\r',''), '\n','') as reason_for_rejection,  
-      REPLACE(REPLACE(rejection_notes, '\r',''), '\n','')     as rejection_notes 
-      
-   FROM liberator_licence_licence_full 
-   WHERE import_Date = (Select MAX(import_date) from liberator_licence_licence_full) 
+      REPLACE(REPLACE(reason_for_rejection, '\r',''), '\n','') as reason_for_rejection,
+      REPLACE(REPLACE(rejection_notes, '\r',''), '\n','')     as rejection_notes
+
+   FROM liberator_licence_licence_full
+   WHERE import_Date = (Select MAX(import_date) from liberator_licence_licence_full)
    and business_name not in ('IvieSCSC Ltd','IvieSCSC')
    order by Business_ID, requested_start_date),
 
 /*** Now index the END date to find the latest record for a business ***/
-Latest_Business as ( 
+Latest_Business as (
     SELECT
        *,
        /*** Create a Row Number to identify the latest record ***/
-       ROW_NUMBER() OVER ( PARTITION BY Business_ID 
+       ROW_NUMBER() OVER ( PARTITION BY Business_ID
                        ORDER BY  Business_ID, EndDate DESC) row_num
      FROM Latest_Business_Before),
 
@@ -142,18 +144,18 @@ Renewal_ref as (
       renewal_ref,original_ref, renewal_type, renewal_date
     FROM liberator_licence_renewal
     WHERE import_Date = (Select MAX(import_date) from liberator_licence_licence_full)),
-    
+
 /**************************************************************************************************************************
 Get the renewal data
 **************************************************************************************************************************/
 Status_Data as (
-   SELECT 
+   SELECT
       licence_ref, status, status_start_date, status_end_date,
-  
+
       /*** Create a Row Number to identify the latest record ***/
-      ROW_NUMBER() OVER ( PARTITION BY licence_ref 
+      ROW_NUMBER() OVER ( PARTITION BY licence_ref
                        ORDER BY  licence_ref, status_start_date DESC) row_num
-   FROM liberator_licence_status 
+   FROM liberator_licence_status
    WHERE import_Date = (Select MAX(import_date) from liberator_licence_status)),
 
 /**************************************************************************************************************************
@@ -166,23 +168,23 @@ Inspections as (
       REPLACE(REPLACE(internal_notes, '\r',''), '\n','')    as INSP_internal_notes,
       REPLACE(REPLACE(external_notes, '\r',''), '\n','')    as INSP_external_notes,
       REPLACE(REPLACE(recommendation, '\r',''), '\n','')    as INSP_recommendation,
-      area_width_1 as INSP_area_width_1, area_depth_1 as INSP_area_depth_1, 
-      area_width_2 as INSP_area_width_2, area_depth_2 as INSP_area_depth_2, 
-      area_width_3 as INSP_area_width_3, area_depth_3 as INSP_area_depth_3, 
+      area_width_1 as INSP_area_width_1, area_depth_1 as INSP_area_depth_1,
+      area_width_2 as INSP_area_width_2, area_depth_2 as INSP_area_depth_2,
+      area_width_3 as INSP_area_width_3, area_depth_3 as INSP_area_depth_3,
       total_area as INSP_total_area, drawing as INSP_drawing,
-      
+
       /*** Create a Row Number to identify the latest record ***/
-      ROW_NUMBER() OVER ( PARTITION BY licence_ref 
-                       ORDER BY  licence_ref, inspection_date DESC) row_num  
-   
-   FROM liberator_licence_inspections 
+      ROW_NUMBER() OVER ( PARTITION BY licence_ref
+                       ORDER BY  licence_ref, inspection_date DESC) row_num
+
+   FROM liberator_licence_inspections
    WHERE import_Date = (Select MAX(import_date) from liberator_licence_inspections)),
 
 /**************************************************************************************************************************
 Get the LLPG data
 **************************************************************************************************************************/
 LLPG as (
-   SELECT * 
+   SELECT *
    FROM liberator_permit_llpg
    WHERE import_Date = (Select MAX(import_date) from liberator_licence_inspections)),
 
@@ -197,7 +199,7 @@ Payments as (
          Else cast(amount as double)
       END as Amount
 
-    FROM liberator_licence_payments 
+    FROM liberator_licence_payments
     WHERE import_date = (Select MAX(import_date) from liberator_licence_payments)),
 
 Total_Payments as (
@@ -205,29 +207,25 @@ Total_Payments as (
       Licence_Ref, Unique_ref, round(Sum(Amount),2) as Total_Payment
    FROM Payments
    GROUP BY Licence_Ref, Unique_ref)
-   
+
 /**************************************************************************************************************************
 Output the data
-**************************************************************************************************************************/    
-SELECT 
+**************************************************************************************************************************/
+SELECT
    A.*,
    renewal_type, renewal_date, original_ref,
    status, status_start_date, status_end_date
-   inspection_reason, INSP_internal_notes, INSP_external_notes, INSP_recommendation, 
-   INSP_area_width_1,INSP_area_depth_1, 
-   INSP_area_width_2,INSP_area_depth_2, 
-   INSP_area_width_3,INSP_area_depth_3, 
+   inspection_reason, INSP_internal_notes, INSP_external_notes, INSP_recommendation,
+   INSP_area_width_1,INSP_area_depth_1,
+   INSP_area_width_2,INSP_area_depth_2,
+   INSP_area_width_3,INSP_area_depth_3,
    INSP_total_area, INSP_total_area, bplu_class, Total_Payment,
-   
-    current_timestamp() as ImportDateTime,
-    
-    current_date        as import_Date,
-    
-    --Add the Import date
-    Year(current_date)  as import_year, 
-    month(current_date) as import_month, 
-    day(current_date)   as import_day
 
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
 FROM Latest_Business as A
 LEFT JOIN Renewal_ref    as B ON A.licence_ref = B.renewal_ref
 LEFT JOIN Status_Data    as C ON A.licence_ref = C.licence_ref AND C.row_num = 1
@@ -252,10 +250,12 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Markets_Denormalisation/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_Markets_Denormalisation/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day"],
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )

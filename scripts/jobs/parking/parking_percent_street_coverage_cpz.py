@@ -1,12 +1,14 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
 
 from scripts.helpers.helpers import get_glue_env_var
+
 environment = get_glue_env_var("environment")
 
 
@@ -41,7 +43,7 @@ This SQL creates the street % coverage by Month & CPZ
 08/12/2021 - create SQL
 ******************************************************************************************************************************/
 WITH Target_Actual as (
-   SELECT 
+   SELECT
       month, cpz,
       cast(SUM(mfam+mfpm+mfev+mfat) as double)                 as Mon_Fri,
       cast(cast(SUM(satam+satpm+satev) as int) as double)      as Sat,
@@ -52,7 +54,7 @@ WITH Target_Actual as (
    GROUP BY month, cpz),
 /*** Summerise the Mon-Fri & Sat totals into a Single Monthly Target ***/
 Monthly_Totals as (
-   SELECT 
+   SELECT
       month, cpz,
       SUM(Mon_Fri+Sat)          as zone_Target,
       SUM(Act_Mon_Fri +Act_Sat) as zone_actual
@@ -60,24 +62,21 @@ Monthly_Totals as (
    GROUP BY month, cpz
    order by month, cpz)
 /*** Calculate the coverage percentage ***/
-SELECT 
+SELECT
    month,
    cpz,
-   Zone_Target as Monthly_NoStreets_Target, 
+   Zone_Target as Monthly_NoStreets_Target,
    zone_actual as Monthly_NoStreets_Actual,
    round(CASE
       When round(((zone_actual - zone_target) / zone_target)*100, 2)+100 > 100 Then 100.00
       ELSE round(((zone_actual - zone_target) / zone_target)*100, 2)+100
    END, 2) as Percentage_Coverage,
-   
-   current_timestamp() as ImportDateTime,
-   
-   replace(cast(current_date() as string),'-','') as import_date,
-   
-   -- Add the Import date
-   cast(Year(current_date) as string)  as import_year, 
-   cast(month(current_date) as string) as import_month, 
-   cast(day(current_date) as string)   as import_day 
+
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
 FROM Monthly_Totals
 order by month, cpz
 """
@@ -90,10 +89,12 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Percent_Street_Coverage_CPZ/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_Percent_Street_Coverage_CPZ/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day"],
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )
