@@ -1,7 +1,19 @@
+# flake8: noqa: F821
+
+import sys
+
+from awsglue.utils import getResolvedOptions
 import great_expectations as gx
 import great_expectations.expectations as gxe
 
-suite = gx.ExpectationSuite(name='person_reshape')
+arg_key = ['s3_target_location']
+args = getResolvedOptions(sys.argv, arg_key)
+locals().update(args)
+
+# add to GX context
+context = gx.get_context(mode="file", project_root_dir=s3_target_location)
+
+suite = gx.ExpectationSuite(name='person_reshape_suite')
 suite.add_expectation(
     gxe.ExpectColumnValueLengthsToBeBetween(
         column="firstname",
@@ -75,3 +87,5 @@ suite.add_expectation(
     gxe.ExpectColumnValuesToNotBeNull(
         column='dateofbirth')
 )
+
+suite = context.suites.add(suite)

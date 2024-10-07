@@ -10,7 +10,10 @@ from awsglue.utils import getResolvedOptions
 import great_expectations as gx
 import pandas as pd
 from pyathena import connect
-from scripts.helpers.housing_gx_dq_inputs import gx_dq_housing_config, table_list, partition_keys
+from scripts.helpers.housing_gx_dq_inputs import sql_config, table_list, partition_keys
+import scripts.jobs.housing.housing_person_reshape_gx_suite
+import scripts.jobs.housing.housing_tenure_reshape_gx_suite
+import scripts.jobs.housing.housing_contacts_reshape_gx_suite
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,8 +25,8 @@ locals().update(args)
 
 
 def main():
-    # create GX context
-    context = gx.get_context(mode="file")
+    # add GX context
+    context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
     # set up data docs
     boto3_options = {
@@ -52,7 +55,7 @@ def main():
     for table in table_list:
         logger.info(f'{table} loading...')
 
-        sql_query = gx_dq_housing_config.get(table).get('sql')
+        sql_query = sql_config.get(table).get('sql')
 
         conn = connect(s3_staging_dir=s3_staging_location,
                        region_name=region_name)
@@ -65,7 +68,7 @@ def main():
         batch_parameters = {"dataframe": df}
 
         # get expectation suite for dataset
-        suite = context.suites.add(gx_dq_housing_config.get(table).get('suite'))
+        suite = context.suites.get(name=f'{table}_suite')
 
         validation_definition = gx.ValidationDefinition(
             data=batch_definition,

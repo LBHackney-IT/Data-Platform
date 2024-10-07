@@ -1,7 +1,17 @@
+# flake8: noqa: F821
+
+import sys
+
+from awsglue.utils import getResolvedOptions
 import great_expectations as gx
 import great_expectations.expectations as gxe
 
-context = gx.get_context(mode="file")
+arg_key = ['s3_target_location']
+args = getResolvedOptions(sys.argv, arg_key)
+locals().update(args)
+
+# add to GX context
+context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name='tenure_reshape')
 suite.add_expectation(
@@ -94,3 +104,5 @@ suite.add_expectation(
     gxe.ExpectColumnValuesToNotBeNull(
         column='billingfrequency')
 )
+
+suite = context.suites.add(suite)
