@@ -156,10 +156,10 @@ PCases AS
 
           ROW_NUMBER() OVER (PARTITION BY ticketserialnumber ORDER BY ticketserialnumber DESC) as Rn,
 
-          cast(current_date as string) as import_date,
-
-          Year(current_date) as import_year, month(current_date) as import_month,
-          day(current_date) as import_day
+        date_format(current_date, 'yyyy') AS import_year,
+        date_format(current_date, 'MM') AS import_month,
+        date_format(current_date, 'dd') AS import_day,
+        date_format(current_date, 'yyyyMMdd') AS import_date
 
 FROM (SELECT * FROM liberator_pcn_tickets
       WHERE import_date = (SELECT MAX(import_date)
