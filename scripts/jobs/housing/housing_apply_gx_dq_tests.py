@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 arg_keys = ['region_name', 's3_endpoint', 's3_target_location', 's3_staging_location', 'target_database',
-            'target_table', 'tables_list', 'gx_docs_bucket', 'gx_docs_prefix']
+            'target_table', 'gx_docs_bucket', 'gx_docs_prefix']
 args = getResolvedOptions(sys.argv, arg_keys)
 locals().update(args)
 
