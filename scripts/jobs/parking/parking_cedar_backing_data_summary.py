@@ -1,12 +1,14 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
 
 from scripts.helpers.helpers import get_glue_env_var
+
 environment = get_glue_env_var("environment")
 
 
@@ -43,7 +45,7 @@ SqlQuery0 = """
 /**************************************************************************************************************
 Parking_Cedar_Backing_Data_Summary
 
-This query summerises the Cedar backing data 
+This query summerises the Cedar backing data
 
 08/11/2021 - create the query
 08/05/2024 - update for different backing data date format and calendar format
@@ -51,10 +53,10 @@ This query summerises the Cedar backing data
 /*** Collect & Format the backing data ***/
 WITH CedarBackingData as (
     SELECT
-        CAST(CASE 
+        CAST(CASE
             When trandate like '%/%'Then
                 substr(trandate, 7, 4)||'-'||substr(trandate, 4, 2)||'-'||'01'
-            ELSE 
+            ELSE
                 substr(trandate, 1, 8)||'01'
         END as date) as IssueMonthYear,
        reftype, sub_reftype, cast(REPLACE(REPLACE(financialvalue, '£',''),',','') as decimal(15,2)) as financialvalue
@@ -72,13 +74,13 @@ Before_ICalendar as (
        dow,
        fin_year, fin_year_startdate, fin_year_enddate
     FROM calendar),
-    
+
 /** 08/05/2024 - Add de-dupe of calendar **/
 ICalendar as (
     Select *,
         ROW_NUMBER() OVER ( PARTITION BY date ORDER BY date DESC) R1
     FROM Before_ICalendar),
-    
+
 LatestYear as (
   SELECT MAX(fin_year) as LYear from Calendar),
 
@@ -94,11 +96,11 @@ Payment_Summary as (
 SELECT A.*,
     /* Identify the Financial year, this, last, previous to last */
     CASE
-       When cast(substr(cast(current_date as string), 6, 2) as int) = 4 Then 
+       When cast(substr(cast(current_date as string), 6, 2) as int) = 4 Then
           CASE
              When B.fin_year = cast((Select cast(LYear as int) from LatestYear)-1 as varchar(4)) Then 'Current'
              When B.fin_year = cast((Select cast(LYear as int) from LatestYear)-2 as varchar(4)) Then 'Previous'
-             When B.fin_year = cast((Select cast(LYear as int) from LatestYear)-3 as varchar(4)) Then 'Before_Previous' 
+             When B.fin_year = cast((Select cast(LYear as int) from LatestYear)-3 as varchar(4)) Then 'Before_Previous'
           END
       ELSE
          CASE
@@ -109,12 +111,12 @@ SELECT A.*,
          END
     END as Year_Type,
 
-    current_timestamp() as ImportDateTime,
-    replace(cast(current_date() as string),'-','') as import_date,
-    
-    Year(current_date)    as import_year, 
-    month(current_date)   as import_month, 
-    day(current_date)     as import_day    
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
+
 
 FROM Payment_Summary as A
 LEFT JOIN ICalendar as B ON A.IssueMonthYear = date AND R1 = 1
@@ -131,10 +133,12 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Cedar_Backing_Data_Summary/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_Cedar_Backing_Data_Summary/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day"],
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )

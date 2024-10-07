@@ -1,12 +1,14 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
+from scripts.helpers.helpers import create_pushdown_predicate, get_glue_env_var
+
 environment = get_glue_env_var("environment")
 
 
@@ -72,16 +74,16 @@ The SQL denormalises the Suspension data into a SINGLE row for each of the Suspe
 Get the LATEST Suspension status
 *************************************************************************************************************************/
 WITH SuspensionStatus as (
-SELECT 
-   permit_referece, 
-   CAST(status_date as Timestamp) as status_date, 
-   status, 
+SELECT
+   permit_referece,
+   CAST(status_date as Timestamp) as status_date,
+   status,
    status_change_by,
    ROW_NUMBER() OVER ( PARTITION BY permit_referece ORDER BY permit_referece, status_date DESC) row_num
 FROM liberator_permit_status
-WHERE permit_referece like 'HYS%' AND 
+WHERE permit_referece like 'HYS%' AND
       import_Date = (Select MAX(import_date) from liberator_permit_status)),
-      
+
 -- Get the various status
 SusStatusCreated as (
 SELECT *, ROW_NUMBER() OVER ( PARTITION BY permit_referece ORDER BY permit_referece, status_date DESC) RNum
@@ -127,10 +129,10 @@ SusStatusCancelled as (
 SELECT *, ROW_NUMBER() OVER ( PARTITION BY permit_referece ORDER BY permit_referece, status_date DESC) RNum
 FROM SuspensionStatus
 WHERE status = 'Cancelled'),
-      
+
 /***************************************************************************************************************************************
 Obtain the latest suspension approval records
-****************************************************************************************************************************************/ SusApprovalPre as (     
+****************************************************************************************************************************************/ SusApprovalPre as (
 
 SELECT permit_referece                    as PermitReference,
        CAST(status_date as timestamp)     as ApprovalDate,
@@ -140,8 +142,8 @@ SELECT permit_referece                    as PermitReference,
 FROM SuspensionStatus
 WHERE Status LIKE '%Approved%' OR Status LIKE '%Rejected%'
 UNION ALL
-SELECT permit_referece,  
-       CAST(activity_date as timestamp), 
+SELECT permit_referece,
+       CAST(activity_date as timestamp),
        'Additional evidence requested',
        activity_by
 FROM liberator_permit_activity as A
@@ -157,7 +159,7 @@ FROM SusApprovalPre),
 /***************************************************************************************************************************************
 Get the Suspension change ecords and format the dates to allow a second stage to find the latest
 ****************************************************************************************************************************************/
-LibSusChange_Before as (           
+LibSusChange_Before as (
  SELECT
    supension_reference, cast(supension_change_application_date as timestamp) as Change_App_Date, new_start_date, new_end_date,
    supension_change_amount, supension_change_payment_date, supension_change_payment_status
@@ -167,7 +169,7 @@ WHERE import_Date = (Select MAX(import_date) from liberator_permit_suspension_ch
 
 -- Format the data to find the very LATEST suspension change
 LibSusChange as (
-SELECT 
+SELECT
     *,
     ROW_NUMBER() OVER ( PARTITION BY supension_reference ORDER BY supension_reference, Change_App_Date DESC) row_num
 FROM LibSusChange_Before),
@@ -176,18 +178,18 @@ FROM LibSusChange_Before),
 Get the 'base' Suspension Data
 ****************************************************************************************************************************************/
 LibSusData as (
-SELECT suspensions_reference, 
+SELECT suspensions_reference,
        -- Cast the application date from string to date
        CASE When application_date = '' Then cast(NULL as timestamp)
-       ELSE CAST(application_date as timestamp) END                                  as ApplicationDate, 
-       forename_of_applicant, surname_of_applicant, email_address_of_applicant, 
+       ELSE CAST(application_date as timestamp) END                                  as ApplicationDate,
+       forename_of_applicant, surname_of_applicant, email_address_of_applicant,
        -- CAST The Start Date from string to date
        CASE When start_date = '' Then cast(NULL as timestamp)
-       ELSE CAST(start_date as timestamp) END                                        as StartDate, 
+       ELSE CAST(start_date as timestamp) END                                        as StartDate,
        -- CAST The End Date from string to date
        CASE When end_date = '' Then cast(NULL as timestamp)
-       ELSE CAST(end_date as timestamp) END                                          as EndDate, 
-       start_time, end_time, 
+       ELSE CAST(end_date as timestamp) END                                          as EndDate,
+       start_time, end_time,
         -- CAST The amount paid from string to money/decimal
        CASE When amount = '' Then cast(0 as decimal(11,2))
        ELSE CAST(amount as decimal(11,2)) END                                        as Payment,
@@ -207,7 +209,7 @@ WHERE import_Date = (Select MAX(import_date) from liberator_permit_suspension))
 /***************************************************************************************************************************************
 Combine the CTR data
 ****************************************************************************************************************************************/
-SELECT A.*, 
+SELECT A.*,
        Change_App_Date,new_start_date,new_end_date,
        C.status_date                                   as LatestStatusDate,
        C.status                                        as LatestStatus,
@@ -220,18 +222,16 @@ SELECT A.*,
        I.status_date                                   as Extn_Rejected_Date,
        J.status_date                                   as Signs_Up_Date,
        K.status_date                                   as App_Reject_Date,
-       K.status                                        as App_Reject_status,      
+       K.status                                        as App_Reject_status,
        L.status_date                                   as Cancel_Date,
-       
-       current_timestamp() as ImportDateTime,
-    
-       replace(cast(current_date() as string),'-','') as import_date,
-    
-       -- Add the Import date
-       cast(Year(current_date) as string)  as import_year, 
-       cast(month(current_date) as string) as import_month,
-       cast(day(current_date) as string)   as import_day
-       
+
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
+
+
 FROM LibSusData as A
 LEFT JOIN LibSusChange as B ON A.suspensions_reference       = B.supension_reference AND B.row_num = 1
 LEFT JOIN SuspensionStatus as C ON A.suspensions_reference   = C.permit_referece     AND C.row_num = 1
@@ -240,7 +240,7 @@ LEFT JOIN SusStatusReceived as E ON A.suspensions_reference  = E.permit_referece
 LEFT JOIN SusStatusExtnReq as F ON A.suspensions_reference   = F.permit_referece     AND F.row_num = 1
 LEFT JOIN SusStatusNotRecd as G ON A.suspensions_reference   = G.permit_referece     AND G.row_num = 1
 LEFT JOIN SusStatusExtnApp as H ON A.suspensions_reference   = H.permit_referece     AND H.row_num = 1
-LEFT JOIN SusStatusExtnRej as I ON A.suspensions_reference   = I.permit_referece     AND I.row_num = 1 
+LEFT JOIN SusStatusExtnRej as I ON A.suspensions_reference   = I.permit_referece     AND I.row_num = 1
 LEFT JOIN SusStatusSignUp as J ON A.suspensions_reference    = J.permit_referece     AND J.row_num = 1
 LEFT JOIN SusStatusAppRej as K ON A.suspensions_reference    = K.permit_referece     AND K.row_num = 1
 LEFT JOIN SusStatusCancelled as L ON A.suspensions_reference = L.permit_referece     AND L.row_num = 1
@@ -260,10 +260,12 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Suspension_DeNormalised_Data/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_Suspension_DeNormalised_Data/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day"],
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )

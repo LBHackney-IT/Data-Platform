@@ -1,12 +1,14 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
 
 from scripts.helpers.helpers import get_glue_env_var
+
 environment = get_glue_env_var("environment")
 
 
@@ -47,22 +49,22 @@ This query summerises the Cedar Parking payments, into Parking and Cycle Hanger 
 
 14/09/2021 - create the query
 15/09/2021 - Add code to identify the current and previous financial year
-05/10/2021 - Remove the WHERE against Cedar_Parking_Payments because I am importing the 
+05/10/2021 - Remove the WHERE against Cedar_Parking_Payments because I am importing the
              .csv data a month at a time
 06/10/2021 - update for incorrect September date format import
 08/11/2021 - update to collect dates BEFORE last Financial year
 19/11/2021 - change code to tidy date formating
-01/12/2021 - add where statement when collecting parking_payments 
+01/12/2021 - add where statement when collecting parking_payments
                and set import_date to string
 26/04/2024 - add further code to de-dupe the calendar data
 ****************************************************************************************************************/
 WITH Cedar_Payments as (
-SELECT 
+SELECT
    cc, subj,analysis, trandate,
    CASE
       When trandate like '%/%'Then CAST(substr(trandate, 7, 4)||'-'||substr(trandate, 4,2)||'-'||'01' as date)
-      ELSE cast(concat(substr(Cast(trandate as varchar(10)),1, 7), '-01') as date) 
-   END as PayMonthYear,  
+      ELSE cast(concat(substr(Cast(trandate as varchar(10)),1, 7), '-01') as date)
+   END as PayMonthYear,
    description, o_description, cast(financialvalue as decimal(10,2)) as financialvalue
 FROM cedar_parking_payments
 WHERE import_Date = (Select MAX(import_date) from cedar_parking_payments)),
@@ -72,7 +74,7 @@ Before_ICalendar as (
       CAST(CASE
          When date like '%/%'Then substr(date, 7, 4)||'-'||substr(date, 4,2)||'-'||substr(date, 1,2)
          ELSE substr(date, 1, 10)
-      end as date) as date,  
+      end as date) as date,
       workingday,
       holiday,
       dow,
@@ -86,9 +88,9 @@ ICalendar as (
     Select *,
         ROW_NUMBER() OVER ( PARTITION BY date ORDER BY  date DESC) row_num
     FROM Before_ICalendar),
-    
+
 Cedar_Summary as (
-SELECT 
+SELECT
    PayMonthYear, CASE When Description != 'Cycle Hangar' Then 'Parking' Else 'Cycle Hangar' END as PaymentType,
    SUM(financialvalue) as TotalPayments
 FROM Cedar_Payments as A
@@ -96,15 +98,15 @@ group by PayMonthYear,CASE When Description != 'Cycle Hangar' Then 'Parking' Els
 
 LatestYear as (
   SELECT MAX(fin_year) as LYear from Calendar)
-  
+
 SELECT A.*,
     /* Identify the Financial year, this, last, previous to last */
     CASE
-       When cast(substr(cast(current_date as string), 6, 2) as int) = 4 Then 
+       When cast(substr(cast(current_date as string), 6, 2) as int) = 4 Then
           CASE
              When B.fin_year = cast((Select cast(LYear as int) from LatestYear)-1 as varchar(4)) Then 'Current'
              When B.fin_year = cast((Select cast(LYear as int) from LatestYear)-2 as varchar(4)) Then 'Previous'
-             When B.fin_year = cast((Select cast(LYear as int) from LatestYear)-3 as varchar(4)) Then 'PreviousPrevious' 
+             When B.fin_year = cast((Select cast(LYear as int) from LatestYear)-3 as varchar(4)) Then 'PreviousPrevious'
           END
       ELSE
          CASE
@@ -115,13 +117,12 @@ SELECT A.*,
          END
     END as Year_Type,
 
-    current_timestamp()            as ImportDateTime,
-    replace(cast(current_date() as string),'-','') as import_date,
-    
-    cast(Year(current_date) as string)    as import_year, 
-    cast(month(current_date) as string)   as import_month, 
-    cast(day(current_date) as string)     as import_day
-    
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
+
 FROM Cedar_Summary as A
 LEFT JOIN ICalendar as B ON A.PayMonthYear = date and row_num = 1
 order by A.PayMonthYear
@@ -138,10 +139,12 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Cedar_Payments/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_Cedar_Payments/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day"],
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )
