@@ -13,7 +13,7 @@ locals().update(args)
 # add to GX context
 context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
-suite = gx.ExpectationSuite(name='tenure_reshape')
+suite = gx.ExpectationSuite(name='tenure_reshape_suite')
 suite.add_expectation(
     gxe.ExpectColumnValueLengthsToBeBetween(
         column="member_fullname",
