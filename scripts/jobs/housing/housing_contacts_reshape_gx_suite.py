@@ -13,7 +13,7 @@ locals().update(args)
 # add to GX context
 context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
-suite = gx.ExpectationSuite(name='contacts_reshape')
+suite = gx.ExpectationSuite(name='contacts_reshape_suite')
 suite.add_expectation(
     gxe.ExpectColumnValuesToBeInSet(
         column='contacttype',
