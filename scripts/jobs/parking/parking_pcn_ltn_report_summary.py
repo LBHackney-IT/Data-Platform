@@ -1,12 +1,14 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
 
 from scripts.helpers.helpers import get_glue_env_var
+
 environment = get_glue_env_var("environment")
 
 
@@ -38,22 +40,18 @@ Parking_PCN_LTN_Report_Summary
 
 The SQL builds the PCN Low Traffic Network figures, for use with the answering of the LTN FOI's
 
-12/07/2021 - Create SQL. 
+12/07/2021 - Create SQL.
 *************************************************************************************************************************/
 SELECT concat(substr(Cast(pcnissuedate as varchar(10)),1, 7), '-01')    AS IssueMonthYear,
        street_location,
        COUNT(distinct pcn)                                              AS PCNs_Issued,
        CAST(SUM(cast(lib_payment_received as double)) as decimal(11,2)) AS Total_Amount_Paid,
 
-       
-       current_timestamp() as ImportDateTime,
-    
-       replace(cast(current_date() as string),'-','') as import_date,
-    
-       -- Add the Import date
-       cast(Year(current_date) as string)  as import_year, 
-       cast(month(current_date) as string) as import_month,
-       cast(day(current_date) as string)   as import_day
+        date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+        date_format(current_date, 'yyyy') AS import_year,
+        date_format(current_date, 'MM') AS import_month,
+        date_format(current_date, 'dd') AS import_day,
+        date_format(current_date, 'yyyyMMdd') AS import_date
 
 FROM pcnfoidetails_pcn_foi_full as A
 WHERE warningflag = 0 and isvda = 0 and isvoid = 0 AND
@@ -79,7 +77,7 @@ street_location IN ('Allen Road',
 'Pritchards Road',
 'Richmond Road junction of Greenwood Road',
 'Shepherdess Walk',
-'Ufton Road junction of Downham Road', 'Wilton Way junction of Greenwood Road') 
+'Ufton Road junction of Downham Road', 'Wilton Way junction of Greenwood Road')
 
 GROUP BY  concat(substr(Cast(pcnissuedate as varchar(10)),1, 7), '-01'), street_location, import_date, import_day, import_month, import_year
 """
@@ -92,10 +90,12 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_PCN_LTN_Report_Summary/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_PCN_LTN_Report_Summary/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day"],
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )

@@ -1,12 +1,14 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
 
-from scripts.helpers.helpers import get_glue_env_var, create_pushdown_predicate
+from scripts.helpers.helpers import create_pushdown_predicate, get_glue_env_var
+
 environment = get_glue_env_var("environment")
 
 
@@ -29,7 +31,7 @@ AmazonS3_node1628173244776 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="pcnfoidetails_pcn_foi_full",
     transformation_ctx="AmazonS3_node1628173244776",
-    push_down_predicate=create_pushdown_predicate("import_date",1)
+    push_down_predicate=create_pushdown_predicate("import_date", 1),
 )
 
 # Script generated for node ApplyMapping
@@ -39,10 +41,10 @@ Parking_Bailiff_Warrant_Figures
 
 This SQL creates the Warrant return figures on the basis of the following spec:-
 
-1) Firstly identify all warrants issued to enforcement agents in the month in question. 
+1) Firstly identify all warrants issued to enforcement agents in the month in question.
 2) Exclude from this group PCNs that were cancelled
 3) Then identify the payment status of the PCN - fully paid, partially paid, not paid
-4) Produce a dataset for each month, that shows the number and % of the overall number of warrants (excluding cancelled) that fall into the above three categories. 
+4) Produce a dataset for each month, that shows the number and % of the overall number of warrants (excluding cancelled) that fall into the above three categories.
 
 
 24/11/2021 - create SQL
@@ -54,8 +56,8 @@ This SQL creates the Warrant return figures on the basis of the following spec:-
 ******************************************************************************************************************************/
 /*** Collect those PCNs that have a Warrant date ***/
 WITH Bailiff_PCNs_Int as (
-   SELECT 
-      PCN, warrantissuedate as warrant_issued, 
+   SELECT
+      PCN, warrantissuedate as warrant_issued,
       substr(cast(cast(warrant_issued as date) as string), 1, 8)||'01' as MonthYear, bailiff, pcn_canx_date,
       cancellationreason,
       lib_initial_debt_amount, lib_payment_received, lib_write_off_amount,
@@ -108,30 +110,30 @@ WITH Bailiff_PCNs_Int as (
           When cast(lib_payment_received as double) > 0      Then 3 /* Added 28/07/2023 */
           ELSE 0
      END as Write_Off_Flag
-   FROM pcnfoidetails_pcn_foi_full 
+   FROM pcnfoidetails_pcn_foi_full
    WHERE import_Date = (Select MAX(import_date) from pcnfoidetails_pcn_foi_full) and
    length(cast(warrantissuedate as string)) > 0 ),
 
 Bailiff_PCNs as (
    SELECT
-      PCN, warrant_issued, 
+      PCN, warrant_issued,
       substr(cast(cast(warrant_issued as date) as string), 1, 8)||'01' as MonthYear,
       lib_initial_debt_amount, lib_payment_received, lib_write_off_amount,pcn_canx_date,cancellationreason,
-  
+
         /*** Create the payment flag ***/
         /** 19-05-2023 update calculation to add write off and payment **/
         /** 28/07/2023 - change the calculation...again! **/
         CASE
-            When Write_Off_Flag = 1 AND 
+            When Write_Off_Flag = 1 AND
                             CAST(lib_payment_received as double) = 0 Then 'Not Paid'
-             When cast(lib_payment_received as double) = 0 AND 
+             When cast(lib_payment_received as double) = 0 AND
                             CAST(lib_write_off_amount as double) = 0 Then 'Not Paid'
-        When (cast(lib_payment_received as double) + cast(lib_write_off_amount as double))              
+        When (cast(lib_payment_received as double) + cast(lib_write_off_amount as double))
                             >= cast(lib_initial_debt_amount as double) Then 'Paid'
-        When (cast(lib_payment_received as double) + cast(lib_write_off_amount as double))              
+        When (cast(lib_payment_received as double) + cast(lib_write_off_amount as double))
                             < cast(lib_initial_debt_amount as double)  Then 'Part Payment'
       END as Payment_Status
-  
+
    FROM Bailiff_PCNs_Int
    WHERE Write_Off_Flag != 0),
 
@@ -150,7 +152,7 @@ Summary_PCN as (
    FROM Bailiff_PCNs
    GROUP BY MonthYear,Payment_Status
    ORDER BY MonthYear, Payment_Status),
-   
+
 /*** Bring the data togather into a single record ***/
 Merge_Month as (
    SELECT
@@ -158,7 +160,7 @@ Merge_Month as (
       coalesce(B.No_of_Warrents,0) as Paid_Total,
       coalesce(C.No_of_Warrents,0) as Part_Paid_Total,
       coalesce(D.No_of_Warrents,0) as Not_Paid_Total,
-   
+
       (coalesce(B.No_of_Warrents,0)+
        coalesce(C.No_of_Warrents,0)+
        coalesce(D.No_of_Warrents,0)) as Total_No_PCN
@@ -168,23 +170,20 @@ Merge_Month as (
    LEFT JOIN Summary_PCN as C ON A.MonthYear = C.MonthYear AND C.payment_status = 'Part Payment'
    LEFT JOIN Summary_PCN as D ON A.MonthYear = D.MonthYear AND D.payment_status = 'Not Paid'
    order by A.MonthYear)
-   
+
 /*** Output the data and create a % figure for each of the Payment flags ***/
-SELECT 
+SELECT
    A.*,
    round((cast(Paid_Total as double)/Total_No_PCN)*100,2)      as Paid_Total_Percentage,
    round((cast(Part_Paid_Total as double)/Total_No_PCN)*100,2) as Part_Paid_Total_Percentage,
    round((cast(Not_Paid_Total as double)/Total_No_PCN)*100,2)  as Not_Paid_Total_Percentage,
-   
-   current_timestamp() as ImportDateTime,
-   
-    replace(cast(current_date() as string),'-','') as import_date,
-    
-    -- Add the Import date
-    Year(current_date)  as import_year, 
-    month(current_date) as import_month, 
-    day(current_date)   as import_day    
-   
+
+    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    date_format(current_date, 'yyyy') AS import_year,
+    date_format(current_date, 'MM') AS import_month,
+    date_format(current_date, 'dd') AS import_day,
+    date_format(current_date, 'yyyyMMdd') AS import_date
+
 FROM Merge_Month as A
 Order by A.WarrantMonth
 """
@@ -197,10 +196,12 @@ ApplyMapping_node2 = sparkSqlQuery(
 
 # Script generated for node S3 bucket
 S3bucket_node3 = glueContext.getSink(
-    path="s3://dataplatform-" + environment + "-refined-zone/parking/liberator/Parking_Bailiff_Warrant_Figures/",
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/Parking_Bailiff_Warrant_Figures/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day"],
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )
