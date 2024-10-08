@@ -171,7 +171,7 @@ SELECT
    No_Temp_Licences,
    No_Perm_Licences,
 
-   date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+   current_timestamp() as ImportDateTime,
    date_format(current_date, 'yyyy') AS import_year,
    date_format(current_date, 'MM') AS import_month,
    date_format(current_date, 'dd') AS import_day,
