@@ -35,7 +35,7 @@ SELECT concat(substr(Cast(pcnissuedate as varchar(10)),1, 7), '-01') as IssueMon
        CASE When Lib_Payment_Received != '0' Then 1 Else 0 END as Payment_Flag,
        count(*) as PCNs_Issued,
 
-    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    current_timestamp() as ImportDateTime,
     date_format(current_date, 'yyyy') AS import_year,
     date_format(current_date, 'MM') AS import_month,
     date_format(current_date, 'dd') AS import_day,

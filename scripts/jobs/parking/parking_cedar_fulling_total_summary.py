@@ -324,7 +324,7 @@ SELECT
     CAST((Previous_Monthly_Total/Current_Monthly_Total)*100  as decimal(10,2)) as PercentageDiff,
 
     Pay_Year,
-    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    current_timestamp() as ImportDateTime,
     date_format(current_date, 'yyyy') AS import_year,
     date_format(current_date, 'MM') AS import_month,
     date_format(current_date, 'dd') AS import_day,

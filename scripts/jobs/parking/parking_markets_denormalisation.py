@@ -221,7 +221,7 @@ SELECT
    INSP_area_width_3,INSP_area_depth_3,
    INSP_total_area, INSP_total_area, bplu_class, Total_Payment,
 
-    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    current_timestamp() as ImportDateTime,
     date_format(current_date, 'yyyy') AS import_year,
     date_format(current_date, 'MM') AS import_month,
     date_format(current_date, 'dd') AS import_day,

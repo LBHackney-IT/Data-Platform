@@ -99,7 +99,7 @@ SELECT
    C.shift_start_time,
    C.shift_end_time,
 
-    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    current_timestamp() as ImportDateTime,
     date_format(current_date, 'yyyy') AS import_year,
     date_format(current_date, 'MM') AS import_month,
     date_format(current_date, 'dd') AS import_day,

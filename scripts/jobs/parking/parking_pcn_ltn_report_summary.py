@@ -47,7 +47,7 @@ SELECT concat(substr(Cast(pcnissuedate as varchar(10)),1, 7), '-01')    AS Issue
        COUNT(distinct pcn)                                              AS PCNs_Issued,
        CAST(SUM(cast(lib_payment_received as double)) as decimal(11,2)) AS Total_Amount_Paid,
 
-        date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+        current_timestamp() as ImportDateTime,
         date_format(current_date, 'yyyy') AS import_year,
         date_format(current_date, 'MM') AS import_month,
         date_format(current_date, 'dd') AS import_day,

@@ -178,7 +178,7 @@ SELECT
    round((cast(Part_Paid_Total as double)/Total_No_PCN)*100,2) as Part_Paid_Total_Percentage,
    round((cast(Not_Paid_Total as double)/Total_No_PCN)*100,2)  as Not_Paid_Total_Percentage,
 
-    date_format(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS ImportDateTime,
+    current_timestamp() as ImportDateTime,
     date_format(current_date, 'yyyy') AS import_year,
     date_format(current_date, 'MM') AS import_month,
     date_format(current_date, 'dd') AS import_day,
