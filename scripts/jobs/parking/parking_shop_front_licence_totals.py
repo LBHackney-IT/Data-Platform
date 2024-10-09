@@ -176,7 +176,7 @@ S3bucket_node3 = glueContext.getSink(
     + "-refined-zone/parking/liberator/Parking_Shop_Front_Licence_Totals/",
     connection_type="s3",
     updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day"],
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
     enableUpdateCatalog=True,
     transformation_ctx="S3bucket_node3",
 )
