@@ -6,6 +6,7 @@ locals {
     Name         = "${var.identifier_prefix}-qlik-sense-restore"
   }
   ec2_tags_prod_restore = {
+    Application = "Qlik"
     BackupPolicy = title(var.environment)
     Name         = "${var.identifier_prefix}-qlik-sense-restore-2"
   }
