@@ -87,7 +87,8 @@ def main():
             gx.checkpoint.checkpoint.Checkpoint(
                 name=f'{table}_checkpoint',
                 validation_definitions=[validation_definition],
-                actions=actions
+                actions=actions,
+                result_format={"result_format": "COMPLETE"}
             )
         )
 
@@ -103,6 +104,27 @@ def main():
     results_df['import_day'] = datetime.today().day
     results_df['import_date'] = datetime.today().strftime('%Y%m%d')
 
+    # set dtypes for Athena
+    dtype_dict = {'expectation_type': 'string',
+                  'kwargs.batch_id': 'string',
+                  'kwargs.column': 'string',
+                  'result.element_count': 'bigint',
+                  'result.unexpected_count': 'bigint',
+                  'result.missing_count': 'bigint',
+                  'result.partial_unexpected_list': 'array<string>',
+                  'result.partial_unexpected_counts': 'array<struct<count:bigint,value:string>>',
+                  'result.partial_unexpected_index_list': 'array<bigint>',
+                  'result.unexpected_list': 'array<string>',
+                  'result.unexpected_index_list': 'array<bigint>',
+                  'result.unexpected_index_query': 'string',
+                  'kwargs.regex': 'string',
+                  'kwargs.value_set': 'string',
+                  'kwargs.column_list': 'string',
+                  'import_year': 'string',
+                  'import_month': 'string',
+                  'import_day': 'string',
+                  'import_date': 'string'}
+
     # write to s3
     wr.s3.to_parquet(
         df=results_df,
@@ -111,7 +133,8 @@ def main():
         database=target_database,
         table=target_table,
         mode="overwrite_partitions",
-        partition_cols=partition_keys
+        partition_cols=partition_keys,
+        dtype=dtype_dict
     )
 
     logger.info(f'GX Data Quality testing results written to {s3_target_location}')

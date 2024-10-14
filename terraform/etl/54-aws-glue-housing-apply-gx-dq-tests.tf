@@ -26,7 +26,7 @@ module "housing_apply_gx_dq_tests" {
     "--s3_target_location"               = "s3://${module.raw_zone_data_source.bucket_id}/housing/data-quality-tests/"
     "--s3_staging_location"              = "s3://${module.athena_storage_data_source.bucket_id}/housing/data-quality-tests/"
     "--target_database"                  = "housing-raw-zone"
-    "--target_table"                     = "housing_gx_data_quality_tests"
+    "--target_table"                     = "housing_gx_data_quality_tests_complete"
     "--gx_docs_bucket"                   = module.raw_zone_data_source.bucket_id
     "--gx_docs_prefix"                   = "housing/glue-dq/data-docs/"
   }
