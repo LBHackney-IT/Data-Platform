@@ -42,6 +42,7 @@ module "alloy_api_export_raw_env_services" {
   script_name                = "alloy_api_export"
   glue_version               = "4.0"
   glue_job_worker_type       = "G.1X"
+  glue_job_timeout           = 180
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--enable-glue-datacatalog" = "true"
