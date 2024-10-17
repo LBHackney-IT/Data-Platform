@@ -15,9 +15,8 @@ sql_config = {'person_reshape': {
         'id_field': 'property_dwelling_reference_number'},
     'assets_reshape': {
         'sql': """SELECT * FROM "housing-refined-zone"."assets_reshape" where import_date=(select max(import_date) from "housing-refined-zone"."assets_reshape") and assettype = 'Dwelling'""",
-        'id_field': 'asset_id'
-    }
-}
+        'id_field': 'asset_id'}
+            }
 
 table_list = ['person_reshape', 'tenure_reshape', 'contacts_reshape', 'housing_homeowner_record_sheet',
               'housing_dwellings_list', 'assets_reshape']
