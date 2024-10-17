@@ -22,7 +22,8 @@ suite.add_expectation(
 suite.add_expectation(
     gxe.ExpectColumnValuesToBeInSet(
         column='subtype',
-        value_set=['correspondenceAddress', 'mobile', 'home', 'work', 'other', 'landline'])
+        value_set=['mainNumber', 'emergencyContact', 'carer', 'wife', 'husband', 'spouse', 'child', 'sibling',
+                   'relative', 'neighbour', 'doctor', 'socialWorker', 'other'])
 )
 suite.add_expectation(
     gxe.ExpectColumnValuesToBeInSet(
