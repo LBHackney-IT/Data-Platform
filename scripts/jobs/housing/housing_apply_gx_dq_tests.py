@@ -14,6 +14,7 @@ from scripts.helpers.housing_gx_dq_inputs import sql_config, table_list, partiti
 import scripts.jobs.housing.housing_person_reshape_gx_suite
 import scripts.jobs.housing.housing_tenure_reshape_gx_suite
 import scripts.jobs.housing.housing_contacts_reshape_gx_suite
+import scripts.jobs.housing.housing_assets_reshape_gx_suite
 import scripts.jobs.housing.housing_homeowner_record_sheet_gx_suite
 import scripts.jobs.housing.housing_dwellings_list_gx_suite
 
