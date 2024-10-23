@@ -1,7 +1,7 @@
 # flake8: noqa: F821
 
 import awswrangler as wr
-from datetime import datetime
+from datetime import datetime, date
 import json
 import logging
 import sys
@@ -25,6 +25,13 @@ arg_keys = ['region_name', 's3_endpoint', 's3_target_location', 's3_staging_loca
             'target_table', 'gx_docs_bucket', 'gx_docs_prefix']
 args = getResolvedOptions(sys.argv, arg_keys)
 locals().update(args)
+
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default."""
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    raise TypeError(f"Type {type(obj)} not serializable")
 
 
 def main():
@@ -96,7 +103,11 @@ def main():
         )
 
         checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
-        results = json.loads(checkpoint_result.describe())
+        results_dict = checkpoint_result.describe_dict()
+        # Serialize the result to handle any datetime objects
+        json_results = json.dumps(results_dict, default=json_serial)
+        logger.info(f"json_results: {json_results}")
+        results = json.loads(json_results)
         table_results_df = pd.json_normalize(results['validation_results'][0]['expectations'])
         table_results_df_list.append(table_results_df)
 
