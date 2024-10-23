@@ -1,5 +1,5 @@
 # flake8: noqa: F821
-from datetime import datetime, date
+from datetime import datetime
 import sys
 
 from awsglue.utils import getResolvedOptions
@@ -85,7 +85,14 @@ suite.add_expectation(
 )
 suite.add_expectation(
     gxe.ExpectColumnValuesToNotBeNull(
-        column='dateofbirth')
+        column='dateofbirth_parsed')
+)
+suite.add_expectation(
+    gxe.ExpectColumnValuesToBeBetween(
+        column='dateofbirth_parsed',
+        min_value=datetime(1900, 1, 1, 0, 0, 0).isoformat(),
+        max_value=datetime.today().isoformat()
+    )
 )
 
 suite = context.suites.add(suite)
