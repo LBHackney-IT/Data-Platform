@@ -1,8 +1,6 @@
 sql_config = {'person_reshape': {
     'sql': """SELECT *, substr(startdate, 1, 10) as startdate_parsed, substr(enddate, 1, 10) as enddate_parsed,
-    substr(dateofbirth, 1, 10) as dateofbirth_parsed
-    FROM "housing-refined-zone"."person_reshape" WHERE import_date = (SELECT max(import_date) FROM "housing-refined-zone"."person_reshape"
-	) AND enddate IS NULL AND type IN ('Secure', 'Introductory')	and substr(dateofbirth, 1, 10) between '1850-01-01' and '2100-01-01' 	and substr(startdate, 1, 10) between '1900-01-01' and '2100-01-01'""",
+    substr(dateofbirth, 1, 10) as dateofbirth_parsed FROM "housing-refined-zone"."person_reshape" WHERE import_date = (SELECT max(import_date) FROM "housing-refined-zone"."person_reshape") AND enddate IS NULL AND type IN ('Secure', 'Introductory')	and substr(dateofbirth, 1, 10) between '1850-01-01' and '2100-01-01' 	and substr(startdate, 1, 10) between '1900-01-01' and '2100-01-01'""",
     'id_field': 'person_id'},
     'tenure_reshape': {
         'sql': """SELECT * FROM "housing-refined-zone"."tenure_reshape" where import_date>'20240412' and import_date=(select max(import_date) from "housing-refined-zone"."tenure_reshape" where import_date>'20240412') and isterminated=False and description in ('Secure', 'Introductory')""",
