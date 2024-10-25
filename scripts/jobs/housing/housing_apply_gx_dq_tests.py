@@ -122,6 +122,8 @@ def main():
     dtype_dict = {'expectation_type': 'string',
                   'kwargs.batch_id': 'string',
                   'kwargs.column': 'string',
+                  'kwargs.min_value': 'string',
+                  'kwargs.max_value': 'string',
                   'result.element_count': 'bigint',
                   'result.unexpected_count': 'bigint',
                   'result.missing_count': 'bigint',
