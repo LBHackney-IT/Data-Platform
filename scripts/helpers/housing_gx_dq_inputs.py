@@ -4,7 +4,7 @@ sql_config = {'person_reshape': {
     'id_field': 'person_id'},
     'tenure_reshape': {
         'sql': """SELECT * FROM "housing-refined-zone"."tenure_reshape" where import_date>'20240412' and import_date=(select max(import_date) from "housing-refined-zone"."tenure_reshape" where import_date>'20240412') and isterminated=False and description in ('Secure', 'Introductory')""",
-        'id_field': 'tenure_id'},
+        'id_field': 'tenancy_id'},
     'contacts_reshape': {
         'sql': """SELECT id, targetid, createdat, contacttype, subtype, value, lastmodified, targettype, isactive, person_id, import_date  FROM "housing-refined-zone"."contacts_reshape"  where import_date=(select max(import_date) from "housing-refined-zone"."contacts_reshape") and isactive=True""",
         'id_field': 'id'},
