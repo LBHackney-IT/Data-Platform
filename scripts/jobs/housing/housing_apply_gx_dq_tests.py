@@ -127,6 +127,10 @@ def main():
     # map DQ dimension type
     results_df['dq_dimension_type'] = results_df['expectation_type'].map(dq_dimensions_map)
 
+    # add clean dataset name
+    results_df['table_name'] = results_df['kwargs.batch_id'].map(
+        lambda x: x.removeprefix('pandas-').removesuffix('_df_asset'))
+
     results_df['import_year'] = datetime.today().year
     results_df['import_month'] = datetime.today().month
     results_df['import_day'] = datetime.today().day
