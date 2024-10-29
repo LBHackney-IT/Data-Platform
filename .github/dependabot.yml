@@ -1,0 +1,15 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directories:
+      - "*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    groups:
+      straightforward-dependencies:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
