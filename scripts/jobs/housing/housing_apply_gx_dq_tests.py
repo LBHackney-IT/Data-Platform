@@ -10,7 +10,7 @@ from awsglue.utils import getResolvedOptions
 import great_expectations as gx
 import pandas as pd
 from pyathena import connect
-from scripts.helpers.housing_gx_dq_inputs import sql_config, table_list, partition_keys
+from scripts.helpers.housing_gx_dq_inputs import sql_config, table_list, partition_keys, dq_dimensions_map
 import scripts.jobs.housing.housing_person_reshape_gx_suite
 import scripts.jobs.housing.housing_tenure_reshape_gx_suite
 import scripts.jobs.housing.housing_contacts_reshape_gx_suite
@@ -98,7 +98,9 @@ def main():
                 name=f'{table}_checkpoint',
                 validation_definitions=[validation_definition],
                 actions=actions,
-                result_format={"result_format": "COMPLETE"}
+                result_format={"result_format": "COMPLETE",
+                               "return_unexpected_index_query": False,
+                               "partial_unexpected_count": 0}
             )
         )
 
@@ -111,7 +113,19 @@ def main():
         table_results_df = pd.json_normalize(results['validation_results'][0]['expectations'])
         table_results_df_list.append(table_results_df)
 
+        # generate id lists for each unexpected result set
+        query_df = table_results_df.loc[(~table_results_df['result.unexpected_index_list'].isna()) & (
+                table_results_df['result.unexpected_index_list'].values != '[]')]
+
+        table_results_df['unexpected_id_list'] = pd.Series(dtype='object')
+        for i, row in query_df.iterrows():
+            table_results_df.loc[i, 'unexpected_id_list'] = str(
+                list(df[sql_config.get(table).get('id_field')].iloc[row['result.unexpected_index_list']]))
+
     results_df = pd.concat(table_results_df_list)
+
+    # map DQ dimension type
+    results_df['dq_dimension_type'] = results_df['expectation_type'].map(dq_dimensions_map)
 
     results_df['import_year'] = datetime.today().year
     results_df['import_month'] = datetime.today().month
@@ -128,8 +142,6 @@ def main():
                   'result.unexpected_count': 'bigint',
                   'result.missing_count': 'bigint',
                   'result.partial_unexpected_list': 'array<string>',
-                  'result.partial_unexpected_counts': 'array<struct<count:bigint,value:string>>',
-                  'result.partial_unexpected_index_list': 'array<bigint>',
                   'result.unexpected_list': 'array<string>',
                   'result.unexpected_index_list': 'array<bigint>',
                   'result.unexpected_index_query': 'string',
