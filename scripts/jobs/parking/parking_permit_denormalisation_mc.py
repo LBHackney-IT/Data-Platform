@@ -21,6 +21,7 @@ This query outputs a de-normalised Permits data with the addition of the Motorcy
 Code has been switched the use of the raw vrm and vrm update tables to the 480 raw tables
 
 02/09/2024 - Create query from 'parking_permit_denormalisation'
+30/10/2024 - add code to remove the dupliacte records
 ****************************************************************************************************************/
 /*** Obtain the Permits start/finish for FTA and renewals ***/
 With PermitStartFinishBEFORE as (
@@ -490,11 +491,13 @@ WHERE A.import_Date = format_datetime(current_date, 'yyyyMMdd') AND
     A.permit_reference not like 'HYF%' AND 
     A.permit_reference not like 'HYJ%' AND 
     A.permit_reference not like 'HYE%' AND
-    (renewal_start_date != '' OR renewal_end_date != '')) 
+    (renewal_start_date != '' OR renewal_end_date != '')),
       
 /******************************************************************************************************************/
 /*** Finally output the data, WITH The VRM details **/
-SELECT 
+/*** 30-10-2024 add code to remove the duplicates ***/
+Output as (
+  SELECT 
     A.permit_reference, A.application_date, A.forename_of_applicant, A.surname_of_applicant,
     A.email_address_of_applicant, A.primary_phone, A.secondary_phone, A.date_of_birth_of_applicant,
     A.blue_badge_number, A.blue_badge_expiry, A.start_date, A.end_date, A.approval_date, 
@@ -519,22 +522,34 @@ SELECT
         Else ''
     END as Fin_Year_Flag,
     /** Financial Year **/
-    Fin_Year,
-    
-    usrn,
+    Fin_Year, usrn   
+  From Permits as A
+  LEFT JOIN VRMDetails      as B ON A.permit_reference = B.permit_reference AND A.vrm = B.vrm and B.row_num = 1
+  LEFT JOIN CalendarFormat  as F ON CAST(A.application_date as date) = date and F.row_num = 1
+  LEFT JOIN LLPG_USRN  as G ON A.uprn = G.uprn
+  Where A.Rn = 1)
+  
+/*** Output the deduped data ***/
+SELECT 
+    permit_reference, application_date, forename_of_applicant, surname_of_applicant,
+    email_address_of_applicant, primary_phone, secondary_phone, date_of_birth_of_applicant,
+    blue_badge_number, blue_badge_expiry, start_date, end_date, approval_date, 
+    approved_by, approval_type, amount, payment_date, payment_method, payment_location, 
+    payment_by, payment_received, directorate_to_be_charged, authorising_officer,
+    cost_code, subjective_code, permit_type, ordered_by, business_name, hasc_organisation_name,
+    doctors_surgery_name, number_of_bays, number_of_days, number_of_dispensation_vehicles,
+    dispensation_reason, uprn, address_line_1, address_line_2, address_line_3, postcode, 
+    cpz, cpz_name, status, quantity, vrm, associated_to_order, Live_Permit_Flag,
+    Permit_Fta_Renewal, Latest_Permit_Status, cpz_code,
+    make, model, fuel, engine_capactiy, co2_emission, foreign, lpg_conversion, VRM_record_created,
+    is_motorcycle, Fin_Year_Flag, Fin_Year, usrn,
 
-    --current_timestamp as ImportDateTime,
-    
     format_datetime(current_date, 'yyyy') AS import_year,
     format_datetime(current_date, 'MM') AS import_month,
     format_datetime(current_date, 'dd') AS import_day,
     format_datetime(current_date, 'yyyyMMdd') AS import_date
-   
-From Permits as A
-LEFT JOIN VRMDetails      as B ON A.permit_reference = B.permit_reference AND A.vrm = B.vrm and B.row_num = 1
-LEFT JOIN CalendarFormat  as F ON CAST(A.application_date as date) = date and F.row_num = 1
-LEFT JOIN LLPG_USRN  as G ON A.uprn = G.uprn
-Where A.Rn = 1
+FROM Output
+WHERE R1 = 1 
 """
 
 create_update_table_with_partition(
