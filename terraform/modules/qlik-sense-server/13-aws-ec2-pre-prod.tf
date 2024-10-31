@@ -9,6 +9,7 @@ locals {
   ec2_tags_for_restore = {
     BackupPolicy = title(var.environment)
     Name         = "${var.identifier_prefix}-qlik-sense-restore-7"
+
   }
 }
 
