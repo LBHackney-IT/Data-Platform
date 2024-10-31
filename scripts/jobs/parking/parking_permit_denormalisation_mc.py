@@ -522,7 +522,12 @@ Output as (
         Else ''
     END as Fin_Year_Flag,
     /** Financial Year **/
-    Fin_Year, usrn   
+    Fin_Year, usrn,
+    /*** 30-10-2024 - add code to enable dedupe ***/
+    ROW_NUMBER() OVER ( PARTITION BY A.permit_reference, A.application_date, 
+                                            A.forename_of_applicant, A.surname_of_applicant
+    ORDER BY A.permit_reference, A.application_date, 
+                                    A.forename_of_applicant, A.surname_of_applicant DESC) as R1    
   From Permits as A
   LEFT JOIN VRMDetails      as B ON A.permit_reference = B.permit_reference AND A.vrm = B.vrm and B.row_num = 1
   LEFT JOIN CalendarFormat  as F ON CAST(A.application_date as date) = date and F.row_num = 1
