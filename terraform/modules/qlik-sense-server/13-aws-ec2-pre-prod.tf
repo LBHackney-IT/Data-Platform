@@ -8,7 +8,8 @@ locals {
   backup_ami_id_to_restore = "ami-0e95b4a1bb30870c9"
   ec2_tags_for_restore = {
     BackupPolicy = title(var.environment)
-    Name         = "${var.identifier_prefix}-qlik-sense-restore-6"
+    Name         = "${var.identifier_prefix}-qlik-sense-restore-7"
+
   }
 }
 
