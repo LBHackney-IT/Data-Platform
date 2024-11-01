@@ -12,7 +12,7 @@ from awsglue.transforms import DropFields
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from pyspark.sql.functions import (
-    col,
+   col,
     current_date,
     date_format,
     date_sub,
@@ -20,6 +20,8 @@ from pyspark.sql.functions import (
     substring,
     to_date,
     to_timestamp,
+    datediff,
+    when
 )
 from scripts.helpers.helpers import (
     PARTITION_KEYS,
@@ -568,7 +570,9 @@ if __name__ == "__main__":
 
     # Arrangements
 
-    ten = accounts2.select('uh_ten_ref', 'paymentreference')
+    ten = accounts2.select('uh_ten_ref', 'paymentreference')\
+        .filter(col("previousweekbalance") > 0.00)
+    
     arr = df5.join(ten, df5.tenancy_ref == ten.uh_ten_ref, "inner")
     arr = arr.distinct()
     arr = arr.where(col("current_state").isin({"live", "breached"}))
@@ -796,7 +800,16 @@ if __name__ == "__main__":
 
     # Attach the last action as the patch and save out the accounts
 
-    accounts3 = accounts2.join(actions, accounts2.paymentreference == actions.AccountReference, "left")
+    accounts2 = accounts2.withColumn('days_since_termination', datediff(current_date(), F.col('TenancyEndDate')))
+
+    accounts3 = accounts2.withColumn('Patch',when(accounts2['days_since_termination'] < 7, 'New Terminations')
+                                          .when((accounts2['days_since_termination'] >= 7) & (accounts2['days_since_termination'] <= 31), '0-1 month')
+                                          .when((accounts2['days_since_termination'] > 31) & (accounts2['days_since_termination'] <= 92), '2-3 months')
+                                          .when((accounts2['days_since_termination'] > 92) & (accounts2['days_since_termination'] <= 182), '3-6 months')
+                                          .when((accounts2['days_since_termination'] > 182) & (accounts2['days_since_termination'] <= 365), '6-12 months')
+                                          .when((accounts2['days_since_termination'] > 365) & (accounts2['days_since_termination'] <= 2191), '1 year - 6 years')
+                                          .when(accounts2['days_since_termination'] > 2191, '6 years+')
+                                          .otherwise('Unknown'))
 
     accounts3 = accounts3.selectExpr("paymentreference as AccountReference",
                                      "description as TenureType",
