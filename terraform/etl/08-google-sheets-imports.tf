@@ -855,7 +855,9 @@ module "hra_stock_count" {
   google_sheet_header_row_number  = 3
   department                      = module.department_housing_data_source
   dataset_name                    = "hra_stock_count_2024_25"
+  google_sheet_import_schedule    = "cron(0 6 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
+  enable_glue_trigger             = false
 }
 
 module "hostels_stock_count" {
@@ -877,7 +879,9 @@ module "hostels_stock_count" {
   google_sheet_header_row_number  = 2
   department                      = module.department_housing_data_source
   dataset_name                    = "hostels_stock_count_2024_25"
+  google_sheet_import_schedule    = "cron(0 6 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
+  enable_glue_trigger             = false
 }
 
 module "permits_consultation_survey_data_load" {
