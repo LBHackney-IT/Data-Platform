@@ -20,7 +20,7 @@ module "housing_apply_gx_dq_tests" {
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
-    "--additional-python-modules"        = "great_expectations==1.2.0,PyAthena,awswrangler"
+    "--additional-python-modules"        = "great_expectations==1.2.1,PyAthena,numpy==1.26.1,awswrangler==3.10.0"
     "--region_name"                      = data.aws_region.current.name
     "--s3_endpoint"                      = "https://s3.${data.aws_region.current.name}.amazonaws.com"
     "--s3_target_location"               = "s3://${module.raw_zone_data_source.bucket_id}/housing/data-quality-tests/"
