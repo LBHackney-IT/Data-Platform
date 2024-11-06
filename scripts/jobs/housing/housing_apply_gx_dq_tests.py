@@ -105,12 +105,8 @@ def main():
         )
 
         checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
-        results_dict = checkpoint_result.describe_dict()
-        # Serialize the result to handle any datetime objects
-        json_results = json.dumps(results_dict, default=json_serial)
-        logger.info(f"json_results: {json_results}")
-        results = json.loads(json_results)
-        table_results_df = pd.json_normalize(results['validation_results'][0]['expectations'])
+        results_dict = list(checkpoint_result.run_results.values())[0].to_json_dict()
+        table_results_df = pd.json_normalize(results_dict['results'])
         table_results_df_list.append(table_results_df)
 
         # generate id lists for each unexpected result set
@@ -125,11 +121,16 @@ def main():
     results_df = pd.concat(table_results_df_list)
 
     # map DQ dimension type
-    results_df['dq_dimension_type'] = results_df['expectation_type'].map(dq_dimensions_map)
+    results_df['dq_dimension_type'] = results_df['expectation_config.type'].map(dq_dimensions_map)
 
     # add clean dataset name
-    results_df['table_name'] = results_df['kwargs.batch_id'].map(
+    results_df['dataset_name'] = results_df['expectation_config.kwargs.batch_id'].map(
         lambda x: x.removeprefix('pandas-').removesuffix('_df_asset'))
+
+    # add composite key for each specific test (so can be tracked over time)
+    results_df.insert(loc=0, column='expectation_key',
+                      value=results_df.set_index(['expectation_config.type', 'dataset_name']).index.factorize()[0] + 1)
+    results_df['expectation_id'] = results_df['expectation_config.type'] + "_" + results_df['dataset_name']
 
     results_df['import_year'] = datetime.today().year
     results_df['import_month'] = datetime.today().month
@@ -137,11 +138,11 @@ def main():
     results_df['import_date'] = datetime.today().strftime('%Y%m%d')
 
     # set dtypes for Athena
-    dtype_dict = {'expectation_type': 'string',
-                  'kwargs.batch_id': 'string',
-                  'kwargs.column': 'string',
-                  'kwargs.min_value': 'string',
-                  'kwargs.max_value': 'string',
+    dtype_dict = {'expectation_config.type': 'string',
+                  'expectation_config.kwargs.batch_id': 'string',
+                  'expectation_config.kwargs.column': 'string',
+                  'expectation_config.kwargs.min_value': 'string',
+                  'expectation_config.kwargs.max_value': 'string',
                   'result.element_count': 'bigint',
                   'result.unexpected_count': 'bigint',
                   'result.missing_count': 'bigint',
@@ -149,9 +150,12 @@ def main():
                   'result.unexpected_list': 'array<string>',
                   'result.unexpected_index_list': 'array<bigint>',
                   'result.unexpected_index_query': 'string',
-                  'kwargs.regex': 'string',
-                  'kwargs.value_set': 'string',
-                  'kwargs.column_list': 'string',
+                  'expectation_config.kwargs.regex': 'string',
+                  'expectation_config.kwargs.value_set': 'string',
+                  'expectation_config.kwargs.column_list': 'string',
+                  'exception_info.raised_exception': 'string',
+                  'exception_info.exception_traceback': 'string',
+                  'exception_info.exception_message': 'string',
                   'import_year': 'string',
                   'import_month': 'string',
                   'import_day': 'string',
@@ -164,7 +168,7 @@ def main():
         dataset=True,
         database=target_database,
         table=target_table,
-        mode="overwrite_partitions",
+        mode="overwrite",
         partition_cols=partition_keys,
         dtype=dtype_dict
     )

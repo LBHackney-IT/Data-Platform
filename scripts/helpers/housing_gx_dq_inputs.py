@@ -1,6 +1,6 @@
 sql_config = {'person_reshape': {
     'sql': """SELECT *, substr(startdate, 1, 10) as startdate_parsed, substr(enddate, 1, 10) as enddate_parsed,
-    substr(dateofbirth, 1, 10) as dateofbirth_parsed FROM "housing-refined-zone"."person_reshape" WHERE import_date = (SELECT max(import_date) FROM "housing-refined-zone"."person_reshape") AND enddate IS NULL AND type IN ('Secure', 'Introductory')	and substr(dateofbirth, 1, 10) between '1850-01-01' and '2100-01-01' 	and substr(startdate, 1, 10) between '1900-01-01' and '2100-01-01'""",
+    substr(dateofbirth, 1, 10) as dateofbirth_parsed FROM "housing-refined-zone"."person_reshape" WHERE import_date = (SELECT max(import_date) FROM "housing-refined-zone"."person_reshape") AND enddate IS NULL AND type IN ('Secure', 'Introductory')""",
     'id_field': 'person_id'},
     'tenure_reshape': {
         'sql': """SELECT * FROM "housing-refined-zone"."tenure_reshape" where import_date>'20240412' and import_date=(select max(import_date) from "housing-refined-zone"."tenure_reshape" where import_date>'20240412') and isterminated=False and description in ('Secure', 'Introductory')""",
@@ -24,11 +24,18 @@ table_list = ['person_reshape', 'tenure_reshape', 'contacts_reshape', 'housing_h
 
 partition_keys = ['import_year', 'import_month', 'import_day', 'import_date']
 
-dq_dimensions_map = {'expect_column_value_lengths_to_be_between': 'ACCURACY',
+dq_dimensions_map = {'expect_column_value_lengths_to_be_between': 'VALIDITY',
+                     'expect_first_name_column_value_lengths': 'VALIDITY',
+                     'expect_surname_column_value_lengths': 'VALIDITY',
                      'expect_column_values_to_be_unique': 'UNIQUENESS',
                      'expect_column_values_to_match_regex': 'VALIDITY',
+                     'expect_uprn_column_values_to_match_regex': 'VALIDITY',
                      'expect_column_values_to_be_in_set': 'CONSISTENCY',
+                     'expect_person_type_values_to_be_in_set': 'CONSISTENCY',
+                     'expect_preferred_title_values_to_be_in_set': 'CONSISTENCY',
                      'expect_select_column_values_to_be_unique_within_record': 'UNIQUENESS',
                      'expect_column_values_to_not_be_null': 'COMPLETENESS',
-                     'expect_column_values_to_be_between': 'VALIDITY'
+                     'expect_uprn_not_to_be_null': 'COMPLETENESS',
+                     'expect_column_values_to_be_between': 'VALIDITY',
+                     'expect_date_of_birth_to_be_between': 'VALIDITY'
                      }
