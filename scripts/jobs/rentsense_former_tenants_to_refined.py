@@ -958,7 +958,7 @@ if __name__ == "__main__":
         "TenancyEndDate",
         "'Hackney' as LocalAuthority",
         "'' as HousingOfficerName",
-        "ActionCode as Patch",
+        "Patch as Patch",
         #     "import_date as import_date",
         "uh_ten_ref as tenancy_ref",
         "PreviousWeekBalance",
