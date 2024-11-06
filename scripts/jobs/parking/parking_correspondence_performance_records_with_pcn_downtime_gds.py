@@ -62,6 +62,7 @@ Correspondence Performance records last 13 months with PCN FOI records
 21/04/2023 - added teams data from google spreadsheet load - https://docs.google.com/spreadsheets/d/1zxZXX1_qU9NW93Ug1JUy7aXsnTz45qIj7Zftmi9trbI/edit?usp=sharing
 02/10/2023 - modified to union data into one output for Downtime data gathered from Google form https://forms.gle/bB53jAayiZ2Ykwjk6
 08/11/2023 - modified to add monthly officer totals from original gds job
+06/11/2024 - updated date formats in downtime data as source google sheet changed to yyyy-mm-dd HH:MM:ss from d/m/y
 
 */
 /*Teams data from google spreadsheet load - https://docs.google.com/spreadsheets/d/1zxZXX1_qU9NW93Ug1JUy7aXsnTz45qIj7Zftmi9trbI/edit?usp=sharing*/
