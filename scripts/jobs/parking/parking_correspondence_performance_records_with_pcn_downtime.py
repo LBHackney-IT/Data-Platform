@@ -61,7 +61,7 @@ Correspondence Performance records last 13 months with PCN FOI records
 16/06/2022 - Created 
 21/04/2023 - added teams data from google spreadsheet load - https://docs.google.com/spreadsheets/d/1zxZXX1_qU9NW93Ug1JUy7aXsnTz45qIj7Zftmi9trbI/edit?usp=sharing
 02/10/2023 - modified to union data into one output for Downtime data gathered from Google form https://forms.gle/bB53jAayiZ2Ykwjk6
-
+06/11/2024 - updated date formats in downtime data as source google sheet changed to yyyy-mm-dd HH:MM:ss from d/m/y
 */
 /*Teams data from google spreadsheet load - https://docs.google.com/spreadsheets/d/1zxZXX1_qU9NW93Ug1JUy7aXsnTz45qIj7Zftmi9trbI/edit?usp=sharing*/
 With team as (
@@ -342,38 +342,38 @@ cast(parking_officer_downtime.timestamp as string) as downtime_timestamp
 ,liberator_system_username
 ,liberator_system_id
 ,cast(import_datetime as string) import_datetime
-,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60)  > 1440 then 1 else 0 end as string) as multiple_downtime_days_flag
-,cast(unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')) as string) as response_secs
-,cast(Case when parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' then (unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60  end as string) as response_mins
-,cast(Case when parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' then (unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/3600  end as string) as response_hours
+,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60)  > 1440 then 1 else 0 end as string) as multiple_downtime_days_flag
+,cast(unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')) as string) as response_secs
+,cast(Case when parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' then (unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60  end as string) as response_mins
+,cast(Case when parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' then (unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/3600  end as string) as response_hours
 
 /*Downtime calendar days*/
-,cast(Case when parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' then datediff( cast(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date) )+1  end as string) as response_days_plus_one -- downtime days plus one calendar day
+,cast(Case when parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' then datediff( cast(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date) )+1  end as string) as response_days_plus_one -- downtime days plus one calendar day
 
 /*Downtime non working mins*/
-,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 948 
-    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) < 1440 then 948 end  as string) as downtime_total_non_working_mins_with_lunch --if greater than 1440 mins then (days + 1) * 948  "
-,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 1008
-    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) < 1440 then 1008 end  as string) as downtime_total_non_working_mins --if greater than 1440 mins then (days + 1) * 1008 "
+,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 948 
+    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) < 1440 then 948 end  as string) as downtime_total_non_working_mins_with_lunch --if greater than 1440 mins then (days + 1) * 948  "
+,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 1008
+    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) < 1440 then 1008 end  as string) as downtime_total_non_working_mins --if greater than 1440 mins then (days + 1) * 1008 "
 
 /*Downtime working mins*/
-,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 492 
-    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) < 1440 then 492 end  as string) as downtime_total_working_mins_with_lunch -- 492 mins = 8hrs 12 mins working day including lunch"
-,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 432
-    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) < 1440 then 432 end  as string)  as downtime_total_working_mins --432 mins = 7hrs 12mins working hours"
+,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 492 
+    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) < 1440 then 492 end  as string) as downtime_total_working_mins_with_lunch -- 492 mins = 8hrs 12 mins working day including lunch"
+,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 432
+    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) < 1440 then 432 end  as string)  as downtime_total_working_mins --432 mins = 7hrs 12mins working hours"
 
 /*Downtime working mins net (less downtime mins)*/
-,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 492
-    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) < 1440 then 492 - /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) end  as string) as downtime_total_working_mins_with_lunch_net -- 492 mins = 8hrs 12 mins working day including lunch less downtime"
-,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 432
-    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60 ) < 1440 then 432 - (/* downtime mins (response_mins)*/ (unix_timestamp(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss')))/60  ) end  as string) as downtime_total_working_mins_net --432 mins = 7hrs 12mins working hours"
+,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 492
+    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) < 1440 then 492 - /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) end  as string) as downtime_total_working_mins_with_lunch_net -- 492 mins = 8hrs 12 mins working day including lunch less downtime"
+,cast(case when  parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) > 1440 then /*response_days_plus_one*/(datediff( cast(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date) )+1) * 432
+    When parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' and /* downtime mins (response_mins)*/ ((unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60 ) < 1440 then 432 - (/* downtime mins (response_mins)*/ (unix_timestamp(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss')) - unix_timestamp(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss')))/60  ) end  as string) as downtime_total_working_mins_net --432 mins = 7hrs 12mins working hours"
 
 ,cast(substr(cast(start_date as string), 12, 5)  as string) as start_date_time
 ,cast(substr(cast(start_date as string), 1, 10)  as string) as startdate
-,cast(Substr(cast(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,16)  as string) as start_date_datetime
+,cast(Substr(cast(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,16)  as string) as start_date_datetime
 ,cast(substr(cast(end_date as string), 12, 5)  as string) as end_date_time
 ,cast(substr(cast(end_date as string), 1, 10)  as string) as enddate
-,cast(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,16)  as string) as end_date_datetime
+,cast(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,16)  as string) as end_date_datetime
 ,'Downtime' as response_status
 ,cast(current_timestamp as string) as Current_time_stamp
 
@@ -382,7 +382,7 @@ cast(parking_officer_downtime.timestamp as string) as downtime_timestamp
 ,'' as to_assigned_time
 ,'' as assigned_in_progress_time
 ,'' as assigned_response_time
-,(cast (cast(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,16)  as timestamp) - cast ( Substr(cast(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,16) as timestamp) as string)  )  as response_time --as downtime_duration  --line 30
+,(cast (cast(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,16)  as timestamp) - cast ( Substr(cast(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,16) as timestamp) as string)  )  as response_time --as downtime_duration  --line 30
 ,'' as unassigned_days
 ,'' as unassigned_days_group
 ,'' as unassigned_days_kpiTotFiftySixLess
@@ -399,15 +399,15 @@ cast(parking_officer_downtime.timestamp as string) as downtime_timestamp
 ,'' as assignedResponseDays_group
 ,'' as assignedResponseDays_kpiTotFiftySixLess
 ,'' as assignedResponseDays_kpiTotFourteenLess
-,cast( Case when parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' then datediff( cast(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,10) as date) )  end as string) as ResponseDays --as downtime_duration in days
+,cast( Case when parking_officer_downtime.timestamp not like '' and parking_officer_downtime.timestamp not like '#REF!' then datediff( cast(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date), cast(Substr(cast(to_timestamp(start_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,10) as date) )  end as string) as ResponseDays --as downtime_duration in days
 ,'' as ResponseDays_group
 ,'' as ResponseDays_kpiTotFiftySixLess
 ,'' as ResponseDays_kpiTotFourteenLess
 , end_date as Response_generated_at
 , start_date  as Date_Received
-,concat(Substr(cast(to_timestamp(end_date,'dd/MM/yyyy HH:mm:ss') as varchar(30)),1,7), '-01') as MonthYear  
+,concat(Substr(cast(to_timestamp(end_date,'yyyy-MM-dd HH:mm:ss') as varchar(30)),1,7), '-01') as MonthYear  
 ,'Downtime' as  Type
-,parking_officer_downtime.downtime as Serviceable -- downtime --,'Downtime' as Serviceable -- downtime
+,parking_officer_downtime.Downtime as Serviceable -- downtime
 ,'' as Service_category
 ,concat(officer_s_first_name,' ',officer_s_last_name) as Response_written_by --downtime officer full name
 ,'' as Letter_template
@@ -549,7 +549,8 @@ cast(parking_officer_downtime.timestamp as string) as downtime_timestamp
 ,'' as t_notes
 ,'' as t_import_date
 
-from parking_officer_downtime where import_date = (select max(import_date) from parking_officer_downtime) and timestamp not like '' and timestamp not like '#REF!' 
+from parking_officer_downtime where import_date = (select max(import_date) from parking_officer_downtime) and timestamp not like '' and timestamp not like '#REF!'
+AND cast(Substr( cast(parking_officer_downtime.timestamp as string) ,1,10) as date)  > current_date  - interval '13' month  --Last 13 months from todays date
 --order by timestamp desc
 """
 ApplyMapping_node2 = sparkSqlQuery(
