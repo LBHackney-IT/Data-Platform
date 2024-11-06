@@ -1,14 +1,14 @@
 locals {
-  backup_ami_id = "ami-0b08cd4ad0a6162e3"
+  backup_ami_id = "ami-0e95b4a1bb30870c9"
   ec2_tags = {
     BackupPolicy = title(var.environment)
-    Name         = "${var.identifier_prefix}-qlik-sense-restore-old"
+    Name         = "${var.identifier_prefix}-qlik-sense-restore-5"
   }
 
-  backup_ami_id_to_restore = "ami-0462df3547bccd38d"
+  backup_ami_id_to_restore = "ami-0e95b4a1bb30870c9"
   ec2_tags_for_restore = {
     BackupPolicy = title(var.environment)
-    Name         = "${var.identifier_prefix}-qlik-sense-restore"
+    Name         = "${var.identifier_prefix}-qlik-sense-restore-7"
   }
 }
 
