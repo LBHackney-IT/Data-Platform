@@ -95,8 +95,6 @@ class ExpectDateOfBirthToBeBetween(gxe.ExpectColumnValuesToBeBetween):
     column: str = 'dateofbirth_parsed'
     min_value: str = datetime(1900, 1, 1, 0, 0, 0).isoformat()
     max_value: str = datetime.today().isoformat()
-    condition_parser: str = "pandas"
-    row_condition: str = 'df["dateofbirth_parsed"].str[:10]  >= "1850-01-01" and df["dateofbirth_parsed"].str[:10] < "2025-01-01" and df["startdate_parsed"].str[:10] > "1900-01-01" and df["startdate_parsed"].str[:10] < "2100-01-01"'
     description: str = "Expect dateofbirth_parsed be complete with no missing values"
 
 
