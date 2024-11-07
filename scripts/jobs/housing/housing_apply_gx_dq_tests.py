@@ -107,6 +107,10 @@ def main():
         checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
         results_dict = list(checkpoint_result.run_results.values())[0].to_json_dict()
         table_results_df = pd.json_normalize(results_dict['results'])
+        table_results_df = table_results_df.drop(
+            columns={'exception_info.raised_exception',
+                     'exception_info.exception_traceback',
+                     'exception_info.exception_message'})
         table_results_df_list.append(table_results_df)
 
         # generate id lists for each unexpected result set
@@ -155,9 +159,6 @@ def main():
                   'expectation_config.kwargs.regex': 'string',
                   'expectation_config.kwargs.value_set': 'string',
                   'expectation_config.kwargs.column_list': 'string',
-                  'exception_info.raised_exception': 'string',
-                  'exception_info.exception_traceback': 'string',
-                  'exception_info.exception_message': 'string',
                   'import_year': 'string',
                   'import_month': 'string',
                   'import_day': 'string',
