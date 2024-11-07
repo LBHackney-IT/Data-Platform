@@ -116,7 +116,21 @@ data "aws_iam_policy_document" "fme_access_to_s3" {
     ]
     resources = [
       "${module.raw_zone.bucket_arn}/unrestricted/*",
-      "${module.athena_storage.bucket_arn}/primary/*"
+      "${module.athena_storage.bucket_arn}/primary/*",
+      "${module.raw_zone.bucket_arn}/data-and-insight/*",
+      "${module.raw_zone.bucket_arn}/env-enforcement/*",
+      "${module.raw_zone.bucket_arn}/env-services/*",
+      "${module.raw_zone.bucket_arn}/housing/*",
+      "${module.raw_zone.bucket_arn}/parking/*",
+      "${module.raw_zone.bucket_arn}/planning/*",
+      "${module.raw_zone.bucket_arn}/streetscene/*",
+      "${module.refined_zone.bucket_arn}/data-and-insight/*",
+      "${module.refined_zone.bucket_arn}/env-enforcement/*",
+      "${module.refined_zone.bucket_arn}/env-services/*",
+      "${module.refined_zone.bucket_arn}/housing/*",
+      "${module.refined_zone.bucket_arn}/parking/*",
+      "${module.refined_zone.bucket_arn}/planning/*",
+      "${module.refined_zone.bucket_arn}/streetscene/*"
     ]
   }
 
@@ -141,6 +155,7 @@ data "aws_iam_policy_document" "fme_access_to_s3" {
     resources = [
       module.athena_storage.kms_key_arn,
       module.raw_zone.kms_key_arn,
+      module.refined_zone.kms_key_arn
     ]
   }
 }
