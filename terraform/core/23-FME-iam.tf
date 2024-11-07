@@ -95,6 +95,20 @@ data "aws_iam_policy_document" "fme_access_to_athena_and_glue" {
   }
 }
 
+# Folder names need reading permission
+locals {
+  folders = [
+    "unrestricted",
+    "data-and-insight",
+    "env-enforcement",
+    "env-services",
+    "housing",
+    "parking",
+    "planning",
+    "streetscene"
+  ]
+}
+
 data "aws_iam_policy_document" "fme_access_to_s3" {
   statement {
     effect = "Allow"
@@ -119,20 +133,12 @@ data "aws_iam_policy_document" "fme_access_to_s3" {
         "${module.athena_storage.bucket_arn}/primary/*",
       ],
       [
-        for folder in [
-          "unrestricted",
-          "data-and-insight",
-          "env-enforcement",
-          "env-services",
-          "housing",
-          "parking",
-          "planning",
-          "streetscene"
-        ] :
-        "${module.raw_zone.bucket_arn}/${folder}/*",
-        "${module.refined_zone.bucket_arn}/${folder}/*",
-        "${module.trusted_zone.bucket_arn}/${folder}/*"
-      ]
+        for folder in local.folders : [
+          "${module.raw_zone.bucket_arn}/${folder}/*",
+          "${module.refined_zone.bucket_arn}/${folder}/*",
+          "${module.trusted_zone.bucket_arn}/${folder}/*"
+        ]
+      ]...
     )
   }
 
