@@ -39,5 +39,3 @@ dq_dimensions_map = {'expect_column_value_lengths_to_be_between': 'VALIDITY',
                      'expect_column_values_to_be_between': 'VALIDITY',
                      'expect_date_of_birth_to_be_between': 'VALIDITY'
                      }
-
-
