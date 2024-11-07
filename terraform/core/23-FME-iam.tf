@@ -114,24 +114,26 @@ data "aws_iam_policy_document" "fme_access_to_s3" {
       "s3:GetObject",
       "s3:GetObjectVersion",
     ]
-    resources = [
-      "${module.raw_zone.bucket_arn}/unrestricted/*",
-      "${module.athena_storage.bucket_arn}/primary/*",
-      "${module.raw_zone.bucket_arn}/data-and-insight/*",
-      "${module.raw_zone.bucket_arn}/env-enforcement/*",
-      "${module.raw_zone.bucket_arn}/env-services/*",
-      "${module.raw_zone.bucket_arn}/housing/*",
-      "${module.raw_zone.bucket_arn}/parking/*",
-      "${module.raw_zone.bucket_arn}/planning/*",
-      "${module.raw_zone.bucket_arn}/streetscene/*",
-      "${module.refined_zone.bucket_arn}/data-and-insight/*",
-      "${module.refined_zone.bucket_arn}/env-enforcement/*",
-      "${module.refined_zone.bucket_arn}/env-services/*",
-      "${module.refined_zone.bucket_arn}/housing/*",
-      "${module.refined_zone.bucket_arn}/parking/*",
-      "${module.refined_zone.bucket_arn}/planning/*",
-      "${module.refined_zone.bucket_arn}/streetscene/*"
-    ]
+    resources = concat(
+      [
+        "${module.athena_storage.bucket_arn}/primary/*",
+      ],
+      [
+        for folder in [
+          "unrestricted",
+          "data-and-insight",
+          "env-enforcement",
+          "env-services",
+          "housing",
+          "parking",
+          "planning",
+          "streetscene"
+        ] :
+        "${module.raw_zone.bucket_arn}/${folder}/*",
+        "${module.refined_zone.bucket_arn}/${folder}/*",
+        "${module.trusted_zone.bucket_arn}/${folder}/*"
+      ]
+    )
   }
 
   statement {
@@ -155,7 +157,8 @@ data "aws_iam_policy_document" "fme_access_to_s3" {
     resources = [
       module.athena_storage.kms_key_arn,
       module.raw_zone.kms_key_arn,
-      module.refined_zone.kms_key_arn
+      module.refined_zone.kms_key_arn,
+      module.trusted_zone.kms_key_arn
     ]
   }
 }
