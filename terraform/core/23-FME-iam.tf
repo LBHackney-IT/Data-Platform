@@ -133,8 +133,8 @@ data "aws_iam_policy_document" "fme_access_to_s3" {
           "${module.raw_zone.bucket_arn}/${folder}/*",
           "${module.refined_zone.bucket_arn}/${folder}/*",
           "${module.trusted_zone.bucket_arn}/${folder}/*"
-        ]...
-      ]
+        ]
+      ]...
     )
   }
 
