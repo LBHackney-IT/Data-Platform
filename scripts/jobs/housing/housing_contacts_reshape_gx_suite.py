@@ -38,22 +38,22 @@ class ExpectTargetIDAndValueColumnValuesToBeUniqueWithinRecord(gxe.ExpectSelectC
 
 
 class ExpectTargetIDColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column = 'target_id'
+    column: str = 'target_id'
     description: str = "Expect Target ID column to be complete with no nulls"
 
 
 class ExpectContactValueColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column = 'value'
+    column: str = 'value'
     description: str = "Expect Value column to be complete with no nulls"
 
 
 class ExpectContactTypeColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column = 'contacttype'
+    column: str = 'contacttype'
     description: str = "Expect Contact Type column to be complete with no nulls"
 
 
 class ExpectSubTypeColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column = 'subtype'
+    column: str = 'subtype'
     description: str = "Expect Subtype column to be complete with no nulls"
 
 
