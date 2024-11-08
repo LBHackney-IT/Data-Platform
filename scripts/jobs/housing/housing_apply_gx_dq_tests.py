@@ -141,8 +141,6 @@ def main():
     results_df['import_day'] = datetime.today().day
     results_df['import_date'] = datetime.today().strftime('%Y%m%d')
 
-    results_df = results_df.drop(columns={'exception_info.exception_traceback'})
-
     # set dtypes for Athena
     dtype_dict = {'expectation_config.type': 'string',
                   'expectation_config.kwargs.batch_id': 'string',
