@@ -107,10 +107,8 @@ def main():
         checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
         results_dict = list(checkpoint_result.run_results.values())[0].to_json_dict()
         table_results_df = pd.json_normalize(results_dict['results'])
-        table_results_df = table_results_df.drop(
-            columns={'exception_info.raised_exception',
-                     'exception_info.exception_traceback',
-                     'exception_info.exception_message'})
+        cols_to_drop = [c for c in table_results_df.columns if c.startswith('exception_info')]
+        table_results_df = table_results_df.drop(columns=cols_to_drop)
         table_results_df_list.append(table_results_df)
 
         # generate id lists for each unexpected result set
