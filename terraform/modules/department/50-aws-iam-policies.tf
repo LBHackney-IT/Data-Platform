@@ -925,3 +925,39 @@ resource "aws_iam_policy" "airflow_base_policy" {
   name   = lower("${var.identifier_prefix}-${local.department_identifier}-ariflow-base-policy")
   policy = data.aws_iam_policy_document.airflow_base_policy.json
 }
+
+# ECS Department task role policy
+
+# Todo: departments should probably have their own log groups
+# but this is equivalent to the existing Glue set up
+data "aws_iam_policy_document" "ecs_cloudwatch" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:PutLogEvents",
+      "logs:CreateLogStream",
+      "logs:CreateLogGroup",
+      "logs:AssociateKmsKey"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:/ecs/*"
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "ecs_department_policy" {
+  source_policy_documents = [
+    data.aws_iam_policy_document.s3_department_access,
+    data.aws_iam_policy_document.secrets_manager_read_only,
+    data.aws_iam_policy_document.read_glue_scripts_and_mwaa_and_athena,
+    data.aws_iam_policy_document.ecs_cloudwatch,
+    data.aws_iam_policy_document.crawler_can_access_jdbc_connection
+  ]
+
+}
+
+resource "aws_iam_policy" "ecs_department_task_policy" {
+  name = lower("${var.identifier_prefix}-${local.department_identifier}-ecs-policy")
+
+
+}
