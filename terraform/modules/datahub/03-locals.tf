@@ -24,7 +24,7 @@ locals {
       { name : "AUTH_OIDC_ENABLED", value : var.is_live_environment },
       { name : "AUTH_OIDC_DISCOVERY_URI", value : "https://accounts.google.com/.well-known/openid-configuration" },
       { name : "AUTH_OIDC_BASE_URL", value : var.datahub_url },
-      { name : "AUTH_OIDC_SCOPE", value : "openid profile email" },
+      { name : "AUTH_OIDC_SCOPE", value : "openid email" },
       { name : "AUTH_OIDC_USER_NAME_CLAIM", value : "email" },
       { name : "AUTH_OIDC_USER_NAME_CLAIM_REGEX", value : "([^@]+)" },
       { name : "DATAHUB_ANALYTICS_ENABLED", value : "false" },
