@@ -960,3 +960,14 @@ resource "aws_iam_policy_document" "department_ecs_policy" {
   policy = data.aws_iam_policy_document.department_ecs.json
   tags   = var.tags
 }
+
+data "aws_iam_policy_document" "ecs_assume_role_policy" {
+  statement {
+    effect = "allow"
+    principals {
+      identifiers = ["ecs-tasks.amazonaws.com"]
+      type        = "Service"
+    }
+    actions = "sts:AssumeRole"
+  }
+}
