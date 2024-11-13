@@ -953,11 +953,10 @@ data "aws_iam_policy_document" "ecs_department_policy" {
     data.aws_iam_policy_document.ecs_cloudwatch,
     data.aws_iam_policy_document.crawler_can_access_jdbc_connection
   ]
-
 }
 
-resource "aws_iam_policy" "ecs_department_task_policy" {
-  name = lower("${var.identifier_prefix}-${local.department_identifier}-ecs-policy")
-
-
+resource "aws_iam_policy_document" "department_ecs_policy" {
+  name   = lower("${var.identifier_prefix}${local.department_identifier}-ecs-base-policy")
+  policy = data.aws_iam_policy_document.department_ecs.json
+  tags   = var.tags
 }

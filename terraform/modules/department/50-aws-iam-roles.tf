@@ -139,3 +139,15 @@ resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
     extra     = jsonencode({ region_name = var.region })
   })
 }
+
+# Department ECS
+resource "aws_iam_role" "department_ecs_role" {
+  name               = lower("${var.identifier_prefix}-glue-${local.department_identifier}")
+  assume_role_policy = data.aws_iam_policy_document.department
+  tags               = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "department_ecs_policy" {
+  role       = aws_iam_role.department_ecs_role.name
+  policy_arn = aws_iam_policy_document.department_ecs_policy.arn
+}
