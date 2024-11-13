@@ -968,6 +968,6 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
       identifiers = ["ecs-tasks.amazonaws.com"]
       type        = "Service"
     }
-    actions = "sts:AssumeRole"
+    actions = ["sts:AssumeRole"]
   }
 }
