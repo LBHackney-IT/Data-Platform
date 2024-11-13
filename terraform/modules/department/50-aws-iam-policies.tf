@@ -963,7 +963,7 @@ resource "aws_iam_policy_document" "department_ecs_policy" {
 
 data "aws_iam_policy_document" "ecs_assume_role_policy" {
   statement {
-    effect = "allow"
+    effect = "Allow"
     principals {
       identifiers = ["ecs-tasks.amazonaws.com"]
       type        = "Service"
