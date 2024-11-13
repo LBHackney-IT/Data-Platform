@@ -947,11 +947,11 @@ data "aws_iam_policy_document" "ecs_cloudwatch" {
 
 data "aws_iam_policy_document" "ecs_department_policy" {
   source_policy_documents = [
-    data.aws_iam_policy_document.s3_department_access,
-    data.aws_iam_policy_document.secrets_manager_read_only,
-    data.aws_iam_policy_document.read_glue_scripts_and_mwaa_and_athena,
-    data.aws_iam_policy_document.ecs_cloudwatch,
-    data.aws_iam_policy_document.crawler_can_access_jdbc_connection
+    data.aws_iam_policy_document.s3_department_access.json,
+    data.aws_iam_policy_document.secrets_manager_read_only.json,
+    data.aws_iam_policy_document.read_glue_scripts_and_mwaa_and_athena.json,
+    data.aws_iam_policy_document.ecs_cloudwatch.json,
+    data.aws_iam_policy_document.crawler_can_access_jdbc_connection.json
   ]
 }
 
