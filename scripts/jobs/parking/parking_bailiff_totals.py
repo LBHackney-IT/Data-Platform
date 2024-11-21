@@ -55,7 +55,7 @@ warrant_sum as (
 SELECT
     A.*, B.*,
     
-    format_datetime(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS importdatetime
+    format_datetime(CAST(CURRENT_TIMESTAMP AS timestamp), 'yyyy-MM-dd HH:mm:ss') AS importdatetime,
     format_datetime(current_date, 'yyyy')       AS import_year,
     format_datetime(current_date, 'MM')         AS import_month,
     format_datetime(current_date, 'dd')         AS import_day,
