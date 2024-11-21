@@ -911,9 +911,9 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-execution-role",
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-task-role",
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/parking-ecs-execution-role",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.identifier_prefix}-${var.environment}-ecs-parking",
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.identifier_prefix}-ecs-parking",
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/housing-ecs-execution-role",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.identifier_prefix}-${var.environment}-ecs-housing",
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.identifier_prefix}-ecs-housing",
     ]
     condition {
       test     = "StringEquals"
