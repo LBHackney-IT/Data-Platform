@@ -922,6 +922,11 @@ data "aws_iam_policy_document" "department_ecs_passrole" {
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-execution-role",
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-task-role"
     ]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values   = ["ecs-tasks.amazonaws.com"]
+    }
   }
 }
 
