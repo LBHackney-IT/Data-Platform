@@ -932,7 +932,7 @@ data "aws_iam_policy_document" "department_ecs_passrole" {
 
 resource "aws_iam_policy" "department_ecs_passrole" {
   name   = lower("${var.identifier_prefix}-${local.department_identifier}-department-ecs-passrole")
-  policy = data.aws_iam_policy_document.airflow_base_policy.json
+  policy = data.aws_iam_policy_document.department_ecs_passrole.json
   tags   = var.tags
 }
 
