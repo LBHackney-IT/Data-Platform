@@ -900,20 +900,27 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "arn:aws:ecs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cluster/*"
     ]
   }
+}
 
+resource "aws_iam_policy" "airflow_base_policy" {
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-ariflow-base-policy")
+  policy = data.aws_iam_policy_document.airflow_base_policy.json
+}
+
+data "aws_iam_policy_document" "department_ecs_passrole" {
   statement {
-    sid    = "AirflowPassRolePolicy"
+    sid    = "AirflowDepartmentECSPassrolePolicy"
     effect = "Allow"
     actions = [
       "iam:PassRole"
     ]
     resources = [
+      aws_iam_role.department_ecs_role.arn,
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.department_identifier}-ecs-execution-role",
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-execution-role",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-task-role",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/parking-ecs-execution-role",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.identifier_prefix}-ecs-parking",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/housing-ecs-execution-role",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.identifier_prefix}-ecs-housing",
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-task-role"
     ]
     condition {
       test     = "StringEquals"
@@ -923,12 +930,12 @@ data "aws_iam_policy_document" "airflow_base_policy" {
   }
 }
 
-resource "aws_iam_policy" "airflow_base_policy" {
-  tags = var.tags
-
-  name   = lower("${var.identifier_prefix}-${local.department_identifier}-ariflow-base-policy")
-  policy = data.aws_iam_policy_document.airflow_base_policy.json
+resource "aws_iam_policy" "department_ecs_passrole" {
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-department-ecs-passrole")
+  policy = data.aws_iam_policy_document.department_ecs_passrole.json
+  tags   = var.tags
 }
+
 
 # ECS Department task role policy
 

@@ -102,6 +102,7 @@ locals {
     s3_access                 = aws_iam_policy.s3_access.arn,
     secrets_manager_read_only = aws_iam_policy.secrets_manager_read_only.arn,
     airflow_base_policy       = aws_iam_policy.airflow_base_policy.arn,
+    department_ecs_passrole   = aws_iam_policy.department_ecs_policy.arn
   }
 }
 
