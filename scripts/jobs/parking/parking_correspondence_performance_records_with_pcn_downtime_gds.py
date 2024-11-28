@@ -63,8 +63,10 @@ Correspondence Performance records last 13 months with PCN FOI records
 02/10/2023 - modified to union data into one output for Downtime data gathered from Google form https://forms.gle/bB53jAayiZ2Ykwjk6
 08/11/2023 - modified to add monthly officer totals from original gds job
 06/11/2024 - updated date formats in downtime data as source google sheet changed to yyyy-mm-dd HH:MM:ss from d/m/y
+28/11/2024 - updated downtime records for t_team details to pull from parking_correspondence_performance_teams instead on leaving blank
 
 */
+
 /*Teams data from google spreadsheet load - https://docs.google.com/spreadsheets/d/1zxZXX1_qU9NW93Ug1JUy7aXsnTz45qIj7Zftmi9trbI/edit?usp=sharing*/
 With officer_total_rep_dates as(
 select
@@ -414,8 +416,8 @@ UNION
 Select
 cast(parking_officer_downtime.timestamp as string) as downtime_timestamp
 ,email_address as downtime_email_address
-,officer_s_first_name
-,officer_s_last_name
+,TRIM(officer_s_first_name) as officer_s_first_name 
+,TRIM(officer_s_last_name) as officer_s_last_name
 ,liberator_system_username
 ,liberator_system_id
 ,cast(import_datetime as string) import_datetime
@@ -486,7 +488,7 @@ cast(parking_officer_downtime.timestamp as string) as downtime_timestamp
 ,'Downtime' as  Type
 ,parking_officer_downtime.Downtime as Serviceable -- downtime
 ,'' as Service_category
-,concat(officer_s_first_name,' ',officer_s_last_name) as Response_written_by --downtime officer full name
+,concat(TRIM(officer_s_first_name),' ',TRIM(officer_s_last_name)) as Response_written_by --downtime officer full name
 ,'' as Letter_template
 ,'' as Action_taken
 ,'' as Related_to_PCN
@@ -626,21 +628,23 @@ cast(parking_officer_downtime.timestamp as string) as downtime_timestamp
 ,'' as tot_rep_records
 
 /*Teams data*/
-,'' as t_start_date
-,'' as t_end_date
-,'' as t_team
-,'' as t_team_name
-,'' as t_role
-,'' as t_forename
-,'' as t_surname
-,'' as t_full_name
-,'' as t_qa_doc_created_by
-,'' as t_qa_doc_full_name
-,'' as t_post_title
-,'' as t_notes
-,'' as t_import_date
+,t_start_date
+,t_end_date
+,t_team
+,t_team_name
+,t_role
+,t_forename
+,t_surname
+,t_full_name
+,t_qa_doc_created_by
+,t_qa_doc_full_name
+,t_post_title
+,t_notes
+,t_import_date
 
-from parking_officer_downtime where import_date = (select max(import_date) from parking_officer_downtime) and timestamp not like '' and timestamp not like '#REF!'
+from parking_officer_downtime 
+left join team on upper(team.t_full_name) = upper(concat(TRIM(officer_s_first_name),' ',TRIM(officer_s_last_name))) --as Response_written_by --downtime officer full name
+where import_date = (select max(import_date) from parking_officer_downtime) and timestamp not like '' and timestamp not like '#REF!'
 AND cast(Substr( cast(parking_officer_downtime.timestamp as string) ,1,10) as date)  > current_date  - interval '13' month  --Last 13 months from todays date
 --order by timestamp desc
 """
