@@ -996,13 +996,13 @@ module "interim_cycle_wait_list" {
   glue_job_name                  = "interim_cycle_wait_list"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Interim_Cycle_Hangar_Wait_List/Cycle Hangar Waiting List @ 19-11-2024.csv"
+  input_file_name                = "Interim_Cycle_Hangar_Wait_List/interim_cycle_wait_list @ 19-11-2024.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
     sheet1 : {
       header_row_number = 0
-      worksheet_name    = "Cycle Hangar Waiting List"
+      worksheet_name    = "interim_cycle_wait_list"
     }
   }
 }
