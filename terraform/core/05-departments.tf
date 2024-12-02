@@ -221,6 +221,7 @@ module "department_unrestricted" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
+  departmental_airflow_user       = true
 }
 
 module "department_sandbox" {
