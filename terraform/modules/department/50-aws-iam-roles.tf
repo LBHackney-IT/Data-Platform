@@ -152,3 +152,8 @@ resource "aws_iam_role_policy_attachment" "department_ecs_policy" {
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.department_ecs_policy.arn
 }
+
+resource "aws_iam_role_policy_attachment" "glue_access_attachment_to_ecs_role" {
+  role       = aws_iam_role.department_ecs_role.name
+  policy_arn = aws_iam_policy.glue_access.arn
+}

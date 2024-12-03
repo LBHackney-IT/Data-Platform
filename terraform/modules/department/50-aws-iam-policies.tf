@@ -475,7 +475,8 @@ data "aws_iam_policy_document" "read_glue_scripts_and_mwaa_and_athena" {
       "athena:GetQueryResults",
       "athena:ListDatabases",
       "athena:ListTableMetadata",
-      "athena:GetTableMetadata"
+      "athena:GetTableMetadata",
+      "athena:GetWorkGroup",
     ]
     resources = ["*"]
   }
