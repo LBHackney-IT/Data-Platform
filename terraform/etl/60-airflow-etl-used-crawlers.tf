@@ -68,3 +68,25 @@ resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
     }
   })
 }
+
+resource "aws_glue_crawler" "parking_spatially_enriched_refined_zone" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "${local.short_identifier_prefix}Parking Spatially Enriched Refined Zone"
+  role          = data.aws_iam_role.glue_role.arn
+  database_name = module.department_parking_data_source.refined_zone_catalog_database_name
+
+  s3_target {
+    path = "s3://${module.refined_zone_data_source.bucket_id}/parking/spatially-enriched/"
+  }
+  table_prefix       = "spatially_enriched_"
+  configuration      = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+}
