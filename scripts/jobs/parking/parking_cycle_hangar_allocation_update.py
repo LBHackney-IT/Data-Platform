@@ -38,6 +38,7 @@ Tom's hangar list
 28/04/2024 - refine the 'hangar_can_be_filled' field case statement
 26/09/2024 - add hangar location.
 04/10/2024 - add additional checks for the waiting list
+04/12/2024 - collect the interim cycle hangar waiting list
 ******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -104,6 +105,19 @@ LLPG as (
     SELECT *
     FROM "dataplatform-stg-liberator-raw-zone".liberator_permit_llpg
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
+/*******************************************************************************
+04/12/2024 - interim cycle hangar waiting list
+*******************************************************************************/   
+Interim_Wait as (
+    SELECT * from "parking-raw-zone".interim_cycle_wait_list 
+    WHERE import_date = (select max(import_date) 
+                    from "parking-raw-zone".interim_cycle_wait_list)),
+    
+/*** count the number on the waiting list by hangar ***/
+Interim_Wait_summary as (
+    SELECT hanger_id, count(*) as Interim_Wait_Total
+    FROM Interim_Wait
+    GROUP BY hanger_id),
 /*******************************************************************************
 Cycle Hangar allocation details
 *******************************************************************************/
@@ -222,6 +236,7 @@ allocated_Total as (
     LEFT JOIN Alloc_Total as B ON A.hanger_id = B.hanger_id
     WHERE H1 = 1),
 
+/*** 04/12/2024 - change to use the interim waiting list totals ***/
 Full_Hangar_Data as (
     SELECT
         A.hanger_id, A.hangar_location,
@@ -229,7 +244,7 @@ Full_Hangar_Data as (
             When A.hanger_id = 'new_only' Then 0
             ELSE Total_Allocated
         END as Total_Allocated,
-        Wait_Total,
+        Interim_Wait_Total  as Wait_Total,      /*** remove Wait_Total,***/
         CASE
             When A.hanger_id = 'new_only' Then 0
             ELSE ( 6 - Total_Allocated)
@@ -238,7 +253,8 @@ Full_Hangar_Data as (
         Max_Date as Latest_Registration_Date
     FROM allocated_Total as A
     LEFT JOIN Wait_total as B ON A.hanger_id = B.hanger_id
-    LEFT JOIN Wait_List_Earlist_Latest as C ON A.hanger_id = C.hanger_id),
+    LEFT JOIN Wait_List_Earlist_Latest as C ON A.hanger_id = C.hanger_id
+    LEFT JOIN Interim_Wait_summary as D ON A.hanger_id = D.hanger_id),
 
 /** 20-08-2024 Use the de-dupe data NOT TomHangar **/
 Hangar_WAit_List as (
