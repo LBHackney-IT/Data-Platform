@@ -6,6 +6,41 @@ from awsglue.utils import getResolvedOptions
 import great_expectations as gx
 import great_expectations.expectations as gxe
 
+
+class ExpectPropNoColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
+    column: str = 'property_no'
+    description: str = "Expect Property Number values to be unique"
+
+
+class ExpectPropNoAndPaymentRefColumnValuesToBeUniqueWithinRecord(gxe.ExpectSelectColumnValuesToBeUniqueWithinRecord):
+    column_list: list = ['property_no', 'payment_ref']
+    description: str = "Expect Property Number and Payment Reference fields to be unique for a record"
+
+
+class ExpectPropNoColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+    column: str = 'property_no'
+    description: str = "Expect Property Number column to be complete with no nulls"
+
+
+class ExpectPropNoNoColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
+    column: str = "property_no"
+    regex: str = r"^[0-9]\d+$"
+    description: str = "Expect Property Number Number to match regex ^[0-9]\d+$ (numerical)"
+
+
+class ExpectPaymentRefNoColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
+    column: str = "payment_ref"
+    regex: str = r"^[0-9]\d+$"
+    description: str = "Expect Payment Reference Number to match regex ^[0-9]\d+$ (numerical)"
+
+
+class ExpectTenureTypeColumnValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+    column: str = 'tenancy'
+    value_set: list = ['Leasehold (RTB)', 'Private Sale LH', 'Freehold (Serv)', 'Lse 100% Stair', 'Shared Equity',
+                       'Shared Owners']
+    description: str = "Expect Tenure Type values to be one of Leasehold (RTB), Private Sale LH, Freehold (Serv), Lse 100% Stair, Shared Equity, Shared Owners"
+
+
 arg_key = ['s3_target_location']
 args = getResolvedOptions(sys.argv, arg_key)
 locals().update(args)
@@ -14,33 +49,11 @@ locals().update(args)
 context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name='housing_homeowner_record_sheet_suite')
-suite.add_expectation(
-    gxe.ExpectColumnValuesToBeUnique(
-        column='property_no')
-)
-suite.add_expectation(
-    gxe.ExpectSelectColumnValuesToBeUniqueWithinRecord(
-        column_list=['property_no', 'payment_ref'])
-)
-suite.add_expectation(
-    gxe.ExpectColumnValuesToNotBeNull(
-        column='property_no')
-)
-suite.add_expectation(
-    gxe.ExpectColumnValuesToMatchRegex(
-        column="property_no",
-        regex=r"^[0-9]\d+$")
-)
-suite.add_expectation(
-    gxe.ExpectColumnValuesToMatchRegex(
-        column="payment_ref",
-        regex=r"^[0-9]\d+$")
-)
-suite.add_expectation(
-    gxe.ExpectColumnValuesToBeInSet(
-        column='tenancy',
-        value_set=['Leasehold (RTB)', 'Private Sale LH', 'Freehold (Serv)', 'Lse 100% Stair', 'Shared Equity',
-                   'Shared Owners'])
-)
 
+suite.add_expectation(ExpectPropNoColumnValuesToBeUnique())
+suite.add_expectation(ExpectPropNoAndPaymentRefColumnValuesToBeUniqueWithinRecord())
+suite.add_expectation(ExpectPropNoColumnValuesToNotBeNull())
+suite.add_expectation(ExpectPropNoNoColumnValuesToMatchRegex())
+suite.add_expectation(ExpectPaymentRefNoColumnValuesToMatchRegex())
+suite.add_expectation(ExpectTenureTypeColumnValuesToBeInSet())
 suite = context.suites.add(suite)
