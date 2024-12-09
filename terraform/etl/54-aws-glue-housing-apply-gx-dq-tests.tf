@@ -70,6 +70,9 @@ module "housing_gx_dq_metadata" {
 resource "aws_glue_trigger" "housing_gx_dq_metadata" {
   name = "${local.short_identifier_prefix}Housing GX Data Quality Metadata Trigger"
   type = "CONDITIONAL"
+  tags     = module.department_housing_data_source.tags
+  enabled  = local.is_production_environment
+  count    = local.is_live_environment ? 1 : 0
 
   actions {
     job_name = "${local.short_identifier_prefix}Housing GX Data Quality Metadata"
