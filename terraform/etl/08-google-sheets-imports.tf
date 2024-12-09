@@ -967,6 +967,6 @@ module "diplomatic_country_vrm_prefix_data_load" {
   google_sheets_worksheet_name    = "diplomatic_country_vrm_prefix_data_load"
   department                      = module.department_parking_data_source
   dataset_name                    = "diplomatic_country_vrm_prefix_data_load"
-  google_sheet_import_schedule    = "cron(0 4 * * 1)"
+  google_sheet_import_schedule    = "cron(0 4 ? * MON *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
