@@ -21,6 +21,21 @@ DBNAME="liberator"
 
 MYSQL_CONN_PARAMS="--user=${MYSQL_USER} --password=${MYSQL_PASS} --host=${MYSQL_HOST}"
 
+SSL_MODE=${MYSQL_SSL_MODE:-""}  
+OTHER_FLAGS=${MYSQL_OTHER_FLAGS:-""}  
+
+if [ -n "$SSL_MODE" ]; then
+  MYSQL_CONN_PARAMS="$MYSQL_CONN_PARAMS --ssl-mode=$SSL_MODE"
+  echo "SSL Mode set to $SSL_MODE"
+fi
+
+if [ -n "$OTHER_FLAGS" ]; then
+  MYSQL_CONN_PARAMS="$MYSQL_CONN_PARAMS $OTHER_FLAGS"
+  echo "Additional MySQL flags: $OTHER_FLAGS"
+fi
+
+echo "MYSQL connection params: $MYSQL_CONN_PARAMS"
+
 echo "Deleting old snapshots in database..."
 python3 delete_db_snapshots_in_db.py
 
@@ -50,3 +65,4 @@ echo "Taking snapshot of RDS database..."
 aws rds create-db-snapshot --db-instance-identifier "${RDS_INSTANCE_ID}" --db-snapshot-identifier "${SNAPSHOT_ID}"
 
 echo "Done"
+
