@@ -10,7 +10,7 @@ variable "google_sheet_import_schedule" {
   default     = "cron(0 01 ? * 2-6 *)"
   validation {
     condition = can(regex(
-      "^cron\\((\\d|[1-5]\\d)\\s(\\d|1\\d|2[0-3])\\s([1-9]|[12]\\d|3[01]|\\?|L|W)\\s([1-9]|1[0-2]|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC|\\*)\\s([1-7]|SUN|MON|TUE|WED|THU|FRI|SAT|\\?|L|\\*)\\s(\\*|\\d{4})\\)$",
+      "^cron\\((0|[1-5]?\\d)\\s(0|1\\d|2[0-3])\\s(\\?|L|W|([1-9]|[12]\\d|3[01]))\\s(\\*|[1-9]|1[0-2]|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\\s(\\?|L|\\*|[1-7]|SUN|MON|TUE|WED|THU|FRI|SAT|([1-7]-[1-7]))\\s(\\*|\\d{4})\\)$",
       var.google_sheet_import_schedule
       )) && length(regexall(
       "\\d{1,2}/\\d{1,2}",
