@@ -3,7 +3,7 @@ sql_config = {'person_reshape': {
     substr(dateofbirth, 1, 10) as dateofbirth_parsed FROM "housing-refined-zone"."person_reshape" WHERE import_date = (SELECT max(import_date) FROM "housing-refined-zone"."person_reshape") AND enddate IS NULL AND type IN ('Secure', 'Introductory')""",
     'id_field': 'person_id'},
     'tenure_reshape': {
-        'sql': """SELECT * FROM "housing-refined-zone"."tenure_reshape" where import_date>'20240412' and import_date=(select max(import_date) from "housing-refined-zone"."tenure_reshape" where import_date>'20240412') and isterminated=False and description in ('Secure', 'Introductory')""",
+        'sql': """SELECT * FROM "housing-refined-zone"."tenure_reshape" where import_date=(select max(import_date) from "housing-refined-zone"."tenure_reshape") and description in ('Secure', 'Introductory', 'Mesne Profit Ac', 'Non-Secure') and (endoftenuredate is null or substr(endoftenuredate, 1, 11) = '1900-01-01')""",
         'id_field': 'tenancy_id'},
     'contacts_reshape': {
         'sql': """SELECT id, targetid, createdat, contacttype, subtype, value, lastmodified, targettype, isactive, person_id, import_date  FROM "housing-refined-zone"."contacts_reshape"  where import_date=(select max(import_date) from "housing-refined-zone"."contacts_reshape") and isactive=True""",
