@@ -8,6 +8,36 @@ variable "google_sheet_import_schedule" {
   description = "Cron schedule for importing the Google sheet using AWS Glue"
   type        = string
   default     = "cron(0 01 ? * 2-6 *)"
+  validation {
+    condition = can(regex(
+      "^cron\\((\\d|[1-5]\\d)\\s(\\d|1\\d|2[0-3])\\s([1-9]|[12]\\d|3[01]|\\?|L|W)\\s([1-9]|1[0-2]|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC|\\*)\\s([1-7]|SUN|MON|TUE|WED|THU|FRI|SAT|\\?|L|\\*)\\s(\\*|\\d{4})\\)$",
+      var.google_sheet_import_schedule
+      )) && length(regexall(
+      "\\d{1,2}/\\d{1,2}",
+      var.google_sheet_import_schedule
+      )) == 0 && (length(regexall(
+        "\\?",
+        var.google_sheet_import_schedule)) <= 1 || !contains(split(
+        " ",
+      var.google_sheet_import_schedule),
+      "?"
+    ))
+    error_message = <<-EOT
+    Invalid cron expression. The cron syntax must follow:
+    cron(Minutes Hours Day-of-month Month Day-of-week Year)
+
+    Minutes: 0-59 (use , - * /)
+    Hours: 0-23 (use , - * /)
+    Day-of-month: 1-31 (use , - * ? / L W)
+    Month: 1-12 or JAN-DEC (use , - * /)
+    Day-of-week: 1-7 or SUN-SAT (use , - * ? / L)
+    Year: 1970-2199 (use , - * /)
+
+    Additional rules:
+    1. You cannot specify both Day-of-month and Day-of-week fields; use "?" in one.
+    2. Cron rates faster than 5 minutes are not supported.
+    EOT
+  }
 }
 
 variable "google_sheet_header_row_number" {
