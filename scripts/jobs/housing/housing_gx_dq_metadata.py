@@ -73,7 +73,7 @@ def main():
         dataset=True,
         database=target_database,
         table=target_table,
-        mode="overwrite",
+        mode="overwrite_partitions",
         partition_cols=partition_keys,
         dtype=dtype_dict
     )
