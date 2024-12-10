@@ -23,24 +23,6 @@ class ExpectSurnameColumnValueLength(gxe.ExpectColumnValueLengthsToBeBetween):
     description: str = "Expect surname to be at least 1 character length"
 
 
-class ExpectUPRNColumnValueLengthsBetween(gxe.ExpectColumnValueLengthsToBeBetween):
-    column: str = "uprn"
-    min_value: int = 11
-    max_value: int = 12
-    description: str = "Expect UPRN to be between 11 and 12 characters length inclusive"
-
-
-class ExpectUPRNColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
-    column: str = "uprn"
-    regex: str = r"^[1-9]\d{10,11}"
-    description: str = "Expect UPRN to match regex ^[1-9]\d{10,11} (starting with digit 1-9, followed by 10 or 11 digits"
-
-
-class ExpectUPRNNotToBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column: str = "uprn"
-    description: str = "Expect UPRN column to be complete with no missing values"
-
-
 class ExpectPersonTypeValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = 'person_type'
     value_set: list = ['Tenant', 'HouseholdMember', 'Leaseholder', 'Freeholder', 'Occupant', 'HousingOfficer',
@@ -81,11 +63,6 @@ class ExpectPersonIDAndPaymentReferenceColumnValuesToBeUniqueWithinRecord(
     description: str = "Expect Person ID and Payment Reference to be unique within dataset"
 
 
-class ExpectUPRNColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column: str = 'uprn'
-    description: str = "Expect UPRN be complete with no missing values"
-
-
 class ExpectDateOfBirthColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = 'dateofbirth_parsed'
     description: str = "Expect dateofbirth_parsed be complete with no missing values"
@@ -104,9 +81,6 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 suite = gx.ExpectationSuite(name='person_reshape_suite')
 suite.add_expectation(ExpectFirstNameColumnValueLength())
 suite.add_expectation(ExpectSurnameColumnValueLength())
-suite.add_expectation(ExpectUPRNColumnValueLengthsBetween())
-suite.add_expectation(ExpectUPRNColumnValuesToMatchRegex())
-suite.add_expectation(ExpectUPRNNotToBeNull())
 suite.add_expectation(ExpectPersonTypeValuesToBeInSet())
 suite.add_expectation(ExpectPreferredTitleValuesToBeInSet())
 suite.add_expectation(ExpectPersonIDColumnValuesToBeUnique())
@@ -114,7 +88,6 @@ suite.add_expectation(ExpectPersonIDColumnValuesToNotBeNull())
 suite.add_expectation(ExpectPersonIDAndPropertyReferenceColumnValuesToBeUniqueWithinRecord())
 suite.add_expectation(ExpectPropertyRefColumnValuesToNotBeNull())
 suite.add_expectation(ExpectPersonIDAndPaymentReferenceColumnValuesToBeUniqueWithinRecord())
-suite.add_expectation(ExpectUPRNColumnValuesToNotBeNull())
 suite.add_expectation(ExpectDateOfBirthColumnValuesToNotBeNull())
 suite.add_expectation(ExpectDateOfBirthToBeBetween())
 

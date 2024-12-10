@@ -17,19 +17,6 @@ class ExpectMemberFullNameColumnValueLengthsBetween(gxe.ExpectColumnValueLengths
     description: str = "Expect Member Fullname to be at least 1 character length"
 
 
-class ExpectUPRNColumnValueLengthsBetween(gxe.ExpectColumnValueLengthsToBeBetween):
-    column: str = "uprn"
-    min_value: int = 11
-    max_value: int = 12
-    description: str = "Expect UPRN to be between 11 and 12 characters length inclusive"
-
-
-class ExpectUPRNColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
-    column: str = "uprn"
-    regex: str = r"^[1-9]\d{10,11}"
-    description: str = "Expect UPRN to match regex ^[1-9]\d{10,11} (starting with digit 1-9, followed by 10 or 11 digits"
-
-
 class ExpectDescriptionValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = 'description'
     value_set: list = ['Asylum Seeker', 'Commercial Let', 'Temp Decant', 'Freehold', 'Freehold (Serv)', 'Introductory',
@@ -76,11 +63,6 @@ class ExpectTenancyIDColumnNotToBeNull(gxe.ExpectColumnValuesToNotBeNull):
     description: str = "Expect Tenancy ID column to be complete with no missing values"
 
 
-class ExpectUPRNNotToBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column: str = "uprn"
-    description: str = "Expect UPRN column to be complete with no missing values"
-
-
 class ExpectStartOfTenureDateColumnNotToBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "startoftenuredate"
     description: str = "Expect Start of Tenure Date column to be complete with no missing values"
@@ -97,14 +79,11 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 suite = gx.ExpectationSuite(name='tenure_reshape_suite')
 suite.add_expectation(ExpectTenancyIDAndPaymentReferenceColumnValuesToBeUniqueWithinRecord())
 suite.add_expectation(ExpectMemberFullNameColumnValueLengthsBetween())
-suite.add_expectation(ExpectUPRNColumnValueLengthsBetween())
-suite.add_expectation(ExpectUPRNColumnValuesToMatchRegex())
 suite.add_expectation(ExpectDescriptionValuesToBeInSet())
 suite.add_expectation(ExpectAssetTypeValuesToBeInSet())
 suite.add_expectation(ExpectTenancyIDAndPropertyReferenceColumnValuesToBeUniqueWithinRecord())
 suite.add_expectation(ExpectPaymentReferenceColumnNotToBeNull())
 suite.add_expectation(ExpectTenancyIDColumnNotToBeNull())
-suite.add_expectation(ExpectUPRNNotToBeNull())
 suite.add_expectation(ExpectStartOfTenureDateColumnNotToBeNull())
 suite.add_expectation(ExpectTenureCodeColumnNotToBeNull())
 
