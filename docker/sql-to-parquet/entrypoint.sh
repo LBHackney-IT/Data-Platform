@@ -19,6 +19,7 @@ echo "Snapshot Id - $SNAPSHOT_ID"
 FILENAME="liberator_dump_${DATE}"
 DBNAME="liberator"
 
+echo "Retrieving pem file..."
 wget -O /tmp/rds-combined-ca-bundle.pem https://truststore.pki.rds.amazonaws.com/eu-west-2/eu-west-2-bundle.pem
 
 MYSQL_CONN_PARAMS="--user=${MYSQL_USER} --password=${MYSQL_PASS} --host=${MYSQL_HOST} --ssl-ca=/tmp/rds-combined-ca-bundle.pem"
@@ -29,8 +30,6 @@ if [ -n "$OTHER_FLAGS" ]; then
   MYSQL_CONN_PARAMS="$MYSQL_CONN_PARAMS $OTHER_FLAGS"
   echo "Additional MySQL flags: $OTHER_FLAGS"
 fi
-
-echo "MYSQL connection params: $MYSQL_CONN_PARAMS"
 
 echo "Deleting old snapshots in database..."
 python3 delete_db_snapshots_in_db.py
