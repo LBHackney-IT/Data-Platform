@@ -23,14 +23,7 @@ wget -O /tmp/rds-combined-ca-bundle.pem https://truststore.pki.rds.amazonaws.com
 
 MYSQL_CONN_PARAMS="--user=${MYSQL_USER} --password=${MYSQL_PASS} --host=${MYSQL_HOST} --ssl-ca=/tmp/rds-combined-ca-bundle.pem"
 
-SSL_MODE=${MYSQL_SSL_MODE:-""}  
 OTHER_FLAGS=${MYSQL_OTHER_FLAGS:-""}  
-
-
-if [ -n "$SSL_MODE" ]; then
-  MYSQL_CONN_PARAMS="$MYSQL_CONN_PARAMS --ssl-mode=$SSL_MODE"
-  echo "SSL Mode set to $SSL_MODE"
-fi
 
 if [ -n "$OTHER_FLAGS" ]; then
   MYSQL_CONN_PARAMS="$MYSQL_CONN_PARAMS $OTHER_FLAGS"
