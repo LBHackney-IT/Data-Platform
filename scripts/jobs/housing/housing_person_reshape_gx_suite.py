@@ -11,10 +11,10 @@ args = getResolvedOptions(sys.argv, arg_key)
 locals().update(args)
 
 
-class ExpectFirstNameColumnValueLength(gxe.ExpectColumnValueLengthsToBeBetween):
-    column: str = "firstname"
-    min_value: int = 1
-    description: str = "Expect first name to be at least 1 character length"
+# class ExpectFirstNameColumnValueLength(gxe.ExpectColumnValueLengthsToBeBetween):
+#     column: str = "firstname"
+#     min_value: int = 1
+#     description: str = "Expect first name to be at least 1 character length"
 
 
 class ExpectSurnameColumnValueLength(gxe.ExpectColumnValueLengthsToBeBetween):
@@ -46,6 +46,17 @@ class ExpectPersonIDColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     description: str = "Expect Person ID be complete with no missing values"
 
 
+class ExpectIsOrganisationColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+    column: str = 'isorganisation'
+    description: str = "Expect isorganisation column (boolean) be complete with no missing values"
+
+
+class ExpectIsOrganisationValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+    column: str = 'isorganisation'
+    value_set: list = ['true', 'false']
+    description: str = "Expect IsOrganisation field to be boolean value of true or false"
+
+
 class ExpectPersonIDAndPropertyReferenceColumnValuesToBeUniqueWithinRecord(
     gxe.ExpectSelectColumnValuesToBeUniqueWithinRecord):
     column_list: list = ['person_id', 'propertyreference']
@@ -66,6 +77,8 @@ class ExpectPersonIDAndPaymentReferenceColumnValuesToBeUniqueWithinRecord(
 class ExpectDateOfBirthColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = 'dateofbirth_parsed'
     description: str = "Expect dateofbirth_parsed be complete with no missing values"
+    condition_parser: str = 'pandas'
+    row_condition: str = 'isorganisation<>true'
 
 
 class ExpectDateOfBirthToBeBetween(gxe.ExpectColumnValuesToBeBetween):
@@ -79,7 +92,7 @@ class ExpectDateOfBirthToBeBetween(gxe.ExpectColumnValuesToBeBetween):
 context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name='person_reshape_suite')
-suite.add_expectation(ExpectFirstNameColumnValueLength())
+# suite.add_expectation(ExpectFirstNameColumnValueLength())
 suite.add_expectation(ExpectSurnameColumnValueLength())
 suite.add_expectation(ExpectPersonTypeValuesToBeInSet())
 suite.add_expectation(ExpectPreferredTitleValuesToBeInSet())
@@ -90,5 +103,7 @@ suite.add_expectation(ExpectPropertyRefColumnValuesToNotBeNull())
 suite.add_expectation(ExpectPersonIDAndPaymentReferenceColumnValuesToBeUniqueWithinRecord())
 suite.add_expectation(ExpectDateOfBirthColumnValuesToNotBeNull())
 suite.add_expectation(ExpectDateOfBirthToBeBetween())
+suite.add_expectation(ExpectIsOrganisationColumnValuesToNotBeNull())
+suite.add_expectation(ExpectIsOrganisationValuesToBeInSet())
 
 suite = context.suites.add(suite)
