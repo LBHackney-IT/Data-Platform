@@ -30,7 +30,7 @@ class ExpectDescriptionValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
 
 class ExpectMemberIsResponsibleValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = 'member_is_responsible'
-    value_set: list = ['true', 'false']
+    value_set: list = [True, False]
     description: str = "Expect member_is_responsible field to be boolean value of true or false"
 
 
