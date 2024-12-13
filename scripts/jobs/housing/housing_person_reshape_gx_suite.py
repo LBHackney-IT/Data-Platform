@@ -53,7 +53,7 @@ class ExpectIsOrganisationColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeN
 
 class ExpectIsOrganisationValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = 'isorganisation'
-    value_set: list = ['true', 'false']
+    value_set: list = [True, False]
     description: str = "Expect IsOrganisation field to be boolean value of true or false"
 
 
