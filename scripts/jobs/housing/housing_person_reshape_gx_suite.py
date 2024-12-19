@@ -21,6 +21,16 @@ class ExpectSurnameColumnValueLength(gxe.ExpectColumnValueLengthsToBeBetween):
     column: str = "surname"
     min_value: int = 1
     description: str = "Expect surname to be at least 1 character length"
+    condition_parser: str = 'pandas'
+    row_condition: str = 'isorganisation<>True'
+
+
+class ExpectFirstnameColumnValueLength(gxe.ExpectColumnValueLengthsToBeBetween):
+    column: str = "firstname"
+    min_value: int = 1
+    description: str = "Expect firstname to be at least 1 character length"
+    condition_parser: str = 'pandas'
+    row_condition: str = 'isorganisation<>True'
 
 
 class ExpectPersonTypeValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
@@ -78,14 +88,16 @@ class ExpectDateOfBirthColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull
     column: str = 'dateofbirth_parsed'
     description: str = "Expect dateofbirth_parsed be complete with no missing values"
     condition_parser: str = 'pandas'
-    row_condition: str = 'isorganisation<>true'
+    row_condition: str = 'isorganisation<>True'
 
 
 class ExpectDateOfBirthToBeBetween(gxe.ExpectColumnValuesToBeBetween):
     column: str = 'dateofbirth_parsed'
     min_value: str = datetime(1900, 1, 1, 0, 0, 0).isoformat()
     max_value: str = datetime.today().isoformat()
-    description: str = "Expect dateofbirth_parsed be complete with no missing values"
+    description: str = "Expect dateofbirth_parsed be between 1900-01-01 and today's date"
+    condition_parser: str = 'pandas'
+    row_condition: str = 'isorganisation<>True'
 
 
 # add to GX context
@@ -94,6 +106,7 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 suite = gx.ExpectationSuite(name='person_reshape_suite')
 # suite.add_expectation(ExpectFirstNameColumnValueLength())
 suite.add_expectation(ExpectSurnameColumnValueLength())
+suite.add_expectation(ExpectFirstnameColumnValueLength())
 suite.add_expectation(ExpectPersonTypeValuesToBeInSet())
 suite.add_expectation(ExpectPreferredTitleValuesToBeInSet())
 suite.add_expectation(ExpectPersonIDColumnValuesToBeUnique())
