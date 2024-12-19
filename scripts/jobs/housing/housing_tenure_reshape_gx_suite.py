@@ -34,6 +34,12 @@ class ExpectMemberIsResponsibleValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     description: str = "Expect member_is_responsible field to be boolean value of true or false"
 
 
+class ExpectIsMutualExchangeValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+    column: str = 'ismutualexchange'
+    value_set: list = [True, False]
+    description: str = "Expect ismutualexchange field to be boolean value of true or false"
+
+
 class ExpectTenancyIDAndPropertyReferenceColumnValuesToBeUniqueWithinRecord(
     gxe.ExpectSelectColumnValuesToBeUniqueWithinRecord):
     column_list: list = ['tenancy_id', 'property_reference']
@@ -61,6 +67,13 @@ class ExpectStartOfTenureDateColumnNotToBeNull(gxe.ExpectColumnValuesToNotBeNull
     description: str = "Expect Start of Tenure Date column to be complete with no missing values"
 
 
+class ExpectEndOfTenureDateColumnToBeNull(gxe.ExpectColumnValuesToBeNull):
+    column: str = "endoftenuredate"
+    description: str = "Expect End of Tenure Date column to be null with no default values"
+    condition_parser: str = 'pandas'
+    row_condition: str = 'isterminated<>False'
+
+
 class ExpectTenureCodeColumnNotToBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "tenure_code"
     description: str = "Expect Tenure Code column to be complete with no missing values"
@@ -84,6 +97,7 @@ suite.add_expectation(ExpectMemberIsResponsibleValuesToBeInSet())
 suite.add_expectation(ExpectTenancyIDAndPropertyReferenceColumnValuesToBeUniqueWithinRecord())
 suite.add_expectation(ExpectTenancyIDColumnNotToBeNull())
 suite.add_expectation(ExpectStartOfTenureDateColumnNotToBeNull())
+suite.add_expectation(ExpectEndOfTenureDateColumnToBeNull())
 suite.add_expectation(ExpectTenureCodeColumnNotToBeNull())
 suite.add_expectation(ExpectTagRefColumnNotToBeNull())
 suite.add_expectation(ExpectTenureCodeValuesToBeInSet())
