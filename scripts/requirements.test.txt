@@ -3,5 +3,5 @@ freezegun
 pytest-mock
 pydeequ
 # Explicitly set urllib3 version compatible with botocore to pass CI tests
-urllib3>=1.25.4,<1.27 # glue 4 is using urllib3==1.25.11 so don't need add to requirements.build.txt
+urllib3>=1.25.4,<2.4 # glue 4 is using urllib3==1.25.11 so don't need add to requirements.build.txt
 redshift-connector==2.1.4 # used to connect with redshift
