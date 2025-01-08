@@ -164,6 +164,7 @@ resource "aws_glue_trigger" "parking_google_sheet_ingestion_raw_zone_trigger" {
   actions {
     crawler_name = aws_glue_crawler.parking_google_sheet_ingestion_raw_zone[0].name
   }
+  tags = module.tags.values
 }
 
 
@@ -176,6 +177,7 @@ resource "aws_glue_trigger" "housing_google_sheet_ingestion_raw_zone_trigger" {
   actions {
     crawler_name = aws_glue_crawler.housing_google_sheet_ingestion_raw_zone[0].name
   }
+  tags = module.tags.values
 }
 
 
@@ -188,4 +190,5 @@ resource "aws_glue_trigger" "data_and_insight_google_sheet_ingestion_raw_zone_tr
   actions {
     crawler_name = aws_glue_crawler.data_and_insight_google_sheet_ingestion_raw_zone[0].name
   }
+  tags = module.tags.values
 }
