@@ -62,7 +62,10 @@ WITH Cedar_Payments as (
 SELECT
    cc, subj,analysis, trandate,
    CASE
-      When trandate like '%/%'Then CAST(substr(trandate, 7, 4)||'-'||substr(trandate, 4,2)||'-'||'01' as date)
+      When trandate like '%/%'                  Then 
+                CAST(substr(trandate, 7, 4)||'-'||substr(trandate, 4,2)||'-'||'01' as date)
+      When substr(trandate, 1, 4) like '%-%'    Then
+                CAST(substr(trandate, 7, 4)||'-'||substr(trandate, 4,2)||'-'||'01' as date)
       ELSE cast(concat(substr(Cast(trandate as varchar(10)),1, 7), '-01') as date)
    END as PayMonthYear,
    description, o_description, cast(financialvalue as decimal(10,2)) as financialvalue
