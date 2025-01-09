@@ -55,7 +55,7 @@ With TomHangar as (
             When asset_no like '%Bikehangar_1435%'    Then 'Bikehangar_H1435'
             ELSE replace(asset_no, ' ','_')
         END as HangarID
-    from "parking-raw-zone".parking_ops_cycle_hangar_list
+    from "parking-raw-zone".parking_parking_ops_cycle_hangar_list
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     AND asset_type = 'Hangar' AND lower(status) IN ('active', 'estate locked gate issue')
     /** 20-08-2024 add check for blank records **/
@@ -81,7 +81,7 @@ Hangar_Comp as (
 unsubscribed_emails as (
     SELECT *,
         ROW_NUMBER() OVER ( PARTITION BY email_address ORDER BY email_address DESC) row1
-    FROM "parking-raw-zone".parking_cycle_hangar_unsubscribed_emails 
+    FROM "parking-raw-zone".parking_parking_cycle_hangar_unsubscribed_emails 
     WHERE import_date = (select max(import_date) 
                     from "parking-raw-zone".parking_cycle_hangar_unsubscribed_emails)), 
 
