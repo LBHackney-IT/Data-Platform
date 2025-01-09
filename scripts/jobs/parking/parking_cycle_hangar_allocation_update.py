@@ -39,6 +39,7 @@ Tom's hangar list
 26/09/2024 - add hangar location.
 04/10/2024 - add additional checks for the waiting list
 04/12/2024 - collect the interim cycle hangar waiting list
+08/01/2025 - Amend to remove records from the waiting list that have been unsuscribed
 ******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -54,7 +55,7 @@ With TomHangar as (
             When asset_no like '%Bikehangar_1435%'    Then 'Bikehangar_H1435'
             ELSE replace(asset_no, ' ','_')
         END as HangarID
-    from "parking-raw-zone".parking_parking_ops_cycle_hangar_list
+    from "parking-raw-zone".parking_ops_cycle_hangar_list
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     AND asset_type = 'Hangar' AND lower(status) IN ('active', 'estate locked gate issue')
     /** 20-08-2024 add check for blank records **/
@@ -75,6 +76,14 @@ Hangar_Comp as (
     WHERE H1 = 1
     UNION ALL
     SELECT 'new_only','new_only','new_only'),
+
+/*** 08-01-2025 collect the unsubscribed_emails ***/
+unsubscribed_emails as (
+    SELECT *,
+        ROW_NUMBER() OVER ( PARTITION BY email_address ORDER BY email_address DESC) row1
+    FROM "parking-raw-zone".parking_cycle_hangar_unsubscribed_emails 
+    WHERE import_date = (select max(import_date) 
+                    from "parking-raw-zone".parking_cycle_hangar_unsubscribed_emails)), 
 
 /*******************************************************************************
 Obtain the latest Waiting List History
@@ -106,17 +115,20 @@ LLPG as (
     FROM "dataplatform-stg-liberator-raw-zone".liberator_permit_llpg
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 /*******************************************************************************
-04/12/2024 - interim cycle hangar waiting list
+04/12/2024 - interim cycle hangar waiting list remove unsubscribed emails
 *******************************************************************************/   
 Interim_Wait as (
-    SELECT * from "parking-raw-zone".interim_cycle_wait_list 
-    WHERE import_date = (select max(import_date) 
+    SELECT A.*, E.email_address from "parking-raw-zone".interim_cycle_wait_list as A
+    LEFT JOIN unsubscribed_emails as E ON upper(ltrim(rtrim(A.email))) = 
+                                upper(ltrim(rtrim(E.email_address)))    
+    WHERE A.import_date = (select max(import_date) 
                     from "parking-raw-zone".interim_cycle_wait_list)),
-    
+
 /*** count the number on the waiting list by hangar ***/
 Interim_Wait_summary as (
     SELECT hanger_id, count(*) as Interim_Wait_Total
     FROM Interim_Wait
+    WHERE email_address is NULL
     GROUP BY hanger_id),
 /*******************************************************************************
 Cycle Hangar allocation details
