@@ -88,8 +88,18 @@ dq_dimensions_map = {
     'expect_tenure_code_column_not_to_be_null': 'COMPLETENESS',
     'expect_tenure_type_column_values_to_be_in_set': 'CONSISTENCY',
     'expect_tenure_code_values_to_be_in_set': 'CONSISTENCY',
-    'expect_uprn_column_value_lengths_between': 'VALIDITY',
+    'expect_uprn_column_value_lengths_between': 'ACCURACY',
     'expect_uprn_column_values_to_match_regex': 'VALIDITY',
     'expect_uprn_column_values_to_not_be_null': 'COMPLETENESS',
-    'expect_uprn_not_to_be_null': 'COMPLETENESS'
-}
+    'expect_uprn_not_to_be_null': 'COMPLETENESS',
+    'expect_tag_ref_column_values_to_be_unique': 'UNIQUENESS',
+    'expect_tag_ref_not_to_be_null': 'COMPLETENESS',
+    'expect_prop_ref_not_to_be_null': 'COMPLETENESS',
+    'expect_co_t_not_to_be_null': 'COMPLETENESS',
+    'expect_tenure_not_to_be_null': 'COMPLETENESS',
+    'expect_saff_rent_acc_not_to_be_null': 'COMPLETENESS',
+    'expect_rent_group_ref_not_to_be_null': 'COMPLETENESS',
+    'expect_eo_t_to_be_between': 'ACCURACY',
+    'expect_co_t_to_be_between': 'ACCURACY',
+    'expect_prop_ref_column_values_to_be_unique': 'UNIQUENESS',
+    'expect_arr_patch_not_to_be_null': 'COMPLETENESS'}
