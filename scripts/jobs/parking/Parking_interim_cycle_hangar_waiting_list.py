@@ -44,12 +44,14 @@ With Interim_Wait as (
 /*** Obtain the llpg data ***/
 FULL_LLPG as (
     SELECT * From "parking-refined-zone".spatially_enriched_liberator_permit_llpg
-    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
+    WHERE import_date = (select max(import_date) 
+                    from "parking-refined-zone".spatially_enriched_liberator_permit_llpg)
     AND address1 not like '%STREET RECORD%'),
 
 STREET_LLPG as (
     SELECT * From "parking-refined-zone".spatially_enriched_liberator_permit_llpg
-    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
+    WHERE import_date = (select max(import_date) 
+                    from "parking-refined-zone".spatially_enriched_liberator_permit_llpg)
     AND address1 like '%STREET RECORD%'),
 
 /*** Obtain the Party details, where available ***/
@@ -63,8 +65,9 @@ Party as (
 unsubscribed_emails as (
     SELECT *,
         ROW_NUMBER() OVER ( PARTITION BY email_address ORDER BY email_address DESC) row1
-    FROM "parking-raw-zone".parking_parking_cycle_hangar_unsubscribed_emails 
-    WHERE import_Date = format_datetime(current_date, 'yyyyMMdd'))    
+    FROM "parking-raw-zone".parking_cycle_hangar_unsubscribed_emails 
+    WHERE import_date = (select max(import_date) 
+                    from "parking-raw-zone".parking_cycle_hangar_unsubscribed_emails))    
     
 SELECT 
   A.*, cast(D.telephone_number as varchar) as Telephone_Number,  C.address2 as Street, B.housing_estate, E.email_address,
