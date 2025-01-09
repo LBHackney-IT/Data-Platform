@@ -99,7 +99,7 @@ resource "aws_glue_crawler" "parking_google_sheet_ingestion_raw_zone" {
   s3_target {
     path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_parking_data_source.identifier}/google-sheets/"
   }
-  table_prefix       = "${module.department_parking_data_source.identifier_snake_case}_"
+  table_prefix = "${module.department_parking_data_source.identifier_snake_case}_"
 
   configuration = jsonencode({
     Version = 1.0
@@ -121,7 +121,7 @@ resource "aws_glue_crawler" "housing_google_sheet_ingestion_raw_zone" {
   s3_target {
     path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_housing_data_source.identifier}/google-sheets/"
   }
-  table_prefix       = "${module.department_housing_data_source.identifier_snake_case}_"
+  table_prefix = "${module.department_housing_data_source.identifier_snake_case}_"
 
   configuration = jsonencode({
     Version = 1.0
@@ -143,7 +143,7 @@ resource "aws_glue_crawler" "data_and_insight_google_sheet_ingestion_raw_zone" {
   s3_target {
     path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_data_and_insight_data_source.identifier}/google-sheets/"
   }
-  table_prefix       = "${module.data_and_insight_google_sheet_ingestion_raw_zone.identifier_snake_case}_"
+  table_prefix = "${module.department_data_and_insight_data_source.identifier_snake_case}_"
 
   configuration = jsonencode({
     Version = 1.0
