@@ -39,7 +39,8 @@ Tom's hangar list
 26/09/2024 - add hangar location.
 04/10/2024 - add additional checks for the waiting list
 04/12/2024 - collect the interim cycle hangar waiting list
-08/01/2025 - Amend to remove records from the waiting list that have been unsuscribed
+06/01/2025 - Amend to remove records from the waiting list that have been unsuscribed
+13/01/2025 - add opt-in data
 ******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -85,6 +86,18 @@ unsubscribed_emails as (
     WHERE import_date = (select max(import_date)
                     from "parking-raw-zone".parking_parking_cycle_hangar_unsubscribed_emails)),
 
+/*** 13/01/2025 added ***/
+opt_in_emails as (
+    SELECT
+        please_note_your_email_address_has_been_prefilled_based_on_your_account_registration_please_do_not_amend_this as email,
+        please_select_one_of_the_options_below,
+        ROW_NUMBER() OVER ( PARTITION BY please_note_your_email_address_has_been_prefilled_based_on_your_account_registration_please_do_not_amend_this
+        ORDER BY please_note_your_email_address_has_been_prefilled_based_on_your_account_registration_please_do_not_amend_this
+        DESC) row1
+    FROM "parking-raw-zone".parking_parking_opt_in_form_responses 
+    WHERE import_date = (select max(import_date) 
+                    from "parking-raw-zone".parking_parking_opt_in_form_responses)
+    AND please_select_one_of_the_options_below like 'No.%'),
 /*******************************************************************************
 Obtain the latest Waiting List History
 *******************************************************************************/
@@ -116,14 +129,22 @@ LLPG as (
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 /*******************************************************************************
 04/12/2024 - interim cycle hangar waiting list remove unsubscribed emails
+13/01/2025 - add review of opt in(OUT) email addresses
 *******************************************************************************/
 Interim_Wait as (
-    SELECT A.*, E.email_address from "parking-raw-zone".interim_cycle_wait_list as A
-    LEFT JOIN unsubscribed_emails as E ON upper(ltrim(rtrim(A.email))) =
-                                upper(ltrim(rtrim(E.email_address)))
-    WHERE A.import_date = (select max(import_date)
+    SELECT A.*, 
+        CASE 
+            When length(E.email_address) > 1    Then E.email_address
+            When length(F.email)> 1             Then F.email
+        END as email_address    
+    FROM "parking-raw-zone".interim_cycle_wait_list as A
+    LEFT JOIN unsubscribed_emails as E ON upper(ltrim(rtrim(A.email))) = 
+                                upper(ltrim(rtrim(E.email_address))) AND E.row1 = 1
+    LEFT JOIN opt_in_emails as F ON upper(ltrim(rtrim(A.email))) = 
+                                upper(ltrim(rtrim(F.email))) AND F.row1 = 1                                
+    WHERE A.import_date = (select max(import_date) 
                     from "parking-raw-zone".interim_cycle_wait_list)),
-
+                    
 /*** count the number on the waiting list by hangar ***/
 Interim_Wait_summary as (
     SELECT hanger_id, count(*) as Interim_Wait_Total
