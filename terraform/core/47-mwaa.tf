@@ -169,7 +169,7 @@ resource "aws_s3_object" "requirements_placeholder" {
 resource "aws_mwaa_environment" "mwaa" {
   count                = local.is_live_environment ? 1 : 0
   name                 = "${local.identifier_prefix}-mwaa-environment"
-  airflow_version      = "2.10.3" # Latest MWAA on 2024-01-13, preinstall python 3.11
+  airflow_version      = "2.10.3" # Latest MWAA on 2025-01-13, preinstall python 3.11
   environment_class    = "mw1.medium"
   execution_role_arn   = aws_iam_role.mwaa_role.arn
   source_bucket_arn    = aws_s3_bucket.mwaa_bucket.arn
