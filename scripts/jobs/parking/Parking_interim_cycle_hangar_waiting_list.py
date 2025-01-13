@@ -21,6 +21,8 @@ Process the interim cycle hangar waiting list (supplied by Michael W) to add
 additional fields (telephone Number, etc).
 
 23/12/2024 - Create SQL
+06/01/2025 - add unsubscribed email
+13/01/2025 - add opt-in data
 *********************************************************************************/
 With Interim_Wait as (
     SELECT
@@ -61,16 +63,33 @@ Party as (
     From "dataplatform-stg-liberator-raw-zone".liberator_licence_party
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 
-/*** obtain the emails (from Tom) of those parties that are NOT interested in a Hangar***/
+/*** 06/01/2024 - obtain the emails (from Tom) of those parties that are NOT interested in a Hangar***/
 unsubscribed_emails as (
     SELECT *,
         ROW_NUMBER() OVER ( PARTITION BY email_address ORDER BY email_address DESC) row1
     FROM "parking-raw-zone".parking_parking_cycle_hangar_unsubscribed_emails
     WHERE import_date = (select max(import_date)
-                    from "parking-raw-zone".parking_parking_cycle_hangar_unsubscribed_emails))
+                    from "parking-raw-zone".parking_parking_cycle_hangar_unsubscribed_emails)),
+
+/*** 13/01/2025 added ***/
+opt_in_emails as (
+    SELECT
+        please_note_your_email_address_has_been_prefilled_based_on_your_account_registration_please_do_not_amend_this as email,
+        please_select_one_of_the_options_below,
+        ROW_NUMBER() OVER ( PARTITION BY please_note_your_email_address_has_been_prefilled_based_on_your_account_registration_please_do_not_amend_this
+        ORDER BY please_note_your_email_address_has_been_prefilled_based_on_your_account_registration_please_do_not_amend_this
+        DESC) row1
+    FROM "parking-raw-zone".parking_parking_opt_in_form_responses 
+    WHERE import_date = (select max(import_date) 
+                    from "parking-raw-zone".parking_parking_opt_in_form_responses)
+    AND please_select_one_of_the_options_below like 'No.%')
 
 SELECT
-  A.*, cast(D.telephone_number as varchar) as Telephone_Number,  C.address2 as Street, B.housing_estate, E.email_address,
+    A.*, cast(D.telephone_number as varchar) as Telephone_Number,  C.address2 as Street, B.housing_estate, 
+    CASE 
+        When length(E.email_address) > 1    Then E.email_address
+        When length(F.email)> 1             Then F.email
+    END as email_address,  
 
   format_datetime(CAST(CURRENT_TIMESTAMP AS timestamp),
                 'yyyy-MM-dd HH:mm:ss') AS import_date_timestamp,
@@ -85,7 +104,9 @@ LEFT JOIN FULL_LLPG as B ON A.uprn = B.UPRN
 LEFT JOIN STREET_LLPG as C ON B.USRN = C.USRN
 LEFT JOIN Party as D ON A.party_id = D.business_party_id
 LEFT JOIN unsubscribed_emails as E ON upper(ltrim(rtrim(A.email))) = upper(ltrim(rtrim(E.email_address)))
-        AND row1 = 1
+        AND E.row1 = 1
+LEFT JOIN opt_in_emails as F ON upper(ltrim(rtrim(A.email))) = upper(ltrim(rtrim(F.email)))
+        AND F.row1 = 1
 """
 
 create_update_table_with_partition(
