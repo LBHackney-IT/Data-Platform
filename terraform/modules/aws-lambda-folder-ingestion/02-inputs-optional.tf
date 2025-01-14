@@ -21,7 +21,7 @@ variable "runtime" {
   description = "Runtime to use for the Lambda Function"
   default     = "python3.11"
   validation {
-    condition     = can(regex("python3[.]([7-9]|10)", var.runtime))
+    condition     = contains(["python3.9", "python3.10", "python3.11"], var.runtime)
     error_message = "Runtime must be a valid Python runtime"
   }
 
