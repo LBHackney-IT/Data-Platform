@@ -1345,7 +1345,7 @@ module "parking_cycle_hangar_allocation_update" {
   script_name                    = "parking_cycle_hangar_allocation_update"
   job_description                = "Rewrite of cycle hangar allocation using new denormalisation code"
   trigger_enabled                = local.is_production_environment
-  schedule                       = "cron(0 9 * * ? *)"
+  schedule                       = "cron(0 8 * * ? *)"
   number_of_workers_for_glue_job = 2
   glue_job_worker_type           = "G.1X"
   glue_version                   = "4.0"
