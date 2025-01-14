@@ -16,7 +16,7 @@ module "icaseworks_api_ingestion" {
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   lambda_name                    = "icaseworks-api-ingestion"
   lambda_handler                 = "main.lambda_handler"
-  runtime_language               = "python3.8"
+  runtime_language               = "python3.11"
   secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   s3_target_bucket_arn           = module.landing_zone.bucket_arn
   s3_target_bucket_name          = local.s3_target_bucket_name
@@ -44,7 +44,7 @@ module "vonage_api_ingestion" {
   lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
   lambda_name                    = "vonage-api-ingestion"
   lambda_handler                 = "main.lambda_handler"
-  runtime_language               = "python3.8"
+  runtime_language               = "python3.11"
   secrets_manager_kms_key        = aws_kms_key.secrets_manager_key
   s3_target_bucket_arn           = module.landing_zone.bucket_arn
   s3_target_bucket_name          = local.s3_target_bucket_name

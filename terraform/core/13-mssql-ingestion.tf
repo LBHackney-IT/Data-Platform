@@ -190,7 +190,7 @@ module "max_concurrency_lambda" {
   s3_key                         = "academy-revs-and-bens-housing-needs-database-ingestion-max-concurrency.zip"
   lambda_source_dir              = "../../lambdas/calculate_max_concurrency"
   lambda_output_path             = "../../lambdas/calculate_max_concurrency/max-concurrency.zip"
-  runtime                        = "python3.8"
+  runtime                        = "python3.11"
 }
 
 resource "aws_iam_role" "academy_step_functions_role" {
