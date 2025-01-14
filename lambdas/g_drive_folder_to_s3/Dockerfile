@@ -5,7 +5,7 @@ FROM ubuntu:latest
 RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -y zip
-RUN apt-get install -y python3.11 python3-pip
+RUN apt-get install -y python3.9 python3-pip
 
 RUN pip3 install pipenv
 
@@ -18,7 +18,7 @@ COPY Pipfile Pipfile.lock /app/
 COPY main.py ./source/
 
 # Install Python dependencies using pipenv
-RUN pipenv install 
+RUN pipenv install
 RUN pipenv requirements > requirements.txt
 RUN pip install -t ./source/lib -r requirements.txt
 
@@ -27,7 +27,3 @@ WORKDIR /app/source
 RUN zip -r g_drive_folder_to_s3.zip .
 
 CMD "pyhon3", "main.py"
-
-
-
-

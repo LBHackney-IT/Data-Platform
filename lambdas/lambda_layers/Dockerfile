@@ -7,10 +7,10 @@ ARG L_N
 # Install system dependencies and zip
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y zip python3.11 python3-pip
+    apt-get install -y zip python3.9 python3-pip
 
 # Install pip
-RUN python3.11 -m pip install --upgrade pip
+RUN python3.9 -m pip install --upgrade pip
 
 # Create a non-root user and group
 RUN addgroup --system docker_users \

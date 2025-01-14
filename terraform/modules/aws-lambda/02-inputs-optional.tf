@@ -19,7 +19,7 @@ variable "tags" {
 variable "runtime" {
   type        = string
   description = "Runtime to use for the Lambda Function"
-  default     = "python3.11"
+  default     = "python3.9"
   validation {
     condition     = can(regex("python3[.]([7-9]|10)", var.runtime))
     error_message = "Runtime must be a valid Python runtime"

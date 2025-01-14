@@ -110,7 +110,7 @@ resource "aws_lambda_function" "lambda" {
 
   role             = aws_iam_role.lambda.arn
   handler          = "main.lambda_handler"
-  runtime          = "python3.11"
+  runtime          = "python3.9"
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_object.lambda.key

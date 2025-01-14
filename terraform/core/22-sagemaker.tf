@@ -138,7 +138,7 @@ resource "aws_lambda_function" "shutdown_notebooks" {
 
   role             = aws_iam_role.shutdown_notebooks[0].arn
   handler          = "main.shutdown_notebooks"
-  runtime          = "python3.11"
+  runtime          = "python3.9"
   function_name    = "${local.short_identifier_prefix}shutdown-notebooks"
   s3_bucket        = module.lambda_artefact_storage.bucket_id
   s3_key           = aws_s3_object.shutdown_notebooks.key

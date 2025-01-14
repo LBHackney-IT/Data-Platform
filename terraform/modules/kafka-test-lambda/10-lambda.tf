@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 
 locals {
   command                 = "make install-requirements"
-  confluent_kafka_command = "docker run -v \"$PWD\":/var/task \"lambci/lambda:build-python3.11\" /bin/sh -c \"pip install -r requirements.txt -t python/lib/python3.11/site-packages/; exit\""
+  confluent_kafka_command = "docker run -v \"$PWD\":/var/task \"lambci/lambda:build-python3.9\" /bin/sh -c \"pip install -r requirements.txt -t python/lib/python3.9/site-packages/; exit\""
   # This ensures that this data resource will not be evaluated until
   # after the null_resource has been created.
   lambda_exporter_id = null_resource.run_install_requirements.id
@@ -151,7 +151,7 @@ resource "aws_lambda_function" "lambda" {
 
   role             = aws_iam_role.lambda.arn
   handler          = "main.lambda_handler"
-  runtime          = "python3.11"
+  runtime          = "python3.9"
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_object.lambda.key
