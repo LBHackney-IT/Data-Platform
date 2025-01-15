@@ -108,8 +108,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "mwaa_etl_scripts_
   }
 }
 
-
-resource "aws_s3_bucket_public_access_block" "mwaa_bucket_block" {
+resource "aws_s3_bucket_public_access_block" "mwaa_etl_scripts_bucket_block" {
   bucket = aws_s3_bucket.mwaa_etl_scripts_bucket.id
 
   block_public_acls       = true
