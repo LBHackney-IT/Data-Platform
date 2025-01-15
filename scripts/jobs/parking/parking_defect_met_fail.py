@@ -49,6 +49,7 @@ Parking_Defect_MET_FAIL
 Temp SQL that formats the defcet managment records for Fail/Met
 
 16/11/2022 - Create Query
+15/01/2025 - found AND WHERE repair_date >= (??) removed AND
 *********************************************************************************/
 With Defect as (
 SELECT
@@ -92,7 +93,7 @@ SELECT
     date_format(current_date, 'dd') AS import_day,
     date_format(current_date, 'yyyyMMdd') AS import_date
 FROM Defect
-AND WHERE repair_date >=
+WHERE repair_date >=
     date_add(cast(substr(cast(current_date as string), 1, 8)||'01' as date), -365)
 
 
