@@ -32,7 +32,7 @@ environment = get_glue_env_var("environment")
 # Script generated for node Amazon S3 - unrestricted_address_api_dbo_hackney_xref
 AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724077428047 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-raw-zone-unrestricted-address-api",
-    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 30)",
     table_name="unrestricted_address_api_dbo_hackney_xref",
     transformation_ctx="AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724077428047",
 )
