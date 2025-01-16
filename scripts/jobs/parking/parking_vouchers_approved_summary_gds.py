@@ -48,7 +48,7 @@ AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376 = gl
 # Script generated for node Amazon S3 - raw-zone-unrestricted-address-api - unrestricted_address_api_dbo_hackney_address
 AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-raw-zone-unrestricted-address-api",
-    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 30)",
     table_name="unrestricted_address_api_dbo_hackney_address",
     transformation_ctx="AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032",
 )
