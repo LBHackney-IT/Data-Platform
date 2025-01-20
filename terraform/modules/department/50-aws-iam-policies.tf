@@ -915,7 +915,7 @@ data "aws_iam_policy_document" "airflow_base_policy" {
 resource "aws_iam_policy" "airflow_base_policy" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${local.department_identifier}-ariflow-base-policy")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-airflow-base-policy")
   policy = data.aws_iam_policy_document.airflow_base_policy.json
 }
 
