@@ -854,7 +854,14 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "glue:ListCrawlers",
       "glue:GetTable",
       "glue:GetTables",
+      "glue:GetPartition",
       "glue:GetPartitions",
+      "glue:CreatePartition",
+      "glue:CreatePartitionIndex",
+      "glue:DeletePartitionIndex",
+      "glue:UpdatePartition",
+      "glue:DeletePartition",
+      "glue:BatchCreatePartition",
       "glue:GetDatabase",
       "glue:GetDatabases",
       "glue:GetCrawlers",
@@ -908,7 +915,7 @@ data "aws_iam_policy_document" "airflow_base_policy" {
 resource "aws_iam_policy" "airflow_base_policy" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${local.department_identifier}-ariflow-base-policy")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-airflow-base-policy")
   policy = data.aws_iam_policy_document.airflow_base_policy.json
 }
 
