@@ -265,7 +265,7 @@ module "llpg_geolive_database_ingestion" {
 }
 
 module "llpg_geolive_ingestion_job" {
-  count                     = local.is_production_environment ? 1 : 0
+  count                     = local.is_live_environment ? 1 : 0
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
