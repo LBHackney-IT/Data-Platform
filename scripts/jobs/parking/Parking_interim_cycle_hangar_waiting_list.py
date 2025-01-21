@@ -23,6 +23,7 @@ additional fields (telephone Number, etc).
 23/12/2024 - Create SQL
 06/01/2025 - add unsubscribed email
 13/01/2025 - add opt-in data
+21/01/2024 - change to use new telephone & email field in Michael's data
 *********************************************************************************/
 With Interim_Wait as (
     SELECT
@@ -39,6 +40,7 @@ With Interim_Wait as (
         ,y
         ,lat
         ,long
+        ,telephone
     FROM "parking-raw-zone".interim_cycle_wait_list
     WHERE import_date = (select max(import_date)
                     from "parking-raw-zone".interim_cycle_wait_list)),
@@ -84,14 +86,13 @@ opt_in_emails as (
                     from "parking-raw-zone".parking_parking_opt_in_form_responses)
     AND please_select_one_of_the_options_below like 'No.%')
 
+/*** 21/01/2025 - Update the selected list to use Michael's data (Telephone & Email)***/
 SELECT
-    A.*, cast(D.telephone_number as varchar) as Telephone_Number,  C.address2 as Street, B.housing_estate, 
-    CASE 
-        When length(E.email_address) > 1    Then E.email_address
-        When length(F.email)> 1             Then F.email
-    END as email_address,  
+    A.forename, A.surname, A.email, A.party_id_to, A.party_id, A.uprn, A.address1, A.address2,
+    A.post_code, A.x, A.y, A.lat, A.long, cast(telephone as varchar) as telephone_number,	
+    C.address2 as Street, B.housing_estate, A.email as email_address,
 
-  format_datetime(CAST(CURRENT_TIMESTAMP AS timestamp),
+    format_datetime(CAST(CURRENT_TIMESTAMP AS timestamp),
                 'yyyy-MM-dd HH:mm:ss') AS import_date_timestamp,
 
   format_datetime(current_date, 'yyyy') AS import_year,
