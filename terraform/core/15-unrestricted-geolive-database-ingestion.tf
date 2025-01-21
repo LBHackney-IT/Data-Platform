@@ -272,7 +272,7 @@ module "llpg_geolive_ingestion_job" {
 
   department                 = module.department_unrestricted
   job_name                   = "${local.short_identifier_prefix}geolive llpg tables ingestion"
-  glue_version               = local.is_production_environment ? "2.0" : "4.0"
+  glue_version               = "4.0"
   script_s3_object_key       = aws_s3_object.ingest_database_tables_via_jdbc_connection.key
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   helper_module_key          = aws_s3_object.helpers.key
@@ -281,17 +281,17 @@ module "llpg_geolive_ingestion_job" {
   triggered_by_crawler       = module.llpg_geolive_database_ingestion[0].crawler_name
   workflow_name              = module.llpg_geolive_database_ingestion[0].workflow_name
   job_parameters = {
-    "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/unrestricted/llpg/"
-    "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/unrestricted/llpg/ingestion-details/"
+    "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/unrestricted/geolive/llpg/"
+    "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/unrestricted/geolive/llpg/ingestion-details/"
     "--source_data_database"        = module.llpg_geolive_database_ingestion[0].ingestion_database_name
   }
   crawler_details = {
     database_name      = module.department_unrestricted.raw_zone_catalog_database_name
-    s3_target_location = "s3://${module.raw_zone.bucket_id}/unrestricted/llpg/"
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/unrestricted/geolive/llpg/"
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
-        TableLevelConfiguration = 4
+        TableLevelConfiguration = 5
       }
     })
     table_prefix = null
