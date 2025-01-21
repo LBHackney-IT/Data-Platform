@@ -1,4 +1,3 @@
-#dummy to trigger workflow
 data "aws_ssoadmin_instances" "sso_instances" {
   count = local.is_live_environment ? 1 : 0
 
