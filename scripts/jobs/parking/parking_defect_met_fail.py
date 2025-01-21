@@ -83,7 +83,7 @@ SELECT
 
 FROM parking_parking_ops_db_defects_mgt
 WHERE import_date = (Select MAX(import_date) from parking_parking_ops_db_defects_mgt)
-AND length(ltrim(rtrim(reported_date))) > 0
+AND length(ltrim(rtrim(reported_date))) > 5 AND length(ltrim(rtrim(repair_date))) > 5
 AND met_not_met not IN ('#VALUE!','#N/A') /*('N/A','#N/A','#VALUE!')*/)
 
 SELECT
