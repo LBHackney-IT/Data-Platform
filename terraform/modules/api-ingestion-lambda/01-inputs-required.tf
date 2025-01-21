@@ -65,11 +65,11 @@ variable "runtime_language" {
   validation {
     condition = (
       contains([
-        "python3.8",
+        "python3.9",
         "nodejs14.x"
       ], var.runtime_language)
     )
-    error_message = "The value cannot be a blank string, and must be one of the following: 'python3.8' or 'nodejs14.x'"
+    error_message = "The value cannot be a blank string, and must be one of the following: 'python3.9' or 'nodejs14.x'"
   }
 }
 
