@@ -31,7 +31,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.7.1</version>
+        <version>3.3.0</version>
         <configuration>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -41,6 +41,9 @@
               <addClasspath>true</addClasspath>
             </manifest>
           </archive>
+          <appendAssemblyId>true</appendAssemblyId>
+          <ignoreDirFormatExtensions>false</ignoreDirFormatExtensions>
+          <includeProjectArtifact>false</includeProjectArtifact>
         </configuration>
         <executions>
           <execution>
