@@ -23,7 +23,7 @@ class TestTascomiParsingRefinement:
                                                                                    ' "creation_user_id": null,'
                                                                                    ' "title_id": "4"}'}])
         expected = {'id': '34607', 'creation_user_id': None, 'title_id': '4', 'page_number': 691,
-                     'import_api_url_requested': 'https://hackney-planning.tascomi.com/rest/v1/contacts?page=691',
+                     'import_api_url_requested': 'https://hackney-planning.idoxcloud.com/rest/v1/contacts?page=691',
                      'import_api_status_code': 200, 'import_exception_thrown': '',
                      'import_datetime': datetime(2021, 9, 16, 13, 10), 'import_timestamp': '1631797859.247579',
                      'import_year': '2021', 'import_month': '09', 'import_day': '16',
@@ -32,7 +32,7 @@ class TestTascomiParsingRefinement:
 
     def parse_json_into_dataframe(self, spark, column, data):
         data_with_imports = [{'page_number': 691,
-                              'import_api_url_requested': 'https://hackney-planning.tascomi.com/rest/v1/contacts?page=691',
+                              'import_api_url_requested': 'https://hackney-planning.idoxcloud.com/rest/v1/contacts?page=691',
                               'import_api_status_code': 200, 'import_exception_thrown': '',
                               'import_datetime': datetime(2021, 9, 16, 13, 10), 'import_timestamp': '1631797859.247579',
                               'import_year': '2021', 'import_month': '09', 'import_day': '16',
