@@ -1087,7 +1087,7 @@ module "parking_defect_met_fail" {
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   script_name                    = "parking_defect_met_fail"
-  triggered_by_crawler           = local.is_live_environment ? module.parking_spreadsheet_parking_ops_db_defects_mgt[0].crawler_name : null
+  triggered_by_crawler           = local.is_live_environment ? aws_glue_crawler.parking_google_sheet_ingestion_raw_zone[0].name : null
   job_description                = "To collect and format the Ops Defect Data."
   trigger_enabled                = local.is_production_environment
   glue_job_timeout               = 10
@@ -1132,7 +1132,7 @@ module "parking_defect_met_fail_monthly_format" {
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   script_name                    = "parking_defect_met_fail_monthly_format"
-  triggered_by_crawler           = local.is_live_environment ? module.parking_spreadsheet_parking_ops_db_defects_mgt[0].crawler_name : null
+  triggered_by_crawler           = local.is_live_environment ? aws_glue_crawler.parking_google_sheet_ingestion_raw_zone[0].name : null
   job_description                = "To collect and format the Ops Defect Data into a Pivot."
   trigger_enabled                = local.is_production_environment
   glue_job_timeout               = 10
