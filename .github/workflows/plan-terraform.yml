@@ -72,11 +72,11 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Set Github Auth
         run: git config --global url."https://oauth2:${{ secrets.TERRAFORM_SECRET_TOKEN}}@github.com".insteadOf https://github.com
         shell: bash
-      
+
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2.0.3
         with:
@@ -96,7 +96,16 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
+      - name: Check for changes in external-lib
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            external-lib/**/*.xml
+            external-lib/Makefile
+
       - name: Download external dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
         working-directory: "./external-lib"
         run: make all
 
