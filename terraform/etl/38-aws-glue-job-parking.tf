@@ -224,27 +224,6 @@ module "parking_reps_and_appeals_correspondance_kpi_gds_summary_qtr" {
   }
 }
 
-module "parking_vouchers_approved_summary_gds" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_vouchers_approved_summary_gds"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_vouchers_approved_summary_gds"
-  triggered_by_job               = module.parking_voucher_de_normalised.job_name
-  job_description                = "Summary of voucher applications approved by FY, Month year, cpz and cpz name for use in GDS"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
 
 module "parking_bailiff_allocation" {
   source                         = "../modules/aws-glue-job"
@@ -757,27 +736,7 @@ module "parking_foreign_vrm_pcns" {
   }
 }
 
-module "parking_voucher_de_normalised" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_voucher_de_normalised"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_voucher_de_normalised"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "Permit changes comparison - compare changes in permits from the parking_permit_denormalised_gds_street_llpg table to be used in google data studio  Compares latest import to previous import in table"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+
 module "parking_correspondence_performance_records_with_pcn" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -910,28 +869,6 @@ module "parking_dc_liberator_permit_llpg_street_records" {
   }
 }
 
-# MRB 22-07-2022 Job created
-module "parking_visitor_voucher_qtrly_review" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_visitor_voucher_qtrly_review"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_visitor_voucher_qtrly_review"
-  job_description                = "Quarterly review of Visitor Voucher sales"
-  trigger_enabled                = local.is_production_environment
-  schedule                       = "cron(0 1 10 * ? *)"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
 
 # MRB 08-08-2022 Job created
 module "Parking_Permit_Diesel_Trends_Bought_in_Month" {
@@ -1541,28 +1478,7 @@ module "parking_nas_live_manual_updates_with_pcns_box23" {
     "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
-module "parking_vouchers_approved_summary_gds_lbh" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_vouchers_approved_summary_gds_lbh"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_vouchers_approved_summary_gds_lbh"
-  triggered_by_job               = module.parking_voucher_de_normalised.job_name
-  job_description                = "Summary of denormalised voucher approved by FY, Month year for LBH, for use in GDS"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
+
 module "parking_pcn_dvla_response_no_address" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
