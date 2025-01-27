@@ -23,7 +23,8 @@ additional fields (telephone Number, etc).
 23/12/2024 - Create SQL
 06/01/2025 - add unsubscribed email
 13/01/2025 - add opt-in data
-21/01/2024 - change to use new telephone & email field in Michael's data
+21/01/2025 - change to use new telephone & email field in Michael's data
+27/01/2025 - add the additional fields, Date Registered, in_hackney, gform
 *********************************************************************************/
 With Interim_Wait as (
     SELECT
@@ -41,6 +42,8 @@ With Interim_Wait as (
         ,lat
         ,long
         ,telephone
+        ,date_registered
+        ,in_hackney, gform
     FROM "parking-raw-zone".interim_cycle_wait_list
     WHERE import_date = (select max(import_date)
                     from "parking-raw-zone".interim_cycle_wait_list)),
@@ -91,6 +94,7 @@ SELECT
     A.forename, A.surname, A.email, A.party_id_to, A.party_id, A.uprn, A.address1, A.address2,
     A.post_code, A.x, A.y, A.lat, A.long, cast(telephone as varchar) as telephone_number,	
     C.address2 as Street, B.housing_estate, A.email as email_address,
+    date_registered, in_hackney, gform,
 
     format_datetime(CAST(CURRENT_TIMESTAMP AS timestamp),
                 'yyyy-MM-dd HH:mm:ss') AS import_date_timestamp,
