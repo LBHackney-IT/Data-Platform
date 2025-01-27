@@ -179,7 +179,7 @@ def get_requests(last_import_date, resource, database):
             f"--retry_failure_from_previous_import value must be recognised as a bool, received: {retry_arg_value}.")
 
     if not last_import_date:
-        logger.info(f"Retrieving full load of data")
+        logger.info("Retrieving full load of data")
         return get_requests_for_full_load(resource)
     if retry_failures:
         logger.info(f"Getting failed requests from import on date {last_import_date}")
