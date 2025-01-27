@@ -3,11 +3,11 @@ import requests
 from pyspark.sql.functions import udf, col, explode, lit
 from pyspark.sql.types import StructType, StructField, StringType, ArrayType
 from pyspark.sql import Row
-import hmac, hashlib;
-import base64;
+import hmac
+import hashlib
+import base64
 from datetime import datetime, timedelta
 from dateutil import tz
-from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
@@ -18,17 +18,20 @@ from scripts.helpers.helpers import get_glue_env_var, get_secret, add_import_tim
 import json
 from distutils.util import strtobool
 
+
 def authenticate_tascomi(headers, public_key, private_key):
     auth_hash = calculate_auth_hash(public_key, private_key)
     headers['X-Public'] = public_key
     headers['X-Hash'] = auth_hash
     return headers
 
+
 def not_today(date_str):
     if not date_str:
         return True
     date = datetime.strptime(date_str[:19], "%Y-%m-%d %H:%M:%S")
     return date.date() != datetime.now().date()
+
 
 def get_tascomi_resource(page_number, url, body):
     global public_key
@@ -60,6 +63,7 @@ def get_tascomi_resource(page_number, url, body):
         print(f"ERROR: {exception} when getting page {page_number}. Status code {res.status_code}, response text {res.text}")
         return ([""], url, res.status_code, exception)
 
+
 def calculate_auth_hash(public_key, private_key):
     tz_ldn = tz.gettz('Europe/London')
     now = datetime.now(tz_ldn)
@@ -67,6 +71,7 @@ def calculate_auth_hash(public_key, private_key):
     crypt = hashlib.sha256(public_key.encode('utf-8') + the_time)
     token = crypt.hexdigest().encode('utf-8')
     return base64.b64encode(hmac.new(private_key.encode('utf-8'), token, hashlib.sha256).hexdigest().encode('utf-8'))
+
 
 def get_number_of_pages(resource, query = ""):
     global public_key
@@ -93,6 +98,7 @@ def get_number_of_pages(resource, query = ""):
     logger.info(error_message)
     return { 'success': False, 'error_message': error_message }
 
+
 def get_days_since_last_import(last_import_date):
     yesterday = datetime.now()
     last_import_datetime = datetime.strptime(last_import_date, "%Y%m%d")
@@ -101,8 +107,8 @@ def get_days_since_last_import(last_import_date):
     days.sort()
     return days
 
-def get_last_import_date(glue_context, database, resource):
 
+def get_last_import_date(glue_context, database, resource):
     if not table_exists_in_catalog(glue_context, f"api_response_{resource}", database):
         logger.info(f"Couldn't find table api_response_{resource} in database {database}.")
         return None
@@ -110,14 +116,17 @@ def get_last_import_date(glue_context, database, resource):
     logger.info(f"found table for {resource} api response in {database}")
     return glue_context.sql(f"SELECT max(import_date) as max_import_date FROM `{database}`.api_response_{resource} where import_api_status_code = '200'").take(1)[0].max_import_date
 
+
 def throw_if_unsuccessful(success_state, message):
     if not success_state:
         raise Exception(message)
 
+
 def get_failures_from_last_import(database, resource, last_import_date):
     requests_df = glue_context.sql(f"SELECT page_number, import_api_url_requested as url, '' as body from `{database}`.api_response_{resource} where import_api_status_code != '200' and import_date={last_import_date}")
     return { "requests": requests_df, "count": requests_df.count() }
-    
+
+
 def get_requests_since_last_import(resource, last_import_date):
     requests_list = []
     for day in get_days_since_last_import(last_import_date):
@@ -134,6 +143,7 @@ def get_requests_since_last_import(resource, last_import_date):
     requests_list = sc.parallelize(requests_list)
     requests_list = glue_context.createDataFrame(requests_list)
     return { "requests": requests_list, "count": number_of_requests }
+
 
 def get_requests_for_full_load(resource):
     number_of_pages_reponse = get_number_of_pages(resource)
@@ -175,9 +185,11 @@ def calculate_number_of_partitions(number_of_requests, number_of_workers):
     else:
         return max_partitions
 
+
 def remove_gis_image(records):
     records.pop("gis_map_image_base64", None)
     return records
+
 
 def retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, requests_list, partitions):
     request_df = requests_list.repartition(partitions)
@@ -201,10 +213,12 @@ def retrieve_and_write_tascomi_data(glue_context, s3_target_url, resource, reque
 
     return tascomi_responses_df
 
+
 def get_failed_requests(data_frame):
     return data_frame\
         .where((data_frame.import_api_status_code != '200') & (data_frame.import_api_status_code != '202'))\
         .select(data_frame.page_number.alias("page_number"), data_frame.import_api_url_requested.alias("url"), lit("").alias("body"))
+
 
 if __name__ == "__main__":
     args = getResolvedOptions(sys.argv, ['JOB_NAME'])
