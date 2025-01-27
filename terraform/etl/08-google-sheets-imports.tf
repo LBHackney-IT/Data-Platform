@@ -101,8 +101,8 @@ module "parking_spreadsheet_parking_ops_db_defects_mgt" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
-  google_sheets_document_id       = "158a8akavRN3nuYm04tyUac-zVZAOjLiPU4O8tCrPYpw"
-  google_sheets_worksheet_name    = "dp_data_import"
+  google_sheets_document_id       = "1Ef7pNfYhnzPJsh59DuDyiC97pytm5q7hXY0TlBufJF8"
+  google_sheets_worksheet_name    = "Defect management"
   department                      = module.department_parking_data_source
   dataset_name                    = "parking_ops_db_defects_mgt"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
