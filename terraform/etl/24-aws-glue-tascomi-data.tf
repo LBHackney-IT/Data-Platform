@@ -142,7 +142,7 @@ resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
 
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
-  schedule = "cron(0 21 ? * MON *)"
+  schedule = schedule = "cron(0 10 ? * SUN *)"
   enabled  = local.is_production_environment
 
   actions {
