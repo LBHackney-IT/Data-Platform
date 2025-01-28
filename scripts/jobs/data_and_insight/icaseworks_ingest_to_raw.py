@@ -32,14 +32,15 @@ arg_keys = [
 ]
 partition_keys = ["import_year", "import_month", "import_day", "import_date"]
 
-
 args = getResolvedOptions(sys.argv, arg_keys)
-locals().update(args)
 
-### iCaseworks Loads
-
-
-### Functions ###
+region_name = args["region_name"]
+s3_endpoint = args["s3_endpoint"]
+s3_target_location = args["s3_target_location"]
+s3_staging_location = args["s3_staging_location"]
+target_database = args["target_database"]
+target_table = args["target_table"]
+secret_name = args["secret_name"]
 
 
 def remove_illegal_characters(string):
