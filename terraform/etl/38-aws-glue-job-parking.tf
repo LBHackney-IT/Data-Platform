@@ -1329,7 +1329,7 @@ module "parking_cycle_hangar_met_fail_monthly_format" {
   job_description                = "format cycle hangar maintenance data for qlik reporting"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 10
+  number_of_workers_for_glue_job = 2
   glue_job_worker_type           = "G.1X"
   glue_version                   = "4.0"
   job_parameters = {
