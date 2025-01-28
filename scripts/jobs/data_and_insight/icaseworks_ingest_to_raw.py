@@ -140,10 +140,12 @@ def dump_dataframe(response, location, filename):
 
 
 def get_latest_timestamp(table_dict):
+    # TODO: reintroduce try except
     #   try:
     print(f"Getting max timestamp")
     # 2025-01-05T15:06:16
 
+    # TODO: needs refactoring to allow for different tables
     sql_query = 'select max("casestatustouchtimes_lastupdatedtime") as latest from "data-and-insight-raw-zone"."icaseworks_foi"'
 
     conn = connect(s3_staging_dir=s3_staging_location, region_name=region_name)
@@ -152,7 +154,7 @@ def get_latest_timestamp(table_dict):
     latest_date = df.iloc[0, 0]
     latest_date = latest_date.replace("T", " ")
 
-    print(f"dataframe outputting")
+    print("dataframe outputting")
     print(f"Time Found: {latest_date}")
 
     return latest_date
@@ -203,20 +205,16 @@ def authenticate_icaseworks(api_key, secret):
         signature=signature,
         headers=headers,
     )
-    print(response)
 
     # Get token
     auth_token = response.json().get("access_token")
-    print(f"auth token: {auth_token}")
 
     # Create auth header for API Calls and auth payload
 
     authorization = f"Bearer {auth_token}"
-    print(authorization)
 
     auth_payload = []
 
-    # Note: I don't know how to generate the below cookie. That is extracted using postman. Not sure how to recreate this at all
     auth_headers = {"Authorization": authorization}
     print(f"")
     return auth_payload, auth_headers
@@ -230,7 +228,6 @@ def get_data(table_dict, date_to_call, auth_headers, auth_payload):
     case_id_list = get_report_fromtime(
         case_id_report_id, date_to_call, auth_headers, auth_payload
     )
-    # print(f'Type of case_id_list {type(case_id_list)}')
 
     dict_to_call["DF"] = (
         case_id_list  # This will append the response to the DF column in the dictionary
