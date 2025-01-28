@@ -1,14 +1,22 @@
 # flake8: noqa: F821
 
-import awswrangler as wr
-from datetime import datetime
+import base64
+import hashlib
+import hmac
+import json
 import logging
 import sys
+import time
+from datetime import date, datetime
 
-from awsglue.utils import getResolvedOptions
-from scripts.helpers.helpers import get_max_date_partition_value_from_glue_catalogue
+import awswrangler as wr
+import boto3
 import pandas as pd
+import requests
+from awsglue.utils import getResolvedOptions
+from dateutil.relativedelta import *
 from pyathena import connect
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,26 +32,11 @@ arg_keys = [
 ]
 partition_keys = ["import_year", "import_month", "import_day", "import_date"]
 
-import boto3
 
 args = getResolvedOptions(sys.argv, arg_keys)
 locals().update(args)
 
 ### iCaseworks Loads
-
-import base64
-from datetime import datetime
-from datetime import date
-import json
-import hashlib
-import hmac
-import re
-import requests
-import string
-import time
-import os
-import glob
-from dateutil.relativedelta import *
 
 
 ### Functions ###
