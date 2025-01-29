@@ -270,9 +270,9 @@ def main():
     )
     api_credentials = json.loads(api_credentials_response["SecretString"])
     api_key = api_credentials.get("api_key")
-    print(f"Api_key: {api_key}")
+
     secret = api_credentials.get("secret")
-    print(f"Secret: {secret}")
+
     auth_payload, auth_headers = authenticate_icaseworks(api_key, secret)
 
     list_of_datadictionaries = [

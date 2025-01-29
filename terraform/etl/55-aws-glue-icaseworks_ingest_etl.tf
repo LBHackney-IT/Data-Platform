@@ -3,9 +3,11 @@ module "icaseworks_ingest_to_raw" {
   is_production_environment = local.is_production_environment
   is_live_environment       = local.is_live_environment
 
-  count = local.is_live_environment ? 0 : 0
+  count = !local.is_production_environment && local.is_live_environment ? 1 : 0
+  # count = local.is_live_environment ? 1 : 0
+  # Bottom one is for Prod
 
-  department                     = module.department_housing_data_source
+  department                     = module.department_data_and_insight_data_source
   job_name                       = "${local.short_identifier_prefix}icaseworks_ingest_to_raw"
   glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
   glue_temp_bucket_id            = module.glue_temp_storage_data_source.bucket_id
@@ -15,7 +17,7 @@ module "icaseworks_ingest_to_raw" {
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   trigger_enabled                = local.is_production_environment
   number_of_workers_for_glue_job = 2
-  schedule                       = "cron(0 10 ? * MON-FRI *)"
+  schedule                       = "cron(0 3 ? * * *)"
   job_parameters                 = {
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--enable-glue-datacatalog"          = "true"
@@ -31,5 +33,5 @@ module "icaseworks_ingest_to_raw" {
 
   }
 
-  script_name = "housing_apply_gx_dq_tests"
+  script_name = "icaseworks_ingest_to_raw"
 }
