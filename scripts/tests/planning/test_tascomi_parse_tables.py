@@ -53,7 +53,7 @@ class TestTascomiParsingRefinement:
             "creation_user_id": None,
             "title_id": "4",
             "page_number": 691,
-            "import_api_url_requested": "https://hackney-planning.idoxcloud.com/rest/v1/contacts?page=691",
+            "import_api_url_requested": "https://hackney-planning.tascomi.com/rest/v1/contacts?page=691",
             "import_api_status_code": 200,
             "import_exception_thrown": "",
             "import_datetime": datetime(2021, 9, 16, 13, 10),
@@ -69,7 +69,7 @@ class TestTascomiParsingRefinement:
         data_with_imports = [
             {
                 "page_number": 691,
-                "import_api_url_requested": "https://hackney-planning.idoxcloud.com/rest/v1/contacts?page=691",
+                "import_api_url_requested": "https://hackney-planning.tascomi.com/rest/v1/contacts?page=691",
                 "import_api_status_code": 200,
                 "import_exception_thrown": "",
                 "import_datetime": datetime(2021, 9, 16, 13, 10),

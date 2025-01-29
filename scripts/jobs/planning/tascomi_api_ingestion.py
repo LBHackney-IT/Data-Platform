@@ -87,7 +87,7 @@ def get_number_of_pages(resource, query=""):
 
     headers = authenticate_tascomi(headers, public_key, private_key)
 
-    url = f'https://hackney-planning.idoxcloud.com/rest/v1/{resource}{query}'
+    url = f'https://hackney-planning.tascomi.com/rest/v1/{resource}{query}'
     res = requests.get(url, data="", headers=headers)
     if res.status_code == 202:
         logger.info(f"received status code 202, whilst getting number of pages for {resource}, with query {query}")
@@ -144,7 +144,7 @@ def get_requests_since_last_import(resource, last_import_date):
         number_of_pages = number_of_pages_reponse["number_of_pages"]
         logger.info(f"Number of pages to retrieve for {day}: {number_of_pages}")
         requests_list += [RequestRow(page_number,
-                                     f'https://hackney-planning.idoxcloud.com/rest/v1/{resource}?page={page_number}&last_updated={day}',
+                                     f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}&last_updated={day}',
                                      "") for page_number in range(1, number_of_pages + 1)]
     number_of_requests = len(requests_list)
     if number_of_requests == 0:
@@ -162,7 +162,7 @@ def get_requests_for_full_load(resource):
     number_of_pages = number_of_pages_reponse["number_of_pages"]
     logger.info(f"Number of pages to retrieve: {number_of_pages}")
     requests_list = [
-        RequestRow(page_number, f'https://hackney-planning.idoxcloud.com/rest/v1/{resource}?page={page_number}', "") for
+        RequestRow(page_number, f'https://hackney-planning.tascomi.com/rest/v1/{resource}?page={page_number}', "") for
         page_number in range(1, number_of_pages + 1)]
     number_of_requests = len(requests_list)
     requests_list = sc.parallelize(requests_list)
