@@ -261,7 +261,7 @@ module "llpg_geolive_database_ingestion" {
   identifier_prefix           = local.short_identifier_prefix
   database_secret_name        = "database-credentials/geolive-llpg"
   schema_name                 = "llpg"
-  job_schedule                = "cron(1 1 ? * * *)"
+  job_schedule                = "cron(5 5 ? * * *)"
 }
 
 module "llpg_geolive_ingestion_job" {
