@@ -280,6 +280,7 @@ module "llpg_geolive_ingestion_job" {
   jdbc_connections           = [module.llpg_geolive_database_ingestion[0].jdbc_connection_name]
   triggered_by_crawler       = module.llpg_geolive_database_ingestion[0].crawler_name
   workflow_name              = module.llpg_geolive_database_ingestion[0].workflow_name
+  max_retries = 1
   job_parameters = {
     "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/unrestricted/geolive/llpg/"
     "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/unrestricted/geolive/llpg/ingestion-details/"
