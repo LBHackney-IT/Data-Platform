@@ -117,9 +117,9 @@ def get_report_fromtime(report_id, timestamp_to_call, auth_headers, auth_payload
 def dump_dataframe(response, location, filename):
     df = pd.DataFrame.from_dict(response.json(), orient="columns")
 
-    df["import_year"] = datetime.today().year
-    df["import_month"] = datetime.today().month
-    df["import_day"] = datetime.today().day
+    df["import_year"] = datetime.today().strftime("%Y")
+    df["import_month"] = datetime.today().strftime("%m")
+    df["import_day"] = datetime.today().strftime("%d")
     df["import_date"] = datetime.today().strftime("%Y%m%d")
 
     print(f"Database: {target_database}")
