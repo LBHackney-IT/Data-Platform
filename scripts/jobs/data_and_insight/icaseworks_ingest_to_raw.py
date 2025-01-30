@@ -289,7 +289,7 @@ def main():
     ]
 
     for data_dict in list_of_datadictionaries:
-        if data_dict["full_ingestion"] == False:
+        if data_dict["full_ingestion"] is False:
             date_to_track_from = get_latest_timestamp(data_dict)
             print(f"Starting calls from {date_to_track_from}")
 
