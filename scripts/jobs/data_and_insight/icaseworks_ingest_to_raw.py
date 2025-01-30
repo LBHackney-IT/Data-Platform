@@ -262,9 +262,6 @@ def retrieve_credentials_from_secrets_manager(secrets_manager_client, secret_nam
     return response
 
 
-### main function ##
-
-
 def main():
     secrets_manager_client = boto3.client("secretsmanager")
     api_credentials_response = retrieve_credentials_from_secrets_manager(
