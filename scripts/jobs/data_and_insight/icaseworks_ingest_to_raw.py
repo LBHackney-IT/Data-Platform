@@ -1,5 +1,3 @@
-# flake8: noqa: F821
-
 import base64
 import hashlib
 import hmac
@@ -16,7 +14,6 @@ import requests
 from awsglue.utils import getResolvedOptions
 from dateutil.relativedelta import *
 from pyathena import connect
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -115,7 +112,10 @@ def get_report_fromtime(report_id, timestamp_to_call, auth_headers, auth_payload
 
 
 def dump_dataframe(response, location, filename):
-    df = pd.DataFrame.from_dict(response.json(), orient="columns")
+    df = pd.DataFrame.from_dict(
+        response.json(),
+        orient="columns",
+    )
 
     df["import_year"] = datetime.today().strftime("%Y")
     df["import_month"] = datetime.today().strftime("%m")
@@ -124,6 +124,9 @@ def dump_dataframe(response, location, filename):
 
     print(f"Database: {target_database}")
     print(f"Table: {target_table}")
+
+    dict_values = ["string" for _ in range(len(df.columns))]
+    dtype_dict = dict(zip(df.columns, dict_values))
 
     # write to s3
     wr.s3.to_parquet(
@@ -134,6 +137,7 @@ def dump_dataframe(response, location, filename):
         table=target_table,
         mode="overwrite_partitions",
         partition_cols=partition_keys,
+        dtype=dtype_dict,
     )
     print(f"Dumped Dataframe {df.shape} to {s3_target_location}")
     logger.info(f"Dumped Dataframe {df.shape} to {s3_target_location}")
