@@ -145,7 +145,7 @@ def dump_dataframe(response, location, filename):
 def get_latest_timestamp(table_dict):
     # TODO: reintroduce try except
     #   try:
-    print(f"Getting max timestamp")
+    print("Getting max timestamp")
     # 2025-01-05T15:06:16
 
     # TODO: needs refactoring to allow for different tables
@@ -219,7 +219,6 @@ def authenticate_icaseworks(api_key, secret):
     auth_payload = []
 
     auth_headers = {"Authorization": authorization}
-    print(f"")
     return auth_payload, auth_headers
 
 
@@ -290,8 +289,6 @@ def main():
     ]
 
     for data_dict in list_of_datadictionaries:
-        location = data_dict["location"]
-
         if data_dict["full_ingestion"] == False:
             date_to_track_from = get_latest_timestamp(data_dict)
             print(f"Starting calls from {date_to_track_from}")
