@@ -12,7 +12,6 @@ import boto3
 import pandas as pd
 import requests
 from awsglue.utils import getResolvedOptions
-from dateutil.relativedelta import *
 from pyathena import connect
 
 logging.basicConfig(level=logging.INFO)
