@@ -3,8 +3,8 @@ module "icaseworks_ingest_to_raw" {
   is_production_environment = local.is_production_environment
   is_live_environment       = local.is_live_environment
 
-  count = !local.is_production_environment && local.is_live_environment ? 1 : 0
-  # count = local.is_live_environment ? 1 : 0
+  # count = !local.is_production_environment && local.is_live_environment ? 1 : 0
+  count = local.is_live_environment ? 1 : 0
   # Bottom one is for Prod
 
   department                     = module.department_data_and_insight_data_source
