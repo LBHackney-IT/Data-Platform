@@ -360,28 +360,6 @@ module "parking_suspension_de-normalised_data" {
   }
 }
 
-module "parking_cycle_hangars_denormalisation" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cycle_hangars_denormalisation"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cycle_hangars_denormalisation"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "denormalisation and deduplication of cycle hangars extracts"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
-
 module "parking_reps_and_appeals_correspondance" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -426,49 +404,6 @@ module "parking_permit_de_normalisation" {
   }
 }
 
-module "parking_cedar_payments" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cedar_payments"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cedar_payments"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "This job creates the % return figures for the Bailiff data"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
-
-module "parking_cedar_fulling_total_summary" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cedar_fulling_total_summary"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cedar_fulling_total_summary"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "This job creates the % return figures for the Bailiff data"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
 
 module "parking_ceo_on_street" {
   source                         = "../modules/aws-glue-job"
@@ -669,27 +604,6 @@ module "parking_market_licence_totals" {
   }
 }
 
-module "parking_cedar_backing_data_summary" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cedar_backing_data_summary"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cedar_backing_data_summary"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "This job creates the % return figures for the Bailiff data"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
 
 module "parking_percent_street_coverage_cpz" {
   source                         = "../modules/aws-glue-job"
@@ -1107,29 +1021,6 @@ module "parking_pcn_daily_print_monitoring_all" {
   }
 }
 
-module "parking_cycle_hangar_waiting_list" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cycle_hangar_waiting_list"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cycle_hangars_waiting_list"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "Takes data from Liberator raw zone and creates a geocoded, duplicate-free version of the cycle hangars waiting list"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  glue_job_timeout               = 60
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
 # MRB 17-07-2023 Job created
 module "parking_permit_street_stress" {
   source                         = "../modules/aws-glue-job"
@@ -1223,121 +1114,7 @@ module "parking_correspondence_performance_records_with_pcn_downtime_gds" {
     "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
 }
-# MRB 22-11-2023 Job created
-module "parking_cycle_hangar_allocation_wait" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cycle_hangar_allocation_wait"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cycle_hangar_allocation_wait"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "Identify how many spaces that have been used/free in Cycle Hangars and indicate numbers on the waiting list, etc."
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
-# MRB 11-12-2023 Job created
-module "parking_cycle_hangars_denormalisation_update" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cycle_hangars_denormalisation_update"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cycle_hangars_denormalisation_update"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "Rewrite of cycle hangar denormalisation WITH the emil field"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
-# MRB 15-12-2023 Job created
-module "parking_cycle_hangar_allocation_update" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cycle_hangar_allocation_update"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cycle_hangar_allocation_update"
-  job_description                = "Rewrite of cycle hangar allocation using new denormalisation code"
-  trigger_enabled                = local.is_production_environment
-  schedule                       = "cron(0 8 * * ? *)"
-  number_of_workers_for_glue_job = 2
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
-module "parking_cycle_hangars_denormalised_inservice_live_gds" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cycle_hangars_denormalised_inservice_live_gds"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cycle_hangars_denormalised_inservice_live_gds"
-  triggered_by_job               = module.parking_cycle_hangars_denormalisation.job_name
-  job_description                = "Summary data from parking_cycle_hangars_denormalisation Filtered by First of every month and Hangar is in service and allocation is live for Google Studio - gds"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
-# MRB 30-01-2024 job created
-module "parking_cycle_hangar_met_fail_monthly_format" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cycle_hangar_met_fail_monthly_format"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cycle_hangar_met_fail_monthly_format"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "format cycle hangar maintenance data for qlik reporting"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 2
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
+
 module "parking_open_pcns_vrms_linked_cancelled_ringer" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -1587,54 +1364,6 @@ module "parking_bailiff_totals" {
   script_name                    = "parking_bailiff_totals"
   triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
   job_description                = "Total Bailiff warrants and total revenue"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 2 # 2 minimum which is enough for this job
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
-# MRB 28-11-2024 job created
-module "parking_cycle_hangar_interim_wait_list" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_cycle_hangar_interim_wait_list"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_cycle_hangar_interim_wait_list"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "format the interim cycle hangar waiting list from Michael W."
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 2 # 2 minimum which is enough for this job
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
-# MRB 08-11-2024 job created
-module "Parking_interim_cycle_hangar_waiting_list" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}Parking_interim_cycle_hangar_waiting_list"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "Parking_interim_cycle_hangar_waiting_list"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "format the interim cycle hangar waiting list from Michael W. to remove the unwanted waiting list items"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
   trigger_enabled                = local.is_production_environment
   number_of_workers_for_glue_job = 2 # 2 minimum which is enough for this job
