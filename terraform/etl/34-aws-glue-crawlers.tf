@@ -46,6 +46,29 @@ resource "aws_glue_crawler" "raw_zone_unrestricted_address_api_crawler" {
   })
 }
 
+# This is for a one-off manual crawler to transfer iCaseworks data to the catalogue in raw zone.
+resource "aws_glue_crawler" "icaseworks_manual" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "${local.short_identifier_prefix}${module.department_data_and_insight_data_source.identifier}-icaseworks_manual"
+  role          = data.aws_iam_role.glue_role.arn
+  database_name = module.department_data_and_insight_data_source.raw_zone_catalog_database_name
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_data_and_insight_data_source.identifier}/icaseworks/"
+  }
+  table_prefix = "icaseworks_"
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+}
+
 resource "aws_glue_trigger" "addresses_api_crawler_trigger" {
   tags = module.tags.values
 
