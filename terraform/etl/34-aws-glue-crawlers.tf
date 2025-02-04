@@ -9,14 +9,6 @@ resource "aws_glue_catalog_database" "landing_zone_data_and_insight_address_matc
 }
 
 // ==== RAW ZONE ===========
-resource "aws_glue_catalog_database" "unrestricted_raw_zone" {
-  name = "${local.identifier_prefix}-unrestricted_raw_zone"
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
 resource "aws_glue_catalog_database" "raw_zone_unrestricted_address_api" {
   name = "${local.identifier_prefix}-raw-zone-unrestricted-address-api"
 
