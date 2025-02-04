@@ -14,7 +14,7 @@ module "llpg_raw_to_trusted" {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket_target"        = "s3://${module.trusted_zone_data_source.bucket_id}/unrestricted/llpg/latest_llpg"
     "--enable-glue-datacatalog" = "true"
-    "--source_catalog_database" = unrestricted-raw-zone
+    "--source_catalog_database" = unrestricted-raw-zone.name
     "--source_catalog_table"    = "geolive_llpg_llpg_address"
 
   }
