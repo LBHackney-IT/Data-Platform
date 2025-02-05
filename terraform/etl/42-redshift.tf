@@ -29,6 +29,7 @@ locals {
 
   redshift_schemas = {
     replace(aws_glue_catalog_database.refined_zone_tascomi.name, "-", "_") = aws_glue_catalog_database.refined_zone_tascomi.name,
+    replace(aws_glue_catalog_database.trusted_zone_tascomi.name, "-", "_") = aws_glue_catalog_database.trusted_zone_tascomi.name,
 
     replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_housing_repairs_data_source.raw_zone_catalog_database_name,
     replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_housing_repairs_data_source.refined_zone_catalog_database_name,
@@ -123,6 +124,7 @@ locals {
       secret_arn = module.department_data_and_insight_data_source.redshift_cluster_secret
       schemas_to_grant_access_to = concat([
         replace(aws_glue_catalog_database.refined_zone_tascomi.name, "-", "_"),
+        replace(aws_glue_catalog_database.trusted_zone_tascomi.name, "-", "_"),
 
         replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_"),
