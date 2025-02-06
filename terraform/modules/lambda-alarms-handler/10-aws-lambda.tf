@@ -78,7 +78,7 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 }
 
 #lambda
-#packaging 
+#packaging
 resource "null_resource" "run_install_requirements" {
   triggers = {
     dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/${local.lambda_name_underscore}/*") : filesha1("${path.module}/${f}")]))
@@ -110,7 +110,7 @@ resource "aws_lambda_function" "lambda" {
 
   role             = aws_iam_role.lambda.arn
   handler          = "main.lambda_handler"
-  runtime          = "python3.8"
+  runtime          = "python3.9"
   function_name    = lower("${var.identifier_prefix}${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_object.lambda.key

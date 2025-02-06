@@ -1,39 +1,68 @@
 import sys
+
+from awsglue import DynamicFrame
+from awsglue.context import GlueContext
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import get_glue_env_var, get_latest_partitions, PARTITION_KEYS
+
+from scripts.helpers.helpers import (
+    PARTITION_KEYS,
+    get_glue_env_var,
+    get_latest_partitions,
+)
+
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
         frame.toDF().createOrReplaceTempView(alias)
     result = spark.sql(query)
     return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+
+
+args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
-job.init(args['JOB_NAME'], args)
+job.init(args["JOB_NAME"], args)
 environment = get_glue_env_var("environment")
 
 # Script generated for node Amazon S3 liberator-raw-zone - liberator_permit_llpg
-AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-liberator-raw-zone", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="liberator_permit_llpg", transformation_ctx="AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559")
+AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-" + environment + "-liberator-raw-zone",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
+    table_name="liberator_permit_llpg",
+    transformation_ctx="AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559",
+)
 
 # Script generated for node Amazon S3 - liberator-refined-zone - parking_voucher_de_normalised
-AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-liberator-refined-zone", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="parking_voucher_de_normalised", transformation_ctx="AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376")
+AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-" + environment + "-liberator-refined-zone",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)",
+    table_name="parking_voucher_de_normalised",
+    transformation_ctx="AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376",
+)
 
 # Script generated for node Amazon S3 - raw-zone-unrestricted-address-api - unrestricted_address_api_dbo_hackney_address
-AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-raw-zone-unrestricted-address-api", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="unrestricted_address_api_dbo_hackney_address", transformation_ctx="AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032")
+AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-" + environment + "-raw-zone-unrestricted-address-api",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 30)",
+    table_name="unrestricted_address_api_dbo_hackney_address",
+    transformation_ctx="AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032",
+)
 
 # Script generated for node Amazon S3 - unrestricted_address_api_dbo_hackney_xref
-AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724073104086 = glueContext.create_dynamic_frame.from_catalog(database="dataplatform-"+environment+"-raw-zone-unrestricted-address-api", push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 7)", table_name="unrestricted_address_api_dbo_hackney_xref", transformation_ctx="AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724073104086")
+AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724073104086 = glueContext.create_dynamic_frame.from_catalog(
+    database="dataplatform-" + environment + "-raw-zone-unrestricted-address-api",
+    push_down_predicate="to_date(import_date, 'yyyyMMdd') >= date_sub(current_date, 30)",
+    table_name="unrestricted_address_api_dbo_hackney_xref",
+    transformation_ctx="AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724073104086",
+)
 
 # Script generated for node SQL Query
-SqlQuery0 = '''
+SqlQuery0 = """
 /*
 03/07/2024 - updated vouchers approved version two
 09/07/2024 - breakdown by household, street, zone, lbh versions.  This is the CPZ version
@@ -280,12 +309,12 @@ when parking_voucher_de_normalised.voucher_ref ='HY50300' then 'Dispensation'
 when substr(parking_voucher_de_normalised.voucher_ref,1,3)='HYS' then 'Suspension' else 'Permit'
 end as product_category
 
-,case when (substr(parking_voucher_de_normalised.voucher_ref,1,3) ='HYE' or 
+,case when (substr(parking_voucher_de_normalised.voucher_ref,1,3) ='HYE' or
  substr(parking_voucher_de_normalised.voucher_ref,1,3)='HYF'or
 substr(parking_voucher_de_normalised.voucher_ref,1,3)='HYQ' or
 substr(parking_voucher_de_normalised.voucher_ref,1,3)='HYV' or
 substr(parking_voucher_de_normalised.voucher_ref,1,3)='HYJ' ) and parking_voucher_de_normalised.e_voucher ='E' then 'eVoucher'
-when (substr(parking_voucher_de_normalised.voucher_ref,1,3) ='HYE' or 
+when (substr(parking_voucher_de_normalised.voucher_ref,1,3) ='HYE' or
  substr(parking_voucher_de_normalised.voucher_ref,1,3)='HYF'or
 substr(parking_voucher_de_normalised.voucher_ref,1,3)='HYQ' or
 substr(parking_voucher_de_normalised.voucher_ref,1,3)='HYV' or
@@ -293,7 +322,7 @@ substr(parking_voucher_de_normalised.voucher_ref,1,3)='HYJ' ) and
  parking_voucher_de_normalised.e_voucher <> 'E' then 'Paper Voucher' else 'Not Voucher' end as voucher_type_category
 
 /*Calculation of total vouchers in books*/
-,cast(case 
+,cast(case
 when upper(permit_type) like '2 HOUR VISITORS VOUCHERS' and (quantity is not null or quantity not like '' or quantity not like ' ') THEN 20 *  try_cast(quantity as double) --2 hour visitors vouchers x20
 when upper(permit_type) like '1 DAY VISITORS VOUCHERS' and  (quantity is not null or quantity not like '' or quantity not like ' ')  THEN 5 *  try_cast(quantity as double) --1 day visitors vouchers x5
 when upper(permit_type) like 'FILM VOUCHER' and (quantity is not null or quantity not like '' or quantity not like ' ') THEN 10 *  try_cast(quantity as double) --Film voucher x10
@@ -301,11 +330,11 @@ when upper(permit_type) like 'ESTATE VISITOR VOUCHERS' and  (quantity is not nul
 when upper(permit_type) like 'HEALTH AND SOCIAL CARE VOUCHER' and (quantity is not null or quantity not like '' or quantity not like ' ') THEN 5 *  try_cast(quantity as double) --Health and Social Care Voucher x5
 when upper(permit_type) like 'ALL ZONE BUSINESS VOUCHER' and  (quantity is not null or quantity not like '' or quantity not like ' ')  THEN 10 *  try_cast(quantity as double) --All Zone Business Voucher x10
 end as decimal (10,0)) as total_num_vouchers_in_book
-,* 
+,*
 from parking_voucher_de_normalised where import_date = (Select max(import_date) from parking_voucher_de_normalised ) --544,689
 
 )
-, street as (select  
+, street as (select
     UPRN as SR_UPRN,
 	ADDRESS1 as SR_ADDRESS1,
 	ADDRESS2 as SR_ADDRESS2,
@@ -332,27 +361,27 @@ from parking_voucher_de_normalised where import_date = (Select max(import_date) 
 	STREET_END_X as SR_STREET_END_X,
 	STREET_END_Y as SR_STREET_END_Y,
 	WARD_CODE as SR_WARD_CODE,
-if(WARD_CODE = 'E05009367',    'BROWNSWOOD WARD',    
-if(WARD_CODE = 'E05009368',    'CAZENOVE WARD',    
-if(WARD_CODE = 'E05009369',    'CLISSOLD WARD',    
-if(WARD_CODE = 'E05009370',    'DALSTON WARD',    
-if(WARD_CODE = 'E05009371',    'DE BEAUVOIR WARD',    
-if(WARD_CODE = 'E05009372',    'HACKNEY CENTRAL WARD',    
-if(WARD_CODE = 'E05009373',    'HACKNEY DOWNS WARD',    
-if(WARD_CODE = 'E05009374',    'HACKNEY WICK WARD',    
-if(WARD_CODE = 'E05009375',    'HAGGERSTON WARD',    
-if(WARD_CODE = 'E05009376',    'HOMERTON WARD',    
-if(WARD_CODE = 'E05009377',    'HOXTON EAST AND SHOREDITCH WARD',    
-if(WARD_CODE = 'E05009378',    'HOXTON WEST WARD',    
-if(WARD_CODE = 'E05009379',    'KINGS PARK WARD',    
-if(WARD_CODE = 'E05009380',    'LEA BRIDGE WARD',    
-if(WARD_CODE = 'E05009381',    'LONDON FIELDS WARD',    
-if(WARD_CODE = 'E05009382',    'SHACKLEWELL WARD',    
-if(WARD_CODE = 'E05009383',    'SPRINGFIELD WARD',    
-if(WARD_CODE = 'E05009384',    'STAMFORD HILL WEST',    
-if(WARD_CODE = 'E05009385',    'STOKE NEWINGTON WARD',    
-if(WARD_CODE = 'E05009386',    'VICTORIA WARD',    
-if(WARD_CODE = 'E05009387',    'WOODBERRY DOWN WARD',WARD_CODE))))))))))))))))))))) as SR_ward_name, 	 
+if(WARD_CODE = 'E05009367',    'BROWNSWOOD WARD',
+if(WARD_CODE = 'E05009368',    'CAZENOVE WARD',
+if(WARD_CODE = 'E05009369',    'CLISSOLD WARD',
+if(WARD_CODE = 'E05009370',    'DALSTON WARD',
+if(WARD_CODE = 'E05009371',    'DE BEAUVOIR WARD',
+if(WARD_CODE = 'E05009372',    'HACKNEY CENTRAL WARD',
+if(WARD_CODE = 'E05009373',    'HACKNEY DOWNS WARD',
+if(WARD_CODE = 'E05009374',    'HACKNEY WICK WARD',
+if(WARD_CODE = 'E05009375',    'HAGGERSTON WARD',
+if(WARD_CODE = 'E05009376',    'HOMERTON WARD',
+if(WARD_CODE = 'E05009377',    'HOXTON EAST AND SHOREDITCH WARD',
+if(WARD_CODE = 'E05009378',    'HOXTON WEST WARD',
+if(WARD_CODE = 'E05009379',    'KINGS PARK WARD',
+if(WARD_CODE = 'E05009380',    'LEA BRIDGE WARD',
+if(WARD_CODE = 'E05009381',    'LONDON FIELDS WARD',
+if(WARD_CODE = 'E05009382',    'SHACKLEWELL WARD',
+if(WARD_CODE = 'E05009383',    'SPRINGFIELD WARD',
+if(WARD_CODE = 'E05009384',    'STAMFORD HILL WEST',
+if(WARD_CODE = 'E05009385',    'STOKE NEWINGTON WARD',
+if(WARD_CODE = 'E05009386',    'VICTORIA WARD',
+if(WARD_CODE = 'E05009387',    'WOODBERRY DOWN WARD',WARD_CODE))))))))))))))))))))) as SR_ward_name,
 	PARISH_CODE as SR_PARISH_CODE,
 	PARENT_UPRN as SR_PARENT_UPRN,
 	PAO_START as SR_PAO_START,
@@ -378,10 +407,10 @@ where (ADDRESS1 like 'Street Record' or ADDRESS1 like 'STREET RECORD') and liber
   SELECT * FROM unrestricted_address_api_dbo_hackney_address where unrestricted_address_api_dbo_hackney_address.import_date = (SELECT max(unrestricted_address_api_dbo_hackney_address.import_date) FROM unrestricted_address_api_dbo_hackney_address) and lpi_logical_status like 'Approved Preferred'
   )
 , cfxref as (
-select * from  unrestricted_address_api_dbo_hackney_xref where import_date = (select max(import_date)  from  unrestricted_address_api_dbo_hackney_xref) and xref_name like 'Parking Blacklisted S106' 
+select * from  unrestricted_address_api_dbo_hackney_xref where import_date = (select max(import_date)  from  unrestricted_address_api_dbo_hackney_xref) and xref_name like 'Parking Blacklisted S106'
 )
 
-select distinct 
+select distinct
 
 vou.fy
 ,vou.cpz
@@ -470,11 +499,11 @@ vou.fy
 
 
 from vou
-left join llpg on cast(llpg.uprn as string) = cast(vou.uprn as string) 
+left join llpg on cast(llpg.uprn as string) = cast(vou.uprn as string)
 left join street on cast(street.usrn as string) = cast(llpg.usrn as string)
-left join cfxref on cast(cfxref.uprn as string) = cast(vou.uprn as string) 
+left join cfxref on cast(cfxref.uprn as string) = cast(vou.uprn as string)
 
-Where 
+Where
 vou.approved_status_flag = 1
 
 group by
@@ -505,12 +534,38 @@ vou.month_year_application_date desc
 ,vou.cpz
 --,vou.cpz_name
 --,vou.zone_name
-'''
-SQLQuery_node1720617258366 = sparkSqlQuery(glueContext, query = SqlQuery0, mapping = {"parking_voucher_de_normalised":AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376, "liberator_permit_llpg":AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559, "unrestricted_address_api_dbo_hackney_address":AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032, "unrestricted_address_api_dbo_hackney_xref":AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724073104086}, transformation_ctx = "SQLQuery_node1720617258366")
+"""
+SQLQuery_node1720617258366 = sparkSqlQuery(
+    glueContext,
+    query=SqlQuery0,
+    mapping={
+        "parking_voucher_de_normalised": AmazonS3liberatorrefinedzoneparking_voucher_de_normalised_node1720617253376,
+        "liberator_permit_llpg": AmazonS3liberatorrawzoneliberator_permit_llpg_node1720617252559,
+        "unrestricted_address_api_dbo_hackney_address": AmazonS3rawzoneunrestrictedaddressapiunrestricted_address_api_dbo_hackney_address_node1720617251032,
+        "unrestricted_address_api_dbo_hackney_xref": AmazonS3unrestricted_address_api_dbo_hackney_xref_node1724073104086,
+    },
+    transformation_ctx="SQLQuery_node1720617258366",
+)
 
 # Script generated for node Amazon S3 - parking_vouchers_approved_summary_gds
-AmazonS3parking_vouchers_approved_summary_gds_node1720617264938 = glueContext.getSink(path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_vouchers_approved_summary_gds/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=["import_year", "import_month", "import_day", "import_date"], enableUpdateCatalog=True, transformation_ctx="AmazonS3parking_vouchers_approved_summary_gds_node1720617264938")
-AmazonS3parking_vouchers_approved_summary_gds_node1720617264938.setCatalogInfo(catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",catalogTableName="parking_vouchers_approved_summary_gds")
-AmazonS3parking_vouchers_approved_summary_gds_node1720617264938.setFormat("glueparquet", compression="snappy")
-AmazonS3parking_vouchers_approved_summary_gds_node1720617264938.writeFrame(SQLQuery_node1720617258366)
+AmazonS3parking_vouchers_approved_summary_gds_node1720617264938 = glueContext.getSink(
+    path="s3://dataplatform-"
+    + environment
+    + "-refined-zone/parking/liberator/parking_vouchers_approved_summary_gds/",
+    connection_type="s3",
+    updateBehavior="UPDATE_IN_DATABASE",
+    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
+    enableUpdateCatalog=True,
+    transformation_ctx="AmazonS3parking_vouchers_approved_summary_gds_node1720617264938",
+)
+AmazonS3parking_vouchers_approved_summary_gds_node1720617264938.setCatalogInfo(
+    catalogDatabase="dataplatform-" + environment + "-liberator-refined-zone",
+    catalogTableName="parking_vouchers_approved_summary_gds",
+)
+AmazonS3parking_vouchers_approved_summary_gds_node1720617264938.setFormat(
+    "glueparquet", compression="snappy"
+)
+AmazonS3parking_vouchers_approved_summary_gds_node1720617264938.writeFrame(
+    SQLQuery_node1720617258366
+)
 job.commit()

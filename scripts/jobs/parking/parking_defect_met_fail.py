@@ -43,13 +43,15 @@ AmazonS3_node1658997944648 = glueContext.create_dynamic_frame.from_catalog(
 
 # Script generated for node SQL
 SqlQuery33 = """
-/*********************************************************************************
+/*********************************************************************************************
 Parking_Defect_MET_FAIL
 
 Temp SQL that formats the defcet managment records for Fail/Met
 
 16/11/2022 - Create Query
-*********************************************************************************/
+15/01/2025 - found AND WHERE repair_date >= (??) removed AND
+20/01/2025 - length(ltrim(rtrim(reported_date))) > 0 to length(ltrim(rtrim(reported_date))) > 5
+**********************************************************************************************/
 With Defect as (
 SELECT
     reference_no,
@@ -68,7 +70,7 @@ SELECT
                                                 substr(repair_date, 7, 2)||'-'||
                                                 substr(repair_date, 9, 2)
 
-        When reported_date like '%/%'Then   substr(repair_date, 7, 4)||'-'||
+        When repair_date like '%/%'Then   substr(repair_date, 7, 4)||'-'||
                                             substr(repair_date, 4, 2)||'-'||
                                             substr(repair_date, 1, 2)
         ELSE substr(cast(repair_date as string),1, 10)
@@ -81,7 +83,7 @@ SELECT
 
 FROM parking_parking_ops_db_defects_mgt
 WHERE import_date = (Select MAX(import_date) from parking_parking_ops_db_defects_mgt)
-AND length(ltrim(rtrim(reported_date))) > 0
+AND length(ltrim(rtrim(reported_date))) > 5 AND length(ltrim(rtrim(repair_date))) > 5
 AND met_not_met not IN ('#VALUE!','#N/A') /*('N/A','#N/A','#VALUE!')*/)
 
 SELECT
@@ -92,7 +94,7 @@ SELECT
     date_format(current_date, 'dd') AS import_day,
     date_format(current_date, 'yyyyMMdd') AS import_date
 FROM Defect
-AND WHERE repair_date >=
+WHERE repair_date >=
     date_add(cast(substr(cast(current_date as string), 1, 8)||'01' as date), -365)
 
 

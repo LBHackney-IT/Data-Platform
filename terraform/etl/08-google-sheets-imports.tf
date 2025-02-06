@@ -1,178 +1,3 @@
-module "repairs_dlo" {
-  count = local.is_live_environment ? 1 : 0
-
-  source                          = "../modules/google-sheets-glue-job"
-  is_production_environment       = local.is_production_environment
-  identifier_prefix               = local.short_identifier_prefix
-  is_live_environment             = local.is_live_environment
-  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
-  helper_module_key               = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
-  glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
-  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
-  bucket_id                       = module.raw_zone_data_source.bucket_id
-  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
-  google_sheets_document_id       = "1i9q42Kkbugwi4f2S4zdyid2ZjoN1XLjuYvqYqfHyygs"
-  google_sheets_worksheet_name    = "Form responses 1"
-  department                      = module.department_housing_repairs_data_source
-  dataset_name                    = "repairs-dlo"
-  enable_glue_trigger             = false
-  create_workflow                 = true
-  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
-}
-
-module "repairs_herts_heritage" {
-  count = local.is_live_environment ? 1 : 0
-
-  source                          = "../modules/google-sheets-glue-job"
-  is_production_environment       = local.is_production_environment
-  identifier_prefix               = local.short_identifier_prefix
-  is_live_environment             = local.is_live_environment
-  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
-  helper_module_key               = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
-  glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
-  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
-  bucket_id                       = module.raw_zone_data_source.bucket_id
-  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
-  google_sheets_document_id       = "1Psw8i2qooASPLjaBfGKNX7upiX7BeQSiMeJ8dQngSJI"
-  google_sheets_worksheet_name    = "Form responses 1"
-  department                      = module.department_housing_repairs_data_source
-  dataset_name                    = "repairs-herts-heritage"
-  enable_glue_trigger             = false
-  create_workflow                 = true
-  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
-}
-
-module "repairs_avonline" {
-  count = local.is_live_environment ? 1 : 0
-
-  source                          = "../modules/google-sheets-glue-job"
-  is_production_environment       = local.is_production_environment
-  identifier_prefix               = local.short_identifier_prefix
-  is_live_environment             = local.is_live_environment
-  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
-  helper_module_key               = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
-  glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
-  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
-  bucket_id                       = module.raw_zone_data_source.bucket_id
-  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
-  google_sheets_document_id       = "1nM99bPaOPvg5o_cz9_yJR6jlnMB0oSHdFhAMKQkPJi4"
-  google_sheets_worksheet_name    = "Form responses 1"
-  department                      = module.department_housing_repairs_data_source
-  dataset_name                    = "repairs-avonline"
-  enable_glue_trigger             = false
-  create_workflow                 = true
-  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
-}
-
-module "repairs_alpha_track" {
-  count = local.is_live_environment ? 1 : 0
-
-  source                          = "../modules/google-sheets-glue-job"
-  is_production_environment       = local.is_production_environment
-  identifier_prefix               = local.short_identifier_prefix
-  is_live_environment             = local.is_live_environment
-  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
-  helper_module_key               = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
-  glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
-  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
-  bucket_id                       = module.raw_zone_data_source.bucket_id
-  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
-  google_sheets_document_id       = "1cbeVvMuNNinVQDeVfsUWalRpY6zK9oZPa3ebLtLSiAc"
-  google_sheets_worksheet_name    = "Form responses 1"
-  department                      = module.department_housing_repairs_data_source
-  dataset_name                    = "repairs-alpha-track"
-  enable_glue_trigger             = false
-  create_workflow                 = true
-  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
-}
-
-module "repairs_stannah" {
-  count = local.is_live_environment ? 1 : 0
-
-  source                          = "../modules/google-sheets-glue-job"
-  is_production_environment       = local.is_production_environment
-  identifier_prefix               = local.short_identifier_prefix
-  is_live_environment             = local.is_live_environment
-  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
-  helper_module_key               = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
-  glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
-  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
-  bucket_id                       = module.raw_zone_data_source.bucket_id
-  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
-  google_sheets_document_id       = "1CpC_Dn4aM8MSFb5a6HJ_FEsVYcahRsis9YIATcfArhw"
-  google_sheets_worksheet_name    = "Form responses 1"
-  department                      = module.department_housing_repairs_data_source
-  dataset_name                    = "repairs-stannah"
-  enable_glue_trigger             = false
-  create_workflow                 = true
-  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
-}
-
-module "repairs_purdy" {
-  count = local.is_live_environment ? 1 : 0
-
-  source                          = "../modules/google-sheets-glue-job"
-  is_production_environment       = local.is_production_environment
-  identifier_prefix               = local.short_identifier_prefix
-  is_live_environment             = local.is_live_environment
-  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
-  helper_module_key               = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
-  glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
-  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
-  bucket_id                       = module.raw_zone_data_source.bucket_id
-  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
-  google_sheets_document_id       = "1-PpKPnaPMA6AogsNXT5seqQk3VUB-naFnFJYhROkl2o"
-  google_sheets_worksheet_name    = "FormresponsesPUR"
-  department                      = module.department_housing_repairs_data_source
-  dataset_name                    = "repairs-purdy"
-  enable_glue_trigger             = false
-  create_workflow                 = true
-  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
-}
-
-module "repairs_axis" {
-  count = local.is_live_environment ? 1 : 0
-
-  source                          = "../modules/google-sheets-glue-job"
-  is_production_environment       = local.is_production_environment
-  identifier_prefix               = local.short_identifier_prefix
-  is_live_environment             = local.is_live_environment
-  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
-  helper_module_key               = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
-  glue_catalog_database_name      = module.department_housing_repairs_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
-  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
-  bucket_id                       = module.raw_zone_data_source.bucket_id
-  sheets_credentials_name         = data.aws_ssm_parameter.sheets_credentials_housing_name.value
-  google_sheets_document_id       = "1aDWO9ZAVar377jiYTXkZzDCIckCqbhppOW23B85hFsA"
-  google_sheets_worksheet_name    = "Form responses 1"
-  department                      = module.department_housing_repairs_data_source
-  dataset_name                    = "repairs-axis"
-  enable_glue_trigger             = false
-  create_workflow                 = true
-  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
-}
-
 module "parking_spreadsheet_estate_permit_limits" {
   count                           = local.is_live_environment ? 1 : 0
   source                          = "../modules/google-sheets-glue-job"
@@ -214,29 +39,6 @@ module "parking_spreadsheet_parkmap_restrictions_report" {
   department                      = module.department_parking_data_source
   dataset_name                    = "parkmap_restrictions_report"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
-  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
-}
-
-module "sandbox_estates_round_crew_data" {
-  count = local.is_live_environment ? 1 : 0
-
-  source                          = "../modules/google-sheets-glue-job"
-  is_production_environment       = local.is_production_environment
-  identifier_prefix               = local.short_identifier_prefix
-  is_live_environment             = local.is_live_environment
-  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
-  helper_module_key               = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
-  glue_catalog_database_name      = module.department_sandbox_data_source.raw_zone_catalog_database_name
-  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
-  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
-  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
-  bucket_id                       = module.raw_zone_data_source.bucket_id
-  google_sheets_document_id       = "1C5Afb_4qz2_7m7xPXAW9g40nWDt1jrdla3TBARAlCEM"
-  google_sheets_worksheet_name    = "EstatesRoundCrewData_07032022"
-  department                      = module.department_sandbox_data_source
-  dataset_name                    = "estate_round_crew_data"
-  enable_glue_trigger             = false
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -299,8 +101,8 @@ module "parking_spreadsheet_parking_ops_db_defects_mgt" {
   glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
   google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
   bucket_id                       = module.raw_zone_data_source.bucket_id
-  google_sheets_document_id       = "158a8akavRN3nuYm04tyUac-zVZAOjLiPU4O8tCrPYpw"
-  google_sheets_worksheet_name    = "dp_data_import"
+  google_sheets_document_id       = "1Ef7pNfYhnzPJsh59DuDyiC97pytm5q7hXY0TlBufJF8"
+  google_sheets_worksheet_name    = "Defect management"
   department                      = module.department_parking_data_source
   dataset_name                    = "parking_ops_db_defects_mgt"
   google_sheet_import_schedule    = "cron(0 6 ? * * *)"
@@ -766,7 +568,7 @@ module "nas_live_manual_updates_data_load" {
   google_sheets_worksheet_name    = "nas_live_manual_updates_data_load"
   department                      = module.department_parking_data_source
   dataset_name                    = "nas_live_manual_updates_data_load"
-  google_sheet_import_schedule    = "cron(0 4 ? * * *)"
+  google_sheet_import_schedule    = "cron(0 8 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }
 
@@ -968,5 +770,48 @@ module "diplomatic_country_vrm_prefix_data_load" {
   department                      = module.department_parking_data_source
   dataset_name                    = "diplomatic_country_vrm_prefix_data_load"
   google_sheet_import_schedule    = "cron(0 4 ? * MON *)"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
+}
+
+module "parking_cycle_hangar_unsubscribed_emails" {
+  count                           = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  is_production_environment       = local.is_production_environment
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
+  helper_module_key               = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
+  glue_catalog_database_name      = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone_data_source.bucket_id
+  google_sheets_document_id       = "1I9OPrlWIpidOM1pnwcc8G6Xq86IJz_UcIia1u7zX6_A"
+  google_sheets_worksheet_name    = "Unsubscribed emails"
+  department                      = module.department_parking_data_source
+  dataset_name                    = "parking_cycle_hangar_unsubscribed_emails"
+  google_sheet_import_schedule    = "cron(0 4 ? * * *)"
+  spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
+}
+module "parking_opt_in_form_responses" {
+  count                           = local.is_live_environment ? 1 : 0
+  source                          = "../modules/google-sheets-glue-job"
+  is_production_environment       = local.is_production_environment
+  identifier_prefix               = local.short_identifier_prefix
+  is_live_environment             = local.is_live_environment
+  glue_scripts_bucket_id          = module.glue_scripts_data_source.bucket_id
+  helper_module_key               = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                 = data.aws_s3_object.pydeequ.key
+  glue_catalog_database_name      = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_url    = module.glue_temp_storage_data_source.bucket_url
+  glue_crawler_excluded_blobs     = local.glue_crawler_excluded_blobs
+  google_sheets_import_script_key = aws_s3_object.google_sheets_import_script.key
+  bucket_id                       = module.raw_zone_data_source.bucket_id
+  google_sheets_document_id       = "1yzTqm_l9Pc1jpdqI_OApYCRFNeIg7puQ1nPFcYpbV8Y"
+  google_sheets_worksheet_name    = "opt in form responses"
+  department                      = module.department_parking_data_source
+  dataset_name                    = "parking_opt_in_form_responses"
+  google_sheet_import_schedule    = "cron(0 4 ? * * *)"
   spark_ui_output_storage_id      = module.spark_ui_output_storage_data_source.bucket_id
 }

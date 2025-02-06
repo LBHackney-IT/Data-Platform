@@ -90,3 +90,108 @@ resource "aws_glue_crawler" "parking_spatially_enriched_refined_zone" {
     }
   })
 }
+
+resource "aws_glue_crawler" "parking_google_sheet_ingestion_raw_zone" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "${local.short_identifier_prefix}${module.department_parking_data_source.identifier}-google-sheet-ingestion-raw-zone"
+  role          = data.aws_iam_role.glue_role.arn
+  database_name = module.department_parking_data_source.raw_zone_catalog_database_name
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_parking_data_source.identifier}/google-sheets/"
+  }
+  table_prefix = "${module.department_parking_data_source.identifier_snake_case}_"
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+}
+
+resource "aws_glue_crawler" "housing_google_sheet_ingestion_raw_zone" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "${local.short_identifier_prefix}${module.department_housing_data_source.identifier}-google-sheet-ingestion-raw-zone"
+  role          = data.aws_iam_role.glue_role.arn
+  database_name = module.department_housing_data_source.raw_zone_catalog_database_name
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_housing_data_source.identifier}/google-sheets/"
+  }
+  table_prefix = "${module.department_housing_data_source.identifier_snake_case}_"
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+}
+
+resource "aws_glue_crawler" "data_and_insight_google_sheet_ingestion_raw_zone" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "${local.short_identifier_prefix}${module.department_data_and_insight_data_source.identifier}-google-sheet-ingestion-raw-zone"
+  role          = data.aws_iam_role.glue_role.arn
+  database_name = module.department_data_and_insight_data_source.raw_zone_catalog_database_name
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_data_and_insight_data_source.identifier}/google-sheets/"
+  }
+  table_prefix = "${module.department_data_and_insight_data_source.identifier_snake_case}_"
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+}
+
+# Below crawlers triggers are temporary and will be removed after enabling the airflow google sheet ingestion dag
+resource "aws_glue_trigger" "parking_google_sheet_ingestion_raw_zone_trigger" {
+  name                = "${local.short_identifier_prefix}${module.department_parking_data_source.identifier}-google-sheet-ingestion-raw-zone-trigger"
+  type                = "SCHEDULED"
+  schedule            = "cron(0 7 ? * * *)"
+  start_on_creation   = true
+
+  actions {
+    crawler_name = aws_glue_crawler.parking_google_sheet_ingestion_raw_zone[0].name
+  }
+  tags = module.tags.values
+}
+
+
+resource "aws_glue_trigger" "housing_google_sheet_ingestion_raw_zone_trigger" {
+  name                = "${local.short_identifier_prefix}${module.department_housing_data_source.identifier}-google-sheet-ingestion-raw-zone-trigger"
+  type                = "SCHEDULED"
+  schedule            = "cron(0 7 ? * * *)"
+  start_on_creation   = true
+
+  actions {
+    crawler_name = aws_glue_crawler.housing_google_sheet_ingestion_raw_zone[0].name
+  }
+  tags = module.tags.values
+}
+
+
+resource "aws_glue_trigger" "data_and_insight_google_sheet_ingestion_raw_zone_trigger" {
+  name                = "${local.short_identifier_prefix}${module.department_data_and_insight_data_source.identifier}-google-sheet-ingestion-raw-zone-trigger"
+  type                = "SCHEDULED"
+  schedule            = "cron(0 7 ? * * *)"
+  start_on_creation   = true
+
+  actions {
+    crawler_name = aws_glue_crawler.data_and_insight_google_sheet_ingestion_raw_zone[0].name
+  }
+  tags = module.tags.values
+}
