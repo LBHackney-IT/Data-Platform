@@ -220,7 +220,8 @@ data "aws_iam_policy_document" "s3_department_access" {
       "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*",
 
       var.mwaa_etl_scripts_bucket_arn,
-      "${var.mwaa_etl_scripts_bucket_arn}/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/${local.department_identifier}/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/${local.department_identifier}/unrestricted/*",
     ]
   }
 
