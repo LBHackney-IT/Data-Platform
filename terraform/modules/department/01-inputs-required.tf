@@ -137,10 +137,6 @@ variable "mwaa_etl_scripts_bucket_arn" {
   type = string
 }
 
-variable "mwaa_etl_scripts_bucket_id" {
-  type = string
-}
-
 variable "mwaa_key_arn" {
   type = string
 }

@@ -37,10 +37,6 @@ output "mwaa_etl_scripts_bucket_arn" {
   value = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
 }
 
-output "mwaa_etl_scripts_bucket_id" {
-  value = aws_s3_bucket.mwaa_etl_scripts_bucket.id
-}
-
 output "mwaa_key_arn" {
   value = aws_kms_key.mwaa_key.arn
 }
