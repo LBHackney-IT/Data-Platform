@@ -174,7 +174,8 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.athena_storage_bucket.kms_key_arn,
       var.glue_scripts_bucket.kms_key_arn,
       var.spark_ui_output_storage_bucket.kms_key_arn,
-      var.glue_temp_storage_bucket.kms_key_arn
+      var.glue_temp_storage_bucket.kms_key_arn,
+      var.mwaa_key_arn
     ]
   }
 
@@ -216,7 +217,11 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.glue_temp_storage_bucket.bucket_arn,
 
       var.spark_ui_output_storage_bucket.bucket_arn,
-      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
+      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*",
+
+      var.mwaa_etl_scripts_bucket_arn,
+      "${var.mwaa_etl_scripts_bucket_arn}/${local.department_identifier}/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/${local.department_identifier}/unrestricted/*",
     ]
   }
 
