@@ -221,7 +221,8 @@ data "aws_iam_policy_document" "s3_department_access" {
 
       var.mwaa_etl_scripts_bucket_arn,
       "${var.mwaa_etl_scripts_bucket_arn}/${local.department_identifier}/*",
-      "${var.mwaa_etl_scripts_bucket_arn}/${local.department_identifier}/unrestricted/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/unrestricted/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/shared/*",
     ]
   }
 
