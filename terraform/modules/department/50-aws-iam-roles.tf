@@ -143,7 +143,7 @@ resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
 
 # Department ECS
 resource "aws_iam_role" "department_ecs_role" {
-  name               = lower("${var.identifier_prefix}-ecs-${replace(local.department_identifier, "-", "_")}")
+  name               = lower("${var.identifier_prefix}-ecs-${local.department_identifier}")
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_role_policy.json
   tags               = var.tags
 }
