@@ -170,12 +170,12 @@ module "gov-notify-ingestion-customer-services" {
   runtime                        = "python3.9"
   environment_variables          = {
 
-    API_SECRET_NAME  = "customer-services/gov-notify_live_api_key"
+    API_SECRET_NAME          = "customer-services/gov-notify_live_api_key"
     TARGET_S3_BUCKET_LANDING = module.landing_zone_data_source.bucket_id
-    TARGET_S3_FOLDER = "customer-services/govnotify/"
-    CRAWLER_NAME_LANDING    = "${local.short_identifier_prefix}GovNotify Customer Services Landing Zone"
-    TARGET_S3_BUCKET_RAW = module.raw_zone_data_source.bucket_id
-    CRAWLER_NAME_RAW    = "${local.short_identifier_prefix}GovNotify Customer Services Raw Zone"
+    TARGET_S3_FOLDER         = "customer-services/govnotify/"
+    CRAWLER_NAME_LANDING     = "${local.short_identifier_prefix}GovNotify Customer Services Landing Zone"
+    TARGET_S3_BUCKET_RAW     = module.raw_zone_data_source.bucket_id
+    CRAWLER_NAME_RAW         = "${local.short_identifier_prefix}GovNotify Customer Services Raw Zone"
   }
   layers = [
     "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13",
@@ -203,22 +203,22 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify" {
   source_arn    = aws_cloudwatch_event_rule.govnotify_customer_services_trigger_event[0].arn
 }
 
- # Create a CloudWatch Event Target to trigger the GovNotify Customer Services Lambda function.
- resource "aws_cloudwatch_event_target" "govnotify_customer_services_trigger_event_target" {
-   count     = local.create_govnotify_resource_count
-   rule      = aws_cloudwatch_event_rule.govnotify_customer_services_trigger_event[0].name
-   target_id = "govnotify-customer_services-trigger-event-target"
-   arn       = module.gov-notify-ingestion-customer-services[0].lambda_function_arn
-   input     = <<EOF
+# Create a CloudWatch Event Target to trigger the GovNotify Customer Services Lambda function.
+resource "aws_cloudwatch_event_target" "govnotify_customer_services_trigger_event_target" {
+  count      = local.create_govnotify_resource_count
+  rule       = aws_cloudwatch_event_rule.govnotify_customer_services_trigger_event[0].name
+  target_id  = "govnotify-customer_services-trigger-event-target"
+  arn        = module.gov-notify-ingestion-customer-services[0].lambda_function_arn
+  input      = <<EOF
    {
     "table_names": ${jsonencode(local.govnotify_tables)}
    }
    EOF
-   depends_on = [module.gov-notify-ingestion-customer-services, aws_lambda_permission.allow_cloudwatch_to_call_govnotify]
- }
+  depends_on = [module.gov-notify-ingestion-customer-services, aws_lambda_permission.allow_cloudwatch_to_call_govnotify]
+}
 
 resource "aws_glue_crawler" "govnotify_customer_services_landing_zone" {
-  for_each = { for idx, source in local.govnotify_tables : idx => source }
+  for_each = {for idx, source in local.govnotify_tables : idx => source}
 
   database_name = "${local.identifier_prefix}-landing-zone-database"
   name          = "${local.short_identifier_prefix}GovNotify Customer Services Landing Zone ${each.value}"
@@ -238,7 +238,7 @@ resource "aws_glue_crawler" "govnotify_customer_services_landing_zone" {
 }
 
 resource "aws_glue_crawler" "govnotify_customer_services_raw_zone" {
-  for_each = { for idx, source in local.govnotify_tables : idx => source }
+  for_each = {for idx, source in local.govnotify_tables : idx => source}
 
   database_name = module.department_customer_services_data_source.raw_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}GovNotify Customer Services Raw Zone ${each.value}"
