@@ -227,7 +227,7 @@ resource "aws_glue_crawler" "govnotify_customer_services_landing_zone" {
   name          = "${local.short_identifier_prefix}GovNotify Customer Services Landing Zone ${each.value}"
   role          = data.aws_iam_role.glue_role.arn
   tags          = module.tags.values
-  table_prefix  = "${each.value}_"
+  table_prefix  = "customer_services_${each.value}_"
 
   s3_target {
     path = "s3://${module.landing_zone_data_source.bucket_id}/customer-services/govnotify/${each.value}/"
