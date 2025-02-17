@@ -115,7 +115,7 @@ data "aws_iam_policy_document" "gov_notify_customer_services_lambda_secret_acces
     ]
     effect    = "Allow"
     resources = [
-      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:customer_services/gov-notify*"
+      "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:customer-services/gov-notify*"
     ]
   }
 }
@@ -207,7 +207,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify_customer_se
 resource "aws_cloudwatch_event_target" "govnotify_customer_services_trigger_event_target" {
   count      = local.create_govnotify_customer_services_resource_count
   rule       = aws_cloudwatch_event_rule.govnotify_customer_services_trigger_event[0].name
-  target_id  = "govnotify-customer_services-trigger-event-target"
+  target_id  = "govnotify-customer-services-trigger-event-target"
   arn        = module.gov-notify-ingestion-customer-services[0].lambda_function_arn
   input      = <<EOF
    {
@@ -250,7 +250,7 @@ resource "aws_glue_crawler" "govnotify_customer_services_raw_zone" {
   table_prefix  = null
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/customer_services/govnotify/${each.value}/"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/customer-services/govnotify/${each.value}/"
   }
   configuration = jsonencode({
     Version  = 1.0
