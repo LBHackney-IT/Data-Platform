@@ -235,7 +235,7 @@ resource "aws_glue_crawler" "govnotify_customer_services_landing_zone" {
   configuration = jsonencode({
     Version  = 1.0
     Grouping = {
-      TableLevelConfiguration = 6
+      TableLevelConfiguration = 5
     }
   })
 }
@@ -255,7 +255,7 @@ resource "aws_glue_crawler" "govnotify_customer_services_raw_zone" {
   configuration = jsonencode({
     Version  = 1.0
     Grouping = {
-      TableLevelConfiguration = 5
+      TableLevelConfiguration = 4
     }
   })
 }
