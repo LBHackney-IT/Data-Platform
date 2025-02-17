@@ -62,7 +62,7 @@ resource "aws_iam_role_policy_attachment" "gov_notify_customer_services_lambda_l
   policy_arn = aws_iam_policy.gov_notify_customer_services_lambda_logs[0].arn
 }
 
-data "aws_iam_policy_document" "lambda_assume_role" {
+data "aws_iam_policy_document" "lambda_assume_role_customer_services" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
@@ -93,7 +93,7 @@ resource "aws_iam_policy" "customer_services_gov_notify_lambda_execution" {
 resource "aws_iam_role" "customer_services_gov_notify_ingestion" {
   count              = local.create_govnotify_customer_services_resource_count
   name               = "customer_services_gov_notify_ingestion_lambda_role"
-  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_customer_services.json
 }
 
 resource "aws_iam_role_policy_attachment" "customer_services_gov_notify_ingestion" {
