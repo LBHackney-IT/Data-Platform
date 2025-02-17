@@ -1,6 +1,6 @@
 locals {
-  govnotify_tables                = ["notifications", "received_text_messages"]
-  create_govnotify_resource_count = local.is_live_environment ? 1 : 0
+  govnotify_tables_customer_services                = ["notifications", "received_text_messages"]
+  create_govnotify_customer_services_resource_count = local.is_live_environment ? 1 : 0
 }
 
 
@@ -34,11 +34,11 @@ data "aws_iam_policy_document" "customer_services_s3_access" {
 }
 
 resource "aws_iam_policy" "customer_services_s3_access" {
-  count  = local.create_govnotify_resource_count
+  count  = local.create_govnotify_customer_services_resource_count
   name   = "customer_services_s3_access"
   policy = data.aws_iam_policy_document.customer_services_s3_access.json
 }
-data "aws_iam_policy_document" "gov_notify_lambda_logs" {
+data "aws_iam_policy_document" "gov_notify_customer_services_lambda_logs" {
   statement {
     actions = [
       "logs:CreateLogGroup",
@@ -50,16 +50,16 @@ data "aws_iam_policy_document" "gov_notify_lambda_logs" {
   }
 }
 
-resource "aws_iam_policy" "gov_notify_lambda_logs" {
-  count  = local.create_govnotify_resource_count
-  name   = "gov_notify_lambda_logs"
-  policy = data.aws_iam_policy_document.gov_notify_lambda_logs.json
+resource "aws_iam_policy" "gov_notify_customer_services_lambda_logs" {
+  count  = local.create_govnotify_customer_services_resource_count
+  name   = "gov_notify_customer_services_lambda_logs"
+  policy = data.aws_iam_policy_document.gov_notify_customer_services_lambda_logs.json
 }
 
-resource "aws_iam_role_policy_attachment" "gov_notify_lambda_logs" {
-  count      = local.create_govnotify_resource_count
+resource "aws_iam_role_policy_attachment" "gov_notify_customer_services_lambda_logs" {
+  count      = local.create_govnotify_customer_services_resource_count
   role       = aws_iam_role.customer_services_gov_notify_ingestion[0].name
-  policy_arn = aws_iam_policy.gov_notify_lambda_logs[0].arn
+  policy_arn = aws_iam_policy.gov_notify_customer_services_lambda_logs[0].arn
 }
 
 data "aws_iam_policy_document" "lambda_assume_role" {
@@ -85,30 +85,30 @@ data "aws_iam_policy_document" "customer_services_gov_notify_lambda_execution" {
 }
 
 resource "aws_iam_policy" "customer_services_gov_notify_lambda_execution" {
-  count  = local.create_govnotify_resource_count
+  count  = local.create_govnotify_customer_services_resource_count
   name   = "customer_services_gov_notify_lambda_execution"
   policy = data.aws_iam_policy_document.customer_services_gov_notify_lambda_execution.json
 }
 
 resource "aws_iam_role" "customer_services_gov_notify_ingestion" {
-  count              = local.create_govnotify_resource_count
+  count              = local.create_govnotify_customer_services_resource_count
   name               = "customer_services_gov_notify_ingestion_lambda_role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
 resource "aws_iam_role_policy_attachment" "customer_services_gov_notify_ingestion" {
-  count      = local.create_govnotify_resource_count
+  count      = local.create_govnotify_customer_services_resource_count
   role       = aws_iam_role.customer_services_gov_notify_ingestion[0].name
   policy_arn = aws_iam_policy.customer_services_s3_access[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "customer_services_gov_notify_lambda_invoke" {
-  count      = local.create_govnotify_resource_count
+  count      = local.create_govnotify_customer_services_resource_count
   role       = aws_iam_role.customer_services_gov_notify_ingestion[0].name
   policy_arn = aws_iam_policy.customer_services_gov_notify_lambda_execution[0].arn
 }
 
-data "aws_iam_policy_document" "gov_notify_lambda_secret_access" {
+data "aws_iam_policy_document" "gov_notify_customer_services_lambda_secret_access" {
   statement {
     actions = [
       "secretsmanager:GetSecretValue",
@@ -120,20 +120,20 @@ data "aws_iam_policy_document" "gov_notify_lambda_secret_access" {
   }
 }
 
-resource "aws_iam_policy" "gov_notify_lambda_secret_access" {
-  count  = local.create_govnotify_resource_count
-  name   = "gov_notify_lambda_secret_access"
-  policy = data.aws_iam_policy_document.gov_notify_lambda_secret_access.json
+resource "aws_iam_policy" "gov_notify_customer_services_lambda_secret_access" {
+  count  = local.create_govnotify_customer_services_resource_count
+  name   = "gov_notify_customer_services_lambda_secret_access"
+  policy = data.aws_iam_policy_document.gov_notify_customer_services_lambda_secret_access.json
 }
 
-resource "aws_iam_role_policy_attachment" "gov_notify_lambda_secret_access" {
-  count      = local.create_govnotify_resource_count
+resource "aws_iam_role_policy_attachment" "gov_notify_customer_services_lambda_secret_access" {
+  count      = local.create_govnotify_customer_services_resource_count
   role       = aws_iam_role.customer_services_gov_notify_ingestion[0].name
-  policy_arn = aws_iam_policy.gov_notify_lambda_secret_access[0].arn
+  policy_arn = aws_iam_policy.gov_notify_customer_services_lambda_secret_access[0].arn
 }
 
 # Define a IAM Policy Document for Glue StartCrawler Permissions:
-data "aws_iam_policy_document" "gov_notify_glue_crawler" {
+data "aws_iam_policy_document" "gov_notify_customer_services_glue_crawler" {
   statement {
     actions   = ["glue:StartCrawler"]
     effect    = "Allow"
@@ -142,24 +142,24 @@ data "aws_iam_policy_document" "gov_notify_glue_crawler" {
 }
 
 # create a New IAM Policy Resource:
-resource "aws_iam_policy" "gov_notify_glue_crawler" {
-  count  = local.create_govnotify_resource_count
-  name   = "gov_notify_glue_crawler_access"
-  policy = data.aws_iam_policy_document.gov_notify_glue_crawler.json
+resource "aws_iam_policy" "gov_notify_customer_services_glue_crawler" {
+  count  = local.create_govnotify_customer_services_resource_count
+  name   = "gov_notify_customer_services_glue_crawler_access"
+  policy = data.aws_iam_policy_document.gov_notify_customer_services_glue_crawler.json
 }
 
 # attach the gov_notify_glue_crawler to the customer_services_gov_notify_ingestion_lambda_role by creating a new aws_iam_role_policy_attachment resource.
-resource "aws_iam_role_policy_attachment" "gov_notify_glue_crawler" {
-  count      = local.create_govnotify_resource_count
+resource "aws_iam_role_policy_attachment" "gov_notify_customer_services_glue_crawler" {
+  count      = local.create_govnotify_customer_services_resource_count
   role       = aws_iam_role.customer_services_gov_notify_ingestion[0].name
-  policy_arn = aws_iam_policy.gov_notify_glue_crawler[0].arn
+  policy_arn = aws_iam_policy.gov_notify_customer_services_glue_crawler[0].arn
 }
 
 module "gov-notify-ingestion-customer-services" {
-  count                          = local.create_govnotify_resource_count
+  count                          = local.create_govnotify_customer_services_resource_count
   source                         = "../modules/aws-lambda"
   tags                           = module.tags.values
-  lambda_name                    = "govnotify_api_ingestion_repairs"
+  lambda_name                    = "govnotify_api_ingestion_customer_services"
   lambda_role_arn                = aws_iam_role.customer_services_gov_notify_ingestion[0].arn
   identifier_prefix              = local.short_identifier_prefix
   handler                        = "main.lambda_handler"
@@ -186,7 +186,7 @@ module "gov-notify-ingestion-customer-services" {
 
 # Create a CloudWatch Event Rule to trigger the GovNotify Customer Services Lambda function.
 resource "aws_cloudwatch_event_rule" "govnotify_customer_services_trigger_event" {
-  count               = local.create_govnotify_resource_count
+  count               = local.create_govnotify_customer_services_resource_count
   name                = "${local.short_identifier_prefix}govnotify_customer_services_trigger_event"
   description         = "Trigger event for Customer Services GovNotify API ingestion"
   schedule_expression = "cron(0 0 * * ? *)"
@@ -195,7 +195,7 @@ resource "aws_cloudwatch_event_rule" "govnotify_customer_services_trigger_event"
 }
 
 # Create a Lambda Permission to allow CloudWatch to invoke the GovNotify Customer Services Lambda function.
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify" {
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify_customer_services" {
   statement_id  = "AllowCloudWatchToInvokeGovNotifyFunction"
   action        = "lambda:InvokeFunction"
   function_name = module.gov-notify-ingestion-customer-services[0].lambda_function_arn
@@ -205,7 +205,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify" {
 
 # Create a CloudWatch Event Target to trigger the GovNotify Customer Services Lambda function.
 resource "aws_cloudwatch_event_target" "govnotify_customer_services_trigger_event_target" {
-  count      = local.create_govnotify_resource_count
+  count      = local.create_govnotify_customer_services_resource_count
   rule       = aws_cloudwatch_event_rule.govnotify_customer_services_trigger_event[0].name
   target_id  = "govnotify-customer_services-trigger-event-target"
   arn        = module.gov-notify-ingestion-customer-services[0].lambda_function_arn
@@ -214,11 +214,14 @@ resource "aws_cloudwatch_event_target" "govnotify_customer_services_trigger_even
     "table_names": ${jsonencode(local.govnotify_tables)}
    }
    EOF
-  depends_on = [module.gov-notify-ingestion-customer-services, aws_lambda_permission.allow_cloudwatch_to_call_govnotify]
+  depends_on = [
+    module.gov-notify-ingestion-customer-services,
+    aws_lambda_permission.allow_cloudwatch_to_call_govnotify_customer_services
+  ]
 }
 
 resource "aws_glue_crawler" "govnotify_customer_services_landing_zone" {
-  for_each = {for idx, source in local.govnotify_tables : idx => source}
+  for_each = {for idx, source in local.govnotify_tables_customer_services : idx => source}
 
   database_name = "${local.identifier_prefix}-landing-zone-database"
   name          = "${local.short_identifier_prefix}GovNotify Customer Services Landing Zone ${each.value}"
@@ -238,7 +241,7 @@ resource "aws_glue_crawler" "govnotify_customer_services_landing_zone" {
 }
 
 resource "aws_glue_crawler" "govnotify_customer_services_raw_zone" {
-  for_each = {for idx, source in local.govnotify_tables : idx => source}
+  for_each = {for idx, source in local.govnotify_tables_customer_services : idx => source}
 
   database_name = module.department_customer_services_data_source.raw_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}GovNotify Customer Services Raw Zone ${each.value}"
