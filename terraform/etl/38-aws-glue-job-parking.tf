@@ -44,71 +44,11 @@ module "parking_persistent_evaders" {
   }
 }
 
-module "parking_school_street_vrms" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_school_street_vrms"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_school_street_vrms"
-  triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
-  job_description                = "Permit changes comparison - compare changes in permits from the parking_permit_denormalised_gds_street_llpg table to be used in google data studio  Compares latest import to previous import in table"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+# Migrated job "parking_school_street_vrms" to dap-airflow om 19/02/2025
 
-module "parking_estate_waiting_list_live_permits_type_gds" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_estate_waiting_list_live_permits_type_gds"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_estate_waiting_list_live_permits_type_gds"
-  triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
-  job_description                = "Filters for distinct record id's and adds number of Live permits by type.  This is for use by Parking Permits team."
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+# Migrated job "parking_estate_waiting_list_live_permits_type_gds" to dap-airflow om 19/02/2025
 
-module "parking_gds_permit_change_comparison" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_gds_permit_change_comparison"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_gds_permit_change_comparison"
-  triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
-  job_description                = "Permit changes comparison - compare changes in permits from the parking_permit_denormalised_gds_street_llpg table to be used in google data studio  Compares latest import to previous import in table"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+# Migrated job "parking_gds_permit_change_comparison" to dap-airflow om 19/02/2025
 
 module "parking_kpi_gds_summary" {
   source                         = "../modules/aws-glue-job"
@@ -158,27 +98,7 @@ module "parking_foi_pcn_gds_summary" {
   }
 }
 
-module "parking_permit_denormalised_gds_street_llpg" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_permit_denormalised_gds_street_llpg"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_permit_denormalised_gds_street_llpg"
-  triggered_by_job               = module.parking_permit_de_normalisation.job_name
-  job_description                = "parking_permit_denormalised_data and bolts on fields from llpg (usrn, Street record street name, street_description, ward code, ward name, property_shell, blpu_class, usage_primary, usage_description, planning_use_class, longitude & latitude) to be used in gds(Google Data Studio)"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+# Migrated job "parking_permit_denormalised_gds_street_llpg" to dap-airflow om 19/02/2025
 
 module "parking_pcn_create_event_log" {
   source                         = "../modules/aws-glue-job"
@@ -685,28 +605,9 @@ module "parking_defect_met_fail" {
     "--environment"         = var.environment
   }
 }
-module "parking_match_pcn_permit_vrm_llpg_nlpg_postcodes" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_match_pcn_permit_vrm_llpg_nlpg_postcodes"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_match_pcn_permit_vrm_with_address_match_llpg_nlpg_postcodes"
-  trigger_enabled                = local.is_production_environment
-  triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
-  job_description                = "PCNs VRM match to Permits VRM with match to LLPG and NLPG for Registered and Current addresses Post Code for the last 13 months of pcn issue date as at run date with post code match regexp_extract"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+
+# Migrated job "parking_match_pcn_permit_vrm_llpg_nlpg_postcodes" to dap-airflow om 19/02/2025
+
 # MRB 17-04-2023 Job created
 module "parking_defect_met_fail_monthly_format" {
   source                         = "../modules/aws-glue-job"
@@ -922,28 +823,7 @@ module "parking_pcn_dvla_response_no_address" {
   }
 }
 
-module "parking_motorcycle_permits_480" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_motorcycle_permits_480"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_motorcycle_permits_480"
-  trigger_enabled                = local.is_production_environment
-  triggered_by_job               = module.parking_permit_denormalised_gds_street_llpg.job_name
-  job_description                = "All Permits data in latest import_date matched to all is_motorcycle like 'Y' in the VRM_480 and VRM_update_480 tables"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+# Migrated job "parking_motorcycle_permits_480" to dap-airflow om 19/02/2025
 
 module "parking_permit_street_cpz_stress_mc" {
   source                         = "../modules/aws-glue-job"
