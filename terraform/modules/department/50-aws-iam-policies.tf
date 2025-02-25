@@ -933,8 +933,8 @@ data "aws_iam_policy_document" "department_ecs_passrole" {
       "iam:PassRole"
     ]
     resources = [
-      aws_iam_role.department_ecs_role.arn, # Defined in 50-aws-iam-roles.tf
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${replace(local.department_identifier, "-", "_")}-ecs-execution-role", # Defined in ecs repo.
+      aws_iam_role.department_ecs_role.arn,                                                                                 # Defined in 50-aws-iam-roles.tf
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.department_identifier}-ecs-execution-role", # Defined in ecs repo.
     ]
     condition {
       test     = "StringEquals"
