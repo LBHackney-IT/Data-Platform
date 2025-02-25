@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 
 data "aws_iam_policy_document" "housing_gov_notify_lambda_execution" {
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "lambda:InvokeFunction"
     ]
@@ -113,7 +113,7 @@ data "aws_iam_policy_document" "gov_notify_lambda_secret_access" {
     actions = [
       "secretsmanager:GetSecretValue",
     ]
-    effect    = "Allow"
+    effect = "Allow"
     resources = [
       "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:housing/gov-notify*"
     ]
@@ -168,14 +168,14 @@ module "gov-notify-ingestion-housing-repairs" {
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_repairs"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_repairs.zip"
   runtime                        = "python3.9"
-  environment_variables          = {
+  environment_variables = {
 
-    API_SECRET_NAME  = "housing/gov-notify_live_api_key"
+    API_SECRET_NAME          = "housing/gov-notify_live_api_key"
     TARGET_S3_BUCKET_LANDING = module.landing_zone_data_source.bucket_id
-    TARGET_S3_FOLDER = "housing/govnotify/damp_and_mould/"
-    CRAWLER_NAME_LANDING    = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing Zone"
-    TARGET_S3_BUCKET_RAW = module.raw_zone_data_source.bucket_id
-    CRAWLER_NAME_RAW    = "${local.short_identifier_prefix}GovNotify Housing Repairs Raw Zone"
+    TARGET_S3_FOLDER         = "housing/govnotify/damp_and_mould/"
+    CRAWLER_NAME_LANDING     = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing Zone"
+    TARGET_S3_BUCKET_RAW     = module.raw_zone_data_source.bucket_id
+    CRAWLER_NAME_RAW         = "${local.short_identifier_prefix}GovNotify Housing Repairs Raw Zone"
   }
   layers = [
     "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13",
@@ -203,19 +203,19 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify" {
   source_arn    = aws_cloudwatch_event_rule.govnotify_housing_repairs_trigger_event[0].arn
 }
 
- # Create a CloudWatch Event Target to trigger the GovNotify Housing Repairs Lambda function.
- resource "aws_cloudwatch_event_target" "govnotify_housing_repairs_trigger_event_target" {
-   count     = local.create_govnotify_resource_count
-   rule      = aws_cloudwatch_event_rule.govnotify_housing_repairs_trigger_event[0].name
-   target_id = "govnotify-housing-repairs-trigger-event-target"
-   arn       = module.gov-notify-ingestion-housing-repairs[0].lambda_function_arn
-   input     = <<EOF
+# Create a CloudWatch Event Target to trigger the GovNotify Housing Repairs Lambda function.
+resource "aws_cloudwatch_event_target" "govnotify_housing_repairs_trigger_event_target" {
+  count      = local.create_govnotify_resource_count
+  rule       = aws_cloudwatch_event_rule.govnotify_housing_repairs_trigger_event[0].name
+  target_id  = "govnotify-housing-repairs-trigger-event-target"
+  arn        = module.gov-notify-ingestion-housing-repairs[0].lambda_function_arn
+  input      = <<EOF
    {
     "table_names": ${jsonencode(local.govnotify_tables)}
    }
    EOF
-   depends_on = [module.gov-notify-ingestion-housing-repairs, aws_lambda_permission.allow_cloudwatch_to_call_govnotify]
- }
+  depends_on = [module.gov-notify-ingestion-housing-repairs, aws_lambda_permission.allow_cloudwatch_to_call_govnotify]
+}
 
 resource "aws_glue_crawler" "govnotify_housing_repairs_landing_zone" {
   for_each = { for idx, source in local.govnotify_tables : idx => source }
@@ -230,9 +230,9 @@ resource "aws_glue_crawler" "govnotify_housing_repairs_landing_zone" {
     path = "s3://${module.landing_zone_data_source.bucket_id}/housing/govnotify/damp_and_mould/${each.value}/"
   }
   configuration = jsonencode({
-    Version  = 1.0
+    Version = 1.0
     Grouping = {
-      TableLevelConfiguration = 6
+      TableLevelConfiguration = 5
     }
   })
 }
@@ -250,7 +250,7 @@ resource "aws_glue_crawler" "govnotify_housing_repairs_raw_zone" {
     path = "s3://${module.raw_zone_data_source.bucket_id}/housing/govnotify/damp_and_mould/${each.value}/"
   }
   configuration = jsonencode({
-    Version  = 1.0
+    Version = 1.0
     Grouping = {
       TableLevelConfiguration = 5
     }
