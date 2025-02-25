@@ -77,7 +77,7 @@ on:
 jobs:
   deploy:
     name: Terraform Apply
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout Source
@@ -86,7 +86,7 @@ jobs:
       - name: Set Github Auth
         run: git config --global url."https://oauth2:${{ secrets.TERRAFORM_SECRET_TOKEN}}@github.com".insteadOf https://github.com
         shell: bash
-      
+
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2.0.3
         with:
