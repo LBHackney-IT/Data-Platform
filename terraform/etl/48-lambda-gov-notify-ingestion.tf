@@ -233,6 +233,7 @@ resource "aws_glue_crawler" "govnotify_housing_repairs_landing_zone" {
     Version = 1.0
     Grouping = {
       TableLevelConfiguration = 5
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
     }
   })
 }
@@ -253,6 +254,7 @@ resource "aws_glue_crawler" "govnotify_housing_repairs_raw_zone" {
     Version = 1.0
     Grouping = {
       TableLevelConfiguration = 5
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
     }
   })
 }
