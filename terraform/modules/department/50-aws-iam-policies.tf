@@ -380,7 +380,6 @@ data "aws_iam_policy_document" "glue_access" {
     actions = [
       "glue:Batch*",
       "glue:CheckSchemaVersionValidity",
-      "glue:CreateDag",
       "glue:CreateDevEndpoint",
       "glue:CreateJob",
       "glue:CreateScript",
@@ -403,7 +402,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:StopTrigger",
       "glue:StopWorkflowRun",
       "glue:TagResource",
-      "glue:UpdateDag",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
       "glue:UpdateTable",
