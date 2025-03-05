@@ -6,6 +6,7 @@ from awsglue.utils import getResolvedOptions
 import great_expectations as gx
 import great_expectations.expectations as gxe
 
+
 class ExpectLLPGColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
     column: str = 'llpg'
     description: str = "Expect UPRN (LLPG) values to be unique"
@@ -46,6 +47,14 @@ class ExpectEstateRefNoColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchReg
     description: str = "Expect Estate Reference Number to match regex ^[0-9]\d+$ (numerical)"
 
 
+class ExpectTenureValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+    column: str = 'tenure'
+    value_set: list = ['Asylum Seeker', 'Freehold', 'Freehold (Serv)', 'Introductory',
+                       'Leasehold (RTB)', 'Lse 100% Stair', 'Mesne Profit Ac', 'Non-Secure',
+                       'Private Sale LH', 'Secure', 'Shared Owners', 'Short Life Lse', 'Temp Decant',
+                       'Shared Equity']
+    description: str = "Expect tenure values to contain one of the set"
+
 
 arg_key = ['s3_target_location']
 args = getResolvedOptions(sys.argv, arg_key)
@@ -63,5 +72,6 @@ suite.add_expectation(ExpectLLPGColumnValueLengthsBetween())
 suite.add_expectation(ExpectBlockRefNoColumnValuesToMatchRegex())
 suite.add_expectation(ExpectLLPGColumnValuesToMatchRegex())
 suite.add_expectation(ExpectEstateRefNoColumnValuesToMatchRegex())
+suite.add_expectation(ExpectTenureValuesToBeInSet())
 
 suite = context.suites.add(suite)
