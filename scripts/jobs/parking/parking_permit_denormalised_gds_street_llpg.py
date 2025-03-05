@@ -1,264 +1,683 @@
-from calendar import c
-import sys
-from awsglue.transforms import *
-from awsglue.utils import getResolvedOptions
-from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue import DynamicFrame
-from scripts.helpers.helpers import (
-    get_glue_env_var,
-    get_latest_partitions,
-    PARTITION_KEYS,
-    create_pushdown_predicate,
-)
+"""
+Only need to change the table name and the query prototyped on the Athena UI
+by replacing table_name and query_on_athena
+"""
 
-def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
-    for alias, frame in mapping.items():
-        frame.toDF().createOrReplaceTempView(alias)
-    result = spark.sql(query)
-    return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
+from scripts.helpers.athena_helpers import create_update_table_with_partition
+from scripts.helpers.helpers import get_glue_env_var
 
-
-args = getResolvedOptions(sys.argv, ["JOB_NAME"])
-sc = SparkContext()
-glueContext = GlueContext(sc)
-spark = glueContext.spark_session
-job = Job(glueContext)
-job.init(args["JOB_NAME"], args)
 environment = get_glue_env_var("environment")
 
-# Script generated for node S3 bucket - refined - parking_permit_denormalised_data
-S3bucketrefinedparking_permit_denormalised_data_node1 = (
-    glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-"+environment+"-liberator-refined-zone",
-        table_name="parking_permit_denormalised_data",
-        transformation_ctx="S3bucketrefinedparking_permit_denormalised_data_node1",
-        #teporarily removed while table partitions are fixed
-        #push_down_predicate=create_pushdown_predicate("import_date", 7),
-    )
+# The target table in liberator refined zone
+table_name = "parking_permit_denormalised_gds_street_llpg"
+
+# The exact same query prototyped in pre-prod(stg) or prod Athena
+query_on_athena = """
+-->> "dataplatform-prod-liberator-refined-zone"."parking_permit_denormalised_gds_street_llpg"
+-- < "dataplatform-prod-liberator-refined-zone"."parking_permit_denormalised_data"
+-- < "dataplatform-prod-liberator-raw-zone"."liberator_permit_llpg"
+-- < "unrestricted-raw-zone"."geolive_llpg_llpg_address"
+-- 		(replaces "dataplatform-prod-raw-zone-unrestricted-address-api"."unrestricted_address_api_dbo_hackney_address")
+-- < "parking-raw-zone"."ltn_london_fields"
+
+-- 2025-01-29: "geolive_llpg_llpg_address" replaced "unrestricted_address_api_dbo_hackney_address")
+-- 2025-02-12	Reformatted SQL, replaced wildcards and ordered columns as per existing tables in S3
+
+WITH
+street AS (
+	SELECT
+		UPRN AS SR_UPRN,
+		ADDRESS1 AS SR_ADDRESS1,
+		ADDRESS2 AS SR_ADDRESS2,
+		ADDRESS3 AS SR_ADDRESS3,
+		ADDRESS4 AS SR_ADDRESS4,
+		ADDRESS5 AS SR_ADDRESS5,
+		POST_CODE AS SR_POST_CODE,
+		BPLU_CLASS AS SR_BPLU_CLASS,
+		X AS SR_X,
+		Y AS SR_Y,
+		LATITUDE AS SR_LATITUDE,
+		LONGITUDE AS SR_LONGITUDE,
+		IN_CONGESTION_CHARGE_ZONE AS SR_IN_CONGESTION_CHARGE_ZONE,
+		CPZ_CODE AS SR_CPZ_CODE,
+		CPZ_NAME AS SR_CPZ_NAME,
+		LAST_UPDATED_STAMP AS SR_LAST_UPDATED_STAMP,
+		LAST_UPDATED_TX_STAMP AS SR_LAST_UPDATED_TX_STAMP,
+		CREATED_STAMP AS SR_CREATED_STAMP,
+		CREATED_TX_STAMP AS SR_CREATED_TX_STAMP,
+		HOUSE_NAME AS SR_HOUSE_NAME,
+		POST_CODE_PACKED AS SR_POST_CODE_PACKED,
+		STREET_START_X AS SR_STREET_START_X,
+		STREET_START_Y AS SR_STREET_START_Y,
+		STREET_END_X AS SR_STREET_END_X,
+		STREET_END_Y AS SR_STREET_END_Y,
+		WARD_CODE AS SR_WARD_CODE,
+		IF(WARD_CODE = 'E05009367', 'BROWNSWOOD WARD',    
+		IF(WARD_CODE = 'E05009368', 'CAZENOVE WARD',    
+		IF(WARD_CODE = 'E05009369', 'CLISSOLD WARD',    
+		IF(WARD_CODE = 'E05009370', 'DALSTON WARD',    
+		IF(WARD_CODE = 'E05009371', 'DE BEAUVOIR WARD',    
+		IF(WARD_CODE = 'E05009372', 'HACKNEY CENTRAL WARD',    
+		IF(WARD_CODE = 'E05009373', 'HACKNEY DOWNS WARD',    
+		IF(WARD_CODE = 'E05009374', 'HACKNEY WICK WARD',    
+		IF(WARD_CODE = 'E05009375', 'HAGGERSTON WARD',    
+		IF(WARD_CODE = 'E05009376', 'HOMERTON WARD',    
+		IF(WARD_CODE = 'E05009377', 'HOXTON EAST AND SHOREDITCH WARD',    
+		IF(WARD_CODE = 'E05009378', 'HOXTON WEST WARD',    
+		IF(WARD_CODE = 'E05009379', 'KINGS PARK WARD',    
+		IF(WARD_CODE = 'E05009380', 'LEA BRIDGE WARD',    
+		IF(WARD_CODE = 'E05009381', 'LONDON FIELDS WARD',    
+		IF(WARD_CODE = 'E05009382', 'SHACKLEWELL WARD',    
+		IF(WARD_CODE = 'E05009383', 'SPRINGFIELD WARD',    
+		IF(WARD_CODE = 'E05009384', 'STAMFORD HILL WEST',    
+		IF(WARD_CODE = 'E05009385', 'STOKE NEWINGTON WARD',    
+		IF(WARD_CODE = 'E05009386', 'VICTORIA WARD',    
+		IF(WARD_CODE = 'E05009387', 'WOODBERRY DOWN WARD',
+				WARD_CODE))))))))))))))))))))
+			) AS SR_ward_name, 	 
+		PARISH_CODE AS SR_PARISH_CODE,
+		PARENT_UPRN AS SR_PARENT_UPRN,
+		PAO_START AS SR_PAO_START,
+		PAO_START_SUFFIX AS SR_PAO_START_SUFFIX,
+		PAO_END AS SR_PAO_END,
+		PAO_END_SUFFIX AS SR_PAO_END_SUFFIX,
+		PAO_TEXT AS SR_PAO_TEXT,
+		SAO_START AS SR_SAO_START,
+		SAO_START_SUFFIX AS SR_SAO_START_SUFFIX,
+		SAO_END AS SR_SAO_END,
+		SAO_END_SUFFIX AS SR_SAO_END_SUFFIX,
+		SAO_TEXT AS SR_SAO_TEXT,
+		DERIVED_BLPU AS SR_DERIVED_BLPU,
+		USRN,
+		import_year,
+		import_month,
+		import_day,
+		import_date
+	FROM
+		"dataplatform-prod-liberator-raw-zone"."liberator_permit_llpg"
+	WHERE import_date = (
+			SELECT MAX(import_date)
+			FROM "dataplatform-prod-liberator-raw-zone"."liberator_permit_llpg"
+		)
+		AND (
+			ADDRESS1 LIKE 'Street Record'
+			OR ADDRESS1 LIKE 'STREET RECORD'
+		)
+),
+
+llpg AS (
+	SELECT
+		-- conversion of new column names and data-types to support the original query... 
+		uprn, -- bigint -- Confirmed: was previously converted from double to bigint to prevent subsequent varchar casts being broken.
+		usrn, -- int
+		street_description, -- string
+		isparent AS property_shell, -- boolean
+		blpu_class, -- string
+		usage_primary, -- string
+		usage_description, -- string
+		planning_use_class, -- string
+		CAST(longitude AS DOUBLE) AS longitude, -- converts string to double
+		CAST(latitude AS DOUBLE) AS latitude, -- converts string to double
+		lpi_logical_status_code, -- int BS7666 code
+		lpi_logical_status, --string logical description as per previous API version
+		import_date -- string
+	FROM
+		"unrestricted-raw-zone"."geolive_llpg_llpg_address"
+		-- replaces "dataplatform-prod-raw-zone-unrestricted-address-api"."unrestricted_address_api_dbo_hackney_address" 
+	WHERE
+		import_date = (
+			SELECT
+				MAX(import_date)
+			FROM
+				"unrestricted-raw-zone"."geolive_llpg_llpg_address"
+		)
+		AND lpi_logical_status_code = 1 -- like 'Approved Preferred'
 )
 
-# Script generated for node Amazon S3 - raw - liberator_permit_llpg
-AmazonS3rawliberator_permit_llpg_node1657535904691 = (
-    glueContext.create_dynamic_frame.from_catalog(
-        database="dataplatform-"+environment+"-liberator-raw-zone",
-        table_name="liberator_permit_llpg",
-        transformation_ctx="AmazonS3rawliberator_permit_llpg_node1657535904691",
-        push_down_predicate=create_pushdown_predicate("import_date", 7),
-    )
-)
+SELECT
+    street.usrn AS sr_usrn,
+    SR_ADDRESS1,
+    SR_ADDRESS2,
+    llpg.street_description,
+    SR_WARD_CODE,
+    SR_ward_name,
+    llpg.property_shell,
+    llpg.blpu_class,
+    llpg.usage_primary,
+    llpg.usage_description,
+    concat (CAST(street.usrn AS VARCHAR), ' - ', llpg.street_description) AS street,
+    concat (CAST(llpg.uprn AS VARCHAR), ' - ', llpg.usage_description) AS add_type,
+    concat (llpg.blpu_class, ' - ', llpg.planning_use_class) AS add_class,
+    CASE WHEN cpz != ''
+		AND cpz_name != '' THEN concat (cpz, ' - ', cpz_name)
+	WHEN cpz != ''
+		AND cpz_name = '' THEN concat (cpz, '-')
+	WHEN cpz = ''
+		AND cpz_name != '' THEN concat (cpz_name, '-')
+	ELSE 'NONE'
+    END AS zone_name,
+    CASE WHEN address_line_2 = ''
+		AND business_name = ''
+		AND hasc_organisation_name = ''
+		AND doctors_surgery_name = '' THEN concat (
+			permit_reference,
+			' - ',
+			address_line_1,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN business_name != ''
+		AND hasc_organisation_name != ''
+		AND address_line_2 = '' THEN concat (
+			permit_reference,
+			' - ',
+			business_name,
+			' - ',
+			hasc_organisation_name,
+			' - ',
+			address_line_1,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN business_name != ''
+		AND doctors_surgery_name != ''
+		AND address_line_2 = '' THEN concat (
+			permit_reference,
+			' - ',
+			business_name,
+			' - ',
+			doctors_surgery_name,
+			' - ',
+			address_line_1,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN business_name != ''
+		AND address_line_2 = '' THEN concat (
+			permit_reference,
+			' - ',
+			business_name,
+			' - ',
+			address_line_1,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN hasc_organisation_name != ''
+		AND address_line_2 = '' THEN concat (
+			permit_reference,
+			' - ',
+			hasc_organisation_name,
+			' - ',
+			address_line_1,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN doctors_surgery_name != ''
+		AND address_line_2 = '' THEN concat (
+			permit_reference,
+			' - ',
+			doctors_surgery_name,
+			' - ',
+			address_line_1,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN address_line_3 = ''
+		AND business_name = ''
+		AND hasc_organisation_name = ''
+		AND doctors_surgery_name = '' THEN concat (
+			permit_reference,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN business_name != ''
+		AND hasc_organisation_name != ''
+		AND address_line_3 = '' THEN concat (
+			permit_reference,
+			' - ',
+			business_name,
+			' - ',
+			hasc_organisation_name,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN business_name != ''
+		AND doctors_surgery_name != ''
+		AND address_line_3 = '' THEN concat (
+			permit_reference,
+			' - ',
+			business_name,
+			' - ',
+			doctors_surgery_name,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN business_name != ''
+		AND address_line_3 = '' THEN concat (
+			permit_reference,
+			' - ',
+			business_name,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN hasc_organisation_name != ''
+		AND address_line_3 = '' THEN concat (
+			permit_reference,
+			' - ',
+			hasc_organisation_name,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN doctors_surgery_name != ''
+		AND address_line_3 = '' THEN concat (
+			permit_reference,
+			' - ',
+			doctors_surgery_name,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN business_name != '' THEN concat (
+			permit_reference,
+			' - ',
+			business_name,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			address_line_3,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN hasc_organisation_name != '' THEN concat (
+			permit_reference,
+			' - ',
+			hasc_organisation_name,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			address_line_3,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	WHEN doctors_surgery_name != '' THEN concat (
+			permit_reference,
+			' - ',
+			doctors_surgery_name,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			address_line_3,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+	ELSE concat (
+			permit_reference,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			address_line_3,
+			', ',
+			p.postcode,
+			' - ',
+			email_address_of_applicant
+		)
+    END AS permit_summary,
+    CASE WHEN address_line_2 = '' THEN concat (
+			permit_reference,
+			' - ',
+			address_line_1,
+			', ',
+			p.postcode
+		)
+	WHEN address_line_3 = '' THEN concat (
+			permit_reference,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			p.postcode
+		)
+	ELSE concat (
+			permit_reference,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			address_line_3,
+			', ',
+			p.postcode
+		)
+    END AS permit_full_address,
+    CASE WHEN address_line_2 = '' THEN concat (address_line_1, ', ', p.postcode)
+	WHEN address_line_3 = '' THEN concat (
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			p.postcode
+		)
+	ELSE concat (
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			address_line_3,
+			', ',
+			p.postcode
+		)
+    END AS full_address,
+    CASE WHEN address_line_2 = '' THEN concat (
+            permit_reference,
+            ' - ',
+            usage_primary,
+            ' - ',
+            address_line_1,
+            ', ',
+            p.postcode
+        )
+	WHEN address_line_3 = '' THEN concat (
+			permit_reference,
+			' - ',
+			usage_primary,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			p.postcode
+		)
+	ELSE concat (
+			permit_reference,
+			' - ',
+			usage_primary,
+			' - ',
+			address_line_1,
+			', ',
+			address_line_2,
+			', ',
+			address_line_3,
+			', ',
+			p.postcode
+		)
+    END AS permit_full_address_type,
+    CASE WHEN address_line_2 = '' THEN concat (
+            usage_primary,
+            ' - ',
+            address_line_1,
+            ', ',
+            p.postcode
+        )
+	WHEN address_line_3 = '' THEN concat (
+            usage_primary,
+            ' - ',
+            address_line_1,
+            ', ',
+            address_line_2,
+            ', ',
+            p.postcode
+        )
+	ELSE concat (
+            usage_primary,
+            ' - ',
+            address_line_1,
+            ', ',
+            address_line_2,
+            ', ',
+            address_line_3,
+            ', ',
+            p.postcode
+        )
+    END AS full_address_type,
+    CASE WHEN latest_permit_status IN (
+            'Approved',
+            'Renewed',
+            'Created',
+            'ORDER_APPROVED',
+            'PENDING_VRM_CHANGE',
+            'RENEW_EVID',
+            'PENDING_ADDR_CHANGE'
+        )
+        AND live_permit_flag = 1 THEN 1
+	ELSE 0
+    END AS live_flag,
+    CASE WHEN live_permit_flag = 1
+        AND blue_badge_number != ''
+        AND permit_type LIKE 'Estate Resident'
+        AND (
+            amount LIKE '0.00'
+            OR amount LIKE '0.000'
+            OR amount LIKE ''
+        ) THEN 1
+	ELSE 0
+    END AS flag_lp_est_bb_zero,
+    CASE WHEN live_permit_flag = 1
+        AND blue_badge_number != ''
+        AND permit_type != 'Estate Resident' THEN 1
+	ELSE 0
+    END AS flag_lp_bb_onst,
+    CASE WHEN live_permit_flag = 1
+        AND permit_type LIKE 'Estate Resident' THEN 1
+	ELSE 0
+    END AS flag_lp_est,
+    CASE WHEN live_permit_flag = 1
+        AND permit_type LIKE 'Business' THEN 1
+	ELSE 0
+    END AS flag_lp_bus,
+    CASE WHEN live_permit_flag = 1
+        AND permit_type LIKE 'Doctor' THEN 1
+	ELSE 0
+    END AS flag_lp_doc,
+    CASE WHEN live_permit_flag = 1
+        AND permit_type LIKE 'Leisure centre permit' THEN 1
+	ELSE 0
+    END AS flag_lp_lc,
+    CASE WHEN live_permit_flag = 1
+        AND permit_type LIKE 'Health and Social Care' THEN 1
+	ELSE 0
+    END AS flag_lp_hsc,
+    CASE WHEN live_permit_flag = 1
+        AND permit_type LIKE 'Residents' THEN 1
+	ELSE 0
+    END AS flag_lp_res,
+    CASE WHEN live_permit_flag = 1
+        AND permit_type LIKE 'Dispensation' THEN 1
+	ELSE 0
+    END AS flag_lp_disp,
+    CASE WHEN live_permit_flag = 1
+        AND permit_type NOT IN (
+            'Estate Resident',
+            'All Zone',
+            'Companion Badge',
+            'Dispensation',
+            'Residents',
+            'Health and Social Care',
+            'Leisure centre permit',
+            'Doctor',
+            'Business'
+        ) THEN 1
+	ELSE 0
+    END AS flag_lp_othr,
+    CASE WHEN live_permit_flag = 1
+        AND permit_type LIKE 'All Zone' THEN 1
+	ELSE 0
+    END AS flag_lp_al,
+    CASE WHEN live_permit_flag = 1
+        AND permit_type LIKE 'Companion Badge' THEN 1
+	ELSE 0
+    END AS flag_lp_cb,
 
-# Script generated for node Amazon S3 - unrestricted_address_api_dbo_hackney_address
-AmazonS3unrestricted_address_api_dbo_hackney_address_node1657535910004 = glueContext.create_dynamic_frame.from_catalog(
-    database="dataplatform-"+environment+"-raw-zone-unrestricted-address-api",
-    table_name="unrestricted_address_api_dbo_hackney_address",
-    transformation_ctx="AmazonS3unrestricted_address_api_dbo_hackney_address_node1657535910004",
-    push_down_predicate=create_pushdown_predicate("import_date", 7),
-)
+    /* fields in ltn table -- ltn.uprn, ltn.usrn, ltn.street_name*/
+    CASE WHEN ltn.uprn != '' THEN 1
+	ELSE 0
+    END AS flag_ltn_london_fields,
+    CASE WHEN ltn.uprn != '' THEN 'LTN London Fields'
+	ELSE 'NOT LTN London Fields'
+    END AS flag_name_ltn_london_fields,
 
-# Script generated for node Amazon S3 - parking raw - ltn_london_fields
-AmazonS3parkingrawltn_london_fields_node1657536241729 = (
-    glueContext.create_dynamic_frame.from_catalog(
-        database="parking-raw-zone",
-        table_name="ltn_london_fields",
-        transformation_ctx="AmazonS3parkingrawltn_london_fields_node1657536241729",
-    )
-)
+	/* parking_permit_denormalised_data.* */
+	p.permit_reference,
+	p.application_date,
+	p.forename_of_applicant,
+	p.surname_of_applicant,
+	p.email_address_of_applicant,
+	p.primary_phone,
+	p.secondary_phone,
+	p.date_of_birth_of_applicant,
+	p.blue_badge_number,
+	p.blue_badge_expiry,
+	p.start_date,
+	p.end_date,
+	p.approval_date,
+	p.approved_by,
+	p.approval_type,
+	p.amount,
+	p.payment_date,
+	p.payment_method,
+	p.payment_location,
+	p.payment_by,
+	p.payment_received,
+	p.directorate_to_be_charged,
+	p.authorising_officer,
+	p.cost_code,
+	p.subjective_code,
+	p.permit_type,
+	p.ordered_by,
+	p.business_name,
+	p.hasc_organisation_name,
+	p.doctors_surgery_name,
+	p.number_of_bays,
+	p.number_of_days,
+	p.number_of_dispensation_vehicles,
+	p.dispensation_reason,
+	p.uprn,
+	p.address_line_1,
+	p.address_line_2,
+	p.address_line_3,
+	p.postcode,
+	p.cpz,
+	p.cpz_name,
+	p.status,
+	p.quantity,
+	p.vrm,
+	p.associated_to_order,
+	p.live_permit_flag,
+	p.permit_fta_renewal,
+	p.latest_permit_status,
+	p.rn,
+	p.make,
+	p.model,
+	p.fuel,
+	p.engine_capactiy,
+	p.co2_emission,
+	p.foreign,
+	p.lpg_conversion,
+	p.vrm_record_created,
+	p.fin_year_flag,
+	p.fin_year,
+	p.usrn,
+	p.importdatetime,
 
-# Script generated for node Apply Mapping - New
-SqlQuery0 = """
-/*08/04/2022 - added ,case when latest_permit_status in('Approved','Renewed','Created','ORDER_APPROVED','PENDING_VRM_CHANGE','RENEW_EVID','PENDING_ADDR_CHANGE') and live_permit_flag = 1 then 1 else 0 end as live_flag */
-with street as (select  
-    UPRN as SR_UPRN,
-	ADDRESS1 as SR_ADDRESS1,
-	ADDRESS2 as SR_ADDRESS2,
-	ADDRESS3 as SR_ADDRESS3,
-	ADDRESS4 as SR_ADDRESS4,
-	ADDRESS5 as SR_ADDRESS5,
-	POST_CODE as SR_POST_CODE,
-	BPLU_CLASS as SR_BPLU_CLASS,
-	X as SR_X,
-	Y as SR_Y,
-	LATITUDE as SR_LATITUDE,
-	LONGITUDE as SR_LONGITUDE,
-	IN_CONGESTION_CHARGE_ZONE as SR_IN_CONGESTION_CHARGE_ZONE,
-	CPZ_CODE as SR_CPZ_CODE,
-	CPZ_NAME as SR_CPZ_NAME,
-	LAST_UPDATED_STAMP as SR_LAST_UPDATED_STAMP,
-	LAST_UPDATED_TX_STAMP as SR_LAST_UPDATED_TX_STAMP,
-	CREATED_STAMP as SR_CREATED_STAMP,
-	CREATED_TX_STAMP as SR_CREATED_TX_STAMP,
-	HOUSE_NAME as SR_HOUSE_NAME,
-	POST_CODE_PACKED as SR_POST_CODE_PACKED,
-	STREET_START_X as SR_STREET_START_X,
-	STREET_START_Y as SR_STREET_START_Y,
-	STREET_END_X as SR_STREET_END_X,
-	STREET_END_Y as SR_STREET_END_Y,
-	WARD_CODE as SR_WARD_CODE,
-if(WARD_CODE = 'E05009367',    'BROWNSWOOD WARD',    
-if(WARD_CODE = 'E05009368',    'CAZENOVE WARD',    
-if(WARD_CODE = 'E05009369',    'CLISSOLD WARD',    
-if(WARD_CODE = 'E05009370',    'DALSTON WARD',    
-if(WARD_CODE = 'E05009371',    'DE BEAUVOIR WARD',    
-if(WARD_CODE = 'E05009372',    'HACKNEY CENTRAL WARD',    
-if(WARD_CODE = 'E05009373',    'HACKNEY DOWNS WARD',    
-if(WARD_CODE = 'E05009374',    'HACKNEY WICK WARD',    
-if(WARD_CODE = 'E05009375',    'HAGGERSTON WARD',    
-if(WARD_CODE = 'E05009376',    'HOMERTON WARD',    
-if(WARD_CODE = 'E05009377',    'HOXTON EAST AND SHOREDITCH WARD',    
-if(WARD_CODE = 'E05009378',    'HOXTON WEST WARD',    
-if(WARD_CODE = 'E05009379',    'KINGS PARK WARD',    
-if(WARD_CODE = 'E05009380',    'LEA BRIDGE WARD',    
-if(WARD_CODE = 'E05009381',    'LONDON FIELDS WARD',    
-if(WARD_CODE = 'E05009382',    'SHACKLEWELL WARD',    
-if(WARD_CODE = 'E05009383',    'SPRINGFIELD WARD',    
-if(WARD_CODE = 'E05009384',    'STAMFORD HILL WEST',    
-if(WARD_CODE = 'E05009385',    'STOKE NEWINGTON WARD',    
-if(WARD_CODE = 'E05009386',    'VICTORIA WARD',    
-if(WARD_CODE = 'E05009387',    'WOODBERRY DOWN WARD',WARD_CODE))))))))))))))))))))) as SR_ward_name, 	 
-	PARISH_CODE as SR_PARISH_CODE,
-	PARENT_UPRN as SR_PARENT_UPRN,
-	PAO_START as SR_PAO_START,
-	PAO_START_SUFFIX as SR_PAO_START_SUFFIX,
-	PAO_END as SR_PAO_END,
-	PAO_END_SUFFIX as SR_PAO_END_SUFFIX,
-	PAO_TEXT as SR_PAO_TEXT,
-	SAO_START as SR_SAO_START,
-	SAO_START_SUFFIX as SR_SAO_START_SUFFIX,
-	SAO_END as SR_SAO_END,
-	SAO_END_SUFFIX as SR_SAO_END_SUFFIX,
-	SAO_TEXT as SR_SAO_TEXT,
-	DERIVED_BLPU as SR_DERIVED_BLPU,
-	USRN
-,import_year
-,import_month
-,import_day
-,import_date
-FROM liberator_permit_llpg
-where (ADDRESS1 like 'Street Record' or ADDRESS1 like 'STREET RECORD') and liberator_permit_llpg.import_date = (SELECT MAX(liberator_permit_llpg.import_date) FROM liberator_permit_llpg)
-)
-, llpg as (
-  SELECT * FROM unrestricted_address_api_dbo_hackney_address where unrestricted_address_api_dbo_hackney_address.import_date = (SELECT max(unrestricted_address_api_dbo_hackney_address.import_date) FROM unrestricted_address_api_dbo_hackney_address) and lpi_logical_status like 'Approved Preferred'
-  )
-SELECT street.usrn as sr_usrn, SR_ADDRESS1, SR_ADDRESS2, llpg.street_description, SR_WARD_CODE, SR_ward_name, llpg.property_shell, llpg.blpu_class, llpg.usage_primary, llpg.usage_description
-,concat(cast(street.usrn as string),' - ', llpg.street_description) as street, concat(cast(llpg.uprn as string),' - ',llpg.usage_description) as add_type , concat(llpg.blpu_class,' - ',llpg.planning_use_class ) as add_class, 
+	/* LLPG enrichment */
+    llpg.planning_use_class,
+    llpg.longitude,
+    llpg.latitude,
 
-case when cpz !='' and cpz_name != '' then concat(cpz,' - ', cpz_name)
-when cpz !='' and cpz_name = '' then concat(cpz)
-when cpz ='' and cpz_name != '' then concat(cpz_name)
-else 'NONE'
-end as zone_name, 
-case 
+	/* Partition columns from source table go last */
+	p.import_year,
+	p.import_month,
+	p.import_day,
+	p.import_date
 
-when address_line_2 ='' and business_name ='' and hasc_organisation_name ='' and  doctors_surgery_name ='' then concat(permit_reference,' - ',address_line_1,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when business_name !='' and hasc_organisation_name !='' and address_line_2 ='' then concat(permit_reference,' - ',business_name,' - ',hasc_organisation_name,' - ',address_line_1,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when business_name !='' and doctors_surgery_name !='' and address_line_2 ='' then concat(permit_reference,' - ',business_name,' - ',doctors_surgery_name,' - ',address_line_1,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when business_name !='' and address_line_2 ='' then concat(permit_reference,' - ',business_name,' - ',address_line_1,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when hasc_organisation_name !='' and address_line_2 ='' then concat(permit_reference,' - ',hasc_organisation_name,' - ',address_line_1,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when doctors_surgery_name !='' and address_line_2 ='' then concat(permit_reference,' - ',doctors_surgery_name,' - ',address_line_1,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-
-when address_line_3 =''and business_name ='' and hasc_organisation_name ='' and  doctors_surgery_name ='' then concat(permit_reference,' - ',address_line_1,', ',address_line_2,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when business_name !='' and hasc_organisation_name !='' and address_line_3 ='' then concat(permit_reference,' - ',business_name,' - ',hasc_organisation_name,' - ',address_line_1,', ',address_line_2,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when business_name !='' and doctors_surgery_name !='' and address_line_3 ='' then concat(permit_reference,' - ',business_name,' - ',doctors_surgery_name,' - ',address_line_1,', ',address_line_2,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when business_name !='' and address_line_3 ='' then concat(permit_reference,' - ',business_name,' - ',address_line_1,', ',address_line_2,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when hasc_organisation_name !='' and address_line_3 ='' then concat(permit_reference,' - ',hasc_organisation_name,' - ',address_line_1,', ',address_line_2,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when doctors_surgery_name !='' and address_line_3 ='' then concat(permit_reference,' - ',doctors_surgery_name,' - ',address_line_1,', ',address_line_2,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-
-
-when business_name !='' then concat(permit_reference,' - ',business_name,' - ',address_line_1,', ',address_line_2,', ',address_line_3,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-when hasc_organisation_name !='' then concat(permit_reference,' - ',hasc_organisation_name,' - ',address_line_1,', ',address_line_2,', ',address_line_3,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant) 
-when doctors_surgery_name !='' then concat(permit_reference,' - ',doctors_surgery_name,' - ',address_line_1,', ',address_line_2,', ',address_line_3,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant)
-
-else concat(permit_reference,' - ',address_line_1,', ',address_line_2,', ',address_line_3,', ',parking_permit_denormalised_data.postcode,' - ',email_address_of_applicant) 
-end as permit_summary
-
-
-,case 
-when address_line_2 ='' then concat(permit_reference,' - ',address_line_1,', ',parking_permit_denormalised_data.postcode)
-when address_line_3 ='' then concat(permit_reference,' - ',address_line_1,', ',address_line_2,', ',parking_permit_denormalised_data.postcode) 
-else concat(permit_reference,' - ',address_line_1,', ',address_line_2,', ',address_line_3,', ',parking_permit_denormalised_data.postcode) 
-end as permit_full_address
-,case 
-when address_line_2 ='' then concat(address_line_1,', ',parking_permit_denormalised_data.postcode)
-when address_line_3 ='' then concat(address_line_1,', ',address_line_2,', ',parking_permit_denormalised_data.postcode) 
-else concat(address_line_1,', ',address_line_2,', ',address_line_3,', ',parking_permit_denormalised_data.postcode) 
-end as full_address
-
-,case 
-when address_line_2 ='' then concat(permit_reference,' - ',usage_primary,' - ',address_line_1,', ',parking_permit_denormalised_data.postcode) 
-when address_line_3 ='' then concat(permit_reference,' - ',usage_primary,' - ',address_line_1,', ',address_line_2,', ',parking_permit_denormalised_data.postcode) 
-else concat(permit_reference,' - ',usage_primary,' - ',address_line_1,', ',address_line_2,', ',address_line_3,', ',parking_permit_denormalised_data.postcode) 
-end as permit_full_address_type
-
-,case 
-when address_line_2 ='' then concat(usage_primary,' - ',address_line_1,', ',parking_permit_denormalised_data.postcode) 
-when address_line_3 ='' then concat(usage_primary,' - ',address_line_1,', ',address_line_2,', ',parking_permit_denormalised_data.postcode) 
-else concat(usage_primary,' - ',address_line_1,', ',address_line_2,', ',address_line_3,', ',parking_permit_denormalised_data.postcode) 
-end as full_address_type
-
-,case when latest_permit_status in('Approved','Renewed','Created','ORDER_APPROVED','PENDING_VRM_CHANGE','RENEW_EVID','PENDING_ADDR_CHANGE') and live_permit_flag = 1 then 1 else 0 end as live_flag 
-
-,Case when live_permit_flag = 1 and blue_badge_number !='' and permit_type like 'Estate Resident' and (amount like '0.00' or amount like '0.000'  or amount like '') then 1 else 0 end as flag_lp_est_bb_zero
-,Case when live_permit_flag = 1 and blue_badge_number !='' and permit_type != 'Estate Resident' then 1 else 0 end as flag_lp_bb_onst
-
-,Case when live_permit_flag = 1 and permit_type like 'Estate Resident' then 1 else 0 end as flag_lp_est
-,Case when live_permit_flag = 1 and permit_type like 'Business' then 1 else 0 end as flag_lp_bus
-,Case when live_permit_flag = 1 and permit_type like 'Doctor' then 1 else 0 end as flag_lp_doc
-,Case when live_permit_flag = 1 and permit_type like 'Leisure centre permit' then 1 else 0 end as flag_lp_lc
-,Case when live_permit_flag = 1 and permit_type like 'Health and Social Care' then 1 else 0 end as flag_lp_hsc
-,Case when live_permit_flag = 1 and permit_type like 'Residents' then 1 else 0 end as flag_lp_res
-,Case when live_permit_flag = 1 and permit_type like 'Dispensation' then 1 else 0 end as flag_lp_disp
-,Case when live_permit_flag = 1 and permit_type not in ('Estate Resident','All Zone','Companion Badge','Dispensation','Residents','Health and Social Care','Leisure centre permit','Doctor','Business') then 1 else 0 end as flag_lp_othr
-,Case when live_permit_flag = 1 and permit_type like 'All Zone' then 1 else 0 end as flag_lp_al
-,Case when live_permit_flag = 1 and permit_type like 'Companion Badge' then 1 else 0 end as flag_lp_cb
-
-/* fields in ltn table -- ltn_london_fields.uprn, ltn_london_fields.usrn, ltn_london_fields.street_name*/
-, Case when ltn_london_fields.uprn !='' then 1 else 0 end as flag_ltn_london_fields
-, Case when ltn_london_fields.uprn !='' then 'LTN London Fields' else 'NOT LTN London Fields' end as flag_name_ltn_london_fields
-
-
-, parking_permit_denormalised_data.*, llpg.planning_use_class, llpg.longitude, llpg.latitude  FROM parking_permit_denormalised_data
-
-left join llpg on cast(llpg.uprn as string) = cast(parking_permit_denormalised_data.uprn as string) /*and 
-cast(concat(parking_permit_denormalised_data.import_year,parking_permit_denormalised_data.import_month,parking_permit_denormalised_data.import_day) as string
-) = llpg.import_date*/
-
-left join street on cast(street.usrn as string) = cast(llpg.usrn as string)
-
-left join ltn_london_fields on  ltn_london_fields.uprn = parking_permit_denormalised_data.uprn
-
-
-where parking_permit_denormalised_data.import_date = (SELECT max(parking_permit_denormalised_data.import_date) FROM parking_permit_denormalised_data)
-
-
+FROM (
+		SELECT * 
+		FROM "dataplatform-prod-liberator-refined-zone"."parking_permit_denormalised_data"
+		WHERE import_date = (
+				SELECT MAX(import_date)
+				FROM "dataplatform-prod-liberator-refined-zone"."parking_permit_denormalised_data"
+			)
+	) p
+LEFT JOIN llpg
+	ON CAST(llpg.uprn AS VARCHAR) = CAST(p.uprn AS VARCHAR)
+    /*and 
+    cast(concat(p.import_year,p.import_month,p.import_day) as varchar
+    ) = llpg.import_date*/
+LEFT JOIN street
+	ON CAST(street.usrn AS VARCHAR) = CAST(llpg.usrn AS VARCHAR)
+LEFT JOIN (
+		SELECT * 
+		FROM "parking-raw-zone"."ltn_london_fields"
+		WHERE import_date = (
+				SELECT MAX(import_date)
+				FROM "parking-raw-zone"."ltn_london_fields"
+			)
+	) ltn
+	ON ltn.uprn = p.uprn
+;
 """
-ApplyMappingNew_node1657710041310 = sparkSqlQuery(
-    glueContext,
-    query=SqlQuery0,
-    mapping={
-        "parking_permit_denormalised_data": S3bucketrefinedparking_permit_denormalised_data_node1,
-        "liberator_permit_llpg": AmazonS3rawliberator_permit_llpg_node1657535904691,
-        "unrestricted_address_api_dbo_hackney_address": AmazonS3unrestricted_address_api_dbo_hackney_address_node1657535910004,
-        "ltn_london_fields": AmazonS3parkingrawltn_london_fields_node1657536241729,
-    },
-    transformation_ctx="ApplyMappingNew_node1657710041310",
-)
 
-# Script generated for node Amazon S3
-AmazonS3_node1657709892303 = glueContext.getSink(
-    path="s3://dataplatform-"+environment+"-refined-zone/parking/liberator/parking_permit_denormalised_gds_street_llpg/",
-    connection_type="s3",
-    updateBehavior="UPDATE_IN_DATABASE",
-    partitionKeys=["import_year", "import_month", "import_day", "import_date"],
-    compression="snappy",
-    enableUpdateCatalog=True,
-    transformation_ctx="AmazonS3_node1657709892303",
+create_update_table_with_partition(
+    environment=environment, query_on_athena=query_on_athena, table_name=table_name
 )
-AmazonS3_node1657709892303.setCatalogInfo(
-    catalogDatabase="dataplatform-"+environment+"-liberator-refined-zone",
-    catalogTableName="parking_permit_denormalised_gds_street_llpg",
-)
-AmazonS3_node1657709892303.setFormat("glueparquet")
-AmazonS3_node1657709892303.writeFrame(ApplyMappingNew_node1657710041310)
-job.commit()

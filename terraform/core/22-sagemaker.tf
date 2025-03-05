@@ -110,7 +110,7 @@ resource "aws_iam_role_policy_attachment" "shutdown_notebooks" {
   policy_arn = aws_iam_policy.shutdown_notebooks[0].arn
 }
 
-#  Lambda function 
+#  Lambda function
 data "archive_file" "shutdown_notebooks" {
   type        = "zip"
   source_dir  = "../../lambdas/shutdown_notebooks"
@@ -138,7 +138,7 @@ resource "aws_lambda_function" "shutdown_notebooks" {
 
   role             = aws_iam_role.shutdown_notebooks[0].arn
   handler          = "main.shutdown_notebooks"
-  runtime          = "python3.8"
+  runtime          = "python3.9"
   function_name    = "${local.short_identifier_prefix}shutdown-notebooks"
   s3_bucket        = module.lambda_artefact_storage.bucket_id
   s3_key           = aws_s3_object.shutdown_notebooks.key

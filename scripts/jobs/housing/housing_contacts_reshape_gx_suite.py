@@ -16,8 +16,7 @@ class ExpectContactTypeColumnValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
 class ExpectSubTypeColumnValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = 'subtype'
     value_set: list = ['mainNumber', 'emergencyContact', 'carer', 'wife', 'husband', 'spouse', 'child', 'sibling',
-                       'relative',
-                       'neighbour', 'doctor', 'socialWorker', 'other']
+                       'relative', 'neighbour', 'doctor', 'socialWorker', 'other']
     description: str = "Expect Subtype values to be within set"
 
 

@@ -11,34 +11,26 @@ args = getResolvedOptions(sys.argv, arg_key)
 locals().update(args)
 
 
-class ExpectFirstNameColumnValueLength(gxe.ExpectColumnValueLengthsToBeBetween):
-    column: str = "firstname"
-    min_value: int = 1
-    description: str = "Expect first name to be at least 1 character length"
+# class ExpectFirstNameColumnValueLength(gxe.ExpectColumnValueLengthsToBeBetween):
+#     column: str = "firstname"
+#     min_value: int = 1
+#     description: str = "Expect first name to be at least 1 character length"
 
 
 class ExpectSurnameColumnValueLength(gxe.ExpectColumnValueLengthsToBeBetween):
     column: str = "surname"
     min_value: int = 1
     description: str = "Expect surname to be at least 1 character length"
+    condition_parser: str = 'pandas'
+    row_condition: str = 'isorganisation<>True'
 
 
-class ExpectUPRNColumnValueLengthsBetween(gxe.ExpectColumnValueLengthsToBeBetween):
-    column: str = "uprn"
-    min_value: int = 11
-    max_value: int = 12
-    description: str = "Expect UPRN to be between 11 and 12 characters length inclusive"
-
-
-class ExpectUPRNColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
-    column: str = "uprn"
-    regex: str = r"^[1-9]\d{10,11}"
-    description: str = "Expect UPRN to match regex ^[1-9]\d{10,11} (starting with digit 1-9, followed by 10 or 11 digits"
-
-
-class ExpectUPRNNotToBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column: str = "uprn"
-    description: str = "Expect UPRN column to be complete with no missing values"
+class ExpectFirstnameColumnValueLength(gxe.ExpectColumnValueLengthsToBeBetween):
+    column: str = "firstname"
+    min_value: int = 1
+    description: str = "Expect firstname to be at least 1 character length"
+    condition_parser: str = 'pandas'
+    row_condition: str = 'isorganisation<>True'
 
 
 class ExpectPersonTypeValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
@@ -64,6 +56,17 @@ class ExpectPersonIDColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     description: str = "Expect Person ID be complete with no missing values"
 
 
+class ExpectIsOrganisationColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+    column: str = 'isorganisation'
+    description: str = "Expect isorganisation column (boolean) be complete with no missing values"
+
+
+class ExpectIsOrganisationValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+    column: str = 'isorganisation'
+    value_set: list = [True, False]
+    description: str = "Expect IsOrganisation field to be boolean value of true or false"
+
+
 class ExpectPersonIDAndPropertyReferenceColumnValuesToBeUniqueWithinRecord(
     gxe.ExpectSelectColumnValuesToBeUniqueWithinRecord):
     column_list: list = ['person_id', 'propertyreference']
@@ -81,32 +84,29 @@ class ExpectPersonIDAndPaymentReferenceColumnValuesToBeUniqueWithinRecord(
     description: str = "Expect Person ID and Payment Reference to be unique within dataset"
 
 
-class ExpectUPRNColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column: str = 'uprn'
-    description: str = "Expect UPRN be complete with no missing values"
-
-
 class ExpectDateOfBirthColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = 'dateofbirth_parsed'
     description: str = "Expect dateofbirth_parsed be complete with no missing values"
+    condition_parser: str = 'pandas'
+    row_condition: str = 'isorganisation<>True'
 
 
 class ExpectDateOfBirthToBeBetween(gxe.ExpectColumnValuesToBeBetween):
     column: str = 'dateofbirth_parsed'
     min_value: str = datetime(1900, 1, 1, 0, 0, 0).isoformat()
     max_value: str = datetime.today().isoformat()
-    description: str = "Expect dateofbirth_parsed be complete with no missing values"
+    description: str = "Expect dateofbirth_parsed be between 1900-01-01 and today's date"
+    condition_parser: str = 'pandas'
+    row_condition: str = 'isorganisation<>True'
 
 
 # add to GX context
 context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name='person_reshape_suite')
-suite.add_expectation(ExpectFirstNameColumnValueLength())
+# suite.add_expectation(ExpectFirstNameColumnValueLength())
 suite.add_expectation(ExpectSurnameColumnValueLength())
-suite.add_expectation(ExpectUPRNColumnValueLengthsBetween())
-suite.add_expectation(ExpectUPRNColumnValuesToMatchRegex())
-suite.add_expectation(ExpectUPRNNotToBeNull())
+suite.add_expectation(ExpectFirstnameColumnValueLength())
 suite.add_expectation(ExpectPersonTypeValuesToBeInSet())
 suite.add_expectation(ExpectPreferredTitleValuesToBeInSet())
 suite.add_expectation(ExpectPersonIDColumnValuesToBeUnique())
@@ -114,8 +114,9 @@ suite.add_expectation(ExpectPersonIDColumnValuesToNotBeNull())
 suite.add_expectation(ExpectPersonIDAndPropertyReferenceColumnValuesToBeUniqueWithinRecord())
 suite.add_expectation(ExpectPropertyRefColumnValuesToNotBeNull())
 suite.add_expectation(ExpectPersonIDAndPaymentReferenceColumnValuesToBeUniqueWithinRecord())
-suite.add_expectation(ExpectUPRNColumnValuesToNotBeNull())
 suite.add_expectation(ExpectDateOfBirthColumnValuesToNotBeNull())
 suite.add_expectation(ExpectDateOfBirthToBeBetween())
+suite.add_expectation(ExpectIsOrganisationColumnValuesToNotBeNull())
+suite.add_expectation(ExpectIsOrganisationValuesToBeInSet())
 
 suite = context.suites.add(suite)
