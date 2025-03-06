@@ -64,7 +64,6 @@ resource "aws_s3_object" "parking_spatial_enrichment_dictionary" {
   source_hash = filemd5("../../scripts/jobs/parking/spatial-enrichment-dictionary.json")
 }
 
-
 # Job using the script and dictionary above for the parking dept
 module "parking_geospatial_enrichment" {
   source                    = "../modules/aws-glue-job"
