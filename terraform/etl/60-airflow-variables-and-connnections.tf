@@ -51,3 +51,27 @@ resource "aws_secretsmanager_secret_version" "alloy_connection" {
     host = "https://api.uk.alloyapp.io"
   })
 }
+
+
+# Store the KMS key ARNs for the refined, raw, and trusted zones as airflow variables in Secrets Manager
+locals {
+  kms_keys = {
+    refined_zone = module.refined_zone_data_source.kms_key_arn
+    raw_zone     = module.raw_zone_data_source.kms_key_arn
+    trusted_zone = module.trusted_zone_data_source.kms_key_arn
+  }
+}
+
+resource "aws_secretsmanager_secret" "kms_keys" {
+  for_each = local.kms_keys
+
+  name = "airflow/variables/${each.key}_kms_key"
+  tags = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "kms_keys" {
+  for_each = local.kms_keys
+
+  secret_id     = aws_secretsmanager_secret.kms_keys[each.key].id
+  secret_string = each.value
+}
