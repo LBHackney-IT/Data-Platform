@@ -64,38 +64,8 @@ resource "aws_s3_object" "parking_spatial_enrichment_dictionary" {
   source_hash = filemd5("../../scripts/jobs/parking/spatial-enrichment-dictionary.json")
 }
 
-# Job using the script and dictionary above for the environmental services dept 
-module "env_services_geospatial_enrichment" {
-  source                    = "../modules/aws-glue-job"
-  is_live_environment       = local.is_live_environment
-  is_production_environment = local.is_production_environment
 
-  department                 = module.department_environmental_services_data_source
-  job_name                   = "${local.short_identifier_prefix}env_services_geospatial_enrichment"
-  script_s3_object_key       = aws_s3_object.spatial_enrichment.key
-  glue_version               = local.is_production_environment ? "2.0" : "4.0"
-  glue_job_worker_type       = "G.1X"
-  helper_module_key          = data.aws_s3_object.helpers.key
-  pydeequ_zip_key            = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
-  schedule                   = "cron(30 4 ? * MON-FRI *)"
-  job_parameters = {
-    "--job-bookmark-option"        = "job-bookmark-enable"
-    "--enable-glue-datacatalog"    = "true"
-    "--additional-python-modules"  = "rtree,geopandas"
-    "--geography_tables_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.geography_tables_dictionary.key}"
-    "--tables_to_enrich_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.env_services_spatial_enrichment_dictionary.key}"
-    "--target_location"            = "s3://${module.refined_zone_data_source.bucket_id}/env-services/spatially-enriched/"
-  }
-  crawler_details = {
-    database_name      = module.department_environmental_services_data_source.refined_zone_catalog_database_name
-    s3_target_location = "s3://${module.refined_zone_data_source.bucket_id}/env-services/spatially-enriched"
-    table_prefix       = "spatially_enriched_"
-    configuration      = null
-  }
-}
-
-# Job using the script and dictionary above for the parking dept 
+# Job using the script and dictionary above for the parking dept
 module "parking_geospatial_enrichment" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
@@ -131,7 +101,7 @@ module "parking_geospatial_enrichment" {
   }
 }
 
-# 2 jobs for loading AddressBasePremium into unrestricted raw/refined 
+# 2 jobs for loading AddressBasePremium into unrestricted raw/refined
 
 # Ward look up resource for AddressBasePremium loader
 resource "aws_s3_object" "ons_ward_lookup" {
@@ -151,7 +121,7 @@ resource "aws_s3_object" "blpu_class_lookup" {
   source_hash = filemd5("../../scripts/jobs/unrestricted/blpu_class_lookup.csv")
 }
 
-# Job pre-processing csv files provided by OS 
+# Job pre-processing csv files provided by OS
 module "addressbasepremium_load_files" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
@@ -166,15 +136,15 @@ module "addressbasepremium_load_files" {
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
-    "--job-bookmark-option"  = "job-bookmark-disable"    
-    "--raw_bucket"           = module.raw_zone_data_source.bucket_id
-    "--raw_prefix"           = "unrestricted/os-addressbase-premium/full-supply/epoch-115/raw/"
-    "--processed_data_path"  = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/os-addressbase-premium/full-supply/epoch-115/processed/"
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--raw_bucket"          = module.raw_zone_data_source.bucket_id
+    "--raw_prefix"          = "unrestricted/os-addressbase-premium/full-supply/epoch-115/raw/"
+    "--processed_data_path" = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/os-addressbase-premium/full-supply/epoch-115/processed/"
   }
-  script_name                = "addressbasepremium_load_files"
+  script_name = "addressbasepremium_load_files"
 }
 
-# Job using pre-processed csv files to create one national_address table  
+# Job using pre-processed csv files to create one national_address table
 module "addressbasepremium_create_address_table" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
@@ -189,11 +159,11 @@ module "addressbasepremium_create_address_table" {
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   job_parameters = {
-    "--job-bookmark-option"          = "job-bookmark-disable"    
-    "--blpu_class_lookup_path"       = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.blpu_class_lookup.key}"
-    "--ward_lookup_path"             = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.ons_ward_lookup.key}"
-    "--processed_source_data_path"   = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/os-addressbase-premium/full-supply/epoch-115/processed/"
-    "--target_path"                  = "s3://${module.refined_zone_data_source.bucket_id}/unrestricted/national_address"
+    "--job-bookmark-option"        = "job-bookmark-disable"
+    "--blpu_class_lookup_path"     = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.blpu_class_lookup.key}"
+    "--ward_lookup_path"           = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.ons_ward_lookup.key}"
+    "--processed_source_data_path" = "s3://${module.raw_zone_data_source.bucket_id}/unrestricted/os-addressbase-premium/full-supply/epoch-115/processed/"
+    "--target_path"                = "s3://${module.refined_zone_data_source.bucket_id}/unrestricted/national_address"
   }
-  script_name                    = "addressbasepremium_create_address_table"
+  script_name = "addressbasepremium_create_address_table"
 }
