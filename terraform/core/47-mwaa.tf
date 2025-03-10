@@ -112,6 +112,24 @@ resource "aws_iam_role_policy" "mwaa_role_policy" {
   })
 }
 
+# To allow the MWAA execution role to assume the housing reporting role and export
+# MTFH tables to S3
+resource "aws_iam_role_policy" "mwaa_assume_role_policy" {
+  name = "mwaa_assume_role_policy"
+  role = aws_iam_role.mwaa_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "sts:AssumeRole",
+        Resource = "arn:aws:iam::282997303675:role/LBH_Reporting_Data_Sync_Role"
+      }
+    ]
+  })
+}
+
 
 # Security group for MWAA - self-referencing and allowing all traffic out
 # This is recommended in the doc, Matt recommended at current stage.
