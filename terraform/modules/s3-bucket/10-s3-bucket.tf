@@ -131,7 +131,7 @@ data "aws_iam_policy_document" "bucket" {
 }
 
 resource "aws_s3_bucket" "bucket" {
-  tags = var.tags
+  tags = merge(var.tags, { BackupPolicy = title(var.environment) })
 
   bucket = lower("${var.identifier_prefix}-${var.bucket_identifier}")
 
