@@ -419,7 +419,10 @@ resource "aws_s3_bucket" "ssl_connection_resources" {
   count = local.is_live_environment ? 1 : 0
 
   bucket = "${local.identifier_prefix}-ssl-connection-resources"
-  tags   = module.tags.values
+  tags = {
+    for key, value in module.tags.values :
+    key => value if key != "BackupPolicy"
+  }
 }
 
 resource "aws_s3_bucket_acl" "ssl_connection_resources" {

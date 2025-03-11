@@ -1,11 +1,12 @@
 module "lambda_artefact_storage_for_api_account" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Lambda Artefact Storage"
-  bucket_identifier = "api-lambda-artefact-storage"
+  source                     = "../modules/s3-bucket"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "Lambda Artefact Storage"
+  bucket_identifier          = "api-lambda-artefact-storage"
+  include_backup_policy_tags = false
 
   providers = {
     aws = aws.aws_api_account

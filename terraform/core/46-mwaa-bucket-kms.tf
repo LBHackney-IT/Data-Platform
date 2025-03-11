@@ -95,8 +95,10 @@ resource "aws_s3_bucket_public_access_block" "mwaa_bucket_block" {
 
 resource "aws_s3_bucket" "mwaa_etl_scripts_bucket" {
   bucket = "${local.identifier_prefix}-mwaa-etl-scripts-bucket"
-
-  tags = module.tags.values
+  tags = {
+    for key, value in module.tags.values :
+    key => value if key != "BackupPolicy"
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "mwaa_etl_scripts_bucket_encryption" {
