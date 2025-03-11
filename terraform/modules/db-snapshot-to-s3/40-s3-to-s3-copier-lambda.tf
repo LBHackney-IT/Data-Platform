@@ -158,6 +158,9 @@ resource "aws_s3_object" "s3_to_s3_copier_lambda" {
   depends_on = [
     data.archive_file.s3_to_s3_copier_lambda
   ]
+  metadata = {
+    last_updated = data.archive_file.s3_to_s3_copier_lambda.output_base64sha256
+  }
 }
 
 resource "aws_lambda_function" "s3_to_s3_copier_lambda" {
