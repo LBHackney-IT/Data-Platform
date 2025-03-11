@@ -81,7 +81,6 @@ resource "aws_s3_object" "lambda" {
   bucket = var.lambda_artefact_storage_bucket
   key    = "${local.lambda_name_underscore}.zip"
   source = data.archive_file.lambda.output_path
-  etag   = filemd5(data.archive_file.lambda.output_path)
   acl    = "private"
   metadata = {
     last_updated = data.archive_file.lambda.output_base64sha256
