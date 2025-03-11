@@ -66,7 +66,10 @@ resource "aws_kms_alias" "mwaa_key_alias" {
 resource "aws_s3_bucket" "mwaa_bucket" {
   bucket = "${local.identifier_prefix}-mwaa-bucket"
 
-  tags = module.tags.values
+  tags = {
+    for key, value in module.tags.values :
+    key => value if key != "BackupPolicy"
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "mwaa_bucket_encryption" {
@@ -116,3 +119,4 @@ resource "aws_s3_bucket_public_access_block" "mwaa_etl_scripts_bucket_block" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
