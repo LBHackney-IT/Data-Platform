@@ -979,3 +979,31 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
     actions = ["sts:AssumeRole"]
   }
 }
+
+// s3 access for mtfh data in landing zone
+data "aws_iam_policy_document" "mtfh_access" {
+  count = local.department_identifier == "data-and-insight" ? 1 : 0
+
+  statement {
+    sid    = "S3ReadMtfhDirectory"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket",
+    ]
+    resources = [
+      "${var.landing_zone_bucket.bucket_arn}/mtfh/*",
+      var.landing_zone_bucket.bucket_arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "mtfh_access_policy" {
+  count       = local.department_identifier == "data-and-insight" ? 1 : 0
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-mtfh-landing-access-policy")
+  description = "Allows data-and-insight department access  for ecs tasks to mtfh/ subdirectory in landing zone"
+  policy      = data.aws_iam_policy_document.mtfh_access[0].json
+}
+
+
