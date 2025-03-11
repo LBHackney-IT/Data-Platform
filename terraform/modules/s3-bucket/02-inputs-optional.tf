@@ -60,7 +60,7 @@ variable "bucket_policy_statements" {
   validation {
     condition = length([
       for o in var.bucket_policy_statements : true
-       if o.principals.type != null && o.principals.type != ""
+      if o.principals.type != null && o.principals.type != ""
     ]) == length(var.bucket_policy_statements)
     error_message = "Principal type must be provided"
   }
@@ -72,9 +72,9 @@ variable "bucket_policy_statements" {
 variable "bucket_key_policy_statements" {
   description = "A list of statements to be added to the bucket policy"
   type = list(object({
-    sid       = string
-    effect    = string
-    actions   = list(string)
+    sid     = string
+    effect  = string
+    actions = list(string)
     principals = object({
       type        = string
       identifiers = list(string)
@@ -116,7 +116,7 @@ variable "bucket_key_policy_statements" {
   validation {
     condition = length([
       for o in var.bucket_key_policy_statements : true
-       if o.principals.type != null && o.principals.type != ""
+      if o.principals.type != null && o.principals.type != ""
     ]) == length(var.bucket_key_policy_statements)
     error_message = "Principal type must be provided"
   }
@@ -151,3 +151,8 @@ variable "abort_multipart_days" {
   default     = null
 }
 
+variable "include_backup_policy_tags" {
+  description = "Whether to apply the backup policy tags provided by the tagging module"
+  type        = bool
+  default     = true
+}

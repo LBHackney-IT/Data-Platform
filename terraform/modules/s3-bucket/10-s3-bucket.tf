@@ -130,13 +130,18 @@ data "aws_iam_policy_document" "bucket" {
   ]
 }
 
+locals {
+  standard_s3_tags = var.tags
+
+  filtered_s3_tags = {
+    for key, value in local.standard_s3_tags :
+    key => value if key != "BackupPolicy" || var.include_backup_policy_tags
+  }
+}
 resource "aws_s3_bucket" "bucket" {
-  tags = var.tags
-
-  bucket = lower("${var.identifier_prefix}-${var.bucket_identifier}")
-
+  tags          = local.filtered_s3_tags
+  bucket        = lower("${var.identifier_prefix}-${var.bucket_identifier}")
   force_destroy = (var.environment == "dev")
-
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket" {
