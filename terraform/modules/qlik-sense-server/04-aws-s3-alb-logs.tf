@@ -117,23 +117,21 @@ data "aws_iam_policy_document" "write_access_for_aws_loggers" {
   }
 
   statement {
-    sid    = "HTTPSOnly"
-    effect = "Deny"
-
-    resources = [aws_s3_bucket.qlik_alb_logs[0].arn,
-    "${aws_s3_bucket.qlik_alb_logs[0].arn}/*"]
-
+    sid     = "AllowSSLRequestsOnly"
+    effect  = "Deny"
     actions = ["s3:*"]
-
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    resources = [
+      aws_s3_bucket.qlik_alb_logs[0].arn,
+      "${aws_s3_bucket.qlik_alb_logs[0].arn}/*"
+    ]
     condition {
       test     = "Bool"
       variable = "aws:SecureTransport"
       values   = ["false"]
-    }
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
     }
   }
 }
