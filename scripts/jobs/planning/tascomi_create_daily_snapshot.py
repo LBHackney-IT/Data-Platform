@@ -180,7 +180,7 @@ if __name__ == "__main__":
                 glueContext, snapshot_table_name, source_catalog_database
             ):
                 logger.info(
-                    f"Couldn't find table {snapshot_table_name} in database {source_catalog_database}, creating a snapshot from all the increments, starting from 30 days ago"
+                    f"Couldn't find table {snapshot_table_name} in database {source_catalog_database}, creating a snapshot from all the increments, starting from 20210101"
                 )
                 # Increment table does not exist in glue catalogue
                 if not table_exists_in_catalog(
@@ -190,6 +190,8 @@ if __name__ == "__main__":
                         f"No snapshot and no increment for {increment_table_name}, going to the next table"
                     )
                     continue
+
+                # Load increments from default date
                 increment_df = loadIncrementsSinceDate(
                     increment_table_name=increment_table_name,
                     name_space=source_catalog_database,
