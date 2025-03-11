@@ -1,3 +1,4 @@
+# test
 """
 Script to call the GovNotify API to retrieve data and write to S3.
 Retrieved data is written to S3 Landing as a json string and parquet file.
@@ -5,17 +6,18 @@ Data is then normalised and written to s3 Raw for use by analysts.
 Both zones are crawled so that data is exposed in the Glue data catalog.
 """
 
-from datetime import datetime
-from io import BytesIO
 import json
 import logging
+from datetime import datetime
+from io import BytesIO
 from os import getenv
 
-from botocore.exceptions import ClientError
 import boto3
-from notifications_python_client.notifications import NotificationsAPIClient
-from notifications_python_client.errors import HTTPError
 import pandas as pd
+from botocore.exceptions import ClientError
+from notifications_python_client.errors import HTTPError
+from notifications_python_client.notifications import NotificationsAPIClient
+
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
