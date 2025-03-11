@@ -162,3 +162,9 @@ resource "aws_iam_role_policy" "grant_s3_access_to_ecs_role" {
   role   = aws_iam_role.department_ecs_role.name
   policy = data.aws_iam_policy_document.s3_department_access.json
 }
+
+resource "aws_iam_role_policy_attachment" "mtfh_access_attachment" {
+  count      = local.department_identifier == "data-and-insight" ? 1 : 0
+  role       = aws_iam_role.department_ecs_role.name
+  policy_arn = aws_iam_policy.mtfh_access_policy[0].arn
+}
