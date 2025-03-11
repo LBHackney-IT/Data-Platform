@@ -1,6 +1,9 @@
 resource "aws_s3_bucket" "qlik_alb_logs" {
-  count  = var.is_live_environment ? 1 : 0
-  tags   = var.tags
+  count = var.is_live_environment ? 1 : 0
+  tags = {
+    for key, value in var.tags :
+    key => value if key != "BackupPolicy"
+  }
   bucket = "${var.identifier_prefix}-qlik-alb-logs"
 }
 
@@ -42,8 +45,8 @@ resource "aws_s3_bucket_versioning" "qlik_alb_logs_versioning" {
 }
 
 data "aws_iam_policy_document" "write_access_for_aws_loggers" {
-  count  = var.is_live_environment ? 1 : 0
-  
+  count = var.is_live_environment ? 1 : 0
+
   statement {
     sid    = "AWSLogDeliveryAclCheck"
     effect = "Allow"
@@ -118,7 +121,7 @@ data "aws_iam_policy_document" "write_access_for_aws_loggers" {
     effect = "Deny"
 
     resources = [aws_s3_bucket.qlik_alb_logs[0].arn,
-                "${aws_s3_bucket.qlik_alb_logs[0].arn}/*"]
+    "${aws_s3_bucket.qlik_alb_logs[0].arn}/*"]
 
     actions = ["s3:*"]
 
@@ -136,7 +139,7 @@ data "aws_iam_policy_document" "write_access_for_aws_loggers" {
 }
 
 resource "aws_s3_bucket_policy" "write_access_for_aws_loggers" {
-  count  = var.is_live_environment ? 1 : 0
+  count = var.is_live_environment ? 1 : 0
 
   bucket = aws_s3_bucket.qlik_alb_logs[0].id
   policy = data.aws_iam_policy_document.write_access_for_aws_loggers[0].json
