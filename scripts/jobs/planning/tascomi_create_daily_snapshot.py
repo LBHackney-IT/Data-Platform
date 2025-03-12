@@ -149,6 +149,32 @@ dq_params = {
     "enforcement_breach_details": {"unique": ["id"]},
 }
 
+
+def purge_today_partition(
+    glueContext: GlueContext, target_destination: str, retentionPeriod: int = 0
+) -> None:
+    """
+    Purges (delete) only today's partition under the given target destination.
+
+    Parameters:
+      glueContext: GlueContext instance.
+      target_destination: Base S3 path (e.g., "s3://your-bucket/path").
+      retentionPeriod: Retention period in hours (default 0, meaning delete all files immediately).
+
+    Returns:
+      partition_path: The S3 partition path that was purged.
+    """
+    now = datetime.now()
+    snapshot_year = str(now.year)
+    snapshot_month = str(now.month).zfill(2)
+    snapshot_day = str(now.day).zfill(2)
+    snapshot_date = snapshot_year + snapshot_month + snapshot_day
+
+    partition_path = f"{target_destination}/snapshot_year={snapshot_year}/snapshot_month={snapshot_month}/snapshot_day={snapshot_day}/snapshot_date={snapshot_date}"
+
+    glueContext.purge_s3_path(partition_path, {"retentionPeriod": retentionPeriod})
+
+
 if __name__ == "__main__":
     args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 
@@ -342,6 +368,9 @@ if __name__ == "__main__":
                     snapshot_df, glueContext, "resultDataFrame"
                 )
                 target_destination = s3_bucket_target + table_name
+
+                # Clean up today's partition before writing
+                purge_today_partition(glueContext, target_destination)
                 parquetData = glueContext.write_dynamic_frame.from_options(
                     frame=resultDataFrame,
                     connection_type="s3",
@@ -351,6 +380,7 @@ if __name__ == "__main__":
                         "partitionKeys": PARTITION_KEYS,
                     },
                 )
+
         job.commit()
     finally:
         if len(dq_errors) > 0:
