@@ -252,7 +252,6 @@ if __name__ == "__main__":
                         # apply COU
                         logger.info(f"Applying increment {increment_table_name}")
                         snapshot_df = apply_increments(snapshot_df, increment_df)
-                        # snapshot_df = snapshot_df.coalesce(1) # Reduce the DataFrame to a single partition - the data is small
 
                 else:
                     logger.info(
