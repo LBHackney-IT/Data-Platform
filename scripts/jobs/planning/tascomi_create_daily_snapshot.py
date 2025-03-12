@@ -208,14 +208,18 @@ if __name__ == "__main__":
             # snapshot table in glue catalogue
             else:
                 pushDownPredicate = create_pushdown_predicate(
-                    partitionDateColumn="snapshot_date", daysBuffer=3
+                    partitionDateColumn="snapshot_date", daysBuffer=60
                 )
                 #   load latest snpashot
                 snapshot_ddf = glueContext.create_dynamic_frame.from_catalog(
                     name_space=source_catalog_database,
                     table_name=snapshot_table_name,
-                    # push_down_predicate=pushDownPredicate
+                    push_down_predicate=pushDownPredicate,
                 )
+                if snapshot_ddf.count() == 0:
+                    logger.error(
+                        f"No data returned for table {snapshot_table_name} using push_down_predicate: {pushDownPredicate}. "
+                    )
                 snapshot_df = snapshot_ddf.toDF()
                 snapshot_df = get_latest_snapshot(snapshot_df)
                 last_snapshot_date = snapshot_df.select(max("snapshot_date")).first()[0]
@@ -248,6 +252,8 @@ if __name__ == "__main__":
                         # apply COU
                         logger.info(f"Applying increment {increment_table_name}")
                         snapshot_df = apply_increments(snapshot_df, increment_df)
+                        # snapshot_df = snapshot_df.coalesce(1) # Reduce the DataFrame to a single partition - the data is small
+
                 else:
                     logger.info(
                         f"Couldn't find table {increment_table_name} in database {source_catalog_database}, saving same snapshot as yesterday"
