@@ -83,13 +83,13 @@ def loadIncrementsSinceDate(
 ) -> DataFrame:
     """
     Loads increments from the specified catalog table starting from a given date.
-    If the provided date is None, it defaults to 30 days ago.
+    If the provided date is None, it defaults to 60 days ago.
 
     Returns:
         DataFrame: A Spark DataFrame containing the loaded increments.
     """
     if date is None:
-        date = (datetime.now() - timedelta(days=30)).strftime("%Y%m%d")  # default date
+        date = (datetime.now() - timedelta(days=60)).strftime("%Y%m%d")  # default date
     increment_ddf = glueContext.create_dynamic_frame.from_catalog(
         name_space=name_space,
         table_name=increment_table_name,
