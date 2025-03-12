@@ -57,6 +57,7 @@ dq_dimensions_map = {
     'expect_tenure_code_column_not_to_be_null': 'COMPLETENESS',
     'expect_target_id_and_value_column_values_to_be_unique_within_record': 'UNIQUENESS',
     'expect_sub_type_column_values_to_be_in_set': 'CONSISTENCY',
+    'expect_tenure_values_to_be_in_set_housing_dwellings_list': 'CONSISTENCY',
     'expect_contact_value_column_values_to_be_unique': 'UNIQUENESS',
     'expect_contact_value_column_values_to_not_be_null': 'COMPLETENESS',
     'expect_asset_type_not_to_be_null': 'COMPLETENESS',
