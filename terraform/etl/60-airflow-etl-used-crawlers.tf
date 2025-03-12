@@ -78,11 +78,47 @@ resource "aws_glue_crawler" "parking_spatially_enriched_refined_zone" {
   s3_target {
     path = "s3://${module.refined_zone_data_source.bucket_id}/parking/spatially-enriched/"
   }
-  table_prefix       = "spatially_enriched_"
-  configuration      = jsonencode({
+  table_prefix = "spatially_enriched_"
+  configuration = jsonencode({
     Version = 1.0
     Grouping = {
       TableLevelConfiguration = 4
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+}
+
+locals {
+  departments = {
+    parking            = module.department_parking_data_source
+    housing            = module.department_housing_data_source
+    data_and_insight   = module.department_data_and_insight_data_source
+    child_fam_services = module.department_children_family_services_data_source
+    unrestricted       = module.department_unrestricted_data_source
+    env_services       = module.department_environmental_services_data_source
+  }
+}
+
+resource "aws_glue_crawler" "google_sheet_ingestion_raw_zone" {
+  for_each      = local.is_live_environment ? local.departments : {}
+  name          = "${local.short_identifier_prefix}${each.value.identifier}-google-sheet-ingestion-raw-zone"
+  role          = data.aws_iam_role.glue_role.arn
+  database_name = each.value.raw_zone_catalog_database_name
+
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${each.value.identifier}/google-sheets/"
+  }
+
+  table_prefix = "${each.value.identifier_snake_case}_"
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
     }
     CrawlerOutput = {
       Partitions = { AddOrUpdateBehavior = "InheritFromTable" }

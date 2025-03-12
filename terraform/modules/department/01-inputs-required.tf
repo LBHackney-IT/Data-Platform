@@ -132,3 +132,11 @@ variable "redshift_port" {
   description = "Port that the redshift cluster is running on"
   type        = number
 }
+
+variable "mwaa_etl_scripts_bucket_arn" {
+  type = string
+}
+
+variable "mwaa_key_arn" {
+  type = string
+}

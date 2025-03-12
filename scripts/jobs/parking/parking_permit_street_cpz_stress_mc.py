@@ -21,20 +21,23 @@ query_on_athena = """
  collects the Motorcycle spaces & permits
 
  22/08/2024 - Create SQL
+ 11/02/2025 - add totals for following permit types 
+     permit_type, All Zone, Doctor, Dispensation, Health and Social Care
+     Leisure centre permit, Community Support Permit
  *********************************************************************************/
 With parking_permit_denormalised_data as (
     SELECT *
-    from "dataplatform-stg-liberator-refined-zone".parking_permit_denormalised_data
+    from "dataplatform-prod-liberator-refined-zone".parking_permit_denormalised_data
     where import_date = format_datetime(current_date, 'yyyyMMdd')
 ),
 LLPG as (
     SELECT *
-    FROM "dataplatform-stg-liberator-raw-zone".liberator_permit_llpg
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_permit_llpg
     WHERE import_date = format_datetime(current_date, 'yyyyMMdd')
 ),
 Street_Rec as (
     SELECT *
-    FROM "dataplatform-stg-liberator-raw-zone".liberator_permit_llpg
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_permit_llpg
     WHERE import_date = format_datetime(current_date, 'yyyyMMdd')
         AND address1 = 'STREET RECORD'
 ),
@@ -79,7 +82,7 @@ Parkmap as (
         END As Zone
     FROM "parking-raw-zone".geolive_parking_order as A
     WHERE import_date = (Select MAX(import_date) from "parking-raw-zone".geolive_parking_order)
-        AND schedule = 'MC.001'
+        AND schedule IN ('MC.001', 'MCC - F')
         AND street_name is not NULL
 ),
 /** Summerise the Parkmap records **/
@@ -154,7 +157,7 @@ Parkmap_Summary as (
 /*** get the VRM details to obtain the m/c flag ***/
 MC_Permit_Flag as (
     SELECT *
-    from "dataplatform-stg-liberator-raw-zone".liberator_permit_vrm_480
+    from "dataplatform-prod-liberator-raw-zone".liberator_permit_vrm_480
     WHERE import_date = format_datetime(current_date, 'yyyyMMdd')
 ),
 /** Get the Permits records link in the LLPG data **/
@@ -187,12 +190,7 @@ Permits as (
         AND A.VRM = D.vrm
     WHERE A.import_date = format_datetime(current_date, 'yyyyMMdd')
         AND current_date between start_date and end_date
-        AND Permit_type IN (
-            'Business',
-            'Residents',
-            'Companion Badge',
-            'Estate Resident'
-        )
+        AND Permit_type not IN ('Suspension')
         AND latest_permit_status not IN ('Cancelled', 'Rejected', 'RENEW_REJECTED')
 ),
 Permits_summ as (
@@ -246,6 +244,10 @@ Output as (
         D.currentPermitTotal as Total_Business_Permits,
         E.currentPermitTotal as Total_Companion_Badge_Permits,
         L.currentPermitTotal as Total_Motorcycle_Permits,
+        
+        /*** 11/02/2025 - Add other permits ***/
+        N.currentPermitTotal as Total_Other_Permits,
+ 
         /****/
         F.no_of_spaces as Business_bay_no_of_spaces,
         G.no_of_spaces as Shared_Use_no_of_spaces,
@@ -256,10 +258,12 @@ Output as (
         M.no_of_spaces as Motorcycle_bay_no_of_spaces,
         /****/
         (
-            coalesce(B.currentPermitTotal, 0) + coalesce(C.currentPermitTotal, 0) + coalesce(D.currentPermitTotal, 0) + coalesce(E.currentPermitTotal, 0) + coalesce(L.currentPermitTotal, 0)
+            coalesce(B.currentPermitTotal, 0) + coalesce(C.currentPermitTotal, 0) + coalesce(D.currentPermitTotal, 0) + 
+            coalesce(E.currentPermitTotal, 0) + coalesce(L.currentPermitTotal, 0)+ coalesce(N.currentPermitTotal, 0)
         ) as TotalNoofPermits,
         (
-            coalesce(F.no_of_spaces, 0) + coalesce(G.no_of_spaces, 0) + coalesce(H.no_of_spaces, 0) + coalesce(I.no_of_spaces, 0) + coalesce(J.no_of_spaces, 0) + coalesce(K.no_of_spaces, 0) + coalesce(M.no_of_spaces, 0)
+            coalesce(F.no_of_spaces, 0) + coalesce(G.no_of_spaces, 0) + coalesce(H.no_of_spaces, 0) + 
+            coalesce(I.no_of_spaces, 0) + coalesce(J.no_of_spaces, 0) + coalesce(K.no_of_spaces, 0) + coalesce(M.no_of_spaces, 0)
         ) as TotalNoOfSpaces
     FROM CPZ_List_DeDupe as A
         LEFT JOIN Permits_summ as B ON A.cpz = B.cpz
@@ -274,6 +278,12 @@ Output as (
         LEFT JOIN Permits_summ as E ON A.cpz = E.cpz
         AND lower(A.Street) = lower(E.Street)
         AND E.permit_type = 'Companion Badge'
+
+        /*** 11/02/2025 add the 'other' permits***/
+        LEFT JOIN Permits_summ as N ON A.cpz = N.cpz
+            AND lower(A.Street) = lower(N.Street) AND 
+                N.permit_type IN ('All Zone','Dispensation','Health and Social Care',
+                    'Leisure centre permit','Community Support Permit')      
         /*****/
         LEFT JOIN Parkmap_Summary as F ON A.cpz = F.zone
         AND lower(A.Street) = lower(F.street_name)
@@ -316,6 +326,7 @@ SELECT *,
 FROM Output
 WHERE length(trim(cpz)) != 0
     AND length(trim(Street)) != 0
+;
 """
 
 create_update_table_with_partition(

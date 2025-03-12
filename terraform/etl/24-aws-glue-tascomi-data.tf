@@ -142,7 +142,7 @@ resource "aws_glue_trigger" "tascomi_tables_weekly_ingestion_triggers" {
 
   name     = "${local.short_identifier_prefix}Tascomi ${title(replace(each.value, "_", " "))} Ingestion Trigger"
   type     = "SCHEDULED"
-  schedule = "cron(0 10 ? * SUN *)"
+  schedule = "cron(0 16 ? * SUN *)"
   enabled  = local.is_production_environment
 
   actions {
@@ -264,7 +264,7 @@ module "tascomi_create_daily_snapshot" {
   job_name                       = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
   glue_version                   = "2.0"
   glue_job_worker_type           = "G.2X"
-  number_of_workers_for_glue_job = 8
+  number_of_workers_for_glue_job = 12
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id

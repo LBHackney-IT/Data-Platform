@@ -1,12 +1,13 @@
 
 module "liberator_data_storage" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Liberator Data Storage"
-  bucket_identifier = "liberator-data-storage"
+  source                     = "../modules/s3-bucket"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "Liberator Data Storage"
+  bucket_identifier          = "liberator-data-storage"
+  include_backup_policy_tags = false
 }
 
 module "liberator_dump_to_rds_snapshot" {
