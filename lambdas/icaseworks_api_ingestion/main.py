@@ -8,13 +8,16 @@ import sys
 import time
 from os import getenv
 
-import boto3
-import pybase64
-import requests
-from dotenv import load_dotenv
 
-
+# needs to be above imports for the additional dependencies
+# flake8 E402 would complain about this so is ignored
 sys.path.append("./lib/")
+
+import boto3  # noqa: E402
+import pybase64  # noqa: E402
+import requests  # noqa: E402
+from dotenv import load_dotenv  # noqa: E402
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
