@@ -1,7 +1,6 @@
 import sys
 from datetime import datetime
 
-import pydeequ
 import pyspark.sql.functions as F
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
@@ -298,7 +297,7 @@ if __name__ == "__main__":
 
             except Exception as verificationError:
                 logger.info(
-                    f"Job cancelled due to data quality test failure, continuing to next table."
+                    "Job cancelled due to data quality test failure, continuing to next table."
                 )
                 message = verificationError.args
                 logger.info(f"{message[0]}")
@@ -309,7 +308,7 @@ if __name__ == "__main__":
 
             else:
                 logger.info(
-                    f"Data quality tests passed, appending data quality results to JSON and moving on to writing data"
+                    "Data quality tests passed, appending data quality results to JSON and moving on to writing data"
                 )
                 verificationSuite.saveOrAppendResult(resultKey).run()
 
