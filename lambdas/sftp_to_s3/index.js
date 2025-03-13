@@ -16,7 +16,7 @@ const config = {
   host: process.env.SFTP_HOST,
   username: process.env.SFTP_USERNAME,
   password: process.env.SFTP_PASSWORD,
-  port: 22
+  port: 22,
 };
 
 let fileNamePattern = "";
@@ -34,20 +34,20 @@ async function getImportFilenamePattern(manualOverrideDateString) {
     Settings.throwOnInvalid = true;
     DateTime.fromISO(manualOverrideDateString);
 
-    let parts = manualOverrideDateString.split('-');
+    let parts = manualOverrideDateString.split("-");
     dateToImport = new Date(parts[0], parts[1] - 1, parts[2]);
   }
 
   year = dateToImport.getFullYear().toString();
-  month = (dateToImport.getMonth() + 1).toString().padStart(2, '0');
-  day = dateToImport.getDate().toString().padStart(2, '0');
-  date = `${year}-${month}-${day}`
+  month = (dateToImport.getMonth() + 1).toString().padStart(2, "0");
+  day = dateToImport.getDate().toString().padStart(2, "0");
+  date = `${year}-${month}-${day}`;
 
   fileNamePattern = `${sftpSourceFilePrefix}${date}`;
 }
 
 async function findFiles(sftpConn) {
-  console.log(`filepath on server: ${sftpFilePath}`)
+  console.log(`filepath on server: ${sftpFilePath}`);
 
   const validPath = await sftpConn.exists(sftpFilePath);
 
@@ -55,7 +55,7 @@ async function findFiles(sftpConn) {
     return {
       success: false,
       message: `Path ${sftpFilePath} doesn't exist on SFTP server`,
-      fileNames: []
+      fileNames: [],
     };
   }
 
@@ -68,7 +68,7 @@ async function findFiles(sftpConn) {
     function filterByFileNamePattern(file) {
       let name = file.name.toLowerCase();
       return name.includes(fileNamePattern.toLowerCase());
-    }
+    },
   );
 
   if (fileList.length === 0) {
@@ -79,12 +79,14 @@ async function findFiles(sftpConn) {
     };
   }
 
-  const fileNames = fileList.filter(file => file.type != 'd').map(file => file.name);
+  const fileNames = fileList
+    .filter((file) => file.type != "d")
+    .map((file) => file.name);
   console.log(fileNames);
   return {
     success: true,
     fileNames,
-    message: ""
+    message: "",
   };
 }
 
@@ -92,13 +94,15 @@ async function checkS3ForFile() {
   const s3Client = new AWS.S3({ region: AWS_REGION });
   const params = {
     Bucket: s3Bucket,
-    Key: `${s3TargetFolder}/import_year=${year}/import_month=${month}/import_day=${day}/import_date=${date}/${sftpSourceFilePrefix}${date}.${sftpSourceFileExtension}`
+    Key: `${s3TargetFolder}/import_year=${year}/import_month=${month}/import_day=${day}/import_date=${date}/${sftpSourceFilePrefix}${date}.${sftpSourceFileExtension}`,
   };
   try {
     await s3Client.headObject(params).promise();
     return true;
   } catch (error) {
-    console.log(`Today's ${s3TargetFolder} file not yet present in S3 bucket, retrieving file from SFTP`)
+    console.log(
+      `Today's ${s3TargetFolder} file not yet present in S3 bucket, retrieving file from SFTP`,
+    );
     return false;
   }
 }
@@ -109,7 +113,7 @@ function putFile() {
   const params = {
     Bucket: s3Bucket,
     Key: `${s3TargetFolder}/import_year=${year}/import_month=${month}/import_day=${day}/import_date=${date}/${sftpSourceFilePrefix}${date}.${sftpSourceFileExtension}`,
-    Body: stream
+    Body: stream,
   };
 
   const upload = s3Client.upload(params);
@@ -129,8 +133,7 @@ async function streamFileFromSftpToS3(sftp, fileName) {
 }
 
 exports.handler = async (event) => {
-
-  let manualOverrideDateString = event['DateToImport'];
+  let manualOverrideDateString = event["DateToImport"];
 
   console.log(`Manual override date: ${manualOverrideDateString}`);
 
@@ -139,8 +142,13 @@ exports.handler = async (event) => {
   const sftp = new sftpClient();
 
   if (await checkS3ForFile()) {
-    console.log(`Today's ${s3TargetFolder} file is already present in S3 bucket!`);
-    return { success: true, message: `File already found in s3, no further action taken` };
+    console.log(
+      `Today's ${s3TargetFolder} file is already present in S3 bucket!`,
+    );
+    return {
+      success: true,
+      message: `File already found in s3, no further action taken`,
+    };
   }
 
   await sftp.connect(config);
@@ -153,26 +161,33 @@ exports.handler = async (event) => {
       console.log(findFilesResponse);
       return {
         success: findFilesResponse.success,
-        message: findFilesResponse.message
+        message: findFilesResponse.message,
       };
     }
 
-    await Promise.all(findFilesResponse.fileNames.map(file => streamFileFromSftpToS3(sftp, file)));
+    await Promise.all(
+      findFilesResponse.fileNames.map((file) =>
+        streamFileFromSftpToS3(sftp, file),
+      ),
+    );
 
     //start trigger
-    const glue = new AWS.Glue({ apiVersion: '2017-03-31' });
+    const glue = new AWS.Glue({ apiVersion: "2017-03-31" });
     const params = {
-      Name: trigger_to_run
+      Name: trigger_to_run,
     };
-    console.log("Starting trigger with params", params)
+    console.log("Starting trigger with params", params);
 
     await glue.startTrigger(params).promise();
 
     console.log("Success!");
-    return { success: true, message: `Successfully uploaded ${findFilesResponse.fileNames.length} file(s) to s3` };
+    return {
+      success: true,
+      message: `Successfully uploaded ${findFilesResponse.fileNames.length} file(s) to s3`,
+    };
   } catch (error) {
     console.error(error.message);
   } finally {
     await sftp.end();
   }
-}
+};

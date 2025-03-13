@@ -129,7 +129,7 @@ resource "aws_s3_object" "lambda" {
   source_hash = null_resource.run_install_requirements.triggers["dir_sha1"]
   depends_on  = [data.archive_file.lambda]
   metadata = {
-    last_updated = data.archive_file.lambda.output_base64sha256
+    last_updated = null_resource.run_install_requirements.triggers.dir_sha1
   }
 }
 
