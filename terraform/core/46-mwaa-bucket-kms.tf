@@ -66,7 +66,10 @@ resource "aws_kms_alias" "mwaa_key_alias" {
 resource "aws_s3_bucket" "mwaa_bucket" {
   bucket = "${local.identifier_prefix}-mwaa-bucket"
 
-  tags = module.tags.values
+  tags = {
+    for key, value in module.tags.values :
+    key => value if key != "BackupPolicy"
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "mwaa_bucket_encryption" {
@@ -89,3 +92,33 @@ resource "aws_s3_bucket_public_access_block" "mwaa_bucket_block" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
+resource "aws_s3_bucket" "mwaa_etl_scripts_bucket" {
+  bucket = "${local.identifier_prefix}-mwaa-etl-scripts-bucket"
+  tags = {
+    for key, value in module.tags.values :
+    key => value if key != "BackupPolicy"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "mwaa_etl_scripts_bucket_encryption" {
+  bucket = aws_s3_bucket.mwaa_etl_scripts_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.mwaa_key.arn
+    }
+    bucket_key_enabled = true
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "mwaa_etl_scripts_bucket_block" {
+  bucket = aws_s3_bucket.mwaa_etl_scripts_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+

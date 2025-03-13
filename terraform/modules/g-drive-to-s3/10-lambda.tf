@@ -133,7 +133,7 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
 
   role             = aws_iam_role.g_drive_to_s3_copier_lambda.arn
   handler          = "main.lambda_handler"
-  runtime          = "python3.8"
+  runtime          = "python3.9"
   function_name    = lower("${var.identifier_prefix}g-drive-${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_object.g_drive_to_s3_copier_lambda.key

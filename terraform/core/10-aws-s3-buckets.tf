@@ -304,6 +304,7 @@ module "landing_zone" {
   bucket_identifier            = "landing-zone"
   bucket_policy_statements     = local.is_production_environment ? [local.allow_housing_reporting_role_access_to_landing_zone_path] : (local.is_live_environment ? [local.allow_housing_reporting_role_access_to_landing_zone_path_pre_prod] : [])
   bucket_key_policy_statements = [local.share_kms_key_with_housing_reporting_role]
+  include_backup_policy_tags   = false
 }
 
 module "raw_zone" {
@@ -316,7 +317,7 @@ module "raw_zone" {
   bucket_identifier            = "raw-zone"
   bucket_policy_statements     = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement] : (local.is_live_environment ? [local.prod_to_pre_prod_raw_zone_data_sync_statement_for_pre_prod] : [])
   bucket_key_policy_statements = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement] : (local.is_live_environment ? [local.prod_to_pre_prod_data_sync_access_to_raw_zone_key_statement_for_pre_prod] : [])
-
+  include_backup_policy_tags   = false
 }
 
 module "refined_zone" {
@@ -335,6 +336,7 @@ module "refined_zone" {
   bucket_key_policy_statements = concat(
     [local.rentsense_refined_zone_key_statement],
   local.is_live_environment && !local.is_production_environment ? [local.prod_to_pre_prod_data_sync_access_to_refined_zone_key_statement_for_pre_prod] : [])
+  include_backup_policy_tags = false
 }
 
 module "trusted_zone" {
@@ -348,47 +350,52 @@ module "trusted_zone" {
 
   bucket_policy_statements     = local.is_live_environment && !local.is_production_environment ? [local.prod_to_pre_prod_trusted_zone_data_sync_statement_for_pre_prod] : []
   bucket_key_policy_statements = local.is_live_environment && !local.is_production_environment ? [local.prod_to_pre_prod_data_sync_access_to_trusted_zone_key_statement_for_pre_prod] : []
+  include_backup_policy_tags   = false
 }
 
 module "glue_scripts" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Glue Scripts"
-  bucket_identifier = "glue-scripts"
+  source                     = "../modules/s3-bucket"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "Glue Scripts"
+  bucket_identifier          = "glue-scripts"
+  include_backup_policy_tags = false
 }
 
 module "glue_temp_storage" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Glue Temp Storage"
-  bucket_identifier = "glue-temp-storage"
+  source                     = "../modules/s3-bucket"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "Glue Temp Storage"
+  bucket_identifier          = "glue-temp-storage"
+  include_backup_policy_tags = false
 }
 
 module "athena_storage" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Athena Storage"
-  bucket_identifier = "athena-storage"
+  source                     = "../modules/s3-bucket"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "Athena Storage"
+  bucket_identifier          = "athena-storage"
+  include_backup_policy_tags = false
 }
 
 module "lambda_artefact_storage" {
-  source             = "../modules/s3-bucket"
-  tags               = module.tags.values
-  project            = var.project
-  environment        = var.environment
-  identifier_prefix  = local.identifier_prefix
-  bucket_name        = "Lambda Artefact Storage"
-  bucket_identifier  = "dp-lambda-artefact-storage"
-  versioning_enabled = false
+  source                     = "../modules/s3-bucket"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "Lambda Artefact Storage"
+  bucket_identifier          = "dp-lambda-artefact-storage"
+  versioning_enabled         = false
+  include_backup_policy_tags = false
 }
 
 module "spark_ui_output_storage" {
@@ -403,6 +410,7 @@ module "spark_ui_output_storage" {
   expire_objects_days            = 60
   expire_noncurrent_objects_days = 30
   abort_multipart_days           = 30
+  include_backup_policy_tags     = false
 }
 
 # This bucket is used for storing certificates used in Looker Studio connections.
@@ -411,7 +419,10 @@ resource "aws_s3_bucket" "ssl_connection_resources" {
   count = local.is_live_environment ? 1 : 0
 
   bucket = "${local.identifier_prefix}-ssl-connection-resources"
-  tags   = module.tags.values
+  tags = {
+    for key, value in module.tags.values :
+    key => value if key != "BackupPolicy"
+  }
 }
 
 resource "aws_s3_bucket_acl" "ssl_connection_resources" {
@@ -434,23 +445,25 @@ resource "aws_s3_bucket_versioning" "ssl_connection_resources" {
 module "rds_export_storage" {
   source = "../modules/s3-bucket"
 
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "RDS Export Storage"
-  bucket_identifier = "rds-shapshot-export-storage"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "RDS Export Storage"
+  bucket_identifier          = "rds-shapshot-export-storage"
+  include_backup_policy_tags = false
 }
 
 module "deprecated_rds_export_storage" {
   source = "../modules/s3-bucket"
 
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = "${local.identifier_prefix}-dp"
-  bucket_name       = "RDS Export Storage"
-  bucket_identifier = "rds-export-storage"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = "${local.identifier_prefix}-dp"
+  bucket_name                = "RDS Export Storage"
+  bucket_identifier          = "rds-export-storage"
+  include_backup_policy_tags = false
 }
 
 module "addresses_api_rds_export_storage" {
@@ -467,6 +480,7 @@ module "addresses_api_rds_export_storage" {
   providers = {
     aws = aws.aws_api_account
   }
+  include_backup_policy_tags = false
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "addresses_api_rds_export_storage" {

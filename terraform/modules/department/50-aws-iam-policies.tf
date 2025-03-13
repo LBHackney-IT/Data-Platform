@@ -174,7 +174,8 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.athena_storage_bucket.kms_key_arn,
       var.glue_scripts_bucket.kms_key_arn,
       var.spark_ui_output_storage_bucket.kms_key_arn,
-      var.glue_temp_storage_bucket.kms_key_arn
+      var.glue_temp_storage_bucket.kms_key_arn,
+      var.mwaa_key_arn
     ]
   }
 
@@ -216,7 +217,12 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.glue_temp_storage_bucket.bucket_arn,
 
       var.spark_ui_output_storage_bucket.bucket_arn,
-      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
+      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*",
+
+      var.mwaa_etl_scripts_bucket_arn,
+      "${var.mwaa_etl_scripts_bucket_arn}/${replace(local.department_identifier, "-", "_")}/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/unrestricted/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/shared/*",
     ]
   }
 
@@ -374,11 +380,11 @@ data "aws_iam_policy_document" "glue_access" {
     actions = [
       "glue:Batch*",
       "glue:CheckSchemaVersionValidity",
-      "glue:CreateDag",
       "glue:CreateDevEndpoint",
       "glue:CreateJob",
       "glue:CreateScript",
       "glue:CreateSession",
+      "glue:CreatePartition",
       "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
       "glue:DeleteTrigger",
@@ -397,7 +403,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:StopTrigger",
       "glue:StopWorkflowRun",
       "glue:TagResource",
-      "glue:UpdateDag",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
       "glue:UpdateTable",
@@ -854,7 +859,14 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "glue:ListCrawlers",
       "glue:GetTable",
       "glue:GetTables",
+      "glue:GetPartition",
       "glue:GetPartitions",
+      "glue:CreatePartition",
+      "glue:CreatePartitionIndex",
+      "glue:DeletePartitionIndex",
+      "glue:UpdatePartition",
+      "glue:DeletePartition",
+      "glue:BatchCreatePartition",
       "glue:GetDatabase",
       "glue:GetDatabases",
       "glue:GetCrawlers",
@@ -908,7 +920,7 @@ data "aws_iam_policy_document" "airflow_base_policy" {
 resource "aws_iam_policy" "airflow_base_policy" {
   tags = var.tags
 
-  name   = lower("${var.identifier_prefix}-${local.department_identifier}-ariflow-base-policy")
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-airflow-base-policy")
   policy = data.aws_iam_policy_document.airflow_base_policy.json
 }
 
@@ -920,10 +932,8 @@ data "aws_iam_policy_document" "department_ecs_passrole" {
       "iam:PassRole"
     ]
     resources = [
-      aws_iam_role.department_ecs_role.arn,
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.department_identifier}-ecs-execution-role",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-execution-role",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/dap-ecs-task-role"
+      aws_iam_role.department_ecs_role.arn,                                                                                 # Defined in 50-aws-iam-roles.tf
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.department_identifier}-ecs-execution-role", # Defined in ecs repo.
     ]
     condition {
       test     = "StringEquals"
@@ -947,7 +957,6 @@ resource "aws_iam_policy" "department_ecs_passrole" {
 
 data "aws_iam_policy_document" "ecs_department_policy" {
   source_policy_documents = [
-    data.aws_iam_policy_document.s3_department_access.json,
     data.aws_iam_policy_document.secrets_manager_read_only.json,
     data.aws_iam_policy_document.read_glue_scripts_and_mwaa_and_athena.json,
     data.aws_iam_policy_document.crawler_can_access_jdbc_connection.json
@@ -970,3 +979,31 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
     actions = ["sts:AssumeRole"]
   }
 }
+
+// s3 access for mtfh data in landing zone
+data "aws_iam_policy_document" "mtfh_access" {
+  count = local.department_identifier == "data-and-insight" ? 1 : 0
+
+  statement {
+    sid    = "S3ReadMtfhDirectory"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket",
+    ]
+    resources = [
+      "${var.landing_zone_bucket.bucket_arn}/mtfh/*",
+      var.landing_zone_bucket.bucket_arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "mtfh_access_policy" {
+  count       = local.department_identifier == "data-and-insight" ? 1 : 0
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-mtfh-landing-access-policy")
+  description = "Allows data-and-insight department access  for ecs tasks to mtfh/ subdirectory in landing zone"
+  policy      = data.aws_iam_policy_document.mtfh_access[0].json
+}
+
+

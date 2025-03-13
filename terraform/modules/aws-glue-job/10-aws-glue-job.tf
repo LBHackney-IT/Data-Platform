@@ -58,7 +58,7 @@ resource "aws_glue_job" "job" {
       "--extra-py-files"                   = "s3://${local.scripts_bucket_id}/${var.helper_module_key},s3://${local.scripts_bucket_id}/${var.pydeequ_zip_key}"
       "--extra-jars"                       = local.extra_jars
       "--enable-continuous-cloudwatch-log" = "true"
-      "--enable-metrics"                   = "true"
+      "--enable-metrics"                   = "false"
       "--enable-spark-ui"                  = "true"
       "--spark-event-logs-path"            = local.spark_ui_storage
       "--enable-auto-scaling"              = "true"

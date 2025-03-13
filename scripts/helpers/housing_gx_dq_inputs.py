@@ -6,7 +6,7 @@ sql_config = {'person_reshape': {
         'sql': """SELECT * FROM "housing-refined-zone"."tenure_reshape" where import_date=(select max(import_date) from "housing-refined-zone"."tenure_reshape") and description in ('Secure', 'Introductory', 'Mesne Profit Ac', 'Non-Secure') and (endoftenuredate is null or substr(endoftenuredate, 1, 11) = '1900-01-01')""",
         'id_field': 'tenancy_id'},
     'contacts_reshape': {
-        'sql': """SELECT id, targetid, createdat, contacttype, subtype, value, lastmodified, targettype, isactive, person_id, import_date  FROM "housing-refined-zone"."contacts_reshape"  where import_date=(select max(import_date) from "housing-refined-zone"."contacts_reshape") and isactive=True""",
+        'sql': """SELECT id, targetid, substr(createdat, 1, 10) as createdat, contacttype, subtype, value, substr(lastmodified, 1, 10) as lastmodified, targettype, isactive, person_id, import_date  FROM "housing-refined-zone"."contacts_reshape"  where import_date=(select max(import_date) from "housing-refined-zone"."contacts_reshape") and isactive=True""",
         'id_field': 'id'},
     'housing_homeowner_record_sheet': {
         'sql': """SELECT * FROM "housing-raw-zone"."housing_homeowner_record_sheet" where import_date=(select max(import_date) from "housing-raw-zone"."housing_homeowner_record_sheet")""",
@@ -16,11 +16,17 @@ sql_config = {'person_reshape': {
         'id_field': 'property_dwelling_reference_number'},
     'assets_reshape': {
         'sql': """SELECT * FROM "housing-refined-zone"."assets_reshape" where import_date=(select max(import_date) from "housing-refined-zone"."assets_reshape") and assettype = 'Dwelling'""",
-        'id_field': 'asset_id'}
+        'id_field': 'asset_id'},
+    'matenancyagreement': {
+        'sql': """SELECT *, substr(cast(eot as varchar), 1, 10) as eot_parsed, substr(cast(cot as varchar), 1, 10) as cot_parsed FROM "housing-raw-zone"."sow2b_dbo_matenancyagreement" where import_date=(select max(import_date) FROM "housing-raw-zone"."sow2b_dbo_matenancyagreement")""",
+        'id_field': 'tag_ref'},
+    'maproperty': {
+        'sql': """SELECT * FROM "housing-raw-zone"."sow2b_dbo_maproperty" where import_date=(select max(import_date) FROM "housing-raw-zone"."sow2b_dbo_maproperty")""",
+        'id_field': 'prop_ref'}
 }
 
 table_list = ['person_reshape', 'tenure_reshape', 'contacts_reshape', 'housing_homeowner_record_sheet',
-              'housing_dwellings_list', 'assets_reshape']
+              'housing_dwellings_list', 'assets_reshape', 'matenancyagreement', 'maproperty']
 
 partition_keys = ['import_year', 'import_month', 'import_day', 'import_date']
 
@@ -97,5 +103,4 @@ dq_dimensions_map = {
     'expect_uprn_column_value_lengths_between': 'VALIDITY',
     'expect_uprn_column_values_to_match_regex': 'ACCURACY',
     'expect_uprn_column_values_to_not_be_null': 'COMPLETENESS',
-    'expect_uprn_not_to_be_null': 'COMPLETENESS'
-}
+    'expect_uprn_not_to_be_null': 'COMPLETENESS'}

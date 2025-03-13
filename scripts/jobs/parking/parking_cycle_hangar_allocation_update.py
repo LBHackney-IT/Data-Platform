@@ -39,6 +39,8 @@ Tom's hangar list
 26/09/2024 - add hangar location.
 04/10/2024 - add additional checks for the waiting list
 04/12/2024 - collect the interim cycle hangar waiting list
+06/01/2025 - Amend to remove records from the waiting list that have been unsuscribed
+13/01/2025 - add opt-in data
 ******************************************************************************************************************/
 /*******************************************************************************
 Create a comparison between Toms Hangar list and EStreet
@@ -76,13 +78,33 @@ Hangar_Comp as (
     UNION ALL
     SELECT 'new_only','new_only','new_only'),
 
+/*** 08-01-2025 collect the unsubscribed_emails ***/
+unsubscribed_emails as (
+    SELECT *,
+        ROW_NUMBER() OVER ( PARTITION BY email_address ORDER BY email_address DESC) row1
+    FROM "parking-raw-zone".parking_parking_cycle_hangar_unsubscribed_emails
+    WHERE import_date = (select max(import_date)
+                    from "parking-raw-zone".parking_parking_cycle_hangar_unsubscribed_emails)),
+
+/*** 13/01/2025 added ***/
+opt_in_emails as (
+    SELECT
+        please_note_your_email_address_has_been_prefilled_based_on_your_account_registration_please_do_not_amend_this as email,
+        please_select_one_of_the_options_below,
+        ROW_NUMBER() OVER ( PARTITION BY please_note_your_email_address_has_been_prefilled_based_on_your_account_registration_please_do_not_amend_this
+        ORDER BY please_note_your_email_address_has_been_prefilled_based_on_your_account_registration_please_do_not_amend_this
+        DESC) row1
+    FROM "parking-raw-zone".parking_parking_opt_in_form_responses 
+    WHERE import_date = (select max(import_date) 
+                    from "parking-raw-zone".parking_parking_opt_in_form_responses)
+    AND please_select_one_of_the_options_below like 'No.%'),
 /*******************************************************************************
 Obtain the latest Waiting List History
 *******************************************************************************/
 Wait_History as (
     SELECT A.*,
         ROW_NUMBER() OVER ( PARTITION BY A.party_id,hanger_id ORDER BY A.party_id,hanger_id, updated DESC ) R1
-    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_waiting_list_history as A
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_hangar_waiting_list_history as A
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 /*******************************************************************************
 Create the Waiting list - unique "party_id"
@@ -93,30 +115,41 @@ waiting_list as (
         B.party_id as History_party_id, A.hanger_id	as History_hanger_id, B.status_from, B.status_to,
         B.date_from, B.date_to, B.updated, B.created_by, B.registation_date as History_registation_date,
         ROW_NUMBER() OVER ( PARTITION BY A.party_id, A.hanger_id ORDER BY A.party_id, A.hanger_id DESC) row1
-    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_waiting_list as A
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_hangar_waiting_list as A
     LEFT JOIN Wait_History as B ON A.party_id = B.party_id AND A.hanger_id = B.hanger_id AND B.R1 = 1
     WHERE A.import_Date = format_datetime(current_date, 'yyyyMMdd')),
 /*** Party List ***/
 Licence_Party as (
-    SELECT * from "dataplatform-stg-liberator-raw-zone".liberator_licence_party
+    SELECT * from "dataplatform-prod-liberator-raw-zone".liberator_licence_party
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 /*** STREET ***/
 LLPG as (
     SELECT *
-    FROM "dataplatform-stg-liberator-raw-zone".liberator_permit_llpg
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_permit_llpg
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 /*******************************************************************************
-04/12/2024 - interim cycle hangar waiting list
-*******************************************************************************/   
+04/12/2024 - interim cycle hangar waiting list remove unsubscribed emails
+13/01/2025 - add review of opt in(OUT) email addresses
+*******************************************************************************/
 Interim_Wait as (
-    SELECT * from "parking-raw-zone".interim_cycle_wait_list 
-    WHERE import_date = (select max(import_date) 
+    SELECT A.*, 
+        CASE 
+            When length(E.email_address) > 1    Then E.email_address
+            When length(F.email)> 1             Then F.email
+        END as email_address    
+    FROM "parking-raw-zone".interim_cycle_wait_list as A
+    LEFT JOIN unsubscribed_emails as E ON upper(ltrim(rtrim(A.email))) = 
+                                upper(ltrim(rtrim(E.email_address))) AND E.row1 = 1
+    LEFT JOIN opt_in_emails as F ON upper(ltrim(rtrim(A.email))) = 
+                                upper(ltrim(rtrim(F.email))) AND F.row1 = 1                                
+    WHERE A.import_date = (select max(import_date) 
                     from "parking-raw-zone".interim_cycle_wait_list)),
-    
+                    
 /*** count the number on the waiting list by hangar ***/
 Interim_Wait_summary as (
     SELECT hanger_id, count(*) as Interim_Wait_Total
     FROM Interim_Wait
+    WHERE email_address is NULL
     GROUP BY hanger_id),
 /*******************************************************************************
 Cycle Hangar allocation details
@@ -130,7 +163,7 @@ Cycle_Hangar_allocation as (
         /* 19/06 trim the space */
         ROW_NUMBER() OVER ( PARTITION BY hanger_id, trim(upper(space))
             ORDER BY hanger_id, trim(upper(space)), date_of_allocation DESC, fee_due_date DESC, id DESC) row_num
-    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_allocations
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_hangar_allocations
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     /* 14/06 change to exclude those records where keys have not been issued AND
     remove those records where the Space and Key ID fields have been switched??? also
@@ -143,7 +176,7 @@ Party_ID_Allocation as (
         *,
         ROW_NUMBER() OVER ( PARTITION BY party_id, hanger_id
             ORDER BY party_id, hanger_id, id DESC) row_num
-    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_allocations
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_hangar_allocations
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     AND key_issued = 'Y' AND length(key_id) > 2 AND space != 'null'),
 
@@ -156,7 +189,7 @@ Alloc_Total as (
 
 Street_Rec as (
     SELECT *
-    FROM "dataplatform-stg-liberator-raw-zone".liberator_permit_llpg
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_permit_llpg
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     AND address1 = 'STREET RECORD'),
 
@@ -178,7 +211,7 @@ Cycle_Hangar_Wait_List as (
     LEFT JOIN LLPG          as C ON B.uprn = cast(C.UPRN as varchar)
     LEFT JOIN Street_Rec    as D ON C.USRN = D.USRN
     /*LEFT JOIN Summary_Alloca_PartyID as E ON A.party_id = E.party_id AND R1 = 1*/
-    LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id  AND row_num = 1 
+    LEFT JOIN Cycle_Hangar_allocation as E ON A.party_id = E.party_id  AND row_num = 1
     WHERE row1= 1 AND E.party_id is NULL AND status_to not IN ('removed','rejected offer','offer accepted')),
 /************************************************************
 Waiting List CREATED
@@ -209,13 +242,13 @@ Wait_List_Hangar as (
     SELECT A.party_id, A.hanger_id,
     ROW_NUMBER() OVER ( PARTITION BY A.party_id, A.hanger_id
                                     ORDER BY A.party_id, A.hanger_id DESC) H2
-    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_waiting_list as A
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_hangar_waiting_list as A
     INNER JOIN Cycle_Hangar_Wait_List as B ON A.party_id = B.party_id AND A.hanger_id = B.hanger_id
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')),
 
 Wait_List_Earlist_Latest as (
     SELECT A.hanger_id, max(A.registration_date) as Max_Date, min(A.registration_date) as Min_Date
-    FROM "dataplatform-stg-liberator-raw-zone".liberator_hangar_waiting_list as A
+    FROM "dataplatform-prod-liberator-raw-zone".liberator_hangar_waiting_list as A
     INNER JOIN Cycle_Hangar_Wait_List as B ON A.party_id = B.party_id
     WHERE import_Date = format_datetime(current_date, 'yyyyMMdd')
     AND A.registration_date not

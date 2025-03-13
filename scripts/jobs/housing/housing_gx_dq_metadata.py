@@ -15,6 +15,8 @@ import scripts.jobs.housing.housing_contacts_reshape_gx_suite
 import scripts.jobs.housing.housing_assets_reshape_gx_suite
 import scripts.jobs.housing.housing_homeowner_record_sheet_gx_suite
 import scripts.jobs.housing.housing_dwellings_list_gx_suite
+import scripts.jobs.housing.housing_maproperty_gx_suite
+import scripts.jobs.housing.housing_matenancyagreement_gx_suite
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -73,7 +75,7 @@ def main():
         dataset=True,
         database=target_database,
         table=target_table,
-        mode="overwrite",
+        mode="overwrite_partitions",
         partition_cols=partition_keys,
         dtype=dtype_dict
     )
