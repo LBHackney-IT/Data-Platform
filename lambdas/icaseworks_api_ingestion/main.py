@@ -22,7 +22,7 @@ logger.setLevel(logging.INFO)
 
 def remove_illegal_characters(string):
     """Removes illegal characters from string"""
-    regex_list = [["=", ""], ["\/", "_"], ["+", "-"]]
+    regex_list = [["=", ""], ["\/", "_"], ["+", "-"]]  # noqa: W605
     for r in regex_list:
         string = re.sub(string=string, pattern="[{}]".format(r[0]), repl=r[1])
     return string
