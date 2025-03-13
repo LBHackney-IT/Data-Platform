@@ -1,14 +1,10 @@
-import sys
-
-
-sys.path.append("./lib/")
-
 import datetime
 import hashlib
 import hmac
 import json
 import logging
 import re
+import sys
 import time
 from os import getenv
 
@@ -17,6 +13,8 @@ import pybase64
 import requests
 from dotenv import load_dotenv
 
+
+sys.path.append("./lib/")
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
