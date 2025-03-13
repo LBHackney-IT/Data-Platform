@@ -7,4 +7,4 @@ install-requirements:
 
 	. venv/bin/activate && sudo pipenv requirements > requirements.txt
 	. venv/bin/activate && sudo pip install --target ./lib -r requirements.txt
-rm -rf venv/
+	rm -rf venv/
