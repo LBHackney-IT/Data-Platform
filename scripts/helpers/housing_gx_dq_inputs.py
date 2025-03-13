@@ -93,7 +93,7 @@ dq_dimensions_map = {
     'expect_tenure_code_values_to_be_in_set': 'CONSISTENCY',
     'expect_tenure_not_to_be_null': 'COMPLETENESS',
     'expect_tenure_type_column_values_to_be_in_set': 'CONSISTENCY',
-    'expect_tenure_values_to_be_in_set_housing_dwellings_list': 'CONSISTENCY',
+    'expect_tenure_values_to_be_in_set': 'CONSISTENCY',
     'expect_uprn_column_value_lengths_between': 'VALIDITY',
     'expect_uprn_column_values_to_match_regex': 'ACCURACY',
     'expect_uprn_column_values_to_not_be_null': 'COMPLETENESS',
