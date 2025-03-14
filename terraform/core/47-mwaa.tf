@@ -112,6 +112,24 @@ resource "aws_iam_role_policy" "mwaa_role_policy" {
   })
 }
 
+# To allow the MWAA execution role to assume the housing reporting role and export
+# MTFH tables to S3
+resource "aws_iam_role_policy" "mwaa_assume_role_policy" {
+  name = "mwaa_assume_role_policy"
+  role = aws_iam_role.mwaa_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "sts:AssumeRole",
+        Resource = "arn:aws:iam::282997303675:role/LBH_Reporting_Data_Sync_Role"
+      }
+    ]
+  })
+}
+
 
 # Security group for MWAA - self-referencing and allowing all traffic out
 # This is recommended in the doc, Matt recommended at current stage.
@@ -170,7 +188,7 @@ resource "aws_mwaa_environment" "mwaa" {
   count                = local.is_live_environment ? 1 : 0
   name                 = "${local.identifier_prefix}-mwaa-environment"
   airflow_version      = "2.10.3" # Latest MWAA on 2025-01-13, preinstall python 3.11
-  environment_class    = "mw1.medium"
+  environment_class    = local.is_production_environment ? "mw1.medium" : "mw1.small"
   execution_role_arn   = aws_iam_role.mwaa_role.arn
   source_bucket_arn    = aws_s3_bucket.mwaa_bucket.arn
   dag_s3_path          = "dags"
@@ -205,10 +223,10 @@ resource "aws_mwaa_environment" "mwaa" {
 
   # To view the Airflow UI, set this to PUBLIC_ONLY or create a mechanism to access the VPC endpoint
   # https://docs.aws.amazon.com/mwaa/latest/userguide/t-create-update-environment.html#t-network-failure
-  webserver_access_mode           = "PUBLIC_ONLY" # Default is PRIVATE_ONLY
-  max_workers                     = 10            # The default for mw1.medium is 10 for mw1.samll is 5
-  min_workers                     = 1             # Default 1
-  schedulers                      = 2             # Must be between 2 and 5
+  webserver_access_mode           = "PUBLIC_ONLY"                             # Default is PRIVATE_ONLY
+  max_workers                     = local.is_production_environment ? 20 : 10 # The default for mw1.medium is 10 for mw1.samll is 5
+  min_workers                     = 1                                         # Default 1
+  schedulers                      = 2                                         # Must be between 2 and 5
   kms_key                         = aws_kms_key.mwaa_key.arn
   tags                            = module.tags.values
   weekly_maintenance_window_start = "SUN:03:30"

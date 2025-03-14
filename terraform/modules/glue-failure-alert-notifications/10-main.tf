@@ -83,6 +83,9 @@ resource "aws_s3_object" "lambda" {
   source = data.archive_file.lambda.output_path
   etag   = filemd5(data.archive_file.lambda.output_path)
   acl    = "private"
+  metadata = {
+    last_updated = data.archive_file.lambda.output_base64sha256
+  }
 }
 
 resource "aws_lambda_function" "lambda" {

@@ -380,11 +380,11 @@ data "aws_iam_policy_document" "glue_access" {
     actions = [
       "glue:Batch*",
       "glue:CheckSchemaVersionValidity",
-      "glue:CreateDag",
       "glue:CreateDevEndpoint",
       "glue:CreateJob",
       "glue:CreateScript",
       "glue:CreateSession",
+      "glue:CreatePartition",
       "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
       "glue:DeleteTrigger",
@@ -403,7 +403,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:StopTrigger",
       "glue:StopWorkflowRun",
       "glue:TagResource",
-      "glue:UpdateDag",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
       "glue:UpdateTable",
@@ -933,8 +932,8 @@ data "aws_iam_policy_document" "department_ecs_passrole" {
       "iam:PassRole"
     ]
     resources = [
-      aws_iam_role.department_ecs_role.arn, # Defined in 50-aws-iam-roles.tf
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${replace(local.department_identifier, "-", "_")}-ecs-execution-role", # Defined in ecs repo.
+      aws_iam_role.department_ecs_role.arn,                                                                                 # Defined in 50-aws-iam-roles.tf
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.department_identifier}-ecs-execution-role", # Defined in ecs repo.
     ]
     condition {
       test     = "StringEquals"
@@ -980,3 +979,31 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
     actions = ["sts:AssumeRole"]
   }
 }
+
+// s3 access for mtfh data in landing zone
+data "aws_iam_policy_document" "mtfh_access" {
+  count = local.department_identifier == "data-and-insight" ? 1 : 0
+
+  statement {
+    sid    = "S3ReadMtfhDirectory"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket",
+    ]
+    resources = [
+      "${var.landing_zone_bucket.bucket_arn}/mtfh/*",
+      var.landing_zone_bucket.bucket_arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "mtfh_access_policy" {
+  count       = local.department_identifier == "data-and-insight" ? 1 : 0
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-mtfh-landing-access-policy")
+  description = "Allows data-and-insight department access  for ecs tasks to mtfh/ subdirectory in landing zone"
+  policy      = data.aws_iam_policy_document.mtfh_access[0].json
+}
+
+

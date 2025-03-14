@@ -85,6 +85,10 @@ locals {
     replace(module.department_unrestricted_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_unrestricted_data_source.raw_zone_catalog_database_name,
     replace(module.department_unrestricted_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_unrestricted_data_source.refined_zone_catalog_database_name,
     replace(module.department_unrestricted_data_source.trusted_zone_catalog_database_name, "-", "_") = module.department_unrestricted_data_source.trusted_zone_catalog_database_name
+
+    replace(module.department_children_family_services_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_children_family_services_data_source.raw_zone_catalog_database_name,
+    replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_children_family_services_data_source.refined_zone_catalog_database_name,
+    replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_") = module.department_children_family_services_data_source.trusted_zone_catalog_database_name
   }
 
   redshift_users = [
@@ -172,6 +176,11 @@ locals {
         replace(module.department_housing_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_children_family_services_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
       ], local.unrestricted_schemas)
     },
     {
@@ -236,6 +245,15 @@ locals {
         replace(module.department_housing_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_"),
+      ], local.unrestricted_schemas)
+    },
+     {
+      user_name  = module.department_children_family_services_data_source.identifier_snake_case
+      secret_arn = module.department_children_family_services_data_source.redshift_cluster_secret
+      schemas_to_grant_access_to = concat([
+        replace(module.department_children_family_services_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_"),
       ], local.unrestricted_schemas)
     }
   ]
@@ -331,7 +349,12 @@ locals {
 
         replace(module.department_housing_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.refined_zone_catalog_database_name, "-", "_"),
-        replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_")
+        replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(module.department_children_family_services_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_")
+
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name,
@@ -344,7 +367,8 @@ locals {
         "${module.department_benefits_and_housing_needs_data_source.identifier_snake_case}_ro",
         "${module.department_revenues_data_source.identifier_snake_case}_ro",
         "${module.department_environmental_services_data_source.identifier_snake_case}_ro",
-        "${module.department_housing_data_source.identifier_snake_case}_ro"
+        "${module.department_housing_data_source.identifier_snake_case}_ro",
+        "${module.department_children_family_services_data_source.identifier_snake_case}_ro"
       ]
     },
     {
@@ -419,6 +443,17 @@ locals {
         replace(module.department_housing_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_"),
+      ]
+      roles_to_inherit_permissions_from = [
+        local.unrestricted_data_role_name
+      ]
+    },
+    {
+      role_name = "${module.department_children_family_services_data_source.identifier_snake_case}_ro"
+      schemas_to_grant_access_to = [
+        replace(module.department_children_family_services_data_source.raw_zone_catalog_database_name, "-", "_"),
+        replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_"),
+        replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_"),
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name

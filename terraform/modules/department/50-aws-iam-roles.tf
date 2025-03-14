@@ -143,7 +143,7 @@ resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
 
 # Department ECS
 resource "aws_iam_role" "department_ecs_role" {
-  name               = lower("${var.identifier_prefix}-ecs-${replace(local.department_identifier, "-", "_")}")
+  name               = lower("${var.identifier_prefix}-${local.department_identifier}-ecs-task-role")
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_role_policy.json
   tags               = var.tags
 }
@@ -161,4 +161,10 @@ resource "aws_iam_role_policy_attachment" "glue_access_attachment_to_ecs_role" {
 resource "aws_iam_role_policy" "grant_s3_access_to_ecs_role" {
   role   = aws_iam_role.department_ecs_role.name
   policy = data.aws_iam_policy_document.s3_department_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "mtfh_access_attachment" {
+  count      = local.department_identifier == "data-and-insight" ? 1 : 0
+  role       = aws_iam_role.department_ecs_role.name
+  policy_arn = aws_iam_policy.mtfh_access_policy[0].arn
 }
