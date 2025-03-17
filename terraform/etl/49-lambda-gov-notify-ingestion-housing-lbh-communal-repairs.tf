@@ -78,7 +78,6 @@ resource "aws_cloudwatch_event_target" "govnotify_housing_lbh_communal_repairs_t
   rule       = aws_cloudwatch_event_rule.govnotify_housing_lbh_communal_repairs_trigger_event[0].name
   target_id  = "govnotify-housing-communal-repairs-event-target"
   arn        = module.gov-notify-ingestion-housing-communal-repairs[0].lambda_function_arn
-  tags       = module.tags.values
   input      = <<EOF
    {
     "table_names": ${jsonencode(local.govnotify_tables_housing_communal_repairs)}
