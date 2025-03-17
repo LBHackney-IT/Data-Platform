@@ -5,14 +5,13 @@ module "tags" {
   application          = var.application
   automation_build_url = var.automation_build_url
   confidentiality      = var.confidentiality
-  custom_tags          = merge(var.custom_tags, { TerraformWorkspace = terraform.workspace })
+  custom_tags          = merge(var.custom_tags, { TerraformWorkspace = terraform.workspace, TeamEmail = var.team_email })
   department           = var.department
   environment          = var.environment
   phase                = var.phase
   project              = var.project
   stack                = var.stack
   team                 = var.team
-  TeamEmail            = var.team_email
 }
 
 locals {
