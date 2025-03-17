@@ -12,6 +12,7 @@ module "tags" {
   project              = var.project
   stack                = var.stack
   team                 = var.team
+  TeamEmail            = var.team_email
 }
 
 locals {

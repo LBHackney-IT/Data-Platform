@@ -94,3 +94,9 @@ variable "production_firewall_ip" {
   type        = string
   default     = ""
 }
+
+variable "team_email" {
+  description = "Email address for the team responsible for the service."
+  type        = string
+  default     = "developers@hackney.gov.uk"
+}
