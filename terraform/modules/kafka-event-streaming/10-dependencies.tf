@@ -1,11 +1,12 @@
 module "kafka_dependency_storage" {
-  source            = "../s3-bucket"
-  tags              = var.tags
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = var.identifier_prefix
-  bucket_name       = "Kafka Dependency Storage"
-  bucket_identifier = "kafka-dependency-storage"
+  source                     = "../s3-bucket"
+  tags                       = var.tags
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = var.identifier_prefix
+  bucket_name                = "Kafka Dependency Storage"
+  bucket_identifier          = "kafka-dependency-storage"
+  include_backup_policy_tags = false
 }
 
 resource "aws_s3_object" "kafka_connector_s3" {

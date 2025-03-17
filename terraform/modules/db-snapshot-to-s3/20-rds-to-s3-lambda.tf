@@ -141,6 +141,10 @@ resource "aws_s3_object" "rds_snapshot_to_s3_lambda" {
   depends_on = [
     data.archive_file.rds_snapshot_to_s3_lambda
   ]
+  metadata = {
+    last_updated = data.archive_file.rds_snapshot_to_s3_lambda.output_sha256
+  }
+
 }
 
 resource "aws_lambda_function" "rds_snapshot_to_s3_lambda" {

@@ -70,14 +70,6 @@ resource "aws_s3_object" "copy_json_data_landing_to_raw" {
   source_hash = filemd5("../../scripts/jobs/copy_json_data_landing_to_raw.py")
 }
 
-resource "aws_s3_object" "vonage_landing_to_raw" {
-  bucket      = module.glue_scripts.bucket_id
-  key         = "scripts/vonage_landing_to_raw.py"
-  acl         = "private"
-  source      = "../../scripts/jobs/customer_services/vonage_landing_to_raw.py"
-  source_hash = filemd5("../../scripts/jobs/customer_services/vonage_landing_to_raw.py")
-}
-  
 resource "aws_s3_object" "hackney_bank_holiday" {
   bucket      = module.raw_zone.bucket_id
   key         = "unrestricted/util/hackney_bank_holiday.csv"
@@ -109,3 +101,4 @@ resource "aws_s3_object" "load_all_academy_data_into_redshift" {
   source      = "../../scripts/jobs/academy_data/load_all_academy_data_into_redshift.py"
   source_hash = filemd5("../../scripts/jobs/academy_data/load_all_academy_data_into_redshift.py")
 }
+

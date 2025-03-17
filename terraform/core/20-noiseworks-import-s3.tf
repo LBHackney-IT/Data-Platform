@@ -1,11 +1,12 @@
 module "noiseworks_data_storage" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Noiseworks Data Storage"
-  bucket_identifier = "noiseworks-data-storage"
+  source                     = "../modules/s3-bucket"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "Noiseworks Data Storage"
+  bucket_identifier          = "noiseworks-data-storage"
+  include_backup_policy_tags = false
 }
 
 # Noiseworks User
