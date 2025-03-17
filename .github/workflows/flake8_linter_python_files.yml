@@ -23,7 +23,7 @@ jobs:
 
       - name: Get Changed Files
         id: changed-files
-        uses: tj-actions/changed-files@fd9f32e836e6013a9c2a742b07d7d52bf03674c2
+        uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46.0.1
         with:
           files: |
             **.py
