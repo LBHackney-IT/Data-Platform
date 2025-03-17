@@ -19,14 +19,12 @@ resource "aws_iam_policy" "gov_notify_housing_communal_repairs_lambda_secret_acc
   count  = local.create_govnotify_resource_count
   name   = "gov_notify_housing_communal_repairs_lambda_secret_access"
   policy = data.aws_iam_policy_document.gov_notify_housing_communal_repairs_lambda_secret_access.json
-  tags   = module.tags.values
 }
 
 resource "aws_iam_role_policy_attachment" "gov_notify_housing_communal_repairs_lambda_secret_access" {
   count      = local.create_govnotify_resource_count
   role       = aws_iam_role.housing_gov_notify_ingestion[0].name
   policy_arn = aws_iam_policy.gov_notify_housing_communal_repairs_lambda_secret_access[0].arn
-  tags       = module.tags.values
 }
 
 module "gov-notify-ingestion-housing-communal-repairs" {
@@ -59,12 +57,12 @@ module "gov-notify-ingestion-housing-communal-repairs" {
 }
 
 resource "aws_cloudwatch_event_rule" "govnotify_housing_lbh_communal_repairs_trigger_event" {
-  count               = local.create_govnotify_resource_count
-  name                = "${local.short_identifier_prefix}govnotify_housing_lbh_communal_repairs_trigger_event"
-  description         = "Trigger event for Housing LBH Communal Repairs GovNotify API ingestion"
+  count       = local.create_govnotify_resource_count
+  name        = "${local.short_identifier_prefix}govnotify_housing_lbh_communal_repairs_trigger_event"
+  description = "Trigger event for Housing LBH Communal Repairs GovNotify API ingestion"
+  tags        = module.tags.values
   schedule_expression = "cron(0 0 * * ? *)"
   is_enabled          = local.is_production_environment ? true : false
-  tags                = module.tags.values
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify_housing_lbh_communal_repairs" {
@@ -73,7 +71,6 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify_housing_lbh
   function_name = module.gov-notify-ingestion-housing-communal-repairs[0].lambda_function_arn
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.govnotify_housing_lbh_communal_repairs_trigger_event[0].arn
-  tags          = module.tags.values
 }
 
 resource "aws_cloudwatch_event_target" "govnotify_housing_lbh_communal_repairs_trigger_event_target" {
