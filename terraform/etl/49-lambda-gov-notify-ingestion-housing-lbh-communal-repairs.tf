@@ -19,12 +19,14 @@ resource "aws_iam_policy" "gov_notify_housing_communal_repairs_lambda_secret_acc
   count  = local.create_govnotify_resource_count
   name   = "gov_notify_housing_communal_repairs_lambda_secret_access"
   policy = data.aws_iam_policy_document.gov_notify_housing_communal_repairs_lambda_secret_access.json
+  tags   = module.tags.values
 }
 
 resource "aws_iam_role_policy_attachment" "gov_notify_housing_communal_repairs_lambda_secret_access" {
   count      = local.create_govnotify_resource_count
   role       = aws_iam_role.housing_gov_notify_ingestion[0].name
   policy_arn = aws_iam_policy.gov_notify_housing_communal_repairs_lambda_secret_access[0].arn
+  tags       = module.tags.values
 }
 
 module "gov-notify-ingestion-housing-communal-repairs" {
@@ -71,6 +73,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify_housing_lbh
   function_name = module.gov-notify-ingestion-housing-communal-repairs[0].lambda_function_arn
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.govnotify_housing_lbh_communal_repairs_trigger_event[0].arn
+  tags          = module.tags.values
 }
 
 resource "aws_cloudwatch_event_target" "govnotify_housing_lbh_communal_repairs_trigger_event_target" {
@@ -78,6 +81,7 @@ resource "aws_cloudwatch_event_target" "govnotify_housing_lbh_communal_repairs_t
   rule       = aws_cloudwatch_event_rule.govnotify_housing_lbh_communal_repairs_trigger_event[0].name
   target_id  = "govnotify-housing-communal-repairs-event-target"
   arn        = module.gov-notify-ingestion-housing-communal-repairs[0].lambda_function_arn
+  tags       = module.tags.values
   input      = <<EOF
    {
     "table_names": ${jsonencode(local.govnotify_tables_housing_communal_repairs)}
@@ -124,7 +128,7 @@ resource "aws_glue_crawler" "govnotify_housing_lbh_communal_repairs_raw_zone" {
   configuration = jsonencode({
     Version  = 1.0
     Grouping = {
-      TableLevelConfiguration = 4
+      TableLevelConfiguration = 5
     }
   })
 }
