@@ -32,4 +32,5 @@ module "housing_register_to_refined_and_trusted" {
   }
   script_name          = "housing_register_to_refined_and_trusted"
   triggered_by_crawler = data.aws_ssm_parameter.copy_mtfh_reshape_to_refined_crawler_for_HR.value
+  tags                 = module.tags.values
 }
