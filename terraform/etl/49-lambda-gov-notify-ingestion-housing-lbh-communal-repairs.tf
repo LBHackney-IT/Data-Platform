@@ -57,12 +57,12 @@ module "gov-notify-ingestion-housing-communal-repairs" {
 }
 
 resource "aws_cloudwatch_event_rule" "govnotify_housing_lbh_communal_repairs_trigger_event" {
-  count               = local.create_govnotify_resource_count
-  name                = "${local.short_identifier_prefix}govnotify_housing_lbh_communal_repairs_trigger_event"
-  description         = "Trigger event for Housing LBH Communal Repairs GovNotify API ingestion"
+  count       = local.create_govnotify_resource_count
+  name        = "${local.short_identifier_prefix}govnotify_housing_lbh_communal_repairs_trigger_event"
+  description = "Trigger event for Housing LBH Communal Repairs GovNotify API ingestion"
+  tags        = module.tags.values
   schedule_expression = "cron(0 0 * * ? *)"
   is_enabled          = local.is_production_environment ? true : false
-  tags                = module.tags.values
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify_housing_lbh_communal_repairs" {
@@ -124,7 +124,7 @@ resource "aws_glue_crawler" "govnotify_housing_lbh_communal_repairs_raw_zone" {
   configuration = jsonencode({
     Version  = 1.0
     Grouping = {
-      TableLevelConfiguration = 4
+      TableLevelConfiguration = 5
     }
   })
 }
