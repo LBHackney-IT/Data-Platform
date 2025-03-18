@@ -51,9 +51,10 @@ locals {
 
 # Create the KMS key with the custom key policy
 resource "aws_kms_key" "mwaa_key" {
-  description = "KMS key for MWAA"
-  policy      = local.custom_key_policy
-  tags        = module.tags.values
+  description         = "KMS key for MWAA"
+  policy              = local.custom_key_policy
+  enable_key_rotation = true
+  tags                = module.tags.values
 }
 
 # Create an alias for the KMS key for better readability in the console
