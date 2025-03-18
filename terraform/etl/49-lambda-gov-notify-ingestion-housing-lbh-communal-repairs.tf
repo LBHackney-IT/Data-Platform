@@ -96,7 +96,7 @@ resource "aws_glue_crawler" "govnotify_housing_lbh_communal_repairs_landing_zone
   name          = "${local.short_identifier_prefix}GovNotify Housing LBH Communal Repairs Landing Zone ${each.value}"
   role          = data.aws_iam_role.glue_role.arn
   tags          = module.tags.values
-  table_prefix  = "housing_lbh_communal_repairs_${each.value}"
+  table_prefix  = "housing_lbh_communal_repairs_${each.value}_"
 
   s3_target {
     path = "s3://${module.landing_zone_data_source.bucket_id}/housing/govnotify/lbh_communal_repairs/${each.value}/"
