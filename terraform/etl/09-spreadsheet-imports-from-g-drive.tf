@@ -1006,3 +1006,213 @@ module "interim_cycle_wait_list" {
     }
   }
 }
+module "parking_ringgo_fuel_type_monthly" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1qwC8mv1y_8-7vSwqnG6uf4qpLRkjTsN5"
+  glue_job_name                  = "parking_ringgo_fuel_type_monthly"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "parking_ringgo_fuel_type_monthly/parking_ringgo_fuel_type_monthly_Feb_2025.csv"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
+  enable_bookmarking             = true
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "parking_ringgo_fuel_type_monthly"
+    }
+  }
+}
+module "parking_visitor_voucher_monthly_review" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1M5UJWtjMdMd64eZk9R3hyLsNF55rm070"
+  glue_job_name                  = "parking_visitor_voucher_monthly_review"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "parking_visitor_voucher_monthly_review/Parking_Visitor_Voucher_Monthly_Review_feb_2025.csv"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
+  enable_bookmarking             = true
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "parking_visitor_voucher_monthly_review"
+    }
+  }
+}
+module "parking_trends_co2_emissions_monthly" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1dZUbXFICLWcB0kCwapWQ2tdkBABi-d_6"
+  glue_job_name                  = "parking_trends_co2_emissions_monthly"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "parking_trends_co2_emissions_monthly/Parking_Trends_CO2_emissions_Monthly_feb_2025.csv"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
+  enable_bookmarking             = true
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "parking_trends_co2_emissions_monthly"
+    }
+  }
+}
+module "parking_permit_diesel_trends_as_of_1st_of_month" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1vJdBc1T1rJwpQiEseTprA3ZMzr_F6Iv2"
+  glue_job_name                  = "parking_permit_diesel_trends_as_of_1st_of_month"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "parking_permit_diesel_trends_as_of_1st_of_month/Parking_Permit_diesel_Trends_as_of_1st_of_month_jan_2025.csv"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
+  enable_bookmarking             = true
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "parking_permit_diesel_trends_as_of_1st_of_month"
+    }
+  }
+}
+module "parking_permit_co2_gt_150_by_month" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1L-ej8TMxbPbirbGEqVihHEGvVk2N2yST"
+  glue_job_name                  = "parking_permit_co2_gt_150_by_month"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "parking_permit_co2_gt_150_by_month/Parking_Permit_Co2_GT_150_By_Month_jan_2025.csv"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
+  enable_bookmarking             = true
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "parking_permit_co2_gt_150_by_month"
+    }
+  }
+}
+module "parking_permit_by_emmission_band" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_parking_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_parking_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "15Ig8vMHIOwbEWW3x3iH8N26S27JtR2nc"
+  glue_job_name                  = "parking_permit_by_emmission_band"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "parking_permit_by_emmission_band/Parking_Permit_by_emmission_band_jan_2025.csv"
+  ingestion_schedule             = "cron(0 21 * * ? *)"
+  enable_bookmarking             = true
+  worksheets = {
+    sheet1 : {
+      header_row_number = 0
+      worksheet_name    = "parking_permit_by_emmission_band"
+    }
+  }
+}
