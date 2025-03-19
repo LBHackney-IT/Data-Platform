@@ -1034,6 +1034,7 @@ module "parking_ringgo_fuel_type_monthly" {
   input_file_name                = "parking_ringgo_fuel_type_monthly/parking_ringgo_fuel_type_monthly_Feb_2025.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
+  tags                           = module.tags.values
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1069,6 +1070,7 @@ module "parking_visitor_voucher_monthly_review" {
   input_file_name                = "parking_visitor_voucher_monthly_review/Parking_Visitor_Voucher_Monthly_Review_feb_2025.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
+  tags                           = module.tags.values
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1104,6 +1106,7 @@ module "parking_trends_co2_emissions_monthly" {
   input_file_name                = "parking_trends_co2_emissions_monthly/Parking_Trends_CO2_emissions_Monthly_feb_2025.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
+  tags                           = module.tags.values
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1139,6 +1142,7 @@ module "parking_permit_diesel_trends_as_of_1st_of_month" {
   input_file_name                = "parking_permit_diesel_trends_as_of_1st_of_month/Parking_Permit_diesel_Trends_as_of_1st_of_month_jan_2025.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
+  tags                           = module.tags.values
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1174,6 +1178,7 @@ module "parking_permit_co2_gt_150_by_month" {
   input_file_name                = "parking_permit_co2_gt_150_by_month/Parking_Permit_Co2_GT_150_By_Month_jan_2025.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
+  tags                           = module.tags.values
   worksheets = {
     sheet1 : {
       header_row_number = 0
@@ -1209,6 +1214,7 @@ module "parking_permit_by_emmission_band" {
   input_file_name                = "parking_permit_by_emmission_band/Parking_Permit_by_emmission_band_jan_2025.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
+  tags                           = module.tags.values
   worksheets = {
     sheet1 : {
       header_row_number = 0
