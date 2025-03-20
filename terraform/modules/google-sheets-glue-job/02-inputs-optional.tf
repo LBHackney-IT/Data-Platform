@@ -43,3 +43,9 @@ variable "max_retries" {
     error_message = "Maximum number of retries must be between 0 and 3."
   }
 }
+
+variable "tags" {
+  description = "AWS tags"
+  type        = map(string)
+  default     = null
+}
