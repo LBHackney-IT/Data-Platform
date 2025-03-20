@@ -29,4 +29,5 @@ module "google_sheet_import" {
 resource "aws_glue_workflow" "workflow" {
   count = var.create_workflow ? 1 : 0
   name  = "${var.identifier_prefix}${local.import_name}"
+  tags  = var.tags
 }
