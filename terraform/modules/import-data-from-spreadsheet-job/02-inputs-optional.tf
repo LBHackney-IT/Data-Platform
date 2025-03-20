@@ -15,3 +15,9 @@ variable "enable_bookmarking" {
   type        = bool
   default     = false
 }
+
+variable "tags" {
+  description = "AWS tags"
+  type        = map(string)
+  default     = null
+}
