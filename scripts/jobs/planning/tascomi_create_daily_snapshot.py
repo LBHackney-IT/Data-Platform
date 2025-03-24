@@ -357,5 +357,6 @@ if __name__ == "__main__":
     finally:
         if len(dq_errors) > 0:
             logger.error(f"DQ Errors: {dq_errors}")
+            raise Exception(f"Data quality check failed: {'; '.join(dq_errors)}")
         spark.sparkContext._gateway.close()
         spark.stop()
