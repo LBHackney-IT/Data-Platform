@@ -46,7 +46,7 @@ resource "aws_glue_crawler" "allocations_refined_tables" {
 
 }
 
-resource "aws_glue_crawler" "mosaic_raw_zone" {
+resource "aws_glue_crawler" "synergy_raw_zone" {
   count         = local.is_live_environment ? 1 : 0
   name          = "${local.short_identifier_prefix}${module.department_children_family_services_data_source.identifier}-synergy-raw-zone"
   role          = module.department_children_family_services_data_source.glue_role_arn
