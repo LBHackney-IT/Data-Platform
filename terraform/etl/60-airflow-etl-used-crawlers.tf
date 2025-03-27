@@ -20,7 +20,7 @@ resource "aws_glue_crawler" "mosaic_raw_zone" {
       Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
     }
   })
-
+  tags = module.tags.values
 }
 
 resource "aws_glue_crawler" "allocations_refined_tables" {
@@ -43,7 +43,7 @@ resource "aws_glue_crawler" "allocations_refined_tables" {
       Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
     }
   })
-
+  tags = module.tags.values
 }
 
 resource "aws_glue_crawler" "synergy_raw_zone" {
@@ -66,7 +66,7 @@ resource "aws_glue_crawler" "synergy_raw_zone" {
       Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
     }
   })
-
+  tags = module.tags.values
 }
 
 resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
@@ -89,6 +89,7 @@ resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
       Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
     }
   })
+  tags = module.tags.values
 }
 
 resource "aws_glue_crawler" "parking_spatially_enriched_refined_zone" {
@@ -111,6 +112,7 @@ resource "aws_glue_crawler" "parking_spatially_enriched_refined_zone" {
       Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
     }
   })
+  tags = module.tags.values
 }
 
 locals {
@@ -147,4 +149,5 @@ resource "aws_glue_crawler" "google_sheet_ingestion_raw_zone" {
       Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
     }
   })
+  tags = module.tags.values
 }
