@@ -136,8 +136,6 @@ resource "aws_glue_crawler" "google_sheet_ingestion_raw_zone" {
     path = "s3://${module.raw_zone_data_source.bucket_id}/${each.value.identifier}/google-sheets/"
   }
 
-  table_prefix = "${each.value.identifier_snake_case}_"
-
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
