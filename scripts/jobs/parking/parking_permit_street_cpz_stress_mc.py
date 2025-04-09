@@ -24,6 +24,7 @@ query_on_athena = """
  11/02/2025 - add totals for following permit types 
      permit_type, All Zone, Doctor, Dispensation, Health and Social Care
      Leisure centre permit, Community Support Permit
+01/04/2025 - add check for is_motorcycle is NULL
  *********************************************************************************/
 With parking_permit_denormalised_data as (
     SELECT *
@@ -155,8 +156,14 @@ Parkmap_Summary as (
         street_name
 ),
 /*** get the VRM details to obtain the m/c flag ***/
+/*** 01-04-2025 - tidy the code ***/ 
 MC_Permit_Flag as (
-    SELECT *
+     SELECT permit_reference, vrm, make, model, fuel, engine_capactiy, co2_emission, colour, 
+            foreign, door_plan, lpg_conversion, 
+            CASE 
+                When length(ltrim(rtrim(is_motorcycle))) = 0 Then 'N'
+                ELSE ltrim(rtrim(is_motorcycle))
+            END as is_motorcycle
     from "dataplatform-prod-liberator-raw-zone".liberator_permit_vrm_480
     WHERE import_date = format_datetime(current_date, 'yyyyMMdd')
 ),
@@ -193,14 +200,14 @@ Permits as (
         AND Permit_type not IN ('Suspension')
         AND latest_permit_status not IN ('Cancelled', 'Rejected', 'RENEW_REJECTED')
 ),
+ /*** 01-04-2025 - add check for is_motorcycle is NULL ***/
 Permits_summ as (
     SELECT permit_type,
         cpz,
         address2 as Street,
         cast(count(*) as int) as CurrentPermitTotal
     FROM Permits
-    WHERE r1 = 1
-        AND is_motorcycle != 'Y'
+    WHERE r1 = 1 AND is_motorcycle is NULL OR rtrim(ltrim(is_motorcycle)) = 'N'
     GROUP BY permit_type,
         cpz,
         address2

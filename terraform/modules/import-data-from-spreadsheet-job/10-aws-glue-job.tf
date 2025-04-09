@@ -29,11 +29,12 @@ module "spreadsheet_import" {
         TableLevelConfiguration = 3
       }
     })
-    table_prefix      = null
+    table_prefix = null
   }
   trigger_enabled = false
 }
 
 resource "aws_glue_workflow" "workflow" {
   name = "${var.identifier_prefix}${local.import_name}-${var.output_folder_name}"
+  tags = var.tags
 }
