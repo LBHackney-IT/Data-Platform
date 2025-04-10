@@ -40,6 +40,7 @@ module "gov-notify-ingestion-housing-communal-repairs" {
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_housing_lbh_communal_repairs"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_housing_lbh_communal_repairs.zip"
   runtime                        = "python3.9"
+  lambda_memory_size             = 512
   environment_variables          = {
 
     API_SECRET_NAME          = "housing-lbh-communal-repairs/gov-notify_live_api_key"
@@ -57,10 +58,10 @@ module "gov-notify-ingestion-housing-communal-repairs" {
 }
 
 resource "aws_cloudwatch_event_rule" "govnotify_housing_lbh_communal_repairs_trigger_event" {
-  count       = local.create_govnotify_resource_count
-  name        = "${local.short_identifier_prefix}govnotify_housing_lbh_communal_repairs_trigger_event"
-  description = "Trigger event for Housing LBH Communal Repairs GovNotify API ingestion"
-  tags        = module.tags.values
+  count               = local.create_govnotify_resource_count
+  name                = "${local.short_identifier_prefix}govnotify_housing_lbh_communal_repairs_trigger_event"
+  description         = "Trigger event for Housing LBH Communal Repairs GovNotify API ingestion"
+  tags                = module.tags.values
   schedule_expression = "cron(0 0 * * ? *)"
   is_enabled          = local.is_production_environment ? true : false
 }
