@@ -212,7 +212,7 @@ if __name__ == "__main__":
             # snapshot table in glue catalogue
             else:
                 pushDownPredicate = create_pushdown_predicate(
-                    partitionDateColumn="snapshot_date", daysBuffer=30
+                    partitionDateColumn="snapshot_date", daysBuffer=60
                 )
                 #   load latest snpashot
                 snapshot_ddf = glueContext.create_dynamic_frame.from_catalog(
