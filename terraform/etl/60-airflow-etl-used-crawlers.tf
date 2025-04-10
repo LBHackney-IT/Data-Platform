@@ -133,7 +133,7 @@ resource "aws_glue_crawler" "google_sheet_ingestion_raw_zone" {
   database_name = each.value.raw_zone_catalog_database_name
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/${each.value.identifier}/google-sheets/"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${each.value.identifier}/google-sheet/"
   }
 
   configuration = jsonencode({
