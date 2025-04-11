@@ -389,6 +389,7 @@ if __name__ == "__main__":
     finally:
         if len(dq_errors) > 0:
             logger.error(f"Errors: {dq_errors}")
-            raise Exception(f"Job Failed: {'; '.join(dq_errors)}")
+            spark.stop()
+            raise SystemExit(f"Failed: {'; '.join(dq_errors)}")
         spark.sparkContext._gateway.close()
         spark.stop()
