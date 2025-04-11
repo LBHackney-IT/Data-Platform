@@ -62,7 +62,7 @@ def deduplicate_by_id_and_last_updated(df):
     return deduplicated_df
 
 
-def prepare_increments(increment_df):
+def prepare_increments(increment_df, logger):
     # In case there are several days worth of increments: only keep the latest version of a record
     id_partition = Window.partitionBy("id")
     # preparation step: create a temporary column to replace NULL last_updated values with 01/01/2020
@@ -233,7 +233,7 @@ if __name__ == "__main__":
                     )
                     continue
                 # create first snapshot
-                increment_df = prepare_increments(increment_df)
+                increment_df = prepare_increments(increment_df, logger)
                 snapshot_df = increment_df
 
             # snapshot table in glue catalogue
@@ -274,7 +274,7 @@ if __name__ == "__main__":
                             )
                     else:
                         # prepare COU
-                        increment_df = prepare_increments(increment_df)
+                        increment_df = prepare_increments(increment_df, logger)
                         increment_df = add_snapshot_date_columns(increment_df)
                         # apply COU
                         logger.info(f"Applying increment {increment_table_name}")
