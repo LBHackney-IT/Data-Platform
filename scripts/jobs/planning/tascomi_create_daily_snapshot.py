@@ -89,7 +89,7 @@ def prepare_increments(increment_df):
 
     # Check for residual duplicates - print and further de-duplicate
     duplicate_ids = increment_df.groupBy("id").count().filter("count > 1")
-    if duplicate_ids.count() > 0:
+    if duplicate_ids.limit(1).count() > 0:
         duplicate_ids.join(increment_df, "id").show(truncate=False)
         increment_df = deduplicate_by_id_and_last_updated(increment_df)
     else:
@@ -368,7 +368,7 @@ if __name__ == "__main__":
                 verificationSuite.saveOrAppendResult(resultKey).run()
 
                 # if data quality tests succeed, write to S3
-
+                snapshot_df = snapshot_df.coalesce(300)
                 resultDataFrame = DynamicFrame.fromDF(
                     snapshot_df, glueContext, "resultDataFrame"
                 )
