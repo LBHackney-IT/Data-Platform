@@ -59,9 +59,12 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 }
 
 module "liberator_rds_snapshot_to_s3" {
-  count                          = local.is_live_environment ? 1 : 0
-  source                         = "../modules/rds-snapshot-to-s3"
-  tags                           = module.tags.values
+  count  = local.is_live_environment ? 1 : 0
+  source = "../modules/rds-snapshot-to-s3"
+  tags = {
+    for key, value in module.tags.values :
+    key => value if key != "BackupPolicy"
+  }
   identifier_prefix              = local.identifier_prefix
   project                        = var.project
   environment                    = var.environment

@@ -1,8 +1,11 @@
 module "qlik_server" {
   count = local.is_live_environment ? 1 : 0
 
-  source                    = "../modules/qlik-sense-server"
-  tags                      = module.tags.values
+  source = "../modules/qlik-sense-server"
+  tags = {
+    for key, value in module.tags.values :
+    key => value if key != "BackupPolicy"
+  }
   vpc_id                    = data.aws_vpc.network.id
   vpc_subnet_ids            = local.subnet_ids_list
   instance_type             = var.qlik_server_instance_type
