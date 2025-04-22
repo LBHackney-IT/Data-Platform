@@ -392,7 +392,30 @@ module "parking_foreign_vrm_pcns" {
   }
 }
 
-# Migrated job "parking_correspondence_performance_records_with_pcn" to dap-airflow om 14/04/2025
+
+module "parking_correspondence_performance_records_with_pcn" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn"
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_correspondence_performance_records_with_pcn"
+  triggered_by_job               = module.parking_pcn_denormalisation.job_name
+  job_description                = "correspondence performance records with pcn"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
+  }
+}
 
 module "parking_disputes_kpi_gds_summary" {
   source                         = "../modules/aws-glue-job"
@@ -483,8 +506,30 @@ module "Parking_Permit_Diesel_Trends_Bought_in_Month" {
     "--environment"         = var.environment
   }
 }
+module "parking_correspondence_performance_records_with_pcn_gds" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn_gds"
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_correspondence_performance_records_with_pcn_gds"
+  triggered_by_job               = module.parking_pcn_denormalisation.job_name
+  job_description                = "parking_correspondence_performance_records_with_pcn with no timestamp for GDS"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
+  }
+}
 
-# Migrated job "parking_correspondence_performance_records_with_pcn_gds" to dap-airflow om 14/04/2025
 
 module "parking_foi_pcn_gds_daily_summary_records" {
   source                         = "../modules/aws-glue-job"
@@ -589,9 +634,53 @@ module "parking_permit_street_stress_with_cpz" {
     "--environment"         = var.environment
   }
 }
+module "parking_correspondence_performance_records_with_pcn_downtime" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn_downtime"
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_correspondence_performance_records_with_pcn_downtime"
+  triggered_by_job               = module.parking_pcn_denormalisation.job_name
+  job_description                = "correspondence performance records with pcn FOI records Team details and Downtime data"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
+  }
+}
 
-# Migrated job "parking_correspondence_performance_records_with_pcn_downtime" to dap-airflow om 14/04/2025
-# Migrated job "parking_correspondence_performance_records_with_pcn_downtime_gds" to dap-airflow om 14/04/2025
+module "parking_correspondence_performance_records_with_pcn_downtime_gds" {
+  source                         = "../modules/aws-glue-job"
+  is_live_environment            = local.is_live_environment
+  is_production_environment      = local.is_production_environment
+  department                     = module.department_parking_data_source
+  job_name                       = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn_downtime_gds"
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  script_name                    = "parking_correspondence_performance_records_with_pcn_downtime_gds"
+  triggered_by_job               = module.parking_pcn_denormalisation.job_name
+  job_description                = "correspondence performance records with pcn FOI records Team details and Downtime data for Google Studio - gds"
+  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
+  trigger_enabled                = local.is_production_environment
+  number_of_workers_for_glue_job = 10
+  glue_job_worker_type           = "G.1X"
+  glue_version                   = "4.0"
+  job_parameters = {
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--environment"         = var.environment
+    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
+  }
+}
 
 module "parking_open_pcns_vrms_linked_cancelled_ringer" {
   source                         = "../modules/aws-glue-job"
