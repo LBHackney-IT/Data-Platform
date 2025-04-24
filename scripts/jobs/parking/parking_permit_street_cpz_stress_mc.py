@@ -280,7 +280,7 @@ Output as (
         AND lower(A.Street) = lower(C.Street)
         AND C.permit_type = 'Estate Resident'
         LEFT JOIN Permits_summ as D ON A.cpz = D.cpz
-        AND lower(A.Street) = lower(C.Street)
+        AND lower(A.Street) = lower(D.Street)
         AND D.permit_type = 'Business'
         LEFT JOIN Permits_summ as E ON A.cpz = E.cpz
         AND lower(A.Street) = lower(E.Street)
