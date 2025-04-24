@@ -50,7 +50,7 @@ resource "aws_glue_crawler" "hackney_synergy_live" {
   count         = local.is_live_environment ? 1 : 0
   name          = "hackney_synergy_live_crawler"
   role          = module.department_children_family_services_data_source.glue_role_arn
-  database_name = aws_glue_catalog_database.hackney_synergy_live
+  database_name = aws_glue_catalog_database.hackney_synergy_live.name
 
   s3_target {
     path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_children_family_services_data_source.identifier}/synergy/Hackney_Synergy_Live"
@@ -74,7 +74,7 @@ resource "aws_glue_crawler" "hackney_casemanagement_live" {
   count         = local.is_live_environment ? 1 : 0
   name          = "hackney_casemanagement_live_crawler"
   role          = module.department_children_family_services_data_source.glue_role_arn
-  database_name = aws_glue_catalog_database.hackney_casemanagement_live
+  database_name = aws_glue_catalog_database.hackney_casemanagement_live.name
 
   s3_target {
     path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_children_family_services_data_source.identifier}/synergy/Hackney_CaseManagement_Live"
