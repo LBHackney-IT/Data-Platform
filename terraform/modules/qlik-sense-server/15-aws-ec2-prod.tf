@@ -1,12 +1,12 @@
 locals {
   backup_ami_id_prod = "ami-0a9bac68a32217ec9"
   ec2_tags_prod = {
-    Application = "Qlik"
+    Application  = "Qlik"
     BackupPolicy = title(var.environment)
     Name         = "${var.identifier_prefix}-qlik-sense-restore"
   }
   ec2_tags_prod_restore = {
-    Application = "Qlik"
+    Application  = "Qlik"
     BackupPolicy = title(var.environment)
     Name         = "${var.identifier_prefix}-qlik-sense-restore-2"
   }
@@ -44,9 +44,14 @@ resource "aws_instance" "qlik_sense_prod_instance" {
     encrypted             = true
     delete_on_termination = false
     kms_key_id            = aws_kms_key.key.arn
-    tags                  = merge(var.tags, local.ec2_tags_prod)
-    volume_size           = 1000
-    volume_type           = "gp3"
+    # BackupPolicy tags will be automatically removed from volumes by cloud custodian
+    # https://github.com/LBHackney-IT/ce-cloud-custodian/blob/be250a45b282b9bd3771cc0990a8a8e00c669888/custodian/policies/prod-ou/remove-tag-from-ebs-volumes.yaml
+    tags = {
+      for key, value in merge(var.tags, local.ec2_tags_prod) :
+      key => value if key != "BackupPolicy"
+    }
+    volume_size = 1000
+    volume_type = "gp3"
   }
 
   lifecycle {
