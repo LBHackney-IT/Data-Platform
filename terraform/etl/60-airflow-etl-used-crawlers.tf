@@ -46,14 +46,38 @@ resource "aws_glue_crawler" "allocations_refined_tables" {
   tags = module.tags.values
 }
 
-resource "aws_glue_crawler" "synergy_raw_zone" {
+resource "aws_glue_crawler" "hackney_synergy_live" {
   count         = local.is_live_environment ? 1 : 0
-  name          = "${local.short_identifier_prefix}${module.department_children_family_services_data_source.identifier}-synergy-raw-zone"
+  name          = "hackney_synergy_live_crawler"
   role          = module.department_children_family_services_data_source.glue_role_arn
-  database_name = module.department_children_family_services_data_source.raw_zone_catalog_database_name
+  database_name = aws_glue_catalog_database.hackney_synergy_live.name
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_children_family_services_data_source.identifier}/synergy/"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_children_family_services_data_source.identifier}/synergy/Hackney_Synergy_Live"
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+  tags = module.tags.values
+}
+
+
+resource "aws_glue_crawler" "hackney_casemanagement_live" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "hackney_casemanagement_live_crawler"
+  role          = module.department_children_family_services_data_source.glue_role_arn
+  database_name = aws_glue_catalog_database.hackney_casemanagement_live.name
+
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_children_family_services_data_source.identifier}/synergy/Hackney_CaseManagement_Live"
   }
 
   configuration = jsonencode({
