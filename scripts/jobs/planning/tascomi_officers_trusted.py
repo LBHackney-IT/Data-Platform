@@ -5,10 +5,9 @@ import pyspark.sql.functions as F
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
-from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from pyspark.sql.functions import *
+from pyspark.sql.functions import col, concat, lit, max, trim
 
 from scripts.helpers.helpers import create_pushdown_predicate, get_glue_env_var
 
@@ -20,10 +19,7 @@ def get_latest_snapshot(df):
 
 
 # Creates a function that removes any columns that are entirely null values - useful for large tables
-
-
 def drop_null_columns(df):
-
     _df_length = df.count()
     null_counts = (
         df.select([F.count(F.when(F.col(c).isNull(), c)).alias(c) for c in df.columns])
@@ -166,12 +162,12 @@ if __name__ == "__main__":
     df2 = df2.join(df3, df2.user_team_id == df3.team_id, "left")
     df = df.join(df2, df.officer_id == df2.user_id, "left")
     df = df.drop("team_id", "user_id")
-    ## Data Processing Ends
+    # Data Processing Ends
     # Convert data frame to dynamic frame
     dynamic_frame = DynamicFrame.fromDF(df, glueContext, "target_data_to_write")
 
     # wipe out the target folder in the trusted zone
-    logger.info(f"clearing target bucket")
+    logger.info("clearing target bucket")
     clear_target_folder(s3_bucket_target)
 
     # Write the data to S3
