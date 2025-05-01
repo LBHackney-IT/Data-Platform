@@ -53,8 +53,7 @@ AmazonS3_node1681807784480 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="parking_permit_denormalised_data",
     transformation_ctx="AmazonS3_node1681807784480",
-    # teporarily removed while table partitions are fixed
-    # push_down_predicate=create_pushdown_predicate("import_date", 7),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node SQL

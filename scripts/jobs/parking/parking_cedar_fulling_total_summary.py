@@ -9,6 +9,7 @@ from pyspark.context import SparkContext
 
 from scripts.helpers.helpers import create_pushdown_predicate, get_glue_env_var
 
+
 environment = get_glue_env_var("environment")
 
 
@@ -31,8 +32,7 @@ AmazonS3_node1625732038443 = glueContext.create_dynamic_frame.from_catalog(
     database="dataplatform-" + environment + "-liberator-refined-zone",
     table_name="parking_cedar_payments",
     transformation_ctx="AmazonS3_node1625732038443",
-    # teporarily removed while table partitions are fixed
-    # push_down_predicate=create_pushdown_predicate("import_date", 7),
+    push_down_predicate=create_pushdown_predicate("import_date", 7),
 )
 
 # Script generated for node Amazon S3
