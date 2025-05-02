@@ -108,3 +108,10 @@ variable "team_email" {
   type        = string
   default     = "data.insight@hackney.gov.uk"
 }
+
+variable "academy_data_source_arn" {
+  description = "ARN of the academy data source"
+  type        = string
+  default     = ""
+}
+

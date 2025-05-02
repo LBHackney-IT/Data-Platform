@@ -19,3 +19,4 @@ emails_to_notify_with_budget_alerts = ["saml-aws-data-platform-admins@hackney.go
 datahub_url                         = "https://datahub.hackney.gov.uk"
 rentsense_target_path               = "hackneylondonborough/rent/"
 rentsense_ft_target_path            = "hackneylondonborough/fta/"
+academy_data_source_arn             = "arn:aws:iam::704265464895:role/academy-app-prod"
