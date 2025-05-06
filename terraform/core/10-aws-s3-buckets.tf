@@ -292,6 +292,46 @@ locals {
       "arn:aws:s3:::dataplatform-prod-landing-zone/mtfh/*"
     ]
   }
+
+
+  allow_access_from_academy_account = {
+    sid = "Allow access from academy account"
+    effect = "Allow"
+    principals = {
+      type = "AWS"
+      identifiers = [var.academy_data_source_arn]
+    }
+    actions = [
+      "s3:PutObject",
+      "s3:ListBucket",
+    ]
+    resources = [
+      module.landing_zone.bucket_arn,
+      "${module.landing_zone.bucket_arn}/ieg4/*"
+    ]
+  }
+
+
+  share_kms_key_with_academy_account = {
+    sid    = "Allow use of KMS key by academy account"
+    effect = "Allow"
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:Encrypt",
+      "kms:DescribeKey",
+      "kms:CreateGrant",
+      "kms:RetireGrant"
+    ]
+    principals = {
+      type = "AWS"
+      identifiers = [
+        var.academy_data_source_arn
+      ]
+    }
+    resources = "*"
+  }
 }
 
 module "landing_zone" {
@@ -302,8 +342,18 @@ module "landing_zone" {
   identifier_prefix            = local.identifier_prefix
   bucket_name                  = "Landing Zone"
   bucket_identifier            = "landing-zone"
-  bucket_policy_statements     = local.is_production_environment ? [local.allow_housing_reporting_role_access_to_landing_zone_path] : (local.is_live_environment ? [local.allow_housing_reporting_role_access_to_landing_zone_path_pre_prod] : [])
-  bucket_key_policy_statements = [local.share_kms_key_with_housing_reporting_role]
+  bucket_policy_statements     = local.is_production_environment ? [
+    local.allow_housing_reporting_role_access_to_landing_zone_path,
+    local.allow_access_from_academy_account
+  ] : (
+    local.is_live_environment ? [
+      local.allow_housing_reporting_role_access_to_landing_zone_path_pre_prod
+    ] : []
+  )
+  bucket_key_policy_statements = [
+    local.share_kms_key_with_housing_reporting_role, 
+    local.share_kms_key_with_academy_account
+  ]
   include_backup_policy_tags   = false
 }
 
