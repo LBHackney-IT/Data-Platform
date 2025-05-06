@@ -330,7 +330,9 @@ locals {
         var.academy_data_source_arn
       ]
     }
-    resources = "*"
+    resources = [
+      "*"
+    ]
   }
 }
 
