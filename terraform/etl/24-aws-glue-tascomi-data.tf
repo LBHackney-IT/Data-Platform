@@ -264,7 +264,7 @@ module "tascomi_create_daily_snapshot" {
   job_name                       = "${local.short_identifier_prefix}tascomi_create_daily_snapshot_planning"
   glue_version                   = "2.0"
   glue_job_worker_type           = "G.2X"
-  number_of_workers_for_glue_job = 12
+  number_of_workers_for_glue_job = 16
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
