@@ -136,9 +136,6 @@ def main():
                       value=results_df.set_index(['expectation_config.type', 'dataset_name']).index.factorize()[0] + 1)
     results_df['expectation_id'] = results_df['expectation_config.type'] + "_" + results_df['dataset_name']
 
-    # convert single column to string to avoid conversion error later on
-    results_df['result.unexpected_list'] = results_df['result.unexpected_list'].astype(str)
-
     results_df['import_year'] = datetime.today().year
     results_df['import_month'] = datetime.today().month
     results_df['import_day'] = datetime.today().day
