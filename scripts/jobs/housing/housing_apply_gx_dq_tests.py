@@ -110,6 +110,7 @@ def main():
         results_dict = list(checkpoint_result.run_results.values())[0].to_json_dict()
         table_results_df = pd.json_normalize(results_dict['results'])
         cols_to_drop = [c for c in table_results_df.columns if c.startswith('exception_info')]
+        cols_to_drop.append('result.unexpected_list')
         table_results_df = table_results_df.drop(columns=cols_to_drop)
         table_results_df_list.append(table_results_df)
 
@@ -151,7 +152,6 @@ def main():
                   'result.unexpected_count': 'bigint',
                   'result.missing_count': 'bigint',
                   'result.partial_unexpected_list': 'array<string>',
-                  'result.unexpected_list': 'array<string>',
                   'result.unexpected_index_list': 'array<bigint>',
                   'result.unexpected_index_query': 'string',
                   'expectation_config.kwargs.regex': 'string',
