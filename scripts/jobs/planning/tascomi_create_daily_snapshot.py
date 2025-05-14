@@ -368,7 +368,9 @@ if __name__ == "__main__":
                 verificationSuite.saveOrAppendResult(resultKey).run()
 
                 # if data quality tests succeed, write to S3
-                snapshot_df = snapshot_df.coalesce(300)
+                snapshot_df = snapshot_df.repartition(200)
+                
+                
                 resultDataFrame = DynamicFrame.fromDF(
                     snapshot_df, glueContext, "resultDataFrame"
                 )
