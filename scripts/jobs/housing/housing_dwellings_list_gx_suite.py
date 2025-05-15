@@ -31,8 +31,8 @@ class ExpectLLPGColumnValueLengthsBetween(gxe.ExpectColumnValueLengthsToBeBetwee
 
 class ExpectBlockRefNoColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
     column: str = "block_reference_number"
-    regex: str = r"^[0-9]\d+$"
-    description: str = "Expect Block Reference Number to match regex ^[0-9]\d+$ (numerical)"
+    regex: str = r"^\d+$"
+    description: str = "Expect Block Reference Number to match regex ^\d+$ (numerical)"
 
 
 class ExpectLLPGColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
@@ -43,8 +43,8 @@ class ExpectLLPGColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
 
 class ExpectEstateRefNoColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
     column: str = "estate_reference_number"
-    regex: str = r"^[0-9]\d+$"
-    description: str = "Expect Estate Reference Number to match regex ^[0-9]\d+$ (numerical)"
+    regex: str = r"^\d+$"
+    description: str = "Expect Estate Reference Number to match regex ^\d+$ (numerical)"
 
 
 class ExpectTenureValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):

@@ -24,14 +24,14 @@ class ExpectPropNoColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
 
 class ExpectPropNoNoColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
     column: str = "property_no"
-    regex: str = r"^[0-9]\d+$"
-    description: str = "Expect Property Number Number to match regex ^[0-9]\d+$ (numerical)"
+    regex: str = r"^\d+$"
+    description: str = "Expect Property Number Number to match regex ^\d+$ (numerical)"
 
 
 class ExpectPaymentRefNoColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
     column: str = "payment_ref"
-    regex: str = r"^[0-9]\d+$"
-    description: str = "Expect Payment Reference Number to match regex ^[0-9]\d+$ (numerical)"
+    regex: str = r"^\d+$"
+    description: str = "Expect Payment Reference Number to match regex ^\d+$ (numerical)"
 
 
 class ExpectTenureTypeColumnValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
