@@ -20,7 +20,7 @@ class ExpectUPRNColumnValueLengthsBetween(gxe.ExpectColumnValueLengthsToBeBetwee
 
 class ExpectUPRNColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
     column: str = "uprn"
-    regex: str = r"^[1-9]\d{10,11}"
+    regex: str = "[1-9]\d{10,11}"
     description: str = "Expect UPRN to match regex ^[1-9]\d{10,11} (starting with digit 1-9, followed by 10 or 11 digits"
 
 
