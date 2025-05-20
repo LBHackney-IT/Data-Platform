@@ -74,7 +74,7 @@ substr(dateofbirth, 1, 10) as dateofbirth_parsed FROM "housing-refined-zone"."pe
             hascommunalareas,
             hasprivatekitchen,
             hasprivatebathroom,
-            hasrampaccess, 
+            hasrampaccess,
             isstepfree,
             hasstairs,
             heating,
