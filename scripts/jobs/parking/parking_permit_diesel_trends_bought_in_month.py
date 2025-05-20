@@ -64,24 +64,24 @@ The SQL builds the Permit diesel trends based upon the application date
 /*** Create the Calendar formatted data ***/
 With Calendar_Data as (
    SELECT
-      date as Calendar_date, workingday, dow, holiday,fin_year, 
+      date as Calendar_date, workingday, dow, holiday,fin_year,
       cast(substr(cast(date as string),1, 8)||'01' as date) as MonthStartDate,
       CASE
          When cast(substr(date, 6,2) as int) = 1 Then 'Q4' -- Jan
-         When cast(substr(date, 6,2) as int) = 2 Then 'Q4' -- Feb  
+         When cast(substr(date, 6,2) as int) = 2 Then 'Q4' -- Feb
          When cast(substr(date, 6,2) as int) = 3 Then 'Q4' -- March
-         When cast(substr(date, 6,2) as int) = 4 Then 'Q1' -- Apr    
-         When cast(substr(date, 6,2) as int) = 5 Then 'Q1' -- May  
-         When cast(substr(date, 6,2) as int) = 6 Then 'Q1' -- June  
-         When cast(substr(date, 6,2) as int) = 7 Then 'Q2' -- Jul   
-         When cast(substr(date, 6,2) as int) = 8 Then 'Q2' -- Aug 
+         When cast(substr(date, 6,2) as int) = 4 Then 'Q1' -- Apr
+         When cast(substr(date, 6,2) as int) = 5 Then 'Q1' -- May
+         When cast(substr(date, 6,2) as int) = 6 Then 'Q1' -- June
+         When cast(substr(date, 6,2) as int) = 7 Then 'Q2' -- Jul
+         When cast(substr(date, 6,2) as int) = 8 Then 'Q2' -- Aug
          When cast(substr(date, 6,2) as int) = 9 Then 'Q2' -- Sept
-         When cast(substr(date, 6,2) as int) = 10 Then 'Q3' -- Oct    
-         When cast(substr(date, 6,2) as int) = 11 Then 'Q3' -- Nov 
+         When cast(substr(date, 6,2) as int) = 10 Then 'Q3' -- Oct
+         When cast(substr(date, 6,2) as int) = 11 Then 'Q3' -- Nov
          When cast(substr(date, 6,2) as int) = 12 Then 'Q3' -- Dec
          Else ''
       END as QTR,
-      
+
       ROW_NUMBER() OVER ( PARTITION BY date ORDER BY  date, import_date DESC) row_num
    FROM calendar),
 
@@ -94,17 +94,17 @@ CalendarFormat as (
       END as date) as Format_date, fin_year, QTR
    FROM Calendar_Data
    WHERE row_num = 1),
-   
+
 Latest_Report_Year as (
    SELECT
       /**** Find the Latest Financial Year ***/
       CASE
          /** Q1 **/
-         When cast(substr(cast(Format_date as string),6,2) as int) = 4 Then 
+         When cast(substr(cast(Format_date as string),6,2) as int) = 4 Then
                                         cast(cast(fin_year as int) - 1 as string)
-         When cast(substr(cast(Format_date as string),6,2) as int) = 5 Then 
+         When cast(substr(cast(Format_date as string),6,2) as int) = 5 Then
                                         cast(cast(fin_year as int) - 1 as string)
-         When cast(substr(cast(Format_date as string),6,2) as int) = 6 Then 
+         When cast(substr(cast(Format_date as string),6,2) as int) = 6 Then
                                         cast(cast(fin_year as int) - 1 as string)
          /** Q2 **/
          When cast(substr(cast(Format_date as string),6,2) as int) = 7 Then fin_year
@@ -140,29 +140,29 @@ Latest_Report_Year as (
       END as LatestQTR,
 
     CASE
-        When cast(substr(cast(Format_date as string),6,2) as int) = 4 Then 
-                    cast(substr(cast(Format_date as string),1,5)||'03-01' as date)  
-        When cast(substr(cast(Format_date as string),6,2) as int) = 5 Then 
-                    cast(substr(cast(Format_date as string),1,5)||'03-01' as date)   
-        When cast(substr(cast(Format_date as string),6,2) as int) = 6 Then 
+        When cast(substr(cast(Format_date as string),6,2) as int) = 4 Then
                     cast(substr(cast(Format_date as string),1,5)||'03-01' as date)
-        When cast(substr(cast(Format_date as string),6,2) as int) = 7 Then 
-                    cast(substr(cast(Format_date as string),1,5)||'06-01' as date)  
-        When cast(substr(cast(Format_date as string),6,2) as int) = 8 Then 
-                    cast(substr(cast(Format_date as string),1,5)||'06-01' as date)  
-        When cast(substr(cast(Format_date as string),6,2) as int) = 9 Then 
-                    cast(substr(cast(Format_date as string),1,5)||'06-01' as date)  
-        When cast(substr(cast(Format_date as string),6,2) as int) = 10 Then 
-                    cast(substr(cast(Format_date as string),1,5)||'09-01' as date)  
-        When cast(substr(cast(Format_date as string),6,2) as int) = 11 Then 
-                    cast(substr(cast(Format_date as string),1,5)||'09-01' as date)   
-        When cast(substr(cast(Format_date as string),6,2) as int) = 12 Then 
-                    cast(substr(cast(Format_date as string),1,5)||'09-01' as date) 
-        When cast(substr(cast(Format_date as string),6,2) as int) = 1 Then 
-                    cast(substr(cast(Format_date as string),1,5)||'12-01' as date)  
-        When cast(substr(cast(Format_date as string),6,2) as int) = 2 Then 
-                    cast(substr(cast(Format_date as string),1,5)||'12-01' as date)   
-        When cast(substr(cast(Format_date as string),6,2) as int) = 3 Then 
+        When cast(substr(cast(Format_date as string),6,2) as int) = 5 Then
+                    cast(substr(cast(Format_date as string),1,5)||'03-01' as date)
+        When cast(substr(cast(Format_date as string),6,2) as int) = 6 Then
+                    cast(substr(cast(Format_date as string),1,5)||'03-01' as date)
+        When cast(substr(cast(Format_date as string),6,2) as int) = 7 Then
+                    cast(substr(cast(Format_date as string),1,5)||'06-01' as date)
+        When cast(substr(cast(Format_date as string),6,2) as int) = 8 Then
+                    cast(substr(cast(Format_date as string),1,5)||'06-01' as date)
+        When cast(substr(cast(Format_date as string),6,2) as int) = 9 Then
+                    cast(substr(cast(Format_date as string),1,5)||'06-01' as date)
+        When cast(substr(cast(Format_date as string),6,2) as int) = 10 Then
+                    cast(substr(cast(Format_date as string),1,5)||'09-01' as date)
+        When cast(substr(cast(Format_date as string),6,2) as int) = 11 Then
+                    cast(substr(cast(Format_date as string),1,5)||'09-01' as date)
+        When cast(substr(cast(Format_date as string),6,2) as int) = 12 Then
+                    cast(substr(cast(Format_date as string),1,5)||'09-01' as date)
+        When cast(substr(cast(Format_date as string),6,2) as int) = 1 Then
+                    cast(substr(cast(Format_date as string),1,5)||'12-01' as date)
+        When cast(substr(cast(Format_date as string),6,2) as int) = 2 Then
+                    cast(substr(cast(Format_date as string),1,5)||'12-01' as date)
+        When cast(substr(cast(Format_date as string),6,2) as int) = 3 Then
                     cast(substr(cast(Format_date as string),1,5) ||'12-01' as date)
     END as Adj_Date
 From CalendarFormat
@@ -172,16 +172,16 @@ Monthly_Date as (
     SELECT distinct
         MonthStartDate
     FROM Calendar_Data as A
-    WHERE MonthStartDate >= cast('2021-04-01' as date) and 
+    WHERE MonthStartDate >= cast('2021-04-01' as date) and
                                             MonthStartDate <= current_date),
 /***********************************************************************
 Collect the Permit 2019 data as benchmark
 ************************************************************************/
 Permit_VRMS as (
-    Select distinct new_vrm, new_make,new_model,new_fuel,new_engine_capactiy, 
+    Select distinct new_vrm, new_make,new_model,new_fuel,new_engine_capactiy,
     new_co2_emission
-    From liberator_permit_vrm_update 
-    WHERE import_date = (Select MAX(import_date) from 
+    From liberator_permit_vrm_update
+    WHERE import_date = (Select MAX(import_date) from
                                         liberator_permit_vrm_update)),
 PERMIT_2019 as (
     SELECT
@@ -201,9 +201,9 @@ PERMIT_2019 as (
         END as co2_emission
 From parking_permit_denormalised_data as A
 LEFT JOIN Permit_VRMS as B ON A.vrm = B.new_vrm
-WHERE ImportDateTime = (Select MAX(ImportDateTime) from 
+WHERE ImportDateTime = (Select MAX(ImportDateTime) from
                                         parking_permit_denormalised_data)
-and cast(substr(cast(application_date as string), 1, 10) as date) 
+and cast(substr(cast(application_date as string), 1, 10) as date)
                 between cast('2020-03-01' as date) and cast('2020-03-31' as date)
 and permit_type != 'Dispensation' AND latest_permit_status not IN ('Cancelled','Rejected','RENEW_REJECTED')
 AND cpz_name IN ('Zone A', 'Zone D','Zone F','Zone G','Zone G2','Zone H','Zone K','Zone L',
@@ -215,7 +215,7 @@ Permit_2019_Summary as (
         count(*)                                            as TotalPermits,
         SUM(CASE When Fuel = 'DIESEL' Then 1 Else 0 END)    as DieselPermitTotal,
         SUM(CASE When Fuel = 'ELECTRIC' Then 1 Else 0 END)  as ELECTRICPermitTotal,
-        
+
         /*** Calc the percantage ***/
         (cast(count(*) as decimal(10,4)) - SUM(CASE When Fuel = 'DIESEL' Then 1 Else 0 END))
         /
@@ -235,10 +235,10 @@ Permit_2019_Summary as (
 Collect the 'current' permit data, from 1st April 2021 (after COVID)
 *********************************************************************************************************************/
 Current_Permit as (
-    SELECT * 
+    SELECT *
     FROM parking_permit_denormalised_data as A
     LEFT JOIN Permit_VRMS as B ON A.vrm = B.new_vrm
-    WHERE ImportDateTime = (Select MAX(ImportDateTime) from 
+    WHERE ImportDateTime = (Select MAX(ImportDateTime) from
                                             parking_permit_denormalised_data)
     AND permit_type != 'Dispensation' AND latest_permit_status not IN ('Cancelled','Rejected','RENEW_REJECTED')
     AND cpz_name IN ('Zone A', 'Zone D','Zone F','Zone G','Zone G2','Zone H','Zone K','Zone L',
@@ -246,7 +246,7 @@ Current_Permit as (
 
 Permit_Summary as (
     SELECT
-        permit_reference, application_date, vrm, start_date, end_date, 
+        permit_reference, application_date, vrm, start_date, end_date,
         cast(substr(cast(application_date as string), 1, 8)||'01' as date) as MonthDate,
         CASE
             When new_vrm is NULL Then fuel
@@ -261,7 +261,7 @@ Permit_Summary as (
             ELSE new_co2_emission
         END as co2_emission
     FROM Current_Permit as A
-    WHERE cast(substr(cast(application_date as string), 1, 10) as date) >= 
+    WHERE cast(substr(cast(application_date as string), 1, 10) as date) >=
                                                     cast('2021-04-01' as date)),
 
 /*** Total the number of 'open' Permits & Diesel, etc Permits annd the 2019 data ***/
@@ -270,8 +270,8 @@ Permit_Report_ALL as (
         MonthDate,
         count(*)                                            as TotalPermits,
         SUM(CASE When Fuel = 'DIESEL' Then 1 Else 0 END)    as DieselPermitTotal,
-        SUM(CASE When Fuel = 'ELECTRIC' Then 1 Else 0 END)  as ELECTRICPermitTotal,   
-    
+        SUM(CASE When Fuel = 'ELECTRIC' Then 1 Else 0 END)  as ELECTRICPermitTotal,
+
         /*** Calc the percantage ***/
         (cast(count(*) as decimal(10,4)) - SUM(CASE When Fuel = 'DIESEL' Then 1 Else 0 END))
         /
@@ -294,11 +294,10 @@ Permit_Report_ALL as (
 SELECT
     *,
     current_timestamp()                            as ImportDateTime,
-    replace(cast(current_date() as string),'-','') as import_date,
-    
-    cast(Year(current_date) as string)    as import_year, 
-    cast(month(current_date) as string)   as import_month, 
-    cast(day(current_date) as string)     as import_day
+    format_datetime(current_date, 'yyyy') AS import_year,
+    format_datetime(current_date, 'MM') AS import_month,
+    format_datetime(current_date, 'dd') AS import_day,
+    format_datetime(current_date, 'yyyyMMdd') AS import_date
 FROM Permit_Report_ALL
 """
 SQL_node1658765472050 = sparkSqlQuery(
