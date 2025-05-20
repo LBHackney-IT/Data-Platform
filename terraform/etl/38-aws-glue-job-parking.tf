@@ -174,27 +174,7 @@ module "parking_pcn_ltn_report_summary" {
 
 
 
-module "parking_permit_de_normalisation" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_permit_de_normalisation"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_permit_de_normalisation"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "This job creates the Permit de-normalised data"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+# migrated Parking_Permit_DeNormalised_Data to airflow on 20/05/2025
 
 
 # The airflow has the latest version of these 7 tables
@@ -322,28 +302,7 @@ module "parking_eta_decision_records_pcn_dispute_gds" {
   }
 }
 
-# MRB 08-08-2022 Job created
-module "Parking_Permit_Diesel_Trends_Bought_in_Month" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}Parking_Permit_Diesel_Trends_Bought_in_Month"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_permit_diesel_trends_bought_in_month"
-  job_description                = "Monthly review of Permits bought in month, broken down by diesel or electric vehicles"
-  trigger_enabled                = local.is_production_environment
-  schedule                       = "cron(0 1 10 * ? *)"
-  number_of_workers_for_glue_job = 6
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+# migrated Parking_Permit_diesel_Tends_Bought_in_Month to airflow on 20/05/2025
 module "parking_correspondence_performance_records_with_pcn_gds" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -426,52 +385,10 @@ module "parking_correspondence_performance_qa_with_totals_gds" {
 
 # Migrated job "parking_defect_met_fail_monthly_format" to dap-airflow om 25/02/2025
 
-# MRB 17-07-2023 Job created
-module "parking_permit_street_stress" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_permit_street_stress"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_permit_street_stress"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "Calculate Permit stress, by Street and Permit Type"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
-# MRB 14-08-2023 Job created
-module "parking_permit_street_stress_with_cpz" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_permit_street_stress_with_cpz"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_permit_street_stress_with_cpz"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "Calculate Permit stress, by Street and Permit Type"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+# Migrated job parking_permit_street_stress to airflow on 20/05/2025
+
+# migrated parking_permit_street_stress_with_cpz to airflow on 20/05/2025
+
 module "parking_correspondence_performance_records_with_pcn_downtime" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
