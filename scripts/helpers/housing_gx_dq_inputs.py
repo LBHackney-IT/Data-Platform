@@ -27,7 +27,7 @@ substr(dateofbirth, 1, 10) as dateofbirth_parsed FROM "housing-refined-zone"."pe
         'sql': """SELECT
             property_no,
             date_of_ownership,
-            tenancy,     
+            tenancy,
             managing_agent_name_address,
             managing_agent_phone_number,
             managing_agent_email,
