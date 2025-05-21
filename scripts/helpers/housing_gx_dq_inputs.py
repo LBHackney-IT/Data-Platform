@@ -7,6 +7,7 @@ substr(dateofbirth, 1, 10) as dateofbirth_parsed FROM "housing-refined-zone"."pe
         'id_field': 'tenancy_id'},
     'contacts_reshape': {
         'sql': """SELECT
+            id,
             DATE_FORMAT(from_iso8601_timestamp(createdat), '%Y-%b-%d') AS createdat,
             contacttype,
             subtype,
@@ -23,7 +24,21 @@ substr(dateofbirth, 1, 10) as dateofbirth_parsed FROM "housing-refined-zone"."pe
             and import_date = (select max(import_date) from "housing-refined-zone"."contacts_reshape")""",
         'id_field': 'id'},
     'housing_homeowner_record_sheet': {
-        'sql': """SELECT * FROM "housing-raw-zone"."housing_homeowner_record_sheet" where import_date=(select max(import_date) from "housing-raw-zone"."housing_homeowner_record_sheet")""",
+        'sql': """SELECT
+            property_no,
+            date_of_ownership,
+            tenancy,
+            managing_agent_name_address,
+            managing_agent_phone_number,
+            managing_agent_email,
+            rtb_date,
+            managing_agent_name,
+            import_year,
+            import_month,
+            import_day,
+            import_date
+            FROM "housing-raw-zone"."housing_homeowner_record_sheet"
+            where import_date = (select max(import_date) from "housing-raw-zone"."housing_homeowner_record_sheet")""",
         'id_field': 'property_no'},
     'housing_dwellings_list': {
         'sql': """SELECT
@@ -88,7 +103,7 @@ substr(dateofbirth, 1, 10) as dateofbirth_parsed FROM "housing-refined-zone"."pe
             import_date
             FROM "housing-refined-zone"."assets_reshape" where import_date = (select max(import_date) from "housing-refined-zone"."assets_reshape")
             and assettype in ('BoilerHouse','BoosterPump','CleanersFacilities','CombinedHeatAndPowerUnit','CommunityHall','Concierge','Dwelling','LettableNonDwelling','Lift','NA','NBD','OutBuilding','TravellerSite')""",
-        'id_field': 'asset_id'},
+        'id_field': 'assetid'},
     'matenancyagreement': {
         'sql': """SELECT *, substr(cast(eot as varchar), 1, 10) as eot_parsed, substr(cast(cot as varchar), 1, 10) as cot_parsed FROM "housing-raw-zone"."sow2b_dbo_matenancyagreement" where import_date=(select max(import_date) FROM "housing-raw-zone"."sow2b_dbo_matenancyagreement")""",
         'id_field': 'tag_ref'},
