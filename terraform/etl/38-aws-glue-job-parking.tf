@@ -200,7 +200,7 @@ module "parking_foreign_vrm_pcns" {
   triggered_by_job               = module.parking_pcn_denormalisation.job_name
   job_description                = "This job creates the LTN PCN count and Total paid"
   workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
+  number_of_workers_for_glue_job = 2
   glue_job_worker_type           = "G.1X"
   glue_version                   = "4.0"
   job_parameters = {
