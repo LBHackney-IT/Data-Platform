@@ -14,6 +14,11 @@ table_name = "parking_open_pcns_vrms_linked_cancelled_ringer"
 
 # The exact same query prototyped in pre-prod(stg) or prod Athena
 query_on_athena = """
+/*Open PCNs linked to VRMs cancelled due to being a Ringer or Clone
+Created: 15/02/2024
+11/03/2024 - added extracted post codes and bailiff fields to output
+
+*/
 With cancelled_vrm as (
     Select distinct vrm as canx_vrm
     from "dataplatform-prod-liberator-refined-zone".pcnfoidetails_pcn_foi_full
