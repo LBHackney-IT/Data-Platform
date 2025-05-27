@@ -1,3 +1,4 @@
+# buckets should only be excluded from one of these two rules
 Feature: S3
 
   @exclude_aws_s3_bucket.ssl_connection_resources\[0\]
@@ -5,6 +6,9 @@ Feature: S3
   @exclude_module.airflow.aws_s3_bucket.bucket
   @exclude_aws_s3_bucket.mwaa_bucket
   @exclude_aws_s3_bucket.mwaa_etl_scripts_bucket
+  @exclude_module.housing_nec_migration_storage.aws_s3_bucket.bucket
+
+  # This rule is in place for legacy buckets created with the deprecated block within the aws_s3_bucket resource 
   Scenario: Data must be encrypted at rest for buckets created using server_side_encryption_configuration property within bucket resource
     Given I have aws_s3_bucket defined
     Then it must have server_side_encryption_configuration
@@ -27,6 +31,7 @@ Feature: S3
   @exclude_module.db_snapshot_to_s3\[0\].module.rds_export_storage.aws_s3_bucket.bucket
   @exclude_module.liberator_dump_to_rds_snapshot\[0\].aws_s3_bucket.cloudtrail
   @exclude_module.liberator_db_snapshot_to_s3\[0\].module.rds_export_storage.aws_s3_bucket.bucket
+  # This rule checks for a separate sse block as supported by the s3 bucket module
   Scenario: Data must be encrypted at rest for buckets created using separate server side configuration resource
     Given I have aws_s3_bucket defined
     Then it must have aws_s3_bucket_server_side_encryption_configuration
