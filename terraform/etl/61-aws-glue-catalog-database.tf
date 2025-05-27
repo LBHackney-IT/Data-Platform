@@ -13,3 +13,11 @@ resource "aws_glue_catalog_database" "hackney_casemanagement_live" {
     prevent_destroy = true
   }
 }
+
+resource "aws_glue_catalog_database" "housing_nec_migration_database" {
+  name = "housing_nec_migration"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
