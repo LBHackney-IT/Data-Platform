@@ -42,3 +42,15 @@ variable "region" {
   type        = string
   default     = "eu-west-2"
 }
+
+variable "additional_s3_access" {
+  description = "Additional s3 access to grant to the department. Can specify optional paths for fine-grained access."
+  type = list(object({
+    bucket_arn  = string
+    kms_key_arn = string
+    actions     = list(string)
+    paths       = optional(list(string))
+  }))
+  default = []
+}
+

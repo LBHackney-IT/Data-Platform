@@ -32,6 +32,21 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
     ]
   }
 
+  dynamic "statement" {
+    for_each = var.additional_s3_access
+    iterator = additional_access_item
+    content {
+      sid    = "AdditionalKmsReadOnlyAccess${replace(additional_access_item.value.bucket_arn, "/[^a-zA-Z0-9]/", "")}"
+      effect = "Allow"
+      actions = [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey",
+      ]
+      resources = [additional_access_item.value.kms_key_arn]
+    }
+  }
+
   statement {
     sid    = "S3ReadAllDepartmentAreasInBuckets"
     effect = "Allow"
@@ -73,6 +88,27 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       var.spark_ui_output_storage_bucket.bucket_arn,
       "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
+  }
+
+  dynamic "statement" {
+    for_each = var.additional_s3_access
+    iterator = additional_access_item
+    content {
+      sid    = "AdditionalS3ReadOnlyAccess${replace(additional_access_item.value.bucket_arn, "/[^a-zA-Z0-9]/", "")}"
+      effect = "Allow"
+      actions = [
+        "s3:Get*",
+        "s3:List*",
+      ]
+      resources = concat(
+        [additional_access_item.value.bucket_arn],
+        additional_access_item.value.paths == null ? [
+          "${additional_access_item.value.bucket_arn}/*"
+        ] : [
+          for path in additional_access_item.value.paths : "${additional_access_item.value.bucket_arn}/${path}/*"
+        ]
+      )
+    }
   }
 
   statement {
@@ -179,6 +215,25 @@ data "aws_iam_policy_document" "s3_department_access" {
     ]
   }
 
+  dynamic "statement" {
+    for_each = var.additional_s3_access
+    iterator = additional_access_item
+    content {
+      sid    = "AdditionalKmsFullAccess${replace(additional_access_item.value.bucket_arn, "/[^a-zA-Z0-9]/", "")}"
+      effect = "Allow"
+      actions = [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey",
+        "kms:CreateGrant",
+        "kms:RetireGrant"
+      ]
+      resources = [additional_access_item.value.kms_key_arn]
+    }
+  }
+
   statement {
     sid    = "S3ReadAndWrite"
     effect = "Allow"
@@ -224,6 +279,24 @@ data "aws_iam_policy_document" "s3_department_access" {
       "${var.mwaa_etl_scripts_bucket_arn}/unrestricted/*",
       "${var.mwaa_etl_scripts_bucket_arn}/shared/*",
     ]
+  }
+
+  dynamic "statement" {
+    for_each = var.additional_s3_access
+    iterator = additional_access_item
+    content {
+      sid    = "AdditionalS3FullAccess${replace(additional_access_item.value.bucket_arn, "/[^a-zA-Z0-9]/", "")}"
+      effect = "Allow"
+      actions = additional_access_item.value.actions
+      resources = concat(
+        [additional_access_item.value.bucket_arn],
+        additional_access_item.value.paths == null ? [
+          "${additional_access_item.value.bucket_arn}/*"
+        ] : [
+          for path in additional_access_item.value.paths : "${additional_access_item.value.bucket_arn}/${path}/*"
+        ]
+      )
+    }
   }
 
   statement {
