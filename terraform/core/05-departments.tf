@@ -409,6 +409,7 @@ module "department_housing" {
     {
       bucket_arn  = module.housing_nec_migration_storage.bucket_arn
       kms_key_arn = module.housing_nec_migration_storage.kms_key_arn
+      paths       = []
       actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
     }
   ]
