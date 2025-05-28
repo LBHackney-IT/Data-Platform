@@ -405,6 +405,14 @@ module "department_housing" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  additional_s3_access = [
+    {
+      bucket_arn  = module.housing_nec_migration_storage.bucket_arn
+      kms_key_arn = module.housing_nec_migration_storage.kms_key_arn
+      paths       = []
+      actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
+    }
+  ]
 }
 
 module "department_children_and_education" {

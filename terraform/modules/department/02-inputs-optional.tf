@@ -42,3 +42,19 @@ variable "region" {
   type        = string
   default     = "eu-west-2"
 }
+
+variable "additional_s3_access" {
+  description = <<EOF
+    Additional s3 access to grant to the department.
+    To grant access to specific paths, provide a list of strings for 'paths'.
+    If 'paths' is null or an empty list, access will be granted to the entire bucket.
+  EOF
+  type = list(object({
+    bucket_arn  = string
+    kms_key_arn = string
+    actions     = list(string)
+    paths       = list(string)
+  }))
+  default = []
+}
+
