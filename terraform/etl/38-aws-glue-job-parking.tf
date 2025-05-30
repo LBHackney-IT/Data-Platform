@@ -74,29 +74,7 @@ module "parking_kpi_gds_summary" {
   }
 }
 
-module "parking_foi_pcn_gds_summary" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_foi_pcn_gds_summary"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_foi_pcn_gds_summary"
-  triggered_by_job               = module.parking_pcn_denormalisation.job_name
-  job_description                = "Summarising data from the FOI Google Data Studio dashboard as need to be under 100,000 -"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  glue_job_timeout               = 240
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
+# Migrated job "parking_foi_pcn_gds_summary" to dap-airflow om 30/05/2025
 
 # Migrated job "parking_permit_denormalised_gds_street_llpg" to dap-airflow om 20/02/2025
 
@@ -214,30 +192,8 @@ module "parking_foreign_vrm_pcns" {
 
 #  parking_Disputes_KPI_GDS_Summary not in use anymore - confirmed with Davina
 
-module "parking_foi_pcn_gds_daily_summary" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_foi_pcn_gds_daily_summary"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_foi_pcn_gds_daily_summary"
-  triggered_by_job               = module.parking_pcn_denormalisation.job_name
-  job_description                = "Daily summarising data from the FOI Google Data Studio dashboard as need to be under 100,000"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  glue_job_timeout               = 240
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY --conf spark.sql.legacy.ctePrecedencePolicy=LEGACY"
-  }
-}
+# Migrated "parking_foi_pcn_gds_daily_summary" to dap-airflow on 30/05/2025
+
 module "parking_eta_decision_records_pcn_dispute_gds" {
   source                         = "../modules/aws-glue-job"
   is_live_environment            = local.is_live_environment
@@ -265,30 +221,7 @@ module "parking_eta_decision_records_pcn_dispute_gds" {
 
 # Migrated "parking_correspondence_performance_records_with_pcn_gds" to dap-airflow on 30/05/2025
 
-module "parking_foi_pcn_gds_daily_summary_records" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_foi_pcn_gds_daily_summary_records"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_foi_pcn_gds_daily_summary_records"
-  triggered_by_job               = module.parking_pcn_denormalisation.job_name
-  job_description                = "Records of daily summarising data from the FOI Google Data Studio dashboard as need to be under 100,000"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  glue_job_timeout               = 240
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY --conf spark.sql.legacy.ctePrecedencePolicy=LEGACY"
-  }
-}
+# Migrated "parking_foi_pcn_gds_daily_summary_records" to dap-airflow on 30/05/2025
 
 # Migrated job "parking_correspondence_performance_qa_with_totals_gds" to dap-airflow om 30/05/2025
 
