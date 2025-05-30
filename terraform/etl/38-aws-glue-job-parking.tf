@@ -335,31 +335,7 @@ module "parking_foi_pcn_gds_daily_summary_records" {
   }
 }
 
-
-module "parking_correspondence_performance_qa_with_totals_gds" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_correspondence_performance_qa_with_totals_gds"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_correspondence_performance_qa_with_totals_gds"
-  triggered_by_job               = "${local.short_identifier_prefix}parking_correspondence_performance_records_with_pcn"
-  job_description                = "For use in Google Studio to calculate the Correspondence performance for each calendar month Total number of cases and Total number of QA reviews for each month."
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  glue_job_timeout               = 240
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
+# Migrated job "parking_correspondence_performance_qa_with_totals_gds" to dap-airflow om 30/05/2025
 
 # Migrated job "parking_defect_met_fail" to dap-airflow om 25/02/2025
 
