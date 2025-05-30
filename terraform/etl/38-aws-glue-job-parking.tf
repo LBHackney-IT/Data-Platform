@@ -1,25 +1,5 @@
-module "parking_pcn_denormalisation" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_pcn_denormalisation"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_pcn_denormalisation"
-  triggered_by_job               = module.parking_pcn_create_event_log.job_name
-  job_description                = "This job creates a single de-normalised PCN record with the latest details against it (Events, finance, ETA, etc.). This can then be queried (WITHOUT joins)."
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
+# Migrated job "parking_pcn_denormalisation" to dap-airflow om 30/05/2025
+# >> PCNFOIDetails_PCN_FOI_FULL
 
 # Migrated job "parking_persistent_evaders" to dap-airflow om 30/05/2025
 
@@ -35,28 +15,9 @@ module "parking_pcn_denormalisation" {
 
 # Migrated job "parking_permit_denormalised_gds_street_llpg" to dap-airflow om 20/02/2025
 
-module "parking_pcn_create_event_log" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_pcn_create_event_log"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_pcn_create_event_log"
-  triggered_by_job               = "${local.short_identifier_prefix}Copy parking Liberator landing zone to raw"
-  job_description                = "This job reviews the PCN Events trying to find the LATEST event date for a number of Events (i.e. DVLA Requested, DVLA Received). The output is a SINGLE PCN record containing some 30+ fields of Dates. The field name identifies what the date field is"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 10
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
+
+# Migrated job "parking_pcn_create_event_log" to dap-airflow om 30/05/2025
+# >> PCNFOIDetails_PCN_EVENT_LOG
 
 # Migrated job "parking_pcn_report_summary" to dap-airflow om 30/05/2025
 
@@ -116,7 +77,6 @@ module "parking_pcn_create_event_log" {
 
 # Migrated job "parking_motorcycle_permits_480" to dap-airflow om 20/02/2025
 # Migrated job "parking_permit_street_cpz_stress_mc" to dap-airflow on 21/05/2025
-
 
 # MRB 18-08-2024 job created
 # Migrated job "parking_permit_denormalisation_mc" to dap-airflow om 01/05/2025
