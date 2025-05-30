@@ -194,28 +194,7 @@ module "parking_foreign_vrm_pcns" {
 
 # Migrated "parking_foi_pcn_gds_daily_summary" to dap-airflow on 30/05/2025
 
-module "parking_eta_decision_records_pcn_dispute_gds" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_eta_decision_records_pcn_dispute_gds"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_eta_decision_records_pcn_dispute_gds"
-  triggered_by_job               = module.parking_pcn_denormalisation.job_name
-  job_description                = "Daily summarising data from the FOI Google Data Studio dashboard as need to be under 100,000"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  trigger_enabled                = local.is_production_environment
-  number_of_workers_for_glue_job = 2
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-disable"
-    "--environment"         = var.environment
-  }
-}
+# Migrated "parking_eta_decision_records_pcn_dispute_gds" to dap-airflow on 30/05/2025
 
 # migrated Parking_Permit_diesel_Tends_Bought_in_Month to airflow on 20/05/2025
 
