@@ -124,36 +124,11 @@ module "parking_pcn_report_summary" {
   }
 }
 
-module "parking_pcn_ltn_report_summary" {
-  source                         = "../modules/aws-glue-job"
-  is_live_environment            = local.is_live_environment
-  is_production_environment      = local.is_production_environment
-  department                     = module.department_parking_data_source
-  job_name                       = "${local.short_identifier_prefix}parking_pcn_ltn_report_summary"
-  helper_module_key              = data.aws_s3_object.helpers.key
-  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
-  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  script_name                    = "parking_pcn_ltn_report_summary"
-  triggered_by_job               = module.parking_pcn_denormalisation.job_name
-  job_description                = "This job creates the LTN PCN count and Total paid"
-  workflow_name                  = "${local.short_identifier_prefix}parking-liberator-data-workflow"
-  number_of_workers_for_glue_job = 2
-  glue_job_worker_type           = "G.1X"
-  glue_version                   = "4.0"
-  job_parameters = {
-    "--job-bookmark-option" = "job-bookmark-enable"
-    "--environment"         = var.environment
-    "--conf"                = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
-  }
-}
+# Migrated job "parking_pcn_ltn_report_summary" to dap-airflow om 30/05/2025
 
 # migrated Parking_Suspension_DeNormalised_Data to airflow on 19/05/2025
 
-
-
-
 # migrated Parking_Permit_DeNormalised_Data to airflow on 20/05/2025
-
 
 # The airflow has the latest version of these 7 tables
 # removed Parking_Deployment_Target_Details
