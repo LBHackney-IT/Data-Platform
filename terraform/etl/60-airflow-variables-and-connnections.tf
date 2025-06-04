@@ -85,6 +85,10 @@ resource "aws_secretsmanager_secret" "mtfh_secrets" {
 resource "aws_secretsmanager_secret_version" "mtfh_secrets" {
   secret_id     = aws_secretsmanager_secret.mtfh_secrets.id
   secret_string = jsonencode({
-    api_key = "UPDATE_IN_CONSOLE"
+    value = "UPDATE_IN_CONSOLE"
   })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
 }
