@@ -982,7 +982,7 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
 
 // s3 access for mtfh data in landing zone
 data "aws_iam_policy_document" "mtfh_access" {
-  count = local.department_identifier == "data-and-insight" ? 1 : 0
+  count = contains(["data-and-insight", "housing"], local.department_identifier) ? 1 : 0
 
   statement {
     sid    = "S3ReadMtfhDirectory"
@@ -1000,9 +1000,9 @@ data "aws_iam_policy_document" "mtfh_access" {
 }
 
 resource "aws_iam_policy" "mtfh_access_policy" {
-  count       = local.department_identifier == "data-and-insight" ? 1 : 0
+  count       = contains(["data-and-insight", "housing"], local.department_identifier) ? 1 : 0
   name        = lower("${var.identifier_prefix}-${local.department_identifier}-mtfh-landing-access-policy")
-  description = "Allows data-and-insight department access  for ecs tasks to mtfh/ subdirectory in landing zone"
+  description = "Allows ${local.department_identifier} department access for ecs tasks to mtfh/ subdirectory in landing zone"
   policy      = data.aws_iam_policy_document.mtfh_access[0].json
 }
 
