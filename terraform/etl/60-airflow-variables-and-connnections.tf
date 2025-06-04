@@ -75,3 +75,16 @@ resource "aws_secretsmanager_secret_version" "kms_keys" {
   secret_id     = aws_secretsmanager_secret.kms_keys[each.key].id
   secret_string = each.value
 }
+
+resource "aws_secretsmanager_secret" "mtfh_secrets" {
+  name        = "airflow/variables/mtfh_secrets"
+  description = "Secrets for mtfh ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "mtfh_secrets" {
+  secret_id     = aws_secretsmanager_secret.mtfh_secrets.id
+  secret_string = jsonencode({
+    api_key = "UPDATE_IN_CONSOLE"
+  })
+}
