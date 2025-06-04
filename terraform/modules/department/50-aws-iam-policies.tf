@@ -104,7 +104,7 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
         [additional_access_item.value.bucket_arn],
         additional_access_item.value.paths == null ? [
           "${additional_access_item.value.bucket_arn}/*"
-        ] : [
+          ] : [
           for path in additional_access_item.value.paths : "${additional_access_item.value.bucket_arn}/${path}/*"
         ]
       )
@@ -285,14 +285,14 @@ data "aws_iam_policy_document" "s3_department_access" {
     for_each = var.additional_s3_access
     iterator = additional_access_item
     content {
-      sid    = "AdditionalS3FullAccess${replace(additional_access_item.value.bucket_arn, "/[^a-zA-Z0-9]/", "")}"
-      effect = "Allow"
+      sid     = "AdditionalS3FullAccess${replace(additional_access_item.value.bucket_arn, "/[^a-zA-Z0-9]/", "")}"
+      effect  = "Allow"
       actions = additional_access_item.value.actions
       resources = concat(
         [additional_access_item.value.bucket_arn],
         additional_access_item.value.paths == null ? [
           "${additional_access_item.value.bucket_arn}/*"
-        ] : [
+          ] : [
           for path in additional_access_item.value.paths : "${additional_access_item.value.bucket_arn}/${path}/*"
         ]
       )
@@ -947,7 +947,8 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "glue:GetCrawler",
       "glue:CreateTable",
       "glue:UpdateTable",
-      "glue:DeleteTable"
+      "glue:DeleteTable",
+      "glue:GetJobRuns"
     ]
     resources = ["*"]
   }
@@ -1078,5 +1079,3 @@ resource "aws_iam_policy" "mtfh_access_policy" {
   description = "Allows ${local.department_identifier} department access for ecs tasks to mtfh/ subdirectory in landing zone"
   policy      = data.aws_iam_policy_document.mtfh_access[0].json
 }
-
-
