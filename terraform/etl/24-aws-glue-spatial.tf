@@ -113,7 +113,7 @@ module "parking_geospatial_enrichment" {
   job_parameters = {
     "--job-bookmark-option"        = "job-bookmark-enable"
     "--enable-glue-datacatalog"    = "true"
-    "--additional-python-modules"  = "rtree,geopandas"
+    "--additional-python-modules"  = "numpy==1.26.4,geopandas==1.0.1,rtree"
     "--geography_tables_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.geography_tables_dictionary.key}"
     "--tables_to_enrich_dict_path" = "s3://${module.glue_scripts_data_source.bucket_id}/${aws_s3_object.parking_spatial_enrichment_dictionary.key}"
     "--target_location"            = "s3://${module.refined_zone_data_source.bucket_id}/parking/spatially-enriched/"
