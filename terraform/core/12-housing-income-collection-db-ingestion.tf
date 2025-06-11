@@ -69,16 +69,30 @@ module "ingest_housing_income_collection_database_to_housing_raw_zone" {
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
-        TableGroupingPolicy = "CombineCompatibleSchemas"
+        TableGroupingPolicy     = "CombineCompatibleSchemas"
         TableLevelConfiguration = 3
       }
       CrawlerOutput = {
         Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
       }
-      Exclusions = ["mtfh*", "archive*", "data-quality*", "glue-*", "google-sheets*", "govnotify*", "ingestion-details*", "temp_backup*"]
     })
     table_prefix = null
   }
+  glue_crawler_excluded_blobs = [
+    "mtfh*",
+    "archive*",
+    "data-quality*",
+    "glue-*",
+    "google-sheets*",
+    "govnotify*",
+    "ingestion-details*", 
+    "temp_backup*",
+    "*.json",
+    "*.txt",
+    "*.zip",
+    "*.xlsx",
+    "*.html"
+    ]
 }
 
 
