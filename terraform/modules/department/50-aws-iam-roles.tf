@@ -1,4 +1,20 @@
-// User Role for staging account - This role is a combination of policies ready to be applied to SSO
+# =============================================================================
+# IAM ROLES
+# =============================================================================
+# This file contains all IAM roles for the department module.
+# 
+# Roles included:
+# - SSO user roles (staging and production)
+# - Glue agent role
+# - Airflow user (IAM user)
+# - Department ECS role
+# =============================================================================
+
+# =============================================================================
+# SSO USER ROLES
+# =============================================================================
+
+# SSO User Role for staging account - combination of policies for SSO
 data "aws_iam_policy_document" "sso_staging_user_policy" {
   override_policy_documents = local.create_notebook ? [
     data.aws_iam_policy_document.s3_department_access.json,
@@ -15,7 +31,7 @@ data "aws_iam_policy_document" "sso_staging_user_policy" {
   ]
 }
 
-// User Role for production account - This role is a combination of policies ready to be applied to SSO
+# SSO User Role for production account - combination of policies for SSO
 data "aws_iam_policy_document" "sso_production_user_policy" {
   override_policy_documents = [
     data.aws_iam_policy_document.read_only_s3_department_access.json,
@@ -25,16 +41,24 @@ data "aws_iam_policy_document" "sso_production_user_policy" {
   ]
 }
 
-// Glue role + attachments
+# =============================================================================
+# GLUE AGENT ROLE
+# =============================================================================
+
+# Assume role policy for Glue agent
 data "aws_iam_policy_document" "glue_agent_assume_role" {
   statement {
+    sid     = "GlueServiceAssumeRole"
     actions = ["sts:AssumeRole"]
-
     principals {
       identifiers = ["glue.amazonaws.com"]
       type        = "Service"
     }
+  }
 
+  statement {
+    sid     = "LambdaServiceAssumeRole"
+    actions = ["sts:AssumeRole"]
     principals {
       identifiers = ["lambda.amazonaws.com"]
       type        = "Service"
@@ -43,8 +67,7 @@ data "aws_iam_policy_document" "glue_agent_assume_role" {
 }
 
 resource "aws_iam_role" "glue_agent" {
-  tags = var.tags
-
+  tags               = var.tags
   name               = lower("${var.identifier_prefix}-glue-${local.department_identifier}")
   assume_role_policy = data.aws_iam_policy_document.glue_agent_assume_role.json
 }
@@ -55,7 +78,7 @@ resource "aws_iam_role_policy_attachment" "glue_agent_s3_access" {
   policy_arn = aws_iam_policy.s3_access.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agents_secrets_manager_read_only" {
+resource "aws_iam_role_policy_attachment" "glue_agent_cloudwatch_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.glue_can_write_to_cloudwatch.arn
 }
@@ -65,38 +88,41 @@ resource "aws_iam_role_policy_attachment" "read_glue_scripts_and_mwaa_and_athena
   policy_arn = aws_iam_policy.read_glue_scripts_and_mwaa_and_athena.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_can_write_to_cloudwatch" {
+resource "aws_iam_role_policy_attachment" "glue_agent_secrets_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.secrets_manager_read_only.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_full_access" {
+resource "aws_iam_role_policy_attachment" "glue_agent_full_glue_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.full_glue_access.arn
 }
 
-resource "aws_iam_role_policy_attachment" "crawler_can_access_jdbc_connection" {
+resource "aws_iam_role_policy_attachment" "glue_agent_jdbc_connection" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.crawler_can_access_jdbc_connection.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_has_full_s3_access_to_glue_resources" {
+resource "aws_iam_role_policy_attachment" "glue_agent_s3_glue_resources" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.full_s3_access_to_glue_resources.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_access_to_watermarks_table" {
+resource "aws_iam_role_policy_attachment" "glue_agent_watermarks_table" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.glue_access_to_watermarks_table.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_runner_pass_role_to_glue_for_notebook_use" {
+resource "aws_iam_role_policy_attachment" "glue_agent_notebook_pass_role" {
   count      = var.environment == "prod" ? 0 : 1
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.glue_runner_pass_role_to_glue_for_notebook_use.arn
 }
 
-# Define a map for the departmentalairflow policies
+# =============================================================================
+# AIRFLOW USER (IAM USER)
+# =============================================================================
+
 locals {
   airflow_policy_map = {
     s3_access                 = aws_iam_policy.s3_access.arn,
@@ -106,7 +132,7 @@ locals {
   }
 }
 
-# IAM user and permission for departmetnal airflow user
+# IAM user for departmental Airflow
 resource "aws_iam_user" "airflow_user" {
   count = var.departmental_airflow_user ? 1 : 0
   name  = "${local.department_identifier}-airflow-user"
@@ -124,10 +150,11 @@ resource "aws_iam_access_key" "airflow_user_key" {
   user  = aws_iam_user.airflow_user[0].name
 }
 
-# Store airflow user credentials in Secrets Manager with required format
+# Store Airflow user credentials in Secrets Manager
 resource "aws_secretsmanager_secret" "airflow_user_secret" {
   count = var.departmental_airflow_user ? 1 : 0
   name  = "airflow/connections/${local.department_identifier}-airflow-aws-default"
+  tags  = var.tags
 }
 
 resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
@@ -141,29 +168,33 @@ resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
   })
 }
 
-# Department ECS
+# =============================================================================
+# DEPARTMENT ECS ROLE
+# =============================================================================
+
 resource "aws_iam_role" "department_ecs_role" {
   name               = lower("${var.identifier_prefix}-${local.department_identifier}-ecs-task-role")
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_role_policy.json
   tags               = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "department_ecs_policy" {
+resource "aws_iam_role_policy_attachment" "department_ecs_base_policy" {
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.department_ecs_policy.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_access_attachment_to_ecs_role" {
+resource "aws_iam_role_policy_attachment" "department_ecs_glue_access" {
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.glue_access.arn
 }
 
-resource "aws_iam_role_policy" "grant_s3_access_to_ecs_role" {
+resource "aws_iam_role_policy" "department_ecs_s3_access" {
+  name   = "s3-access"
   role   = aws_iam_role.department_ecs_role.name
   policy = data.aws_iam_policy_document.s3_department_access.json
 }
 
-resource "aws_iam_role_policy_attachment" "mtfh_access_attachment" {
+resource "aws_iam_role_policy_attachment" "department_ecs_mtfh_access" {
   count      = contains(["data-and-insight", "housing"], local.department_identifier) ? 1 : 0
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.mtfh_access_policy[0].arn
