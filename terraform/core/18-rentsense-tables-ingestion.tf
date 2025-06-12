@@ -90,6 +90,22 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
     })
     table_prefix = null
   }
+  glue_crawler_excluded_blobs = [
+    "*/housingfinance*",
+    "*/sow2b*",
+    "*/archive*",
+    "*/data-quality*",
+    "*/ingestion-details*",
+    "*/temp_backup*",
+    "*/glue-*",
+    "*/google-sheets*",
+    "*/govnotify*",
+    "*.json",
+    "*.txt",
+    "*.zip",
+    "*.xlsx",
+    "*.html",
+  ]
 }
 
 resource "aws_ssm_parameter" "copy_mtfh_dynamo_db_rentsense_tables_to_raw_zone_crawler_name" {
