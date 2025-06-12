@@ -82,6 +82,7 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
+        TableGoupingPolicy = "CombineCompatibleSchemas"
         TableLevelConfiguration = 3
       }
       CrawlerOutput = {
