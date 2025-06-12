@@ -346,10 +346,10 @@ module "landing_zone" {
   bucket_identifier            = "landing-zone"
   bucket_policy_statements     = local.is_production_environment ? [
     local.allow_housing_reporting_role_access_to_landing_zone_path,
-    local.allow_access_from_academy_account
   ] : (
     local.is_live_environment ? [
-      local.allow_housing_reporting_role_access_to_landing_zone_path_pre_prod
+      local.allow_housing_reporting_role_access_to_landing_zone_path_pre_prod,
+      local.allow_access_from_academy_account
     ] : []
   )
   bucket_key_policy_statements = [
