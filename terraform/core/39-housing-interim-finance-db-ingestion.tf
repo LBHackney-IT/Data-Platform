@@ -70,6 +70,7 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
+        TableGroupingPolicy     = "CombineCompatibleSchemas"
         TableLevelConfiguration = 3
       }
       CrawlerOutput = {
@@ -93,7 +94,7 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
     "*.zip",
     "*.xlsx",
     "*.html",
-  ] 
+  ]
 }
 
 resource "aws_ssm_parameter" "ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name" {
