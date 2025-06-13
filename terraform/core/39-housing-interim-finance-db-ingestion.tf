@@ -78,6 +78,22 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
     })
     table_prefix = null
   }
+  glue_crawler_excluded_blobs = [
+    "*/archive*",
+    "*/data-quality*",
+    "*/glue-*",
+    "*/google-sheets*",
+    "*/govnotify*",
+    "*/housingfinance*",
+    "*/ingestion-details*",
+    "*/mtfh*",
+    "*/temp_backup*",
+    "*.json",
+    "*.txt",
+    "*.zip",
+    "*.xlsx",
+    "*.html",
+  ] 
 }
 
 resource "aws_ssm_parameter" "ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name" {
