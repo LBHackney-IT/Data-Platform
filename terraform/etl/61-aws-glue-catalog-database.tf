@@ -29,3 +29,11 @@ resource "aws_glue_catalog_database" "housing_nec_migration_database" {
     prevent_destroy = true
   }
 }
+
+resource "aws_glue_catalog_database" "temp_academy_ingestion" {
+  name = "temp_academy_ingestion"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
