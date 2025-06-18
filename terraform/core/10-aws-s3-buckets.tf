@@ -560,3 +560,15 @@ module "housing_nec_migration_storage" {
   bucket_identifier          = "housing-nec-migration-storage"
   include_backup_policy_tags = false
 }
+
+module "admin_bucket" {
+  source = "../modules/s3-bucket"
+
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "Admin Storage"
+  bucket_identifier          = "admin"
+  include_backup_policy_tags = false
+}
