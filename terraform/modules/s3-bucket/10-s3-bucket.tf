@@ -131,7 +131,9 @@ data "aws_iam_policy_document" "bucket" {
 }
 
 locals {
-  standard_s3_tags = var.tags
+  standard_s3_tags = merge(var.tags, {
+    "Environment" = lower(var.environment)
+  })
 
   filtered_s3_tags = {
     for key, value in local.standard_s3_tags :
