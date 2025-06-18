@@ -7,6 +7,7 @@ Feature: S3
   @exclude_aws_s3_bucket.mwaa_bucket
   @exclude_aws_s3_bucket.mwaa_etl_scripts_bucket
   @exclude_module.housing_nec_migration_storage.aws_s3_bucket.bucket
+  @exclude_module.admin_bucket.aws_s3_bucket.bucket
 
   # This rule is in place for legacy buckets created with the deprecated block within the aws_s3_bucket resource 
   Scenario: Data must be encrypted at rest for buckets created using server_side_encryption_configuration property within bucket resource
