@@ -301,6 +301,7 @@ module "department_benefits_and_housing_needs" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-benefits-housing-needs@hackney.gov.uk"
+  departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
 }
@@ -334,9 +335,9 @@ module "department_revenues" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-revenues@hackney.gov.uk"
+  departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-
 }
 
 module "department_environmental_services" {
