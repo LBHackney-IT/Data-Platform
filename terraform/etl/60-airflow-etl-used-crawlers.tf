@@ -190,6 +190,7 @@ resource "aws_glue_crawler" "benefits_housing_needs_academy_raw_zone" {
     Version = 1.0
     Grouping = {
       TableLevelConfiguration = 4
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
     }
     CrawlerOutput = {
       Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
@@ -213,6 +214,7 @@ resource "aws_glue_crawler" "revenues_academy_raw_zone" {
     Version = 1.0
     Grouping = {
       TableLevelConfiguration = 4
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
     }
     CrawlerOutput = {
       Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
