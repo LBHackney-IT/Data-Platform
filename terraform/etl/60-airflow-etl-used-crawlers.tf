@@ -180,7 +180,7 @@ resource "aws_glue_crawler" "benefits_housing_needs_academy_raw_zone" {
   count         = local.is_live_environment ? 1 : 0
   name          = "benefits-housing-needs-academy-raw-zone"
   role          = module.department_benefits_and_housing_needs_data_source.glue_role_arn
-  database_name = module.department_benefits_and_housing_needs_data_source.raw_zone_catalog_database_name
+  database_name = aws_glue_catalog_database.temp_benefits_housing_needs_academy.name # This is a temp database for the academy crawlers, will change to raw zone crawler when ready
 
   s3_target {
     path = "s3://${module.raw_zone_data_source.bucket_id}/benefits-housing-needs/academy"
@@ -204,7 +204,7 @@ resource "aws_glue_crawler" "revenues_academy_raw_zone" {
   count         = local.is_live_environment ? 1 : 0
   name          = "revenues-academy-raw-zone"
   role          = module.department_revenues_data_source.glue_role_arn
-  database_name = module.department_revenues_data_source.raw_zone_catalog_database_name
+  database_name = aws_glue_catalog_database.temp_revenues_academy.name # This is a temp database for the academy crawlers, will change to raw zone crawler when ready
 
   s3_target {
     path = "s3://${module.raw_zone_data_source.bucket_id}/revenues/academy"
