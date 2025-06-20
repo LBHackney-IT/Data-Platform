@@ -92,22 +92,3 @@ resource "aws_secretsmanager_secret_version" "mtfh_secrets" {
     ignore_changes = [secret_string]
   }
 }
-
-
-# Academy SQL Server credentials
-resource "aws_secretsmanager_secret" "academy_sql_server_credentials" {
-  name        = "airflow/variables/academy_sql_server_credentials"
-  description = "SQL Server credentials for Academy database ingestion"
-  tags        = module.tags.values
-}
-
-resource "aws_secretsmanager_secret_version" "academy_sql_server_credentials" {
-  secret_id = aws_secretsmanager_secret.academy_sql_server_credentials.id
-  secret_string = jsonencode({
-    value = "UPDATE_IN_CONSOLE"
-  })
-
-  lifecycle {
-    ignore_changes = [secret_string]
-  }
-}
