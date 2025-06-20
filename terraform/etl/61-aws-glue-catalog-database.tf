@@ -30,8 +30,17 @@ resource "aws_glue_catalog_database" "housing_nec_migration_database" {
   }
 }
 
-resource "aws_glue_catalog_database" "temp_academy_ingestion" {
-  name = "temp_academy_ingestion"
+
+resource "aws_glue_catalog_database" "temp_revenues_academy" {
+  name = "temp_revenues_academy"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_glue_catalog_database" "temp_benefits_housing_needs_academy" {
+  name = "temp_benefits_housing_needs_academy"
 
   lifecycle {
     prevent_destroy = true
