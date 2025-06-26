@@ -176,14 +176,14 @@ resource "aws_glue_crawler" "google_sheet_ingestion_raw_zone" {
 
 
 # Academy crawlers for raw zone
-resource "aws_glue_crawler" "benefits_housing_needs_academy_raw_zone" {
+resource "aws_glue_crawler" "ctax_raw_zone" {
   count         = local.is_live_environment ? 1 : 0
-  name          = "benefits-housing-needs-academy-raw-zone"
-  role          = module.department_benefits_and_housing_needs_data_source.glue_role_arn
-  database_name = aws_glue_catalog_database.temp_benefits_housing_needs_academy.name # This is a temp database will change to raw zone database when ready
+  name          = "ctax-raw-zone-crawler"
+  role          = module.department_revenues_data_source.glue_role_arn
+  database_name = aws_glue_catalog_database.ctax_raw_zone.name
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/benefits-housing-needs/academy"
+    path = "s3://dataplatform-prod-raw-zone/revenues/academy/ctax"
   }
 
   configuration = jsonencode({
@@ -200,14 +200,38 @@ resource "aws_glue_crawler" "benefits_housing_needs_academy_raw_zone" {
   tags = module.tags.values
 }
 
-resource "aws_glue_crawler" "revenues_academy_raw_zone" {
+resource "aws_glue_crawler" "nndr_raw_zone" {
   count         = local.is_live_environment ? 1 : 0
-  name          = "revenues-academy-raw-zone"
+  name          = "nndr-raw-zone-crawler"
   role          = module.department_revenues_data_source.glue_role_arn
-  database_name = aws_glue_catalog_database.temp_revenues_academy.name # This is a temp database will change to raw zone database when ready
+  database_name = aws_glue_catalog_database.nndr_raw_zone.name
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/revenues/academy"
+    path = "s3://dataplatform-prod-raw-zone/revenues/academy/nndr"
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+  tags = module.tags.values
+}
+
+resource "aws_glue_crawler" "hben_raw_zone" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "hben-raw-zone-crawler"
+  role          = module.department_benefits_and_housing_needs_data_source.glue_role_arn
+  database_name = aws_glue_catalog_database.hben_raw_zone.name
+
+  s3_target {
+    path = "s3://dataplatform-stg-raw-zone/benefits-housing-needs/academy/hben"
   }
 
   configuration = jsonencode({

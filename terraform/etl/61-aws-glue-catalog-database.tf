@@ -31,16 +31,24 @@ resource "aws_glue_catalog_database" "housing_nec_migration_database" {
 }
 
 
-resource "aws_glue_catalog_database" "temp_revenues_academy" {
-  name = "temp_revenues_academy"
+resource "aws_glue_catalog_database" "ctax_raw_zone" {
+  name = "ctax_raw_zone"
 
   lifecycle {
     prevent_destroy = true
   }
 }
 
-resource "aws_glue_catalog_database" "temp_benefits_housing_needs_academy" {
-  name = "temp_benefits_housing_needs_academy"
+resource "aws_glue_catalog_database" "nndr_raw_zone" {
+  name = "nndr_raw_zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_glue_catalog_database" "hben_raw_zone" {
+  name = "hben_raw_zone"
 
   lifecycle {
     prevent_destroy = true
