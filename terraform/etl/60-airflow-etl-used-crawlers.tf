@@ -183,7 +183,7 @@ resource "aws_glue_crawler" "ctax_raw_zone" {
   database_name = aws_glue_catalog_database.ctax_raw_zone.name
 
   s3_target {
-    path = "s3://dataplatform-prod-raw-zone/revenues/academy/ctax"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/revenues/academy/ctax"
   }
 
   configuration = jsonencode({
@@ -207,7 +207,7 @@ resource "aws_glue_crawler" "nndr_raw_zone" {
   database_name = aws_glue_catalog_database.nndr_raw_zone.name
 
   s3_target {
-    path = "s3://dataplatform-prod-raw-zone/revenues/academy/nndr"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/revenues/academy/nndr"
   }
 
   configuration = jsonencode({
@@ -231,7 +231,7 @@ resource "aws_glue_crawler" "hben_raw_zone" {
   database_name = aws_glue_catalog_database.hben_raw_zone.name
 
   s3_target {
-    path = "s3://dataplatform-stg-raw-zone/benefits-housing-needs/academy/hben"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/benefits-housing-needs/academy/hben"
   }
 
   configuration = jsonencode({
