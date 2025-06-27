@@ -49,14 +49,14 @@ resource "aws_secretsmanager_secret_version" "revenues_academy_sql_server_creds"
 }
 
 # Academy SQL Server credentials for Benefits and Housing Needs department
-resource "aws_secretsmanager_secret" "benefits_housing_needs_academy_sql_server_creds" {
-  name        = "/benefits-housing-needs/academy_sql_server_creds"
+resource "aws_secretsmanager_secret" "bens_housing_needs_academy_sql_server_creds" {
+  name        = "/bens-housing-needs/academy_sql_server_creds"
   description = "SQL Server credentials for Academy database ingestion - Benefits and Housing Needs department"
   tags        = module.tags.values
 }
 
-resource "aws_secretsmanager_secret_version" "benefits_housing_needs_academy_sql_server_creds" {
-  secret_id = aws_secretsmanager_secret.benefits_housing_needs_academy_sql_server_creds.id
+resource "aws_secretsmanager_secret_version" "bens_housing_needs_academy_sql_server_creds" {
+  secret_id = aws_secretsmanager_secret.bens_housing_needs_academy_sql_server_creds.id
   secret_string = jsonencode({
     value = "UPDATE_IN_CONSOLE"
   })
