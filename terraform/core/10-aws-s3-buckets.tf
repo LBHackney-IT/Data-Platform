@@ -295,10 +295,10 @@ locals {
 
 
   allow_access_from_academy_account = {
-    sid = "Allow access from academy account"
+    sid    = "Allow access from academy account"
     effect = "Allow"
     principals = {
-      type = "AWS"
+      type        = "AWS"
       identifiers = [var.academy_data_source_arn]
     }
     actions = [
@@ -334,42 +334,185 @@ locals {
       "*"
     ]
   }
+
+  allow_s3_access_to_raw_zone_kms_key = {
+    sid    = "Allow Amazon S3 use of the customer managed key"
+    effect = "Allow"
+    principals = {
+      type = "Service"
+      identifiers = [
+        "s3.amazonaws.com"
+      ]
+    }
+    actions = [
+      "kms:GenerateDataKey*",
+    ]
+    resources = [
+      "*"
+    ]
+    conditions = [
+      {
+        test     = "StringEquals"
+        variable = "aws:SourceAccount"
+        values = [
+          data.aws_caller_identity.data_platform.account_id
+        ]
+      },
+      {
+        test     = "ArnLike"
+        variable = "aws:SourceArn"
+        values = [
+          module.raw_zone.bucket_arn
+        ]
+      }
+    ]
+  }
+
+  allow_s3_access_to_refined_zone_kms_key = {
+    sid    = "Allow Amazon S3 use of the customer managed key"
+    effect = "Allow"
+    principals = {
+      type = "Service"
+      identifiers = [
+        "s3.amazonaws.com"
+      ]
+    }
+    actions = [
+      "kms:GenerateDataKey*",
+    ]
+    resources = [
+      "*"
+    ]
+    conditions = [
+      {
+        test     = "StringEquals"
+        variable = "aws:SourceAccount"
+        values = [
+          data.aws_caller_identity.data_platform.account_id
+        ]
+      },
+      {
+        test     = "ArnLike"
+        variable = "aws:SourceArn"
+        values = [
+          module.refined_zone.bucket_arn
+        ]
+      }
+    ]
+  }
+
+  allow_s3_access_to_trusted_zone_kms_key = {
+    sid    = "Allow Amazon S3 use of the customer managed key"
+    effect = "Allow"
+    principals = {
+      type = "Service"
+      identifiers = [
+        "s3.amazonaws.com"
+      ]
+    }
+    actions = [
+      "kms:GenerateDataKey*",
+    ]
+    resources = [
+      "*"
+    ]
+    conditions = [
+      {
+        test     = "StringEquals"
+        variable = "aws:SourceAccount"
+        values = [
+          data.aws_caller_identity.data_platform.account_id
+        ]
+      },
+      {
+        test     = "ArnLike"
+        variable = "aws:SourceArn"
+        values = [
+          module.trusted_zone.bucket_arn
+        ]
+      }
+    ]
+  }
+
+  grant_s3_write_permission_to_admin_bucket = {
+    sid    = "Allow S3 write permission to admin bucket"
+    effect = "Allow"
+    principals = {
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
+    }
+    actions = [
+      "s3:PutObject"
+    ]
+    resources = [
+      "${module.admin_bucket.bucket_arn}/*"
+    ]
+    conditions = [
+      {
+        test     = "ArnLike"
+        variable = "aws:SourceArn"
+        values   = [module.raw_zone.bucket_arn, module.refined_zone.bucket_arn, module.trusted_zone.bucket_arn]
+      },
+      {
+        test     = "StringEquals"
+        variable = "aws:SourceAccount"
+        values   = [data.aws_caller_identity.data_platform.account_id]
+      },
+      {
+        test     = "StringEquals"
+        variable = "s3:x-amz-acl"
+        values   = ["bucket-owner-full-control"]
+      }
+    ]
+  }
 }
 
+
 module "landing_zone" {
-  source                       = "../modules/s3-bucket"
-  tags                         = module.tags.values
-  project                      = var.project
-  environment                  = var.environment
-  identifier_prefix            = local.identifier_prefix
-  bucket_name                  = "Landing Zone"
-  bucket_identifier            = "landing-zone"
-  bucket_policy_statements     = local.is_production_environment ? [
+  source            = "../modules/s3-bucket"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "Landing Zone"
+  bucket_identifier = "landing-zone"
+  bucket_policy_statements = local.is_production_environment ? [
     local.allow_housing_reporting_role_access_to_landing_zone_path,
-  ] : (
+    ] : (
     local.is_live_environment ? [
       local.allow_housing_reporting_role_access_to_landing_zone_path_pre_prod,
       local.allow_access_from_academy_account
     ] : []
   )
   bucket_key_policy_statements = [
-    local.share_kms_key_with_housing_reporting_role, 
+    local.share_kms_key_with_housing_reporting_role,
     local.share_kms_key_with_academy_account
   ]
-  include_backup_policy_tags   = false
+  include_backup_policy_tags = false
 }
 
 module "raw_zone" {
-  source                       = "../modules/s3-bucket"
-  tags                         = module.tags.values
-  project                      = var.project
-  environment                  = var.environment
-  identifier_prefix            = local.identifier_prefix
-  bucket_name                  = "Raw Zone"
-  bucket_identifier            = "raw-zone"
-  bucket_policy_statements     = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement] : (local.is_live_environment ? [local.prod_to_pre_prod_raw_zone_data_sync_statement_for_pre_prod] : [])
-  bucket_key_policy_statements = local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement] : (local.is_live_environment ? [local.prod_to_pre_prod_data_sync_access_to_raw_zone_key_statement_for_pre_prod] : [])
-  include_backup_policy_tags   = false
+  source            = "../modules/s3-bucket"
+  tags              = module.tags.values
+  project           = var.project
+  environment       = var.environment
+  identifier_prefix = local.identifier_prefix
+  bucket_name       = "Raw Zone"
+  bucket_identifier = "raw-zone"
+  bucket_policy_statements = concat(
+    local.is_production_environment ? [local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement] : [],
+    local.is_live_environment && !local.is_production_environment ? [local.prod_to_pre_prod_raw_zone_data_sync_statement_for_pre_prod] : []
+  )
+  bucket_key_policy_statements = concat(
+    local.is_production_environment ? [
+      local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement
+    ] : [],
+    local.is_live_environment && !local.is_production_environment ? [
+      local.prod_to_pre_prod_data_sync_access_to_raw_zone_key_statement_for_pre_prod
+    ] : [],
+    [local.allow_s3_access_to_raw_zone_kms_key]
+  )
+  include_backup_policy_tags = false
 }
 
 module "refined_zone" {
@@ -380,29 +523,33 @@ module "refined_zone" {
   identifier_prefix = local.identifier_prefix
   bucket_name       = "Refined Zone"
   bucket_identifier = "refined-zone"
-
   bucket_policy_statements = concat(
     [local.rentsense_refined_zone_access_statement],
   local.is_live_environment && !local.is_production_environment ? [local.prod_to_pre_prod_refined_zone_data_sync_statement_for_pre_prod] : [])
-
   bucket_key_policy_statements = concat(
     [local.rentsense_refined_zone_key_statement],
-  local.is_live_environment && !local.is_production_environment ? [local.prod_to_pre_prod_data_sync_access_to_refined_zone_key_statement_for_pre_prod] : [])
+    local.is_live_environment && !local.is_production_environment ? [local.prod_to_pre_prod_data_sync_access_to_refined_zone_key_statement_for_pre_prod] : [],
+    [local.allow_s3_access_to_refined_zone_kms_key]
+  )
   include_backup_policy_tags = false
 }
 
 module "trusted_zone" {
-  source            = "../modules/s3-bucket"
-  tags              = module.tags.values
-  project           = var.project
-  environment       = var.environment
-  identifier_prefix = local.identifier_prefix
-  bucket_name       = "Trusted Zone"
-  bucket_identifier = "trusted-zone"
-
-  bucket_policy_statements     = local.is_live_environment && !local.is_production_environment ? [local.prod_to_pre_prod_trusted_zone_data_sync_statement_for_pre_prod] : []
-  bucket_key_policy_statements = local.is_live_environment && !local.is_production_environment ? [local.prod_to_pre_prod_data_sync_access_to_trusted_zone_key_statement_for_pre_prod] : []
-  include_backup_policy_tags   = false
+  source                   = "../modules/s3-bucket"
+  tags                     = module.tags.values
+  project                  = var.project
+  environment              = var.environment
+  identifier_prefix        = local.identifier_prefix
+  bucket_name              = "Trusted Zone"
+  bucket_identifier        = "trusted-zone"
+  bucket_policy_statements = local.is_live_environment && !local.is_production_environment ? [local.prod_to_pre_prod_trusted_zone_data_sync_statement_for_pre_prod] : []
+  bucket_key_policy_statements = concat(
+    local.is_live_environment && !local.is_production_environment ? [
+      local.prod_to_pre_prod_data_sync_access_to_trusted_zone_key_statement_for_pre_prod
+    ] : [],
+    [local.allow_s3_access_to_trusted_zone_kms_key]
+  )
+  include_backup_policy_tags = false
 }
 
 module "glue_scripts" {
@@ -570,5 +717,6 @@ module "admin_bucket" {
   identifier_prefix          = local.identifier_prefix
   bucket_name                = "Admin Storage"
   bucket_identifier          = "admin"
+  bucket_policy_statements   = [local.grant_s3_write_permission_to_admin_bucket]
   include_backup_policy_tags = false
 }
