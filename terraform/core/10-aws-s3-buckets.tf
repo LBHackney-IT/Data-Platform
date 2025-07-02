@@ -433,6 +433,38 @@ locals {
       }
     ]
   }
+
+  grant_s3_write_permission_to_admin_bucket = {
+    sid    = "Allow S3 write permission to admin bucket"
+    effect = "Allow"
+    principals = {
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
+    }
+    actions = [
+      "s3:PutObject"
+    ]
+    resources = [
+      "${module.admin_bucket.bucket_arn}/*"
+    ]
+    conditions = [
+      {
+        test     = "ArnLike"
+        variable = "aws:SourceArn"
+        values   = [module.raw_zone.bucket_arn, module.refined_zone.bucket_arn, module.trusted_zone.bucket_arn]
+      },
+      {
+        test     = "StringEquals"
+        variable = "aws:SourceAccount"
+        values   = [data.aws_caller_identity.data_platform.account_id]
+      },
+      {
+        test     = "StringEquals"
+        variable = "s3:x-amz-acl"
+        values   = ["bucket-owner-full-control"]
+      }
+    ]
+  }
 }
 
 
@@ -685,5 +717,6 @@ module "admin_bucket" {
   identifier_prefix          = local.identifier_prefix
   bucket_name                = "Admin Storage"
   bucket_identifier          = "admin"
+  bucket_policy_statements   = [local.grant_s3_write_permission_to_admin_bucket]
   include_backup_policy_tags = false
 }
