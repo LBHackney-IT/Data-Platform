@@ -97,7 +97,7 @@ module "addresses_api_rds_export_storage" {
   identifier_prefix              = local.identifier_prefix
   bucket_name                    = "RDS Export Storage"
   bucket_identifier              = "rds-export-storage"
-  role_arns_to_share_access_with = local.is_prod_env ? [module.db_snapshot_to_s3[0].rds_snapshot_to_s3_lambda_role_arn] : []
+  role_arns_to_share_access_with = local.is_production_environment ? [module.db_snapshot_to_s3[0].rds_snapshot_to_s3_lambda_role_arn] : []
 
   providers = {
     aws = aws.aws_api_account

@@ -32,7 +32,7 @@ module "landing_zone" {
   bucket_identifier = "landing-zone"
 
   bucket_policy_statements = concat(
-    local.is_prod_env ? [
+    local.is_production_environment ? [
       local.allow_housing_reporting_role_access_to_landing_zone_path
     ] : [],
     local.is_preprod_env ? [
@@ -57,7 +57,7 @@ module "raw_zone" {
   bucket_identifier = "raw-zone"
 
   bucket_policy_statements = concat(
-    local.is_prod_env ? [
+    local.is_production_environment ? [
       local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement
     ] : [],
     local.is_preprod_env ? [
@@ -65,7 +65,7 @@ module "raw_zone" {
     ] : []
   )
   bucket_key_policy_statements = concat(
-    local.is_prod_env ? [
+    local.is_production_environment ? [
       local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement
     ] : [],
     local.is_preprod_env ? [

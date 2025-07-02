@@ -3,7 +3,6 @@
 #===============================================================================
 
 locals {
-  is_prod_env    = local.is_production_environment
   is_preprod_env = local.is_live_environment && !local.is_production_environment
 
   prod_account_id    = data.aws_secretsmanager_secret_version.production_account_id.secret_string
