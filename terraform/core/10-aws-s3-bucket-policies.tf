@@ -295,7 +295,7 @@ locals {
   ]
 
   allow_s3_kms_generatedatakey_from_raw_zone = {
-    sid    = "Allow Amazon S3 use of the customer managed key"
+    sid    = "Allow Amazon S3 use of the raw zone customer managed key"
     effect = "Allow"
     principals = {
       type        = "Service"
@@ -313,7 +313,7 @@ locals {
   }
 
   allow_s3_kms_generatedatakey_from_refined_zone = {
-    sid    = "Allow Amazon S3 use of the customer managed key"
+    sid    = "Allow Amazon S3 use of the refined zone customer managed key"
     effect = "Allow"
     principals = {
       type        = "Service"
@@ -331,7 +331,7 @@ locals {
   }
 
   allow_s3_kms_generatedatakey_from_trusted_zone = {
-    sid    = "Allow Amazon S3 use of the customer managed key"
+    sid    = "Allow Amazon S3 use of the trusted zone customer managed key"
     effect = "Allow"
     principals = {
       type        = "Service"
