@@ -174,7 +174,6 @@ resource "aws_glue_crawler" "google_sheet_ingestion_raw_zone" {
   tags = module.tags.values
 }
 
-
 # Academy crawlers for raw zone
 resource "aws_glue_crawler" "ctax_raw_zone" {
   count         = local.is_live_environment ? 1 : 0
