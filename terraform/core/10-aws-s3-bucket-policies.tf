@@ -294,8 +294,8 @@ locals {
     }
   ]
 
-  allow_s3_access_to_raw_zone_kms_key = {
-    sid    = "Allow Amazon S3 use of the customer managed key"
+  allow_s3_kms_generatedatakey_from_raw_zone = {
+    sid    = "Allow Amazon S3 use of the raw zone customer managed key"
     effect = "Allow"
     principals = {
       type        = "Service"
@@ -312,8 +312,8 @@ locals {
     ])
   }
 
-  allow_s3_access_to_refined_zone_kms_key = {
-    sid    = "Allow Amazon S3 use of the customer managed key"
+  allow_s3_kms_generatedatakey_from_refined_zone = {
+    sid    = "Allow Amazon S3 use of the refined zone customer managed key"
     effect = "Allow"
     principals = {
       type        = "Service"
@@ -330,8 +330,8 @@ locals {
     ])
   }
 
-  allow_s3_access_to_trusted_zone_kms_key = {
-    sid    = "Allow Amazon S3 use of the customer managed key"
+  allow_s3_kms_generatedatakey_from_trusted_zone = {
+    sid    = "Allow Amazon S3 use of the trusted zone customer managed key"
     effect = "Allow"
     principals = {
       type        = "Service"
@@ -347,6 +347,7 @@ locals {
       }
     ])
   }
+
 
   #-----------------------------------------------------------------------------
   # Admin Bucket Policies
