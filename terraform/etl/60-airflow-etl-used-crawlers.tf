@@ -183,13 +183,13 @@ resource "aws_glue_crawler" "ctax_raw_zone" {
   database_name = aws_glue_catalog_database.ctax_raw_zone.name
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/revenues/academy/ctax"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_revenues_data_source.identifier}/academy/ctax"
   }
 
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
-      TableLevelConfiguration = 4
+      TableLevelConfiguration = 5
       TableGroupingPolicy     = "CombineCompatibleSchemas"
     }
     CrawlerOutput = {
@@ -207,13 +207,13 @@ resource "aws_glue_crawler" "nndr_raw_zone" {
   database_name = aws_glue_catalog_database.nndr_raw_zone.name
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/revenues/academy/nndr"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_revenues_data_source.identifier}/academy/nndr"
   }
 
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
-      TableLevelConfiguration = 4
+      TableLevelConfiguration = 5
       TableGroupingPolicy     = "CombineCompatibleSchemas"
     }
     CrawlerOutput = {
@@ -231,13 +231,13 @@ resource "aws_glue_crawler" "hben_raw_zone" {
   database_name = aws_glue_catalog_database.hben_raw_zone.name
 
   s3_target {
-    path = "s3://${module.raw_zone_data_source.bucket_id}/benefits-housing-needs/academy/hben"
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_benefits_and_housing_needs_data_source.identifier}/academy/hben"
   }
 
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
-      TableLevelConfiguration = 4
+      TableLevelConfiguration = 5
       TableGroupingPolicy     = "CombineCompatibleSchemas"
     }
     CrawlerOutput = {
