@@ -103,6 +103,11 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   vpc_security_group_ids       = [aws_security_group.redshift_cluster_security_group.id]
   preferred_maintenance_window = var.preferred_maintenance_window
   tags                         = var.tags
+  lifecycle {
+    ignore_changes = [
+      maintenance_track_name
+    ]
+  }
 }
 
 resource "aws_secretsmanager_secret" "redshift_cluster_master_password" {
