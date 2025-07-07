@@ -201,7 +201,7 @@ resource "aws_iam_role" "batch_s3_copy_role" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          Service = "batch.amazonaws.com"
+          Service = "batchoperations.s3.amazonaws.com"
         }
       }
     ]
