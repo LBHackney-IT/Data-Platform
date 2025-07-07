@@ -102,7 +102,7 @@ data "aws_iam_policy_document" "batch_s3_copy_service_role" {
     condition {
       test     = "StringLike"
       variable = "kms:EncryptionContext:aws:s3:arn"
-      values   = [module.raw_zone.bucket_arn]
+      values   = ["${module.raw_zone.bucket_arn}/*"]
     }
   }
 
@@ -124,7 +124,7 @@ data "aws_iam_policy_document" "batch_s3_copy_service_role" {
     condition {
       test     = "StringLike"
       variable = "kms:EncryptionContext:aws:s3:arn"
-      values   = [module.refined_zone.bucket_arn]
+      values   = ["${module.refined_zone.bucket_arn}/*"]
     }
   }
 
@@ -146,7 +146,7 @@ data "aws_iam_policy_document" "batch_s3_copy_service_role" {
     condition {
       test     = "StringLike"
       variable = "kms:EncryptionContext:aws:s3:arn"
-      values   = [module.trusted_zone.bucket_arn]
+      values   = ["${module.trusted_zone.bucket_arn}/*"]
     }
   }
 }
