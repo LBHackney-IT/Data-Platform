@@ -149,6 +149,38 @@ data "aws_iam_policy_document" "batch_s3_copy_service_role" {
       values   = ["${module.trusted_zone.bucket_arn}/*"]
     }
   }
+
+  statement {
+    sid = "S3BatchJobManifestAndReportAccess"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject"
+    ]
+    resources = ["${module.admin_bucket.bucket_arn}/*"]
+  }
+
+  statement {
+    sid = "KMSAccessForAdminBucket"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = [
+      module.admin_bucket.kms_key_arn
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "kms:ViaService"
+      values   = ["s3.${var.aws_deploy_region}.amazonaws.com"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "kms:EncryptionContext:aws:s3:arn"
+      values   = ["${module.admin_bucket.bucket_arn}/*"]
+    }
+  }
 }
 
 resource "aws_iam_policy" "batch_s3_copy_policy" {
