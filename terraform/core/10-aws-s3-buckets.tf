@@ -70,7 +70,8 @@ module "raw_zone" {
     ] : [],
     local.is_preprod_env ? [
       local.prod_to_pre_prod_data_sync_access_to_raw_zone_key_statement_for_pre_prod
-    ] : []
+    ] : [],
+    local.allow_s3_batch_copy_kms_access_raw_zone
   )
   include_backup_policy_tags = false
 }
@@ -95,7 +96,8 @@ module "refined_zone" {
     [local.rentsense_refined_zone_key_statement],
     local.is_preprod_env ? [
       local.prod_to_pre_prod_data_sync_access_to_refined_zone_key_statement_for_pre_prod
-    ] : []
+    ] : [],
+    local.allow_s3_batch_copy_kms_access_refined_zone
   )
   include_backup_policy_tags = false
 }
@@ -116,7 +118,8 @@ module "trusted_zone" {
   bucket_key_policy_statements = concat(
     local.is_preprod_env ? [
       local.prod_to_pre_prod_data_sync_access_to_trusted_zone_key_statement_for_pre_prod
-    ] : []
+    ] : [],
+    local.allow_s3_batch_copy_kms_access_trusted_zone
   )
   include_backup_policy_tags = false
 }
