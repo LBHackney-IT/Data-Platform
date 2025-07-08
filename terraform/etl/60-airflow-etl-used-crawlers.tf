@@ -185,6 +185,10 @@ resource "aws_glue_crawler" "ctax_raw_zone" {
     path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_revenues_data_source.identifier}/academy/ctax"
   }
 
+  schema_change_policy {
+    delete_behavior = "DELETE_FROM_DATABASE"
+  }
+
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
@@ -209,6 +213,10 @@ resource "aws_glue_crawler" "nndr_raw_zone" {
     path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_revenues_data_source.identifier}/academy/nndr"
   }
 
+  schema_change_policy {
+    delete_behavior = "DELETE_FROM_DATABASE"
+  }
+
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
@@ -231,6 +239,10 @@ resource "aws_glue_crawler" "hben_raw_zone" {
 
   s3_target {
     path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_benefits_and_housing_needs_data_source.identifier}/academy/hben"
+  }
+
+  schema_change_policy {
+    delete_behavior = "DELETE_FROM_DATABASE"
   }
 
   configuration = jsonencode({
