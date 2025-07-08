@@ -65,6 +65,7 @@ module "raw_zone" {
     ] : []
   )
   bucket_key_policy_statements = concat(
+    [local.allow_s3_batch_copy_kms_access_raw_zone],
     local.is_production_environment ? [
       local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement
     ] : [],
@@ -92,7 +93,10 @@ module "refined_zone" {
   )
 
   bucket_key_policy_statements = concat(
-    [local.rentsense_refined_zone_key_statement],
+    [
+      local.rentsense_refined_zone_key_statement,
+      local.allow_s3_batch_copy_kms_access_refined_zone
+    ],
     local.is_preprod_env ? [
       local.prod_to_pre_prod_data_sync_access_to_refined_zone_key_statement_for_pre_prod
     ] : []
@@ -114,6 +118,7 @@ module "trusted_zone" {
   ] : []
 
   bucket_key_policy_statements = concat(
+    [local.allow_s3_batch_copy_kms_access_trusted_zone],
     local.is_preprod_env ? [
       local.prod_to_pre_prod_data_sync_access_to_trusted_zone_key_statement_for_pre_prod
     ] : []

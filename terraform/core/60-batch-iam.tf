@@ -102,7 +102,7 @@ data "aws_iam_policy_document" "batch_s3_copy_service_role" {
     condition {
       test     = "StringLike"
       variable = "kms:EncryptionContext:aws:s3:arn"
-      values   = [module.raw_zone.bucket_arn]
+      values   = ["${module.raw_zone.bucket_arn}/*"]
     }
   }
 
@@ -124,7 +124,7 @@ data "aws_iam_policy_document" "batch_s3_copy_service_role" {
     condition {
       test     = "StringLike"
       variable = "kms:EncryptionContext:aws:s3:arn"
-      values   = [module.refined_zone.bucket_arn]
+      values   = ["${module.refined_zone.bucket_arn}/*"]
     }
   }
 
@@ -146,7 +146,39 @@ data "aws_iam_policy_document" "batch_s3_copy_service_role" {
     condition {
       test     = "StringLike"
       variable = "kms:EncryptionContext:aws:s3:arn"
-      values   = [module.trusted_zone.bucket_arn]
+      values   = ["${module.trusted_zone.bucket_arn}/*"]
+    }
+  }
+
+  statement {
+    sid = "S3BatchJobManifestAndReportAccess"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject"
+    ]
+    resources = ["${module.admin_bucket.bucket_arn}/*"]
+  }
+
+  statement {
+    sid = "KMSAccessForAdminBucket"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = [
+      module.admin_bucket.kms_key_arn
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "kms:ViaService"
+      values   = ["s3.${var.aws_deploy_region}.amazonaws.com"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "kms:EncryptionContext:aws:s3:arn"
+      values   = ["${module.admin_bucket.bucket_arn}/*"]
     }
   }
 }
@@ -169,7 +201,7 @@ resource "aws_iam_role" "batch_s3_copy_role" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          Service = "batch.amazonaws.com"
+          Service = "batchoperations.s3.amazonaws.com"
         }
       }
     ]

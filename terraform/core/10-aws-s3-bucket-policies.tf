@@ -384,4 +384,57 @@ locals {
       }
     ]
   }
+
+
+  #-----------------------------------------------------------------------------
+  # S3 Batch Copy Policies
+  #-----------------------------------------------------------------------------
+
+  allow_s3_batch_copy_kms_access_raw_zone = {
+    sid    = "Allow S3 Batch Copy to access raw zone KMS key"
+    effect = "Allow"
+    principals = {
+      type        = "AWS"
+      identifiers = [
+        aws_iam_role.batch_s3_copy_role.arn
+      ]
+    }
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = ["*"]
+  }
+
+  allow_s3_batch_copy_kms_access_refined_zone = {
+    sid    = "Allow S3 Batch Copy to access refined zone KMS key"
+    effect = "Allow"
+    principals = {
+      type        = "AWS"
+      identifiers = [
+        aws_iam_role.batch_s3_copy_role.arn
+      ]
+    }
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = ["*"]
+  }
+  
+  allow_s3_batch_copy_kms_access_trusted_zone = {
+    sid    = "Allow S3 Batch Copy to access trusted zone KMS key"
+    effect = "Allow"
+    principals = {
+      type        = "AWS"
+      identifiers = [
+        aws_iam_role.batch_s3_copy_role.arn
+      ]
+    }
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = ["*"]
+  }
 }
