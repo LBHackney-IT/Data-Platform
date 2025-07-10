@@ -3,12 +3,12 @@
    will be inherited from the parent Terraform.
 */
 terraform {
-  required_version = ">= 0.14.3"
+  required_version = "~> 1.0"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 4.11"
+      version = ">= 4.0"
     }
   }
 }
