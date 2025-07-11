@@ -88,7 +88,11 @@ locals {
 
     replace(module.department_children_family_services_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_children_family_services_data_source.raw_zone_catalog_database_name,
     replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_children_family_services_data_source.refined_zone_catalog_database_name,
-    replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_") = module.department_children_family_services_data_source.trusted_zone_catalog_database_name
+    replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_") = module.department_children_family_services_data_source.trusted_zone_catalog_database_name,
+
+    replace(aws_glue_catalog_database.ctax_raw_zone.name, "-", "_") = aws_glue_catalog_database.ctax_raw_zone.name,
+    replace(aws_glue_catalog_database.nndr_raw_zone.name, "-", "_") = aws_glue_catalog_database.nndr_raw_zone.name,
+    replace(aws_glue_catalog_database.hben_raw_zone.name, "-", "_") = aws_glue_catalog_database.hben_raw_zone.name
   }
 
   redshift_users = [
@@ -181,6 +185,10 @@ locals {
         replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_"),
 
+        replace(aws_glue_catalog_database.ctax_raw_zone.name, "-", "_"),
+        replace(aws_glue_catalog_database.nndr_raw_zone.name, "-", "_"),
+        replace(aws_glue_catalog_database.hben_raw_zone.name, "-", "_"),
+
       ], local.unrestricted_schemas)
     },
     {
@@ -247,7 +255,7 @@ locals {
         replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_"),
       ], local.unrestricted_schemas)
     },
-     {
+    {
       user_name  = module.department_children_family_services_data_source.identifier_snake_case
       secret_arn = module.department_children_family_services_data_source.redshift_cluster_secret
       schemas_to_grant_access_to = concat([
@@ -353,7 +361,11 @@ locals {
 
         replace(module.department_children_family_services_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_"),
-        replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_")
+        replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_"),
+
+        replace(aws_glue_catalog_database.ctax_raw_zone.name, "-", "_"),
+        replace(aws_glue_catalog_database.nndr_raw_zone.name, "-", "_"),
+        replace(aws_glue_catalog_database.hben_raw_zone.name, "-", "_")
 
       ]
       roles_to_inherit_permissions_from = [
