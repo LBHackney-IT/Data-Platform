@@ -8,10 +8,10 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
-      configuration_aliases = [ 
+      version = ">=4.0, <6.0"
+      configuration_aliases = [
         aws.aws_hackit_account
-       ]
+      ]
     }
   }
 }
