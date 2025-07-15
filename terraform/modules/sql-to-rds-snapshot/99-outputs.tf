@@ -5,7 +5,7 @@ output "ecr_repository_worker_endpoint" {
 }
 
 output "rds_instance_id" {
-  value = aws_db_instance.ingestion_db.id
+  value = aws_db_instance.ingestion_db.identifier
 }
 
 output "cloudwatch_event_rule_name" {
