@@ -54,3 +54,11 @@ resource "aws_glue_catalog_database" "hben_raw_zone" {
     prevent_destroy = true
   }
 }
+
+resource "aws_glue_catalog_database" "metastore" {
+  name = "metastore"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
