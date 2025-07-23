@@ -68,7 +68,7 @@ data "aws_iam_policy_document" "assume_policy" {
   }
 }
 
-data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
+data "aws_iam_policy_document" "sql_to_rds_snapshot_cloudtrail_bucket_policy" {
   statement {
     effect    = "Allow"
     actions   = ["s3:GetBucketAcl"]
@@ -117,8 +117,8 @@ data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
 }
 
 # Apply the bucket policy to the external bucket (only in production)
-resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
+resource "aws_s3_bucket_policy" "sql_to_rds_snapshot_cloudtrail_bucket_policy" {
   count  = var.is_production_environment ? 1 : 0
   bucket = var.cloudtrail_bucket_id
-  policy = data.aws_iam_policy_document.cloudtrail_bucket_policy.json
+  policy = data.aws_iam_policy_document.sql_to_rds_snapshot_cloudtrail_bucket_policy.json
 }
