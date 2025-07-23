@@ -8,6 +8,7 @@ Feature: S3
   @exclude_aws_s3_bucket.mwaa_etl_scripts_bucket
   @exclude_module.housing_nec_migration_storage.aws_s3_bucket.bucket
   @exclude_module.admin_bucket.aws_s3_bucket.bucket
+  @exclude_module.cloudtrail_storage.aws_s3_bucket.bucket
 
   # This rule is in place for legacy buckets created with the deprecated block within the aws_s3_bucket resource
   Scenario: Data must be encrypted at rest for buckets created using server_side_encryption_configuration property within bucket resource
@@ -30,7 +31,6 @@ Feature: S3
   @exclude_module.trusted_zone.aws_s3_bucket.bucket
   @exclude_module.kafka_event_streaming\[0\].module.kafka_dependency_storage.aws_s3_bucket.bucket
   @exclude_module.db_snapshot_to_s3\[0\].module.rds_export_storage.aws_s3_bucket.bucket
-  @exclude_module.cloudtrail_storage.aws_s3_bucket.bucket
   @exclude_module.liberator_db_snapshot_to_s3\[0\].module.rds_export_storage.aws_s3_bucket.bucket
   # This rule checks for a separate sse block as supported by the s3 bucket module
   Scenario: Data must be encrypted at rest for buckets created using separate server side configuration resource
