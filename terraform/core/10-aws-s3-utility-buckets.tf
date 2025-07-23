@@ -50,10 +50,24 @@ module "spark_ui_output_storage" {
   include_backup_policy_tags     = false
 }
 
+module "cloudtrail_storage" {
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "CloudTrail" # Used in kms key description
+  bucket_identifier              = "cloudtrail" # Used in created bucket name and kms key alias
+  versioning_enabled             = false
+  expire_objects_days            = 365
+  expire_noncurrent_objects_days = 30
+  abort_multipart_days           = 30
+  include_backup_policy_tags     = false
+}
+
 #===============================================================================
 # Application and Storage Buckets
 #===============================================================================
-
 module "lambda_artefact_storage" {
   source                     = "../modules/s3-bucket"
   tags                       = module.tags.values

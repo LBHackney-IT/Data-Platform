@@ -2,7 +2,7 @@ resource "aws_cloudtrail" "events" {
   count = var.is_production_environment ? 1 : 0
 
   name                          = var.identifier_prefix
-  s3_bucket_name                = aws_s3_bucket.cloudtrail.id
+  s3_bucket_name                = var.cloudtrail_bucket_id
   s3_key_prefix                 = "prefix"
   include_global_service_events = false
 
@@ -68,70 +68,11 @@ data "aws_iam_policy_document" "assume_policy" {
   }
 }
 
-resource "aws_kms_key" "key" {
-  tags = var.tags
-
-  description             = "${var.project} ${var.environment} - ${var.identifier_prefix}-cloudtrail Bucket Key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
-}
-
-resource "aws_s3_bucket" "cloudtrail" {
-  bucket        = "${var.identifier_prefix}-cloudtrail"
-  force_destroy = true
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
-  bucket = aws_s3_bucket.cloudtrail.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.key.arn
-      sse_algorithm     = "aws:kms"
-    }
-    bucket_key_enabled = true
-  }
-}
-
-resource "aws_s3_bucket_versioning" "cloudtrail" {
-  bucket = aws_s3_bucket.cloudtrail.id
-
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "block_public_access" {
-  bucket     = aws_s3_bucket.cloudtrail.id
-  depends_on = [aws_s3_bucket.cloudtrail]
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-resource "aws_s3_bucket_policy" "example" {
-  bucket = aws_s3_bucket.cloudtrail.id
-  policy = data.aws_iam_policy_document.cloudtrail_bucket_policy.json
-}
-
-resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail" {
-  bucket = aws_s3_bucket.cloudtrail.id
-  rule {
-    id     = "Keep previous version 30 days"
-    status = "Enabled"
-    expiration {
-      days = 30
-    }
-  }
-}
-
 data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
   statement {
     effect    = "Allow"
     actions   = ["s3:GetBucketAcl"]
-    resources = ["arn:aws:s3:::${var.identifier_prefix}-cloudtrail"]
+    resources = [var.cloudtrail_bucket_arn]
     principals {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
@@ -141,7 +82,7 @@ data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
   statement {
     effect    = "Allow"
     actions   = ["s3:PutObject"]
-    resources = ["arn:aws:s3:::${var.identifier_prefix}-cloudtrail/prefix/AWSLogs/*"]
+    resources = ["${var.cloudtrail_bucket_arn}/prefix/AWSLogs/*"]
     principals {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
@@ -162,8 +103,8 @@ data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
       identifiers = ["*"]
     }
     resources = [
-      aws_s3_bucket.cloudtrail.arn,
-      "${aws_s3_bucket.cloudtrail.arn}/*",
+      var.cloudtrail_bucket_arn,
+      "${var.cloudtrail_bucket_arn}/*",
     ]
     condition {
       test     = "Bool"
@@ -173,4 +114,11 @@ data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
       ]
     }
   }
+}
+
+# Apply the bucket policy to the external bucket (only in production)
+resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
+  count  = var.is_production_environment ? 1 : 0
+  bucket = var.cloudtrail_bucket_id
+  policy = data.aws_iam_policy_document.cloudtrail_bucket_policy.json
 }
