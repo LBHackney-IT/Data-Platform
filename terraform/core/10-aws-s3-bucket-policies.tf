@@ -457,12 +457,10 @@ locals {
     sid       = "AllowCloudTrailPutObject"
     effect    = "Allow"
     actions   = ["s3:PutObject"]
-    resources = ["arn:aws:s3:::${local.identifier_prefix}-cloudtrail/prefix/AWSLogs/*"]
+    resources = ["arn:aws:s3:::${local.identifier_prefix}-cloudtrail/*/AWSLogs/*"]
     principals = {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }
-    # Note: s3:x-amz-acl condition cannot be added due to s3-bucket module limitations
-    # This condition would ensure CloudTrail sets bucket-owner-full-control ACL
   }
 }

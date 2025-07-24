@@ -1,9 +1,9 @@
 resource "aws_cloudtrail" "events" {
-  count = var.is_production_environment ? 1 : 0
+  count = var.is_live_environment ? 1 : 0
 
   name                          = var.identifier_prefix
   s3_bucket_name                = var.cloudtrail_bucket_id
-  s3_key_prefix                 = "prefix"
+  s3_key_prefix                 = "liberator-data-processing"
   include_global_service_events = false
 
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.cloud_trail_events.arn}:*" # CloudTrail requires the Log Stream wildcard

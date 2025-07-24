@@ -68,8 +68,8 @@ module "cloudtrail_storage" {
   abort_multipart_days           = 30
   include_backup_policy_tags     = false
 
-  # CloudTrail-specific bucket policy statements (only in production)
-  bucket_policy_statements = local.is_production_environment ? [
+  # CloudTrail-specific bucket policy statements (for live environments: stg and prod)
+  bucket_policy_statements = local.is_live_environment ? [
     local.cloudtrail_get_bucket_acl_statement,
     local.cloudtrail_put_object_statement
   ] : []
