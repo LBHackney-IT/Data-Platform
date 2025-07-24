@@ -57,3 +57,18 @@ variable "vpc_id" {
   description = "ID of the VPC for the current environment"
   type        = string
 }
+
+variable "cloudtrail_bucket_id" {
+  description = "ID of the S3 bucket for storing CloudTrail logs"
+  type        = string
+}
+
+variable "cloudtrail_bucket_arn" {
+  description = "ARN of the S3 bucket for storing CloudTrail logs"
+  type        = string
+}
+
+variable "cloudtrail_kms_key_arn" {
+  description = "KMS Key ARN for the CloudTrail bucket"
+  type        = string
+}

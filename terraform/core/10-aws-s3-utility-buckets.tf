@@ -51,9 +51,38 @@ module "spark_ui_output_storage" {
 }
 
 #===============================================================================
-# Application and Storage Buckets
+# CloudTrail Storage Bucket
 #===============================================================================
 
+module "cloudtrail_storage" {
+  source                         = "../modules/s3-bucket"
+  tags                           = module.tags.values
+  project                        = var.project
+  environment                    = var.environment
+  identifier_prefix              = local.identifier_prefix
+  bucket_name                    = "CloudTrail"
+  bucket_identifier              = "cloudtrail"
+  versioning_enabled             = true
+  expire_objects_days            = 365
+  expire_noncurrent_objects_days = 30
+  abort_multipart_days           = 30
+  include_backup_policy_tags     = false
+
+  bucket_policy_statements = local.is_live_environment ? [
+    local.cloudtrail_get_bucket_acl_statement,
+    local.cloudtrail_put_object_statement
+  ] : []
+}
+
+# Move CloudTrail bucket from sql-to-rds-snapshot module to centralized location, keeping the same name
+moved {
+  from = module.liberator_dump_to_rds_snapshot[0].aws_s3_bucket.cloudtrail
+  to   = module.cloudtrail_storage.aws_s3_bucket.bucket
+}
+
+#===============================================================================
+# Application and Storage Buckets
+#===============================================================================
 module "lambda_artefact_storage" {
   source                     = "../modules/s3-bucket"
   tags                       = module.tags.values

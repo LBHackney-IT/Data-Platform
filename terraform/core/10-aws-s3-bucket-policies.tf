@@ -394,7 +394,7 @@ locals {
     sid    = "Allow S3 Batch Copy to access raw zone KMS key"
     effect = "Allow"
     principals = {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
         aws_iam_role.batch_s3_copy_role.arn
       ]
@@ -410,7 +410,7 @@ locals {
     sid    = "Allow S3 Batch Copy to access refined zone KMS key"
     effect = "Allow"
     principals = {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
         aws_iam_role.batch_s3_copy_role.arn
       ]
@@ -421,12 +421,12 @@ locals {
     ]
     resources = ["*"]
   }
-  
+
   allow_s3_batch_copy_kms_access_trusted_zone = {
     sid    = "Allow S3 Batch Copy to access trusted zone KMS key"
     effect = "Allow"
     principals = {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
         aws_iam_role.batch_s3_copy_role.arn
       ]
@@ -436,5 +436,34 @@ locals {
       "kms:GenerateDataKey"
     ]
     resources = ["*"]
+  }
+
+  #-----------------------------------------------------------------------------
+  # CloudTrail Policies
+  #-----------------------------------------------------------------------------
+
+  cloudtrail_get_bucket_acl_statement = {
+    sid       = "AllowCloudTrailGetBucketAcl"
+    effect    = "Allow"
+    actions   = ["s3:GetBucketAcl"]
+    resources = ["arn:aws:s3:::${local.identifier_prefix}-cloudtrail"]
+    principals = {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+  }
+
+  cloudtrail_put_object_statement = {
+    sid       = "AllowCloudTrailPutObject"
+    effect    = "Allow"
+    actions   = ["s3:PutObject"]
+    resources = ["arn:aws:s3:::${local.identifier_prefix}-cloudtrail/*/AWSLogs/*"]
+    # First wildcard (*) matches any custom prefix (e.g., liberator-data-processing)
+    # AWSLogs path is automatically added by AWS CloudTrail service
+    # Second wildcard (*) matches AWS-generated path: account-id/CloudTrail/region/date/
+    principals = {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
   }
 }
