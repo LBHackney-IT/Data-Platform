@@ -76,7 +76,7 @@ module "cloudtrail_storage" {
 
 # Move CloudTrail bucket from sql-to-rds-snapshot module to centralized location, keeping the same name
 moved {
-  from = module.liberator_dump_to_rds_snapshot[0].aws_s3_bucket.cloudtrail_bucket[0]
+  from = module.liberator_dump_to_rds_snapshot[0].aws_s3_bucket.cloudtrail
   to   = module.cloudtrail_storage.aws_s3_bucket.bucket
 }
 
