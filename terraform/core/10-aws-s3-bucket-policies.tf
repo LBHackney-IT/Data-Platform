@@ -457,7 +457,7 @@ locals {
     sid       = "AllowCloudTrailPutObject"
     effect    = "Allow"
     actions   = ["s3:PutObject"]
-    resources = ["arn:aws:s3:::${local.identifier_prefix}-cloudtrail/*/AWSLogs/*"]
+    resources = ["arn:aws:s3:::${local.identifier_prefix}-cloudtrail/*/AWSLogs/*"] # First wildcard should be the project name
     principals = {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]

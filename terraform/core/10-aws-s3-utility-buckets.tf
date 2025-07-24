@@ -60,15 +60,14 @@ module "cloudtrail_storage" {
   project                        = var.project
   environment                    = var.environment
   identifier_prefix              = local.identifier_prefix
-  bucket_name                    = "CloudTrail" # Used in kms key description
-  bucket_identifier              = "cloudtrail" # Used in created bucket name and kms key alias
+  bucket_name                    = "CloudTrail"
+  bucket_identifier              = "cloudtrail"
   versioning_enabled             = true
   expire_objects_days            = 365
   expire_noncurrent_objects_days = 30
   abort_multipart_days           = 30
   include_backup_policy_tags     = false
 
-  # CloudTrail-specific bucket policy statements (for live environments: stg and prod)
   bucket_policy_statements = local.is_live_environment ? [
     local.cloudtrail_get_bucket_acl_statement,
     local.cloudtrail_put_object_statement
