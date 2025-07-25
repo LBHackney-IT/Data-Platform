@@ -67,10 +67,6 @@ resource "aws_cloudtrail" "glue_data_catalog_usage" {
   advanced_event_selector {
     name = "Log Glue Data Catalog events only"
     field_selector {
-      field  = "eventCategory"
-      equals = ["Management"]
-    }
-    field_selector {
       field  = "eventSource"
       equals = ["glue.amazonaws.com"]
     }
