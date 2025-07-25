@@ -50,7 +50,6 @@ resource "aws_iam_role_policy" "glue_data_catalog_cloudtrail_logs_policy" {
   })
 }
 
-
 resource "aws_cloudtrail" "glue_data_catalog_usage" {
   name           = "${local.identifier_prefix}-glue-data-catalog-usage"
   s3_bucket_name = module.cloudtrail_storage.bucket_id
@@ -63,45 +62,35 @@ resource "aws_cloudtrail" "glue_data_catalog_usage" {
   is_multi_region_trail         = false
   enable_logging                = true
 
-  # Event selectors to capture Glue Data Catalog API calls
-  event_selector {
-    read_write_type                  = "All"
-    include_management_events        = true
-    exclude_management_event_sources = []
-
-    # Capture all Glue Data Catalog operations
-    data_resource {
-      type   = "AWS::Glue::Catalog"
-      values = ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"]
+  # Use advanced_event_selector for comprehensive Glue Data Catalog logging
+  # because event_selector only supports data_resource field includes only S3, Dynamodb, Lambda events
+  advanced_event_selector {
+    name = "Log Glue Data Catalog events only"
+    field_selector {
+      field  = "eventCategory"
+      equals = ["Management"]
     }
-
-    # Capture Glue Database operations
-    data_resource {
-      type   = "AWS::Glue::Database"
-      values = ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/*"]
+    field_selector {
+      field  = "eventSource"
+      equals = ["glue.amazonaws.com"]
     }
-
-    # Capture Glue Table operations
-    data_resource {
-      type   = "AWS::Glue::Table"
-      values = ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/*/*"]
+    field_selector {
+      field = "eventName"
+      equals = [
+        # Database operations
+        "CreateDatabase", "GetDatabase", "GetDatabases", "UpdateDatabase", "DeleteDatabase",
+        # Table operations
+        "CreateTable", "GetTable", "GetTables", "UpdateTable", "DeleteTable",
+        "GetTableVersion", "GetTableVersions", "DeleteTableVersion",
+        # Partition operations
+        "CreatePartition", "GetPartition", "GetPartitions", "UpdatePartition", "DeletePartition",
+        "GetPartitionIndexes", "CreatePartitionIndex", "DeletePartitionIndex"
+      ]
     }
   }
-
   tags = module.tags.values
 
   depends_on = [
     aws_iam_role_policy.glue_data_catalog_cloudtrail_logs_policy
   ]
-}
-
-
-output "glue_data_catalog_cloudtrail_arn" {
-  description = "ARN of the CloudTrail logging Glue Data Catalog usage"
-  value       = aws_cloudtrail.glue_data_catalog_usage.arn
-}
-
-output "glue_data_catalog_cloudtrail_log_group" {
-  description = "CloudWatch Log Group for Glue Data Catalog CloudTrail"
-  value       = aws_cloudwatch_log_group.glue_data_catalog_cloudtrail.name
 }
