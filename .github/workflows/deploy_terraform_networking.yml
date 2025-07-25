@@ -68,8 +68,6 @@ on:
         required: true
       TERRAFORM_SECRET_TOKEN:
         required: true
-      GITHUB_TOKEN: 
-        required: false
 
 
 jobs:
