@@ -40,3 +40,13 @@ output "mwaa_etl_scripts_bucket_arn" {
 output "mwaa_key_arn" {
   value = aws_kms_key.mwaa_key.arn
 }
+
+output "glue_data_catalog_cloudtrail_arn" {
+  description = "ARN of the CloudTrail logging Glue Data Catalog usage"
+  value       = aws_cloudtrail.glue_data_catalog_usage.arn
+}
+
+output "glue_data_catalog_cloudtrail_log_group" {
+  description = "CloudWatch Log Group for Glue Data Catalog CloudTrail"
+  value       = aws_cloudwatch_log_group.glue_data_catalog_cloudtrail.name
+}
