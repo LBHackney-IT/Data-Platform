@@ -62,6 +62,8 @@ on:
         required: true
       TERRAFORM_SECRET_TOKEN:
         required: true
+      GITHUB_TOKEN: 
+        required: false
 
 jobs:
   validate:
@@ -131,7 +133,11 @@ jobs:
 
       - name: Install tflint
         run: |
-          curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/74267234 | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip
+          curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/74267234 \
+          | jq -r '.assets[] | select(.name == "tflint_linux_amd64.zip") | .browser_download_url' \
+          | xargs curl -L -o tflint.zip
+          unzip tflint.zip
+          rm tflint.zip
 
       - name: Configuring AWS credentials
         working-directory: ${{ inputs.build_path }}
@@ -147,3 +153,5 @@ jobs:
           terraform init -backend=false
           ../../tflint --init --config="../config/.tflint.hcl"
           ../../tflint --var-file='../config/stg.tfvars'  --var 'aws_deploy_region=${{ env.aws_deploy_region }}' --var 'aws_deploy_account_id=${{ secrets.aws_deploy_account_id }}' --var 'aws_api_account_id=${{ secrets.AWS_API_ACCOUNT_PROD }}' --var 'aws_hackit_account_id=${{ secrets.AWS_HACKIT_ACCOUNT_ID }}' --var 'aws_sandbox_account_id=${{ secrets.AWS_SANDBOX_ACCOUNT_ID }}' --var 'aws_deploy_iam_role_name=${{ secrets.AWS_ROLE_TO_ASSUME }}' --var 'environment=${{ inputs.environment }}' --var 'google_project_id=${{ env.google_project_id }}' --var 'automation_build_url=${{ inputs.automation_build_url }}' --var 'aws_api_vpc_id=${{ secrets.AWS_API_VPC_ID }}' --var 'copy_liberator_to_pre_prod_lambda_execution_role=${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}' --var 'pre_production_liberator_data_storage_kms_key_arn=${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}' --module --config="../config/.tflint.hcl" --loglevel=warn .
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

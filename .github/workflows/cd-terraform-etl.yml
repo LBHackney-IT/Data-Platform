@@ -49,6 +49,7 @@ jobs:
       COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE: ${{ secrets.COPY_LIBERATOR_TO_PRE_PROD_LAMBDA_EXECUTION_ROLE }}
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
       TERRAFORM_SECRET_TOKEN: ${{ secrets.TERRAFORM_SECRET_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   pre-production:
     needs: ["test", "validate"]
     uses: ./.github/workflows/deploy_terraform.yml
@@ -81,6 +82,7 @@ jobs:
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
       PRODUCTION_FIREWALL_IP: ${{ secrets.PRODUCTION_FIREWALL_IP }}
       TERRAFORM_SECRET_TOKEN: ${{ secrets.TERRAFORM_SECRET_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   production:
     needs: [ "pre-production" ]
     uses: ./.github/workflows/deploy_terraform.yml
@@ -113,3 +115,4 @@ jobs:
       PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN: ${{ secrets.PRE_PRODUCTION_LIBERATOR_DATA_STORAGE_KMS_KEY_ARN }}
       PRODUCTION_FIREWALL_IP: ${{ secrets.PRODUCTION_FIREWALL_IP }}
       TERRAFORM_SECRET_TOKEN: ${{ secrets.TERRAFORM_SECRET_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
