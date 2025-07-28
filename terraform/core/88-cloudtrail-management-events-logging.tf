@@ -1,5 +1,5 @@
 #===============================================================================
-# Management Events Logging (All AWS Services)
+# Management Events Logging (All AWS Services - free)
 #===============================================================================
 
 resource "aws_cloudwatch_log_group" "management_events_cloudtrail" {
@@ -49,8 +49,8 @@ resource "aws_iam_role_policy" "management_events_cloudtrail_logs_policy" {
   })
 }
 
-# AWS Support Guidance (Case Summary):
-# 1. For CloudTrail Trails, cannot filter management events by eventSource - must log all management events.
+# Summary from AWS Doc and Support:
+# 1. For CloudTrail Trails, cannot filter management events by eventSource.
 # 2. To log all management events, enable management events (Read/Write).
 # 3. We can exclude KMS and RDS Data API events to reduce noise.
 # 4. Nearly all of glue operations are management events.
