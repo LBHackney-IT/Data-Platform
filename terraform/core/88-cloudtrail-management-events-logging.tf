@@ -67,7 +67,6 @@ resource "aws_cloudtrail" "management_events" {
   is_multi_region_trail         = false
   enable_logging                = true
 
-
   event_selector {
     read_write_type           = "All"
     include_management_events = true
