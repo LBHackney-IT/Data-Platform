@@ -112,6 +112,7 @@ module "ingest_tascomi_data" {
     "--private_key_secret_id"   = data.aws_secretsmanager_secret.tascomi_api_private_key.id
     "--number_of_workers"       = local.number_of_workers
     "--target_database_name"    = aws_glue_catalog_database.raw_zone_tascomi.name
+    "--max_lookback_days"       = "30" # Limit lookback to prevent excessive API calls
   }
   script_name                = "tascomi_api_ingestion"
   spark_ui_output_storage_id = module.spark_ui_output_storage_data_source.bucket_id
