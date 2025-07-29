@@ -42,9 +42,6 @@ def not_today(date_str):
 
 
 def get_tascomi_resource(page_number, url, body):
-    global public_key
-    global private_key
-
     print(f"Calling API to get page {page_number}")
 
     headers = {
@@ -94,9 +91,6 @@ def calculate_auth_hash(public_key, private_key):
 
 
 def get_number_of_pages(resource, query=""):
-    global public_key
-    global private_key
-
     headers = {"content-type": "application/json", "content-length": "0"}
 
     headers = authenticate_tascomi(headers, public_key, private_key)
