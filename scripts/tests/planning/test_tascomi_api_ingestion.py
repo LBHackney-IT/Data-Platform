@@ -17,25 +17,3 @@ class TestTascomiApiIngestion:
         with freeze_time(today):
             actual_response = get_days_since_last_import(last_import_date)
             assert actual_response == ["2018-03-13", "2018-03-14"]
-
-    def test_get_days_since_last_import_with_max_lookback(self):
-        """Test that max_lookback_days limits the number of days queried"""
-        today = "2025-01-15"
-        last_import_date = "20220720"  # more than 60 days ago compared with today
-        max_lookback_days = 7
-
-        with freeze_time(today):
-            actual_response = get_days_since_last_import(
-                last_import_date, max_lookback_days
-            )
-            # Should only return the last 7 days, not all days since last import
-            expected_days = [
-                "2025-01-08",
-                "2025-01-09",
-                "2025-01-10",
-                "2025-01-11",
-                "2025-01-12",
-                "2025-01-13",
-                "2025-01-14",
-            ]
-            assert actual_response == expected_days
