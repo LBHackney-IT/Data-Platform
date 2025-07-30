@@ -96,18 +96,14 @@ resource "aws_iam_role_policy_attachment" "glue_runner_pass_role_to_glue_for_not
   policy_arn = aws_iam_policy.glue_runner_pass_role_to_glue_for_notebook_use.arn
 }
 
-# Define a map for the departmentalairflow policies
+# Define a map for the departmental airflow policies
 locals {
-  airflow_policy_map = merge({
+  airflow_policy_map = {
     s3_access                 = aws_iam_policy.s3_access.arn,
     secrets_manager_read_only = aws_iam_policy.secrets_manager_read_only.arn,
     airflow_base_policy       = aws_iam_policy.airflow_base_policy.arn,
     department_ecs_passrole   = aws_iam_policy.department_ecs_passrole.arn
-    },
-    local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? {
-      cloudtrail_access = aws_iam_policy.cloudtrail_access_policy[0].arn
-    } : {}
-  )
+  }
 }
 
 # IAM user and permission for departmetnal airflow user

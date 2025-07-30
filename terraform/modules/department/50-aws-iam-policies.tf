@@ -191,7 +191,7 @@ resource "aws_iam_policy" "read_only_glue_access" {
 data "aws_iam_policy_document" "s3_department_access" {
   # Include CloudTrail bucket access for data-and-insight department
   source_policy_documents = local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? [
-    data.aws_iam_policy_document.cloudtrail_access[0].json # CloudTrail S3 + KMS access
+    data.aws_iam_policy_document.cloudtrail_access[0].json
   ] : []
 
   statement {
