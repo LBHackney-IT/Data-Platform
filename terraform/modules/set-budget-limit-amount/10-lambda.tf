@@ -94,7 +94,7 @@ resource "aws_cloudwatch_event_rule" "run_lambda_to_update_budget_once_a_month" 
   name                = "run_lambda_to_update_budget_once_a_month"
   description         = "triggers the budget update lambda once per month"
   schedule_expression = "cron(0 0 1 * ? *)"
-  state               = "DISABLED"
+  is_enabled          = false
 }
 
 resource "aws_cloudwatch_event_target" "run_lambda_to_update_budget_once_a_month" {

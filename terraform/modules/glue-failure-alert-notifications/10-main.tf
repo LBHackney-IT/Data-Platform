@@ -116,7 +116,7 @@ resource "aws_cloudwatch_event_rule" "lambda" {
   name          = lower("${var.identifier_prefix}${var.lambda_name}")
   description   = "Event rule for triggering lambda ${var.lambda_name}"
   event_pattern = var.cloudwatch_event_pattern
-  state         = "ENABLED"
+  is_enabled    = true
 
   tags = var.tags
 }

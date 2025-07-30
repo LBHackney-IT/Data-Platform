@@ -190,7 +190,7 @@ resource "aws_cloudwatch_event_rule" "govnotify_customer_services_trigger_event"
   name                = "${local.short_identifier_prefix}govnotify_customer_services_trigger_event"
   description         = "Trigger event for Customer Services GovNotify API ingestion"
   schedule_expression = "cron(0 0 * * ? *)"
-  state               = local.is_production_environment ? "ENABLED" : "DISABLED"
+  is_enabled          = local.is_production_environment ? true : false
   tags                = module.tags.values
 }
 

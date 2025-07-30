@@ -169,7 +169,7 @@ resource "aws_cloudwatch_event_rule" "run_lambda" {
   name_prefix         = "${var.lambda_name}-lambda-"
   description         = "Fires every day at "
   schedule_expression = var.lambda_execution_cron_schedule
-  state               = (var.is_production_environment || !var.is_live_environment) ? "ENABLED" : "DISABLED"
+  is_enabled          = var.is_production_environment || !var.is_live_environment
 }
 
 resource "aws_cloudwatch_event_target" "run_lambda" {

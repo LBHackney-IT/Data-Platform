@@ -190,7 +190,7 @@ resource "aws_cloudwatch_event_rule" "govnotify_housing_repairs_trigger_event" {
   name                = "${local.short_identifier_prefix}govnotify_housing_repairs_trigger_event"
   description         = "Trigger event for GovNotify Housing API ingestion"
   schedule_expression = "cron(0 0 * * ? *)"
-  state               = local.is_production_environment ? "ENABLED" : "DISABLED"
+  is_enabled          = local.is_production_environment ? true : false
   tags                = module.tags.values
 }
 

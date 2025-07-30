@@ -197,7 +197,7 @@ resource "aws_cloudwatch_event_rule" "run_s3_copier_lambda_on_glue_job_success" 
   }
   EOF
 
-  state = var.is_live_environment ? "ENABLED" : "DISABLED"
+  is_enabled = var.is_live_environment
 }
 
 resource "aws_cloudwatch_event_target" "run_s3_copier_lambda" {

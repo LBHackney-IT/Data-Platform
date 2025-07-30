@@ -175,7 +175,7 @@ resource "aws_cloudwatch_event_rule" "ingestion_schedule" {
   name_prefix         = "g-drive-to-s3-copier-schedule"
   description         = "Ingestion Schedule"
   schedule_expression = var.ingestion_schedule
-  state               = var.ingestion_schedule_enabled ? "ENABLED" : "DISABLED"
+  is_enabled          = var.ingestion_schedule_enabled ? true : false
 }
 
 resource "aws_cloudwatch_event_target" "run_lambda" {

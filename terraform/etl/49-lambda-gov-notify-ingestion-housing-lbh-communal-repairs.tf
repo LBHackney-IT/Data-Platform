@@ -63,7 +63,7 @@ resource "aws_cloudwatch_event_rule" "govnotify_housing_lbh_communal_repairs_tri
   description         = "Trigger event for Housing LBH Communal Repairs GovNotify API ingestion"
   tags                = module.tags.values
   schedule_expression = "cron(0 0 * * ? *)"
-  state               = local.is_production_environment ? "ENABLED" : "DISABLED"
+  is_enabled          = local.is_production_environment ? true : false
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify_housing_lbh_communal_repairs" {
