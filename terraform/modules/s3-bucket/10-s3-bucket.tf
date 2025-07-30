@@ -174,6 +174,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
     id     = "expire-older-objects"
     status = "Enabled"
 
+    filter {}
+
     expiration {
       days = var.expire_objects_days
     }
