@@ -107,12 +107,16 @@ resource "aws_iam_role_policy_attachment" "glue_runner_pass_role_to_glue_for_not
 
 # Define a map for the departmentalairflow policies
 locals {
-  airflow_policy_map = {
+  airflow_policy_map = merge({
     s3_access                 = aws_iam_policy.s3_access.arn,
     secrets_manager_read_only = aws_iam_policy.secrets_manager_read_only.arn,
     airflow_base_policy       = aws_iam_policy.airflow_base_policy.arn,
     department_ecs_passrole   = aws_iam_policy.department_ecs_passrole.arn
-  }
+    },
+    local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? {
+      cloudtrail_access = aws_iam_policy.cloudtrail_access_policy[0].arn
+    } : {}
+  )
 }
 
 # IAM user and permission for departmetnal airflow user
@@ -176,11 +180,4 @@ resource "aws_iam_role_policy_attachment" "mtfh_access_attachment" {
   count      = contains(["data-and-insight", "housing"], local.department_identifier) ? 1 : 0
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.mtfh_access_policy[0].arn
-}
-
-// Read-only CloudTrail access attachment for Data and Insight department only - ECS role only
-resource "aws_iam_role_policy_attachment" "cloudtrail_access_attachment_ecs" {
-  count      = local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? 1 : 0
-  role       = aws_iam_role.department_ecs_role.name
-  policy_arn = aws_iam_policy.cloudtrail_access_policy[0].arn
 }
