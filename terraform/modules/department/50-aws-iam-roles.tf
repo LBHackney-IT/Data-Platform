@@ -1,28 +1,37 @@
 // User Role for staging account - This role is a combination of policies ready to be applied to SSO
 data "aws_iam_policy_document" "sso_staging_user_policy" {
-  override_policy_documents = local.create_notebook ? [
-    data.aws_iam_policy_document.s3_department_access.json,
-    data.aws_iam_policy_document.glue_access.json,
-    data.aws_iam_policy_document.secrets_manager_read_only.json,
-    data.aws_iam_policy_document.redshift_department_read_access.json,
-    data.aws_iam_policy_document.notebook_access[0].json
-    ] : [
-    data.aws_iam_policy_document.s3_department_access.json,
-    data.aws_iam_policy_document.glue_access.json,
-    data.aws_iam_policy_document.secrets_manager_read_only.json,
-    data.aws_iam_policy_document.redshift_department_read_access.json,
-    data.aws_iam_policy_document.mwaa_department_web_server_access.json
-  ]
+  override_policy_documents = concat(
+    local.create_notebook ? [
+      data.aws_iam_policy_document.s3_department_access.json,
+      data.aws_iam_policy_document.glue_access.json,
+      data.aws_iam_policy_document.secrets_manager_read_only.json,
+      data.aws_iam_policy_document.redshift_department_read_access.json,
+      data.aws_iam_policy_document.notebook_access[0].json
+      ] : [
+      data.aws_iam_policy_document.s3_department_access.json,
+      data.aws_iam_policy_document.glue_access.json,
+      data.aws_iam_policy_document.secrets_manager_read_only.json,
+      data.aws_iam_policy_document.redshift_department_read_access.json,
+      data.aws_iam_policy_document.mwaa_department_web_server_access.json
+    ],
+    local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? [
+      data.aws_iam_policy_document.cloudtrail_access[0].json
+    ] : []
+  )
 }
 
 // User Role for production account - This role is a combination of policies ready to be applied to SSO
 data "aws_iam_policy_document" "sso_production_user_policy" {
-  override_policy_documents = [
+  override_policy_documents = concat([
     data.aws_iam_policy_document.read_only_s3_department_access.json,
     data.aws_iam_policy_document.read_only_glue_access.json,
     data.aws_iam_policy_document.secrets_manager_read_only.json,
     data.aws_iam_policy_document.athena_can_write_to_s3.json
-  ]
+    ],
+    local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? [
+      data.aws_iam_policy_document.cloudtrail_access[0].json
+    ] : []
+  )
 }
 
 // Glue role + attachments
@@ -167,4 +176,11 @@ resource "aws_iam_role_policy_attachment" "mtfh_access_attachment" {
   count      = contains(["data-and-insight", "housing"], local.department_identifier) ? 1 : 0
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.mtfh_access_policy[0].arn
+}
+
+// Read-only CloudTrail access attachment for Data and Insight department only - ECS role only
+resource "aws_iam_role_policy_attachment" "cloudtrail_access_attachment_ecs" {
+  count      = local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? 1 : 0
+  role       = aws_iam_role.department_ecs_role.name
+  policy_arn = aws_iam_policy.cloudtrail_access_policy[0].arn
 }
