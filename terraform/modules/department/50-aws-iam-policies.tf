@@ -3,6 +3,11 @@
 
 // S3 read only access policy
 data "aws_iam_policy_document" "read_only_s3_department_access" {
+  # Include CloudTrail bucket access for data-and-insight department
+  source_policy_documents = local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? [
+    data.aws_iam_policy_document.cloudtrail_access[0].json
+  ] : []
+
   statement {
     sid    = "ListAllS3AndKmsKeys"
     effect = "Allow"
@@ -184,6 +189,11 @@ resource "aws_iam_policy" "read_only_glue_access" {
 
 // Full departmental S3 access policy
 data "aws_iam_policy_document" "s3_department_access" {
+  # Include CloudTrail bucket access for data-and-insight department
+  source_policy_documents = local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? [
+    data.aws_iam_policy_document.cloudtrail_access[0].json # CloudTrail S3 + KMS access
+  ] : []
+
   statement {
     sid    = "ListAllS3AndKmsKeys"
     effect = "Allow"
