@@ -16,22 +16,23 @@ from pyspark.ml.feature import StringIndexer, OneHotEncoder, VectorAssembler
 from pyspark.ml.functions import vector_to_array
 from pyspark.ml.tuning import ParamGridBuilder, CrossValidator, CrossValidatorModel
 from pyspark.sql import DataFrame, SparkSession, Column
-from pyspark.sql.functions import to_date, col, lit, length, broadcast, udf, when, substring, lower, concat_ws, soundex, \
-    regexp_replace, trim, split, struct, arrays_zip, array, array_sort, current_date
+from pyspark.sql.functions import (to_date, col, lit, length, broadcast, udf, when, substring, lower, concat_ws,
+                                   soundex, \
+    regexp_replace, trim, split, struct, arrays_zip, array, array_sort, current_date)
 from pyspark.sql.pandas.functions import pandas_udf
 from pyspark.sql.types import StructType, StructField, StringType, DateType, BooleanType, DoubleType
 
 extracted_name_schema = StructType(
     [StructField("entity_type", StringType(), True), StructField("title", StringType(), True),
-        StructField("first_name", StringType(), True), StructField("middle_name", StringType(), True),
-        StructField("last_name", StringType(), True)])
+     StructField("first_name", StringType(), True), StructField("middle_name", StringType(), True),
+     StructField("last_name", StringType(), True)])
 
 features_schema = StructType(
     [StructField("first_name_similar", BooleanType(), True), StructField("middle_name_similar", BooleanType(), True),
-        StructField("last_name_similar", BooleanType(), True), StructField("name_similarity", DoubleType(), True),
-        StructField("address_line_1_similarity", DoubleType(), True),
-        StructField("address_line_2_similarity", DoubleType(), True),
-        StructField("full_address_similarity", DoubleType(), True), ])
+     StructField("last_name_similar", BooleanType(), True), StructField("name_similarity", DoubleType(), True),
+     StructField("address_line_1_similarity", DoubleType(), True),
+     StructField("address_line_2_similarity", DoubleType(), True),
+     StructField("full_address_similarity", DoubleType(), True), ])
 
 
 @udf(returnType=extracted_name_schema)
@@ -113,8 +114,7 @@ def extract_person_name(name: str) -> (str, str, str, str, str):
             title_finder = [t for t in title_with_name if t.casefold() in common_titles]
             person_title = " ".join(title_finder) if len(title_finder) else None
         remaining_name = [n for n in title_with_name if n.casefold() != (
-                    person_title or "").casefold() and n.casefold() not in common_titles and n.casefold() not in [".",
-                                                                                                                  "&"]]
+                person_title or "").casefold() and n.casefold() not in common_titles and n.casefold() not in [".", "&"]]
 
         if len(remaining_name) == 1:
             first_name = remaining_name[0]
@@ -312,21 +312,25 @@ def standardize_housing_data(housing_cleaned: DataFrame) -> DataFrame:
     standard names that will be used by various other functions like feature engineering etc.)
     The DataFrame returned will have the following columns:
     * source: Source of the data like parking, tax etc. Should be of type string and cannot be blank.
-    * source_id: Unique ID for reach record. It's ok to have same person with different source_id. Should be of type string and cannot be blank.
+    * source_id: Unique ID for reach record. It's ok to have same person with different source_id. Should be of type
+    string and cannot be blank.
     * uprn: UPRN of the address. Should be of type string and can be blank.
     * title: Title of the person. Should be of type string and can be blank.
     * first_name: First name of the person. Should be of type string and can be blank.
     * middle_name: Middle name of the person. Should be of type string and can be blank.
     * last_name: Last name of the person. Should be of type string and can be blank.
-    * name: Concatenation of first, middle and last name after sorting alphabetically of the person. Should be of type string and can be blank.
+    * name: Concatenation of first, middle and last name after sorting alphabetically of the person. Should be of
+    type string and can be blank.
     * date_of_birth: Date of birth of the person. Should be of type Date and can be blank.
     * post_code: Postal code of the address. Should be of type string and can be blank.
     * address_line_1: First line of the address. Should be of type string and can be blank.
     * address_line_2: Second line of the address. Should be of type string and can be blank.
     * address_line_3: Third line of the address. Should be of type string and can be blank.
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
-    * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order. Should be of type string and can be blank.
-    * source_filter: A field containing more information on the datasource such as tenancy type; this allows the user to filter the dataset to only
+    * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
+    Should be of type string and can be blank.
+    * source_filter: A field containing more information on the datasource such as tenancy type; this allows the user
+    to filter the dataset to only
     include records for certain tenancy types.
     Args:
         housing_cleaned: housing DataFrame after preparing and cleaning it.
@@ -389,8 +393,8 @@ def prepare_clean_council_tax_data(spark: SparkSession, council_tax_account: Dat
 
     liable_types = broadcast(spark.createDataFrame(
         [(0, 'Non-liable'), (1, 'Joint & Several'), (2, 'Freeholder'), (3, 'Leaseholder'), (4, 'Tenant'),
-            (5, 'Licencee'), (6, 'Resident'), (7, 'Owner'), (8, 'Assumed'), (9, 'VOID'), (10, 'Other'),
-            (11, 'Suspense'), (12, 'CTax Payer'), (-1, '(DATA ERROR)')]).toDF("liability_id", "liability_type"))
+         (5, 'Licencee'), (6, 'Resident'), (7, 'Owner'), (8, 'Assumed'), (9, 'VOID'), (10, 'Other'), (11, 'Suspense'),
+         (12, 'CTax Payer'), (-1, '(DATA ERROR)')]).toDF("liability_id", "liability_type"))
 
     council_tax_lead_person = (
         council_tax_account.join(liable_types, col("lead_liab_pos") == col("liability_id")).withColumn("source",
@@ -534,12 +538,12 @@ def prepare_clean_housing_benefit_data(hb_member_df: DataFrame, hb_household_df:
     housing_benefit_rent_assessment = hb_rent_assessment_df.withColumn("source_filter", when(
         (col("dhp_ind") == 1) & (col("type_ind") > 1), "DHP").otherwise("HB")).filter(
         (col("from_date") < col("import_date")) & (col("to_date") > col("import_date")) & (
-                    (col("type_ind") == 1) | (col("dhp_ind") == 1)) & (col("model_amt") > 0)).select(col("claim_id"),
-                                                                                                     col("source_filter"))
+                (col("type_ind") == 1) | (col("dhp_ind") == 1)) & (col("model_amt") > 0)).select(col("claim_id"),
+                                                                                                 col("source_filter"))
 
     housing_benefit_ctax_assessment = hb_ctax_assessment_df.withColumn("source_filter", lit("CTS")).filter(
         (col("from_date") < col("import_date")) & (col("to_date") > col("import_date")) & (col("model_amt") > 0) & (
-                    (col("type_ind") == 1) | (col("dhp_ind") == 1))).select(col("claim_id"), col("source_filter"))
+                (col("type_ind") == 1) | (col("dhp_ind") == 1))).select(col("claim_id"), col("source_filter"))
 
     housing_benefit_rent_ctax = housing_benefit_rent_assessment.union(housing_benefit_ctax_assessment)
 
@@ -620,7 +624,9 @@ def prepare_clean_parking_permit_data(parking_permit_df: DataFrame) -> DataFrame
     """
 
     parking_permit_cleaned = parking_permit_df.withColumn("source", lit("parking_permit")).withColumn("source_filter",
-                                                                                                      lit("live parking permit")).withColumn(
+                                                                                                      lit("live "
+                                                                                                          "parking "
+                                                                                                          "permit")).withColumn(
         "extracted_name",
         extract_name_udf(concat_ws(" ", col("forename_of_applicant"), col("surname_of_applicant")))).withColumn(
         "date_of_birth", to_date(col("date_of_birth_of_applicant"), format="yyyy-MM-dd")).withColumnRenamed("postcode",
@@ -720,17 +726,22 @@ def prepare_clean_schools_admissions_data(schools_admissions_df: DataFrame) -> D
 
     # create a zip of address line arrays, sorted in the order of not null (False), column order
     schools_admissions_cleaned = schools_admissions_cleaned.select(col("source"), col("source_id"), col("title"),
-        col("first_name"), col("middle_name"), col("last_name"), col("name"), col("date_of_birth"), col("email"),
-        col("post_code"), col("uprn"), col("address_line_1"), col("address_line_2"), col("address_line_3"),
-        col("address_line_4"), col("source_filter"), array_sort(
+                                                                   col("first_name"), col("middle_name"),
+                                                                   col("last_name"), col("name"), col("date_of_birth"),
+                                                                   col("email"), col("post_code"), col("uprn"),
+                                                                   col("address_line_1"), col("address_line_2"),
+                                                                   col("address_line_3"), col("address_line_4"),
+                                                                   col("source_filter"), array_sort(
             arrays_zip(array([col(c).isNull() for c in address_cols]), array([lit(i) for i in range(4)]),
-                array([col(c) for c in address_cols]))).alias('address_sorted'))
+                       array([col(c) for c in address_cols]))).alias('address_sorted'))
 
     # disaggregate address_sorted arrays into columns
     schools_admissions_cleaned = schools_admissions_cleaned.select(col("source"), col("source_id"), col("title"),
-        col("first_name"), col("middle_name"), col("last_name"), col("name"), col("date_of_birth"), col("email"),
-        col("post_code"), col("uprn"), col("source_filter"),
-        *[col("address_sorted")[i]['2'].alias(address_cols[i]) for i in range(4)])
+                                                                   col("first_name"), col("middle_name"),
+                                                                   col("last_name"), col("name"), col("date_of_birth"),
+                                                                   col("email"), col("post_code"), col("uprn"),
+                                                                   col("source_filter"), *[
+            col("address_sorted")[i]['2'].alias(address_cols[i]) for i in range(4)])
 
     # rejig address lines
     schools_admissions_cleaned = schools_admissions_cleaned.withColumn("address_line_1", when(
@@ -780,7 +791,8 @@ def standardize_schools_admissions_data(schools_admissions_cleaned: DataFrame) -
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
     * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
     Should be of type string and can be blank.
-    * source_filter: Field to contain additional information on schools admissions (only contains holding string for now).
+    * source_filter: Field to contain additional information on schools admissions (only contains holding string for
+    now).
     Should be of type string and can be blank.
 
     Args:
@@ -856,16 +868,18 @@ def prepare_clean_freedom_pass_admissions_data(freedom_df: DataFrame) -> DataFra
 
     # create a zip of address line arrays, sorted in the order of not null (False), column order
     freedom_cleaned = freedom_cleaned.select(col("source"), col("source_id"), col("title"), col("first_name"),
-        col("middle_name"), col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"),
-        col("uprn"), col("address_line_1"), col("address_line_2"), col("address_line_3"), col("address_line_4"),
-        col("source_filter"), array_sort(
+                                             col("middle_name"), col("last_name"), col("name"), col("date_of_birth"),
+                                             col("email"), col("post_code"), col("uprn"), col("address_line_1"),
+                                             col("address_line_2"), col("address_line_3"), col("address_line_4"),
+                                             col("source_filter"), array_sort(
             arrays_zip(array([col(c).isNull() for c in address_cols]), array([lit(i) for i in range(4)]),
-                array([col(c) for c in address_cols]))).alias('address_sorted'))
+                       array([col(c) for c in address_cols]))).alias('address_sorted'))
 
     # disaggregate address_sorted arrays into columns
     freedom_cleaned = freedom_cleaned.select(col("source"), col("source_id"), col("title"), col("first_name"),
-        col("middle_name"), col("last_name"), col("name"), col("date_of_birth"), col("email"), col("post_code"),
-        col("uprn"), col("source_filter"), *[col("address_sorted")[i]['2'].alias(address_cols[i]) for i in range(4)])
+                                             col("middle_name"), col("last_name"), col("name"), col("date_of_birth"),
+                                             col("email"), col("post_code"), col("uprn"), col("source_filter"),
+                                             *[col("address_sorted")[i]['2'].alias(address_cols[i]) for i in range(4)])
 
     # rejig address lines
     freedom_cleaned = freedom_cleaned.withColumn("address_line_1", when(
@@ -915,7 +929,8 @@ def standardize_freedom_pass_data(freedom_cleaned: DataFrame) -> DataFrame:
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
     * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
     Should be of type string and can be blank.
-    * source_filter: Field to contain additional information on freedom pass dataset e.g year (only contains holding string for now).
+    * source_filter: Field to contain additional information on freedom pass dataset e.g year (only contains holding
+    string for now).
     Should be of type string and can be blank.
 
     Args:
@@ -938,12 +953,12 @@ def standardize_freedom_pass_data(freedom_cleaned: DataFrame) -> DataFrame:
         "address_line_4", standardize_address_line(trim(col("address_line_4")))).withColumn("full_address1",
                                                                                             full_address(trim(
                                                                                                 col("address_line_1")),
-                                                                                                         trim(
-                                                                                                             col("address_line_2")),
-                                                                                                         trim(
-                                                                                                             col("address_line_3")),
-                                                                                                         trim(
-                                                                                                             col("address_line_4")))).withColumn(
+                                                                                                trim(
+                                                                                                    col("address_line_2")),
+                                                                                                trim(
+                                                                                                    col("address_line_3")),
+                                                                                                trim(
+                                                                                                    col("address_line_4")))).withColumn(
         "full_address", regexp_replace(col("full_address1"), r"\s+", " ")).select(col("source"), col("source_id"),
                                                                                   col("uprn"), col("title"),
                                                                                   col("first_name"), col("middle_name"),
@@ -985,24 +1000,31 @@ def prepare_clean_electoral_register_data(electoral_register_df: DataFrame) -> D
                                                                   "address_line_3").withColumnRenamed(
         "property_address_4", "address_line_4").withColumnRenamed("property_post_code", "post_code").withColumnRenamed(
         "property_urn", "uprn").withColumn("email", lit("")).withColumn("title", lit("")).withColumn("source_filter",
-                                                                                                     lit("electoral register jun23")).select(
+                                                                                                     lit("electoral "
+                                                                                                         "register "
+                                                                                                         "jun23")).select(
         col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"), col("last_name"),
         col("name"), col("date_of_birth"), col("email"), col("post_code"), col("uprn"), col("address_line_1"),
         col("address_line_2"), col("address_line_3"), col("address_line_4"), col("source_filter"))
 
     # create a zip of address line arrays, sorted in the order of not null (False), column order
     electoral_register_cleaned = electoral_register_cleaned.select(col("source"), col("source_id"), col("title"),
-        col("first_name"), col("middle_name"), col("last_name"), col("name"), col("date_of_birth"), col("email"),
-        col("post_code"), col("uprn"), col("address_line_1"), col("address_line_2"), col("address_line_3"),
-        col("address_line_4"), col("source_filter"), array_sort(
+                                                                   col("first_name"), col("middle_name"),
+                                                                   col("last_name"), col("name"), col("date_of_birth"),
+                                                                   col("email"), col("post_code"), col("uprn"),
+                                                                   col("address_line_1"), col("address_line_2"),
+                                                                   col("address_line_3"), col("address_line_4"),
+                                                                   col("source_filter"), array_sort(
             arrays_zip(array([col(c).isNull() for c in address_cols]), array([lit(i) for i in range(4)]),
-                array([col(c) for c in address_cols]))).alias('address_sorted'))
+                       array([col(c) for c in address_cols]))).alias('address_sorted'))
 
     # disaggregate address_sorted arrays into columns
     electoral_register_cleaned = electoral_register_cleaned.select(col("source"), col("source_id"), col("title"),
-        col("first_name"), col("middle_name"), col("last_name"), col("name"), col("date_of_birth"), col("email"),
-        col("post_code"), col("uprn"), col("source_filter"),
-        *[col("address_sorted")[i]['2'].alias(address_cols[i]) for i in range(4)])
+                                                                   col("first_name"), col("middle_name"),
+                                                                   col("last_name"), col("name"), col("date_of_birth"),
+                                                                   col("email"), col("post_code"), col("uprn"),
+                                                                   col("source_filter"), *[
+            col("address_sorted")[i]['2'].alias(address_cols[i]) for i in range(4)])
 
     return electoral_register_cleaned
 
@@ -1032,7 +1054,8 @@ def standardize_electoral_register_data(electoral_register_cleaned: DataFrame) -
     * address_line_4: Fourth line of the address. Should be of type string and can be blank.
     * full_address: Concatenation of address line 1, address line 2, address line 3, address line 4 in that order.
     Should be of type string and can be blank.
-    * source_filter: Field to contain additional information on electoral register (only contains holding string for now).
+    * source_filter: Field to contain additional information on electoral register (only contains holding string for
+    now).
     Should be of type string and can be blank.
 
     Args:
@@ -1083,10 +1106,10 @@ def remove_deceased(df: DataFrame) -> DataFrame:
         A DataFrame after removing all the deceased persons.
     """
     deceased_filter_cond = (
-                lower(col("title")).contains("(deceased)") | lower(col("title")).contains("executor") | lower(
-            col("title")).contains("exor") | lower(col("title")).contains("rep") | lower(col("title")).contains(
-            " of") | lower(col("title")).contains("of ") | lower(col("title")).contains("the") | lower(
-            col("title")).contains("pe") | lower(col("title")).contains("other"))
+            lower(col("title")).contains("(deceased)") | lower(col("title")).contains("executor") | lower(
+        col("title")).contains("exor") | lower(col("title")).contains("rep") | lower(col("title")).contains(
+        " of") | lower(col("title")).contains("of ") | lower(col("title")).contains("the") | lower(
+        col("title")).contains("pe") | lower(col("title")).contains("other"))
 
     return df.filter(~deceased_filter_cond)
 
@@ -1117,8 +1140,8 @@ def generate_possible_matches(df: DataFrame) -> DataFrame:
                                                                       col("last_name_soundex"))
 
     return df_a.join(df_b, (df_a["a_source_id"] != df_b["b_source_id"]) & (
-                df_a["first_name_soundex"] == df_b["first_name_soundex"]) & (
-                                 df_a["last_name_soundex"] == df_b["last_name_soundex"])).drop(
+            df_a["first_name_soundex"] == df_b["first_name_soundex"]) & (
+                             df_a["last_name_soundex"] == df_b["last_name_soundex"])).drop(
         *["first_name_soundex", "last_name_soundex"])
 
 
@@ -1134,8 +1157,8 @@ def automatically_label_data(df: DataFrame) -> DataFrame:
     """
     return df.withColumn("auto_labels", when((col("a_source_id") == col("b_source_id")) | (
             (col("a_first_name") == col("b_first_name")) & (col("a_last_name") == col("b_last_name")) & (
-                col("a_date_of_birth") == col("b_date_of_birth")) & (col("a_uprn") == col("b_uprn")) & (
-                        col("a_post_code") == col("b_post_code"))), lit(True)).otherwise(lit(None).cast(BooleanType())))
+            col("a_date_of_birth") == col("b_date_of_birth")) & (col("a_uprn") == col("b_uprn")) & (
+                    col("a_post_code") == col("b_post_code"))), lit(True)).otherwise(lit(None).cast(BooleanType())))
 
 
 @pandas_udf(features_schema)
@@ -1191,7 +1214,7 @@ def generate_features(input_df: pd.DataFrame) -> pd.DataFrame:
 
     return input_df.drop(
         ["a_first_name", "b_first_name", "a_last_name", "b_last_name", "a_name", "b_name", "a_address_line_1",
-            "b_address_line_1", "a_address_line_2", "b_address_line_2", "a_full_address", "b_full_address"], axis=1)
+         "b_address_line_1", "a_address_line_2", "b_address_line_2", "a_full_address", "b_full_address"], axis=1)
 
 
 def feature_engineering(df: DataFrame) -> DataFrame:
@@ -1234,9 +1257,9 @@ def feature_engineering(df: DataFrame) -> DataFrame:
                                                                       non_match).otherwise(unknown)).withColumn(
         "similarity_features", generate_features(
             struct(col("a_first_name"), col("b_first_name"), col("a_middle_name"), col("b_middle_name"),
-                col("a_last_name"), col("b_last_name"), col("a_name"), col("b_name"), col("a_address_line_1"),
-                col("b_address_line_1"), col("a_address_line_2"), col("b_address_line_2"), col("a_full_address"),
-                col("b_full_address")))).select(col("*"), col("similarity_features.*")).drop("similarity_features")
+                   col("a_last_name"), col("b_last_name"), col("a_name"), col("b_name"), col("a_address_line_1"),
+                   col("b_address_line_1"), col("a_address_line_2"), col("b_address_line_2"), col("a_full_address"),
+                   col("b_full_address")))).select(col("*"), col("similarity_features.*")).drop("similarity_features")
 
     return features_df
 
@@ -1318,7 +1341,8 @@ def train_model(df: DataFrame, model_path: str, test_model: bool, save_model: bo
     f_measure = training_summary.fMeasureByThreshold
     max_f_measure = f_measure.groupBy().max("F-Measure").select("max(F-Measure)").head()
     best_threshold = \
-    f_measure.filter(f_measure["F-Measure"] == max_f_measure["max(F-Measure)"]).select("threshold").head()["threshold"]
+        f_measure.filter(f_measure["F-Measure"] == max_f_measure["max(F-Measure)"]).select("threshold").head()[
+            "threshold"]
     print(f"Best threshold: {best_threshold}")
     cv_model.bestModel.stages[-1].setThreshold(best_threshold)
 
@@ -1405,11 +1429,15 @@ def link_all_matched_persons(standard_df: DataFrame, predicted_df: DataFrame) ->
 
     # Extra analysis (for analyst only): if you need to do.
 
-    # To find how many connection are there  # person_graph.inDegrees.filter(col("inDegree") > 1).orderBy(col("inDegree").desc()).show(truncate=False)
+    # To find how many connection are there  # person_graph.inDegrees.filter(col("inDegree") > 1).orderBy(col(
+    # "inDegree").desc()).show(truncate=False)
 
-    # Graph query using motif to find where person 'a' is connected to person 'b', and person 'b' is also connected to  # person 'a'  # motif = person_graph.find("(a)-[]->(b); (b)-[]->(a)")  # motif.show(truncate=False)
+    # Graph query using motif to find where person 'a' is connected to person 'b', and person 'b' is also connected
+    # to  # person 'a'  # motif = person_graph.find("(a)-[]->(b); (b)-[]->(a)")  # motif.show(truncate=False)
 
-    # To count number of triangles i.e. a connected to b, b connected to c and c is connected back to a  # triangle_count = person_graph.triangleCount()  # triangle_count.orderBy(col("count").desc()).show(n=10, truncate=False)
+    # To count number of triangles i.e. a connected to b, b connected to c and c is connected back to a  #
+    # triangle_count = person_graph.triangleCount()  # triangle_count.orderBy(col("count").desc()).show(n=10,
+    # truncate=False)
 
 
 def match_persons(model_path: str, standard_df: DataFrame) -> DataFrame:
