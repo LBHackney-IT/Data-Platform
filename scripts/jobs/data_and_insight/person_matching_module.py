@@ -404,7 +404,7 @@ def standardize_name(name: Column) -> Column:
             trim(
                 regexp_replace(
                     regexp_replace(regexp_replace(name, "0", "O"), "1", "L"),
-                    "^[&*./]+",
+                    r"^[\&*./\]+",
                     "",
                 )
             )
