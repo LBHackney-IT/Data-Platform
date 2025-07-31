@@ -404,7 +404,7 @@ def standardize_name(name: Column) -> Column:
             trim(
                 regexp_replace(
                     regexp_replace(regexp_replace(name, "0", "O"), "1", "L"),
-                    "^[\\&*./\\\]+",
+                    "^[\&*./\]+",
                     "",
                 )
             )
@@ -2362,7 +2362,7 @@ def train_model(
         )
         test_prediction = cv_model.transform(test)
         test_prediction.show()
-        print(f"Write predictions to csv...")
+        print("Write predictions to csv...")
         test_prediction.printSchema()
         test_prediction_for_export = (
             test_prediction.withColumn(
