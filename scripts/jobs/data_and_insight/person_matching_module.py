@@ -385,7 +385,7 @@ def prepare_clean_council_tax_data(spark: SparkSession, council_tax_account: Dat
         A DataFrame after preparing and cleaning data from multiple council tax tables.
     """
     council_tax_occupation = council_tax_occupation.filter(
-        (col("live_ind") == 1) & (col("vacation_date") > col("import_datetime")))
+        (col("live_ind") == 1) & (col("vacation_date") > col("import_date")))
 
     council_tax_property_occupancy = council_tax_occupation \
         .join(council_tax_property, "property_ref") \
@@ -538,19 +538,19 @@ def prepare_clean_housing_benefit_data(hb_member_df: DataFrame,
         .withColumnRenamed("addr2", "address_line_2") \
         .withColumnRenamed("addr3", "address_line_3") \
         .withColumnRenamed("addr4", "address_line_4") \
-        .filter((col("from_date") < col("import_datetime")) & (col("to_date") > col("import_datetime"))) \
+        .filter((col("from_date") < col("import_date")) & (col("to_date") > col("import_date"))) \
         .select(col("claim_id"), col("claim_house_id"), col("address_line_1"), col("address_line_2"),
                 col("address_line_3"), col("address_line_4"), col("post_code"), col("uprn"))
 
     housing_benefit_rent_assessment = hb_rent_assessment_df \
         .withColumn("source_filter", when((col("dhp_ind") == 1) & (col("type_ind") > 1), "DHP").otherwise("HB")) \
-        .filter((col("from_date") < col("import_datetime")) & (col("to_date") > col("import_datetime"))
+        .filter((col("from_date") < col("import_date")) & (col("to_date") > col("import_date"))
                 & ((col("type_ind") == 1) | (col("dhp_ind") == 1)) & (col("model_amt") > 0)) \
         .select(col("claim_id"), col("source_filter"))
 
     housing_benefit_ctax_assessment = hb_ctax_assessment_df \
         .withColumn("source_filter", lit("CTS")) \
-        .filter((col("from_date") < col("import_datetime")) & (col("to_date") > col("import_datetime"))
+        .filter((col("from_date") < col("import_date")) & (col("to_date") > col("import_date"))
                 & (col("model_amt") > 0) & ((col("type_ind") == 1) | (col("dhp_ind") == 1))) \
         .select(col("claim_id"), col("source_filter"))
 
