@@ -31,7 +31,7 @@ class ExpectLLPGColumnValueLengthsBetween(gxe.ExpectColumnValueLengthsToBeBetwee
 
 class ExpectBlockRefNoColumnValuesToMatchRegex(gxe.ExpectColumnValuesToMatchRegex):
     column: str = "block_reference_number"
-    regex: str = "\d+"
+    regex: str = "\d+$"
     description: str = "Expect Block Reference Number to match regex ^\d+$ (numerical)"
 
 
