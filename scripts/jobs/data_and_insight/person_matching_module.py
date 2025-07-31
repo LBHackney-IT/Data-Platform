@@ -276,7 +276,7 @@ def prepare_clean_housing_data(person_reshape: DataFrame, assets_reshape: DataFr
         A prepared and cleaned dataframe containing housing tenancy data.
     """
     tenure_reshape = tenure_reshape.filter((tenure_reshape["endoftenuredate"].isNull()) | (
-                tenure_reshape["endoftenuredate"].cast(DateType()) > current_date()))
+            tenure_reshape["endoftenuredate"].cast(DateType()) > current_date()))
 
     assets_reshape = assets_reshape.filter(assets_reshape['assettype'] == 'Dwelling')
 
@@ -865,7 +865,7 @@ def prepare_clean_freedom_pass_admissions_data(freedom_df: DataFrame) -> DataFra
         .withColumnRenamed("district", "address_line_4") \
         .withColumnRenamed("postcode", "post_code") \
         .withColumnRenamed("email_address", "email") \
-        .withColumn("date_of_birth", to_date(col("date_of_birth"), format="dd/MM/yyyy"))\
+        .withColumn("date_of_birth", to_date(col("date_of_birth"), format="dd/MM/yyyy")) \
         .withColumn("uprn", lit("")) \
         .withColumn("source_filter", lit("freedom_passes_2024")) \
         .select(col("source"), col("source_id"), col("title"), col("first_name"), col("middle_name"),
