@@ -17,8 +17,8 @@ from pyspark.ml.functions import vector_to_array
 from pyspark.ml.tuning import ParamGridBuilder, CrossValidator, CrossValidatorModel
 from pyspark.sql import DataFrame, SparkSession, Column
 from pyspark.sql.functions import (to_date, col, lit, length, broadcast, udf, when, substring, lower, concat_ws,
-                                   soundex, \
-    regexp_replace, trim, split, struct, arrays_zip, array, array_sort, current_date)
+                                   soundex, regexp_replace, trim, split, struct, arrays_zip, array, array_sort,
+                                   current_date)
 from pyspark.sql.pandas.functions import pandas_udf
 from pyspark.sql.types import StructType, StructField, StringType, DateType, BooleanType, DoubleType
 
@@ -79,9 +79,9 @@ def extract_person_name(name: str) -> (str, str, str, str, str):
     if not name or any(junk in name.casefold() for junk in junk_data):
         return "Unknown", None, None, None, None
 
-    if any(business in name.casefold() for business in common_business_types) or (
-            any(business in name.casefold() for business in common_business_types_small) and not any(
-        t in name.casefold() for t in common_titles_subset_with_space)):
+    if (any(business in name.casefold() for business in common_business_types) or (
+        any(business in name.casefold() for business in common_business_types_small) and not any(
+        t in name.casefold() for t in common_titles_subset_with_space))):
         return "Business", None, None, None, None
 
     person_title, first_name, middle_name, last_name = None, None, None, None
@@ -114,7 +114,7 @@ def extract_person_name(name: str) -> (str, str, str, str, str):
             title_finder = [t for t in title_with_name if t.casefold() in common_titles]
             person_title = " ".join(title_finder) if len(title_finder) else None
         remaining_name = [n for n in title_with_name if n.casefold() != (
-                person_title or "").casefold() and n.casefold() not in common_titles and n.casefold() not in [".", "&"]]
+            person_title or "").casefold() and n.casefold() not in common_titles and n.casefold() not in [".", "&"]]
 
         if len(remaining_name) == 1:
             first_name = remaining_name[0]
@@ -259,7 +259,7 @@ def prepare_clean_housing_data(person_reshape: DataFrame, assets_reshape: DataFr
         A prepared and cleaned dataframe containing housing tenancy data.
     """
     tenure_reshape = tenure_reshape.filter((tenure_reshape["endoftenuredate"].isNull()) | (
-            tenure_reshape["endoftenuredate"].cast(DateType()) > current_date()))
+        tenure_reshape["endoftenuredate"].cast(DateType()) > current_date()))
 
     assets_reshape = assets_reshape.filter(assets_reshape['assettype'] == 'Dwelling')
 
@@ -538,12 +538,12 @@ def prepare_clean_housing_benefit_data(hb_member_df: DataFrame, hb_household_df:
     housing_benefit_rent_assessment = hb_rent_assessment_df.withColumn("source_filter", when(
         (col("dhp_ind") == 1) & (col("type_ind") > 1), "DHP").otherwise("HB")).filter(
         (col("from_date") < col("import_date")) & (col("to_date") > col("import_date")) & (
-                (col("type_ind") == 1) | (col("dhp_ind") == 1)) & (col("model_amt") > 0)).select(col("claim_id"),
-                                                                                                 col("source_filter"))
+            (col("type_ind") == 1) | (col("dhp_ind") == 1)) & (col("model_amt") > 0)).select(col("claim_id"),
+                                                                                             col("source_filter"))
 
     housing_benefit_ctax_assessment = hb_ctax_assessment_df.withColumn("source_filter", lit("CTS")).filter(
         (col("from_date") < col("import_date")) & (col("to_date") > col("import_date")) & (col("model_amt") > 0) & (
-                (col("type_ind") == 1) | (col("dhp_ind") == 1))).select(col("claim_id"), col("source_filter"))
+            (col("type_ind") == 1) | (col("dhp_ind") == 1))).select(col("claim_id"), col("source_filter"))
 
     housing_benefit_rent_ctax = housing_benefit_rent_assessment.union(housing_benefit_ctax_assessment)
 
@@ -1106,7 +1106,7 @@ def remove_deceased(df: DataFrame) -> DataFrame:
         A DataFrame after removing all the deceased persons.
     """
     deceased_filter_cond = (
-            lower(col("title")).contains("(deceased)") | lower(col("title")).contains("executor") | lower(
+        lower(col("title")).contains("(deceased)") | lower(col("title")).contains("executor") | lower(
         col("title")).contains("exor") | lower(col("title")).contains("rep") | lower(col("title")).contains(
         " of") | lower(col("title")).contains("of ") | lower(col("title")).contains("the") | lower(
         col("title")).contains("pe") | lower(col("title")).contains("other"))
@@ -1140,8 +1140,8 @@ def generate_possible_matches(df: DataFrame) -> DataFrame:
                                                                       col("last_name_soundex"))
 
     return df_a.join(df_b, (df_a["a_source_id"] != df_b["b_source_id"]) & (
-            df_a["first_name_soundex"] == df_b["first_name_soundex"]) & (
-                             df_a["last_name_soundex"] == df_b["last_name_soundex"])).drop(
+        df_a["first_name_soundex"] == df_b["first_name_soundex"]) & (
+                         df_a["last_name_soundex"] == df_b["last_name_soundex"])).drop(
         *["first_name_soundex", "last_name_soundex"])
 
 
@@ -1156,9 +1156,9 @@ def automatically_label_data(df: DataFrame) -> DataFrame:
         A DataFrame with column auto_labels.
     """
     return df.withColumn("auto_labels", when((col("a_source_id") == col("b_source_id")) | (
-            (col("a_first_name") == col("b_first_name")) & (col("a_last_name") == col("b_last_name")) & (
-            col("a_date_of_birth") == col("b_date_of_birth")) & (col("a_uprn") == col("b_uprn")) & (
-                    col("a_post_code") == col("b_post_code"))), lit(True)).otherwise(lit(None).cast(BooleanType())))
+        (col("a_first_name") == col("b_first_name")) & (col("a_last_name") == col("b_last_name")) & (
+        col("a_date_of_birth") == col("b_date_of_birth")) & (col("a_uprn") == col("b_uprn")) & (
+            col("a_post_code") == col("b_post_code"))), lit(True)).otherwise(lit(None).cast(BooleanType())))
 
 
 @pandas_udf(features_schema)
@@ -1429,13 +1429,13 @@ def link_all_matched_persons(standard_df: DataFrame, predicted_df: DataFrame) ->
 
     # Extra analysis (for analyst only): if you need to do.
 
-    # To find how many connection are there  # person_graph.inDegrees.filter(col("inDegree") > 1).orderBy(col(
+    # To find how many connection are there  # person_graph.inDegrees.filter(col("inDegree") > 1).orderBy(col(  #   #
     # "inDegree").desc()).show(truncate=False)
 
     # Graph query using motif to find where person 'a' is connected to person 'b', and person 'b' is also connected
     # to  # person 'a'  # motif = person_graph.find("(a)-[]->(b); (b)-[]->(a)")  # motif.show(truncate=False)
 
-    # To count number of triangles i.e. a connected to b, b connected to c and c is connected back to a  #
+    # To count number of triangles i.e. a connected to b, b connected to c and c is connected back to a  #  #   #  #
     # triangle_count = person_graph.triangleCount()  # triangle_count.orderBy(col("count").desc()).show(n=10,
     # truncate=False)
 
