@@ -139,6 +139,7 @@ module "department_data_and_insight" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  cloudtrail_bucket               = module.cloudtrail_storage
 }
 
 module "department_env_enforcement" {

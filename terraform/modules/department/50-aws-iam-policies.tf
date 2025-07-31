@@ -3,6 +3,11 @@
 
 // S3 read only access policy
 data "aws_iam_policy_document" "read_only_s3_department_access" {
+  # Include CloudTrail bucket access for data-and-insight department
+  source_policy_documents = local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? [
+    data.aws_iam_policy_document.cloudtrail_access[0].json
+  ] : []
+
   statement {
     sid    = "ListAllS3AndKmsKeys"
     effect = "Allow"
@@ -31,6 +36,8 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       var.spark_ui_output_storage_bucket.kms_key_arn
     ]
   }
+
+
 
   dynamic "statement" {
     for_each = var.additional_s3_access
@@ -89,6 +96,8 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
+
+
 
   dynamic "statement" {
     for_each = var.additional_s3_access
@@ -180,6 +189,11 @@ resource "aws_iam_policy" "read_only_glue_access" {
 
 // Full departmental S3 access policy
 data "aws_iam_policy_document" "s3_department_access" {
+  # Include CloudTrail bucket access for data-and-insight department
+  source_policy_documents = local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? [
+    data.aws_iam_policy_document.cloudtrail_access[0].json
+  ] : []
+
   statement {
     sid    = "ListAllS3AndKmsKeys"
     effect = "Allow"
@@ -214,6 +228,8 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.mwaa_key_arn
     ]
   }
+
+
 
   dynamic "statement" {
     for_each = var.additional_s3_access
@@ -277,9 +293,11 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.mwaa_etl_scripts_bucket_arn,
       "${var.mwaa_etl_scripts_bucket_arn}/${replace(local.department_identifier, "-", "_")}/*",
       "${var.mwaa_etl_scripts_bucket_arn}/unrestricted/*",
-      "${var.mwaa_etl_scripts_bucket_arn}/shared/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/shared/*"
     ]
   }
+
+
 
   dynamic "statement" {
     for_each = var.additional_s3_access
@@ -1078,4 +1096,41 @@ resource "aws_iam_policy" "mtfh_access_policy" {
   name        = lower("${var.identifier_prefix}-${local.department_identifier}-mtfh-landing-access-policy")
   description = "Allows ${local.department_identifier} department access for ecs tasks to mtfh/ subdirectory in landing zone"
   policy      = data.aws_iam_policy_document.mtfh_access[0].json
+}
+
+// Read-only CloudTrail access for Data and Insight department only
+data "aws_iam_policy_document" "cloudtrail_access" {
+  count = local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? 1 : 0
+
+  statement {
+    sid    = "CloudTrailKmsReadAccess"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    resources = [var.cloudtrail_bucket.kms_key_arn]
+  }
+
+  statement {
+    sid    = "CloudTrailS3ReadAccess"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket"
+    ]
+    resources = [
+      var.cloudtrail_bucket.bucket_arn,
+      "${var.cloudtrail_bucket.bucket_arn}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "cloudtrail_access_policy" {
+  count       = local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? 1 : 0
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-cloudtrail-access-policy")
+  description = "Allows ${local.department_identifier} department read-only access to CloudTrail bucket"
+  policy      = data.aws_iam_policy_document.cloudtrail_access[0].json
 }

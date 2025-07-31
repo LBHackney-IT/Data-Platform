@@ -96,7 +96,7 @@ resource "aws_iam_role_policy_attachment" "glue_runner_pass_role_to_glue_for_not
   policy_arn = aws_iam_policy.glue_runner_pass_role_to_glue_for_notebook_use.arn
 }
 
-# Define a map for the departmentalairflow policies
+# Define a map for the departmental airflow policies
 locals {
   airflow_policy_map = {
     s3_access                 = aws_iam_policy.s3_access.arn,
