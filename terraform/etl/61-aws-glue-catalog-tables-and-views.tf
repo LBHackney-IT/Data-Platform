@@ -1,6 +1,6 @@
 # Use partition projection to create a table with partitions updated automatically, valid until 2045
-resource "aws_glue_catalog_table" "cloudtrail_managementevents" {
-  name          = "cloudtrail_managementevents"
+resource "aws_glue_catalog_table" "cloudtrail_management_events" {
+  name          = "cloudtrail_management_events"
   database_name = aws_glue_catalog_database.metastore.name
 
   table_type = "EXTERNAL_TABLE"
@@ -48,77 +48,102 @@ resource "aws_glue_catalog_table" "cloudtrail_managementevents" {
     }
 
     columns {
-      name = "eventversion"
+      name = "eventVersion"
       type = "string"
     }
 
     columns {
-      name = "useridentity"
-      type = "struct<type:string,principalid:string,arn:string,accountid:string,invokedby:string,accesskeyid:string,username:string,sessioncontext:struct<attributes:struct<mfaauthenticated:string,creationdate:string>,sessionissuer:struct<type:string,principalid:string,arn:string,accountid:string,username:string>,ec2roledelivery:string,webidfederationdata:struct<federatedprovider:string,attributes:map<string,string>>>>"
+      name = "userIdentity"
+      type = <<-EOT
+        struct<
+          type:string,
+          principalId:string,
+          arn:string,
+          accountId:string,
+          invokedBy:string,
+          accessKeyId:string,
+          userName:string,
+          sessionContext:struct<
+            attributes:struct<
+              mfaAuthenticated:string,
+              creationDate:string>,
+            sessionIssuer:struct<
+              type:string,
+              principalId:string,
+              arn:string,
+              accountId:string,
+              userName:string>,
+            ec2RoleDelivery:string,
+            webIdFederationData:struct<
+              federatedprovider:string,
+              attributes:map<string,string>>
+          >
+        >
+      EOT
     }
 
     columns {
-      name = "eventtime"
+      name = "eventTime"
       type = "string"
     }
 
     columns {
-      name = "eventsource"
+      name = "eventSource"
       type = "string"
     }
 
     columns {
-      name = "eventname"
+      name = "eventName"
       type = "string"
     }
 
     columns {
-      name = "awsregion"
+      name = "awsRegion"
       type = "string"
     }
 
     columns {
-      name = "sourceipaddress"
+      name = "sourceIpAddress"
       type = "string"
     }
 
     columns {
-      name = "useragent"
+      name = "userAgent"
       type = "string"
     }
 
     columns {
-      name = "errorcode"
+      name = "errorCode"
       type = "string"
     }
 
     columns {
-      name = "errormessage"
+      name = "errorMessage"
       type = "string"
     }
 
     columns {
-      name = "requestparameters"
+      name = "requestParameters"
       type = "string"
     }
 
     columns {
-      name = "responseelements"
+      name = "responseElements"
       type = "string"
     }
 
     columns {
-      name = "additionaleventdata"
+      name = "additionalEventData"
       type = "string"
     }
 
     columns {
-      name = "requestid"
+      name = "requestId"
       type = "string"
     }
 
     columns {
-      name = "eventid"
+      name = "eventId"
       type = "string"
     }
 
@@ -128,43 +153,157 @@ resource "aws_glue_catalog_table" "cloudtrail_managementevents" {
     }
 
     columns {
-      name = "eventtype"
+      name = "eventType"
       type = "string"
     }
 
     columns {
-      name = "apiversion"
+      name = "apiVersion"
       type = "string"
     }
 
     columns {
-      name = "readonly"
+      name = "readOnly"
       type = "string"
     }
 
     columns {
-      name = "recipientaccountid"
+      name = "recipientAccountId"
       type = "string"
     }
 
     columns {
-      name = "serviceeventdetails"
+      name = "serviceEventDetails"
       type = "string"
     }
 
     columns {
-      name = "sharedeventid"
+      name = "sharedEventID"
       type = "string"
     }
 
     columns {
-      name = "vpcendpointid"
+      name = "vpcEndpointId"
       type = "string"
     }
 
     columns {
-      name = "tlsdetails"
-      type = "struct<tlsversion:string,ciphersuite:string,clientprovidedohostheader:string>"
+      name = "tlsDetails"
+      type = <<-EOT
+        struct<
+          tlsVersion:string,
+          cipherSuite:string,
+          clientProvidedHostHeader:string
+        >
+      EOT
+    }
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_glue_catalog_table" "glue_catalog_management_events_view" {
+  name          = "glue_catalog_management_events"
+  database_name = aws_glue_catalog_database.metastore.name
+  table_type    = "VIRTUAL_VIEW"
+
+  view_original_text = "/* Presto View: ${base64encode(jsonencode({
+    originalSql = <<-EOF
+SELECT
+  eventVersion,
+  userIdentity,
+  eventTime,
+  eventSource,
+  eventName,
+  awsRegion,
+  sourceIpAddress,
+  userAgent,
+  errorCode,
+  errorMessage,
+  requestParameters,
+  responseElements,
+  additionalEventData,
+  requestId,
+  eventId,
+  resources,
+  eventType,
+  apiVersion,
+  readOnly,
+  recipientAccountId,
+  serviceEventDetails,
+  sharedEventID,
+  vpcEndpointId,
+  tlsDetails,
+  year,
+  month,
+  day,
+  year  AS import_year,
+  month AS import_month,
+  day   AS import_day,
+  concat(year, month, day) AS import_date,
+  json_extract_scalar(requestParameters, '$.databaseName') AS database_name,
+  json_extract_scalar(requestParameters, '$.tableName') AS table_name
+FROM "${aws_glue_catalog_database.metastore.name}"."${aws_glue_catalog_table.cloudtrail_management_events.name}"
+WHERE eventSource = 'glue.amazonaws.com'
+  AND eventName IN (
+    'CreateTable',
+    'UpdateTable',
+    'BatchCreatePartition',
+    'DeleteTable',
+    'BatchDeletePartition'
+  )
+EOF
+    catalog     = "awsdatacatalog"
+    schema      = aws_glue_catalog_database.metastore.name
+    columns = [
+      for col in concat(
+        aws_glue_catalog_table.cloudtrail_management_events.storage_descriptor[0].columns,
+        aws_glue_catalog_table.cloudtrail_management_events.partition_keys
+        ) : {
+        name = col.name
+        type = col.type
+      }
+    ]
+  }))} */"
+
+  view_expanded_text = "/* Presto View */"
+
+  storage_descriptor {
+    dynamic "columns" {
+      for_each = concat(
+        aws_glue_catalog_table.cloudtrail_management_events.storage_descriptor[0].columns,
+        aws_glue_catalog_table.cloudtrail_management_events.partition_keys
+      )
+      content {
+        name = columns.value.name
+        type = columns.value.type
+      }
+    }
+    columns {
+      name = "import_year"
+      type = "string"
+    }
+    columns {
+      name = "import_month"
+      type = "string"
+    }
+    columns {
+      name = "import_day"
+      type = "string"
+    }
+    columns {
+      name = "import_date"
+      type = "string"
+    }
+    columns {
+      name = "database_name"
+      type = "string"
+    }
+    columns {
+      name = "table_name"
+      type = "string"
     }
   }
 
