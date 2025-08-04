@@ -248,11 +248,15 @@ SELECT
 FROM "${aws_glue_catalog_database.metastore.name}"."${aws_glue_catalog_table.cloudtrail_management_events.name}"
 WHERE eventSource = 'glue.amazonaws.com'
   AND eventName IN (
-    'CreateTable',
-    'UpdateTable',
-    'BatchCreatePartition',
-    'DeleteTable',
-    'BatchDeletePartition'
+    -- Database operations
+    'CreateDatabase', 'GetDatabase', 'GetDatabases', 'UpdateDatabase', 'DeleteDatabase',
+    -- Table operations
+    'CreateTable', 'GetTable', 'GetTables', 'UpdateTable', 'DeleteTable',
+    'GetTableVersion', 'GetTableVersions', 'DeleteTableVersion',
+    -- Partition operations
+    'CreatePartition', 'GetPartition', 'GetPartitions', 'UpdatePartition', 'DeletePartition',
+    'GetPartitionIndexes', 'CreatePartitionIndex', 'DeletePartitionIndex',
+    'BatchCreatePartition', 'BatchDeletePartition'
   )
 EOF
     catalog     = "awsdatacatalog"
