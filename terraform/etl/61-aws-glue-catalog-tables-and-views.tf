@@ -54,32 +54,7 @@ resource "aws_glue_catalog_table" "cloudtrail_management_events" {
 
     columns {
       name = "userIdentity"
-      type = <<-EOT
-        struct<
-          type:string,
-          principalId:string,
-          arn:string,
-          accountId:string,
-          invokedBy:string,
-          accessKeyId:string,
-          userName:string,
-          sessionContext:struct<
-            attributes:struct<
-              mfaAuthenticated:string,
-              creationDate:string>,
-            sessionIssuer:struct<
-              type:string,
-              principalId:string,
-              arn:string,
-              accountId:string,
-              userName:string>,
-            ec2RoleDelivery:string,
-            webIdFederationData:struct<
-              federatedprovider:string,
-              attributes:map<string,string>>
-          >
-        >
-      EOT
+      type = "struct<type:string,principalId:string,arn:string,accountId:string,invokedBy:string,accessKeyId:string,userName:string,sessionContext:struct<attributes:struct<mfaAuthenticated:string,creationDate:string>,sessionIssuer:struct<type:string,principalId:string,arn:string,accountId:string,userName:string>,ec2RoleDelivery:string,webIdFederationData:struct<federatedprovider:string,attributes:map<string,string>>>>"
     }
 
     columns {
@@ -189,13 +164,7 @@ resource "aws_glue_catalog_table" "cloudtrail_management_events" {
 
     columns {
       name = "tlsDetails"
-      type = <<-EOT
-        struct<
-          tlsVersion:string,
-          cipherSuite:string,
-          clientProvidedHostHeader:string
-        >
-      EOT
+      type = "struct<tlsVersion:string,cipherSuite:string,clientProvidedHostHeader:string>"
     }
   }
 
