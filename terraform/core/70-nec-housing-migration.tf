@@ -1,6 +1,5 @@
 module "file_sync_destination_nec" {
-  # TODO: use previous version
-  source = "git::https://github.com/LBHackney-IT/ce-file-sync-modules.git//destination?ref=caa59d0852914b52245295c57695a52940aa4a31" # v.0.3.2
+  source = "git::https://github.com/LBHackney-IT/ce-file-sync-modules.git//destination?ref=4d993ac140e1f2ae51d93a521c5692a786c0cce6" # v.0.5.0
 
   tags        = module.tags.values
   application = "nec_housing"
