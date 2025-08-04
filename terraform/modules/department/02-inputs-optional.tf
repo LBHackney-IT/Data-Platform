@@ -58,3 +58,12 @@ variable "additional_s3_access" {
   default = []
 }
 
+variable "cloudtrail_bucket" {
+  description = "CloudTrail storage S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+  default = null
+}

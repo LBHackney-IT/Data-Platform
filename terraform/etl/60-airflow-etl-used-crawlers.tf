@@ -173,3 +173,76 @@ resource "aws_glue_crawler" "google_sheet_ingestion_raw_zone" {
   })
   tags = module.tags.values
 }
+
+# Academy crawlers for raw zone
+resource "aws_glue_crawler" "ctax_raw_zone" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "ctax-raw-zone-crawler"
+  role          = module.department_revenues_data_source.glue_role_arn
+  database_name = aws_glue_catalog_database.ctax_raw_zone.name
+
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_revenues_data_source.identifier}/academy/ctax"
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 5
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+  tags = module.tags.values
+}
+
+resource "aws_glue_crawler" "nndr_raw_zone" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "nndr-raw-zone-crawler"
+  role          = module.department_revenues_data_source.glue_role_arn
+  database_name = aws_glue_catalog_database.nndr_raw_zone.name
+
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_revenues_data_source.identifier}/academy/nndr"
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 5
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+  tags = module.tags.values
+}
+
+resource "aws_glue_crawler" "hben_raw_zone" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "hben-raw-zone-crawler"
+  role          = module.department_benefits_and_housing_needs_data_source.glue_role_arn
+  database_name = aws_glue_catalog_database.hben_raw_zone.name
+
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_benefits_and_housing_needs_data_source.identifier}/academy/hben"
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 5
+      TableGroupingPolicy     = "CombineCompatibleSchemas"
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+  tags = module.tags.values
+}

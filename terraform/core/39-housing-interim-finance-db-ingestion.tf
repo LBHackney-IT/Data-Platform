@@ -15,7 +15,7 @@ module "housing_interim_finance_database_ingestion" {
 }
 
 locals {
-  table_filter_expressions_housing_interim_finance = local.is_live_environment ? "(^sow2b_dbo_matenancyagreement$|^sow2b_dbo_uharaction$|^sow2b_dbo_maproperty$|^sow2b_dbo_ssminitransaction$|^sow2b_dbo_uhproperty$|^sow2b_dbo_calculatedcurrentbalance$)" : ""
+  table_filter_expressions_housing_interim_finance = local.is_live_environment ? "(^sow2b_dbo_matenancyagreement$|^sow2b_dbo_uharaction$|^sow2b_dbo_maproperty$|^sow2b_dbo_ssminitransaction$|^sow2b_dbo_uhproperty$|^sow2b_dbo_calculatedcurrentbalance$|^sow2b_dbo_mamember$)" : ""
 }
 
 resource "aws_glue_trigger" "housing_interim_finance_filter_ingestion_tables" {
@@ -70,6 +70,7 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
+        TableGroupingPolicy     = "CombineCompatibleSchemas"
         TableLevelConfiguration = 3
       }
       CrawlerOutput = {
@@ -78,6 +79,22 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
     })
     table_prefix = null
   }
+  glue_crawler_excluded_blobs = [
+    "*/archive*",
+    "*/data-quality*",
+    "*/glue-*",
+    "*/google-sheets*",
+    "*/govnotify*",
+    "*/housingfinance*",
+    "*/ingestion-details*",
+    "*/mtfh*",
+    "*/temp_backup*",
+    "*.json",
+    "*.txt",
+    "*.zip",
+    "*.xlsx",
+    "*.html",
+  ]
 }
 
 resource "aws_ssm_parameter" "ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name" {

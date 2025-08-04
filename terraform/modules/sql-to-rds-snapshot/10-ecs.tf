@@ -3,7 +3,7 @@ locals {
     { name : "MYSQL_HOST", value : aws_db_instance.ingestion_db.address },
     { name : "MYSQL_USER", value : aws_db_instance.ingestion_db.username },
     { name : "MYSQL_PASS", value : random_password.rds_password.result },
-    { name : "RDS_INSTANCE_ID", value : aws_db_instance.ingestion_db.id },
+    { name : "RDS_INSTANCE_ID", value : aws_db_instance.ingestion_db.identifier },
     { name : "BUCKET_NAME", value : var.watched_bucket_name },
   ]
 
@@ -71,7 +71,7 @@ module "sql_to_parquet" {
         { name : "MYSQL_HOST", value : aws_db_instance.ingestion_db.address },
         { name : "MYSQL_USER", value : aws_db_instance.ingestion_db.username },
         { name : "MYSQL_PASS", value : random_password.rds_password.result },
-        { name : "RDS_INSTANCE_ID", value : aws_db_instance.ingestion_db.id },
+        { name : "RDS_INSTANCE_ID", value : aws_db_instance.ingestion_db.identifier },
         { name : "BUCKET_NAME", value : var.watched_bucket_name },
       ]
     }

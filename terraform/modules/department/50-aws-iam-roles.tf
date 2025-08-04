@@ -96,7 +96,7 @@ resource "aws_iam_role_policy_attachment" "glue_runner_pass_role_to_glue_for_not
   policy_arn = aws_iam_policy.glue_runner_pass_role_to_glue_for_notebook_use.arn
 }
 
-# Define a map for the departmentalairflow policies
+# Define a map for the departmental airflow policies
 locals {
   airflow_policy_map = {
     s3_access                 = aws_iam_policy.s3_access.arn,
@@ -164,7 +164,7 @@ resource "aws_iam_role_policy" "grant_s3_access_to_ecs_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "mtfh_access_attachment" {
-  count      = local.department_identifier == "data-and-insight" ? 1 : 0
+  count      = contains(["data-and-insight", "housing"], local.department_identifier) ? 1 : 0
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.mtfh_access_policy[0].arn
 }

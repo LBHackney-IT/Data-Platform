@@ -25,6 +25,9 @@ module "liberator_dump_to_rds_snapshot" {
   aws_subnet_ids             = data.aws_subnets.network.ids
   ecs_cluster_arn            = aws_ecs_cluster.workers.arn
   vpc_id                     = data.aws_vpc.network.id
+  cloudtrail_bucket_id       = module.cloudtrail_storage.bucket_id
+  cloudtrail_bucket_arn      = module.cloudtrail_storage.bucket_arn
+  cloudtrail_kms_key_arn     = module.cloudtrail_storage.kms_key_arn
 }
 
 resource "aws_glue_workflow" "parking_liberator_data" {
