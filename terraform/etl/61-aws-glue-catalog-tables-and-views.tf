@@ -54,7 +54,7 @@ resource "aws_glue_catalog_table" "cloudtrail_management_events" {
 
     columns {
       name = "useridentity"
-      type = "struct<type:string,principalId:string,arn:string,accountId:string,invokedBy:string,accessKeyId:string,userName:string,sessionContext:struct<attributes:struct<mfaAuthenticated:string,creationDate:string>,sessionIssuer:struct<type:string,principalId:string,arn:string,accountId:string,userName:string>,ec2RoleDelivery:string,webIdFederationData:struct<federatedprovider:string,attributes:map<string,string>>>>"
+      type = "struct<type:string,principalid:string,arn:string,accountid:string,invokedby:string,accesskeyid:string,username:string,sessioncontext:struct<attributes:struct<mfaauthenticated:string,creationdate:string>,sessionissuer:struct<type:string,principalid:string,arn:string,accountid:string,username:string>,ec2roledelivery:string,webidfederationdata:struct<federatedprovider:string,attributes:map<string,string>>>>"
     }
 
     columns {
@@ -164,7 +164,7 @@ resource "aws_glue_catalog_table" "cloudtrail_management_events" {
 
     columns {
       name = "tlsdetails"
-      type = "struct<tlsVersion:string,cipherSuite:string,clientProvidedHostHeader:string>"
+      type = "struct<tlsversion:string,ciphersuite:string,clientprovidedhostheader:string>"
     }
   }
 
@@ -212,8 +212,8 @@ SELECT
   month AS import_month,
   day   AS import_day,
   concat(year, month, day) AS import_date,
-  json_extract_scalar(requestparameters, '$.databaseName') AS database_name,
-  json_extract_scalar(requestparameters, '$.tableName') AS table_name
+  json_extract_scalar(requestparameters, '$.databasename') AS database_name,
+  json_extract_scalar(requestparameters, '$.tablename') AS table_name
 FROM "${aws_glue_catalog_database.metastore.name}"."${aws_glue_catalog_table.cloudtrail_management_events.name}"
 WHERE eventsource = 'glue.amazonaws.com'
   AND eventname IN (
