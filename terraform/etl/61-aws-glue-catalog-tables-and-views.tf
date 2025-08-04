@@ -48,77 +48,77 @@ resource "aws_glue_catalog_table" "cloudtrail_management_events" {
     }
 
     columns {
-      name = "eventVersion"
+      name = "eventversion"
       type = "string"
     }
 
     columns {
-      name = "userIdentity"
+      name = "useridentity"
       type = "struct<type:string,principalId:string,arn:string,accountId:string,invokedBy:string,accessKeyId:string,userName:string,sessionContext:struct<attributes:struct<mfaAuthenticated:string,creationDate:string>,sessionIssuer:struct<type:string,principalId:string,arn:string,accountId:string,userName:string>,ec2RoleDelivery:string,webIdFederationData:struct<federatedprovider:string,attributes:map<string,string>>>>"
     }
 
     columns {
-      name = "eventTime"
+      name = "eventtime"
       type = "string"
     }
 
     columns {
-      name = "eventSource"
+      name = "eventsource"
       type = "string"
     }
 
     columns {
-      name = "eventName"
+      name = "eventname"
       type = "string"
     }
 
     columns {
-      name = "awsRegion"
+      name = "awsregion"
       type = "string"
     }
 
     columns {
-      name = "sourceIpAddress"
+      name = "sourceipaddress"
       type = "string"
     }
 
     columns {
-      name = "userAgent"
+      name = "useragent"
       type = "string"
     }
 
     columns {
-      name = "errorCode"
+      name = "errorcode"
       type = "string"
     }
 
     columns {
-      name = "errorMessage"
+      name = "errormessage"
       type = "string"
     }
 
     columns {
-      name = "requestParameters"
+      name = "requestparameters"
       type = "string"
     }
 
     columns {
-      name = "responseElements"
+      name = "responseelements"
       type = "string"
     }
 
     columns {
-      name = "additionalEventData"
+      name = "additionaleventdata"
       type = "string"
     }
 
     columns {
-      name = "requestId"
+      name = "requestid"
       type = "string"
     }
 
     columns {
-      name = "eventId"
+      name = "eventid"
       type = "string"
     }
 
@@ -128,42 +128,42 @@ resource "aws_glue_catalog_table" "cloudtrail_management_events" {
     }
 
     columns {
-      name = "eventType"
+      name = "eventtype"
       type = "string"
     }
 
     columns {
-      name = "apiVersion"
+      name = "apiversion"
       type = "string"
     }
 
     columns {
-      name = "readOnly"
+      name = "readonly"
       type = "string"
     }
 
     columns {
-      name = "recipientAccountId"
+      name = "recipientaccountid"
       type = "string"
     }
 
     columns {
-      name = "serviceEventDetails"
+      name = "serviceeventdetails"
       type = "string"
     }
 
     columns {
-      name = "sharedEventID"
+      name = "sharedeventid"
       type = "string"
     }
 
     columns {
-      name = "vpcEndpointId"
+      name = "vpcendpointid"
       type = "string"
     }
 
     columns {
-      name = "tlsDetails"
+      name = "tlsdetails"
       type = "struct<tlsVersion:string,cipherSuite:string,clientProvidedHostHeader:string>"
     }
   }
@@ -181,30 +181,30 @@ resource "aws_glue_catalog_table" "glue_catalog_management_events_view" {
   view_original_text = "/* Presto View: ${base64encode(jsonencode({
     originalSql = <<-EOF
 SELECT
-  eventVersion,
-  userIdentity,
-  eventTime,
-  eventSource,
-  eventName,
-  awsRegion,
-  sourceIpAddress,
-  userAgent,
-  errorCode,
-  errorMessage,
-  requestParameters,
-  responseElements,
-  additionalEventData,
-  requestId,
-  eventId,
+  eventversion,
+  useridentity,
+  eventtime,
+  eventsource,
+  eventname,
+  awsregion,
+  sourceipaddress,
+  useragent,
+  errorcode,
+  errormessage,
+  requestparameters,
+  responseelements,
+  additionaleventdata,
+  requestid,
+  eventid,
   resources,
-  eventType,
-  apiVersion,
-  readOnly,
-  recipientAccountId,
-  serviceEventDetails,
-  sharedEventID,
-  vpcEndpointId,
-  tlsDetails,
+  eventtype,
+  apiversion,
+  readonly,
+  recipientaccountid,
+  serviceeventdetails,
+  sharedeventid,
+  vpcendpointid,
+  tlsdetails,
   year,
   month,
   day,
@@ -212,11 +212,11 @@ SELECT
   month AS import_month,
   day   AS import_day,
   concat(year, month, day) AS import_date,
-  json_extract_scalar(requestParameters, '$.databaseName') AS database_name,
-  json_extract_scalar(requestParameters, '$.tableName') AS table_name
+  json_extract_scalar(requestparameters, '$.databaseName') AS database_name,
+  json_extract_scalar(requestparameters, '$.tableName') AS table_name
 FROM "${aws_glue_catalog_database.metastore.name}"."${aws_glue_catalog_table.cloudtrail_management_events.name}"
-WHERE eventSource = 'glue.amazonaws.com'
-  AND eventName IN (
+WHERE eventsource = 'glue.amazonaws.com'
+  AND eventname IN (
     -- Database operations
     'CreateDatabase', 'GetDatabase', 'GetDatabases', 'UpdateDatabase', 'DeleteDatabase',
     -- Table operations
