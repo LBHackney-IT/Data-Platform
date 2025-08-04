@@ -24,23 +24,23 @@ module "active_persons_records_refined" {
     "--enable-glue-datacatalog"                 = "true"
     "--enable-continuous-cloudwatch-log"        = "true"
     "--additional-python-modules"               = "abydos,graphframes,great_expectations==0.15.48"
-    "--source_catalog_database_housing_benefit" = module.department_benefits_and_housing_needs_data_source.raw_zone_catalog_database_name
+    "--source_catalog_database_housing_benefit" = aws_glue_catalog_database.hben_raw_zone.name
     "--source_catalog_database_housing"         = module.department_housing_data_source.refined_zone_catalog_database_name
     "--source_catalog_database_parking"         = aws_glue_catalog_database.refined_zone_liberator.name
-    "--source_catalog_database_council_tax"     = module.department_revenues_data_source.raw_zone_catalog_database_name
+    "--source_catalog_database_council_tax"     = aws_glue_catalog_database.ctax_raw_zone.name
 
     "--source_catalog_table_person_reshape"            = "person_reshape"
     "--source_catalog_table_tenure_reshape"            = "tenure_reshape"
     "--source_catalog_table_assets_reshape"            = "assets_reshape"
-    "--source_catalog_table_ctax_property"             = "lbhaliverbviews_core_ctproperty"
-    "--source_catalog_table_ctax_account"              = "lbhaliverbviews_core_ctaccount"
-    "--source_catalog_table_ctax_liability_person"     = "lbhaliverbviews_core_ctliab_person"
-    "--source_catalog_table_ctax_non_liability_person" = "lbhaliverbviews_core_ctnon_liab"
-    "--source_catalog_table_ctax_occupation"           = "lbhaliverbviews_core_ctoccupation"
-    "--source_catalog_table_hb_member"                 = "lbhaliverbviews_core_hbmember"
-    "--source_catalog_table_hb_ctax_assessment"          = "lbhaliverbviews_core_hbctaxass"
-    "--source_catalog_table_hb_household"              = "lbhaliverbviews_core_hbhousehold"
-    "--source_catalog_table_hb_rent_assessment"        = "lbhaliverbviews_core_hbrentass"
+    "--source_catalog_table_ctax_property"             = "ctproperty"
+    "--source_catalog_table_ctax_account"              = "ctaccount"
+    "--source_catalog_table_ctax_liability_person"     = "ctliab_person"
+    "--source_catalog_table_ctax_non_liability_person" = "ctnon_liab"
+    "--source_catalog_table_ctax_occupation"           = "ctoccupation"
+    "--source_catalog_table_hb_member"                 = "hbmember"
+    "--source_catalog_table_hb_ctax_assessment"        = "hbctaxass"
+    "--source_catalog_table_hb_household"              = "hbhousehold"
+    "--source_catalog_table_hb_rent_assessment"        = "hbrentass"
     "--source_catalog_table_parking_permit"            = "parking_permit_denormalised_data"
     "--output_path"                                    = "s3://${module.refined_zone_data_source.bucket_id}/data-and-insight/active-person-records/"
 
