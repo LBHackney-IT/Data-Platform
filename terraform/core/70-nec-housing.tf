@@ -1,6 +1,7 @@
 module "file_sync_destination_nec" {
   source      = "git::https://github.com/LBHackney-IT/ce-file-sync-modules.git//destination?ref=64aa50415de498e360d2aa89694870ca810ea457" # v0.5.0
   tags        = merge(module.tags.values, { "Environment" = lower(var.environment) })
+  application = "nec-housing"
   environment = var.environment
   sftp_host   = "172.26.130.37"
   sftp_port   = "22"
