@@ -6,8 +6,8 @@ module "file_sync_destination_nec" {
   sftp_host   = "172.26.130.37"
   sftp_port   = "22"
   lambda_vpc_config = {
-    subnet_ids          = local.subnet_ids_list
-    security_groups_ids = [aws_security_group.lambda_sg.id]
+    subnet_ids         = local.subnet_ids_list
+    security_group_ids = [aws_security_group.lambda_sg.id]
   }
 }
 
