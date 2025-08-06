@@ -320,17 +320,7 @@ data "aws_iam_policy_document" "s3_department_access" {
       "kms:CreateGrant",
       "kms:RetireGrant"
     ]
-    resources = [
-      var.landing_zone_bucket.kms_key_arn,
-      var.raw_zone_bucket.kms_key_arn,
-      var.refined_zone_bucket.kms_key_arn,
-      var.trusted_zone_bucket.kms_key_arn,
-      var.athena_storage_bucket.kms_key_arn,
-      var.glue_scripts_bucket.kms_key_arn,
-      var.spark_ui_output_storage_bucket.kms_key_arn,
-      var.glue_temp_storage_bucket.kms_key_arn,
-      var.mwaa_key_arn
-    ]
+    resources = local.full_access_kms_keys
   }
 
 
