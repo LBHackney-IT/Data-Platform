@@ -1,6 +1,60 @@
 // WARNING! All statement blocks MUST have a UNIQUE SID, this is to allow the individual documents to be merged.
 // Statement blocks with the same SID will replace each other when merged.
 
+// Common resource patterns and action lists
+locals {
+  # Common KMS keys for read-only access
+  read_only_kms_keys = [
+    var.landing_zone_bucket.kms_key_arn,
+    var.raw_zone_bucket.kms_key_arn,
+    var.refined_zone_bucket.kms_key_arn,
+    var.trusted_zone_bucket.kms_key_arn,
+    var.athena_storage_bucket.kms_key_arn,
+    var.glue_scripts_bucket.kms_key_arn,
+    var.spark_ui_output_storage_bucket.kms_key_arn
+  ]
+
+  # Common KMS keys for full access
+  full_access_kms_keys = concat(local.read_only_kms_keys, [
+    var.glue_temp_storage_bucket.kms_key_arn,
+    var.mwaa_key_arn
+  ])
+
+  # Common S3 bucket resources for departmental access
+  departmental_s3_resources = [
+    # Landing zone
+    var.landing_zone_bucket.bucket_arn,
+    "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
+    "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
+    
+    # Raw zone
+    var.raw_zone_bucket.bucket_arn,
+    "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+    "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
+    "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
+    
+    # Refined zone
+    var.refined_zone_bucket.bucket_arn,
+    "${var.refined_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
+    "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+    "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
+    "${var.refined_zone_bucket.bucket_arn}/unrestricted/*",
+    
+    # Trusted zone
+    var.trusted_zone_bucket.bucket_arn,
+    "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
+    "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
+    "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
+    "${var.trusted_zone_bucket.bucket_arn}/unrestricted/*",
+    
+    # Other buckets
+    var.athena_storage_bucket.bucket_arn,
+    "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
+    var.spark_ui_output_storage_bucket.bucket_arn,
+    "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
+  ]
+}
+
 // S3 read only access policy
 data "aws_iam_policy_document" "read_only_s3_department_access" {
   # Include CloudTrail bucket access for data-and-insight department
