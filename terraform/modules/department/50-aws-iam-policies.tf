@@ -53,6 +53,92 @@ locals {
     var.spark_ui_output_storage_bucket.bucket_arn,
     "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
   ]
+
+  # Common Glue actions for global operations
+  glue_global_actions = [
+    "glue:BatchGetCrawlers",
+    "glue:BatchGetDevEndpoints", 
+    "glue:BatchGetJobs",
+    "glue:BatchGetTriggers",
+    "glue:BatchGetWorkflows",
+    "glue:CheckSchemaVersionValidity",
+    "glue:GetCrawler",
+    "glue:GetCrawlers",
+    "glue:GetCrawlerMetrics",
+    "glue:GetDevEndpoint",
+    "glue:GetDevEndpoints",
+    "glue:GetJob",
+    "glue:GetJobs",
+    "glue:GetJobBookmark",
+    "glue:GetJobRun",
+    "glue:GetJobRuns",
+    "glue:GetTrigger",
+    "glue:GetTriggers",
+    "glue:GetWorkflow",
+    "glue:GetWorkflowRun",
+    "glue:GetWorkflowRuns",
+    "glue:GetSecurityConfiguration",
+    "glue:GetSecurityConfigurations",
+    "glue:GetConnection",
+    "glue:GetConnections",
+    "glue:GetClassifier",
+    "glue:GetClassifiers",
+    "glue:ListCrawlers",
+    "glue:ListDevEndpoints",
+    "glue:ListJobs",
+    "glue:ListTriggers",
+    "glue:ListWorkflows",
+    "glue:ListClassifiers",
+    "glue:ListSecurityConfigurations",
+    "glue:SearchTables",
+    "glue:QuerySchema"
+  ]
+
+  # Common Glue actions for database/table operations
+  glue_database_read_actions = [
+    "glue:GetDatabases",
+    "glue:GetDatabase",
+    "glue:GetTable",
+    "glue:GetTables",
+    "glue:GetTableVersion",
+    "glue:GetTableVersions",
+    "glue:GetPartition",
+    "glue:GetPartitions",
+    "glue:BatchGetPartition",
+    "glue:GetUserDefinedFunction",
+    "glue:GetUserDefinedFunctions"
+  ]
+
+  # Additional Glue actions for write operations
+  glue_database_write_actions = [
+    "glue:UpdateTable",
+    "glue:CreateTable",
+    "glue:DeleteTable",
+    "glue:CreatePartition",
+    "glue:DeletePartition",
+    "glue:BatchCreatePartition",
+    "glue:BatchDeletePartition",
+    "glue:CreateUserDefinedFunction",
+    "glue:UpdateUserDefinedFunction",
+    "glue:DeleteUserDefinedFunction",
+    "glue:UpdateDatabase",
+    "glue:CreateDatabase",
+    "glue:DeleteDatabase"
+  ]
+
+  # Common Glue resource ARNs for departmental access
+  glue_departmental_resources = [
+    "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+    "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/unrestricted",
+    "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${local.department_identifier}",
+    "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${local.department_identifier}_*",
+    "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted/*",
+    "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${local.department_identifier}/*",
+    "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${local.department_identifier}_*/*",
+    "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:userDefinedFunction/unrestricted/*",
+    "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:userDefinedFunction/${local.department_identifier}/*",
+    "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:userDefinedFunction/${local.department_identifier}_*/*"
+  ]
 }
 
 // S3 read only access policy
