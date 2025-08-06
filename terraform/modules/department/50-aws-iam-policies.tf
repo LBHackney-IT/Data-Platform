@@ -159,22 +159,14 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
   }
 
   statement {
-    sid    = "KmsKeyFullAccess"
+    sid    = "KmsKeyReadOnlyAccess"
     effect = "Allow"
     actions = [
       "kms:Decrypt",
       "kms:GenerateDataKey*",
       "kms:DescribeKey",
     ]
-    resources = [
-      var.landing_zone_bucket.kms_key_arn,
-      var.raw_zone_bucket.kms_key_arn,
-      var.refined_zone_bucket.kms_key_arn,
-      var.trusted_zone_bucket.kms_key_arn,
-      var.athena_storage_bucket.kms_key_arn,
-      var.glue_scripts_bucket.kms_key_arn,
-      var.spark_ui_output_storage_bucket.kms_key_arn
-    ]
+    resources = local.read_only_kms_keys
   }
 
 
@@ -203,38 +195,10 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       "s3:Get*",
       "s3:List*",
     ]
-    resources = [
-
-      var.athena_storage_bucket.bucket_arn,
-      "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
-
+    resources = concat(local.departmental_s3_resources, [
       var.glue_scripts_bucket.bucket_arn,
-      "${var.glue_scripts_bucket.bucket_arn}/*",
-
-      var.landing_zone_bucket.bucket_arn,
-      "${var.landing_zone_bucket.bucket_arn}/unrestricted/*",
-      "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
-
-      var.raw_zone_bucket.bucket_arn,
-      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}/*",
-      "${var.raw_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
-      "${var.raw_zone_bucket.bucket_arn}/unrestricted/*",
-
-      var.refined_zone_bucket.bucket_arn,
-      "${var.refined_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
-      "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}/*",
-      "${var.refined_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
-      "${var.refined_zone_bucket.bucket_arn}/unrestricted/*",
-
-      var.trusted_zone_bucket.bucket_arn,
-      "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
-      "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
-      "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}_$folder$",
-      "${var.trusted_zone_bucket.bucket_arn}/unrestricted/*",
-
-      var.spark_ui_output_storage_bucket.bucket_arn,
-      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
-    ]
+      "${var.glue_scripts_bucket.bucket_arn}/*"
+    ])
   }
 
 
