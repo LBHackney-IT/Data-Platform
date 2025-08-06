@@ -141,6 +141,10 @@ locals {
   ]
 }
 
+// =============================================================================
+// S3 ACCESS POLICIES
+// =============================================================================
+
 // S3 read only access policy
 data "aws_iam_policy_document" "read_only_s3_department_access" {
   # Include CloudTrail bucket access for data-and-insight department
@@ -243,6 +247,10 @@ resource "aws_iam_policy" "read_only_s3_access" {
   name   = lower("${var.identifier_prefix}-${local.department_identifier}-read-only-s3-department-access")
   policy = data.aws_iam_policy_document.read_only_s3_department_access.json
 }
+
+// =============================================================================
+// GLUE ACCESS POLICIES  
+// =============================================================================
 
 // Glue read only access policy
 data "aws_iam_policy_document" "read_only_glue_access" {
