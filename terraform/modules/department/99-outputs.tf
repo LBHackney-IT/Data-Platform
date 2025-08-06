@@ -50,12 +50,12 @@ output "redshift_cluster_secret" {
 
 output "glue_role_name" {
   description = "Name of the role used to run this departments glue scripts"
-  value       = aws_iam_role.glue_agent.name
+  value       = module.department_iam.glue_agent_role_name
 }
 
 output "glue_role_arn" {
   description = "ARN for the role used to run this departments glue scripts"
-  value       = aws_iam_role.glue_agent.arn
+  value       = module.department_iam.glue_agent_role_arn
 }
 
 output "tags" {
