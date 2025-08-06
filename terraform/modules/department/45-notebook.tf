@@ -5,7 +5,7 @@ locals {
 module "sagemaker" {
   count                         = local.create_notebook ? 1 : 0
   source                        = "../sagemaker"
-  development_endpoint_role_arn = aws_iam_role.glue_agent.arn
+  development_endpoint_role_arn = module.department_iam.glue_agent_role_arn
   tags                          = var.tags
   identifier_prefix             = var.short_identifier_prefix
   python_libs                   = try(var.notebook_instance.extra_python_libs, null)
