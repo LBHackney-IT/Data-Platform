@@ -55,42 +55,42 @@ resource "aws_iam_role_policy_attachment" "glue_agent_s3_access" {
   policy_arn = aws_iam_policy.s3_access.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agents_secrets_manager_read_only" {
+resource "aws_iam_role_policy_attachment" "glue_agent_cloudwatch_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.glue_can_write_to_cloudwatch.arn
 }
 
-resource "aws_iam_role_policy_attachment" "read_glue_scripts_and_mwaa_and_athena" {
+resource "aws_iam_role_policy_attachment" "glue_agent_scripts_and_athena_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.read_glue_scripts_and_mwaa_and_athena.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_can_write_to_cloudwatch" {
+resource "aws_iam_role_policy_attachment" "glue_agent_secrets_manager_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.secrets_manager_read_only.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_glue_full_access" {
+resource "aws_iam_role_policy_attachment" "glue_agent_full_glue_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.full_glue_access.arn
 }
 
-resource "aws_iam_role_policy_attachment" "crawler_can_access_jdbc_connection" {
+resource "aws_iam_role_policy_attachment" "glue_agent_jdbc_connection_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.crawler_can_access_jdbc_connection.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_agent_has_full_s3_access_to_glue_resources" {
+resource "aws_iam_role_policy_attachment" "glue_agent_s3_glue_resources_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.full_s3_access_to_glue_resources.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_access_to_watermarks_table" {
+resource "aws_iam_role_policy_attachment" "glue_agent_watermarks_table_access" {
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.glue_access_to_watermarks_table.arn
 }
 
-resource "aws_iam_role_policy_attachment" "glue_runner_pass_role_to_glue_for_notebook_use" {
+resource "aws_iam_role_policy_attachment" "glue_agent_notebook_pass_role" {
   count      = var.environment == "prod" ? 0 : 1
   role       = aws_iam_role.glue_agent.name
   policy_arn = aws_iam_policy.glue_runner_pass_role_to_glue_for_notebook_use.arn
