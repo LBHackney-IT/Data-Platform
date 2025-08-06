@@ -196,7 +196,6 @@ data "aws_iam_policy_document" "read_only_glue_access" {
       "glue:GetConnections",
       "glue:GetClassifier",
       "glue:GetClassifiers",
-      "glue:GetDatabases",
       "glue:ListCrawlers",
       "glue:ListDevEndpoints",
       "glue:ListJobs",
@@ -214,6 +213,7 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     sid    = "DepartmentalGlueDbReadOnly"
     effect = "Allow"
     actions = [
+      "glue:GetDatabases",
       "glue:GetDatabase",
       "glue:GetTable",
       "glue:GetTables",
@@ -563,7 +563,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:GetConnections",
       "glue:GetClassifier",
       "glue:GetClassifiers",
-      "glue:GetDatabases",
       "glue:ListCrawlers",
       "glue:ListDevEndpoints",
       "glue:ListJobs",
@@ -595,6 +594,7 @@ data "aws_iam_policy_document" "glue_access" {
     sid    = "DepartmentalGlueDbReadWrite"
     effect = "Allow"
     actions = [
+      "glue:GetDatabases",
       "glue:GetDatabase",
       "glue:GetTable",
       "glue:GetTables",
