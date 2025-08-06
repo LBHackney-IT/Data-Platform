@@ -1,3 +1,7 @@
+// =============================================================================
+// SSO USER POLICIES
+// =============================================================================
+
 // User Role for staging account - This role is a combination of policies ready to be applied to SSO
 data "aws_iam_policy_document" "sso_staging_user_policy" {
   override_policy_documents = local.create_notebook ? [
@@ -24,6 +28,10 @@ data "aws_iam_policy_document" "sso_production_user_policy" {
     data.aws_iam_policy_document.athena_can_write_to_s3.json
   ]
 }
+
+// =============================================================================
+// GLUE AGENT ROLE
+// =============================================================================
 
 // Glue role + attachments
 data "aws_iam_policy_document" "glue_agent_assume_role" {
@@ -96,6 +104,10 @@ resource "aws_iam_role_policy_attachment" "glue_agent_notebook_pass_role" {
   policy_arn = aws_iam_policy.glue_runner_pass_role_to_glue_for_notebook_use.arn
 }
 
+// =============================================================================
+// DEPARTMENTAL AIRFLOW USER
+// =============================================================================
+
 # Define a map for the departmental airflow policies
 locals {
   airflow_policy_map = {
@@ -140,6 +152,10 @@ resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
     extra     = jsonencode({ region_name = var.region })
   })
 }
+
+// =============================================================================
+// DEPARTMENT ECS ROLE
+// =============================================================================
 
 # Department ECS
 resource "aws_iam_role" "department_ecs_role" {
