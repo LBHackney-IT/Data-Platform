@@ -109,7 +109,7 @@ variable "additional_s3_access" {
   type = list(object({
     bucket_arn  = string
     kms_key_arn = string
-    paths       = optional(list(string))
+    paths       = list(string)
     actions     = list(string)
   }))
   default = []
