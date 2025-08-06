@@ -167,16 +167,76 @@ data "aws_iam_policy_document" "read_only_glue_access" {
 
   // Glue Access
   statement {
-    sid = "AwsGlue"
+    sid = "AwsGlueGlobal"
     actions = [
-      "glue:Batch*",
+      "glue:BatchGetCrawlers",
+      "glue:BatchGetDevEndpoints",
+      "glue:BatchGetJobs",
+      "glue:BatchGetTriggers",
+      "glue:BatchGetWorkflows",
       "glue:CheckSchemaVersionValidity",
-      "glue:Get*",
-      "glue:List*",
+      "glue:GetCrawler",
+      "glue:GetCrawlers",
+      "glue:GetCrawlerMetrics",
+      "glue:GetDevEndpoint",
+      "glue:GetDevEndpoints",
+      "glue:GetJob",
+      "glue:GetJobs",
+      "glue:GetJobBookmark",
+      "glue:GetJobRun",
+      "glue:GetJobRuns",
+      "glue:GetTrigger",
+      "glue:GetTriggers",
+      "glue:GetWorkflow",
+      "glue:GetWorkflowRun",
+      "glue:GetWorkflowRuns",
+      "glue:GetSecurityConfiguration",
+      "glue:GetSecurityConfigurations",
+      "glue:GetConnection",
+      "glue:GetConnections",
+      "glue:GetClassifier",
+      "glue:GetClassifiers",
+      "glue:GetDatabases",
+      "glue:ListCrawlers",
+      "glue:ListDevEndpoints",
+      "glue:ListJobs",
+      "glue:ListTriggers",
+      "glue:ListWorkflows",
+      "glue:ListClassifiers",
+      "glue:ListSecurityConfigurations",
       "glue:SearchTables",
-      "glue:Query*",
+      "glue:QuerySchema",
     ]
     resources = ["*"]
+  }
+
+  statement {
+    sid    = "DepartmentalGlueDbReadOnly"
+    effect = "Allow"
+    actions = [
+      "glue:GetDatabase",
+      "glue:GetTable",
+      "glue:GetTables",
+      "glue:GetTableVersion",
+      "glue:GetTableVersions",
+      "glue:GetPartition",
+      "glue:GetPartitions",
+      "glue:BatchGetPartition",
+      "glue:GetUserDefinedFunction",
+      "glue:GetUserDefinedFunctions",
+    ]
+    resources = [
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/unrestricted",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${local.department_identifier}",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${local.department_identifier}_*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${local.department_identifier}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${local.department_identifier}_*/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:userDefinedFunction/unrestricted/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:userDefinedFunction/${local.department_identifier}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:userDefinedFunction/${local.department_identifier}_*/*",
+    ]
   }
 }
 
@@ -467,20 +527,50 @@ data "aws_iam_policy_document" "glue_access" {
 
   // Glue Access
   statement {
-    sid = "AwsGlue"
+    sid = "AwsGlueGlobal"
     actions = [
-      "glue:Batch*",
+      "glue:BatchGetCrawlers",
+      "glue:BatchGetDevEndpoints",
+      "glue:BatchGetJobs",
+      "glue:BatchGetTriggers",
+      "glue:BatchGetWorkflows",
       "glue:CheckSchemaVersionValidity",
       "glue:CreateDevEndpoint",
       "glue:CreateJob",
       "glue:CreateScript",
       "glue:CreateSession",
-      "glue:CreatePartition",
       "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
       "glue:DeleteTrigger",
-      "glue:Get*",
-      "glue:List*",
+      "glue:GetCrawler",
+      "glue:GetCrawlers",
+      "glue:GetCrawlerMetrics",
+      "glue:GetDevEndpoint",
+      "glue:GetDevEndpoints",
+      "glue:GetJob",
+      "glue:GetJobs",
+      "glue:GetJobBookmark",
+      "glue:GetJobRun",
+      "glue:GetJobRuns",
+      "glue:GetTrigger",
+      "glue:GetTriggers",
+      "glue:GetWorkflow",
+      "glue:GetWorkflowRun",
+      "glue:GetWorkflowRuns",
+      "glue:GetSecurityConfiguration",
+      "glue:GetSecurityConfigurations",
+      "glue:GetConnection",
+      "glue:GetConnections",
+      "glue:GetClassifier",
+      "glue:GetClassifiers",
+      "glue:GetDatabases",
+      "glue:ListCrawlers",
+      "glue:ListDevEndpoints",
+      "glue:ListJobs",
+      "glue:ListTriggers",
+      "glue:ListWorkflows",
+      "glue:ListClassifiers",
+      "glue:ListSecurityConfigurations",
       "glue:ResetJobBookmark",
       "glue:SearchTables",
       "glue:StartCrawler",
@@ -496,17 +586,51 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:TagResource",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
+      "glue:QuerySchema",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "DepartmentalGlueDbReadWrite"
+    effect = "Allow"
+    actions = [
+      "glue:GetDatabase",
+      "glue:GetTable",
+      "glue:GetTables",
+      "glue:GetTableVersion",
+      "glue:GetTableVersions",
+      "glue:GetPartition",
+      "glue:GetPartitions",
+      "glue:BatchGetPartition",
+      "glue:GetUserDefinedFunction",
+      "glue:GetUserDefinedFunctions",
       "glue:UpdateTable",
       "glue:CreateTable",
       "glue:DeleteTable",
-      "glue:GetTableVersions",
-      "glue:GetTable",
-      "glue:GetTables",
-      "glue:GetDatabase",
-      "glue:GetDatabases",
-      "glue:Query*",
+      "glue:CreatePartition",
+      "glue:DeletePartition",
+      "glue:BatchCreatePartition",
+      "glue:BatchDeletePartition",
+      "glue:CreateUserDefinedFunction",
+      "glue:UpdateUserDefinedFunction",
+      "glue:DeleteUserDefinedFunction",
+      "glue:UpdateDatabase",
+      "glue:CreateDatabase",
+      "glue:DeleteDatabase",
     ]
-    resources = ["*"]
+    resources = [
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/unrestricted",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${local.department_identifier}",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${local.department_identifier}_*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${local.department_identifier}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${local.department_identifier}_*/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:userDefinedFunction/unrestricted/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:userDefinedFunction/${local.department_identifier}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:userDefinedFunction/${local.department_identifier}_*/*",
+    ]
   }
 }
 
