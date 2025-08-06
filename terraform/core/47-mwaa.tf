@@ -258,9 +258,8 @@ resource "aws_secretsmanager_secret_version" "mwaa_alloy_api_connection" {
     conn_type = "http",
     host      = "https://api.uk.alloyapp.io",
     password  = "UPDATE_IN_CONSOLE",
-    port      = null,
-    schema    = null,
-    extra     = null,
+    port      = 443,
+    schema    = "https",
   })
 
   lifecycle {
