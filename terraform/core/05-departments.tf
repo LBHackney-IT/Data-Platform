@@ -416,7 +416,7 @@ module "department_housing" {
     },
     {
       bucket_arn  = module.file_sync_destination_nec.bucket_arn
-      kms_key_arn = ""
+      kms_key_arn = module.file_sync_destination_nec.key_arn
       paths       = []
       actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
     }
