@@ -1,5 +1,5 @@
 module "file_sync_destination_nec" {
-  source      = "git::https://github.com/LBHackney-IT/ce-file-sync-modules.git//destination?ref=89c8407aa25eb56cdbd7594dece21563d28e484c" # v1.0.0
+  source      = "git::https://github.com/LBHackney-IT/ce-file-sync-modules.git//destination?ref=f1d2ad6ed999acef41f9126d91cea19d572096cd" # v1.1.0
   tags        = merge(module.tags.values, { "Environment" = lower(var.environment) })
   application = "nec-housing"
   environment = var.environment
