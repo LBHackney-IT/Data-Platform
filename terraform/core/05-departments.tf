@@ -421,6 +421,12 @@ module "department_housing" {
       actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
     }
   ]
+  additional_glue_database_access = [
+    {
+      database_name = "housing_nec_migration"
+      actions       = ["glue:CreateTable", "glue:UpdateTable", "glue:DeleteTable", "glue:GetTable", "glue:GetTables", "glue:GetDatabase"]
+    }
+  ]
 }
 
 module "department_children_and_education" {
