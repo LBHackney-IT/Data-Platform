@@ -187,8 +187,8 @@ data "aws_iam_policy_document" "read_only_glue_access" {
       effect  = "Allow"
       actions = additional_db_access.value.actions
       resources = [
-        "arn:aws:glue:*:*:database/${additional_db_access.value.database_name}",
-        "arn:aws:glue:*:*:table/${additional_db_access.value.database_name}/*"
+        "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
+        "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:table/${additional_db_access.value.database_name}/*"
       ]
     }
   }
@@ -521,20 +521,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:Query*",
     ]
     resources = ["*"]
-  }
-
-  dynamic "statement" {
-    for_each = var.additional_glue_database_access
-    iterator = additional_db_access
-    content {
-      sid     = "AdditionalGlueDatabaseFullAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
-      effect  = "Allow"
-      actions = additional_db_access.value.actions
-      resources = [
-        "arn:aws:glue:*:*:database/${additional_db_access.value.database_name}",
-        "arn:aws:glue:*:*:table/${additional_db_access.value.database_name}/*"
-      ]
-    }
   }
 }
 
