@@ -100,7 +100,7 @@ resource "aws_iam_role_policy_attachment" "g_drive_to_s3_copier_lambda" {
 
 data "archive_file" "lambda" {
   type        = "zip"
-  source_dir  =  "../../lambdas/g_drive_to_s3"
+  source_dir  = "../../lambdas/g_drive_to_s3"
   output_path = "../../lambdas/g_drive_to_s3.zip"
   depends_on  = [null_resource.run_install_requirements]
 }
@@ -110,11 +110,11 @@ resource "null_resource" "run_install_requirements" {
     dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/g_drive_to_s3/*") : filesha1("${path.module}/${f}")]))
   }
 
-#   provisioner "local-exec" {
-#     interpreter = ["bash", "-c"]
-#     command     = "make install-requirements"
-#     working_dir = "${path.module}/../../../lambdas/g_drive_to_s3/"
-#   }
+  #   provisioner "local-exec" {
+  #     interpreter = ["bash", "-c"]
+  #     command     = "make install-requirements"
+  #     working_dir = "${path.module}/../../../lambdas/g_drive_to_s3/"
+  #   }
 }
 
 resource "aws_s3_object" "g_drive_to_s3_copier_lambda" {
@@ -138,12 +138,12 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_object.g_drive_to_s3_copier_lambda.key
   source_code_hash = data.archive_file.lambda.output_base64sha256
-  layers           = [
+  layers = [
     "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:layer:google-apis-layer:1",
     "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:layer:urllib3-1-26-18-layer:1"
-    ]
-  timeout          = local.lambda_timeout
-  memory_size      = local.lambda_memory_size
+  ]
+  timeout     = local.lambda_timeout
+  memory_size = local.lambda_memory_size
 
   environment {
     variables = {
@@ -175,7 +175,7 @@ resource "aws_cloudwatch_event_rule" "ingestion_schedule" {
   name_prefix         = "g-drive-to-s3-copier-schedule"
   description         = "Ingestion Schedule"
   schedule_expression = var.ingestion_schedule
-  is_enabled          = var.ingestion_schedule_enabled ? true : false
+  state               = var.ingestion_schedule_enabled ? "ENABLED" : "DISABLED"
 }
 
 resource "aws_cloudwatch_event_target" "run_lambda" {
