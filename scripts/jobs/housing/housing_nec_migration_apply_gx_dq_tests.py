@@ -90,6 +90,9 @@ def main():
 
     results_df = pd.concat(table_results_df_list)
 
+    # map DQ dimension type
+    results_df['dq_dimension_type'] = results_df['expectation_config.type'].map(dq_dimensions_map)
+
     # add clean dataset name
     results_df['dataset_name'] = results_df['expectation_config.kwargs.batch_id'].map(
         lambda x: x.removeprefix('pandas-').removesuffix('_df_asset'))
@@ -115,6 +118,9 @@ def main():
                   'expectation_config.kwargs.regex': 'string',
                   'expectation_config.kwargs.value_set': 'string',
                   'expectation_config.kwargs.column_list': 'string',
+                  'import_year': 'string',
+                  'import_month': 'string',
+                  'import_day': 'string',
                   'import_date': 'string'}
 
     # write to s3
