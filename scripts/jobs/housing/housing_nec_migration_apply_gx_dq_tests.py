@@ -10,7 +10,7 @@ from awsglue.utils import getResolvedOptions
 import great_expectations as gx
 import pandas as pd
 from pyathena import connect
-from scripts.helpers.housing_gx_dq_inputs import sql_config, table_list, partition_keys
+from scripts.helpers.housing_nec_migration_gx_dq_inputs import sql_config, table_list, partition_keys
 import scripts.jobs.housing.housing_nec_migration_properties_data_load_gx_suite
 
 logging.basicConfig(level=logging.INFO)
