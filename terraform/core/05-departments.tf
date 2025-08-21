@@ -425,6 +425,10 @@ module "department_housing" {
     {
       database_name = "housing_nec_migration"
       actions       = ["glue:CreateTable", "glue:UpdateTable", "glue:DeleteTable", "glue:GetTable", "glue:GetTables", "glue:GetDatabase"]
+    },
+    {
+      database_name = "housing_nec_migration_outputs"
+      actions       = ["glue:CreateTable", "glue:UpdateTable", "glue:DeleteTable", "glue:GetTable", "glue:GetTables", "glue:GetDatabase"]
     }
   ]
 }
