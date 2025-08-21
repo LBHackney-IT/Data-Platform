@@ -22,7 +22,7 @@ data "aws_ssm_parameter" "budget_alert_recipients" {
 
 module "aws_budget" {
   count  = local.is_live_environment ? 1 : 0
-  source = "github.com/LBHackney-IT/ce-aws-budgets-lbh.git?ref=d3a5e0e0751aafcc786dfcbd45af38ed9d834dec"
+  source = "github.com/LBHackney-IT/ce-aws-budgets-lbh.git?ref=671dab00698fbef054ebc15b7928e03aae525583"
 
   budget_name  = "Athena Daily Budget Alert"
   budget_type  = "COST"
