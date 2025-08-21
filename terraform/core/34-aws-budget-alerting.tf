@@ -23,7 +23,6 @@ data "aws_ssm_parameter" "budget_alert_recipients" {
 module "aws_budget_athena" {
   count  = local.is_live_environment ? 1 : 0
   source = "github.com/LBHackney-IT/ce-aws-budgets-lbh.git?ref=671dab00698fbef054ebc15b7928e03aae525583"
-  tags   = module.tags.values
 
   budget_name  = "Athena Daily Budget Alert"
   budget_type  = "COST"
@@ -57,7 +56,7 @@ module "aws_budget_athena" {
 module "aws_budget_glue" {
   count  = local.is_live_environment ? 1 : 0
   source = "github.com/LBHackney-IT/ce-aws-budgets-lbh.git?ref=671dab00698fbef054ebc15b7928e03aae525583"
-  tags   = module.tags.values
+
 
   budget_name  = "Glue Daily Budget Alert"
   budget_type  = "COST"
