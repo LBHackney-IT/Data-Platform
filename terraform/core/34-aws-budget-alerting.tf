@@ -41,7 +41,7 @@ module "aws_budget_athena" {
   threshold                  = 100
   threshold_type             = "PERCENTAGE"
   notification_type          = "ACTUAL"
-  subscriber_email_addresses = data.aws_ssm_parameter.budget_alert_recipients
+  subscriber_email_addresses = [data.aws_ssm_parameter.budget_alert_recipients.value]
 
   enable_anomaly_detection       = true
   anomaly_monitor_name           = "AthenaDailyAnomalyMonitor"
@@ -75,7 +75,7 @@ module "aws_budget_glue" {
   threshold                  = 100
   threshold_type             = "PERCENTAGE"
   notification_type          = "ACTUAL"
-  subscriber_email_addresses = data.aws_ssm_parameter.budget_alert_recipients
+  subscriber_email_addresses = [data.aws_ssm_parameter.budget_alert_recipients.value]
 
   enable_anomaly_detection       = true
   anomaly_monitor_name           = "AthenaDailyAnomalyMonitor"
