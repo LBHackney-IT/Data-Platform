@@ -13,7 +13,7 @@ module "set_budget_limit_amount" {
 resource "aws_ssm_parameter" "budget_alert_recipients" {
   name = "budget-alert-recipients"
   type = "StringList"
-  tags = var.tags
+  tags = module.tags.values
 }
 
 data "aws_ssm_parameter" "budget_alert_recipients" {
@@ -23,6 +23,7 @@ data "aws_ssm_parameter" "budget_alert_recipients" {
 module "aws_budget" {
   count  = local.is_live_environment ? 1 : 0
   source = "github.com/LBHackney-IT/ce-aws-budgets-lbh.git?ref=671dab00698fbef054ebc15b7928e03aae525583"
+  tags   = module.tags.values
 
   budget_name  = "Athena Daily Budget Alert"
   budget_type  = "COST"
