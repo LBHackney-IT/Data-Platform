@@ -11,9 +11,10 @@ module "set_budget_limit_amount" {
 }
 
 resource "aws_ssm_parameter" "budget_alert_recipients" {
-  name = "budget-alert-recipients"
-  type = "StringList"
-  tags = module.tags.values
+  name  = "budget-alert-recipients"
+  type  = "StringList"
+  value = "value"
+  tags  = module.tags.values
 }
 
 data "aws_ssm_parameter" "budget_alert_recipients" {
