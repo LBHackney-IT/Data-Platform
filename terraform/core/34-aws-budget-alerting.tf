@@ -27,7 +27,7 @@ module "aws_budget_athena" {
 
   budget_name  = "Athena Daily Budget Alert"
   budget_type  = "COST"
-  limit_amount = local.is_production_environment ? "3" : "1"
+  limit_amount = local.is_production_environment ? "5" : "3"
   time_unit    = "DAILY"
 
   cost_filter = [
