@@ -10,14 +10,24 @@ module "set_budget_limit_amount" {
   emails_to_notify               = var.emails_to_notify_with_budget_alerts
 }
 
+resource "aws_ssm_parameter" "budget_alert_recipients" {
+  name = "budget-alert-recipients"
+  type = "StringList"
+  tags = var.tags
+}
+
+data "aws_ssm_parameter" "budget_alert_recipients" {
+  name = aws_ssm_parameter.budget_alert_recipients.value
+}
 
 module "aws_budget" {
-  source = "github.com/LBHackney-IT/ce-aws-budgets-lbh"
+  count  = local.is_live_environment ? 1 : 0
+  source = "github.com/LBHackney-IT/ce-aws-budgets-lbh.git?ref=d3a5e0e0751aafcc786dfcbd45af38ed9d834dec"
 
-  budget_name               = "Athena Daily Budget Alert"
-  budget_type               = "COST"
-  limit_amount              = "3"
-  time_unit                 = "DAILY"
+  budget_name  = "Athena Daily Budget Alert"
+  budget_type  = "COST"
+  limit_amount = local.is_production_environment ? "3" : "1"
+  time_unit    = "DAILY"
 
   cost_filter = [
     {
@@ -26,9 +36,19 @@ module "aws_budget" {
     }
   ]
 
-  comparison_operator       = "GREATER_THAN"
-  threshold                 = 100
-  threshold_type            = "PERCENTAGE"
-  notification_type         = "ACTUAL"
-  subscriber_email_address  = var.emails_to_notify_with_budget_alerts
+  comparison_operator        = "GREATER_THAN"
+  threshold                  = 100
+  threshold_type             = "PERCENTAGE"
+  notification_type          = "ACTUAL"
+  subscriber_email_addresses = data.aws_ssm_parameter.budget_alert_recipients
+
+  enable_anomaly_detection       = true
+  anomaly_monitor_name           = "AthenaDailyAnomalyMonitor"
+  anomaly_monitor_type           = "DIMENSIONAL"
+  anomaly_monitor_dimension      = "SERVICE"
+  anomaly_subscription_name      = "AthenaDailySubscription"
+  anomaly_subscription_frequency = "DAILY"
+  threshold_key                  = "ANOMALY_TOTAL_IMPACT_ABSOLUTE"
+  match_options                  = ["GREATER_THAN_OR_EQUAL"]
+  threshold_values               = ["1"]
 }
