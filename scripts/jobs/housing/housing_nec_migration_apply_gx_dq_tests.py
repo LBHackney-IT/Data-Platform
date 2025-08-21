@@ -46,7 +46,7 @@ def main():
         df = pd.read_sql_query(sql_query, conn)
 
         # set up batch
-        data_source = context.data_sources.add_pandas("pandas")
+        data_source = context.data_sources.add_pandas(f'{table}_pandas')
         data_asset = data_source.add_dataframe_asset(name=f'{table}_df_asset')
         batch_definition = data_asset.add_batch_definition_whole_dataframe("Athena batch definition")
         batch_parameters = {"dataframe": df}
