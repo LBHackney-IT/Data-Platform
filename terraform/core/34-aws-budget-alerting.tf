@@ -11,10 +11,17 @@ module "set_budget_limit_amount" {
 }
 
 resource "aws_ssm_parameter" "budget_alert_recipients" {
-  name  = "/data-and-insight/budget-alert-recipients"
-  type  = "StringList"
-  value = "value"
-  tags  = module.tags.values
+  name      = "/data-and-insight/budget-alert-recipients"
+  type      = "StringList"
+  value     = "update_in_console@example.com"
+  tags      = module.tags.values
+  overwrite = true
+
+  lifecycle {
+    ignore_changes = [
+      value,
+    ]
+  }
 }
 
 data "aws_ssm_parameter" "budget_alert_recipients" {
