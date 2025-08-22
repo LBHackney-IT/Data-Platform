@@ -25,7 +25,7 @@ resource "aws_ssm_parameter" "budget_alert_recipients" {
 }
 
 data "aws_ssm_parameter" "budget_alert_recipients" {
-  name = aws_ssm_parameter.budget_alert_recipients.value
+  name = aws_ssm_parameter.budget_alert_recipients.name
 }
 
 module "aws_budget_athena" {
