@@ -74,8 +74,9 @@ def main():
         checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
         results_dict = list(checkpoint_result.run_results.values())[0].to_json_dict()
         table_results_df = pd.json_normalize(results_dict['results'])
-        cols_to_drop = [c for c in table_results_df.columns if c.startswith('exception_info')]
-        cols_to_drop.extend(['result.unexpected_list', 'result.details_mismatched', 'result.observed_value'])
+        cols_not_needed = ['result.unexpected_list', 'result.details_mismatched', 'result.observed_value']
+        cols_to_drop = [c for c in table_results_df.columns if c.startswith('exception_info') or c in cols_not_needed]
+
         table_results_df = table_results_df.drop(columns=cols_to_drop)
         table_results_df_list.append(table_results_df)
 
