@@ -19,21 +19,27 @@ def get_date_time(source_identifier: str) -> tuple[str, str, str, str]:
         source_identifier (str): source identifier taken from the
         event, as implemented this will include datetime for the snapshot as
         applicable in the form sql-to-parquet-yy-mm-dd-hhmmss or
-        sql-to-parquet-yy-mm-dd-hhmmss-backdated
+        sql-to-parquet-yyyy-mm-dd-backdated
 
     Returns:
         tuple(str, str, str, str): year, month, day, date
     """
 
-    pattern = r"^sql-to-parquet-(\d{2})-(\d{2})-(\d{2})-(\d{6})(-backdated)?$"
+    pattern_with_time = r"^sql-to-parquet-(\d{2})-(\d{2})-(\d{2})-(\d{6})(-backdated)?$"
+    pattern_backdated = r"^sql-to-parquet-(\d{4})-(\d{2})-(\d{2})-backdated$"
 
-    if not re.match(pattern, source_identifier):
+    if re.match(pattern_with_time, source_identifier):
+        split_identifier = source_identifier.split("-")
+        day = split_identifier[5]
+        month = split_identifier[4]
+        year = "20" + split_identifier[3]
+    elif re.match(pattern_backdated, source_identifier):
+        split_identifier = source_identifier.split("-")
+        day = split_identifier[5]
+        month = split_identifier[4]
+        year = split_identifier[3]
+    else:
         raise ValueError("Invalid source identifier format")
-
-    split_identifier = source_identifier.split("-")
-    day = split_identifier[5]
-    month = split_identifier[4]
-    year = "20" + split_identifier[3]
 
     date = f"{year}{month}{day}"
     return year, month, day, date
