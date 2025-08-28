@@ -35,6 +35,11 @@ resource "aws_glue_crawler" "landing_zone_liberator" {
   recrawl_policy {
     recrawl_behavior = "CRAWL_NEW_FOLDERS_ONLY"
   }
+
+  schema_change_policy {
+    delete_behavior = "LOG"
+    update_behavior = "LOG"
+  }
 }
 
 // LIBERATOR RAW ZONE
