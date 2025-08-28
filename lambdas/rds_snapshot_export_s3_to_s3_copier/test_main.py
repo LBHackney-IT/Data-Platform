@@ -12,8 +12,6 @@ class TestGetDateTime:
         assert day == "25"
         assert date == "20231225"
 
-
-
     def test_get_date_time_yyyy_format_backdated(self):
         source_identifier = "sql-to-parquet-2023-12-25-backdated"
         year, month, day, date = get_date_time(source_identifier)
