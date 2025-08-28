@@ -25,7 +25,7 @@ def get_date_time(source_identifier: str) -> tuple[str, str, str, str]:
         tuple(str, str, str, str): year, month, day, date
     """
 
-    pattern_with_time = r"^sql-to-parquet-(\d{2})-(\d{2})-(\d{2})-(\d{6})(-backdated)?$"
+    pattern_with_time = r"^sql-to-parquet-(\d{2})-(\d{2})-(\d{2})-(\d{6})$"
     pattern_backdated = r"^sql-to-parquet-(\d{4})-(\d{2})-(\d{2})-backdated$"
 
     if re.match(pattern_with_time, source_identifier):
