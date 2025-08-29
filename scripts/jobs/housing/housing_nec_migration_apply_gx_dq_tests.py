@@ -74,7 +74,7 @@ def main():
         checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
         results_dict = list(checkpoint_result.run_results.values())[0].to_json_dict()
         table_results_df = pd.json_normalize(results_dict['results'])
-        cols_not_needed = ['result.unexpected_list', 'result.details_mismatched', 'result.observed_value']
+        cols_not_needed = ['result.unexpected_list', 'result.observed_value']
         cols_to_drop = [c for c in table_results_df.columns if c.startswith('exception_info') or c in cols_not_needed]
 
         table_results_df = table_results_df.drop(columns=cols_to_drop)
@@ -127,7 +127,8 @@ def main():
         table=target_table,
         mode="overwrite_partitions",
         partition_cols=partition_keys,
-        dtype=dtype_dict
+        dtype=dtype_dict,
+        schema_evolution=True
     )
 
     logger.info(f'Data Quality test results for NEC data loads written to {s3_target_location}')
