@@ -46,6 +46,10 @@ resource "aws_ecs_task_definition" "task_definition" {
     operating_system_family = "LINUX"
     cpu_architecture        = "X86_64"
   }
+
+  ephemeral_storage {
+    size_in_gib = 50
+  }
 }
 
 resource "aws_cloudwatch_log_group" "ecs_task_logs" {
