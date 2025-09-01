@@ -4,7 +4,7 @@ RUN apk add --update --no-cache \
                 bash \
                 unzip \
                 mariadb-connector-c-dev \
-                mysql mysql-client
+                mariadb-client
 
 # Install AWS CLI
 RUN apk add --no-cache \
