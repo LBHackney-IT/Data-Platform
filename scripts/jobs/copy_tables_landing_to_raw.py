@@ -48,7 +48,7 @@ def purge_today_partition(
     logger.info(f"Successfully purged partition for table {table_name}")
 
 
-## @params: [JOB_NAME]
+# @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 
 sc = SparkContext()
