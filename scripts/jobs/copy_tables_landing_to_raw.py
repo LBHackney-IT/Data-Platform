@@ -1,27 +1,62 @@
-import boto3
-import sys
 import re
-from awsglue.transforms import *
-from awsglue.utils import getResolvedOptions
-from pyspark.context import SparkContext
+import sys
+from datetime import datetime
+
+import boto3
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
 
 from scripts.helpers.helpers import (
+    PARTITION_KEYS,
     add_timestamp_column,
     get_glue_env_var,
     initialise_job,
-    PARTITION_KEYS,
 )
 
-## @params: [JOB_NAME]
+
+def purge_today_partition(
+    glue_context: GlueContext,
+    target_destination: str,
+    table_name: str,
+    retentionPeriod: int = 0,
+) -> None:
+    """
+    Purges (delete) only today's partition under the given target destination.
+    Parameters:
+      glue_context: GlueContext instance.
+      target_destination: Base S3 path (e.g., "s3://your-bucket/path").
+      table_name: Name of the table being purged for logging purposes.
+      retentionPeriod: Retention period in hours (default 0, meaning delete all files immediately).
+    Returns:
+      partition_path: The S3 partition path that was purged.
+    """
+    now = datetime.now()
+    import_year = str(now.year)
+    import_month = str(now.month).zfill(2)
+    import_day = str(now.day).zfill(2)
+    import_date = import_year + import_month + import_day
+
+    partition_path = f"{target_destination}/import_year={import_year}/import_month={import_month}/import_day={import_day}/import_date={import_date}"
+
+    logger.info(
+        f"Purging today's partition for table {table_name} at path: {partition_path}"
+    )
+    glue_context.purge_s3_path(partition_path, {"retentionPeriod": retentionPeriod})
+    logger.info(f"Successfully purged partition for table {table_name}")
+
+
+# @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 
 sc = SparkContext()
 glue_context = GlueContext(sc)
 spark = glue_context.spark_session
 job = Job(glue_context)
+
+# Global logger
 logger = glue_context.get_logger()
 
 initialise_job(args, job, logger)
@@ -60,8 +95,13 @@ for table_name in tables_to_copy:
 
     table_with_timestamp = add_timestamp_column(table_data_frame)
 
+    target_destination = f"s3://{bucket_target}/{prefix}{table_name}"
+
+    # Clean up today's partition before writing
+    purge_today_partition(glue_context, target_destination, table_name)
+
     data_sink = glue_context.getSink(
-        path="s3://" + bucket_target + "/" + prefix + table_name + "/",
+        path=target_destination + "/",
         connection_type="s3",
         updateBehavior="UPDATE_IN_DATABASE",
         partitionKeys=PARTITION_KEYS,
