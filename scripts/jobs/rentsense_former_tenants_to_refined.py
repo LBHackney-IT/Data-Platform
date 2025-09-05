@@ -982,19 +982,18 @@ if __name__ == "__main__":
     )
 
     w = Window.partitionBy("AccountReference").orderBy(F.col("TenancyEndDate").desc())
-    
+
     accounts6 = (
-    accounts5
-    .withColumn("rn", F.row_number().over(w))
-    .filter(F.col("rn") == 1)
+        accounts5.withColumn("rn", F.row_number().over(w))
+        .filter(F.col("rn") == 1)
         .selectExpr(
             "AccountReference",
             "TenancyEndDate",
             "LocalAuthority",
             "Patch",
             "'Hackney' as Region",
-            "case when Deceased=1 then 'Y' else 'N' end as Deceased"
-    )
+            "case when Deceased=1 then 'Y' else 'N' end as Deceased",
+        )
     )
     accounts7 = accounts6.filter("AccountReference is not null")
 
