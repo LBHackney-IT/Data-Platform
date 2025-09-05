@@ -125,7 +125,7 @@ def main():
         dataset=True,
         database=target_database,
         table=target_table,
-        mode="overwrite_partitions",
+        mode="overwrite",
         partition_cols=partition_keys,
         dtype=dtype_dict,
         schema_evolution=True
