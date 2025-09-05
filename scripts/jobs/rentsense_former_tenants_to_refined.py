@@ -995,7 +995,7 @@ if __name__ == "__main__":
         "'Hackney' as Region",
         "case when Deceased=1 then 'Y' else 'N' end as Deceased"
     )
-)
+    )
     accounts7 = accounts6.filter("AccountReference is not null")
 
     accounts8 = accounts7.distinct()
