@@ -1,22 +1,17 @@
-sql_config = {
-    "properties_1a": {
-        "sql": """ SELECT *
-                   FROM "housing_nec_migration"."properties_1a" """,
-        "id_field": "LPRO_PROPREF",
-    },
-    "properties_1b": {
-        "sql": """ SELECT *
-                       FROM "housing_nec_migration"."properties_1b" """,
-        "id_field": "LPRO_PROPREF",
-    },
-    "properties_1c": {
-        "sql": """ SELECT *
-                       FROM "housing_nec_migration"."properties_1c" """,
-        "id_field": "LPRO_PROPREF",
-    },
+sql_config = {"properties": {"id_field": "LPRO_PROPREF"}}
+
+data_load_list = ["properties"]
+
+table_list = {
+    "properties": [
+        "properties_1a",
+        "properties_1b",
+        "properties_1c",
+        "properties_1d",
+        "properties_1e",
+        "properties_4a",
+        "properties_4c",
+    ]
 }
-
-
-table_list = ["properties_1a", "properties_1b", "properties_1c"]
 
 partition_keys = ["import_date"]
