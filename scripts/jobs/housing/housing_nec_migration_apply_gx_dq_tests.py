@@ -10,7 +10,11 @@ from awsglue.utils import getResolvedOptions
 import great_expectations as gx
 import pandas as pd
 from pyathena import connect
-from scripts.helpers.housing_nec_migration_gx_dq_inputs import sql_config, data_load_list, table_list
+from scripts.helpers.housing_nec_migration_gx_dq_inputs import (
+    sql_config,
+    data_load_list,
+    table_list,
+)
 import scripts.jobs.housing.housing_nec_migration_properties_data_load_gx_suite
 
 logging.basicConfig(level=logging.INFO)
@@ -48,12 +52,14 @@ def main():
     table_results_df_list = []
 
     for data_load in data_load_list:
-        logger.info(f'{data_load} loading...')
+        logger.info(f"{data_load} loading...")
 
         for table in table_list.get(data_load):
             logger.info(f"{table} loading...")
 
-            sql_query, id_field = get_sql_query(sql_config=sql_config, data_load=data_load, table=table)
+            sql_query, id_field = get_sql_query(
+                sql_config=sql_config, data_load=data_load, table=table
+            )
 
             conn = connect(s3_staging_dir=s3_staging_location, region_name=region_name)
 
@@ -71,7 +77,9 @@ def main():
             suite = context.suites.get(name=f"{data_load}_data_load_suite")
 
             validation_definition = gx.ValidationDefinition(
-                data=batch_definition, suite=suite, name=f"validation_definition_{table}"
+                data=batch_definition,
+                suite=suite,
+                name=f"validation_definition_{table}",
             )
             validation_definition = context.validation_definitions.add(
                 validation_definition
@@ -91,7 +99,9 @@ def main():
             )
 
             checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
-            results_dict = list(checkpoint_result.run_results.values())[0].to_json_dict()
+            results_dict = list(checkpoint_result.run_results.values())[
+                0
+            ].to_json_dict()
             table_results_df = pd.json_normalize(results_dict["results"])
             cols_not_needed = ["result.unexpected_list", "result.observed_value"]
             cols_to_drop = [
@@ -112,11 +122,7 @@ def main():
             table_results_df["unexpected_id_list"] = pd.Series(dtype="object")
             for i, row in query_df.iterrows():
                 table_results_df.loc[i, "unexpected_id_list"] = str(
-                    list(
-                        df[id_field].iloc[
-                            row["result.unexpected_index_list"]
-                        ]
-                    )
+                    list(df[id_field].iloc[row["result.unexpected_index_list"]])
                 )
 
     results_df = pd.concat(table_results_df_list)
