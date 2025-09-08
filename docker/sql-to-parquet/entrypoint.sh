@@ -50,11 +50,11 @@ echo "Unzipping file..."
 unzip "${FILENAME}".zip
 
 echo "Dropping and recreating RDS database if it exists..."
-echo "DROP DATABASE IF EXISTS ${DBNAME}" | mysql ${MYSQL_CONN_PARAMS}
-echo "CREATE DATABASE IF NOT EXISTS ${DBNAME}" | mysql ${MYSQL_CONN_PARAMS}
+echo "DROP DATABASE IF EXISTS ${DBNAME}" | mariadb ${MYSQL_CONN_PARAMS}
+echo "CREATE DATABASE IF NOT EXISTS ${DBNAME}" | mariadb ${MYSQL_CONN_PARAMS}
 
 echo "Running SQL from zip into RDS database..."
-mysql ${MYSQL_CONN_PARAMS} --database=${DBNAME} < *.sql
+mariadb ${MYSQL_CONN_PARAMS} --database=${DBNAME} < *.sql
 
 echo "Taking snapshot of RDS database..."
 aws rds create-db-snapshot --db-instance-identifier "${RDS_INSTANCE_ID}" --db-snapshot-identifier "${SNAPSHOT_ID}"
