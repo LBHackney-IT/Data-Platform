@@ -88,6 +88,7 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
     "*/housingfinance*",
     "*/ingestion-details*",
     "*/mtfh*",
+    "*/nec-migration-data-quality-tests*",
     "*/temp_backup*",
     "*.json",
     "*.txt",
