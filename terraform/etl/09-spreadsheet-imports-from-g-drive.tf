@@ -1319,7 +1319,7 @@ module "bailiff_dashboard_link" {
   glue_job_name                  = "bailiff_dashboard_link"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "forecasting_button/bailiff_dashboard_link.csv"
+  input_file_name                = "bailiff_button/bailiff_dashboard_link.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
