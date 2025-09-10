@@ -34,6 +34,7 @@ locals {
     replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_housing_repairs_data_source.raw_zone_catalog_database_name,
     replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_housing_repairs_data_source.refined_zone_catalog_database_name,
     replace(module.department_housing_repairs_data_source.trusted_zone_catalog_database_name, "-", "_") = module.department_housing_repairs_data_source.trusted_zone_catalog_database_name,
+    replace(aws_glue_catalog_database.housing_nec_migration_database.name, "-", "_")                    = aws_glue_catalog_database.housing_nec_migration_database.name,
 
     parking_raw_zone_liberator     = aws_glue_catalog_database.raw_zone_liberator.name,
     parking_refined_zone_liberator = aws_glue_catalog_database.refined_zone_liberator.name,
@@ -103,6 +104,7 @@ locals {
         replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_repairs_data_source.trusted_zone_catalog_database_name, "-", "_"),
+        replace(aws_glue_catalog_database.housing_nec_migration_database.name, "-", "_"),
       ], local.unrestricted_schemas)
     },
     {
@@ -137,6 +139,7 @@ locals {
         replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_repairs_data_source.trusted_zone_catalog_database_name, "-", "_"),
+        replace(aws_glue_catalog_database.housing_nec_migration_database.name, "-", "_"),
 
         "parking_raw_zone_liberator",
         "parking_refined_zone_liberator",
