@@ -125,7 +125,7 @@ class ExpectPropColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedLi
         "LPRO_HOU_HRV_PST_CODE",
         "LPRO_HOU_HRV_HMT_CODE",
         "LPRO_HOU_MANAGEMENT_END_DATE",
-        "LPRO_FREE_PCODE",
+        "LPRO_FREE_REFNO",
         "LPRO_FREE_NAME",
         "LPRO_PROP_STATUS",
         "LPRO_STATUS_START",
