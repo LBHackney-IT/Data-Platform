@@ -139,6 +139,7 @@ locals {
         replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_repairs_data_source.trusted_zone_catalog_database_name, "-", "_"),
+        replace(aws_glue_catalog_database.housing_nec_migration_database.name, "-", "_"),
 
         "parking_raw_zone_liberator",
         "parking_refined_zone_liberator",
