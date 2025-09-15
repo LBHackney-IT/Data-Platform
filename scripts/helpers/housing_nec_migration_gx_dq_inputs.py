@@ -9,6 +9,7 @@ table_list = {
         "properties_1c",
         "properties_1d",
         "properties_1e",
+        "properties_2a",
         "properties_4a",
         "properties_4c",
     ]
