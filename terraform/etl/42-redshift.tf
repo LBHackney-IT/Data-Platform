@@ -34,8 +34,8 @@ locals {
     replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_housing_repairs_data_source.raw_zone_catalog_database_name,
     replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_housing_repairs_data_source.refined_zone_catalog_database_name,
     replace(module.department_housing_repairs_data_source.trusted_zone_catalog_database_name, "-", "_") = module.department_housing_repairs_data_source.trusted_zone_catalog_database_name,
-    replace(aws_glue_catalog_database.housing_nec_migration_database.id, "-", "_")                    = aws_glue_catalog_database.housing_nec_migration_database.id,
-    replace(aws_glue_catalog_database.housing_nec_migration_outputs_database.id, "-", "_")                    = aws_glue_catalog_database.housing_nec_migration_database.id,
+    replace(aws_glue_catalog_database.housing_nec_migration_database.id, "-", "_")                      = aws_glue_catalog_database.housing_nec_migration_database.id,
+    replace(aws_glue_catalog_database.housing_nec_migration_outputs_database.id, "-", "_")              = aws_glue_catalog_database.housing_nec_migration_database.id,
 
     parking_raw_zone_liberator     = aws_glue_catalog_database.raw_zone_liberator.name,
     parking_refined_zone_liberator = aws_glue_catalog_database.refined_zone_liberator.name,
