@@ -16,7 +16,7 @@ module "housing_nec_migration_apply_gx_dq_tests" {
   trigger_enabled                = local.is_production_environment
   number_of_workers_for_glue_job = 2
   schedule                       = "cron(0 10 ? * MON-FRI *)"
-  job_parameters                 = {
+  job_parameters = {
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
@@ -24,9 +24,13 @@ module "housing_nec_migration_apply_gx_dq_tests" {
     "--region_name"                      = data.aws_region.current.name
     "--s3_endpoint"                      = "https://s3.${data.aws_region.current.name}.amazonaws.com"
     "--s3_target_location"               = "s3://${module.raw_zone_data_source.bucket_id}/housing/nec-migration-data-quality-tests/"
+    "--s3_target_location_metadata"      = "s3://${module.raw_zone_data_source.bucket_id}/housing/nec-migration-data-quality-tests/metadata/"
+    "--s3_target_location_results"       = "s3://${module.raw_zone_data_source.bucket_id}/housing/nec-migration-data-quality-tests/results/"
     "--s3_staging_location"              = "s3://${module.athena_storage_data_source.bucket_id}/housing/nec-migration-data-quality-tests/"
     "--target_database"                  = "housing_nec_migration"
     "--target_table"                     = "housing_nec_data_loads_dq_tests"
+    "--target_table_metadata"            = "housing_nec_data_loads_dq_metadata"
+
   }
 
   script_name = "housing_nec_migration_apply_gx_dq_tests"
