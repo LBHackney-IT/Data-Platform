@@ -172,7 +172,7 @@ resource "aws_cloudwatch_event_rule" "mtfh_export_trigger_event" {
   name                = "${local.short_identifier_prefix}mtfh-export-trigger-event"
   description         = "Trigger event for MTFH export"
   schedule_expression = "cron(0 0 * * ? *)"
-  is_enabled          = local.is_production_environment ? true : false
+  state               = local.is_production_environment ? "ENABLED" : "DISABLED"
   tags                = module.tags.values
 }
 
