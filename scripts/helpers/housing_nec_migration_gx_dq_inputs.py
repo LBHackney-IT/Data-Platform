@@ -1,6 +1,9 @@
-sql_config = {"properties": {"id_field": "LPRO_PROPREF"}}
+sql_config = {
+    "properties": {"id_field": "LPRO_PROPREF"},
+    "tenancies": {"id_field": "LTCY_ALT_REF"},
+}
 
-data_load_list = ["properties"]
+data_load_list = ["properties", "tenancies"]
 
 table_list = {
     "properties": [
@@ -11,8 +14,10 @@ table_list = {
         "properties_1e",
         "properties_2a",
         "properties_4a",
-        "properties_4c",
-    ]
+        "properties_4b",
+        "properties_4c"
+    ],
+    "tenancies": ["tenancies_1a"],
 }
 
 partition_keys = ["import_date"]
