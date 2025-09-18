@@ -16,7 +16,7 @@ from scripts.helpers.housing_nec_migration_gx_dq_inputs import (
     table_list,
 )
 import scripts.jobs.housing.housing_nec_migration_properties_data_load_gx_suite
-import scripts.jobs.housing.housing_nec_migration_properties_data_load_gx_suite
+import scripts.jobs.housing.housing_nec_migration_tenancies_data_load_gx_suite
 
 
 logging.basicConfig(level=logging.INFO)
