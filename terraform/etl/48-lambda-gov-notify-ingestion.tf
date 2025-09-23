@@ -258,4 +258,3 @@ resource "aws_glue_crawler" "govnotify_housing_repairs_raw_zone" {
     }
   })
 }
-
