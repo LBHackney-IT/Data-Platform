@@ -1,0 +1,25 @@
+# =======================================================
+#  CHILD & FAMILY SERVICES SPREADSHEET IMPORTS CONFIG
+
+# Structure of the file:
+  # TEMPLATE - Copy this section and modify:
+  # - name: "your_import_name"           # Unique name (letters, numbers, underscores only)
+  #   google_drive_document_id: "PASTE_DOCUMENT_ID_HERE"
+  #   input_file_name: "YourFolder/your_file.csv"
+  #   worksheet_name: "Sheet1"           # Name of the tab/sheet in the spreadsheet
+  #   header_row_number: 0               # 0 = first row has headers, 1 = second row, etc.
+  #   ingestion_schedule: "cron(0 2 * * ? *)"  # Optional: custom schedule, defaults to 2 AM UTC daily
+# =======================================================
+
+spreadsheets:
+  - name: "newlyn_weekly"
+    google_drive_document_id: "1If-AGk_htDmbCtsiXdBz6qwseAoF7Yyr"
+    input_file_name: "Newlyn_Weekly_Data/newlyn_12_09_2025.csv"
+    worksheet_name: "Newlyn_Weekly_Data"
+    header_row_number: 0
+
+  - name: "whyte_weekly"
+    google_drive_document_id: "1-RGssHGSKGpis4Bode6Iw9e6lStnM5TR"
+    input_file_name: "Whyte_Weekly_Data/whyte_10_09_2025.csv"
+    worksheet_name: "Whyte_Weekly_Data"
+    header_row_number: 0
