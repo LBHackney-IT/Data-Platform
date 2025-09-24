@@ -7,22 +7,24 @@ locals {
   yaml_config = yamldecode(file("${path.module}/09-child-fam-service-spreadsheet-imports.yaml"))
 
   # Convert YAML list to map for Terraform for_each
+  # Use table_name (if provided) or worksheet_name as the unique key
   spreadsheet_imports = {
     for sheet in local.yaml_config.spreadsheets :
-    sheet.name => {
+    lookup(sheet, "table_name", sheet.worksheet_name) => {
       google_drive_document_id = sheet.google_drive_document_id
       input_file_name          = sheet.input_file_name
       worksheet_name           = sheet.worksheet_name
       header_row_number        = sheet.header_row_number
+      table_name               = lookup(sheet, "table_name", null)
     }
   }
 }
 
 locals {
   common_spreadsheet_config = {
-    department                     = module.department_child_fam_service_data_source
+    department                     = module.department_children_family_services_data_source
     glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
-    glue_catalog_database_name     = module.department_child_fam_service_data_source.raw_zone_catalog_database_name
+    glue_catalog_database_name     = module.department_children_family_services_data_source.raw_zone_catalog_database_name
     glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
     spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
     secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
@@ -74,7 +76,7 @@ module "child_fam_spreadsheet_imports" {
 
   # Import-specific parameters (from each spreadsheet_imports entry)
   google_drive_document_id = each.value.google_drive_document_id
-  glue_job_name            = replace(title(replace(each.key, "_", " ")), " ", "_") # Convert key to proper job name
+  glue_job_name            = replace(title(replace(each.key, "_", " ")), " ", "_") # each.key is table_name or worksheet_name
   input_file_name          = each.value.input_file_name
   ingestion_schedule       = lookup(each.value, "ingestion_schedule", local.common_spreadsheet_config.ingestion_schedule)
 
@@ -82,7 +84,8 @@ module "child_fam_spreadsheet_imports" {
   worksheets = {
     sheet1 = {
       header_row_number = lookup(each.value, "header_row_number", 0)
-      worksheet_name    = each.value.worksheet_name
+      # Use custom table_name if provided, otherwise use worksheet_name
+      worksheet_name = each.value.table_name != null ? each.value.table_name : each.value.worksheet_name
     }
   }
 }
