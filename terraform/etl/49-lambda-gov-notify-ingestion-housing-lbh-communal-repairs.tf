@@ -39,7 +39,7 @@ module "gov-notify-ingestion-housing-communal-repairs" {
   s3_key                         = "govnotify_api_ingestion_housing_lbh_communal_repairs.zip"
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_housing_lbh_communal_repairs"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_housing_lbh_communal_repairs.zip"
-  runtime                        = "python3.9"
+  runtime                        = "python3.11"
   lambda_memory_size             = 512
   environment_variables = {
 

@@ -167,7 +167,7 @@ module "gov-notify-ingestion-housing-repairs" {
   s3_key                         = "govnotify_api_ingestion_repairs.zip"
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_repairs"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_repairs.zip"
-  runtime                        = "python3.9"
+  runtime                        = "python3.11"
   environment_variables = {
 
     API_SECRET_NAME          = "housing/gov-notify_live_api_key"

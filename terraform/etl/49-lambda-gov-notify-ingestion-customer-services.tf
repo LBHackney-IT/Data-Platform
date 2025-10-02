@@ -167,7 +167,8 @@ module "gov-notify-ingestion-customer-services" {
   s3_key                         = "govnotify_api_ingestion_customer_services.zip"
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_customer_services"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_customer_services.zip"
-  runtime                        = "python3.9"
+  runtime                        = "python3.11"
+
   environment_variables = {
 
     API_SECRET_NAME          = "customer-services/gov-notify_live_api_key"
