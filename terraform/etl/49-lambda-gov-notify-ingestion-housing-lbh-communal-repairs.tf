@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "gov_notify_housing_communal_repairs_lambda_secre
     actions = [
       "secretsmanager:GetSecretValue",
     ]
-    effect    = "Allow"
+    effect = "Allow"
     resources = [
       "arn:aws:secretsmanager:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:secret:housing-lbh-communal-repairs/gov-notify*"
     ]
@@ -41,7 +41,7 @@ module "gov-notify-ingestion-housing-communal-repairs" {
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_housing_lbh_communal_repairs.zip"
   runtime                        = "python3.9"
   lambda_memory_size             = 512
-  environment_variables          = {
+  environment_variables = {
 
     API_SECRET_NAME          = "housing-lbh-communal-repairs/gov-notify_live_api_key"
     TARGET_S3_BUCKET_LANDING = module.landing_zone_data_source.bucket_id
@@ -63,7 +63,7 @@ resource "aws_cloudwatch_event_rule" "govnotify_housing_lbh_communal_repairs_tri
   description         = "Trigger event for Housing LBH Communal Repairs GovNotify API ingestion"
   tags                = module.tags.values
   schedule_expression = "cron(0 0 * * ? *)"
-  is_enabled          = local.is_production_environment ? true : false
+  state               = local.is_production_environment ? "ENABLED" : "DISABLED"
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify_housing_lbh_communal_repairs" {
@@ -75,11 +75,11 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify_housing_lbh
 }
 
 resource "aws_cloudwatch_event_target" "govnotify_housing_lbh_communal_repairs_trigger_event_target" {
-  count      = local.create_govnotify_resource_count
-  rule       = aws_cloudwatch_event_rule.govnotify_housing_lbh_communal_repairs_trigger_event[0].name
-  target_id  = "govnotify-housing-communal-repairs-event-target"
-  arn        = module.gov-notify-ingestion-housing-communal-repairs[0].lambda_function_arn
-  input      = <<EOF
+  count     = local.create_govnotify_resource_count
+  rule      = aws_cloudwatch_event_rule.govnotify_housing_lbh_communal_repairs_trigger_event[0].name
+  target_id = "govnotify-housing-communal-repairs-event-target"
+  arn       = module.gov-notify-ingestion-housing-communal-repairs[0].lambda_function_arn
+  input     = <<EOF
    {
     "table_names": ${jsonencode(local.govnotify_tables_housing_communal_repairs)}
    }
@@ -91,7 +91,7 @@ resource "aws_cloudwatch_event_target" "govnotify_housing_lbh_communal_repairs_t
 }
 
 resource "aws_glue_crawler" "govnotify_housing_lbh_communal_repairs_landing_zone" {
-  for_each = {for idx, source in local.govnotify_tables_housing_communal_repairs : idx => source}
+  for_each = { for idx, source in local.govnotify_tables_housing_communal_repairs : idx => source }
 
   database_name = "${local.identifier_prefix}-landing-zone-database"
   name          = "${local.short_identifier_prefix}GovNotify Housing LBH Communal Repairs Landing Zone ${each.value}"
@@ -103,7 +103,7 @@ resource "aws_glue_crawler" "govnotify_housing_lbh_communal_repairs_landing_zone
     path = "s3://${module.landing_zone_data_source.bucket_id}/housing/govnotify/lbh_communal_repairs/${each.value}/"
   }
   configuration = jsonencode({
-    Version  = 1.0
+    Version = 1.0
     Grouping = {
       TableLevelConfiguration = 5
     }
@@ -111,7 +111,7 @@ resource "aws_glue_crawler" "govnotify_housing_lbh_communal_repairs_landing_zone
 }
 
 resource "aws_glue_crawler" "govnotify_housing_lbh_communal_repairs_raw_zone" {
-  for_each = {for idx, source in local.govnotify_tables_housing_communal_repairs : idx => source}
+  for_each = { for idx, source in local.govnotify_tables_housing_communal_repairs : idx => source }
 
   database_name = module.department_housing_data_source.raw_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}GovNotify Housing LBH Communal Repairs Raw Zone ${each.value}"
@@ -123,10 +123,9 @@ resource "aws_glue_crawler" "govnotify_housing_lbh_communal_repairs_raw_zone" {
     path = "s3://${module.raw_zone_data_source.bucket_id}/housing/govnotify/lbh_communal_repairs/${each.value}/"
   }
   configuration = jsonencode({
-    Version  = 1.0
+    Version = 1.0
     Grouping = {
       TableLevelConfiguration = 5
     }
   })
 }
-

@@ -1,5 +1,5 @@
 locals {
-  govnotify_tables = ["notifications", "received_text_messages"]
+  govnotify_tables                = ["notifications", "received_text_messages"]
   create_govnotify_resource_count = local.is_live_environment ? 1 : 0
 }
 
@@ -45,7 +45,7 @@ data "aws_iam_policy_document" "gov_notify_lambda_logs" {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
-    effect = "Allow"
+    effect    = "Allow"
     resources = ["*"]
   }
 }
@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
     }
   }
@@ -135,8 +135,8 @@ resource "aws_iam_role_policy_attachment" "gov_notify_lambda_secret_access" {
 # Define a IAM Policy Document for Glue StartCrawler Permissions:
 data "aws_iam_policy_document" "gov_notify_glue_crawler" {
   statement {
-    actions = ["glue:StartCrawler"]
-    effect = "Allow"
+    actions   = ["glue:StartCrawler"]
+    effect    = "Allow"
     resources = ["*"]
   }
 }
@@ -190,7 +190,7 @@ resource "aws_cloudwatch_event_rule" "govnotify_housing_repairs_trigger_event" {
   name                = "${local.short_identifier_prefix}govnotify_housing_repairs_trigger_event"
   description         = "Trigger event for GovNotify Housing API ingestion"
   schedule_expression = "cron(0 0 * * ? *)"
-  is_enabled          = false
+  state               = "DISABLED"
   tags                = module.tags.values
 }
 
@@ -205,11 +205,11 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_govnotify" {
 
 # Create a CloudWatch Event Target to trigger the GovNotify Housing Repairs Lambda function.
 resource "aws_cloudwatch_event_target" "govnotify_housing_repairs_trigger_event_target" {
-  count     = local.create_govnotify_resource_count
-  rule      = aws_cloudwatch_event_rule.govnotify_housing_repairs_trigger_event[0].name
-  target_id = "govnotify-housing-repairs-trigger-event-target"
-  arn       = module.gov-notify-ingestion-housing-repairs[0].lambda_function_arn
-  input     = <<EOF
+  count      = local.create_govnotify_resource_count
+  rule       = aws_cloudwatch_event_rule.govnotify_housing_repairs_trigger_event[0].name
+  target_id  = "govnotify-housing-repairs-trigger-event-target"
+  arn        = module.gov-notify-ingestion-housing-repairs[0].lambda_function_arn
+  input      = <<EOF
    {
     "table_names": ${jsonencode(local.govnotify_tables)}
    }
@@ -218,7 +218,7 @@ resource "aws_cloudwatch_event_target" "govnotify_housing_repairs_trigger_event_
 }
 
 resource "aws_glue_crawler" "govnotify_housing_repairs_landing_zone" {
-  for_each = {for idx, source in local.govnotify_tables : idx => source}
+  for_each = { for idx, source in local.govnotify_tables : idx => source }
 
   database_name = "${local.identifier_prefix}-landing-zone-database"
   name          = "${local.short_identifier_prefix}GovNotify Housing Repairs Landing Zone ${each.value}"
@@ -239,7 +239,7 @@ resource "aws_glue_crawler" "govnotify_housing_repairs_landing_zone" {
 }
 
 resource "aws_glue_crawler" "govnotify_housing_repairs_raw_zone" {
-  for_each = {for idx, source in local.govnotify_tables : idx => source}
+  for_each = { for idx, source in local.govnotify_tables : idx => source }
 
   database_name = module.department_housing_data_source.raw_zone_catalog_database_name
   name          = "${local.short_identifier_prefix}GovNotify Housing Repairs Raw Zone ${each.value}"
