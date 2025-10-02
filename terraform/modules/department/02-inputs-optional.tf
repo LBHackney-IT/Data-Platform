@@ -58,3 +58,24 @@ variable "additional_s3_access" {
   default = []
 }
 
+variable "cloudtrail_bucket" {
+  description = "CloudTrail storage S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+  default = null
+}
+
+variable "additional_glue_database_access" {
+  description = <<EOF
+    Additional Glue database access to grant to the department.
+    Allows specifying specific databases and the actions that can be performed on them.
+  EOF
+  type = list(object({
+    database_name = string
+    actions       = list(string)
+  }))
+  default = []
+}

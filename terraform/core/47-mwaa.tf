@@ -244,3 +244,27 @@ resource "aws_mwaa_environment" "mwaa" {
     })
   }
 }
+
+# Connections
+
+resource "aws_secretsmanager_secret" "mwaa_alloy_api_connection" {
+  name = "airflow/connections/alloy"
+  tags = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "mwaa_alloy_api_connection" {
+  secret_id = aws_secretsmanager_secret.mwaa_alloy_api_connection.id
+  secret_string = jsonencode({
+    conn_type = "http",
+    host      = "https://api.uk.alloyapp.io",
+    password  = "UPDATE_IN_CONSOLE",
+    port      = 443,
+    schema    = "https",
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+

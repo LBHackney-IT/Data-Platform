@@ -69,7 +69,7 @@ resource "aws_lambda_function" "set_budget_limit_amount_lambda" {
 
   role             = aws_iam_role.set_budget_limit_amount_lambda.arn
   handler          = "main.lambda_handler"
-  runtime          = "python3.9"
+  runtime          = "python3.11"
   function_name    = lower("${var.identifier_prefix}set-budget-limit-${var.lambda_name}")
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_object.set_budget_limit_amount_lambda.key

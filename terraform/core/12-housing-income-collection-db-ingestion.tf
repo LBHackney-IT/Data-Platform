@@ -85,14 +85,15 @@ module "ingest_housing_income_collection_database_to_housing_raw_zone" {
     "*/glue-*",
     "*/google-sheets*",
     "*/govnotify*",
-    "*/ingestion-details*", 
+    "*/ingestion-details*",
+    "*/nec-migration-data-quality-tests*",
     "*/temp_backup*",
     "*.json",
     "*.txt",
     "*.zip",
     "*.xlsx",
     "*.html"
-    ]
+  ]
 }
 
 

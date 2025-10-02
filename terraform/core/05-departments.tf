@@ -139,6 +139,7 @@ module "department_data_and_insight" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  cloudtrail_bucket               = module.cloudtrail_storage
 }
 
 module "department_env_enforcement" {
@@ -412,6 +413,22 @@ module "department_housing" {
       kms_key_arn = module.housing_nec_migration_storage.kms_key_arn
       paths       = []
       actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
+    },
+    {
+      bucket_arn  = module.file_sync_destination_nec.bucket_arn
+      kms_key_arn = module.file_sync_destination_nec.key_arn
+      paths       = []
+      actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
+    }
+  ]
+  additional_glue_database_access = [
+    {
+      database_name = "housing_nec_migration"
+      actions       = ["glue:CreateTable", "glue:UpdateTable", "glue:DeleteTable", "glue:GetTable", "glue:GetTables", "glue:GetDatabase"]
+    },
+    {
+      database_name = "housing_nec_migration_outputs"
+      actions       = ["glue:CreateTable", "glue:UpdateTable", "glue:DeleteTable", "glue:GetTable", "glue:GetTables", "glue:GetDatabase"]
     }
   ]
 }

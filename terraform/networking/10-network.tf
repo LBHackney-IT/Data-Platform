@@ -59,7 +59,8 @@ module "core_vpc" {
   ecs_endpoint_security_group_ids        = [aws_security_group.service_endpoint.id]
   ecs_agent_endpoint_private_dns_enabled = true
 
-  tags = module.tags.values
+  tags                = module.tags.values
+  private_subnet_tags = { "Type" = "private" }
 }
 
 resource "aws_ssm_parameter" "vpc_id" {
