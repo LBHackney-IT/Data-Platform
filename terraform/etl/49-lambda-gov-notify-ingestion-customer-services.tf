@@ -168,6 +168,7 @@ module "gov-notify-ingestion-customer-services" {
   lambda_source_dir              = "../../lambdas/govnotify_api_ingestion_customer_services"
   lambda_output_path             = "../../lambdas/govnotify_api_ingestion_customer_services.zip"
   runtime                        = "python3.11"
+
   environment_variables = {
 
     API_SECRET_NAME          = "customer-services/gov-notify_live_api_key"
@@ -190,7 +191,7 @@ resource "aws_cloudwatch_event_rule" "govnotify_customer_services_trigger_event"
   name                = "${local.short_identifier_prefix}govnotify_customer_services_trigger_event"
   description         = "Trigger event for Customer Services GovNotify API ingestion"
   schedule_expression = "cron(0 0 * * ? *)"
-  is_enabled          = local.is_production_environment ? true : false
+  state               = local.is_production_environment ? "ENABLED" : "DISABLED"
   tags                = module.tags.values
 }
 
@@ -259,4 +260,3 @@ resource "aws_glue_crawler" "govnotify_customer_services_raw_zone" {
     }
   })
 }
-
