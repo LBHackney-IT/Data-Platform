@@ -993,6 +993,7 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "athena:StartQueryExecution",
       "athena:GetQueryExecution",
       "athena:GetQueryResults",
+      "athena:GetWorkGroup",
       "athena:ListDatabases",
       "athena:ListTableMetadata",
       "athena:GetTableMetadata"
