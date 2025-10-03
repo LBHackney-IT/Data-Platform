@@ -44,7 +44,8 @@ module "landing_zone" {
     local.share_kms_key_with_housing_reporting_role,
     local.share_kms_key_with_academy_account
   ]
-  include_backup_policy_tags = false
+  include_backup_policy_tags   = false
+  expired_object_delete_marker = true
 }
 
 module "raw_zone" {

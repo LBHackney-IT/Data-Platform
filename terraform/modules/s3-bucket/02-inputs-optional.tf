@@ -156,3 +156,9 @@ variable "include_backup_policy_tags" {
   type        = bool
   default     = true
 }
+
+variable "expired_object_delete_marker" {
+  description = "Whether to delete expired object delete markers. Only applies to versioned buckets."
+  type        = bool
+  default     = false
+}
