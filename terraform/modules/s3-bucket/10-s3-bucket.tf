@@ -167,27 +167,45 @@ resource "aws_s3_bucket_versioning" "bucket" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
-  count  = var.expire_objects_days != null ? 1 : 0
+  count  = (var.expire_objects_days != null || var.expired_object_delete_marker) ? 1 : 0
   bucket = aws_s3_bucket.bucket.id
 
-  rule {
-    id     = "expire-older-objects"
-    status = "Enabled"
+  # Rule for expiring objects by days
+  dynamic "rule" {
+    for_each = var.expire_objects_days != null ? [1] : []
+    content {
+      id     = "expire-older-objects"
+      status = "Enabled"
 
-    filter {}
+      filter {}
 
-    expiration {
-      days = var.expire_objects_days
+      expiration {
+        days = var.expire_objects_days
+      }
+
+      noncurrent_version_expiration {
+        noncurrent_days = var.expire_noncurrent_objects_days
+      }
+
+      abort_incomplete_multipart_upload {
+        days_after_initiation = var.abort_multipart_days
+      }
     }
+  }
 
-    noncurrent_version_expiration {
-      noncurrent_days = var.expire_noncurrent_objects_days
+  # Rule for deleting expired object delete markers
+  dynamic "rule" {
+    for_each = var.expired_object_delete_marker ? [1] : []
+    content {
+      id     = "delete-expired-delete-markers"
+      status = "Enabled"
+
+      filter {}
+
+      expiration {
+        expired_object_delete_marker = true
+      }
     }
-
-    abort_incomplete_multipart_upload {
-      days_after_initiation = var.abort_multipart_days
-    }
-
   }
 }
 
