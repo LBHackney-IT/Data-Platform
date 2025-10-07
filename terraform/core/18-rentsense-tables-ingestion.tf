@@ -92,6 +92,7 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
     table_prefix = null
   }
   glue_crawler_excluded_blobs = [
+    "*_archive/*",
     "*/housingfinance*",
     "*/sow2b*",
     "*/archive*",

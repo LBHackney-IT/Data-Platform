@@ -80,6 +80,7 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
     table_prefix = null
   }
   glue_crawler_excluded_blobs = [
+    "*_archive/*",
     "*/archive*",
     "*/data-quality*",
     "*/glue-*",
