@@ -169,8 +169,8 @@ resource "aws_s3_bucket_versioning" "bucket" {
 resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
   count = (
     var.expire_objects_days != null ||
-    var.noncurrent_version_expiration_days != null ||
-    var.abort_incomplete_multipart_upload_days != null ||
+    var.expire_noncurrent_objects_days != null ||
+    var.abort_multipart_days != null ||
     var.expired_object_delete_marker
   ) ? 1 : 0
   bucket = aws_s3_bucket.bucket.id
@@ -192,7 +192,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
 
   # Combined rule: delete expired delete markers, delete noncurrent versions, abort incomplete multipart uploads
   dynamic "rule" {
-    for_each = (var.expired_object_delete_marker || var.noncurrent_version_expiration_days != null || var.abort_incomplete_multipart_upload_days != null) ? [1] : []
+    for_each = (var.expired_object_delete_marker || var.expire_noncurrent_objects_days != null || var.abort_multipart_days != null) ? [1] : []
     content {
       id     = "delete-expired-delete-markers"
       status = "Enabled"
@@ -209,17 +209,17 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
 
       # Permanently delete noncurrent versions after N days (if set)
       dynamic "noncurrent_version_expiration" {
-        for_each = var.noncurrent_version_expiration_days != null ? [1] : []
+        for_each = var.expire_noncurrent_objects_days != null ? [1] : []
         content {
-          noncurrent_days = var.noncurrent_version_expiration_days
+          noncurrent_days = var.expire_noncurrent_objects_days
         }
       }
 
       # Abort incomplete multipart uploads after N days (if set)
       dynamic "abort_incomplete_multipart_upload" {
-        for_each = var.abort_incomplete_multipart_upload_days != null ? [1] : []
+        for_each = var.abort_multipart_days != null ? [1] : []
         content {
-          days_after_initiation = var.abort_incomplete_multipart_upload_days
+          days_after_initiation = var.abort_multipart_days
         }
       }
     }

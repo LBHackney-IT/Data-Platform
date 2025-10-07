@@ -44,10 +44,10 @@ module "landing_zone" {
     local.share_kms_key_with_housing_reporting_role,
     local.share_kms_key_with_academy_account
   ]
-  include_backup_policy_tags             = false
-  expired_object_delete_marker           = true
-  noncurrent_version_expiration_days     = 1
-  abort_incomplete_multipart_upload_days = 1
+  include_backup_policy_tags     = false
+  expired_object_delete_marker   = true
+  expire_noncurrent_objects_days = 7
+  abort_multipart_days           = 7
 }
 
 module "raw_zone" {

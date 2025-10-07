@@ -139,14 +139,14 @@ variable "expire_objects_days" {
 }
 
 
-variable "noncurrent_version_expiration_days" {
-  description = "Number of days after which to permanently delete noncurrent object versions; set to null to disable"
+variable "expire_noncurrent_objects_days" {
+  description = "Number of days after which to permanently delete noncurrent versions of objects, set to null to disable by default"
   type        = number
   default     = null
 }
 
-variable "abort_incomplete_multipart_upload_days" {
-  description = "Number of days after which to abort incomplete multipart uploads; set to null to disable"
+variable "abort_multipart_days" {
+  description = "Number of days after which to abort incomplete multipart uploads, set to null to disable by default"
   type        = number
   default     = null
 }
