@@ -1,6 +1,11 @@
 locals {
   number_of_workers_for_mtfh_rentsense_ingestion = 16
+  number_of_workers_for_mtfh_ingestion           = 12
   worker_type                                    = "G.1X"
+}
+
+data "aws_ssm_parameter" "role_arn_to_access_housing_tables" {
+  name = "/mtfh/${var.environment}/role-arn-to-access-dynamodb-tables"
 }
 
 module "ingest_mtfh_rentsense_tables" {
