@@ -46,8 +46,8 @@ module "landing_zone" {
   ]
   include_backup_policy_tags     = false
   expired_object_delete_marker   = true
-  expire_noncurrent_objects_days = 7
-  abort_multipart_days           = 7
+  expire_noncurrent_objects_days = 1
+  abort_multipart_days           = 1
 }
 
 module "raw_zone" {

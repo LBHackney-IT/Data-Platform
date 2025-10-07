@@ -167,10 +167,15 @@ resource "aws_s3_bucket_versioning" "bucket" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
-  count  = (var.expire_objects_days != null || var.expired_object_delete_marker) ? 1 : 0
+  count = (
+    var.expire_objects_days != null ||
+    var.expire_noncurrent_objects_days != null ||
+    var.abort_multipart_days != null ||
+    var.expired_object_delete_marker
+  ) ? 1 : 0
   bucket = aws_s3_bucket.bucket.id
 
-  # Rule for expiring objects by days
+  # Rule for expiring objects by days (applies to current versions)
   dynamic "rule" {
     for_each = var.expire_objects_days != null ? [1] : []
     content {
@@ -182,28 +187,40 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
       expiration {
         days = var.expire_objects_days
       }
-
-      noncurrent_version_expiration {
-        noncurrent_days = var.expire_noncurrent_objects_days
-      }
-
-      abort_incomplete_multipart_upload {
-        days_after_initiation = var.abort_multipart_days
-      }
     }
   }
 
-  # Rule for deleting expired object delete markers
+  # Combined rule: delete expired delete markers, delete noncurrent versions, abort incomplete multipart uploads
   dynamic "rule" {
-    for_each = var.expired_object_delete_marker ? [1] : []
+    for_each = (var.expired_object_delete_marker || var.expire_noncurrent_objects_days != null || var.abort_multipart_days != null) ? [1] : []
     content {
       id     = "delete-expired-delete-markers"
       status = "Enabled"
 
       filter {}
 
-      expiration {
-        expired_object_delete_marker = true
+      # Delete expired delete markers when enabled
+      dynamic "expiration" {
+        for_each = var.expired_object_delete_marker ? [1] : []
+        content {
+          expired_object_delete_marker = true
+        }
+      }
+
+      # Permanently delete noncurrent versions after N days (if set)
+      dynamic "noncurrent_version_expiration" {
+        for_each = var.expire_noncurrent_objects_days != null ? [1] : []
+        content {
+          noncurrent_days = var.expire_noncurrent_objects_days
+        }
+      }
+
+      # Abort incomplete multipart uploads after N days (if set)
+      dynamic "abort_incomplete_multipart_upload" {
+        for_each = var.abort_multipart_days != null ? [1] : []
+        content {
+          days_after_initiation = var.abort_multipart_days
+        }
       }
     }
   }
