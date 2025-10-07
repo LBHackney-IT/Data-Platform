@@ -55,18 +55,18 @@ module "spark_ui_output_storage" {
 #===============================================================================
 
 module "cloudtrail_storage" {
-  source                         = "../modules/s3-bucket"
-  tags                           = module.tags.values
-  project                        = var.project
-  environment                    = var.environment
-  identifier_prefix              = local.identifier_prefix
-  bucket_name                    = "CloudTrail"
-  bucket_identifier              = "cloudtrail"
-  versioning_enabled             = true
-  expire_objects_days            = 365
-  expire_noncurrent_objects_days = 30
-  abort_multipart_days           = 30
-  include_backup_policy_tags     = false
+  source                                 = "../modules/s3-bucket"
+  tags                                   = module.tags.values
+  project                                = var.project
+  environment                            = var.environment
+  identifier_prefix                      = local.identifier_prefix
+  bucket_name                            = "CloudTrail"
+  bucket_identifier                      = "cloudtrail"
+  versioning_enabled                     = true
+  expire_objects_days                    = 365
+  noncurrent_version_expiration_days     = 30
+  abort_incomplete_multipart_upload_days = 30
+  include_backup_policy_tags             = false
 
   bucket_policy_statements = local.is_live_environment ? [
     local.cloudtrail_get_bucket_acl_statement,
