@@ -4,6 +4,7 @@ locals {
 }
 
 module "ingest_mtfh_rentsense_tables" {
+  trigger_enabled           = false
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
@@ -48,8 +49,8 @@ module "ingest_mtfh_rentsense_tables" {
 }
 
 module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
-  tags = module.tags.values
-
+  trigger_enabled           = false
+  tags                      = module.tags.values
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
   is_production_environment = local.is_production_environment
