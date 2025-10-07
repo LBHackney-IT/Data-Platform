@@ -32,9 +32,11 @@ data "aws_identitystore_group" "department" {
 
   identity_store_id = var.identity_store_id
 
-  filter {
-    attribute_path  = "DisplayName"
-    attribute_value = var.google_group_display_name
+  alternate_identifier {
+    unique_attribute {
+      attribute_path  = "DisplayName"
+      attribute_value = var.google_group_display_name
+    }
   }
 }
 
