@@ -227,6 +227,21 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
       }
     }
   }
+
+  # Rule for aborting incomplete multipart uploads
+  dynamic "rule" {
+    for_each = var.abort_multipart_days != null ? [1] : []
+    content {
+      id     = "abort-incomplete-multipart-uploads"
+      status = "Enabled"
+
+      filter {}
+
+      abort_incomplete_multipart_upload {
+        days_after_initiation = var.abort_multipart_days
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "block_public_access" {
