@@ -167,7 +167,12 @@ resource "aws_s3_bucket_versioning" "bucket" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
-  count  = (var.expire_objects_days != null || var.expired_object_delete_marker) ? 1 : 0
+  count = (
+    var.expire_objects_days != null ||
+    var.expire_noncurrent_objects_days != null ||
+    var.abort_multipart_days != null ||
+    var.expired_object_delete_marker
+  ) ? 1 : 0
   bucket = aws_s3_bucket.bucket.id
 
   # Rule for expiring objects by days
@@ -204,6 +209,21 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
 
       expiration {
         expired_object_delete_marker = true
+      }
+    }
+  }
+
+  # Rule for expiring noncurrent versions
+  dynamic "rule" {
+    for_each = var.expire_noncurrent_objects_days != null ? [1] : []
+    content {
+      id     = "expire-noncurrent-versions"
+      status = "Enabled"
+
+      filter {}
+
+      noncurrent_version_expiration {
+        noncurrent_days = var.expire_noncurrent_objects_days
       }
     }
   }
