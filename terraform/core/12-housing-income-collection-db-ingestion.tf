@@ -79,6 +79,7 @@ module "ingest_housing_income_collection_database_to_housing_raw_zone" {
     table_prefix = null
   }
   glue_crawler_excluded_blobs = [
+    "*_archive/*",
     "*/mtfh*",
     "*/archive*",
     "*/data-quality*",
