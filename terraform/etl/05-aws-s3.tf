@@ -142,14 +142,6 @@ resource "aws_s3_object" "spreadsheet_import_script" {
   source_hash = filemd5("../../scripts/jobs/spreadsheet_import.py")
 }
 
-resource "aws_s3_object" "get_uprn_from_uhref" {
-  bucket      = module.glue_scripts_data_source.bucket_id
-  key         = "scripts/housing_repairs/get_uprn_from_uhref.py"
-  acl         = "private"
-  source      = "../../scripts/jobs/housing_repairs/get_uprn_from_uhref.py"
-  source_hash = filemd5("../../scripts/jobs/housing_repairs/get_uprn_from_uhref.py")
-}
-
 resource "aws_s3_object" "copy_tables_landing_to_raw" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/copy_tables_landing_to_raw.py"
