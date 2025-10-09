@@ -165,16 +165,64 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     ]
   }
 
-  // Glue Access
+  // Glue Access - Catalog level operations
   statement {
-    sid = "AwsGlue"
+    sid = "GlueCatalogAccess"
     actions = [
-      "glue:Batch*",
-      "glue:CheckSchemaVersionValidity",
-      "glue:Get*",
-      "glue:List*",
+      "glue:GetCatalogImportStatus",
+      "glue:GetDataCatalogEncryptionSettings",
+    ]
+    resources = [
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"
+    ]
+  }
+
+  // Glue Access - Department database and table operations
+  statement {
+    sid = "GlueDepartmentDatabaseAccess"
+    actions = [
+      "glue:GetDatabase",
+      "glue:GetTable",
+      "glue:GetTables",
+      "glue:GetTableVersion",
+      "glue:GetTableVersions",
+      "glue:GetPartition",
+      "glue:GetPartitions",
+      "glue:BatchGetPartition",
+      "glue:GetPartitionIndexes",
       "glue:SearchTables",
-      "glue:Query*",
+      "glue:QuerySchemaVersionMetadata",
+    ]
+    resources = [
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+      aws_glue_catalog_database.raw_zone_catalog_database.arn,
+      aws_glue_catalog_database.refined_zone_catalog_database.arn,
+      aws_glue_catalog_database.trusted_zone_catalog_database.arn,
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
+    ]
+  }
+
+  // Glue Access - Job and crawler read-only operations (unrestricted)
+  statement {
+    sid = "GlueJobAndCrawlerReadAccess"
+    actions = [
+      "glue:GetJob",
+      "glue:GetJobs",
+      "glue:GetJobRun",
+      "glue:GetJobRuns",
+      "glue:BatchGetJobs",
+      "glue:ListJobs",
+      "glue:GetCrawler",
+      "glue:GetCrawlers",
+      "glue:ListCrawlers",
+      "glue:GetCrawlerMetrics",
+      "glue:GetWorkflow",
+      "glue:GetWorkflowRun",
+      "glue:GetWorkflowRuns",
+      "glue:ListWorkflows",
+      "glue:CheckSchemaVersionValidity",
     ]
     resources = ["*"]
   }
@@ -480,24 +528,77 @@ data "aws_iam_policy_document" "glue_access" {
     }
   }
 
-  // Glue Access
+  // Glue Access - Catalog level operations
   statement {
-    sid = "AwsGlue"
+    sid = "GlueCatalogAccess"
     actions = [
-      "glue:Batch*",
+      "glue:GetCatalogImportStatus",
+      "glue:GetDataCatalogEncryptionSettings",
+    ]
+    resources = [
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"
+    ]
+  }
+
+  // Glue Access - Department database and table operations (read, write, delete)
+  statement {
+    sid = "GlueDepartmentDatabaseAccess"
+    actions = [
+      "glue:GetDatabase",
+      "glue:GetTable",
+      "glue:GetTables",
+      "glue:GetTableVersion",
+      "glue:GetTableVersions",
+      "glue:GetPartition",
+      "glue:GetPartitions",
+      "glue:BatchGetPartition",
+      "glue:GetPartitionIndexes",
+      "glue:CreateTable",
+      "glue:UpdateTable",
+      "glue:DeleteTable",
+      "glue:CreatePartition",
+      "glue:UpdatePartition",
+      "glue:DeletePartition",
+      "glue:BatchCreatePartition",
+      "glue:BatchDeletePartition",
+      "glue:BatchUpdatePartition",
+      "glue:SearchTables",
+      "glue:QuerySchemaVersionMetadata",
+    ]
+    resources = [
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+      aws_glue_catalog_database.raw_zone_catalog_database.arn,
+      aws_glue_catalog_database.refined_zone_catalog_database.arn,
+      aws_glue_catalog_database.trusted_zone_catalog_database.arn,
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
+    ]
+  }
+
+  // Glue Access - Job and crawler operations
+  statement {
+    sid = "GlueJobAndCrawlerAccess"
+    actions = [
       "glue:CheckSchemaVersionValidity",
       "glue:CreateDevEndpoint",
       "glue:CreateJob",
       "glue:CreateScript",
       "glue:CreateSession",
-      "glue:CreatePartition",
       "glue:DeleteDevEndpoint",
       "glue:DeleteJob",
       "glue:DeleteTrigger",
-      "glue:Get*",
-      "glue:List*",
+      "glue:GetJob",
+      "glue:GetJobs",
+      "glue:GetJobRun",
+      "glue:GetJobRuns",
+      "glue:BatchGetJobs",
+      "glue:ListJobs",
+      "glue:GetCrawler",
+      "glue:GetCrawlers",
+      "glue:ListCrawlers",
+      "glue:GetCrawlerMetrics",
       "glue:ResetJobBookmark",
-      "glue:SearchTables",
       "glue:StartCrawler",
       "glue:StartCrawlerSchedule",
       "glue:StartExportLabelsTaskRun",
@@ -511,15 +612,10 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:TagResource",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
-      "glue:UpdateTable",
-      "glue:CreateTable",
-      "glue:DeleteTable",
-      "glue:GetTableVersions",
-      "glue:GetTable",
-      "glue:GetTables",
-      "glue:GetDatabase",
-      "glue:GetDatabases",
-      "glue:Query*",
+      "glue:GetWorkflow",
+      "glue:GetWorkflowRun",
+      "glue:GetWorkflowRuns",
+      "glue:ListWorkflows",
     ]
     resources = ["*"]
   }
