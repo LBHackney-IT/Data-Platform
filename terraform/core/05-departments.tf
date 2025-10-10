@@ -73,6 +73,12 @@ module "department_parking" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  additional_glue_database_access = [
+    {
+      database_name = "${local.identifier_prefix}-liberator*"
+      access_level  = "read_only"
+    },
+  ]
 }
 
 module "department_finance" {
