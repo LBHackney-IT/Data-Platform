@@ -211,6 +211,12 @@ module "department_planning" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-planning@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  additional_glue_database_access = [
+    {
+      database_name = "${local.identifier_prefix}-tascomi*"
+      access_level  = "read_only"
+    },
+  ]
 }
 
 module "department_unrestricted" {
