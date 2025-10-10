@@ -351,6 +351,12 @@ module "department_revenues" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  additional_glue_database_access = [
+    {
+      database_name = "nndr_raw_zone"
+      access_level  = "read_only"
+    },
+  ]
 }
 
 module "department_environmental_services" {
