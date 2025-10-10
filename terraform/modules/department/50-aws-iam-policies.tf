@@ -202,6 +202,10 @@ data "aws_iam_policy_document" "read_only_glue_access" {
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-raw-zone/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-refined-zone/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-trusted-zone/*",
+
     ]
   }
 
@@ -585,6 +589,9 @@ data "aws_iam_policy_document" "glue_access" {
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-raw-zone/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-refined-zone/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-trusted-zone/*",
     ]
   }
 
