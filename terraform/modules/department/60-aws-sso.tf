@@ -52,8 +52,8 @@ resource "aws_iam_policy" "sso_department_additional_policy" {
   description = "Additional SSO policy for ${local.department_identifier} department in ${var.environment} environment"
   policy = var.environment == "stg" ? (
     local.create_notebook ?
-    data.aws_iam_policy_document.sso_staging_additional_with_notebook.json :
-    data.aws_iam_policy_document.sso_staging_additional.json
+    data.aws_iam_policy_document.sso_staging_additional_with_notebook[0].json :
+    data.aws_iam_policy_document.sso_staging_additional[0].json
     ) : (
     data.aws_iam_policy_document.sso_production_additional.json
   )

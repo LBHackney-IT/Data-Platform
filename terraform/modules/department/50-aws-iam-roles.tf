@@ -1,4 +1,6 @@
 data "aws_iam_policy_document" "sso_staging_additional_with_notebook" {
+  count = local.create_notebook ? 1 : 0
+
   override_policy_documents = [
     data.aws_iam_policy_document.redshift_department_read_access.json,
     data.aws_iam_policy_document.notebook_access[0].json
@@ -6,6 +8,8 @@ data "aws_iam_policy_document" "sso_staging_additional_with_notebook" {
 }
 
 data "aws_iam_policy_document" "sso_staging_additional" {
+  count = local.create_notebook ? 0 : 1
+
   override_policy_documents = [
     data.aws_iam_policy_document.redshift_department_read_access.json,
     data.aws_iam_policy_document.mwaa_department_web_server_access.json
