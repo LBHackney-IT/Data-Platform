@@ -77,17 +77,14 @@ module "department_parking" {
     {
       database_name = "liberator-raw-zone"
       actions       = ["glue:GetTable", "glue:GetTables"]
-
     },
     {
       database_name = "liberator-refined-zone"
       actions       = ["glue:GetTable", "glue:GetTables"]
-
     },
     {
       database_name = "liberator-trusted-zone"
       actions       = ["glue:GetTable", "glue:GetTables"]
-
     },
   ]
 }
