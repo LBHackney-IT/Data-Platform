@@ -167,7 +167,7 @@ data "aws_iam_policy_document" "read_only_glue_access" {
 
   // Glue Access - Catalog level operations
   statement {
-    sid = "GlueCatalogReadOnlyAccess"
+    sid = "GlueCatalogAccess"
     actions = [
       "glue:GetCatalogImportStatus",
       "glue:GetDataCatalogEncryptionSettings",
@@ -179,10 +179,9 @@ data "aws_iam_policy_document" "read_only_glue_access" {
 
   // Glue Access - Department database and table operations
   statement {
-    sid = "GlueDepartmentDatabaseReadOnlyAccess"
+    sid = "GlueDepartmentDatabaseAccess"
     actions = [
       "glue:GetDatabase",
-      "glue:GetDatabases",
       "glue:GetTable",
       "glue:GetTables",
       "glue:GetTableVersion",
@@ -202,10 +201,6 @@ data "aws_iam_policy_document" "read_only_glue_access" {
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-raw-zone/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-refined-zone/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-trusted-zone/*",
-
     ]
   }
 
@@ -227,7 +222,6 @@ data "aws_iam_policy_document" "read_only_glue_access" {
       "glue:GetWorkflowRun",
       "glue:GetWorkflowRuns",
       "glue:ListWorkflows",
-      "glue:GetTags",
       "glue:CheckSchemaVersionValidity",
     ]
     resources = ["*"]
@@ -237,18 +231,9 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     for_each = var.additional_glue_database_access
     iterator = additional_db_access
     content {
-      sid    = "AdditionalGlueDatabaseAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
-      effect = "Allow"
-      # Auto-append essential actions for database listing and access
-      actions = distinct(concat(
-        additional_db_access.value.actions,
-        [
-          "glue:GetDatabase",  # Required for specific database access
-          "glue:GetDatabases", # Required for SQL editor database listing
-          "glue:GetPartition",
-          "glue:GetPartitions",
-        ]
-      ))
+      sid     = "AdditionalGlueDatabaseAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
+      effect  = "Allow"
+      actions = additional_db_access.value.actions
       resources = [
         "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:catalog",
         "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
@@ -273,7 +258,7 @@ data "aws_iam_policy_document" "s3_department_access" {
   ] : []
 
   statement {
-    sid    = "ListAllS3AndKmsKeysFullAccess"
+    sid    = "ListAllS3AndKmsKeys"
     effect = "Allow"
     actions = [
       "s3:ListAllMyBuckets",
@@ -283,7 +268,7 @@ data "aws_iam_policy_document" "s3_department_access" {
   }
 
   statement {
-    sid    = "KmsKeyFullAccessForS3"
+    sid    = "KmsKeyFullAccess"
     effect = "Allow"
     actions = [
       "kms:Encrypt",
@@ -545,7 +530,7 @@ data "aws_iam_policy_document" "glue_access" {
 
   // Glue Access - Catalog level operations
   statement {
-    sid = "GlueCatalogFullAccess"
+    sid = "GlueCatalogAccess"
     actions = [
       "glue:GetCatalogImportStatus",
       "glue:GetDataCatalogEncryptionSettings",
@@ -557,10 +542,9 @@ data "aws_iam_policy_document" "glue_access" {
 
   // Glue Access - Department database and table operations (read, write, delete)
   statement {
-    sid = "GlueDepartmentDatabaseFullAccess"
+    sid = "GlueDepartmentDatabaseAccess"
     actions = [
       "glue:GetDatabase",
-      "glue:GetDatabases",
       "glue:GetTable",
       "glue:GetTables",
       "glue:GetTableVersion",
@@ -589,9 +573,6 @@ data "aws_iam_policy_document" "glue_access" {
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
       "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-raw-zone/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-refined-zone/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-trusted-zone/*",
     ]
   }
 
@@ -628,7 +609,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:StopCrawlerSchedule",
       "glue:StopTrigger",
       "glue:StopWorkflowRun",
-      "glue:GetTags",
       "glue:TagResource",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
@@ -638,30 +618,6 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:ListWorkflows",
     ]
     resources = ["*"]
-  }
-
-  dynamic "statement" {
-    for_each = var.additional_glue_database_access
-    iterator = additional_db_access
-    content {
-      sid    = "AdditionalGlueDatabaseFullAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
-      effect = "Allow"
-      # Auto-append essential actions for database listing and access
-      actions = distinct(concat(
-        additional_db_access.value.actions,
-        [
-          "glue:GetDatabase",  # Required for specific database access
-          "glue:GetDatabases", # Required for SQL editor database listing
-          "glue:GetPartition",
-          "glue:GetPartitions",
-        ]
-      ))
-      resources = [
-        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
-        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
-        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${additional_db_access.value.database_name}/*"
-      ]
-    }
   }
 }
 
