@@ -223,6 +223,7 @@ data "aws_iam_policy_document" "read_only_glue_access" {
       "glue:GetWorkflowRun",
       "glue:GetWorkflowRuns",
       "glue:ListWorkflows",
+      "glue:GetTags",
       "glue:CheckSchemaVersionValidity",
     ]
     resources = ["*"]
@@ -620,6 +621,7 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:StopCrawlerSchedule",
       "glue:StopTrigger",
       "glue:StopWorkflowRun",
+      "glue:GetTags",
       "glue:TagResource",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
