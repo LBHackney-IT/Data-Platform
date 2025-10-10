@@ -73,12 +73,11 @@ variable "additional_glue_database_access" {
     Additional Glue database access to grant to the department.
     Allows specifying specific databases and the actions that can be performed on them.
     
-    Note: The actions 'glue:GetDatabase' and 'glue:GetDatabases' are automatically 
+    Note: The actions 'glue:GetDatabase', 'glue:GetDatabases', 'glue:GetPartition' and 'glue:GetPartitions' are automatically 
     appended to the actions list to ensure databases appear in SQL editors and can be 
     accessed. You only need to specify additional actions like table operations:
     - glue:GetTable, glue:GetTables
     - glue:CreateTable, glue:UpdateTable, glue:DeleteTable (for write access)
-    - glue:GetPartition, glue:GetPartitions
     - glue:CreatePartition, glue:UpdatePartition, glue:DeletePartition (for write access)
   EOF
   type = list(object({

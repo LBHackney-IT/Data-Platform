@@ -240,6 +240,8 @@ data "aws_iam_policy_document" "read_only_glue_access" {
         [
           "glue:GetDatabase",  # Required for specific database access
           "glue:GetDatabases", # Required for SQL editor database listing
+          "glue:GetPartition",
+          "glue:GetPartitions",
         ]
       ))
       resources = [
@@ -641,6 +643,8 @@ data "aws_iam_policy_document" "glue_access" {
         [
           "glue:GetDatabase",  # Required for specific database access
           "glue:GetDatabases", # Required for SQL editor database listing
+          "glue:GetPartition",
+          "glue:GetPartitions",
         ]
       ))
       resources = [
