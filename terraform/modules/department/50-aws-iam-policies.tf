@@ -182,6 +182,7 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     sid = "GlueDepartmentDatabaseAccess"
     actions = [
       "glue:GetDatabase",
+      "glue:GetDatabases",
       "glue:GetTable",
       "glue:GetTables",
       "glue:GetTableVersion",
@@ -545,6 +546,7 @@ data "aws_iam_policy_document" "glue_access" {
     sid = "GlueDepartmentDatabaseAccess"
     actions = [
       "glue:GetDatabase",
+      "glue:GetDatabases",
       "glue:GetTable",
       "glue:GetTables",
       "glue:GetTableVersion",
