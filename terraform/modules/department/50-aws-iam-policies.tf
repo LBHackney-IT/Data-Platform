@@ -167,7 +167,7 @@ data "aws_iam_policy_document" "read_only_glue_access" {
 
   // Glue Access - Catalog level operations
   statement {
-    sid = "GlueCatalogAccess"
+    sid = "GlueCatalogReadOnlyAccess"
     actions = [
       "glue:GetCatalogImportStatus",
       "glue:GetDataCatalogEncryptionSettings",
@@ -179,7 +179,7 @@ data "aws_iam_policy_document" "read_only_glue_access" {
 
   // Glue Access - Department database and table operations
   statement {
-    sid = "GlueDepartmentDatabaseAccess"
+    sid = "GlueDepartmentDatabaseReadOnlyAccess"
     actions = [
       "glue:GetDatabase",
       "glue:GetDatabases",
@@ -259,7 +259,7 @@ data "aws_iam_policy_document" "s3_department_access" {
   ] : []
 
   statement {
-    sid    = "ListAllS3AndKmsKeys"
+    sid    = "ListAllS3AndKmsKeysFullAccess"
     effect = "Allow"
     actions = [
       "s3:ListAllMyBuckets",
@@ -269,7 +269,7 @@ data "aws_iam_policy_document" "s3_department_access" {
   }
 
   statement {
-    sid    = "KmsKeyFullAccess"
+    sid    = "KmsKeyFullAccessForS3"
     effect = "Allow"
     actions = [
       "kms:Encrypt",
@@ -531,7 +531,7 @@ data "aws_iam_policy_document" "glue_access" {
 
   // Glue Access - Catalog level operations
   statement {
-    sid = "GlueCatalogAccess"
+    sid = "GlueCatalogFullAccess"
     actions = [
       "glue:GetCatalogImportStatus",
       "glue:GetDataCatalogEncryptionSettings",
@@ -543,7 +543,7 @@ data "aws_iam_policy_document" "glue_access" {
 
   // Glue Access - Department database and table operations (read, write, delete)
   statement {
-    sid = "GlueDepartmentDatabaseAccess"
+    sid = "GlueDepartmentDatabaseFullAccess"
     actions = [
       "glue:GetDatabase",
       "glue:GetDatabases",
