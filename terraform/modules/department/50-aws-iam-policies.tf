@@ -1,6 +1,25 @@
 // WARNING! All statement blocks MUST have a UNIQUE SID, this is to allow the individual documents to be merged.
 // Statement blocks with the same SID will replace each other when merged.
 
+locals {
+  glue_access_presets = {
+    read_only = [
+      "glue:Get*",
+      "glue:BatchGet*",
+    ]
+    read_write = [
+      "glue:Get*",
+      "glue:BatchGet*",
+      "glue:Create*",
+      "glue:Update*",
+      "glue:Delete*",
+      "glue:BatchCreate*",
+      "glue:BatchUpdate*",
+      "glue:BatchDelete*",
+    ]
+  }
+}
+
 // S3 read only access policy
 data "aws_iam_policy_document" "read_only_s3_department_access" {
   # Include CloudTrail bucket access for data-and-insight department
@@ -185,11 +204,11 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     content {
       sid     = "AdditionalGlueDatabaseAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
       effect  = "Allow"
-      actions = additional_db_access.value.actions
+      actions = local.glue_access_presets[additional_db_access.value.access_level]
       resources = [
-        "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:catalog",
-        "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
-        "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:table/${additional_db_access.value.database_name}/*"
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${additional_db_access.value.database_name}/*"
       ]
     }
   }
@@ -522,6 +541,21 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:Query*",
     ]
     resources = ["*"]
+  }
+
+  dynamic "statement" {
+    for_each = var.additional_glue_database_access
+    iterator = additional_db_access
+    content {
+      sid     = "AdditionalGlueDatabaseFullAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
+      effect  = "Allow"
+      actions = local.glue_access_presets[additional_db_access.value.access_level]
+      resources = [
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${additional_db_access.value.database_name}/*"
+      ]
+    }
   }
 }
 

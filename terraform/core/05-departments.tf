@@ -424,11 +424,11 @@ module "department_housing" {
   additional_glue_database_access = [
     {
       database_name = "housing_nec_migration"
-      actions       = ["glue:CreateTable", "glue:UpdateTable", "glue:DeleteTable", "glue:GetTable", "glue:GetTables", "glue:GetDatabase"]
+      access_level  = "read_write"
     },
     {
       database_name = "housing_nec_migration_outputs"
-      actions       = ["glue:CreateTable", "glue:UpdateTable", "glue:DeleteTable", "glue:GetTable", "glue:GetTables", "glue:GetDatabase"]
+      access_level  = "read_write"
     }
   ]
 }
