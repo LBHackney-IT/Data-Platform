@@ -232,9 +232,16 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     for_each = var.additional_glue_database_access
     iterator = additional_db_access
     content {
-      sid     = "AdditionalGlueDatabaseAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
-      effect  = "Allow"
-      actions = additional_db_access.value.actions
+      sid    = "AdditionalGlueDatabaseAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
+      effect = "Allow"
+      # Auto-append essential actions for database listing and access
+      actions = distinct(concat(
+        additional_db_access.value.actions,
+        [
+          "glue:GetDatabase",  # Required for specific database access
+          "glue:GetDatabases", # Required for SQL editor database listing
+        ]
+      ))
       resources = [
         "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:catalog",
         "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
@@ -620,6 +627,28 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:ListWorkflows",
     ]
     resources = ["*"]
+  }
+
+  dynamic "statement" {
+    for_each = var.additional_glue_database_access
+    iterator = additional_db_access
+    content {
+      sid    = "AdditionalGlueDatabaseFullAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
+      effect = "Allow"
+      # Auto-append essential actions for database listing and access
+      actions = distinct(concat(
+        additional_db_access.value.actions,
+        [
+          "glue:GetDatabase",  # Required for specific database access
+          "glue:GetDatabases", # Required for SQL editor database listing
+        ]
+      ))
+      resources = [
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${additional_db_access.value.database_name}/*"
+      ]
+    }
   }
 }
 
