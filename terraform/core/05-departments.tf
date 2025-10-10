@@ -73,24 +73,6 @@ module "department_parking" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  additional_glue_database_access = [
-    {
-      database_name = "${local.identifier_prefix}-liberator-raw-zone"
-      actions       = ["glue:GetTable", "glue:GetTables"]
-    },
-    {
-      database_name = "${local.identifier_prefix}-liberator-refined-zone"
-      actions       = ["glue:GetTable", "glue:GetTables"]
-    },
-    {
-      database_name = "${local.identifier_prefix}-liberator-trusted-zone"
-      actions       = ["glue:GetTable", "glue:GetTables"]
-    },
-    {
-      database_name = "${local.identifier_prefix}-raw-zone-unrestricted-address-api"
-      actions       = ["glue:GetTable", "glue:GetTables"]
-    },
-  ]
 }
 
 module "department_finance" {
