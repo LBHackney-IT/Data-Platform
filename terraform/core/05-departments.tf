@@ -86,6 +86,11 @@ module "department_parking" {
       database_name = "${local.identifier_prefix}-liberator-trusted-zone"
       actions       = ["glue:GetTable", "glue:GetTables"]
     },
+    {
+      database_name = "${local.identifier_prefix}-raw-zone-unrestricted-address-api"
+      actions       = ["glue:GetTable", "glue:GetTables"]
+    },
+dataplatform-prod-raw-zone-unrestricted-address-api
   ]
 }
 
