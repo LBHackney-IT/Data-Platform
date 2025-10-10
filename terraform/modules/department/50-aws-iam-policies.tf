@@ -1,6 +1,25 @@
 // WARNING! All statement blocks MUST have a UNIQUE SID, this is to allow the individual documents to be merged.
 // Statement blocks with the same SID will replace each other when merged.
 
+locals {
+  glue_access_presets = {
+    read_only = [
+      "glue:Get*",
+      "glue:BatchGet*",
+    ]
+    read_write = [
+      "glue:Get*",
+      "glue:BatchGet*",
+      "glue:Create*",
+      "glue:Update*",
+      "glue:Delete*",
+      "glue:BatchCreate*",
+      "glue:BatchUpdate*",
+      "glue:BatchDelete*",
+    ]
+  }
+}
+
 // S3 read only access policy
 data "aws_iam_policy_document" "read_only_s3_department_access" {
   # Include CloudTrail bucket access for data-and-insight department
@@ -169,7 +188,61 @@ data "aws_iam_policy_document" "read_only_glue_access" {
   statement {
     sid = "AwsGlue"
     actions = [
-      "glue:Batch*",
+      "glue:GetCatalogImportStatus",
+      "glue:GetDataCatalogEncryptionSettings",
+    ]
+    resources = [
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"
+    ]
+  }
+
+  // Glue Access - Department database and table operations
+  statement {
+    sid = "GlueDepartmentDatabaseReadOnlyAccess"
+    actions = [
+      "glue:GetDatabase",
+      "glue:GetDatabases",
+      "glue:GetTable",
+      "glue:GetTables",
+      "glue:GetTableVersion",
+      "glue:GetTableVersions",
+      "glue:GetPartition",
+      "glue:GetPartitions",
+      "glue:BatchGetPartition",
+      "glue:GetPartitionIndexes",
+      "glue:SearchTables",
+      "glue:QuerySchemaVersionMetadata",
+    ]
+    resources = [
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+      aws_glue_catalog_database.raw_zone_catalog_database.arn,
+      aws_glue_catalog_database.refined_zone_catalog_database.arn,
+      aws_glue_catalog_database.trusted_zone_catalog_database.arn,
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
+    ]
+  }
+
+  // Glue Access - Job and crawler read-only operations (unrestricted)
+  statement {
+    sid = "GlueJobAndCrawlerReadAccess"
+    actions = [
+      "glue:GetJob",
+      "glue:GetJobs",
+      "glue:GetJobRun",
+      "glue:GetJobRuns",
+      "glue:BatchGetJobs",
+      "glue:ListJobs",
+      "glue:GetCrawler",
+      "glue:GetCrawlers",
+      "glue:ListCrawlers",
+      "glue:GetCrawlerMetrics",
+      "glue:GetWorkflow",
+      "glue:GetWorkflowRun",
+      "glue:GetWorkflowRuns",
+      "glue:ListWorkflows",
+      "glue:GetTags",
       "glue:CheckSchemaVersionValidity",
       "glue:Get*",
       "glue:List*",
@@ -185,11 +258,11 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     content {
       sid     = "AdditionalGlueDatabaseAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
       effect  = "Allow"
-      actions = additional_db_access.value.actions
+      actions = local.glue_access_presets[additional_db_access.value.access_level]
       resources = [
-        "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:catalog",
-        "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
-        "arn:aws:glue:eu-west-2:${data.aws_caller_identity.current.account_id}:table/${additional_db_access.value.database_name}/*"
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${additional_db_access.value.database_name}/*"
       ]
     }
   }
@@ -508,6 +581,7 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:StopCrawlerSchedule",
       "glue:StopTrigger",
       "glue:StopWorkflowRun",
+      "glue:GetTags",
       "glue:TagResource",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
@@ -522,6 +596,21 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:Query*",
     ]
     resources = ["*"]
+  }
+
+  dynamic "statement" {
+    for_each = var.additional_glue_database_access
+    iterator = additional_db_access
+    content {
+      sid     = "AdditionalGlueDatabaseFullAccess${replace(additional_db_access.value.database_name, "/[^a-zA-Z0-9]/", "")}"
+      effect  = "Allow"
+      actions = local.glue_access_presets[additional_db_access.value.access_level]
+      resources = [
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${additional_db_access.value.database_name}",
+        "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${additional_db_access.value.database_name}/*"
+      ]
+    }
   }
 }
 

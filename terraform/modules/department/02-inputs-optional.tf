@@ -71,11 +71,22 @@ variable "cloudtrail_bucket" {
 variable "additional_glue_database_access" {
   description = <<EOF
     Additional Glue database access to grant to the department.
-    Allows specifying specific databases and the actions that can be performed on them.
+    
+    access_level options:
+    - "read_only": Grants Get* and BatchGet* permissions (for reading databases, tables, partitions)
+    - "read_write": Grants Get*, BatchGet*, Create*, Update*, Delete*, BatchCreate*, BatchUpdate*, BatchDelete* permissions
   EOF
   type = list(object({
     database_name = string
-    actions       = list(string)
+    access_level  = string
   }))
   default = []
+
+  validation {
+    condition = alltrue([
+      for db in var.additional_glue_database_access :
+      contains(["read_only", "read_write"], db.access_level)
+    ])
+    error_message = "access_level must be either 'read_only' or 'read_write'"
+  }
 }
