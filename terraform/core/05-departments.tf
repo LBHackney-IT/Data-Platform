@@ -75,17 +75,17 @@ module "department_parking" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   additional_glue_database_access = [
     {
-      database_name = aws_glue_catalog_database.landing_zone_liberator.name
+      database_name = "liberator-raw-zone"
       actions       = ["glue:GetTable", "glue:GetTables"]
 
     },
     {
-      database_name = aws_glue_catalog_database.refined_zone_liberator.name
+      database_name = "liberator-refined-zone"
       actions       = ["glue:GetTable", "glue:GetTables"]
 
     },
     {
-      database_name = aws_glue_catalog_database.trusted_zone_liberator.name
+      database_name = "liberator-trusted-zone"
       actions       = ["glue:GetTable", "glue:GetTables"]
 
     },
