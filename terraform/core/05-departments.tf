@@ -610,4 +610,18 @@ module "department_children_family_services" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  additional_glue_database_access = [
+    {
+      database_name = "child_edu_refined"
+      access_level  = "read_only"
+    },
+    {
+      database_name = "hackney_casemanagement_live"
+      access_level  = "read_only"
+    },
+    {
+      database_name = "hackney_synergy_live"
+      access_level  = "read_only"
+    },
+  ]
 }
