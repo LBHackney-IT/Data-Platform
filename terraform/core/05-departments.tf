@@ -74,7 +74,8 @@ module "department_parking" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   additional_glue_database_access = {
-    read_only = ["${local.identifier_prefix}-liberator*"]
+    read_only  = ["${local.identifier_prefix}-liberator*"]
+    read_write = []
   }
 }
 
@@ -209,7 +210,8 @@ module "department_planning" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   additional_glue_database_access = {
-    read_only = ["${local.identifier_prefix}-tascomi*"]
+    read_only  = ["${local.identifier_prefix}-tascomi*"]
+    read_write = []
   }
 }
 
@@ -312,7 +314,8 @@ module "department_benefits_and_housing_needs" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   additional_glue_database_access = {
-    read_only = ["hben_raw_zone"]
+    read_only  = ["hben_raw_zone"]
+    read_write = []
   }
 }
 
@@ -349,7 +352,8 @@ module "department_revenues" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   additional_glue_database_access = {
-    read_only = ["nndr_raw_zone"]
+    read_only  = ["nndr_raw_zone"]
+    read_write = []
   }
 }
 
@@ -434,6 +438,7 @@ module "department_housing" {
     }
   ]
   additional_glue_database_access = {
+    read_only  = []
     read_write = ["housing_nec_migration", "housing_nec_migration_outputs"]
   }
 }
@@ -604,6 +609,7 @@ module "department_children_family_services" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   additional_glue_database_access = {
-    read_only = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
+    read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
+    read_write = []
   }
 }
