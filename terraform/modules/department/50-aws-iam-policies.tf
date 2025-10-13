@@ -195,7 +195,16 @@ data "aws_iam_policy_document" "read_only_glue_access" {
       "glue:SearchTables",
       "glue:Query*",
     ]
-    resources = ["*"]
+    resources = [
+      aws_glue_catalog_database.raw_zone_catalog_database.arn,
+      aws_glue_catalog_database.refined_zone_catalog_database.arn,
+      aws_glue_catalog_database.trusted_zone_catalog_database.arn,
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/unrestricted-*-zone",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-*-zone/*",
+    ]
   }
 
   dynamic "statement" {
@@ -543,7 +552,16 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:GetDatabases",
       "glue:Query*",
     ]
-    resources = ["*"]
+    resources = [
+      aws_glue_catalog_database.raw_zone_catalog_database.arn,
+      aws_glue_catalog_database.refined_zone_catalog_database.arn,
+      aws_glue_catalog_database.trusted_zone_catalog_database.arn,
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/unrestricted-*-zone",
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-*-zone/*",
+    ]
   }
 
   dynamic "statement" {
