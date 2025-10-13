@@ -1,13 +1,3 @@
-resource "aws_glue_catalog_database" "landing_zone_data_and_insight_address_matching" {
-  count = local.is_live_environment ? 1 : 0
-
-  name = "${local.identifier_prefix}-data-and-insight-address-matching-landing-zone"
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
 // ==== RAW ZONE ===========
 resource "aws_glue_catalog_database" "raw_zone_unrestricted_address_api" {
   name = "${local.identifier_prefix}-raw-zone-unrestricted-address-api"
