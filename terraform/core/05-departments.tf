@@ -73,12 +73,9 @@ module "department_parking" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  additional_glue_database_access = [
-    {
-      database_name = "${local.identifier_prefix}-liberator*"
-      access_level  = "read_only"
-    },
-  ]
+  additional_glue_database_access = {
+    read_only = ["${local.identifier_prefix}-liberator*"]
+  }
 }
 
 module "department_finance" {
@@ -211,12 +208,9 @@ module "department_planning" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-planning@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  additional_glue_database_access = [
-    {
-      database_name = "${local.identifier_prefix}-tascomi*"
-      access_level  = "read_only"
-    },
-  ]
+  additional_glue_database_access = {
+    read_only = ["${local.identifier_prefix}-tascomi*"]
+  }
 }
 
 module "department_unrestricted" {
@@ -317,12 +311,9 @@ module "department_benefits_and_housing_needs" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  additional_glue_database_access = [
-    {
-      database_name = "hben_raw_zone"
-      access_level  = "read_only"
-    },
-  ]
+  additional_glue_database_access = {
+    read_only = ["hben_raw_zone"]
+  }
 }
 
 module "department_revenues" {
@@ -357,12 +348,9 @@ module "department_revenues" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  additional_glue_database_access = [
-    {
-      database_name = "nndr_raw_zone"
-      access_level  = "read_only"
-    },
-  ]
+  additional_glue_database_access = {
+    read_only = ["nndr_raw_zone"]
+  }
 }
 
 module "department_environmental_services" {
@@ -445,16 +433,9 @@ module "department_housing" {
       actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
     }
   ]
-  additional_glue_database_access = [
-    {
-      database_name = "housing_nec_migration"
-      access_level  = "read_write"
-    },
-    {
-      database_name = "housing_nec_migration_outputs"
-      access_level  = "read_write"
-    }
-  ]
+  additional_glue_database_access = {
+    read_write = ["housing_nec_migration", "housing_nec_migration_outputs"]
+  }
 }
 
 module "department_children_and_education" {
@@ -622,18 +603,7 @@ module "department_children_family_services" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  additional_glue_database_access = [
-    {
-      database_name = "child_edu_refined"
-      access_level  = "read_only"
-    },
-    {
-      database_name = "hackney_casemanagement_live"
-      access_level  = "read_only"
-    },
-    {
-      database_name = "hackney_synergy_live"
-      access_level  = "read_only"
-    },
-  ]
+  additional_glue_database_access = {
+    read_only = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
+  }
 }
