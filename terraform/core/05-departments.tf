@@ -74,7 +74,10 @@ module "department_parking" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   additional_glue_database_access = {
-    read_only  = ["${local.identifier_prefix}-liberator*"]
+    read_only  = [
+      "${local.identifier_prefix}-liberator*",
+      "parking-ringgo-sftp-raw-zone",
+    ]
     read_write = []
   }
 }
