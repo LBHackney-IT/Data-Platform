@@ -18,6 +18,14 @@ locals {
       "glue:BatchDelete*",
     ]
   }
+
+  common_department_databases = [
+    aws_glue_catalog_database.raw_zone_catalog_database.name,
+    aws_glue_catalog_database.refined_zone_catalog_database.name,
+    aws_glue_catalog_database.trusted_zone_catalog_database.name,
+    "unrestricted-*-zone",
+    "${var.identifier_prefix}-raw-zone-unrestricted-addresses-api"
+  ]
 }
 
 // S3 read only access policy
@@ -195,16 +203,11 @@ data "aws_iam_policy_document" "read_only_glue_access" {
       "glue:SearchTables",
       "glue:Query*",
     ]
-    resources = [
-      aws_glue_catalog_database.raw_zone_catalog_database.arn,
-      aws_glue_catalog_database.refined_zone_catalog_database.arn,
-      aws_glue_catalog_database.trusted_zone_catalog_database.arn,
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/unrestricted-*-zone",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-*-zone/*",
-    ]
+    resources = flatten([
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+    ])
   }
 
   dynamic "statement" {
@@ -552,16 +555,11 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:GetDatabases",
       "glue:Query*",
     ]
-    resources = [
-      aws_glue_catalog_database.raw_zone_catalog_database.arn,
-      aws_glue_catalog_database.refined_zone_catalog_database.arn,
-      aws_glue_catalog_database.trusted_zone_catalog_database.arn,
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.raw_zone_catalog_database.name}/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.refined_zone_catalog_database.name}/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.trusted_zone_catalog_database.name}/*",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/unrestricted-*-zone",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/unrestricted-*-zone/*",
-    ]
+    resources = flatten([
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+    ])
   }
 
   dynamic "statement" {
