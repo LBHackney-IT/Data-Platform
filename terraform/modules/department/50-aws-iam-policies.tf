@@ -212,19 +212,21 @@ data "aws_iam_policy_document" "read_only_glue_access" {
 
   dynamic "statement" {
     for_each = {
-      read_only  = var.additional_glue_database_access.read_only
-      read_write = var.additional_glue_database_access.read_write
+      for k, v in {
+        read_only  = var.additional_glue_database_access.read_only
+        read_write = var.additional_glue_database_access.read_write
+      } : k => v if length(v) > 0
     }
     iterator = access_level
     content {
       sid     = "AdditionalGlueDatabaseAccess${title(replace(access_level.key, "_", ""))}"
       effect  = "Allow"
       actions = local.glue_access_presets[access_level.key]
-      resources = length(access_level.value) > 0 ? flatten([
+      resources = flatten([
         ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
         [for db in access_level.value : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
         [for db in access_level.value : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
-      ]) : []
+      ])
     }
   }
 }
@@ -564,19 +566,21 @@ data "aws_iam_policy_document" "glue_access" {
 
   dynamic "statement" {
     for_each = {
-      read_only  = var.additional_glue_database_access.read_only
-      read_write = var.additional_glue_database_access.read_write
+      for k, v in {
+        read_only  = var.additional_glue_database_access.read_only
+        read_write = var.additional_glue_database_access.read_write
+      } : k => v if length(v) > 0
     }
     iterator = access_level
     content {
       sid     = "AdditionalGlueDatabaseFullAccess${title(replace(access_level.key, "_", ""))}"
       effect  = "Allow"
       actions = local.glue_access_presets[access_level.key]
-      resources = length(access_level.value) > 0 ? flatten([
+      resources = flatten([
         ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
         [for db in access_level.value : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
         [for db in access_level.value : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
-      ]) : []
+      ])
     }
   }
 }
@@ -673,19 +677,21 @@ data "aws_iam_policy_document" "glue_access_sso" {
 
   dynamic "statement" {
     for_each = {
-      read_only  = var.additional_glue_database_access.read_only
-      read_write = var.additional_glue_database_access.read_write
+      for k, v in {
+        read_only  = var.additional_glue_database_access.read_only
+        read_write = var.additional_glue_database_access.read_write
+      } : k => v if length(v) > 0
     }
     iterator = access_level
     content {
       sid     = "AdditionalGlueDatabaseFullAccess${title(replace(access_level.key, "_", ""))}"
       effect  = "Allow"
       actions = local.glue_access_presets[access_level.key]
-      resources = length(access_level.value) > 0 ? flatten([
+      resources = flatten([
         ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
         [for db in access_level.value : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
         [for db in access_level.value : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
-      ]) : []
+      ])
     }
   }
 }
