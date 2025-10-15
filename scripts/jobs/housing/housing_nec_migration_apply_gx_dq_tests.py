@@ -69,7 +69,11 @@ def main():
 
             conn = connect(s3_staging_dir=s3_staging_location, region_name=region_name)
 
-            df = pd.read_sql_query(sql_query, conn)
+            try:
+                df = pd.read_sql_query(sql_query, conn)
+            except Exception as e:
+                print(f"Problem found with {table}: {e}, skipping table.")
+                continue
 
             # set up batch
             data_source = context.data_sources.add_pandas(f"{table}_pandas")
