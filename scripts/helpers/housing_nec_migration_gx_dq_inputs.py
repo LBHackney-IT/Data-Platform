@@ -20,7 +20,7 @@ table_list = {
         "properties_7a",
         "properties_all_tranches"
     ],
-    "tenancies": ["tenancies_2a",
+    "tenancies": ["tenancies_1a",
                   "tenancies_1c"]
 }
 
