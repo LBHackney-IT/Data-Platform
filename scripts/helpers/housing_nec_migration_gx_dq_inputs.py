@@ -13,11 +13,15 @@ table_list = {
         "properties_1d",
         "properties_1e",
         "properties_2a",
+        "properties_3a",
         "properties_4a",
         "properties_4b",
-        "properties_4c"
+        "properties_4c",
+        "properties_7a",
+        "properties_all_tranches"
     ],
-    "tenancies": ["tenancies_1a"],
+    "tenancies": ["properties_2a",
+                  "properties_1c"]
 }
 
 partition_keys = ["import_date"]
