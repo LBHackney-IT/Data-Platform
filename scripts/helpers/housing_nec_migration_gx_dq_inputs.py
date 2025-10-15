@@ -20,8 +20,8 @@ table_list = {
         "properties_7a",
         "properties_all_tranches"
     ],
-    "tenancies": ["properties_2a",
-                  "properties_1c"]
+    "tenancies": ["tenancies_2a",
+                  "tenancies_1c"]
 }
 
 partition_keys = ["import_date"]
