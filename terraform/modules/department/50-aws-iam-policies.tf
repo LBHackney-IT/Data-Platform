@@ -588,6 +588,108 @@ resource "aws_iam_policy" "glue_access" {
   policy = data.aws_iam_policy_document.glue_access.json
 }
 
+data "aws_iam_policy_document" "glue_access_sso" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "athena:*",
+      "logs:DescribeLogGroups",
+      "tag:GetResources",
+      "iam:ListRoles",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:FilterLogEvents",
+      "logs:DescribeLogStreams",
+      "logs:GetLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:/aws-glue/*"
+    ]
+  }
+
+  statement {
+    sid    = "RolePermissions"
+    effect = "Allow"
+    actions = [
+      "iam:GetRole",
+    ]
+    resources = [
+      aws_iam_role.glue_agent.arn
+    ]
+  }
+
+  // Glue Access
+  statement {
+    sid = "AwsGlue"
+    actions = [
+      "glue:Batch*",
+      "glue:CheckSchemaVersionValidity",
+      "glue:CreateDevEndpoint",
+      "glue:CreateJob",
+      "glue:CreateScript",
+      "glue:CreateSession",
+      "glue:CreatePartition",
+      "glue:DeleteDevEndpoint",
+      "glue:DeleteJob",
+      "glue:DeleteTrigger",
+      "glue:Get*",
+      "glue:List*",
+      "glue:ResetJobBookmark",
+      "glue:SearchTables",
+      "glue:StartCrawler",
+      "glue:StartCrawlerSchedule",
+      "glue:StartExportLabelsTaskRun",
+      "glue:StartImportLabelsTaskRun",
+      "glue:StartJobRun",
+      "glue:StartWorkflowRun",
+      "glue:StopCrawler",
+      "glue:StopCrawlerSchedule",
+      "glue:StopTrigger",
+      "glue:StopWorkflowRun",
+      "glue:TagResource",
+      "glue:UpdateDevEndpoint",
+      "glue:UpdateJob",
+      "glue:UpdateTable",
+      "glue:CreateTable",
+      "glue:DeleteTable",
+      "glue:GetTableVersions",
+      "glue:GetTable",
+      "glue:GetTables",
+      "glue:GetDatabase",
+      "glue:GetDatabases",
+      "glue:Query*",
+    ]
+    resources = flatten([
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+    ])
+  }
+
+  dynamic "statement" {
+    for_each = {
+      read_only  = var.additional_glue_database_access.read_only
+      read_write = var.additional_glue_database_access.read_write
+    }
+    iterator = access_level
+    content {
+      sid     = "AdditionalGlueDatabaseFullAccess${title(replace(access_level.key, "_", ""))}"
+      effect  = "Allow"
+      actions = local.glue_access_presets[access_level.key]
+      resources = length(access_level.value) > 0 ? flatten([
+        ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
+        [for db in access_level.value : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
+        [for db in access_level.value : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+      ]) : []
+    }
+  }
+}
+
 // Read only Secrets policy
 data "aws_iam_policy_document" "secrets_manager_read_only" {
   statement {
