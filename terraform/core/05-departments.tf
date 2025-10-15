@@ -73,6 +73,13 @@ module "department_parking" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  additional_glue_database_access = {
+    read_only  = [
+      "${local.identifier_prefix}-liberator*",
+      "parking-ringgo-sftp-raw-zone",
+    ]
+    read_write = []
+  }
 }
 
 module "department_finance" {
@@ -205,6 +212,10 @@ module "department_planning" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-planning@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  additional_glue_database_access = {
+    read_only  = ["${local.identifier_prefix}-tascomi*"]
+    read_write = []
+  }
 }
 
 module "department_unrestricted" {
@@ -305,6 +316,10 @@ module "department_benefits_and_housing_needs" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  additional_glue_database_access = {
+    read_only  = ["hben_raw_zone"]
+    read_write = []
+  }
 }
 
 module "department_revenues" {
@@ -339,6 +354,13 @@ module "department_revenues" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  additional_glue_database_access = {
+    read_only = [
+      "nndr_raw_zone",
+      "ctax_raw_zone",
+    ]
+    read_write = []
+  }
 }
 
 module "department_environmental_services" {
@@ -421,16 +443,10 @@ module "department_housing" {
       actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
     }
   ]
-  additional_glue_database_access = [
-    {
-      database_name = "housing_nec_migration"
-      actions       = ["glue:CreateTable", "glue:UpdateTable", "glue:DeleteTable", "glue:GetTable", "glue:GetTables", "glue:GetDatabase"]
-    },
-    {
-      database_name = "housing_nec_migration_outputs"
-      actions       = ["glue:CreateTable", "glue:UpdateTable", "glue:DeleteTable", "glue:GetTable", "glue:GetTables", "glue:GetDatabase"]
-    }
-  ]
+  additional_glue_database_access = {
+    read_only  = []
+    read_write = ["housing_nec_migration", "housing_nec_migration_outputs"]
+  }
 }
 
 module "department_children_and_education" {
@@ -598,4 +614,8 @@ module "department_children_family_services" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  additional_glue_database_access = {
+    read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
+    read_write = []
+  }
 }
