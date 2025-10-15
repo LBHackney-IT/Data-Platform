@@ -24,7 +24,7 @@ locals {
     aws_glue_catalog_database.refined_zone_catalog_database.name,
     aws_glue_catalog_database.trusted_zone_catalog_database.name,
     "unrestricted-*-zone",
-    "${var.identifier_prefix}-raw-zone-unrestricted-addresses-api"
+    "${var.identifier_prefix}-raw-zone-unrestricted-address-api"
   ]
 }
 
