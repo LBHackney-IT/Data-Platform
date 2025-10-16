@@ -48,6 +48,7 @@ module "landing_zone" {
   expired_object_delete_marker   = true
   expire_noncurrent_objects_days = 30
   abort_multipart_days           = 30
+  enable_intelligent_tiering     = true
 }
 
 module "raw_zone" {
@@ -77,6 +78,7 @@ module "raw_zone" {
     ] : []
   )
   include_backup_policy_tags = false
+  enable_intelligent_tiering = true
 }
 
 module "refined_zone" {
@@ -105,6 +107,7 @@ module "refined_zone" {
     ] : []
   )
   include_backup_policy_tags = false
+  enable_intelligent_tiering = true
 }
 
 module "trusted_zone" {
@@ -127,4 +130,5 @@ module "trusted_zone" {
     ] : []
   )
   include_backup_policy_tags = false
+  enable_intelligent_tiering = true
 }
