@@ -171,7 +171,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
     var.expire_objects_days != null ||
     var.expire_noncurrent_objects_days != null ||
     var.abort_multipart_days != null ||
-    var.expired_object_delete_marker
+    var.expired_object_delete_marker ||
+    var.enable_intelligent_tiering
   ) ? 1 : 0
   bucket = aws_s3_bucket.bucket.id
 
@@ -239,6 +240,22 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
 
       abort_incomplete_multipart_upload {
         days_after_initiation = var.abort_multipart_days
+      }
+    }
+  }
+
+  # Rule for s3 intelligent tiering
+  dynamic "rule" {
+    for_each = var.enable_intelligent_tiering ? [1] : []
+    content {
+      id     = "intelligent-tiering"
+      status = "Enabled"
+
+      filter {}
+
+      transition {
+        days          = var.intelligent_tiering_days
+        storage_class = "INTELLIGENT_TIERING"
       }
     }
   }
