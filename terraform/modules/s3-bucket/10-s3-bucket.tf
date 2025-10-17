@@ -175,69 +175,30 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
   ) ? 1 : 0
   bucket = aws_s3_bucket.bucket.id
 
-  # Rule for expiring objects by days
-  dynamic "rule" {
-    for_each = var.expire_objects_days != null ? [1] : []
-    content {
-      id     = "expire-older-objects"
-      status = "Enabled"
+  rule {
+    id     = "lifecycle-rule"
+    status = "Enabled"
 
-      filter {}
+    filter {}
 
-      expiration {
-        days = var.expire_objects_days
-      }
-
-      noncurrent_version_expiration {
-        noncurrent_days = var.expire_noncurrent_objects_days
-      }
-
-      abort_incomplete_multipart_upload {
-        days_after_initiation = var.abort_multipart_days
+    dynamic "expiration" {
+      for_each = var.expire_objects_days != null || var.expired_object_delete_marker ? [1] : []
+      content {
+        days                         = var.expire_objects_days
+        expired_object_delete_marker = var.expired_object_delete_marker
       }
     }
-  }
 
-  # Rule for deleting expired object delete markers
-  dynamic "rule" {
-    for_each = var.expired_object_delete_marker ? [1] : []
-    content {
-      id     = "delete-expired-delete-markers"
-      status = "Enabled"
-
-      filter {}
-
-      expiration {
-        expired_object_delete_marker = true
-      }
-    }
-  }
-
-  # Rule for expiring noncurrent versions
-  dynamic "rule" {
-    for_each = var.expire_noncurrent_objects_days != null ? [1] : []
-    content {
-      id     = "expire-noncurrent-versions"
-      status = "Enabled"
-
-      filter {}
-
-      noncurrent_version_expiration {
+    dynamic "noncurrent_version_expiration" {
+      for_each = var.expire_noncurrent_objects_days != null ? [1] : []
+      content {
         noncurrent_days = var.expire_noncurrent_objects_days
       }
     }
-  }
 
-  # Rule for aborting incomplete multipart uploads
-  dynamic "rule" {
-    for_each = var.abort_multipart_days != null ? [1] : []
-    content {
-      id     = "abort-incomplete-multipart-uploads"
-      status = "Enabled"
-
-      filter {}
-
-      abort_incomplete_multipart_upload {
+    dynamic "abort_incomplete_multipart_upload" {
+      for_each = var.abort_multipart_days != null ? [1] : []
+      content {
         days_after_initiation = var.abort_multipart_days
       }
     }
