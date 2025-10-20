@@ -739,6 +739,29 @@ resource "aws_iam_policy" "secrets_manager_read_only" {
   policy = data.aws_iam_policy_document.secrets_manager_read_only.json
 }
 
+// Parameter Store read only access policy
+data "aws_iam_policy_document" "parameter_store_read_only" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:GetParametersByPath"
+    ]
+    resources = [
+      "arn:aws:ssm:eu-west-2:${data.aws_caller_identity.current.account_id}:parameter/${var.identifier_prefix}/${local.department_identifier}/*",
+      "arn:aws:ssm:eu-west-2:${data.aws_caller_identity.current.account_id}:parameter/${var.short_identifier_prefix}/${local.department_identifier}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "parameter_store_read_only" {
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-parameter-store-read-only")
+  policy = data.aws_iam_policy_document.parameter_store_read_only.json
+}
+
 // Glue Agent Read only policy for glue scripts and mwaa bucket and run athena
 data "aws_iam_policy_document" "read_glue_scripts_and_mwaa_and_athena" {
   statement {

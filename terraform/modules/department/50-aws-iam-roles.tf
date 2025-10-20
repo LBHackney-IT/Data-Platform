@@ -168,3 +168,8 @@ resource "aws_iam_role_policy_attachment" "mtfh_access_attachment" {
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.mtfh_access_policy[0].arn
 }
+
+resource "aws_iam_role_policy_attachment" "ecs_parameter_store_access" {
+  role       = aws_iam_role.department_ecs_role.name
+  policy_arn = aws_iam_policy.parameter_store_read_only.arn
+}
