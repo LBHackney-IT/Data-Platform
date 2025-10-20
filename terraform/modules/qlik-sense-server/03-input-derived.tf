@@ -11,10 +11,3 @@ data "aws_instance" "qlik-sense-aws-instance" {
 data "aws_vpc" "vpc" {
   id = var.vpc_id
 }
-
-data "aws_instance" "qlik-ec2-data-gateway-prod" {
-  filter {
-    name   = "tag:Name"
-    values = ["qlik-data-gateway-prod"]
-  }
-}

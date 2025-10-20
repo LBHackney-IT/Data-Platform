@@ -55,10 +55,6 @@ resource "aws_iam_instance_profile" "qlik_sense" {
   role = aws_iam_role.qlik_sense.id
 }
 
-locals {
-  instance_cidr = "${data.aws_instance.qlik-ec2-data-gateway-prod.private_ip}/32"
-}
-
 resource "aws_security_group" "qlik_sense" {
   name                   = "${var.short_identifier_prefix}qlik-sense"
   description            = "Restricts access to Qlik Sense EC2 instances"
@@ -118,15 +114,15 @@ resource "aws_security_group" "qlik_sense" {
     from_port       = 445
     to_port         = 445
     protocol        = "tcp"
-    cidr_blocks     = [local.instance_cidr]
+    cidr_blocks     = ["10.120.32.49/32"]
   }
-  
+
   ingress {
     description     = "Allows inbound SMB traffic from the Qlik EC2 data gateway"
     from_port       = 139
     to_port         = 139
     protocol        = "tcp"
-    cidr_blocks     = [local.instance_cidr]
+    cidr_blocks     = ["10.120.32.49/32"]
   }
 
   tags = merge(var.tags, {
