@@ -26,7 +26,7 @@ resource "aws_ssm_parameter" "uh_mirror_username" {
 
 resource "aws_ssm_parameter" "uh_mirror_password" {
   name  = "/${local.identifier_prefix}/${module.department_housing.identifier}/uh_mirror_prod/password"
-  type  = "String"
+  type  = "SecureString"
   value = "UPDATE_IN_CONSOLE"
   tags  = module.tags.values
 
