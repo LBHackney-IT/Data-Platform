@@ -165,6 +165,13 @@ resource "aws_security_group" "redshift_cluster_security_group" {
   }
 
   ingress {
+    description     = "Allows inbound traffic from the Qlik EC2 data gateway"
+    from_port       = 5439
+    to_port         = 5439
+    protocol        = "tcp"
+    cidr_blocks     = ["10.120.32.49/32"]
+  }
+  ingress {
     description     = "Allows security group based inbound traffic"
     from_port       = 5439
     to_port         = 5439

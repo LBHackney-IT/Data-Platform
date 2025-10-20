@@ -109,6 +109,22 @@ resource "aws_security_group" "qlik_sense" {
     cidr_blocks = [data.aws_vpc.vpc.cidr_block]
   }
 
+  ingress {
+    description     = "Allows inbound SMB traffic from the Qlik EC2 data gateway"
+    from_port       = 445
+    to_port         = 445
+    protocol        = "tcp"
+    cidr_blocks     = ["10.120.32.49/32"]
+  }
+
+  ingress {
+    description     = "Allows inbound SMB traffic from the Qlik EC2 data gateway"
+    from_port       = 139
+    to_port         = 139
+    protocol        = "tcp"
+    cidr_blocks     = ["10.120.32.49/32"]
+  }
+
   tags = merge(var.tags, {
     "Name" : "Qlik Sense Server"
   })
