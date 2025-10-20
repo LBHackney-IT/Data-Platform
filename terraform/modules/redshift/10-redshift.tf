@@ -143,6 +143,10 @@ locals {
   redshift_ingress_rules = jsondecode(data.aws_secretsmanager_secret_version.redshift_ingress_rules.secret_string)
 }
 
+locals {
+  instance_cidr = "${data.aws_instance.qlik-ec2-data-gateway-prod.private_ip}/32"
+}
+
 resource "aws_security_group" "redshift_cluster_security_group" {
   name        = "${var.identifier_prefix}-redshift"
   description = "Specifies the rules for inbound traffic to the Redshift cluster"
@@ -164,6 +168,13 @@ resource "aws_security_group" "redshift_cluster_security_group" {
     cidr_blocks = local.redshift_ingress_rules["cidr_blocks"]
   }
 
+  ingress {
+    description     = "Allows inbound traffic from the Qlik EC2 data gateway"
+    from_port       = 5439
+    to_port         = 5439
+    protocol        = "tcp"
+    cidr_blocks     = [local.instance_cidr]
+  }
   ingress {
     description     = "Allows security group based inbound traffic"
     from_port       = 5439
