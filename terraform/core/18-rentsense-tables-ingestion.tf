@@ -83,7 +83,7 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
       Version = 1.0
       Grouping = {
         TableGroupingPolicy     = "CombineCompatibleSchemas"
-        TableLevelConfiguration = 3
+        TableLevelConfiguration = 4
       }
       CrawlerOutput = {
         Partitions = { AddOrUpdateBehavior = "InheritFromTable" }

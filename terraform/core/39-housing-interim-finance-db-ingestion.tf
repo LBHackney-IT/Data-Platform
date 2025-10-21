@@ -71,7 +71,7 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
       Version = 1.0
       Grouping = {
         TableGroupingPolicy     = "CombineCompatibleSchemas"
-        TableLevelConfiguration = 3
+        TableLevelConfiguration = 4
       }
       CrawlerOutput = {
         Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
