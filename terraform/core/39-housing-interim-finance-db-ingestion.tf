@@ -61,7 +61,7 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
   job_parameters = {
     "--source_data_database"        = local.is_live_environment ? module.housing_interim_finance_database_ingestion[0].ingestion_database_name : ""
     "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/housing/sow2b/"
-    "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/housing/sow2b/ingestion-details/"
+    "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/housing/ingestion-details/"
     "--table_filter_expression"     = local.table_filter_expressions_housing_interim_finance
   }
   crawler_details = {
