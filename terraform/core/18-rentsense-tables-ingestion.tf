@@ -72,13 +72,13 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
     "--glue_database_name_source" = aws_glue_catalog_database.landing_zone_catalog_database.name
     "--enable-glue-datacatalog"   = "true"
     "--job-bookmark-option"       = "job-bookmark-enable"
-    "--s3_prefix"                 = "housing/"
+    "--s3_prefix"                 = "housing/mtfh/"
     "--glue_database_name_target" = module.department_housing.raw_zone_catalog_database_name
   }
 
   crawler_details = {
     database_name      = module.department_housing.raw_zone_catalog_database_name
-    s3_target_location = "s3://${module.raw_zone.bucket_id}/housing/"
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/housing/mtfh/"
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
@@ -91,23 +91,6 @@ module "copy_mtfh_rentsense_dynamo_db_tables_to_raw_zone" {
     })
     table_prefix = null
   }
-  glue_crawler_excluded_blobs = [
-    "*/housingfinance*",
-    "*/sow2b*",
-    "*/archive*",
-    "*/data-quality*",
-    "*/ingestion-details*",
-    "*/temp_backup*",
-    "*/glue-*",
-    "*/google-sheets*",
-    "*/govnotify*",
-    "*/nec-migration-data-quality-tests*",
-    "*.json",
-    "*.txt",
-    "*.zip",
-    "*.xlsx",
-    "*.html",
-  ]
 }
 
 resource "aws_ssm_parameter" "copy_mtfh_dynamo_db_rentsense_tables_to_raw_zone_crawler_name" {
