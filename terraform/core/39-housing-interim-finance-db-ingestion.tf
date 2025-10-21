@@ -60,13 +60,13 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
   spark_ui_output_storage_id = module.spark_ui_output_storage.bucket_id
   job_parameters = {
     "--source_data_database"        = local.is_live_environment ? module.housing_interim_finance_database_ingestion[0].ingestion_database_name : ""
-    "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/housing/"
-    "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/housing/ingestion-details/"
+    "--s3_ingestion_bucket_target"  = "s3://${module.raw_zone.bucket_id}/housing/sow2b/"
+    "--s3_ingestion_details_target" = "s3://${module.raw_zone.bucket_id}/housing/sow2b/ingestion-details/"
     "--table_filter_expression"     = local.table_filter_expressions_housing_interim_finance
   }
   crawler_details = {
     database_name      = module.department_housing.raw_zone_catalog_database_name
-    s3_target_location = "s3://${module.raw_zone.bucket_id}/housing/"
+    s3_target_location = "s3://${module.raw_zone.bucket_id}/housing/sow2b/"
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
@@ -79,23 +79,6 @@ module "ingest_housing_interim_finance_database_to_housing_raw_zone" {
     })
     table_prefix = null
   }
-  glue_crawler_excluded_blobs = [
-    "*/archive*",
-    "*/data-quality*",
-    "*/glue-*",
-    "*/google-sheets*",
-    "*/govnotify*",
-    "*/housingfinance*",
-    "*/ingestion-details*",
-    "*/mtfh*",
-    "*/nec-migration-data-quality-tests*",
-    "*/temp_backup*",
-    "*.json",
-    "*.txt",
-    "*.zip",
-    "*.xlsx",
-    "*.html",
-  ]
 }
 
 resource "aws_ssm_parameter" "ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name" {
