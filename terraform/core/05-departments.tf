@@ -74,7 +74,7 @@ module "department_parking" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   additional_glue_database_access = {
-    read_only  = [
+    read_only = [
       "${local.identifier_prefix}-liberator-raw-zone",
       "${local.identifier_prefix}-liberator-refined-zone",
       "${local.identifier_prefix}-liberator-trusted-zone",
@@ -443,6 +443,12 @@ module "department_housing" {
       kms_key_arn = module.file_sync_destination_nec.key_arn
       paths       = []
       actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
+    },
+    {
+      bucket_arn  = module.landing_zone.bucket_arn
+      kms_key_arn = module.landing_zone.kms_key_arn
+      paths       = ["ieg4/housing"]
+      actions     = ["s3:Get*", "s3:List*", ]
     }
   ]
   additional_glue_database_access = {
