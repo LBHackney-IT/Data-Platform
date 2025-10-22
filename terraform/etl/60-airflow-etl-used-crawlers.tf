@@ -221,3 +221,26 @@ resource "aws_glue_crawler" "hben_raw_zone" {
   })
   tags = module.tags.values
 }
+
+resource "aws_glue_crawler" "housing_service_requests_ieg4" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "housing-service-requests-ieg4-crawler"
+  role          = module.department_housing_data_source.glue_role_arn
+  database_name = aws_glue_catalog_database.housing_service_requests_ieg4.name
+
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/${module.department_housing_data_source.identifier}/ieg4/"
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 4
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+      Tables     = { AddOrUpdateBehavior = "MergeNewColumns" }
+    }
+  })
+  tags = module.tags.values
+}
