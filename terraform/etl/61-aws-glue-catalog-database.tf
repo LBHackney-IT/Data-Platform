@@ -69,3 +69,11 @@ resource "aws_glue_catalog_database" "metastore" {
     prevent_destroy = true
   }
 }
+
+resource "aws_glue_catalog_database" "housing_service_requests_ieg4" {
+  name = "housing_service_requests_ieg4"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
