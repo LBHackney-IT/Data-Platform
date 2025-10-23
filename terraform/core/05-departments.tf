@@ -452,7 +452,7 @@ module "department_housing" {
     }
   ]
   additional_glue_database_access = {
-    read_only  = []
+    read_only  = ["housing_service_requests_ieg4"]
     read_write = ["housing_nec_migration", "housing_nec_migration_outputs"]
   }
 }
