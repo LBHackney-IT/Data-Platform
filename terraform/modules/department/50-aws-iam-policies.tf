@@ -696,6 +696,31 @@ data "aws_iam_policy_document" "glue_access_sso" {
   }
 }
 
+// Glue crawler access policy for staging environment only
+data "aws_iam_policy_document" "glue_crawler_access_staging" {
+  statement {
+    sid    = "GlueCrawlerAccessStaging"
+    effect = "Allow"
+    actions = [
+      "glue:ListCrawlers",
+      "glue:GetCrawler",
+      "glue:GetCrawlers",
+      "glue:StartCrawler",
+      "glue:StopCrawler",
+    ]
+    resources = [
+      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:crawler/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "glue_crawler_access_staging" {
+  tags        = var.tags
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-glue-crawler-access-staging")
+  description = "IAM policy for staging environment to allow departments to list and run Glue crawlers for UAT testing"
+  policy      = data.aws_iam_policy_document.glue_crawler_access_staging.json
+}
+
 // Read only Secrets policy
 data "aws_iam_policy_document" "secrets_manager_read_only" {
   statement {
