@@ -162,3 +162,15 @@ variable "expired_object_delete_marker" {
   type        = bool
   default     = false
 }
+
+variable "enable_intelligent_tiering" {
+  description = "Whether to enable S3 Intelligent Tiering for the bucket"
+  type        = bool
+  default     = false
+}
+
+variable "intelligent_tiering_days" {
+  description = "Number of days after which to transition objects to Intelligent Tiering. Set to 0 for immediate transition."
+  type        = number
+  default     = 0
+}
