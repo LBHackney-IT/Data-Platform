@@ -702,6 +702,7 @@ data "aws_iam_policy_document" "glue_crawler_access_staging" {
     sid    = "GlueCrawlerAccessStaging"
     effect = "Allow"
     actions = [
+      "glue:BatchGetCrawlers",
       "glue:ListCrawlers",
       "glue:GetCrawler",
       "glue:GetCrawlers",
