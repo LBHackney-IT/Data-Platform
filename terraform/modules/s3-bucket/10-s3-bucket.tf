@@ -180,12 +180,19 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket" {
     status = "Enabled"
 
     filter {}
-
+    # if expire_objects_days is set use days based expiration
     dynamic "expiration" {
-      for_each = var.expire_objects_days != null || var.expired_object_delete_marker ? [1] : []
+      for_each = var.expire_objects_days != null && !var.expired_object_delete_marker ? [1] : []
       content {
-        days                         = var.expire_objects_days
-        expired_object_delete_marker = var.expired_object_delete_marker
+        days = var.expire_objects_days
+      }
+    }
+
+    # if only expired_object_delete_marker use that instead
+    dynamic "expiration" {
+      for_each = var.expire_objects_days == null && var.expired_object_delete_marker ? [1] : []
+      content {
+        expired_object_delete_marker = true
       }
     }
 
