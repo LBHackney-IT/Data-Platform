@@ -1,5 +1,5 @@
 module "redshift_serverless" {
-  count                                 = local.is_live_environment && !local.is_production_environment ? 1 : 0
+  count                                 = 0 # local.is_live_environment && !local.is_production_environment ? 1 : 0
   source                                = "../modules/redshift-serverless"
   tags                                  = module.tags.values
   subnet_ids                            = local.subnet_ids_list
