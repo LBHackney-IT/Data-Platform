@@ -149,6 +149,10 @@ module "department_data_and_insight" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   cloudtrail_bucket               = module.cloudtrail_storage
+  additional_glue_database_access = {
+    read_only  = []
+    read_write = ["metastore"]
+  }
 }
 
 module "department_env_enforcement" {
