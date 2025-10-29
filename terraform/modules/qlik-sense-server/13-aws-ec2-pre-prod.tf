@@ -3,12 +3,14 @@ locals {
   ec2_tags = {
     BackupPolicy = title(var.environment)
     Name         = "${var.identifier_prefix}-qlik-sense-restore-5"
+    Application  = "Qlik"
   }
 
   backup_ami_id_to_restore = "ami-0f8326f5836b5ff3a"
   ec2_tags_for_restore = {
     BackupPolicy = title(var.environment)
     Name         = "${var.identifier_prefix}-qlik-sense-restore-8"
+    Application  = "Qlik"
   }
 }
 
