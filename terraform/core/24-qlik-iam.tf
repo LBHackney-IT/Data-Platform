@@ -132,4 +132,17 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
       "*"
     ]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:GetBucketVersioning"
+    ]
+    resources = [
+      module.athena_storage.bucket_arn,
+    ]
+  }
 }
+
