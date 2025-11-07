@@ -84,8 +84,16 @@ resource "aws_iam_role_policy" "codebuild_dap_airflow_staging_policy" {
         Resource = "arn:aws:codebuild:${var.aws_deploy_region}:${var.aws_deploy_account_id}:report-group/${local.identifier_prefix}-dap-airflow-sync*"
       },
       {
-        Effect   = "Allow"
-        Action   = "codestar-connections:UseConnection"
+        Sid    = "AllowCodeStarAndCodeConnectionsAccess"
+        Effect = "Allow"
+        Action = [
+          "codestar-connections:GetConnection",
+          "codestar-connections:GetConnectionToken",
+          "codestar-connections:UseConnection",
+          "codeconnections:GetConnection",
+          "codeconnections:GetConnectionToken",
+          "codeconnections:UseConnection"
+        ]
         Resource = aws_codestarconnections_connection.dap_airflow_stg[0].arn
       }
     ]
