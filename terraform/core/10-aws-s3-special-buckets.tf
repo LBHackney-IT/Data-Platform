@@ -43,18 +43,29 @@ module "housing_nec_migration_storage" {
 }
 
 module "admin_bucket" {
+  source                   = "../modules/s3-bucket"
+  tags                     = module.tags.values
+  project                  = var.project
+  environment              = var.environment
+  identifier_prefix        = local.identifier_prefix
+  bucket_name              = "Admin Storage"
+  bucket_identifier        = "admin"
+  bucket_policy_statements = [local.grant_s3_write_permission_to_admin_bucket]
+  bucket_key_policy_statements = [
+    local.allow_s3_kms_generatedatakey_from_raw_zone,
+    local.allow_s3_kms_generatedatakey_from_refined_zone,
+    local.allow_s3_kms_generatedatakey_from_trusted_zone
+  ]
+  include_backup_policy_tags = false
+}
+
+module "arcus_data_storage" {
   source                     = "../modules/s3-bucket"
   tags                       = module.tags.values
   project                    = var.project
   environment                = var.environment
   identifier_prefix          = local.identifier_prefix
-  bucket_name                = "Admin Storage"
-  bucket_identifier          = "admin"
-  bucket_policy_statements   = [local.grant_s3_write_permission_to_admin_bucket]
-  bucket_key_policy_statements = [
-    local.allow_s3_kms_generatedatakey_from_raw_zone,
-    local.allow_s3_kms_generatedatakey_from_refined_zone,
-    local.allow_s3_kms_generatedatakey_from_trusted_zone
-    ]
+  bucket_name                = "Arcus Data Storage"
+  bucket_identifier          = "arcus-data-storage"
   include_backup_policy_tags = false
 }

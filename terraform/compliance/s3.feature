@@ -11,6 +11,7 @@ Feature: S3
   @exclude_module.cloudtrail_storage.aws_s3_bucket.bucket
   @exclude_module.file_sync_destination_nec.aws_s3_bucket.bucket
   @exclude_module.file_sync_destination_nec.aws_s3_bucket.log_bucket
+  @exclude_module.arcus_data_storage.aws_s3_bucket.bucket
 
   # This rule is in place for legacy buckets created with the deprecated block within the aws_s3_bucket resource
   Scenario: Data must be encrypted at rest for buckets created using server_side_encryption_configuration property within bucket resource
