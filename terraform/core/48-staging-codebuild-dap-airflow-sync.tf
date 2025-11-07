@@ -129,12 +129,20 @@ resource "aws_codebuild_project" "dap_airflow_staging_sync" {
   logs_config {
     cloudwatch_logs {
       status      = "ENABLED"
-      group_name  = "/aws/codebuild/${local.identifier_prefix}-stg-dap-airflow-sync"
+      group_name  = aws_cloudwatch_log_group.codebuild_dap_airflow_staging[0].name
       stream_name = "staging"
     }
   }
 
   tags = module.tags.values
+}
+
+resource "aws_cloudwatch_log_group" "codebuild_dap_airflow_staging" {
+  count = local.environment == "stg" ? 1 : 0
+
+  name              = "/aws/codebuild/${local.identifier_prefix}-stg-dap-airflow-sync"
+  retention_in_days = 30
+  tags              = module.tags.values
 }
 
 resource "aws_codebuild_webhook" "dap_airflow_staging_webhook" {
