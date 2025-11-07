@@ -3,7 +3,7 @@
 resource "aws_codestarconnections_connection" "dap_airflow_stg" {
   count = local.environment == "stg" ? 1 : 0
 
-  name          = "${local.identifier_prefix}-stg-dap-airflow-connection"
+  name          = "${local.identifier_prefix}-dap-airflow"
   provider_type = "GitHub"
   tags          = module.tags.values
 }
@@ -11,7 +11,7 @@ resource "aws_codestarconnections_connection" "dap_airflow_stg" {
 resource "aws_iam_role" "codebuild_dap_airflow_staging_role" {
   count = local.environment == "stg" ? 1 : 0
 
-  name = "${local.identifier_prefix}-stg-codebuild-dap-airflow-sync-role"
+  name = "${local.identifier_prefix}-codebuild-dap-airflow-sync-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -32,7 +32,7 @@ resource "aws_iam_role" "codebuild_dap_airflow_staging_role" {
 resource "aws_iam_role_policy" "codebuild_dap_airflow_staging_policy" {
   count = local.environment == "stg" ? 1 : 0
 
-  name = "${local.identifier_prefix}-stg-codebuild-dap-airflow-sync-policy"
+  name = "${local.identifier_prefix}-codebuild-dap-airflow-sync-policy"
   role = aws_iam_role.codebuild_dap_airflow_staging_role[0].id
 
   policy = jsonencode({
@@ -70,7 +70,7 @@ resource "aws_iam_role_policy" "codebuild_dap_airflow_staging_policy" {
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
-        Resource = "arn:aws:logs:${var.aws_deploy_region}:${var.aws_deploy_account_id}:log-group:/aws/codebuild/${local.identifier_prefix}-stg-dap-airflow-sync:*"
+        Resource = "arn:aws:logs:${var.aws_deploy_region}:${var.aws_deploy_account_id}:log-group:/aws/codebuild/${local.identifier_prefix}-dap-airflow-sync:*"
       },
       {
         Effect = "Allow"
@@ -81,7 +81,7 @@ resource "aws_iam_role_policy" "codebuild_dap_airflow_staging_policy" {
           "codebuild:BatchPutTestCases",
           "codebuild:BatchPutCodeCoverages"
         ]
-        Resource = "arn:aws:codebuild:${var.aws_deploy_region}:${var.aws_deploy_account_id}:report-group/${local.identifier_prefix}-stg-dap-airflow-sync*"
+        Resource = "arn:aws:codebuild:${var.aws_deploy_region}:${var.aws_deploy_account_id}:report-group/${local.identifier_prefix}-dap-airflow-sync*"
       },
       {
         Effect   = "Allow"
@@ -95,7 +95,7 @@ resource "aws_iam_role_policy" "codebuild_dap_airflow_staging_policy" {
 resource "aws_codebuild_project" "dap_airflow_staging_sync" {
   count = local.environment == "stg" ? 1 : 0
 
-  name           = "${local.identifier_prefix}-stg-dap-airflow-sync"
+  name           = "${local.identifier_prefix}-dap-airflow-sync"
   description    = "Sync dap-airflow repository folders to MWAA S3 buckets for staging"
   service_role   = aws_iam_role.codebuild_dap_airflow_staging_role[0].arn
   badge_enabled  = false
@@ -140,7 +140,7 @@ resource "aws_codebuild_project" "dap_airflow_staging_sync" {
 resource "aws_cloudwatch_log_group" "codebuild_dap_airflow_staging" {
   count = local.environment == "stg" ? 1 : 0
 
-  name              = "/aws/codebuild/${local.identifier_prefix}-stg-dap-airflow-sync"
+  name              = "/aws/codebuild/${local.identifier_prefix}-dap-airflow-sync"
   retention_in_days = 30
   tags              = module.tags.values
 }
