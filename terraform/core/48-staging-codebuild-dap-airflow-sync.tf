@@ -95,10 +95,12 @@ resource "aws_iam_role_policy" "codebuild_dap_airflow_staging_policy" {
 resource "aws_codebuild_project" "dap_airflow_staging_sync" {
   count = local.environment == "stg" ? 1 : 0
 
-  name          = "${local.identifier_prefix}-stg-dap-airflow-sync"
-  description   = "Sync dap-airflow repository folders to MWAA S3 buckets for staging"
-  service_role  = aws_iam_role.codebuild_dap_airflow_staging_role[0].arn
-  badge_enabled = false
+  name           = "${local.identifier_prefix}-stg-dap-airflow-sync"
+  description    = "Sync dap-airflow repository folders to MWAA S3 buckets for staging"
+  service_role   = aws_iam_role.codebuild_dap_airflow_staging_role[0].arn
+  badge_enabled  = false
+  build_timeout  = 5  # 5 minutes (default is 60 minutes)
+  queued_timeout = 30 # 30 minutes (default is 480 minutes)
 
   artifacts {
     type = "NO_ARTIFACTS"
