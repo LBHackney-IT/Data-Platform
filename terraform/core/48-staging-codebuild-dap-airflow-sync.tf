@@ -1,4 +1,4 @@
-# Staging CodeBuild integration that syncs dap-airflow repository content to two MWAA S3 buckets.
+# Staging CodeBuild integration that syncs dap-airflow repository two folders to two MWAA S3 buckets.
 
 resource "aws_codestarconnections_connection" "dap_airflow_stg" {
   count = local.environment == "stg" ? 1 : 0
@@ -107,7 +107,7 @@ resource "aws_codebuild_project" "dap_airflow_staging_sync" {
   }
 
   environment {
-    compute_type                = "BUILD_GENERAL1_SMALL" # Smallest compute type
+    compute_type                = "BUILD_GENERAL1_SMALL" # Smallest type
     image                       = "aws/codebuild/standard:7.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
@@ -151,7 +151,7 @@ resource "aws_codebuild_webhook" "dap_airflow_staging_webhook" {
 
     filter {
       type    = "HEAD_REF"
-      pattern = "^refs/heads/staging$" # Only trigger on staging branch
+      pattern = "^refs/heads/staging$"
     }
   }
 }
