@@ -6,6 +6,10 @@ resource "aws_codestarconnections_connection" "dap_airflow_stg" {
   name          = "${local.identifier_prefix}-dap-airflow"
   provider_type = "GitHub"
   tags          = module.tags.values
+
+  lifecycle {
+    ignore_changes = [connection_status]
+  }
 }
 
 resource "aws_iam_role" "codebuild_dap_airflow_staging_role" {
@@ -94,6 +98,11 @@ resource "aws_iam_role_policy" "codebuild_dap_airflow_staging_policy" {
 
 resource "aws_codebuild_project" "dap_airflow_staging_sync" {
   count = local.environment == "stg" ? 1 : 0
+
+  depends_on = [
+    aws_codestarconnections_connection.dap_airflow_stg[0],
+    aws_iam_role_policy.codebuild_dap_airflow_staging_policy[0]
+  ]
 
   name           = "${local.identifier_prefix}-dap-airflow-sync"
   description    = "Sync dap-airflow repository folders to MWAA S3 buckets for staging"
