@@ -12,42 +12,47 @@ class ExpectTagRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
     description: str = "Expect LTCY_ALT_REF (tenancy ref) values to be unique"
 
 
+class ExpectTenancyRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+    column: str = "LTCY_ALT_REF"
+    description: str = "Expect LTCY_ALT_REF (tenancy ref) values to not be Null"
+
+
 class ExpectTenancyTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LTCY_TTY_CODE"
     value_set: list = [
-        'ASH',
-        'ASY',
-        'DEC',
-        'Demoted',
-        'FRE',
-        'FRS',
-        'HAL',
-        'LIVINGRT',
-        'INT',
-        'LEA',
-        'LHS',
-        'LTA',
-        'MPA',
-        'NON',
-        'PVG',
-        'RTM',
-        'SEC',
-        'SHO',
-        'SLL',
-        'SPS',
-        'SSE',
-        'TACCFLAT',
-        'TBB',
-        'TBBFam',
-        'THO',
-        'TGA',
-        'THL',
-        'THGF',
-        'TLA',
-        'TPL',
-        'TRA',
-        'UNDER18',
-        'OFFICESE'
+        "ASH",
+        "ASY",
+        "DEC",
+        "Demoted",
+        "FRE",
+        "FRS",
+        "HAL",
+        "LIVINGRT",
+        "INT",
+        "LEA",
+        "LHS",
+        "LTA",
+        "MPA",
+        "NON",
+        "PVG",
+        "RTM",
+        "SEC",
+        "SHO",
+        "SLL",
+        "SPS",
+        "SSE",
+        "TACCFLAT",
+        "TBB",
+        "TBBFam",
+        "THO",
+        "TGA",
+        "THL",
+        "THGF",
+        "TLA",
+        "TPL",
+        "TRA",
+        "UNDER18",
+        "OFFICESE",
     ]
     description: str = "Expect tenancy type code to contain one of the set"
 
@@ -62,20 +67,15 @@ class ExpectTenureTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
         "TEMPORARY",
         "FREEHOLD",
         "COMMERCIAL",
-        "LIVINGRENT"
+        "LIVINGRENT",
     ]
     description: str = "Expect tenure type code to be one of the set"
 
 
 class ExpectTenancyStatusCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LTCY_HRV_TST_CODE"
-    value_set: list = [
-        "DECANT",
-        "NOTICE",
-        "UNAUTHOCC"
-    ]
+    value_set: list = ["DECANT", "NOTICE", "UNAUTHOCC"]
     description: str = "Expect tenancy status code to be one of the set"
-
 
 
 class ExpectTenancyColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
@@ -125,9 +125,10 @@ class ExpectTenancyColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrdere
         "LTCY_THO_END_DATE6",
         "LTCY_THO_HRV_TTR_CODE6",
         "LTCY_PHONE",
-        "LTCY_REVIEW_DATE"
+        "LTCY_REVIEW_DATE",
     ]
     description: str = "Expect tenancy load columns to match ordered list exactly"
+
 
 arg_key = ["s3_target_location"]
 args = getResolvedOptions(sys.argv, arg_key)
@@ -143,4 +144,6 @@ suite.add_expectation(ExpectTenancyTypeCodeToBeInSet())
 suite.add_expectation(ExpectTenureTypeCodeToBeInSet())
 suite.add_expectation(ExpectTenancyStatusCodeToBeInSet())
 suite.add_expectation(ExpectTenancyColumnsToMatchOrderedList())
-suite = context.suites.add(suite)
+suite.add_expectation(ExpectTenancyRefColumnValuesToNotBeNull())
+
+context.suites.add(suite)

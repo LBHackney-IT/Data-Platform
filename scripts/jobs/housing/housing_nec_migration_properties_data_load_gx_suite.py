@@ -12,6 +12,11 @@ class ExpectPropRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
     description: str = "Expect UPRN (LPRO_PROPREF) values to be unique"
 
 
+class ExpectPropRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+    column: str = "LPRO_PROPREF"
+    description: str = "Expect LPRO_PROPREF (prop ref) values to not be Null"
+
+
 class ExpectPropTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LPRO_HOU_PTV_CODE"
     value_set: list = [
@@ -158,4 +163,5 @@ suite.add_expectation(ExpectPropSourceToBeInSet())
 suite.add_expectation(ExpectResIndicatorToBeInSet())
 suite.add_expectation(ExpectPropTypeValuesToBeInSet())
 suite.add_expectation(ExpectPropColumnsToMatchOrderedList())
+suite.add_expectation(ExpectPropRefColumnValuesToNotBeNull())
 suite = context.suites.add(suite)

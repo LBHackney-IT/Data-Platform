@@ -1,9 +1,11 @@
 sql_config = {
     "properties": {"id_field": "LPRO_PROPREF"},
     "tenancies": {"id_field": "LTCY_ALT_REF"},
+    "people": {"id_field": "LPAR_PER_ALT_REF"},
+    "contacts": {"id_field": "LCDE_LEGACY_REF"},
 }
 
-data_load_list = ["properties", "tenancies"]
+data_load_list = ["properties", "tenancies", "people", "contacts"]
 
 table_list = {
     "properties": [
@@ -18,10 +20,17 @@ table_list = {
         "properties_4b",
         "properties_4c",
         "properties_7a",
-        "properties_all_tranches"
+        "properties_all_tranches",
     ],
-    "tenancies": ["tenancies_1a",
-                  "tenancies_1c"]
+    "tenancies": [
+        "tenancies_1a",
+        "tenancies_1c",
+        "tenancies_2a",
+        "tenancies_all",
+        "tenancies_other",
+    ],
+    "people": ["people_1a", "people_1b", "people_1c", "people_2a"],
+    "contacts": ["contacts_1a", "contacts_1b", "contacts_2a"]
 }
 
 partition_keys = ["import_date"]
