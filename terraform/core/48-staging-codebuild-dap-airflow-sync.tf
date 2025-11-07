@@ -105,7 +105,7 @@ resource "aws_codebuild_project" "dap_airflow_staging_sync" {
   }
 
   environment {
-    compute_type                = "BUILD_GENERAL1_SMALL"
+    compute_type                = "BUILD_GENERAL1_SMALL" # Smallest compute type
     image                       = "aws/codebuild/standard:7.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
@@ -145,7 +145,7 @@ resource "aws_codebuild_webhook" "dap_airflow_staging_webhook" {
 
     filter {
       type    = "HEAD_REF"
-      pattern = "^refs/heads/staging$"
+      pattern = "^refs/heads/staging$" # Only trigger on staging branch
     }
   }
 }
