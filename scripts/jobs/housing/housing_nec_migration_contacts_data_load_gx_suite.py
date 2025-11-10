@@ -51,7 +51,7 @@ locals().update(args)
 # add to GX context
 context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
-suite = gx.ExpectationSuite(name="properties_data_load_suite")
+suite = gx.ExpectationSuite(name="contacts_data_load_suite")
 
 suite.add_expectation(ExpectContactsColumnsToMatchOrderedList())
 suite.add_expectation(ExpectContactTypeCodeToBeInSet())
