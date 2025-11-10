@@ -12,7 +12,7 @@ from awsglue.job import Job
 from pyspark.sql.functions import *
 from pyspark.sql.types import IntegerType, StringType, FloatType
 from datetime import date
-import pyspark.sql.functions as F
+import pyspark.sql.functions as f
 from scripts.helpers.helpers import (
     move_file,
     rename_file,
