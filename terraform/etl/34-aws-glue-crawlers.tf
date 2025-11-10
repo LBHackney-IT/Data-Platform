@@ -31,6 +31,7 @@ resource "aws_glue_crawler" "raw_zone_unrestricted_address_api_crawler" {
 # This is for a one-off manual crawler to transfer iCaseworks data to the catalogue in raw zone.
 resource "aws_glue_crawler" "icaseworks_manual" {
   count         = local.is_live_environment ? 1 : 0
+  tags          = module.tags.values
   name          = "${local.short_identifier_prefix}${module.department_data_and_insight_data_source.identifier}-icaseworks_manual"
   role          = data.aws_iam_role.glue_role.arn
   database_name = module.department_data_and_insight_data_source.raw_zone_catalog_database_name
@@ -88,6 +89,7 @@ resource "aws_glue_crawler" "refined_zone_sandbox_crawler" {
 
 resource "aws_glue_crawler" "arcus_archive" {
   count         = local.is_live_environment ? 1 : 0
+  tags          = module.tags.values
   name          = "${local.short_identifier_prefix}arcus_archive"
   role          = data.aws_iam_role.glue_role.arn
   database_name = aws_glue_catalog_database.arcus_archive.name
