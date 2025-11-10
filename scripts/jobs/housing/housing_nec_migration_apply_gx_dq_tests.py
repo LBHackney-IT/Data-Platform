@@ -73,7 +73,7 @@ def main():
             try:
                 df = pd.read_sql_query(sql_query, conn)
             except Exception as e:
-                print(f"Problem found with {table}: {e}, skipping table.")
+                logger.info(f"Problem found with {table}: {e}, skipping table.")
                 continue
 
             # set up batch
@@ -136,7 +136,7 @@ def main():
                 try:
                     list(df[id_field].iloc[row["result.unexpected_index_list"]])
                 except Exception as e:
-                    print(
+                    logger.info(
                         f"Problem found with {table}: {e}, skipping making unexpected_id_list."
                     )
                     continue
