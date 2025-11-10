@@ -83,3 +83,15 @@ resource "aws_glue_crawler" "refined_zone_sandbox_crawler" {
     }
   })
 }
+
+// ==== ARCUS ARCHIVE ===========
+
+resource "aws_glue_crawler" "arcus_archive" {
+  count         = local.is_live_environment ? 1 : 0
+  name          = "${local.short_identifier_prefix}arcus_archive"
+  role          = data.aws_iam_role.glue_role.arn
+  database_name = aws_glue_catalog_database.arcus_archive.name
+  s3_target {
+    path = "s3://${local.identifier_prefix}-arcus-data-storage/Hackney-Data-Extract/"
+  }
+}

@@ -77,3 +77,11 @@ resource "aws_glue_catalog_database" "housing_service_requests_ieg4" {
     prevent_destroy = true
   }
 }
+
+resource "aws_glue_catalog_database" "arcus_archive" {
+  name = "arcus_archive"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
