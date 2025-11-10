@@ -1363,3 +1363,50 @@ resource "aws_iam_policy" "cloudtrail_access_policy" {
   description = "Allows ${local.department_identifier} department read-only access to CloudTrail bucket"
   policy      = data.aws_iam_policy_document.cloudtrail_access[0].json
 }
+
+// CodeBuild read-only access for staging environment
+data "aws_iam_policy_document" "codebuild_logs_read_access_staging" {
+  statement {
+    sid    = "CodeBuildListProjects"
+    effect = "Allow"
+    actions = [
+      "codebuild:BatchGetProjects",
+      "codebuild:ListProjects"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "CodeBuildViewBuilds"
+    effect = "Allow"
+    actions = [
+      "codebuild:BatchGetBuilds",
+      "codebuild:ListBuildsForProject"
+    ]
+    resources = [
+      "arn:aws:codebuild:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:project/${var.identifier_prefix}-*"
+    ]
+  }
+
+  statement {
+    sid    = "CodeBuildLogsReadAccess"
+    effect = "Allow"
+    actions = [
+      "logs:GetLogEvents",
+      "logs:FilterLogEvents",
+      "logs:DescribeLogStreams",
+      "logs:DescribeLogGroups"
+    ]
+    resources = [
+      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/codebuild/${var.identifier_prefix}-*",
+      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/codebuild/${var.identifier_prefix}-*:*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "codebuild_logs_read_access_staging" {
+  tags        = var.tags
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-codebuild-logs-read-access-staging")
+  description = "Allows ${local.department_identifier} department read-only access to CodeBuild projects and CloudWatch logs in staging"
+  policy      = data.aws_iam_policy_document.codebuild_logs_read_access_staging.json
+}

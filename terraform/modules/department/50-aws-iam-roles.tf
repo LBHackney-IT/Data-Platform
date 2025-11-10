@@ -7,6 +7,7 @@ data "aws_iam_policy_document" "sso_staging_user_policy" {
     data.aws_iam_policy_document.redshift_department_read_access.json,
     data.aws_iam_policy_document.notebook_access[0].json,
     data.aws_iam_policy_document.glue_crawler_access_staging.json,
+    data.aws_iam_policy_document.codebuild_logs_read_access_staging.json,
     ] : [
     data.aws_iam_policy_document.s3_department_access.json,
     data.aws_iam_policy_document.glue_access_sso.json,
@@ -14,6 +15,7 @@ data "aws_iam_policy_document" "sso_staging_user_policy" {
     data.aws_iam_policy_document.redshift_department_read_access.json,
     data.aws_iam_policy_document.mwaa_department_web_server_access.json,
     data.aws_iam_policy_document.glue_crawler_access_staging.json,
+    data.aws_iam_policy_document.codebuild_logs_read_access_staging.json,
   ]
 }
 
