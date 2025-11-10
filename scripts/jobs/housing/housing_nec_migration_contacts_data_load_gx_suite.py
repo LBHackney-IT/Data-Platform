@@ -9,7 +9,9 @@ import great_expectations.expectations as gxe
 
 class ExpectPersonRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LCDE_LEGACY_REF"
-    description: str = "Expect LCDE_LEGACY_REF (person ref) values to not be Null in contacts load"
+    description: str = (
+        "Expect LCDE_LEGACY_REF (person ref) values to not be Null in contacts load"
+    )
 
 
 class ExpectValueColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
@@ -25,21 +27,20 @@ class ExpectContactTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
 
 class ExpectContactsColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
     column_list = [
-        "LCDE_START_DATE",
-        "LCDE_PRIMARY_REF",
-        "LCDE_SECONDARY_REF",
-        "LCDE_PRECEDENCE",
-        "LCDE_LEGACY_TYPE",
         "LCDE_LEGACY_REF",
-        "LCDE_FRV_COMM_PREF_CODE",
-        "LCDE_FRV_CME_CODE",
-        "LCDE_END_DATE",
+        "LCDE_LEGACY_TYPE",
+        "LCDE_START_DATE",
         "LCDE_CREATED_DATE",
         "LCDE_CREATED_BY",
         "LCDE_CONTACT_VALUE",
+        "LCDE_FRV_CME_CODE",
         "LCDE_CONTACT_NAME",
-        "LCDE_COMMENTS",
+        "LCDE_END_DATE",
+        "LCDE_PRECEDENCE",
+        "LCDE_FRV_COMM_PREF_CODE",
         "LCDE_ALLOW_TEXTS",
+        "LCDE_SECONDARY_REF",
+        "LCDE_COMMENTS",
     ]
     description: str = "Expect columns to match ordered list exactly"
 

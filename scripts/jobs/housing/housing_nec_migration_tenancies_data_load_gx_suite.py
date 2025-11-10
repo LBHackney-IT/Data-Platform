@@ -96,6 +96,7 @@ class ExpectTenancyColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrdere
         "LTCY_RTB_WITHDRAWN_DATE",
         "LTCY_RTB_APP_EXPECTED_END_DATE",
         "LTCY_HRV_TST_CODE",
+        "LTCY_HRV_TTR_CODE",
         "LTCY_HRV_TNR_CODE",
         "LTCY_HRV_RHR_CODE",
         "LTCY_HRV_RWR_CODE",
