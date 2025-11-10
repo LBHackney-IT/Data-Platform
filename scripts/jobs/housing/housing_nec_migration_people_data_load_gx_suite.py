@@ -81,7 +81,7 @@ locals().update(args)
 # add to GX context
 context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
-suite = gx.ExpectationSuite(name="tenancies_data_load_suite")
+suite = gx.ExpectationSuite(name="people_data_load_suite")
 
 suite.add_expectation(ExpectPersonRefColumnValuesToBeUnique())
 suite.add_expectation(ExpectTitleToBeInSet())
