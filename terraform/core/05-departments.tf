@@ -151,7 +151,7 @@ module "department_data_and_insight" {
   cloudtrail_bucket               = module.cloudtrail_storage
   additional_glue_database_access = {
     read_only  = []
-    read_write = ["metastore"]
+    read_write = ["arcus_archive", "metastore"]
   }
 }
 
