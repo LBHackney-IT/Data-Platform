@@ -73,7 +73,7 @@ def main():
             try:
                 df = pd.read_sql_query(sql_query, conn)
             except Exception as e:
-                print(f"Problem found with {table}: {e}, skipping table.")
+                logger.info(f"Problem found with {table}: {e}, skipping table.")
                 continue
 
             # set up batch
@@ -133,9 +133,17 @@ def main():
 
             table_results_df["unexpected_id_list"] = pd.Series(dtype="object")
             for i, row in query_df.iterrows():
-                table_results_df.loc[i, "unexpected_id_list"] = str(
+                try:
                     list(df[id_field].iloc[row["result.unexpected_index_list"]])
-                )
+                except Exception as e:
+                    logger.info(
+                        f"Problem found with {table}: {e}, skipping making unexpected_id_list."
+                    )
+                    continue
+                else:
+                    table_results_df.loc[i, "unexpected_id_list"] = str(
+                        list(df[id_field].iloc[row["result.unexpected_index_list"]])
+                    )
 
             # drop columns not needed in metatdata
             cols_to_drop_meta = [
