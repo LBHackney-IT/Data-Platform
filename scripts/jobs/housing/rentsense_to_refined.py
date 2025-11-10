@@ -1,29 +1,23 @@
 import sys
-import boto3
-import io
-import zipfile
-from pyspark.sql import Window
-from pyspark.context import SparkContext
+from datetime import date
+
+import pyspark.sql.functions as F
 from awsglue.context import GlueContext
 from awsglue.dynamicframe import DynamicFrame
-from awsglue.transforms import *
-from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
-from pyspark.sql.functions import *
-from pyspark.sql.types import IntegerType, StringType, FloatType
-from datetime import date
-import pyspark.sql.functions as f
+from awsglue.transforms import DropFields
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from pyspark.sql.functions import col, current_date, date_sub, lit, to_date
+
 from scripts.helpers.helpers import (
-    move_file,
-    rename_file,
+    PARTITION_KEYS,
+    add_import_time_columns,
+    clear_target_folder,
     get_glue_env_var,
     get_latest_partitions_optimized,
-    create_pushdown_predicate,
-    add_import_time_columns,
-    PARTITION_KEYS,
-    parse_json_into_dataframe,
-    table_exists_in_catalog,
-    clear_target_folder,
+    move_file,
+    rename_file,
 )
 
 # The block below is the actual job. It is ignored when running tests locally.
@@ -128,7 +122,7 @@ if __name__ == "__main__":
         "RHB": "Housing Benefit",
         "RIT": "Internal Transfer",
         "RML": "MW Loan Payment",
-        "ROB": "\Opening Balance",
+        "ROB": r"\Opening Balance",
         "RPD": "Prompt Pay. Discount",
         "RPO": "Postal Order",
         "RPY": "PayPoint/Post Office",
@@ -274,11 +268,10 @@ if __name__ == "__main__":
         "SMS": "Text message sent",
         "ACB": "Actual Cost Breakdown Sent",
         "TAA": "TA New Account checks",
-        "RAP": "Outcome of rent arrears panel",
+        "RAP": "Rent Arrears Panel Outcome",
         "PLA": "Pre legal action visit",
         "PEO": "Pre eviction contact outcome",
         "AAD": "Pre notice interview",
-        "RAP": "Rent Arrears Panel Outcome",
         "DA4": "Referred to Credit Gee",
         "RT4": "Returned by Credit Gee",
         "ZW0": "MW Pre Arrears Completed",
@@ -300,7 +293,6 @@ if __name__ == "__main__":
         "RT3": "RETURNED BY LEWIS DEBT AGENCY",
         "INV": "ACTION ON HOLD",
         "MHB": "HB INVESTIGATION PENDING",
-        "RT4": "Returned by Credit Gee",
         "MW0": "MW Pre Arrears",
         "MW1": "MW Letter Action 1",
         "MW2": "MW Letter Action 2",
@@ -575,17 +567,17 @@ if __name__ == "__main__":
         transformation_ctx="target_data_to_write",
     )
 
-    filename = f"/rent.accounts%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.accounts%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/accounts", filename)
 
     # move file to export folder
-    target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
-    # move_file("dataplatform-stg-refined-zone", "housing/rentsense/gzip/accounts/", target_path, f"rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"))
+    target_path = "housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
+    # move_file("dataplatform-stg-refined-zone", "housing/rentsense/gzip/accounts/", target_path, "rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"))
     move_file(
         s3_bucket,
         "housing/rentsense/gzip/accounts/",
         target_path,
-        f"rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"),
+        "rent.accounts%s.csv.gz" % today.strftime("%Y%m%d"),
     )
 
     # Arrangements
@@ -675,16 +667,16 @@ if __name__ == "__main__":
     )
 
     today = date.today()
-    filename = f"/rent.arrangements%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.arrangements%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/arrangements", filename)
 
     # move file to export folder
-    target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
+    target_path = "housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
     move_file(
         s3_bucket,
         "housing/rentsense/gzip/arrangements/",
         target_path,
-        f"rent.arrangements%s.csv.gz" % today.strftime("%Y%m%d"),
+        "rent.arrangements%s.csv.gz" % today.strftime("%Y%m%d"),
     )
 
     # Tenants
@@ -802,16 +794,16 @@ if __name__ == "__main__":
         transformation_ctx="target_data_to_write",
     )
 
-    filename = f"/rent.tenants%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.tenants%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/tenants", filename)
 
     # move file to export folder
-    target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
+    target_path = "housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
     move_file(
         s3_bucket,
         "housing/rentsense/gzip/tenants/",
         target_path,
-        f"rent.tenants%s.csv.gz" % today.strftime("%Y%m%d"),
+        "rent.tenants%s.csv.gz" % today.strftime("%Y%m%d"),
     )
 
     # Balances
@@ -877,16 +869,16 @@ if __name__ == "__main__":
         transformation_ctx="target_data_to_write",
     )
 
-    filename = f"/rent.balances%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.balances%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/balances", filename)
 
     # move file to export folder
-    target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
+    target_path = "housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
     move_file(
         s3_bucket,
         "housing/rentsense/gzip/balances/",
         target_path,
-        f"rent.balances%s.csv.gz" % today.strftime("%Y%m%d"),
+        "rent.balances%s.csv.gz" % today.strftime("%Y%m%d"),
     )
 
     # Actions
@@ -963,16 +955,16 @@ if __name__ == "__main__":
         transformation_ctx="target_data_to_write",
     )
 
-    filename = f"/rent.actions%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.actions%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/actions", filename)
 
     # move file to export folder
-    target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
+    target_path = "housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
     move_file(
         s3_bucket,
         "housing/rentsense/gzip/actions/",
         target_path,
-        f"rent.actions%s.csv.gz" % today.strftime("%Y%m%d"),
+        "rent.actions%s.csv.gz" % today.strftime("%Y%m%d"),
     )
 
     # Transactions
@@ -1052,16 +1044,16 @@ if __name__ == "__main__":
         transformation_ctx="target_data_to_write",
     )
 
-    filename = f"/rent.transactions%s.csv.gz" % today.strftime("%Y%m%d")
+    filename = "/rent.transactions%s.csv.gz" % today.strftime("%Y%m%d")
     rename_file(s3_bucket, "housing/rentsense/gzip/transactions", filename)
 
     # move file to export folder
-    target_path = f"housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
+    target_path = "housing/rentsense/export/%s/" % today.strftime("%Y%m%d")
     move_file(
         s3_bucket,
         "housing/rentsense/gzip/transactions/",
         target_path,
-        f"rent.transactions%s.csv.gz" % today.strftime("%Y%m%d"),
+        "rent.transactions%s.csv.gz" % today.strftime("%Y%m%d"),
     )
 
     job.commit()
