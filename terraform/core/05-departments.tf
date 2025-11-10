@@ -153,6 +153,14 @@ module "department_data_and_insight" {
     read_only  = []
     read_write = ["arcus_archive", "metastore"]
   }
+  additional_s3_access = [
+    {
+      bucket_arn  = module.arcus_data_storage.bucket_arn
+      kms_key_arn = module.arcus_data_storage.kms_key_arn
+      paths       = []
+      actions     = ["s3:Get*", "s3:List*", ]
+    },
+  ]
 }
 
 module "department_env_enforcement" {
