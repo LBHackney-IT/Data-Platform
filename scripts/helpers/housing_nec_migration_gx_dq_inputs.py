@@ -5,7 +5,7 @@ sql_config = {
     "contacts": {"id_field": "LCDE_LEGACY_REF"},
 }
 
-data_load_list = ["properties", "tenancies", "people", "contacts"]
+data_load_list = ["properties", "tenancies", "people", "contacts", "arrears_actions"]
 
 table_list = {
     "properties": [
@@ -29,8 +29,9 @@ table_list = {
         "tenancies_all",
         "tenancies_other",
     ],
-    "people": ["people_1a", "people_1b", "people_1c", "people_2a"],
-    "contacts": ["contacts_1a", "contacts_1b", "contacts_2a"]
+    "people": ["people_1a", "people_1b", "people_1c", "people_2a", "people_all"],
+    "contacts": ["contacts_1a", "contacts_1b", "contacts_2a", "contacts_all"],
+    "arrears_actions": ["arrears_actions_1a", "arrears_actions_1c", "arrears_actions_2a"],
 }
 
 partition_keys = ["import_date"]
