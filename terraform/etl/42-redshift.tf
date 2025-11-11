@@ -47,7 +47,7 @@ locals {
     replace(module.department_parking_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_parking_data_source.raw_zone_catalog_database_name,
     replace(module.department_parking_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_parking_data_source.refined_zone_catalog_database_name,
     replace(module.department_parking_data_source.trusted_zone_catalog_database_name, "-", "_") = module.department_parking_data_source.trusted_zone_catalog_database_name,
-    "parking_ringgo_sftp_raw_zone"                                                              = "${local.short_identifier_prefix}parking-ringgo-sftp-raw-zone",
+    replace("parking-ringgo-sftp-raw-zone", "-", "_")                                           = "parking-ringgo-sftp-raw-zone",
 
     replace(module.department_finance_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_finance_data_source.raw_zone_catalog_database_name,
     replace(module.department_finance_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_finance_data_source.refined_zone_catalog_database_name,
@@ -121,7 +121,7 @@ locals {
         "parking_refined_zone_liberator",
         "liberator_refined_zone",
         replace(module.department_parking_data_source.trusted_zone_catalog_database_name, "-", "_"),
-        "parking_ringgo_sftp_raw_zone",
+        replace("parking-ringgo-sftp-raw-zone", "-", "_"),
       ], local.unrestricted_schemas)
     },
     {
@@ -301,7 +301,7 @@ locals {
         "parking_refined_zone_liberator",
         "liberator_refined_zone",
         replace(module.department_parking_data_source.trusted_zone_catalog_database_name, "-", "_"),
-        "parking_ringgo_sftp_raw_zone"
+        replace("parking-ringgo-sftp-raw-zone", "-", "_")
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
