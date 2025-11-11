@@ -14,7 +14,7 @@ module "housing_mtfh_case_notes_enriched_to_refined" {
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  trigger_enabled                = local.is_production_environment
+  trigger_enabled                = false
   number_of_workers_for_glue_job = 2
   glue_job_worker_type           = "G.1X"
   schedule                       = "cron(0 10 ? * MON-FRI *)"
