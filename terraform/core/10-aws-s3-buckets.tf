@@ -33,7 +33,8 @@ module "landing_zone" {
 
   bucket_policy_statements = concat(
     local.is_production_environment ? [
-      local.allow_housing_reporting_role_access_to_landing_zone_path
+      local.allow_housing_reporting_role_access_to_landing_zone_path,
+      local.allow_access_from_academy_account
     ] : [],
     local.is_preprod_env ? [
       local.allow_housing_reporting_role_access_to_landing_zone_path_pre_prod,
