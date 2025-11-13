@@ -126,7 +126,7 @@ resource "aws_codebuild_project" "dap_airflow_staging_sync" {
     location            = "https://github.com/LBHackney-IT/dap-airflow.git"
     git_clone_depth     = 1
     buildspec           = "github_workflow_scripts/mwaa-s3-sync-buildspec.yml" # Stored in dap-airflow repo
-    report_build_status = true
+    report_build_status = false
 
     auth {
       type     = "CODECONNECTIONS"
