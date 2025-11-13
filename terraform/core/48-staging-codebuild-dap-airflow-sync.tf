@@ -122,11 +122,10 @@ resource "aws_codebuild_project" "dap_airflow_staging_sync" {
   }
 
   source {
-    type                = "GITHUB"
-    location            = "https://github.com/LBHackney-IT/dap-airflow.git"
-    git_clone_depth     = 1
-    buildspec           = "github_workflow_scripts/mwaa-s3-sync-buildspec.yml" # Stored in dap-airflow repo
-    report_build_status = true
+    type            = "GITHUB"
+    location        = "https://github.com/LBHackney-IT/dap-airflow.git"
+    git_clone_depth = 1
+    buildspec       = "github_workflow_scripts/mwaa-s3-sync-buildspec.yml" # Stored in dap-airflow repo
 
     auth {
       type     = "CODECONNECTIONS"
