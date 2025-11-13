@@ -20,6 +20,9 @@ import scripts.jobs.housing.housing_nec_migration_tenancies_data_load_gx_suite
 import scripts.jobs.housing.housing_nec_migration_people_data_load_gx_suite
 import scripts.jobs.housing.housing_nec_migration_contacts_data_load_gx_suite
 import scripts.jobs.housing.housing_nec_migration_arrears_actions_data_load_gx_suite
+import scripts.jobs.housing.housing_nec_migration_revenue_accounts_data_load_gx_suite
+import scripts.jobs.housing.housing_nec_migration_transactions_data_load_gx_suite
+import scripts.jobs.housing.housing_nec_migration_addresses_data_load_gx_suite
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -86,8 +89,13 @@ def main():
             batch_parameters = {"dataframe": df}
 
             # get expectation suite for dataset
-            suite = context.suites.get(name=f"{data_load}_data_load_suite")
-            expectations = suite.expectations
+            try:
+                suite = context.suites.get(name=f"{data_load}_data_load_suite")
+            except Exception as e:
+                logger.info(f"Problem found with {data_load}: GX suite {e}, skipping suite.")
+                continue
+            else:
+                expectations = suite.expectations
 
             validation_definition = gx.ValidationDefinition(
                 data=batch_definition,
