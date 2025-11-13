@@ -497,7 +497,7 @@ if __name__ == "__main__":
     patch = patch.distinct()
 
     # data loads - takes all records that have no end date and secure tenancies, intro and mesne tenancies are added after as there are some tenancy ids with both
-    accounts = df2.filter("endoftenuredate is NULL and paymentreference<>''")
+    accounts = df2.filter( "((endoftenuredate IS NULL) OR (endoftenuredate > current_date())) AND paymentreference <> ''")
     accounts_s = accounts.where(col("description").isin({"Secure", "Non-Secure"}))
     accounts_int = accounts.where(col("description").isin({"Introductory", "Mense Profit Ac"}))
     accounts_int = accounts_int.join(accounts_s, accounts_int.paymentreference == accounts_s.paymentreference,
