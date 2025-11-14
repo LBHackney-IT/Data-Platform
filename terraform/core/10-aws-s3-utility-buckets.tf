@@ -149,6 +149,22 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "addresses_api_rds
 }
 
 #===============================================================================
+# User Uploads Bucket
+#===============================================================================
+
+module "user_uploads" {
+  source = "../modules/s3-bucket"
+
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "user-uploads"
+  bucket_identifier          = "user-uploads"
+  include_backup_policy_tags = false
+}
+
+#===============================================================================
 # MWAA Buckets
 #===============================================================================
 
