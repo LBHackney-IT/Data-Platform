@@ -161,6 +161,18 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       "${var.landing_zone_bucket.bucket_arn}/${local.department_identifier}/manual/*",
     ]
   }
+
+  statement {
+    sid    = "S3WriteToUserUploads"
+    effect = "Allow"
+    actions = [
+      "s3:Put*",
+      "s3:Delete*"
+    ]
+    resources = [
+      "${var.user_uploads_bucket.bucket_arn}/${local.department_identifier}/*",
+    ]
+  }
 }
 
 resource "aws_iam_policy" "read_only_s3_access" {
