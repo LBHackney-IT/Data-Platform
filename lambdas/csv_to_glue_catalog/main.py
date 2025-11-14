@@ -152,16 +152,13 @@ def create_glue_table(
         logger.info(f"Table {table_name} does not exist, creating new one")
     except Exception as e:
         logger.warning(f"Error checking/deleting table {table_name}: {e}")
-        # Continue to create table anyway
 
     # Extract directory path from S3 key
     # For s3://bucket/parking/user/file.csv, we want s3://bucket/parking/user/
-    # This allows the table to read the CSV file directly
     s3_path_parts = s3_key.rsplit("/", 1)
     s3_directory = f"{s3_path_parts[0]}/" if len(s3_path_parts) > 1 else ""
 
     # Create new table pointing to the user's directory
-    # Since each CSV file is in its own user directory, this works correctly
     table_input = {
         "Name": table_name,
         "StorageDescriptor": {
@@ -272,10 +269,6 @@ def handle_s3_event(event, context):
 
 
 def lambda_handler(event, context):
-    """
-    Lambda handler entry point.
-    Includes retry logic via Lambda's built-in retry mechanism.
-    """
     try:
         handle_s3_event(event, context)
         return {
