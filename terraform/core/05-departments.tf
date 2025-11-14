@@ -39,6 +39,7 @@ module "department_housing_repairs" {
   google_group_admin_display_name = local.google_group_admin_display_name
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_parking" {
@@ -73,12 +74,14 @@ module "department_parking" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only = [
       "${local.identifier_prefix}-liberator-raw-zone",
       "${local.identifier_prefix}-liberator-refined-zone",
       "${local.identifier_prefix}-liberator-trusted-zone",
       "parking-ringgo-sftp-raw-zone",
+      "parking_user_uploads_db",
     ]
     read_write = []
   }
@@ -114,6 +117,7 @@ module "department_finance" {
   google_group_admin_display_name = local.google_group_admin_display_name
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_data_and_insight" {
@@ -148,6 +152,7 @@ module "department_data_and_insight" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   cloudtrail_bucket               = module.cloudtrail_storage
   additional_glue_database_access = {
     read_only  = []
@@ -193,6 +198,7 @@ module "department_env_enforcement" {
   google_group_admin_display_name = local.google_group_admin_display_name
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_planning" {
@@ -226,6 +232,7 @@ module "department_planning" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-planning@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = ["${local.identifier_prefix}-tascomi*"]
     read_write = []
@@ -263,6 +270,7 @@ module "department_unrestricted" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_sandbox" {
@@ -296,6 +304,7 @@ module "department_sandbox" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-sandbox@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_benefits_and_housing_needs" {
@@ -330,6 +339,7 @@ module "department_benefits_and_housing_needs" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = ["hben_raw_zone"]
     read_write = []
@@ -368,6 +378,7 @@ module "department_revenues" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only = [
       "nndr_raw_zone",
@@ -409,6 +420,7 @@ module "department_environmental_services" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_housing" {
@@ -443,6 +455,7 @@ module "department_housing" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_s3_access = [
     {
       bucket_arn  = module.housing_nec_migration_storage.bucket_arn
@@ -500,6 +513,7 @@ module "department_children_and_education" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-children-and-family-services@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_customer_services" {
@@ -533,6 +547,7 @@ module "department_customer_services" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-customer-services@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_hr_and_od" {
@@ -566,6 +581,7 @@ module "department_hr_and_od" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-hr-and-od@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_streetscene" {
@@ -600,6 +616,7 @@ module "department_streetscene" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_children_family_services" {
@@ -634,6 +651,7 @@ module "department_children_family_services" {
   departmental_airflow_user       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
     read_write = []

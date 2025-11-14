@@ -140,3 +140,12 @@ variable "mwaa_etl_scripts_bucket_arn" {
 variable "mwaa_key_arn" {
   type = string
 }
+
+variable "user_uploads_bucket" {
+  description = "User uploads S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+}

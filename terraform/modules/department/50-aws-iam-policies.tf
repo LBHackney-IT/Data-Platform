@@ -60,7 +60,8 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       var.trusted_zone_bucket.kms_key_arn,
       var.athena_storage_bucket.kms_key_arn,
       var.glue_scripts_bucket.kms_key_arn,
-      var.spark_ui_output_storage_bucket.kms_key_arn
+      var.spark_ui_output_storage_bucket.kms_key_arn,
+      var.user_uploads_bucket.kms_key_arn
     ]
   }
 
@@ -91,7 +92,6 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       "s3:List*",
     ]
     resources = [
-
       var.athena_storage_bucket.bucket_arn,
       "${var.athena_storage_bucket.bucket_arn}/${local.department_identifier}/*",
 
@@ -120,7 +120,10 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       "${var.trusted_zone_bucket.bucket_arn}/unrestricted/*",
 
       var.spark_ui_output_storage_bucket.bucket_arn,
-      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*"
+      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*",
+
+      var.user_uploads_bucket.bucket_arn,
+      "${var.user_uploads_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 
@@ -276,7 +279,8 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.glue_scripts_bucket.kms_key_arn,
       var.spark_ui_output_storage_bucket.kms_key_arn,
       var.glue_temp_storage_bucket.kms_key_arn,
-      var.mwaa_key_arn
+      var.mwaa_key_arn,
+      var.user_uploads_bucket.kms_key_arn
     ]
   }
 
@@ -344,7 +348,10 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.mwaa_etl_scripts_bucket_arn,
       "${var.mwaa_etl_scripts_bucket_arn}/${replace(local.department_identifier, "-", "_")}/*",
       "${var.mwaa_etl_scripts_bucket_arn}/unrestricted/*",
-      "${var.mwaa_etl_scripts_bucket_arn}/shared/*"
+      "${var.mwaa_etl_scripts_bucket_arn}/shared/*",
+
+      var.user_uploads_bucket.bucket_arn,
+      "${var.user_uploads_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 
@@ -401,6 +408,8 @@ data "aws_iam_policy_document" "s3_department_access" {
 
       "${var.trusted_zone_bucket.bucket_arn}/${local.department_identifier}/*",
       "${var.trusted_zone_bucket.bucket_arn}/quality-metrics/department=${local.department_identifier}/*",
+
+      "${var.user_uploads_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 

@@ -72,13 +72,13 @@ variable "additional_glue_database_access" {
   description = <<EOF
     Additional Glue database access to grant to the department.
     Databases are grouped by permission level.
-    
+
     Example:
     additional_glue_database_access = {
       read_only  = ["database1", "database2*"]
       read_write = ["database3"]
     }
-    
+
     Permission levels:
     - "read_only": Grants Get* and BatchGet* permissions (for reading databases, tables, partitions)
     - "read_write": Grants Get*, BatchGet*, Create*, Update*, Delete*, BatchCreate*, BatchUpdate*, BatchDelete* permissions
