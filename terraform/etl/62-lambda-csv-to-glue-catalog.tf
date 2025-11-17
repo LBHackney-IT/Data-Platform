@@ -118,7 +118,6 @@ module "csv_to_glue_catalog_lambda" {
   lambda_role_arn                = aws_iam_role.csv_to_glue_catalog_lambda.arn
   lambda_timeout                 = 900
   lambda_memory_size             = 1024
-  runtime                        = "python3.11"
   layers = [
     "arn:aws:lambda:${data.aws_region.current.name}:336392948345:layer:AWSSDKPandas-Python311:20"
   ]
