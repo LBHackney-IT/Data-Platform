@@ -1,5 +1,5 @@
 # Lambda function to automatically create/delete Glue Catalog tables
-# Workflow: S3 CSV upload/delete → SQS queue → Lambda (via event source mapping) → Glue Catalog table create/delete
+# Workflow: S3 CSV upload/delete → SQS → Lambda (via event source mapping) → Glue Catalog table create/delete (retry on failure → DLQ)
 
 data "aws_iam_policy_document" "csv_to_glue_catalog_lambda_assume_role" {
   statement {
@@ -130,11 +130,23 @@ module "csv_to_glue_catalog_lambda" {
 }
 
 
+resource "aws_sqs_queue" "csv_to_glue_catalog_events_dlq" {
+  name                      = "${local.short_identifier_prefix}csv-to-glue-catalog-events-dlq"
+  message_retention_seconds = 1209600 # 14 days
+
+  tags = module.tags.values
+}
+
 resource "aws_sqs_queue" "csv_to_glue_catalog_events" {
   name                       = "${local.short_identifier_prefix}csv-to-glue-catalog-events"
   visibility_timeout_seconds = 900
   message_retention_seconds  = 1209600
   receive_wait_time_seconds  = 20
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.csv_to_glue_catalog_events_dlq.arn
+    maxReceiveCount     = 2 # 2 attempts before sending to DLQ
+  })
 
   tags = module.tags.values
 }
