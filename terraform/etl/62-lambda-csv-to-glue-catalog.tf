@@ -119,7 +119,7 @@ module "csv_to_glue_catalog_lambda" {
   lambda_timeout                 = 300 # timeout early (5 minutes)
   lambda_memory_size             = 1024
   layers = [
-    "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:layer:AWSSDKPandas-Python311:20"
+    "arn:aws:lambda:${data.aws_region.current.name}:336392948345:layer:AWSSDKPandas-Python311:20"
   ]
   description = "Automatically creates/deletes Glue Catalog tables when CSV files are uploaded/deleted in user_uploads bucket"
   environment_variables = {
