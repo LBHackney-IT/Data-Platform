@@ -1,5 +1,7 @@
 """
 Automatically creates/deletes Glue Catalog tables when CSV files are uploaded/deleted in S3.
+
+Note: all column types of the created tables are defined as strings and please be aware when using them downstream.
 """
 
 import json
