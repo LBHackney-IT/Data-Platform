@@ -46,6 +46,12 @@ module "lambda_artefact_storage_data_source" {
   bucket_identifier = "dp-lambda-artefact-storage"
 }
 
+module "user_uploads_data_source" {
+  source            = "../modules/data-sources/s3-bucket"
+  identifier_prefix = local.identifier_prefix
+  bucket_identifier = "user-uploads"
+}
+
 module "spark_ui_output_storage_data_source" {
   source            = "../modules/data-sources/s3-bucket"
   identifier_prefix = local.identifier_prefix
