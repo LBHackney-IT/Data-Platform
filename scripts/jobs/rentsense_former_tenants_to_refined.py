@@ -16,14 +16,15 @@ from pyspark.sql.functions import (
     current_date,
     date_format,
     date_sub,
+    datediff,
     lit,
     substring,
     to_date,
     to_timestamp,
-    datediff,
     when,
 )
 from pyspark.sql.window import Window
+
 from scripts.helpers.helpers import (
     PARTITION_KEYS,
     add_import_time_columns,
@@ -575,7 +576,7 @@ if __name__ == "__main__":
         )
     )
     accounts_int = accounts.where(
-        col("description").isin({"Introductory", "Mense Profit Ac","Mesne Profit Ac"}) 
+        col("description").isin({"Introductory", "Mense Profit Ac", "Mesne Profit Ac"})
     )
     accounts_int = accounts_int.join(
         accounts_s,
@@ -665,7 +666,7 @@ if __name__ == "__main__":
         "AgreementCode as ArrangementCode",
         #  "initial_payment_date as FirstInstallmentDueDate",
         # "AgreementCreatedDate",
-        "Amount as PaymentAmount"
+        "Amount as PaymentAmount",
         #   "uh_ten_ref as TenReference",
         #  "import_date"
     )
@@ -771,7 +772,7 @@ if __name__ == "__main__":
         #     "Address3",
         "PostCode as PropertyPostCode",
         "Email as PrimaryEmailAddress",
-        "'' as SecondaryEmailAddress"
+        "'' as SecondaryEmailAddress",
         # "PropertyType",
         # "uh_ten_ref as TenReference",
         # "import_date"
@@ -817,7 +818,7 @@ if __name__ == "__main__":
     balances = balances.selectExpr(
         "paymentreference as AccountReference",
         "previousweekbalance as CurrentBalance",
-        "BalanceDate"
+        "BalanceDate",
         # "uh_ten_ref as TenReference",
         #  "import_date"
     )
@@ -1055,7 +1056,7 @@ if __name__ == "__main__":
         "iso8601_format as TransactionPostDate",
         "trans_type as TransactionCode",
         "real_value as TransactionAmount",
-        "code_lookup as TransactionDescription"
+        "code_lookup as TransactionDescription",
         # "uh_ten_ref as TenReference",
         # "import_date"
     )
