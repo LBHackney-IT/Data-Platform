@@ -575,7 +575,7 @@ if __name__ == "__main__":
         )
     )
     accounts_int = accounts.where(
-        col("description").isin({"Introductory", "Mense Profit Ac"})
+        col("description").isin({"Introductory", "Mense Profit Ac","Mesne Profit Ac"}) 
     )
     accounts_int = accounts_int.join(
         accounts_s,
