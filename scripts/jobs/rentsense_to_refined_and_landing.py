@@ -564,7 +564,6 @@ if __name__ == "__main__":
         "endoftenuredate",
         to_date(to_timestamp(col("endoftenuredate"), "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'"))
     )
-    
     accounts = accounts.drop("uh_ten_ref")
 
     accounts = accounts.withColumn("prop_ref", F.trim(F.col("property_reference")))
