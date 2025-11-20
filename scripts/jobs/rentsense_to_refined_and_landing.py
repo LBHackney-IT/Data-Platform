@@ -9,7 +9,7 @@ from awsglue.job import Job
 from awsglue.transforms import DropFields
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from pyspark.sql.functions import col, current_date, date_sub, lit, to_date, trim
+from pyspark.sql.functions import col, current_date, date_sub, lit, to_date, trim, to_timestamp
 
 from scripts.helpers.helpers import (
     PARTITION_KEYS,
@@ -560,11 +560,11 @@ if __name__ == "__main__":
         F.to_date(col("startOfTenureDate"), "yyyy-MM-dd").alias("date"),
     ).drop("startOfTenureDate").withColumnRenamed("date", "startOfTenureDate")
 
-    accounts.select(
-        col("endoftenuredate"),
-        F.to_date(col("endoftenuredate"), "yyyy-MM-dd").alias("date"),
-    ).drop("endoftenuredate").withColumnRenamed("date", "endoftenuredate")
-
+    accounts = accounts.withColumn(
+        "endoftenuredate",
+        to_date(to_timestamp(col("endoftenuredate"), "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'"))
+    )
+    
     accounts = accounts.drop("uh_ten_ref")
 
     accounts = accounts.withColumn("prop_ref", F.trim(F.col("property_reference")))
