@@ -7,17 +7,17 @@ import great_expectations as gx
 import great_expectations.expectations as gxe
 
 
-class ExpectPersonRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
+class PeopleExpectPersonRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
     column: str = "LPAR_PER_ALT_REF"
     description: str = "Expect LPAR_PER_ALT_REF (person ref) values to be unique"
 
 
-class ExpectPersonRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+class PeopleExpectPersonRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LPAR_PER_ALT_REF"
     description: str = "Expect LPAR_PER_ALT_REF (person ref) values to not be Null"
 
 
-class ExpectTitleToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class PeopleExpectTitleToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LPAR_PER_TITLE"
     value_set: list = [
         "DAME",
@@ -39,7 +39,7 @@ class ExpectTitleToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     description: str = "Expect title to be one of the set"
 
 
-class ExpectPeopleColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
+class PeopleExpectPeopleColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
     column_list = [
         "LPAR_HOP_START_DATE",
         "LPAR_PER_SURNAME",
@@ -83,8 +83,8 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name="people_data_load_suite")
 
-suite.add_expectation(ExpectPersonRefColumnValuesToBeUnique())
-suite.add_expectation(ExpectTitleToBeInSet())
-suite.add_expectation(ExpectPeopleColumnsToMatchOrderedList())
-suite.add_expectation(ExpectPersonRefColumnValuesToNotBeNull())
+suite.add_expectation(PeopleExpectPersonRefColumnValuesToBeUnique())
+suite.add_expectation(PeopleExpectTitleToBeInSet())
+suite.add_expectation(PeopleExpectPeopleColumnsToMatchOrderedList())
+suite.add_expectation(PeopleExpectPersonRefColumnValuesToNotBeNull())
 suite = context.suites.add(suite)

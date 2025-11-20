@@ -7,19 +7,19 @@ import great_expectations as gx
 import great_expectations.expectations as gxe
 
 
-class ExpectPayRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+class ArrearsActionsExpectPayRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LACA_PAY_REF"
     description: str = (
         "Expect LACA_PAY_REF (pay ref) values to not be Null in contacts load"
     )
 
 
-class ExpectValueColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+class ArrearsActionsExpectCreatedDateToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LACA_CREATED_DATE"
-    description: str = "Expect LCDE_CONTACT_VALUE (contact value) to not be Null"
+    description: str = "Expect LACA_CREATED_DATE to not be Null"
 
 
-class ExpectArrearCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class ArrearsActionsExpectArrearCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LACA_ARA_CODE"
     value_set: list = [
         "BAGF",
@@ -104,7 +104,7 @@ class ExpectArrearCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     description: str = "Expect arrear code to be one of the set"
 
 
-class ExpectArrearsActionsColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
+class ArrearsActionsExpectArrearsActionsColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
     column_list = [
         "LACA_BALANCE",
         "LACA_PAY_REF",
@@ -136,8 +136,8 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name="arrears_actions_data_load_suite")
 
-suite.add_expectation(ExpectArrearsActionsColumnsToMatchOrderedList())
-suite.add_expectation(ExpectArrearCodeToBeInSet())
-suite.add_expectation(ExpectPayRefColumnValuesToNotBeNull())
-suite.add_expectation(ExpectValueColumnValuesToNotBeNull())
+suite.add_expectation(ArrearsActionsExpectArrearsActionsColumnsToMatchOrderedList())
+suite.add_expectation(ArrearsActionsExpectArrearCodeToBeInSet())
+suite.add_expectation(ArrearsActionsExpectPayRefColumnValuesToNotBeNull())
+suite.add_expectation(ArrearsActionsExpectCreatedDateToNotBeNull())
 suite = context.suites.add(suite)

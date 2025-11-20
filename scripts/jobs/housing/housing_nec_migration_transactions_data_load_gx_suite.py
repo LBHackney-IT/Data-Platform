@@ -7,7 +7,7 @@ import great_expectations as gx
 import great_expectations.expectations as gxe
 
 
-class ExpectPayRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+class ExpectAltRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LTRN_ALT_REF"
     description: str = "Expect LTRN_ALT_REF values to not be Null in contacts load"
 

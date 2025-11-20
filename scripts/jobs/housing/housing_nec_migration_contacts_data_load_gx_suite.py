@@ -7,25 +7,25 @@ import great_expectations as gx
 import great_expectations.expectations as gxe
 
 
-class ExpectPersonRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+class ContactsExpectPersonRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LCDE_LEGACY_REF"
     description: str = (
         "Expect LCDE_LEGACY_REF (person ref) values to not be Null in contacts load"
     )
 
 
-class ExpectValueColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+class ContactsExpectValueColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LCDE_CONTACT_VALUE"
     description: str = "Expect LCDE_CONTACT_VALUE (contact value) to not be Null"
 
 
-class ExpectContactTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class ContactsExpectContactTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LCDE_FRV_CME_CODE,"
     value_set: list = ["WORKTEL", "MOBILETEL", "HOMETEL", "EMAIL", "OTHER"]
     description: str = "Expect contact type code to be one of the set"
 
 
-class ExpectContactsColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
+class ContactsExpectContactsColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
     column_list = [
         "LCDE_LEGACY_REF",
         "LCDE_LEGACY_TYPE",
@@ -54,8 +54,8 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name="contacts_data_load_suite")
 
-suite.add_expectation(ExpectContactsColumnsToMatchOrderedList())
-suite.add_expectation(ExpectContactTypeCodeToBeInSet())
-suite.add_expectation(ExpectPersonRefColumnValuesToNotBeNull())
-suite.add_expectation(ExpectValueColumnValuesToNotBeNull())
+suite.add_expectation(ContactsExpectContactsColumnsToMatchOrderedList())
+suite.add_expectation(ContactsExpectContactTypeCodeToBeInSet())
+suite.add_expectation(ContactsExpectPersonRefColumnValuesToNotBeNull())
+suite.add_expectation(ContactsExpectValueColumnValuesToNotBeNull())
 suite = context.suites.add(suite)
