@@ -6,7 +6,7 @@ sql_config = {
     "arrears_actions": {"id_field": "LACA_PAY_REF"},
     "revenue_accounts": {"id_field": "LRAC_PAY_REF"},
     "transactions": {"id_field": "LTRN_ALT_REF"},
-    "addresses": {"id_field": "LAUS_LEGACY_REF"}
+    "addresses": {"id_field": "LAUS_LEGACY_REF"},
 }
 
 data_load_list = [
@@ -16,7 +16,7 @@ data_load_list = [
     "contacts",
     "arrears_actions",
     "revenue_accounts",
-    "transactions",
+    # "transactions",
     "addresses",
 ]
 

@@ -7,17 +7,17 @@ import great_expectations as gx
 import great_expectations.expectations as gxe
 
 
-class ExpectTagRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
+class TenanciesExpectTagRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
     column: str = "LTCY_ALT_REF"
     description: str = "Expect LTCY_ALT_REF (tenancy ref) values to be unique"
 
 
-class ExpectTenancyRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+class TenanciesExpectTenancyRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LTCY_ALT_REF"
     description: str = "Expect LTCY_ALT_REF (tenancy ref) values to not be Null"
 
 
-class ExpectTenancyTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class TenanciesExpectTenancyTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LTCY_TTY_CODE"
     value_set: list = [
         "ASH",
@@ -57,7 +57,7 @@ class ExpectTenancyTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     description: str = "Expect tenancy type code to contain one of the set"
 
 
-class ExpectTenureTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class TenanciesExpectTenureTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LTCY_HRV_TTYP_CODE"
     value_set: list = [
         "SECURE",
@@ -72,13 +72,13 @@ class ExpectTenureTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     description: str = "Expect tenure type code to be one of the set"
 
 
-class ExpectTenancyStatusCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class TenanciesExpectTenancyStatusCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LTCY_HRV_TST_CODE"
     value_set: list = ["DECANT", "NOTICE", "UNAUTHOCC"]
     description: str = "Expect tenancy status code to be one of the set"
 
 
-class ExpectTenancyColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
+class TenanciesExpectTenancyColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
     column_list = [
         "LTCY_ALT_REF",
         "LTCY_TTY_CODE",
@@ -140,11 +140,11 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name="tenancies_data_load_suite")
 
-suite.add_expectation(ExpectTagRefColumnValuesToBeUnique())
-suite.add_expectation(ExpectTenancyTypeCodeToBeInSet())
-suite.add_expectation(ExpectTenureTypeCodeToBeInSet())
-suite.add_expectation(ExpectTenancyStatusCodeToBeInSet())
-suite.add_expectation(ExpectTenancyColumnsToMatchOrderedList())
-suite.add_expectation(ExpectTenancyRefColumnValuesToNotBeNull())
+suite.add_expectation(TenanciesExpectTagRefColumnValuesToBeUnique())
+suite.add_expectation(TenanciesExpectTenancyTypeCodeToBeInSet())
+suite.add_expectation(TenanciesExpectTenureTypeCodeToBeInSet())
+suite.add_expectation(TenanciesExpectTenancyStatusCodeToBeInSet())
+suite.add_expectation(TenanciesExpectTenancyColumnsToMatchOrderedList())
+suite.add_expectation(TenanciesExpectTenancyRefColumnValuesToNotBeNull())
 
 context.suites.add(suite)

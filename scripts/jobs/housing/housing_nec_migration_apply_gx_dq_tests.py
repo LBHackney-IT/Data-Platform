@@ -21,7 +21,7 @@ import scripts.jobs.housing.housing_nec_migration_people_data_load_gx_suite
 import scripts.jobs.housing.housing_nec_migration_contacts_data_load_gx_suite
 import scripts.jobs.housing.housing_nec_migration_arrears_actions_data_load_gx_suite
 import scripts.jobs.housing.housing_nec_migration_revenue_accounts_data_load_gx_suite
-import scripts.jobs.housing.housing_nec_migration_transactions_data_load_gx_suite
+# import scripts.jobs.housing.housing_nec_migration_transactions_data_load_gx_suite
 import scripts.jobs.housing.housing_nec_migration_addresses_data_load_gx_suite
 
 logging.basicConfig(level=logging.INFO)
@@ -68,119 +68,133 @@ def main():
         for table in table_list.get(data_load):
             logger.info(f"{table} loading...")
 
-            sql_query, id_field = get_sql_query(
-                sql_config=sql_config, data_load=data_load, table=table
-            )
-
-            conn = connect(s3_staging_dir=s3_staging_location, region_name=region_name)
-
             try:
-                df = pd.read_sql_query(sql_query, conn)
-            except Exception as e:
-                logger.info(f"Problem found with {table}: {e}, skipping table.")
-                continue
-
-            # set up batch
-            data_source = context.data_sources.add_pandas(f"{table}_pandas")
-            data_asset = data_source.add_dataframe_asset(name=f"{table}_df_asset")
-            batch_definition = data_asset.add_batch_definition_whole_dataframe(
-                "Athena batch definition"
-            )
-            batch_parameters = {"dataframe": df}
-
-            # get expectation suite for dataset
-            try:
-                suite = context.suites.get(name=f"{data_load}_data_load_suite")
-            except Exception as e:
-                logger.info(f"Problem found with {data_load}: GX suite {e}, skipping suite.")
-                continue
-            else:
-                expectations = suite.expectations
-
-            validation_definition = gx.ValidationDefinition(
-                data=batch_definition,
-                suite=suite,
-                name=f"validation_definition_{table}",
-            )
-            validation_definition = context.validation_definitions.add(
-                validation_definition
-            )
-
-            # create and start checking data with checkpoints
-            checkpoint = context.checkpoints.add(
-                gx.checkpoint.checkpoint.Checkpoint(
-                    name=f"{table}_checkpoint",
-                    validation_definitions=[validation_definition],
-                    result_format={
-                        "result_format": "COMPLETE",
-                        "return_unexpected_index_query": False,
-                        "partial_unexpected_count": 0,
-                    },
+                sql_query, id_field = get_sql_query(
+                    sql_config=sql_config, data_load=data_load, table=table
                 )
-            )
 
-            checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
-            results_dict = list(checkpoint_result.run_results.values())[
-                0
-            ].to_json_dict()
-            table_results_df = pd.json_normalize(results_dict["results"])
-            cols_not_needed = ["result.unexpected_list", "result.observed_value"]
-            cols_to_drop = [
-                c
-                for c in table_results_df.columns
-                if c.startswith("exception_info") or c in cols_not_needed
-            ]
+                conn = connect(s3_staging_dir=s3_staging_location, region_name=region_name)
 
-            table_results_df = table_results_df.drop(columns=cols_to_drop)
-            table_results_df_list.append(table_results_df)
-
-            # generate id lists for each unexpected result set
-            query_df = table_results_df.loc[
-                (~table_results_df["result.unexpected_index_list"].isna())
-                & (table_results_df["result.unexpected_index_list"].values != "[]")
-            ]
-
-            table_results_df["unexpected_id_list"] = pd.Series(dtype="object")
-            for i, row in query_df.iterrows():
                 try:
-                    list(df[id_field].iloc[row["result.unexpected_index_list"]])
+                    df = pd.read_sql_query(sql_query, conn)
                 except Exception as e:
-                    logger.info(
-                        f"Problem found with {table}: {e}, skipping making unexpected_id_list."
-                    )
+                    logger.error(f"SQL Read Problem found with {table}: {e}, skipping table.")
+                    continue
+
+                # set up batch
+                data_source = context.data_sources.add_pandas(f"{table}_pandas")
+                data_asset = data_source.add_dataframe_asset(name=f"{table}_df_asset")
+                batch_definition = data_asset.add_batch_definition_whole_dataframe(
+                    "Athena batch definition"
+                )
+                batch_parameters = {"dataframe": df}
+
+                # get expectation suite for dataset
+                try:
+                    suite = context.suites.get(name=f"{data_load}_data_load_suite")
+                except Exception as e:
+                    logger.error(f"GX Suite Problem found with {data_load}: {e}, skipping suite.")
                     continue
                 else:
-                    table_results_df.loc[i, "unexpected_id_list"] = str(
-                        list(df[id_field].iloc[row["result.unexpected_index_list"]])
+                    expectations = suite.expectations
+
+                validation_definition = gx.ValidationDefinition(
+                    data=batch_definition,
+                    suite=suite,
+                    name=f"validation_definition_{table}",
+                )
+
+                validation_definition = context.validation_definitions.add_or_update(
+                    validation_definition
+                )
+
+                # create and start checking data with checkpoints
+                checkpoint = context.checkpoints.add_or_update(
+                    gx.checkpoint.checkpoint.Checkpoint(
+                        name=f"{table}_checkpoint",
+                        validation_definitions=[validation_definition],
+                        result_format={
+                            "result_format": "COMPLETE",
+                            "return_unexpected_index_query": False,
+                            "partial_unexpected_count": 0,
+                        },
                     )
+                )
 
-            # drop columns not needed in metatdata
-            cols_to_drop_meta = [
-                "notes",
-                "result_format",
-                "catch_exceptions",
-                "rendered_content",
-                "windows",
-            ]
+                checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
 
-            suite_df = pd.DataFrame()
-            for i in expectations:
-                temp_i = i
-                temp_df = pd.json_normalize(dict(temp_i))
-                temp_df["expectation_type"] = temp_i.expectation_type
-                temp_df["dataset_name"] = table
-                temp_df = temp_df.drop(columns=cols_to_drop_meta)
-                suite_df = pd.concat([suite_df, temp_df])
+                # Logic to handle results
+                results_dict = list(checkpoint_result.run_results.values())[0].to_json_dict()
+                table_results_df = pd.json_normalize(results_dict["results"])
 
-            df_all_suite_list.append(suite_df)
+                cols_not_needed = ["result.unexpected_list", "result.observed_value"]
+                cols_to_drop = [
+                    c
+                    for c in table_results_df.columns
+                    if c.startswith("exception_info") or c in cols_not_needed
+                ]
+
+                table_results_df = table_results_df.drop(columns=cols_to_drop)
+                table_results_df_list.append(table_results_df)
+
+                # generate id lists for each unexpected result set
+                query_df = table_results_df.loc[
+                    (~table_results_df["result.unexpected_index_list"].isna())
+                    & (table_results_df["result.unexpected_index_list"].values != "[]")
+                    ]
+
+                table_results_df["unexpected_id_list"] = pd.Series(dtype="object")
+                for i, row in query_df.iterrows():
+                    try:
+                        # check this
+                        list(df[id_field].iloc[row["result.unexpected_index_list"]])
+                    except Exception as e:
+                        logger.warning(
+                            f"Problem mapping IDs for {table}: {e}. Proceeding without ID list."
+                        )
+                        continue
+                    else:
+                        table_results_df.loc[i, "unexpected_id_list"] = str(
+                            list(df[id_field].iloc[row["result.unexpected_index_list"]])
+                        )
+
+                # drop columns not needed in metadata
+                cols_to_drop_meta = [
+                    "notes",
+                    "result_format",
+                    "catch_exceptions",
+                    "rendered_content",
+                    "windows",
+                ]
+
+                suite_df = pd.DataFrame()
+                for i in expectations:
+                    temp_i = i
+                    temp_df = pd.json_normalize(dict(temp_i))
+                    temp_df["expectation_type"] = temp_i.expectation_type
+                    temp_df["dataset_name"] = table
+                    temp_df["expectation_id_full"] = temp_i.expectation_type + '_' + table
+                    temp_df = temp_df.drop(columns=cols_to_drop_meta, errors='ignore')  # errors='ignore' is safer
+                    suite_df = pd.concat([suite_df, temp_df])
+
+                df_all_suite_list.append(suite_df)
+
+            except Exception as e:
+                logger.error(f"CRITICAL ERROR processing table '{table}': {str(e)}")
+                logger.error("Skipping this table and moving to the next.")
+                continue
+
+    if not table_results_df_list:
+        logger.error("No tables were processed successfully. Exiting.")
+        return
 
     results_df = pd.concat(table_results_df_list)
     metadata_df = pd.concat(df_all_suite_list)
 
     # add expectation_id
-    metadata_df["expectation_id"] = (
-        metadata_df["expectation_type"] + "_" + metadata_df["dataset_name"]
-    )
+    # metadata_df["expectation_id"] = (
+    #     metadata_df["expectation_type"] + "_" + metadata_df["dataset_name"]
+    # )
     metadata_df["import_date"] = datetime.today().strftime("%Y%m%d")
 
     # set dtypes for Athena with default of string
@@ -199,10 +213,10 @@ def main():
         value=results_df.set_index(
             ["expectation_config.type", "dataset_name"]
         ).index.factorize()[0]
-        + 1,
+              + 1,
     )
     results_df["expectation_id"] = (
-        results_df["expectation_config.type"] + "_" + results_df["dataset_name"]
+            results_df["expectation_config.type"] + "_" + results_df["dataset_name"]
     )
     results_df["import_date"] = datetime.today().strftime("%Y%m%d")
 
@@ -216,6 +230,7 @@ def main():
         "result.element_count": "bigint",
         "result.unexpected_count": "bigint",
         "result.missing_count": "bigint",
+        "result.details_mismatched": 'string',
         "result.partial_unexpected_list": "array<string>",
         "result.unexpected_index_list": "array<bigint>",
         "result.unexpected_index_query": "string",
@@ -224,9 +239,6 @@ def main():
         "expectation_config.kwargs.column_list": "string",
         "import_date": "string",
     }
-
-    # TODO for df_vars in [[results_df, dtype_dict_results, target_table], [metadata_df, dtype_dict_metadata, target_metadata_table]]:
-    # will loop the writing of these tables
 
     wr.s3.to_parquet(
         df=results_df,

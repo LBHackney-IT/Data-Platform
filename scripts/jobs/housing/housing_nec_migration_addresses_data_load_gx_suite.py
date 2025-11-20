@@ -7,23 +7,23 @@ import great_expectations as gx
 import great_expectations.expectations as gxe
 
 
-class ExpectPropRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
+class AddressesExpectPropRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
     column: str = "LAUS_LEGACY_REF"
     description: str = "Expect LAUS_LEGACY_REF values to be unique"
 
-class ExpectPropRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+class AddressesExpectPropRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LAUS_LEGACY_REF"
     description: str = "Expect LAUS_LEGACY_REF values to not be Null"
 
-class ExpectUPRNColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
+class AddressesExpectUPRNColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
     column: str = "LADR_UPRN"
     description: str = "Expect UPRN values to be unique"
 
-class ExpectUPRNColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+class AddressesExpectUPRNColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LADR_UPRN"
     description: str = "Expect UPRN values to not be Null"
 
-class ExpectAddressColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
+class AddressesExpectAddressColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
     column_list = [
         "LAUS_LEGACY_REF",
         "LAUS_AUT_FAO_CODE",
@@ -65,9 +65,9 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name="addresses_data_load_suite")
 
-suite.add_expectation(ExpectPropRefColumnValuesToBeUnique())
-suite.add_expectation(ExpectUPRNColumnValuesToBeUnique())
-suite.add_expectation(ExpectAddressColumnsToMatchOrderedList())
-suite.add_expectation(ExpectPropRefColumnValuesToNotBeNull())
-suite.add_expectation(ExpectUPRNColumnValuesToNotBeNull())
+suite.add_expectation(AddressesExpectPropRefColumnValuesToBeUnique())
+suite.add_expectation(AddressesExpectUPRNColumnValuesToBeUnique())
+suite.add_expectation(AddressesExpectAddressColumnsToMatchOrderedList())
+suite.add_expectation(AddressesExpectPropRefColumnValuesToNotBeNull())
+suite.add_expectation(AddressesExpectUPRNColumnValuesToNotBeNull())
 suite = context.suites.add(suite)

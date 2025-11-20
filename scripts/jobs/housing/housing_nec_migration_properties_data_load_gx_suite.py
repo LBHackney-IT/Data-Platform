@@ -7,17 +7,17 @@ import great_expectations as gx
 import great_expectations.expectations as gxe
 
 
-class ExpectPropRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
+class PropertiesExpectPropRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
     column: str = "LPRO_PROPREF"
     description: str = "Expect UPRN (LPRO_PROPREF) values to be unique"
 
 
-class ExpectPropRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
+class PropertiesExpectPropRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
     column: str = "LPRO_PROPREF"
     description: str = "Expect LPRO_PROPREF (prop ref) values to not be Null"
 
 
-class ExpectPropTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class PropertiesExpectPropTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LPRO_HOU_PTV_CODE"
     value_set: list = [
         "BUN",
@@ -39,19 +39,19 @@ class ExpectPropTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     description: str = "Expect property type codes to contain one of the set"
 
 
-class ExpectOccStatusCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class PropertiesExpectOccStatusCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LPRO_SCO_CODE"
     value_set: list = ["OCC", "VOI", "CLO"]
     description: str = "Expect status codes to be one of the set"
 
 
-class ExpectOrgIndicatorToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class PropertiesExpectOrgIndicatorToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LPRO_ORGANISATION_IND"
     value_set: list = ["Y", "N"]
     description: str = "Expect organisation indicator to be one of the set"
 
 
-class ExpectOwnTypeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class PropertiesExpectOwnTypeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LPRO_HOU_HRV_HOT_CODE"
     value_set: list = [
         "ASSOC",
@@ -65,7 +65,7 @@ class ExpectOwnTypeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     description: str = "Expect ownership type code to be one of the set"
 
 
-class ExpectPropSourceToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class PropertiesExpectPropSourceToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LPRO_HOU_HRV_HRS_CODE"
     value_set: list = [
         "LEASED",
@@ -78,13 +78,13 @@ class ExpectPropSourceToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     description: str = "Expect property source code to be one of the set"
 
 
-class ExpectResIndicatorToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class PropertiesExpectResIndicatorToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LPRO_HOU_RESIDENTIAL_IND"
     value_set: list = ["Y", "N"]
     description: str = "Expect resdidential indicator to be one of the set"
 
 
-class ExpectPropTypeValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
+class PropertiesExpectPropTypeValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LPRO_HOU_PTV_CODE"
     value_set: list = [
         "CMC",
@@ -106,7 +106,7 @@ class ExpectPropTypeValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     description: str = "Expect property type values to be one of the set"
 
 
-class ExpectPropColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
+class PropertiesExpectPropColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
     column_list = [
         "LPRO_PROPREF",
         "LPRO_HOU_FRB",
@@ -154,14 +154,14 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name="properties_data_load_suite")
 
-suite.add_expectation(ExpectPropRefColumnValuesToBeUnique())
-suite.add_expectation(ExpectPropTypeCodeToBeInSet())
-suite.add_expectation(ExpectOccStatusCodeToBeInSet())
-suite.add_expectation(ExpectOrgIndicatorToBeInSet())
-suite.add_expectation(ExpectOwnTypeToBeInSet())
-suite.add_expectation(ExpectPropSourceToBeInSet())
-suite.add_expectation(ExpectResIndicatorToBeInSet())
-suite.add_expectation(ExpectPropTypeValuesToBeInSet())
-suite.add_expectation(ExpectPropColumnsToMatchOrderedList())
-suite.add_expectation(ExpectPropRefColumnValuesToNotBeNull())
+suite.add_expectation(PropertiesExpectPropRefColumnValuesToBeUnique())
+suite.add_expectation(PropertiesExpectPropTypeCodeToBeInSet())
+suite.add_expectation(PropertiesExpectOccStatusCodeToBeInSet())
+suite.add_expectation(PropertiesExpectOrgIndicatorToBeInSet())
+suite.add_expectation(PropertiesExpectOwnTypeToBeInSet())
+suite.add_expectation(PropertiesExpectPropSourceToBeInSet())
+suite.add_expectation(PropertiesExpectResIndicatorToBeInSet())
+suite.add_expectation(PropertiesExpectPropTypeValuesToBeInSet())
+suite.add_expectation(PropertiesExpectPropColumnsToMatchOrderedList())
+suite.add_expectation(PropertiesExpectPropRefColumnValuesToNotBeNull())
 suite = context.suites.add(suite)
