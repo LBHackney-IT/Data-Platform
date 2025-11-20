@@ -561,8 +561,8 @@ if __name__ == "__main__":
     ).drop("startOfTenureDate").withColumnRenamed("date", "startOfTenureDate")
 
     accounts.select(
-    col("endoftenuredate"),
-    F.to_date(col("endoftenuredate"), "yyyy-MM-dd").alias("date"),
+        col("endoftenuredate"),
+        F.to_date(col("endoftenuredate"), "yyyy-MM-dd").alias("date"),
     ).drop("endoftenuredate").withColumnRenamed("date", "endoftenuredate")
 
     accounts = accounts.drop("uh_ten_ref")
