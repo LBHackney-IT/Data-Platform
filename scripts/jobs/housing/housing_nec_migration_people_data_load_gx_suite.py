@@ -34,7 +34,7 @@ class PeopleExpectTitleToBeInSet(gxe.ExpectColumnValuesToBeInSet):
         "RABBI",
         "REVEREND",
         "SIR",
-        None,
+        "",
     ]
     description: str = "Expect title to be one of the set"
 
@@ -69,7 +69,7 @@ class PeopleExpectPeopleColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchO
         "LPAR_PER_NI_NO",
         "LPAR_PER_FRV_HGO_CODE",
         "LPAR_PER_FRV_FNL_CODE",
-        "LPAR_PER_OTHER_NAME",
+        "LPAR_PER_OTHER_NAME"
     ]
     description: str = "Expect people load columns to match ordered list exactly"
 

@@ -20,7 +20,7 @@ class ContactsExpectValueColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNu
 
 
 class ContactsExpectContactTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LCDE_FRV_CME_CODE,"
+    column: str = "LCDE_FRV_CME_CODE"
     value_set: list = ["WORKTEL", "MOBILETEL", "HOMETEL", "EMAIL", "OTHER"]
     description: str = "Expect contact type code to be one of the set"
 
