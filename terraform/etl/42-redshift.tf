@@ -96,7 +96,11 @@ locals {
 
     replace(aws_glue_catalog_database.ctax_raw_zone.name, "-", "_") = aws_glue_catalog_database.ctax_raw_zone.name,
     replace(aws_glue_catalog_database.nndr_raw_zone.name, "-", "_") = aws_glue_catalog_database.nndr_raw_zone.name,
-    replace(aws_glue_catalog_database.hben_raw_zone.name, "-", "_") = aws_glue_catalog_database.hben_raw_zone.name
+    replace(aws_glue_catalog_database.hben_raw_zone.name, "-", "_") = aws_glue_catalog_database.hben_raw_zone.name,
+
+    replace(aws_glue_catalog_database.child_edu_refined.name, "-", "_")           = aws_glue_catalog_database.child_edu_refined.name,
+    replace(aws_glue_catalog_database.hackney_casemanagement_live.name, "-", "_") = aws_glue_catalog_database.hackney_casemanagement_live.name,
+    replace(aws_glue_catalog_database.hackney_synergy_live.name, "-", "_")        = aws_glue_catalog_database.hackney_synergy_live.name
   }
 
   redshift_users = [
@@ -272,6 +276,9 @@ locals {
         replace(module.department_children_family_services_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_"),
+        replace(aws_glue_catalog_database.child_edu_refined.name, "-", "_"),
+        replace(aws_glue_catalog_database.hackney_casemanagement_live.name, "-", "_"),
+        replace(aws_glue_catalog_database.hackney_synergy_live.name, "-", "_"),
       ], local.unrestricted_schemas)
     }
   ]
@@ -481,6 +488,9 @@ locals {
         replace(module.department_children_family_services_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_"),
+        replace(aws_glue_catalog_database.child_edu_refined.name, "-", "_"),
+        replace(aws_glue_catalog_database.hackney_casemanagement_live.name, "-", "_"),
+        replace(aws_glue_catalog_database.hackney_synergy_live.name, "-", "_"),
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
