@@ -1128,11 +1128,11 @@ module "parking_permit_by_emmission_band" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1i4YDNYJVcM6N-7Qhes1O7gO6ng00qdBu"
+  google_drive_document_id       = "1KvjRjKA_IE_IHKLWHfMr3x-Me1TpF8pC"
   glue_job_name                  = "parking_permit_by_emmission_band"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "parking_permit_by_emmission_band/Parking_Permit_by_emmission_band_oct_2025.csv"
+  input_file_name                = "parking_permit_by_emmission_band/Parking_Permit_by_emmission_band_oct_2025_update.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
