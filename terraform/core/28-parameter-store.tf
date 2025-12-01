@@ -76,3 +76,42 @@ resource "aws_ssm_parameter" "repairs_hub_password" {
   }
 }
 
+resource "aws_ssm_parameter" "nec_housing_address" {
+  name  = "/${local.identifier_prefix}/${module.department_housing.identifier}/nec_housing/address"
+  type  = "String"
+  value = "UPDATE_IN_CONSOLE"
+  tags  = module.tags.values
+
+  lifecycle {
+    ignore_changes = [
+      value,
+    ]
+  }
+}
+
+resource "aws_ssm_parameter" "nec_housing_username" {
+  name  = "/${local.identifier_prefix}/${module.department_housing.identifier}/nec_housing/username"
+  type  = "String"
+  value = "UPDATE_IN_CONSOLE"
+  tags  = module.tags.values
+
+  lifecycle {
+    ignore_changes = [
+      value,
+    ]
+  }
+}
+
+resource "aws_ssm_parameter" "nec_housing_password" {
+  name  = "/${local.identifier_prefix}/${module.department_housing.identifier}/nec_housing/password"
+  type  = "SecureString"
+  value = "UPDATE_IN_CONSOLE"
+  tags  = module.tags.values
+
+  lifecycle {
+    ignore_changes = [
+      value,
+    ]
+  }
+}
+
