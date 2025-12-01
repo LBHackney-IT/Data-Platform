@@ -13,10 +13,10 @@ module "housing_apply_gx_dq_tests" {
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
-  trigger_enabled                = local.is_production_environment
+  trigger_enabled                = false
   number_of_workers_for_glue_job = 2
   schedule                       = "cron(0 10 ? * MON-FRI *)"
-  job_parameters                 = {
+  job_parameters = {
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
@@ -51,7 +51,7 @@ module "housing_gx_dq_metadata" {
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
   trigger_enabled                = local.is_production_environment
   number_of_workers_for_glue_job = 2
-  job_parameters                 = {
+  job_parameters = {
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
@@ -68,11 +68,11 @@ module "housing_gx_dq_metadata" {
 }
 
 resource "aws_glue_trigger" "housing_gx_dq_metadata" {
-  name = "${local.short_identifier_prefix}Housing GX Data Quality Metadata Trigger"
-  type = "CONDITIONAL"
-  tags     = module.department_housing_data_source.tags
-  enabled  = local.is_production_environment
-  count    = local.is_live_environment ? 1 : 0
+  name    = "${local.short_identifier_prefix}Housing GX Data Quality Metadata Trigger"
+  type    = "CONDITIONAL"
+  tags    = module.department_housing_data_source.tags
+  enabled = local.is_production_environment
+  count   = local.is_live_environment ? 1 : 0
 
   actions {
     job_name = "${local.short_identifier_prefix}Housing GX Data Quality Metadata"
