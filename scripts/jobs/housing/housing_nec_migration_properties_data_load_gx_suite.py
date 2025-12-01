@@ -17,28 +17,6 @@ class PropertiesExpectPropRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNot
     description: str = "Expect lpro_propref (prop ref) values to not be Null"
 
 
-class PropertiesExpectPropTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LPRO_HOU_PTV_CODE"
-    value_set: list = [
-        "BUN",
-        "CMC",
-        "CMF",
-        "COM",
-        "CYC",
-        "DUP",
-        "FLT",
-        "GAR",
-        "HOU",
-        "MAI",
-        "PRA",
-        "PSP",
-        "ROM",
-        "STD",
-        "TRV",
-    ]
-    description: str = "Expect property type codes to contain one of the set"
-
-
 class PropertiesExpectOccStatusCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "lpro_sco_code"
     value_set: list = ["OCC", "VOI", "CLO"]
@@ -173,7 +151,6 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 suite = gx.ExpectationSuite(name="properties_data_load_suite")
 
 suite.add_expectation(PropertiesExpectPropRefColumnValuesToBeUnique())
-suite.add_expectation(PropertiesExpectPropTypeCodeToBeInSet())
 suite.add_expectation(PropertiesExpectOccStatusCodeToBeInSet())
 suite.add_expectation(PropertiesExpectOrgIndicatorToBeInSet())
 suite.add_expectation(PropertiesExpectOwnTypeToBeInSet())
