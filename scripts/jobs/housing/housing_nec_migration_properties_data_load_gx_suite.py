@@ -66,7 +66,7 @@ class PropertiesExpectPropTypeValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     column: str = "LPRO_HOU_PTV_CODE"
     value_set: list = [
         "CMC",
-        "CMC",
+        "CMF",
         "GAR",
         "FLT",
         "HOU",
@@ -80,6 +80,11 @@ class PropertiesExpectPropTypeValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
         "PRA",
         "CYC",
         "DUP",
+        "BOI",
+        "LFT",
+        "CON",
+        "PLY",
+
     ]
     description: str = "Expect property type values to be one of the set"
 
