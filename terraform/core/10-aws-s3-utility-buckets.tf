@@ -165,6 +165,21 @@ module "user_uploads" {
 }
 
 #===============================================================================
+# DataHub Config Bucket to store the DataHub YAML configuration files
+#===============================================================================
+
+module "datahub_config" {
+  source                     = "../modules/s3-bucket"
+  tags                       = module.tags.values
+  project                    = var.project
+  environment                = var.environment
+  identifier_prefix          = local.identifier_prefix
+  bucket_name                = "datahub-config"
+  bucket_identifier          = "datahub-config"
+  include_backup_policy_tags = false
+}
+
+#===============================================================================
 # MWAA Buckets
 #===============================================================================
 

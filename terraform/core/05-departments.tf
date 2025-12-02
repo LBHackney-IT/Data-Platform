@@ -165,6 +165,12 @@ module "department_data_and_insight" {
       paths       = []
       actions     = ["s3:Get*", "s3:List*", ]
     },
+    {
+      bucket_arn  = module.datahub_config.bucket_arn
+      kms_key_arn = module.datahub_config.kms_key_arn
+      paths       = []
+      actions     = ["s3:Get*", "s3:List*", ]
+    },
   ]
 }
 
