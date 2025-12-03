@@ -10,10 +10,12 @@ module "redshift" {
   refined_zone_bucket_arn  = module.refined_zone_data_source.bucket_arn
   trusted_zone_bucket_arn  = module.trusted_zone_data_source.bucket_arn
   raw_zone_bucket_arn      = module.raw_zone_data_source.bucket_arn
+  user_uploads_bucket_arn  = module.user_uploads_data_source.bucket_arn
   landing_zone_kms_key_arn = module.landing_zone_data_source.kms_key_arn
   raw_zone_kms_key_arn     = module.raw_zone_data_source.kms_key_arn
   refined_zone_kms_key_arn = module.refined_zone_data_source.kms_key_arn
   trusted_zone_kms_key_arn = module.trusted_zone_data_source.kms_key_arn
+  user_uploads_kms_key_arn = module.user_uploads_data_source.kms_key_arn
   secrets_manager_key      = data.aws_kms_key.secrets_manager_key.arn
   additional_iam_roles     = local.is_production_environment ? [] : [aws_iam_role.parking_redshift_copier[0].arn]
 }
@@ -48,7 +50,7 @@ locals {
     replace(module.department_parking_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_parking_data_source.refined_zone_catalog_database_name,
     replace(module.department_parking_data_source.trusted_zone_catalog_database_name, "-", "_") = module.department_parking_data_source.trusted_zone_catalog_database_name,
     replace("parking-ringgo-sftp-raw-zone", "-", "_")                                           = "parking-ringgo-sftp-raw-zone",
-    replace(aws_glue_catalog_database.parking_user_uploads.name, "-", "_")                      = aws_glue_catalog_database.parking_user_uploads.name,
+    replace(aws_glue_catalog_database.department_user_uploads["parking"].name, "-", "_")        = aws_glue_catalog_database.department_user_uploads["parking"].name,
 
     replace(module.department_finance_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_finance_data_source.raw_zone_catalog_database_name,
     replace(module.department_finance_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_finance_data_source.refined_zone_catalog_database_name,
@@ -127,7 +129,7 @@ locals {
         "liberator_refined_zone",
         replace(module.department_parking_data_source.trusted_zone_catalog_database_name, "-", "_"),
         replace("parking-ringgo-sftp-raw-zone", "-", "_"),
-        replace(aws_glue_catalog_database.parking_user_uploads.name, "-", "_"),
+        replace(aws_glue_catalog_database.department_user_uploads["parking"].name, "-", "_"),
       ], local.unrestricted_schemas)
     },
     {
@@ -311,7 +313,7 @@ locals {
         "liberator_refined_zone",
         replace(module.department_parking_data_source.trusted_zone_catalog_database_name, "-", "_"),
         replace("parking-ringgo-sftp-raw-zone", "-", "_"),
-        replace(aws_glue_catalog_database.parking_user_uploads.name, "-", "_")
+        replace(aws_glue_catalog_database.department_user_uploads["parking"].name, "-", "_")
       ]
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name

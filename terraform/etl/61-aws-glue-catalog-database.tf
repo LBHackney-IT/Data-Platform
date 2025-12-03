@@ -86,8 +86,22 @@ resource "aws_glue_catalog_database" "arcus_archive" {
   }
 }
 
-resource "aws_glue_catalog_database" "parking_user_uploads" {
-  name = "parking_user_uploads_db"
+locals {
+  department_user_uploads_databases = {
+    parking            = "parking_user_uploads_db"
+    housing            = "housing_user_uploads_db"
+    data_and_insight   = "data_and_insight_user_uploads_db"
+    child_fam_services = "child_fam_services_user_uploads_db"
+    unrestricted       = "unrestricted_user_uploads_db"
+    env_services       = "env_services_user_uploads_db"
+    revenues           = "revenues_user_uploads_db"
+  }
+}
+
+resource "aws_glue_catalog_database" "department_user_uploads" {
+  for_each = local.department_user_uploads_databases
+
+  name = each.value
 
   lifecycle {
     prevent_destroy = true

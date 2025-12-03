@@ -1,6 +1,18 @@
 # Lambda function to automatically create/delete Glue Catalog tables
 # Workflow: S3 CSV upload/delete → SQS → Lambda → Glue Catalog table create/delete (retry once on failure → DLQ)
 
+locals {
+  department_user_uploads_prefixes = {
+    parking            = "parking/"
+    housing            = "housing/"
+    data_and_insight   = "data-and-insight/"
+    child_fam_services = "child-fam-services/"
+    unrestricted       = "unrestricted/"
+    env_services       = "env-services/"
+    revenues           = "revenues/"
+  }
+}
+
 data "aws_iam_policy_document" "csv_to_glue_catalog_lambda_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -34,12 +46,11 @@ data "aws_iam_policy_document" "csv_to_glue_catalog_lambda_execution" {
       "glue:GetPartitions",
       "glue:DeletePartition",
     ]
-    # Currently only scoped to parking
-    resources = [
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:catalog",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:database/parking_user_uploads_db",
-      "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:table/parking_user_uploads_db/*",
-    ]
+    resources = concat(
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:catalog"],
+      [for db_name in values(local.department_user_uploads_databases) : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:database/${db_name}"],
+      [for db_name in values(local.department_user_uploads_databases) : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:table/${db_name}/*"]
+    )
   }
 
   statement {
@@ -177,11 +188,14 @@ resource "aws_sqs_queue_policy" "csv_to_glue_catalog_events" {
 resource "aws_s3_bucket_notification" "user_uploads_csv_notification" {
   bucket = module.user_uploads_data_source.bucket_id
 
-  queue {
-    queue_arn     = aws_sqs_queue.csv_to_glue_catalog_events.arn
-    events        = ["s3:ObjectCreated:*", "s3:ObjectRemoved:*"]
-    filter_prefix = "parking/" # Currently only scoped to parking
-    filter_suffix = ".csv"
+  dynamic "queue" {
+    for_each = local.department_user_uploads_prefixes
+    content {
+      queue_arn     = aws_sqs_queue.csv_to_glue_catalog_events.arn
+      events        = ["s3:ObjectCreated:*", "s3:ObjectRemoved:*"]
+      filter_prefix = queue.value
+      filter_suffix = ".csv"
+    }
   }
 
   depends_on = [aws_sqs_queue_policy.csv_to_glue_catalog_events]
