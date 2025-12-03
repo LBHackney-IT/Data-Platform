@@ -1416,7 +1416,7 @@ module "smt_dashboard_link" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1oQEdv8mMcT90HlQlnaO6zbMcyRAj_3sq"
+  google_drive_document_id       = "1KtuAQOnbBpHN8Trk0iczKUZIlqaS0e8t"
   glue_job_name                  = "smt_dashboard_link"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
