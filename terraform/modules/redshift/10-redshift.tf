@@ -36,7 +36,9 @@ data "aws_iam_policy_document" "redshift" {
       "${var.trusted_zone_bucket_arn}/*",
       var.trusted_zone_bucket_arn,
       "${var.raw_zone_bucket_arn}/*",
-      var.raw_zone_bucket_arn
+      var.raw_zone_bucket_arn,
+      "${var.user_uploads_bucket_arn}/*",
+      var.user_uploads_bucket_arn
     ]
   }
   statement {
@@ -55,6 +57,7 @@ data "aws_iam_policy_document" "redshift" {
       var.raw_zone_kms_key_arn,
       var.refined_zone_kms_key_arn,
       var.trusted_zone_kms_key_arn,
+      var.user_uploads_kms_key_arn,
     ]
   }
 }
@@ -165,11 +168,11 @@ resource "aws_security_group" "redshift_cluster_security_group" {
   }
 
   ingress {
-    description     = "Allows inbound traffic from the Qlik EC2 data gateway"
-    from_port       = 5439
-    to_port         = 5439
-    protocol        = "tcp"
-    cidr_blocks     = ["10.120.32.49/32"]
+    description = "Allows inbound traffic from the Qlik EC2 data gateway"
+    from_port   = 5439
+    to_port     = 5439
+    protocol    = "tcp"
+    cidr_blocks = ["10.120.32.49/32"]
   }
   ingress {
     description     = "Allows security group based inbound traffic"

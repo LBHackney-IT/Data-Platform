@@ -62,3 +62,13 @@ variable "secrets_manager_key" {
   description = "ARN of secrets manager KMS key"
   type        = string
 }
+
+variable "user_uploads_bucket_arn" {
+  description = "ARN of user uploads bucket"
+  type        = string
+}
+
+variable "user_uploads_kms_key_arn" {
+  description = "ARN of user uploads KMS key"
+  type        = string
+}
