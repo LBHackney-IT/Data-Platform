@@ -155,7 +155,7 @@ module "department_data_and_insight" {
   user_uploads_bucket             = module.user_uploads
   cloudtrail_bucket               = module.cloudtrail_storage
   additional_glue_database_access = {
-    read_only  = ["data_and_insight_user_uploads_db"]
+    read_only  = []
     read_write = ["arcus_archive", "metastore"]
   }
   additional_s3_access = [
@@ -277,10 +277,6 @@ module "department_unrestricted" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
-  additional_glue_database_access = {
-    read_only  = ["unrestricted_user_uploads_db"]
-    read_write = []
-  }
 }
 
 module "department_sandbox" {
@@ -432,10 +428,6 @@ module "department_environmental_services" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
-  additional_glue_database_access = {
-    read_only  = ["env_services_user_uploads_db"]
-    read_write = []
-  }
 }
 
 module "department_housing" {
@@ -492,7 +484,7 @@ module "department_housing" {
     }
   ]
   additional_glue_database_access = {
-    read_only  = ["housing_user_uploads_db"]
+    read_only  = []
     read_write = ["housing_service_requests_ieg4", "housing_nec_migration", "housing_nec_migration_outputs"]
   }
 }
@@ -668,7 +660,7 @@ module "department_children_family_services" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
-    read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live", "child_fam_services_user_uploads_db"]
+    read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
     read_write = []
   }
 }
