@@ -9,6 +9,7 @@ locals {
     child_fam_services = "child-fam-services/"
     unrestricted       = "unrestricted/"
     env_services       = "env-services/"
+    revenues           = "revenues/"
   }
 }
 

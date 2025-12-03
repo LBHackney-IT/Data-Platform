@@ -94,6 +94,7 @@ locals {
     child_fam_services = "child_fam_services_user_uploads_db"
     unrestricted       = "unrestricted_user_uploads_db"
     env_services       = "env_services_user_uploads_db"
+    revenues           = "revenues_user_uploads_db"
   }
 }
 
