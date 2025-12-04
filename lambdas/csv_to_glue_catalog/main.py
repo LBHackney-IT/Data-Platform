@@ -8,7 +8,6 @@ import json
 import logging
 import re
 import unicodedata
-from os import getenv
 from pathlib import PurePosixPath
 from typing import Any
 from urllib.parse import unquote_plus
@@ -283,7 +282,6 @@ def handle_sqs_event(event: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Dictionary with batchItemFailures for partial batch failure handling
     """
-    database_name = getenv("GLUE_DATABASE_NAME", "parking_user_uploads_db")
     sqs_records = event.get("Records", [])
     total_records = len(sqs_records)
     processed_count = 0
@@ -308,6 +306,14 @@ def handle_sqs_event(event: dict[str, Any]) -> dict[str, Any]:
                 s3_event_record.get("s3", {}).get("object", {}).get("key", "unknown")
             )
             logger.info(f"Processing file from message {message_id}: {s3_key}")
+
+            # Extract and normalize department from S3 path to construct database name
+            department, _, _ = parse_s3_key(s3_key)
+            normalized_dept = department.replace("-", "_")
+            database_name = f"{normalized_dept}_user_uploads_db"
+            logger.info(
+                f"Using database '{database_name}' for department '{department}'"
+            )
 
             was_processed, was_skipped = process_single_event_record(
                 s3_event_record, database_name
