@@ -1279,7 +1279,7 @@ data "aws_iam_policy_document" "department_ecs_passrole" {
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.department_identifier}*-ecs-execution-role", # Defined in ecs repo.
       ],
       local.department_identifier == "data-and-insight" ? [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/datahub-task-execution-role" # DataHub task execution role (Defined in dap-datahub repo)
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/datahub-task-execution-role" # Defined in dap-datahub repo
       ] : []
     )
     condition {
