@@ -25,6 +25,20 @@ resource "aws_ssoadmin_permission_set_inline_policy" "department" {
   permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
 }
 
+resource "aws_ssoadmin_customer_managed_policy_attachment" "departmental_cloudwatch_ecs_logs" {
+  count = local.deploy_sso ? 1 : 0
+
+  provider = aws.aws_hackit_account
+
+  instance_arn       = var.sso_instance_arn
+  permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
+
+  customer_managed_policy_reference {
+    name = aws_iam_policy.departmental_cloudwatch_and_ecs_logs_access.name
+    path = "/"
+  }
+}
+
 data "aws_identitystore_group" "department" {
   count = local.deploy_sso ? 1 : 0
 

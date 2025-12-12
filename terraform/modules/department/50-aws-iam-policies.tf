@@ -809,6 +809,41 @@ resource "aws_iam_policy" "parameter_store_read_only" {
   policy = data.aws_iam_policy_document.parameter_store_read_only.json
 }
 
+// CloudWatch and ECS logs access policy for departmental SSO users
+data "aws_iam_policy_document" "departmental_cloudwatch_and_ecs_logs_access" {
+  statement {
+    sid    = "ECSLogsAccess"
+    effect = "Allow"
+    actions = [
+      "logs:DescribeLogStreams",
+      "logs:GetLogEvents",
+      "logs:DescribeLogGroups"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:/ecs/*${local.department_identifier}*"
+    ]
+  }
+
+  statement {
+    sid    = "CloudWatchMetricsAccess"
+    effect = "Allow"
+    actions = [
+      "cloudwatch:GetMetricData",
+      "cloudwatch:GetMetricStatistics",
+      "cloudwatch:ListMetrics"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "departmental_cloudwatch_and_ecs_logs_access" {
+  tags = var.tags
+
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-cloudwatch-ecs-logs-access")
+  description = "Allows departmental access to CloudWatch metrics and department-specific ECS log groups"
+  policy      = data.aws_iam_policy_document.departmental_cloudwatch_and_ecs_logs_access.json
+}
+
 // Glue Agent Read only policy for glue scripts and mwaa bucket and run athena
 data "aws_iam_policy_document" "read_glue_scripts_and_mwaa_and_athena" {
   statement {
