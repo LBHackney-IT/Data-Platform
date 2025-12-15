@@ -65,3 +65,22 @@ resource "aws_secretsmanager_secret_version" "bens_housing_needs_academy_sql_ser
     ignore_changes = [secret_string]
   }
 }
+
+
+resource "aws_secretsmanager_secret" "qlik_cloud" {
+  name        = "/${module.department_data_and_insight_data_source.identifier}/qlik-cloud"
+  description = "Qlik Cloud credentials containing tenant_hostname and api_key"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "qlik_cloud" {
+  secret_id = aws_secretsmanager_secret.qlik_cloud.id
+  secret_string = jsonencode({
+    tenant_hostname = "UPDATE_IN_CONSOLE"
+    api_key         = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
