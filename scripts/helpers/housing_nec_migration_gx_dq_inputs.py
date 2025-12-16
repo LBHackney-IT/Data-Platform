@@ -10,14 +10,14 @@ sql_config = {
 }
 
 data_load_list = [
-    "properties",
-    "tenancies",
-    "people",
-    "contacts",
-    "arrears_actions",
-    "revenue_accounts",
-    # "transactions",
-    "addresses",
+    "properties"
+    # "tenancies",
+    # "people",
+    # "contacts",
+    # "arrears_actions",
+    # "revenue_accounts",
+    # # "transactions",
+    # "addresses",
 ]
 
 table_list = {
@@ -33,7 +33,7 @@ table_list = {
         # "properties_4b",
         # "properties_4c",
         # "properties_7a",
-        "properties_all_tranches",
+        "full_full_hem_pro_all_dq",
     ],
     "tenancies": [
         # "tenancies_1a",

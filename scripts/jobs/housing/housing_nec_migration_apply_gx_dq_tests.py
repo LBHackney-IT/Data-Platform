@@ -16,14 +16,14 @@ from scripts.helpers.housing_nec_migration_gx_dq_inputs import (
     table_list,
 )
 import scripts.jobs.housing.housing_nec_migration_properties_data_load_gx_suite
-import scripts.jobs.housing.housing_nec_migration_tenancies_data_load_gx_suite
-import scripts.jobs.housing.housing_nec_migration_people_data_load_gx_suite
-import scripts.jobs.housing.housing_nec_migration_contacts_data_load_gx_suite
-import scripts.jobs.housing.housing_nec_migration_arrears_actions_data_load_gx_suite
-import scripts.jobs.housing.housing_nec_migration_revenue_accounts_data_load_gx_suite
-
-# import scripts.jobs.housing.housing_nec_migration_transactions_data_load_gx_suite
-import scripts.jobs.housing.housing_nec_migration_addresses_data_load_gx_suite
+# import scripts.jobs.housing.housing_nec_migration_tenancies_data_load_gx_suite
+# import scripts.jobs.housing.housing_nec_migration_people_data_load_gx_suite
+# import scripts.jobs.housing.housing_nec_migration_contacts_data_load_gx_suite
+# import scripts.jobs.housing.housing_nec_migration_arrears_actions_data_load_gx_suite
+# import scripts.jobs.housing.housing_nec_migration_revenue_accounts_data_load_gx_suite
+#
+# # import scripts.jobs.housing.housing_nec_migration_transactions_data_load_gx_suite
+# import scripts.jobs.housing.housing_nec_migration_addresses_data_load_gx_suite
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ locals().update(args)
 
 
 def get_sql_query(sql_config, data_load, table):
-    query = f"SELECT * FROM housing_nec_migration.{table}"
+    query = f"SELECT * FROM housing_nec_migration_outputs.{table}"
     id_field = sql_config.get(data_load).get("id_field")
     return query, id_field
 
