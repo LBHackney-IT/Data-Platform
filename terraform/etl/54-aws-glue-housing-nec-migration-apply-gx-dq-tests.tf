@@ -20,7 +20,7 @@ module "housing_nec_migration_apply_gx_dq_tests" {
     "--job-bookmark-option"              = "job-bookmark-enable"
     "--enable-glue-datacatalog"          = "true"
     "--enable-continuous-cloudwatch-log" = "true"
-    "--additional-python-modules"        = "great_expectations==1.5.8,PyAthena,numpy==1.26.1,awswrangler==3.10.0"
+    "--additional-python-modules"        = "great_expectations==1.5.8,PyAthena,numpy==1.26.1,awswrangler==3.10.0,urllib3>=1.26.18"
     "--region_name"                      = data.aws_region.current.name
     "--s3_endpoint"                      = "https://s3.${data.aws_region.current.name}.amazonaws.com"
     "--s3_target_location"               = "s3://${module.raw_zone_data_source.bucket_id}/housing/nec-migration-data-quality-tests/"
