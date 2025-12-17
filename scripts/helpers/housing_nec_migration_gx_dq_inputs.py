@@ -1,18 +1,18 @@
 sql_config = {
-    "properties": {"id_field": "LPRO_PROPREF"},
-    "tenancies": {"id_field": "LTCY_ALT_REF"},
-    "people": {"id_field": "LPAR_PER_ALT_REF"},
-    "contacts": {"id_field": "LCDE_LEGACY_REF"},
-    "arrears_actions": {"id_field": "LACA_PAY_REF"},
-    "revenue_accounts": {"id_field": "LRAC_PAY_REF"},
-    "transactions": {"id_field": "LTRN_ALT_REF"},
-    "addresses": {"id_field": "LAUS_LEGACY_REF"},
+    "properties": {"id_field": "lpro_propref"},
+    "tenancies": {"id_field": "ltcy_alt_ref"},
+    "people": {"id_field": "lpar_per_alt_ref"},
+    "contacts": {"id_field": "lcde_legacy_ref"},
+    "arrears_actions": {"id_field": "laca_pay_ref"},
+    "revenue_accounts": {"id_field": "lrac_pay_ref"},
+    "transactions": {"id_field": "ltrn_alt_ref"},
+    "addresses": {"id_field": "laus_legacy_ref"},
 }
 
 data_load_list = [
-    "properties"
-    # "tenancies",
-    # "people",
+    "properties",
+    "tenancies",
+    "people"
     # "contacts",
     # "arrears_actions",
     # "revenue_accounts",
@@ -33,21 +33,21 @@ table_list = {
         # "properties_4b",
         # "properties_4c",
         # "properties_7a",
-        "full_full_hem_pro_all_dq",
+        "full_dq_full_dq_hem_pro_all_dq",
     ],
     "tenancies": [
         # "tenancies_1a",
         # "tenancies_1c",
         # "tenancies_2a",
         # "tenancies_other",
-        "tenancies_all",
+        "full_dq_full_dq_hem_tcy_all_dq",
     ],
     "people": [
         # "people_1a",
         #        "people_1b",
         #        "people_1c",
         #        "people_2a",
-        "people_all"
+        "full_dq_full_dq_hem_per_all_dq"
     ],
     "contacts": [
         # "contacts_1a",
