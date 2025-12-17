@@ -16,8 +16,9 @@ from scripts.helpers.housing_nec_migration_gx_dq_inputs import (
     table_list,
 )
 import scripts.jobs.housing.housing_nec_migration_properties_data_load_gx_suite
-# import scripts.jobs.housing.housing_nec_migration_tenancies_data_load_gx_suite
-# import scripts.jobs.housing.housing_nec_migration_people_data_load_gx_suite
+import scripts.jobs.housing.housing_nec_migration_tenancies_data_load_gx_suite
+import scripts.jobs.housing.housing_nec_migration_people_data_load_gx_suite
+
 # import scripts.jobs.housing.housing_nec_migration_contacts_data_load_gx_suite
 # import scripts.jobs.housing.housing_nec_migration_arrears_actions_data_load_gx_suite
 # import scripts.jobs.housing.housing_nec_migration_revenue_accounts_data_load_gx_suite
@@ -162,7 +163,7 @@ def main():
                     )
                 ]
 
-                table_results_df["unexpected_id_list"] = pd.Series(dtype="object")
+                table_results_df["unexpected_id_list"] = pd.Series(dtype="string")
 
                 for i, row in query_df.iterrows():
                     try:

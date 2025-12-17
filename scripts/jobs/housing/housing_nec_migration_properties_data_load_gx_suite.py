@@ -8,29 +8,31 @@ import great_expectations.expectations as gxe
 
 
 class PropertiesExpectPropRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
-    column: str = "LPRO_PROPREF"
-    description: str = "Expect UPRN (LPRO_PROPREF) values to be unique"
+    column: str = "lpro_propref"
+    description: str = "Expect UPRN (lpro_propref) values to be unique"
 
 
 class PropertiesExpectPropRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column: str = "LPRO_PROPREF"
-    description: str = "Expect LPRO_PROPREF (prop ref) values to not be Null"
+    column: str = "lpro_propref"
+    description: str = "Expect lpro_propref (prop ref) values to not be Null"
 
 
 class PropertiesExpectOccStatusCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LPRO_SCO_CODE"
+    column: str = "lpro_sco_code"
     value_set: list = ["OCC", "VOI", "CLO"]
-    description: str = "Expect status codes to be one of the set"
+    description: str = "Expect status codes (lpro_sco_code) to be one of the set"
 
 
 class PropertiesExpectOrgIndicatorToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LPRO_ORGANISATION_IND"
+    column: str = "lpro_organisation_ind"
     value_set: list = ["Y", "N"]
-    description: str = "Expect organisation indicator to be one of the set"
+    description: str = (
+        "Expect organisation indicator (lpro_organisation_ind) to be one of the set"
+    )
 
 
 class PropertiesExpectOwnTypeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LPRO_HOU_HRV_HOT_CODE"
+    column: str = "lpro_hou_hrv_hot_code"
     value_set: list = [
         "ASSOC",
         "COUN",
@@ -40,11 +42,13 @@ class PropertiesExpectOwnTypeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
         "LEASLOUT",
         "PRIVATE",
     ]
-    description: str = "Expect ownership type code to be one of the set"
+    description: str = (
+        "Expect ownership type code (lpro_hou_hrv_hot_code) to be one of the set"
+    )
 
 
 class PropertiesExpectPropSourceToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LPRO_HOU_HRV_HRS_CODE"
+    column: str = "lpro_hou_hrv_hrs_code"
     value_set: list = [
         "LEASED",
         "NEWBUILD",
@@ -52,80 +56,89 @@ class PropertiesExpectPropSourceToBeInSet(gxe.ExpectColumnValuesToBeInSet):
         "STOCKTRANS",
         "BUYBACK",
         "ACQUIRED",
+        "ENFRAN",
     ]
-    description: str = "Expect property source code to be one of the set"
+    description: str = (
+        "Expect property source code (lpro_hou_hrv_hrs_code) to be one of the set"
+    )
 
 
 class PropertiesExpectResIndicatorToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LPRO_HOU_RESIDENTIAL_IND"
+    column: str = "lpro_hou_residential_ind"
     value_set: list = ["Y", "N"]
-    description: str = "Expect resdidential indicator to be one of the set"
+    description: str = (
+        "Expect residential indicator (lpro_hou_residential_ind) to be one of the set"
+    )
 
 
 class PropertiesExpectPropTypeValuesToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LPRO_HOU_PTV_CODE"
+    column: str = "lpro_hou_ptv_code"
     value_set: list = [
-        "CMC",
-        "CMC",
-        "GAR",
-        "FLT",
-        "HOU",
-        "MAI",
+        "BOI",
         "BUN",
-        "TRV",
-        "STD",
-        "ROM",
+        "CMC",
+        "CMF",
         "COM",
-        "PSP",
-        "PRA",
+        "CON",
         "CYC",
         "DUP",
-        "BOI",
-        "CMC",
-        "CON",
+        "FLT",
+        "GAR",
+        "HOU",
         "LFT",
-        "PLY"
+        "MAI",
+        "PLY",
+        "PRA",
+        "PSP",
+        "ROM",
+        "STD",
+        "TRV",
     ]
-    description: str = "Expect property type values to be one of the set"
+    description: str = (
+        "Expect property type values (lpro_hou_ptv_code) to be one of the set"
+    )
 
 
-class PropertiesExpectPropColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
+class PropertiesExpectPropColumnsToMatchOrderedList(
+    gxe.ExpectTableColumnsToMatchOrderedList
+):
     column_list = [
-        "LPRO_PROPREF",
-        "LPRO_HOU_FRB",
-        "LPRO_SCO_CODE",
-        "LPRO_ORGANISATION_IND",
-        "LPRO_HOU_HRV_HOT_CODE",
-        "LPRO_HOU_HRV_HRS_CODE",
-        "LPRO_HOU_HRV_HBU_CODE",
-        "LPRO_HOU_HRV_HLT_CODE",
-        "LPRO_PARENT_PROPREF",
-        "LPRO_HOU_SALE_DATE",
-        "LPRO_SERVICE_PROP_IND",
-        "LPRO_HOU_ACQUIRED_DATE",
-        "LPRO_HOU_DEFECTS_IND",
-        "LPRO_HOU_RESIDENTIAL_IND",
-        "LPRO_HOU_ALT_REF",
-        "LPRO_HOU_LEASE_START_DATE",
-        "LPRO_HOU_LEASE_REVIEW_DATE",
-        "LPRO_HOU_CONSTRUCTION_DATE",
-        "LPRO_HOU_PTV_CODE",
-        "LPRO_HOU_HRV_PST_CODE",
-        "LPRO_HOU_HRV_HMT_CODE",
-        "LPRO_HOU_MANAGEMENT_END_DATE",
-        "LPRO_FREE_REFNO",
-        "LPRO_FREE_NAME",
-        "LPRO_PROP_STATUS",
-        "LPRO_STATUS_START",
-        "LPRO_HOU_ALLOW_PLACEMENT_IND",
-        "LPRO_HOU_DEBIT_TO_DATE",
-        "LPRO_ON_DEBIT_START_DATE",
-        "LPRO_PHONE",
-        "LPRO_AGENT_PAR_REFNO",
-        "LPRO_PLD_COMMENTS",
-        "LPRO_REFNO",
+        "lpro_propref",
+        "lpro_hou_frb",
+        "lpro_sco_code",
+        "lpro_organisation_ind",
+        "lpro_hou_hrv_hot_code",
+        "lpro_hou_hrv_hrs_code",
+        "lpro_hou_hrv_hbu_code",
+        "lpro_hou_hrv_hlt_code",
+        "lpro_parent_propref",
+        "lpro_hou_sale_date",
+        "lpro_service_prop_ind",
+        "lpro_hou_acquired_date",
+        "lpro_hou_defects_ind",
+        "lpro_hou_residential_ind",
+        "lpro_hou_alt_ref",
+        "lpro_hou_lease_start_date",
+        "lpro_hou_lease_review_date",
+        "lpro_hou_construction_date",
+        "lpro_hou_ptv_code",
+        "lpro_hou_hrv_pst_code",
+        "lpro_hou_hrv_hmt_code",
+        "lpro_hou_management_end_date",
+        "lpro_free_refno",
+        "lpro_free_name",
+        "lpro_prop_status",
+        "lpro_status_start",
+        "lpro_hou_allow_placement_ind",
+        "lpro_hou_debit_to_date",
+        "lpro_on_debit_start_date",
+        "lpro_phone",
+        "lpro_agent_par_refno",
+        "lpro_pld_comments",
+        "lpro_refno",
+        "tranche",
     ]
-    description: str = "Expect columns to match ordered list exactly"
+    description: str = "Expect columns to match ordered list exactly; tranche at end"
 
 
 arg_key = ["s3_target_location"]

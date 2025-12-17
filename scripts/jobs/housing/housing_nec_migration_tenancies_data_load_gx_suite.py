@@ -8,17 +8,17 @@ import great_expectations.expectations as gxe
 
 
 class TenanciesExpectTagRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
-    column: str = "LTCY_ALT_REF"
-    description: str = "Expect LTCY_ALT_REF (tenancy ref) values to be unique"
+    column: str = "ltcy_alt_ref"
+    description: str = "Expect ltcy_alt_ref (tenancy ref) values to be unique"
 
 
 class TenanciesExpectTenancyRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column: str = "LTCY_ALT_REF"
-    description: str = "Expect LTCY_ALT_REF (tenancy ref) values to not be Null"
+    column: str = "ltcy_alt_ref"
+    description: str = "Expect ltcy_alt_ref (tenancy ref) values to not be Null"
 
 
 class TenanciesExpectTenancyTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LTCY_TTY_CODE"
+    column: str = "ltcy_tty_code"
     value_set: list = [
         "ASH",
         "ASY",
@@ -58,7 +58,7 @@ class TenanciesExpectTenancyTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
 
 
 class TenanciesExpectTenureTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LTCY_HRV_TTYP_CODE"
+    column: str = "ltcy_hrv_ttyp_code"
     value_set: list = [
         "SECURE",
         "NONSEC",
@@ -73,62 +73,63 @@ class TenanciesExpectTenureTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
 
 
 class TenanciesExpectTenancyStatusCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LTCY_HRV_TST_CODE"
+    column: str = "ltcy_hrv_tst_code"
     value_set: list = ["DECANT", "NOTICE", "UNAUTHOCC"]
-    description: str = "Expect tenancy status code to be one of the set"
+    description: str = "Expect tenancy status code (ltcy_hrv_tst_code) to be one of the set"
 
 
 class TenanciesExpectTenancyColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
     column_list = [
-        "LTCY_ALT_REF",
-        "LTCY_TTY_CODE",
-        "LTCY_ACT_START_DATE",
-        "LTCY_CORRESPOND_NAME",
-        "LTCY_HRV_TTYP_CODE",
-        "LTCY_HRV_TSO_CODE",
-        "LTCY_ACT_END_DATE",
-        "LTCY_NOTICE_GIVEN_DATE",
-        "LTCY_NOTICE_REC_DATE",
-        "LTCY_EXPECTED_END_DATE",
-        "LTCY_RTB_RECEIVED_DATE",
-        "LTCY_RTB_ADMITTED_DATE",
-        "LTCY_RTB_HELD_DATE",
-        "LTCY_RTB_WITHDRAWN_DATE",
-        "LTCY_RTB_APP_EXPECTED_END_DATE",
-        "LTCY_HRV_TST_CODE",
-        "LTCY_HRV_TTR_CODE",
-        "LTCY_HRV_TNR_CODE",
-        "LTCY_HRV_RHR_CODE",
-        "LTCY_HRV_RWR_CODE",
-        "LTCY_RTB_APP_REFERENCE",
-        "LTCY_THO_PROPREF1",
-        "LTCY_THO_START_DATE1",
-        "LTCY_THO_END_DATE1",
-        "LTCY_THO_TTR_CODE1",
-        "LTCY_THO_PROPREF2",
-        "LTCY_THO_START_DATE2",
-        "LTCY_THO_END_DATE2",
-        "LTCY_THO_HRV_TTR_CODE2",
-        "LTCY_THO_PROPREF3",
-        "LTCY_THO_START_DATE3",
-        "LTCY_THO_END_DATE3",
-        "LTCY_THO_HRV_TTR_CODE3",
-        "LTCY_THO_PROPREF4",
-        "LTCY_THO_START_DATE4",
-        "LTCY_THO_END_DATE4",
-        "LTCY_THO_HRV_TTR_CODE4",
-        "LTCY_THO_PROPREF5",
-        "LTCY_THO_START_DATE5",
-        "LTCY_THO_END_DATE5",
-        "LTCY_THO_HRV_TTR_CODE5",
-        "LTCY_THO_PROPREF6",
-        "LTCY_THO_START_DATE6",
-        "LTCY_THO_END_DATE6",
-        "LTCY_THO_HRV_TTR_CODE6",
-        "LTCY_PHONE",
-        "LTCY_REVIEW_DATE",
+        'ltcy_act_end_date',
+        'ltcy_act_start_date',
+        'ltcy_alt_ref',
+        'ltcy_correspond_name',
+        'ltcy_expected_end_date',
+        'ltcy_hrv_rhr_code',
+        'ltcy_hrv_rwr_code',
+        'ltcy_hrv_tnr_code',
+        'ltcy_hrv_tso_code',
+        'ltcy_hrv_tst_code',
+        'ltcy_hrv_ttr_code',
+        'ltcy_hrv_ttyp_code',
+        'ltcy_notice_given_date',
+        'ltcy_notice_rec_date',
+        'ltcy_phone',
+        'ltcy_review_date',
+        'ltcy_rtb_admitted_date',
+        'ltcy_rtb_app_expected_end_date',
+        'ltcy_rtb_app_reference',
+        'ltcy_rtb_held_date',
+        'ltcy_rtb_received_date',
+        'ltcy_rtb_withdrawn_date',
+        'ltcy_tho_end_date1',
+        'ltcy_tho_end_date2',
+        'ltcy_tho_end_date3',
+        'ltcy_tho_end_date4',
+        'ltcy_tho_end_date5',
+        'ltcy_tho_end_date6',
+        'ltcy_tho_hrv_ttr_code2',
+        'ltcy_tho_hrv_ttr_code3',
+        'ltcy_tho_hrv_ttr_code4',
+        'ltcy_tho_hrv_ttr_code5',
+        'ltcy_tho_hrv_ttr_code6',
+        'ltcy_tho_propref1',
+        'ltcy_tho_propref2',
+        'ltcy_tho_propref3',
+        'ltcy_tho_propref4',
+        'ltcy_tho_propref5',
+        'ltcy_tho_propref6',
+        'ltcy_tho_start_date1',
+        'ltcy_tho_start_date2',
+        'ltcy_tho_start_date3',
+        'ltcy_tho_start_date4',
+        'ltcy_tho_start_date5',
+        'ltcy_tho_start_date6',
+        'ltcy_tho_ttr_code1',
+        'ltcy_tty_code',
+        'tranche'
     ]
-    description: str = "Expect tenancy load columns to match ordered list exactly"
+    description: str = "Expect tenancy load columns to match ordered list exactly; tranche at end"
 
 
 arg_key = ["s3_target_location"]

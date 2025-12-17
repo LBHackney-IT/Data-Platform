@@ -8,17 +8,17 @@ import great_expectations.expectations as gxe
 
 
 class PeopleExpectPersonRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
-    column: str = "LPAR_PER_ALT_REF"
-    description: str = "Expect LPAR_PER_ALT_REF (person ref) values to be unique"
+    column: str = "lpar_per_alt_ref"
+    description: str = "Expect lpar_per_alt_ref (person ref) values to be unique"
 
 
 class PeopleExpectPersonRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
-    column: str = "LPAR_PER_ALT_REF"
-    description: str = "Expect LPAR_PER_ALT_REF (person ref) values to not be Null"
+    column: str = "lpar_per_alt_ref"
+    description: str = "Expect lpar_per_alt_ref (person ref) values to not be Null"
 
 
 class PeopleExpectTitleToBeInSet(gxe.ExpectColumnValuesToBeInSet):
-    column: str = "LPAR_PER_TITLE"
+    column: str = "lpar_per_title"
     value_set: list = [
         "DAME",
         "DR",
@@ -39,37 +39,74 @@ class PeopleExpectTitleToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     description: str = "Expect title to be one of the set"
 
 
-class PeopleExpectPeopleColumnsToMatchOrderedList(gxe.ExpectTableColumnsToMatchOrderedList):
+class PeopleExpectPeopleColumnsToMatchOrderedList(
+    gxe.ExpectTableColumnsToMatchOrderedList
+):
     column_list = [
-        "LPAR_HOP_START_DATE",
-        "LPAR_PER_SURNAME",
-        "LPAR_TCY_ALT_REF",
-        "LPAR_PER_FORENAME",
-        "LPAR_HOP_HPSR_CODE",
-        "LPAR_PER_TITLE",
-        "LPAR_PER_INITIALS",
-        "LPAR_PER_DATE_OF_BIRTH",
-        "LPAR_PER_HOU_DISABLED_IND",
-        "LPAR_PER_HOU_OAP_IND",
-        "LPAR_PER_FRV_FGE_CODE",
-        "LPAR_HOP_HRV_REL_CODE",
-        "LPAR_PER_HOU_EMPLOYER",
-        "LPAR_PER_HOU_HRV_HMS_CODE",
-        "LPAR_PHONE",
-        "LPAR_HOP_END_DATE",
-        "LPAR_HOP_HPER_CODE",
-        "LPAR_TCY_IND",
-        "LPAR_TIN_MAIN_TENANT_IND",
-        "LPAR_TIN_START_DATE",
-        "LPAR_TIN_END_DATE",
-        "PAR_TIN_HRV_TIR_CODE",
-        "LPAR_TIN_STAT_SUCCESSOR_IND",
-        "LPAR_PER_ALT_REF",
-        "LPAR_PER_FRV_FEO_CODE",
-        "LPAR_PER_NI_NO",
-        "LPAR_PER_FRV_HGO_CODE",
-        "LPAR_PER_FRV_FNL_CODE",
-        "LPAR_PER_OTHER_NAME"
+        "lpar_per_surname",
+        "lpar_per_forename",
+        "lpar_hop_start_date",
+        "lpar_tcy_alt_ref",
+        "lpar_hop_hpsr_code",
+        "lpar_per_title",
+        "lpar_per_initials",
+        "lpar_per_date_of_birth",
+        "lpar_per_hou_disabled_ind",
+        "lpar_per_hou_oap_ind",
+        "lpar_per_frv_fge_code",
+        "lpar_hop_hrv_rel_code",
+        "lpar_per_hou_employer",
+        "lpar_per_hou_hrv_hms_code",
+        "lpar_phone",
+        "lpar_hop_end_date",
+        "lpar_hop_hper_code",
+        "lpar_tcy_ind",
+        "lpar_tin_main_tenant_ind",
+        "lpar_tin_start_date",
+        "lpar_tin_end_date",
+        "lpar_tin_hrv_tir_code",
+        "lpar_tin_stat_successor_ind",
+        "lpar_per_alt_ref",
+        "lpar_per_frv_feo_code",
+        "lpar_per_ni_no",
+        "lpar_per_frv_hgo_code",
+        "lpar_per_frv_fnl_code",
+        "lpar_per_other_name",
+        "lpar_per_hou_surname_prefix",
+        "lpar_hou_legacy_ref",
+        "lpar_ipp_shortname",
+        "lpar_ipp_placement_ind",
+        "lpar_ipp_current_ind",
+        "lpar_ipp_ipt_code",
+        "lpar_ipp_usr_username",
+        "lpar_ipp_spr_printer_name",
+        "lpar_ipp_comments",
+        "lpar_ipp_vca_code",
+        "lpar_ipu_aun_code",
+        "lpar_ipp_staff_id",
+        "lpar_ipp_cos_code",
+        "lpar_ipp_hrv_fit_code",
+        "lpar_type",
+        "lpar_org_sort_code",
+        "lpar_org_name",
+        "lpar_org_short_name",
+        "lpar_org_frv_oty_code",
+        "lpar_per_hou_at_risk_ind",
+        "lpar_per_hou_hrv_ntly_code",
+        "lpar_per_hou_hrv_sexo_code",
+        "lpar_per_hou_hrv_rlgn_code",
+        "lpar_per_hou_hrv_ecst_code",
+        "lpar_org_current_ind",
+        "lpar_hop_head_hhold_ind",
+        "lpar_hhold_group_no",
+        "lpar_created_date",
+        "lpar_created_by",
+        "lpar_modified_date",
+        "lpar_modified_by",
+        "lpar_per_hou_end_date",
+        "lpar_per_hou_hrv_hpe_code",
+        "lpar_org_dup",
+        "tranche",
     ]
     description: str = "Expect people load columns to match ordered list exactly"
 
