@@ -33,7 +33,7 @@ class TenanciesExpectTenancyTypeCodeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
         "LHS",
         "LTA",
         "MPA",
-        "NONSEC",
+        "NONSECHR",
         "PVG",
         "RTM",
         "SEC",

@@ -18,6 +18,7 @@ from scripts.helpers.housing_nec_migration_gx_dq_inputs import (
 import scripts.jobs.housing.housing_nec_migration_properties_data_load_gx_suite
 import scripts.jobs.housing.housing_nec_migration_tenancies_data_load_gx_suite
 import scripts.jobs.housing.housing_nec_migration_people_data_load_gx_suite
+import scripts.jobs.housing.housing_nec_migration_debit_breakdowns_data_load_gx_suite
 
 # import scripts.jobs.housing.housing_nec_migration_contacts_data_load_gx_suite
 # import scripts.jobs.housing.housing_nec_migration_arrears_actions_data_load_gx_suite
