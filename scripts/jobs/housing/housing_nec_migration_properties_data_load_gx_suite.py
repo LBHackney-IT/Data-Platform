@@ -36,11 +36,9 @@ class PropertiesExpectOwnTypeToBeInSet(gxe.ExpectColumnValuesToBeInSet):
     value_set: list = [
         "ASSOC",
         "COUN",
-        "LEASH",
-        "LEASL",
-        "LEASHOUT",
-        "LEASLOUT",
+        "LEASEHOLD",
         "PRIVATE",
+        "ENFRAN"
     ]
     description: str = (
         "Expect ownership type code (lpro_hou_hrv_hot_code) to be one of the set"
