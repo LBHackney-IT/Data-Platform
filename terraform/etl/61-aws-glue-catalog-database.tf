@@ -30,6 +30,14 @@ resource "aws_glue_catalog_database" "housing_nec_migration_database" {
   }
 }
 
+resource "aws_glue_catalog_database" "housing_nec_migration_live_database" {
+  name = "housing_nec_migration_live"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 resource "aws_glue_catalog_database" "housing_nec_migration_outputs_database" {
   name = "housing_nec_migration_outputs"
 
