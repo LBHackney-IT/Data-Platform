@@ -485,7 +485,7 @@ module "department_housing" {
   ]
   additional_glue_database_access = {
     read_only  = []
-    read_write = ["housing_service_requests_ieg4", "housing_nec_migration", "housing_nec_migration_live", "housing_nec_migration_outputs"]
+    read_write = ["housing_service_requests_ieg4", "housing_nec_*", ]
   }
 }
 
