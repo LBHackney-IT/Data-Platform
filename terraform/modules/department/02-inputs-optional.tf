@@ -68,6 +68,16 @@ variable "cloudtrail_bucket" {
   default = null
 }
 
+variable "datahub_config_bucket" {
+  description = "DataHub config S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+  default = null
+}
+
 variable "additional_glue_database_access" {
   description = <<EOF
     Additional Glue database access to grant to the department.

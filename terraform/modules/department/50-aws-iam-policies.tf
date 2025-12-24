@@ -1425,3 +1425,45 @@ resource "aws_iam_policy" "cloudtrail_access_policy" {
   description = "Allows ${local.department_identifier} department read-only access to CloudTrail bucket"
   policy      = data.aws_iam_policy_document.cloudtrail_access[0].json
 }
+
+// Write access to DataHub config bucket for Data and Insight department only
+data "aws_iam_policy_document" "datahub_config_access" {
+  count = local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
+
+  statement {
+    sid    = "DataHubConfigKmsAccess"
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    resources = [var.datahub_config_bucket.kms_key_arn]
+  }
+
+  statement {
+    sid    = "DataHubConfigS3WriteAccess"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket",
+      "s3:PutObject",
+      "s3:PutObjectAcl",
+      "s3:DeleteObject"
+    ]
+    resources = [
+      var.datahub_config_bucket.bucket_arn,
+      "${var.datahub_config_bucket.bucket_arn}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "datahub_config_access_policy" {
+  count       = local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-datahub-config-access-policy")
+  description = "Allows ${local.department_identifier} department write access to DataHub config bucket"
+  policy      = data.aws_iam_policy_document.datahub_config_access[0].json
+}

@@ -175,3 +175,9 @@ resource "aws_iam_role_policy_attachment" "ecs_parameter_store_access" {
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.parameter_store_read_only.arn
 }
+
+resource "aws_iam_role_policy_attachment" "datahub_config_access_attachment" {
+  count      = local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
+  role       = aws_iam_role.department_ecs_role.name
+  policy_arn = aws_iam_policy.datahub_config_access_policy[0].arn
+}
