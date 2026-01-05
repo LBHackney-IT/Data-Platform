@@ -154,6 +154,7 @@ module "department_data_and_insight" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
   cloudtrail_bucket               = module.cloudtrail_storage
+  datahub_config_bucket           = module.datahub_config
   additional_glue_database_access = {
     read_only  = []
     read_write = ["arcus_archive", "metastore"]
