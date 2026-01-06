@@ -7,16 +7,9 @@ import great_expectations as gx
 import great_expectations.expectations as gxe
 
 
-# class PeopleExpectPersonRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
-#     column: str = "lpar_per_alt_ref"
-#     description: str = "Expect lpar_per_alt_ref (person ref) values to be unique"
-
-
-
 class PeopleExpectPersonRefTenancyRefColumnValuesToBeUnique(gxe.ExpectCompoundColumnsToBeUnique):
-    column_list = ["lpar_per_alt_ref", "lpar_tcy_alt_ref"]
+    column_list: list = ["lpar_per_alt_ref", "lpar_tcy_alt_ref"]
     description: str = "Expect lpar_per_alt_ref (person ref) and lpar_tcy_alt_ref (tenancy ref) values to be unique"
-
 
 
 class PeopleExpectPersonRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
