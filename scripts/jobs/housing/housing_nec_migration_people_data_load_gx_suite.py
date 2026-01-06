@@ -7,9 +7,16 @@ import great_expectations as gx
 import great_expectations.expectations as gxe
 
 
-class PeopleExpectPersonRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
-    column: str = "lpar_per_alt_ref"
-    description: str = "Expect lpar_per_alt_ref (person ref) values to be unique"
+# class PeopleExpectPersonRefColumnValuesToBeUnique(gxe.ExpectColumnValuesToBeUnique):
+#     column: str = "lpar_per_alt_ref"
+#     description: str = "Expect lpar_per_alt_ref (person ref) values to be unique"
+
+
+
+class PeopleExpectPersonRefTenancyRefColumnValuesToBeUnique(gxe.ExpectCompoundColumnsToBeUnique):
+    column: list = ["lpar_per_alt_ref", "lpar_tcy_alt_ref"]
+    description: str = "Expect lpar_per_alt_ref (person ref) and lpar_tcy_alt_ref (tenancy ref) values to be unique"
+
 
 
 class PeopleExpectPersonRefColumnValuesToNotBeNull(gxe.ExpectColumnValuesToNotBeNull):
@@ -120,7 +127,7 @@ context = gx.get_context(mode="file", project_root_dir=s3_target_location)
 
 suite = gx.ExpectationSuite(name="people_data_load_suite")
 
-suite.add_expectation(PeopleExpectPersonRefColumnValuesToBeUnique())
+suite.add_expectation(PeopleExpectPersonRefTenancyRefColumnValuesToBeUnique())
 suite.add_expectation(PeopleExpectTitleToBeInSet())
 suite.add_expectation(PeopleExpectPeopleColumnsToMatchOrderedList())
 suite.add_expectation(PeopleExpectPersonRefColumnValuesToNotBeNull())
