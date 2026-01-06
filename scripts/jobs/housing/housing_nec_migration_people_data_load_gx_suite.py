@@ -14,7 +14,7 @@ import great_expectations.expectations as gxe
 
 
 class PeopleExpectPersonRefTenancyRefColumnValuesToBeUnique(gxe.ExpectCompoundColumnsToBeUnique):
-    column: list = ["lpar_per_alt_ref", "lpar_tcy_alt_ref"]
+    column_list = ["lpar_per_alt_ref", "lpar_tcy_alt_ref"]
     description: str = "Expect lpar_per_alt_ref (person ref) and lpar_tcy_alt_ref (tenancy ref) values to be unique"
 
 
