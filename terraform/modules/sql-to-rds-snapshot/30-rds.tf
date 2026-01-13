@@ -6,10 +6,10 @@ resource "aws_db_subnet_group" "default" {
 
 resource "aws_db_instance" "ingestion_db" {
   allocated_storage      = 15
-  max_allocated_storage  = 30
+  max_allocated_storage  = 45
   engine                 = "mysql"
   engine_version         = "8.0"
-  instance_class         = "db.t3.micro"
+  instance_class         = "db.t3.small"
   identifier             = var.instance_name
   db_subnet_group_name   = aws_db_subnet_group.default.name
   username               = "dataplatform"
