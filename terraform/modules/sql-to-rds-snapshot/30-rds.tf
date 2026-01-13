@@ -4,11 +4,6 @@ resource "aws_db_subnet_group" "default" {
   tags       = var.tags
 }
 
-resource "random_password" "rds_password" {
-  length  = 40
-  special = false
-}
-
 resource "aws_db_instance" "ingestion_db" {
   allocated_storage      = 15
   max_allocated_storage  = 45
@@ -23,4 +18,9 @@ resource "aws_db_instance" "ingestion_db" {
   apply_immediately      = true
   ca_cert_identifier     = "rds-ca-rsa2048-g1"
   vpc_security_group_ids = [aws_security_group.snapshot_db.id]
+}
+
+resource "random_password" "rds_password" {
+  length  = 40
+  special = false
 }
