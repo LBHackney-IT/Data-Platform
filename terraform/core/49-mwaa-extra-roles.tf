@@ -33,10 +33,20 @@ data "aws_iam_policy_document" "cross_dept_glue_metadata_glue_permissions" {
       "glue:GetDatabases",
       "glue:GetTable",
       "glue:GetTables",
-      "glue:UpdateTable",
       "glue:GetPartitions"
     ]
     resources = ["*"]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "glue:UpdateTable"
+    ]
+    resources = [
+      "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:catalog",
+      "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:database/metastore",
+      "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:table/metastore/*"
+    ]
   }
 }
 
