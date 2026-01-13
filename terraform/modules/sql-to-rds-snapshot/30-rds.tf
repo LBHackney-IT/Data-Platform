@@ -1,27 +1,26 @@
-resource "aws_db_subnet_group""default"{
-  tags       = var.tags
+resource "aws_db_subnet_group" "default" {
   name       = var.instance_name
   subnet_ids = var.aws_subnet_ids
+  tags       = var.tags
 }
 
-resource "aws_db_instance""ingestion_db"{
-  allocated_storage     = 15
-  max_allocated_storage = 45
-  engine                = "mysql"
-  engine_version        = "8.0"
-  instance_class        = "db.t3.small"
-  identifier            = var.instance_name
-  db_subnet_group_name  = aws_db_subnet_group.default.name
-  username              = "dataplatform"
-  password              = random_password.rds_password.result
-  skip_final_snapshot   = true
-  vpc_security_group_ids = [aws_security_group.snapshot_db.id
-  ]
-  apply_immediately  = true
-  ca_cert_identifier = "rds-ca-rsa2048-g1"
-}
-
-resource "random_password""rds_password"{
+resource "random_password" "rds_password" {
   length  = 40
   special = false
+}
+
+resource "aws_db_instance" "ingestion_db" {
+  allocated_storage      = 15
+  max_allocated_storage  = 45
+  engine                 = "mysql"
+  engine_version         = "8.0"
+  instance_class         = "db.t3.small"
+  identifier             = var.instance_name
+  db_subnet_group_name   = aws_db_subnet_group.default.name
+  username               = "dataplatform"
+  password               = random_password.rds_password.result
+  skip_final_snapshot    = true
+  apply_immediately      = true
+  ca_cert_identifier     = "rds-ca-rsa2048-g1"
+  vpc_security_group_ids = [aws_security_group.snapshot_db.id]
 }
