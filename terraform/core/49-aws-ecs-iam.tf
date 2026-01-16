@@ -14,7 +14,7 @@ resource "aws_iam_role" "cross_department_glue_metadata_role" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = aws_iam_role.mwaa_role.arn
+          Service = "ecs-tasks.amazonaws.com"
         }
         Action = "sts:AssumeRole"
       }
