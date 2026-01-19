@@ -348,7 +348,3 @@ resource "aws_iam_role_policy_attachment" "housing_register_glue_attach" {
   policy_arn = aws_iam_policy.housing_register_glue_permissions.arn
 }
 
-resource "aws_iam_role_policy_attachment" "housing_refister_athena_attach" {
-  role       = aws_iam_role.housing_register_task_role.name
-  policy_arn = aws_iam_policy.cross_dept_glue_metadata_athena_permissions.arn
-}
