@@ -193,7 +193,7 @@ resource "aws_iam_role" "housing_register_task_role" {
       {
         Effect = "Allow"
         Principal = {
-          service = "ecs-tasks.amazonaws.com"
+          Service = "ecs-tasks.amazonaws.com"
         }
         Action = "sts:AssumeRole"
       }
