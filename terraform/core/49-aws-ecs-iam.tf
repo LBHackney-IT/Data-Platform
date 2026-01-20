@@ -69,7 +69,8 @@ data "aws_iam_policy_document" "cross_dept_glue_metadata_athena_permissions" {
       "athena:StartQueryExecution",
       "athena:GetQueryExecution",
       "athena:GetQueryResults",
-      "athena:ListTableMetadata"
+      "athena:ListTableMetadata",
+      "athena:GetWorkGroup"
     ]
     resources = ["*"]
   }
