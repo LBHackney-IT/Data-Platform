@@ -216,6 +216,7 @@ data "aws_iam_policy_document" "housing_register_s3_permissions" {
     resources = [
       aws_s3_bucket.mwaa_etl_scripts_bucket.arn,
       "${aws_s3_bucket.mwaa_etl_scripts_bucket.arn}/housing/*",
+      "${aws_s3_bucket.mwaa_etl_scripts_bucket.arn}/shared/*",
       module.raw_zone.bucket_arn,
       "${module.raw_zone.bucket_arn}/housing/mtfh/mtfh_housingregister/*",
       "${module.raw_zone.bucket_arn}/unrestricted/geolive/llpg/geolive_llpg_llpg_address/*"
