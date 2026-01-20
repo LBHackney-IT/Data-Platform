@@ -208,11 +208,14 @@ data "aws_iam_policy_document" "housing_register_s3_permissions" {
   statement {
     sid    = "S3ReadRawZone"
     effect = "Allow"
+
     actions = [
       "s3:GetObject",
       "s3:ListBucket"
     ]
     resources = [
+      aws_s3_bucket.mwaa_etl_scripts_bucket.arn,
+      "${aws_s3_bucket.mwaa_etl_scripts_bucket.arn}/housing/*",
       module.raw_zone.bucket_arn,
       "${module.raw_zone.bucket_arn}/housing/mtfh/mtfh_housingregister/*",
       "${module.raw_zone.bucket_arn}/unrestricted/geolive/llpg/geolive_llpg_llpg_address/*"
@@ -269,6 +272,7 @@ data "aws_iam_policy_document" "housing_register_kms_permissions" {
       "kms:Decrypt"
     ]
     resources = [
+      aws_kms_key.mwaa_key.arn,
       module.raw_zone.kms_key_arn
     ]
   }
