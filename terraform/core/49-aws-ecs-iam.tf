@@ -306,23 +306,7 @@ resource "aws_iam_role_policy_attachment" "housing_register_kms_attach" {
 
 data "aws_iam_policy_document" "housing_register_glue_permissions" {
   statement {
-    sid    = "GlueCatalogRead"
-    effect = "Allow"
-    actions = [
-      "glue:GetTable",
-      "glue:GetDatabase"
-    ]
-    resources = [
-      "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:catalog",
-      "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:database/housing-refined-zone",
-      "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:database/housing-trusted-zone",
-      "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:table/housing-refined-zone/*",
-      "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:table/housing-trusted-zone/*"
-    ]
-  }
-
-  statement {
-    sid    = "GlueCatalogWrite"
+    sid    = "GlueCatalogReadAndWrite"
     effect = "Allow"
     actions = [
       "glue:CreateTable",
@@ -331,7 +315,9 @@ data "aws_iam_policy_document" "housing_register_glue_permissions" {
       "glue:CreatePartition",
       "glue:UpdatePartition",
       "glue:GetPartition",
-      "glue:GetPartitions"
+      "glue:GetTable",
+      "glue:GetPartitions",
+      "glue:GetDatabase",
     ]
     resources = [
       "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:catalog",
