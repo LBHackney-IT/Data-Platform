@@ -130,29 +130,6 @@ resource "aws_iam_role_policy" "mwaa_assume_role_policy" {
   })
 }
 
-# To allow the MWAA execution role to pass the cross-department glue metadata role to ECS tasks
-resource "aws_iam_role_policy" "mwaa_pass_cross_dept_glue_metadata_role" {
-  name = "mwaa_pass_cross_dept_glue_metadata_role"
-  role = aws_iam_role.mwaa_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = "iam:PassRole"
-        Resource = aws_iam_role.cross_department_glue_metadata_role.arn
-        Condition = {
-          StringLike = {
-            "iam:PassedToService" = "ecs-tasks.amazonaws.com"
-          }
-        }
-      }
-    ]
-  })
-}
-
-
 # Security group for MWAA - self-referencing and allowing all traffic out
 # This is recommended in the doc, Matt recommended at current stage.
 # https://docs.aws.amazon.com/mwaa/latest/userguide/vpc-security.html
