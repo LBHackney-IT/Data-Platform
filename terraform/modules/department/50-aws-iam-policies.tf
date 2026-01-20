@@ -1317,6 +1317,9 @@ data "aws_iam_policy_document" "department_ecs_passrole" {
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/datahub-task-execution-role",                                 # Defined in dap-datahub repo
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/DataHubGlueReadRole",                                         # Defined in dap-datahub repo
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.identifier_prefix}-cross-department-glue-metadata-role" # Defined in terraform/core/49-aws-ecs-iam.tf
+      ] : [],
+      local.department_identifier == "housing" ? [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.identifier_prefix}-housing-register-task-role"
       ] : []
     )
     condition {
