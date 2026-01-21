@@ -255,12 +255,6 @@ resource "aws_iam_policy" "read_only_glue_access" {
 
 // Full departmental S3 access policy
 data "aws_iam_policy_document" "s3_department_access" {
-  # Include CloudTrail and DataHub config bucket access for data-and-insight department
-  source_policy_documents = local.department_identifier == "data-and-insight" ? [
-    data.aws_iam_policy_document.cloudtrail_access[0].json,
-    data.aws_iam_policy_document.datahub_config_access[0].json
-  ] : []
-
   statement {
     sid    = "ListAllS3AndKmsKeys"
     effect = "Allow"
