@@ -39,6 +39,36 @@ resource "aws_ssoadmin_customer_managed_policy_attachment" "departmental_cloudwa
   }
 }
 
+# Attach CloudTrail access policy to SSO (data-and-insight only)
+resource "aws_ssoadmin_customer_managed_policy_attachment" "cloudtrail_access" {
+  count = local.deploy_sso && local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? 1 : 0
+
+  provider = aws.aws_hackit_account
+
+  instance_arn       = var.sso_instance_arn
+  permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
+
+  customer_managed_policy_reference {
+    name = aws_iam_policy.cloudtrail_access_policy[0].name
+    path = "/"
+  }
+}
+
+# Attach DataHub config access policy to SSO (data-and-insight only)
+resource "aws_ssoadmin_customer_managed_policy_attachment" "datahub_config_access" {
+  count = local.deploy_sso && local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
+
+  provider = aws.aws_hackit_account
+
+  instance_arn       = var.sso_instance_arn
+  permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
+
+  customer_managed_policy_reference {
+    name = aws_iam_policy.datahub_config_access_policy[0].name
+    path = "/"
+  }
+}
+
 data "aws_identitystore_group" "department" {
   count = local.deploy_sso ? 1 : 0
 
