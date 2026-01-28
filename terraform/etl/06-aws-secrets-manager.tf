@@ -84,3 +84,21 @@ resource "aws_secretsmanager_secret_version" "qlik_cloud" {
     ignore_changes = [secret_string]
   }
 }
+
+resource "aws_secretsmanager_secret" "parking_team_times" {
+  name        = "/parking/team-times-api"
+  description = "Team Times API endpoint and key"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "parking_team_times" {
+  secret_id = aws_secretsmanager_secret.parking_team_times.id
+  secret_string = jsonencode({
+    api_enpoint = "UPDATE_IN_CONSOLE",
+    api_key = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
