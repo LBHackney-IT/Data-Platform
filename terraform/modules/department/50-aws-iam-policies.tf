@@ -1159,8 +1159,7 @@ data "aws_iam_policy_document" "redshift_department_read_access" {
   }
 }
 
-// MWAA Access
-
+// MWAA Access - Used in Staging
 data "aws_iam_policy_document" "mwaa_department_web_server_access" {
   statement {
     effect = "Allow"
@@ -1173,6 +1172,46 @@ data "aws_iam_policy_document" "mwaa_department_web_server_access" {
     ]
 
     resources = ["*"]
+  }
+}
+
+// MWAA Access - Production (allow sso users to access Airflow UI as Viewer by default)
+data "aws_iam_policy_document" "mwaa_department_web_server_access_production" {
+  statement {
+    sid    = "MWAAListEnvironments"
+    effect = "Allow"
+
+    actions = [
+      "airflow:ListEnvironments",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "MWAAGetEnvironment"
+    effect = "Allow"
+
+    actions = [
+      "airflow:GetEnvironment",
+    ]
+
+    resources = [
+      "arn:aws:airflow:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:environment/${var.identifier_prefix}-mwaa-environment"
+    ]
+  }
+
+  statement {
+    sid    = "MWAACreateWebLoginToken"
+    effect = "Allow"
+
+    actions = [
+      "airflow:CreateWebLoginToken",
+    ]
+
+    resources = [
+      "arn:aws:airflow:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:role/${var.identifier_prefix}-mwaa-environment/Viewer"
+    ]
   }
 }
 
