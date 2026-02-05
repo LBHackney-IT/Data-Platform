@@ -2,7 +2,6 @@ locals {
   govnotify_tables_housing_communal_repairs = ["notifications"]
 }
 
-
 data "aws_iam_policy_document" "gov_notify_housing_communal_repairs_lambda_secret_access" {
   statement {
     actions = [
@@ -52,8 +51,8 @@ module "gov-notify-ingestion-housing-communal-repairs" {
   }
   layers = [
     "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311:25",
-    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:notifications-python-client-9-0-0-layer:1",
-    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:urllib3-1-26-18-layer:1"
+    data.aws_lambda_layer_version.notifications_python_client_layer.arn,
+    data.aws_lambda_layer_version.urllib3_layer.arn
   ]
 }
 

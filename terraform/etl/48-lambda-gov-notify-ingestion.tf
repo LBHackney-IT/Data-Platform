@@ -3,7 +3,6 @@ locals {
   create_govnotify_resource_count = local.is_live_environment ? 1 : 0
 }
 
-
 data "aws_iam_policy_document" "housing_s3_access" {
   statement {
     actions = [
@@ -179,8 +178,8 @@ module "gov-notify-ingestion-housing-repairs" {
   }
   layers = [
     "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13",
-    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:notifications-python-client-9-0-0-layer:1",
-    "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.data_platform.account_id}:layer:urllib3-1-26-18-layer:1"
+    data.aws_lambda_layer_version.notifications_python_client_layer.arn,
+    data.aws_lambda_layer_version.urllib3_layer.arn
   ]
 }
 
