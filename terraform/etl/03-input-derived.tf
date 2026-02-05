@@ -61,3 +61,12 @@ data "aws_vpc" "network" {
 data "aws_iam_role" "glue_role" {
   name = "${local.identifier_prefix}-glue-role"
 }
+
+# Lambda Layer Versions - Self-defined layers (always use latest version)
+data "aws_lambda_layer_version" "notifications_python_client_layer" {
+  layer_name = "notifications-python-client-9-0-0-layer"
+}
+
+data "aws_lambda_layer_version" "urllib3_layer" {
+  layer_name = "urllib3-1-26-18-layer"
+}
