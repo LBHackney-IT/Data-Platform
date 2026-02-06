@@ -122,6 +122,12 @@ resource "aws_iam_user_policy_attachment" "airflow_user_policy_attachment" {
   policy_arn = each.value
 }
 
+resource "aws_iam_user_policy_attachment" "airflow_user_datahub_config_access" {
+  count      = var.departmental_airflow_user && local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
+  user       = aws_iam_user.airflow_user[0].name
+  policy_arn = aws_iam_policy.datahub_config_access_policy[0].arn
+}
+
 resource "aws_iam_access_key" "airflow_user_key" {
   count = var.departmental_airflow_user ? 1 : 0
   user  = aws_iam_user.airflow_user[0].name
