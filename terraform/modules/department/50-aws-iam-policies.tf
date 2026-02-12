@@ -812,11 +812,13 @@ data "aws_iam_policy_document" "departmental_cloudwatch_and_ecs_logs_access" {
     actions = [
       "logs:DescribeLogStreams",
       "logs:GetLogEvents",
+      "logs:FilterLogEvents",
       "logs:DescribeLogGroups"
     ]
-    resources = [
-      "arn:aws:logs:*:*:/ecs/*${local.department_identifier}*"
-    ]
+    resources = concat(
+      ["arn:aws:logs:*:*:/ecs/*${local.department_identifier}*"],
+      local.department_identifier == "data-and-insight" ? ["arn:aws:logs:*:*:log-group:/ecs/datahub:*"] : []
+    )
   }
 
   statement {
