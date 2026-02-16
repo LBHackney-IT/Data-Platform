@@ -94,8 +94,8 @@ resource "aws_secretsmanager_secret" "parking_team_times" {
 resource "aws_secretsmanager_secret_version" "parking_team_times" {
   secret_id = aws_secretsmanager_secret.parking_team_times.id
   secret_string = jsonencode({
-    api_enpoint = "UPDATE_IN_CONSOLE",
-    api_key = "UPDATE_IN_CONSOLE"
+    api_endpoint = "UPDATE_IN_CONSOLE",
+    api_key      = "UPDATE_IN_CONSOLE"
   })
 
   lifecycle {
