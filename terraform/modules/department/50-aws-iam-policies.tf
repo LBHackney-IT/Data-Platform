@@ -816,7 +816,8 @@ data "aws_iam_policy_document" "departmental_cloudwatch_and_ecs_logs_access" {
       "logs:DescribeLogGroups"
     ]
     resources = concat(
-      ["arn:aws:logs:*:*:/ecs/*${local.department_identifier}*"],
+      ["arn:aws:logs:*:*:log-group:/ecs/*-cw-${local.department_identifier}-*"],
+      ["arn:aws:logs:*:*:log-group:/ecs/*-unrestricted-*"],
       local.department_identifier == "data-and-insight" ? ["arn:aws:logs:*:*:log-group:/ecs/datahub:*"] : []
     )
   }
