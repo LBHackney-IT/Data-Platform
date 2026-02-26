@@ -60,11 +60,6 @@ variable "emails_to_notify_with_budget_alerts" {
   type        = list(string)
 }
 
-variable "datahub_url" {
-  description = "Datahub URL"
-  type        = string
-}
-
 variable "rentsense_target_path" {
   description = "The S3 path to target when copying rentsense data"
   type        = string
