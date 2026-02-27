@@ -17,7 +17,6 @@ module "redshift" {
   trusted_zone_kms_key_arn = module.trusted_zone_data_source.kms_key_arn
   user_uploads_kms_key_arn = module.user_uploads_data_source.kms_key_arn
   secrets_manager_key      = data.aws_kms_key.secrets_manager_key.arn
-  additional_iam_roles     = local.is_production_environment ? [] : [aws_iam_role.parking_redshift_copier[0].arn]
 }
 
 // Configuration of redshift external schemas, users & granting permissions
