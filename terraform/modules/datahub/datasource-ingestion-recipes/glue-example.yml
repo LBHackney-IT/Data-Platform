@@ -1,0 +1,10 @@
+source:
+  type: glue
+  config:
+    aws_region: '${AWS_DEFAULT_REGION}'
+    aws_role: '${AWS_ROLE}'
+    extract_transforms: '${GLUE_EXTRACT_TRANSFORMS}'
+sink:
+  type: datahub-rest
+  config:
+    server: '${GMS_URL}'
