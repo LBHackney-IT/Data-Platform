@@ -46,6 +46,3 @@ variable "rentsense_target_path" {
   default = false
 }
 
-variable "datahub_url" {
-  default = false
-}
