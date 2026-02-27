@@ -170,9 +170,10 @@ jobs:
           production_firewall_ip: ${{ secrets.PRODUCTION_FIREWALL_IP }}
           branch: "main"
 
+      # Only run this post-deploy Redshift configuration step for ETL production deploys.
       - name: Configure Redshift users, external schemas and user permissions for external schema
         working-directory: "./terraform/etl"
-        if: ${{ (inputs.build_path  == './terraform/etl') && (success()) }}
+        if: ${{ (inputs.build_path  == './terraform/etl') && (inputs.environment == 'prod') && (success()) }}
         run: |
           terraform_outputs=$(terraform output -json)
           cd ../../
