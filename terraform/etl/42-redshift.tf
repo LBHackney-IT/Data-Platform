@@ -1,5 +1,5 @@
 module "redshift" {
-  count = local.is_live_environment ? 1 : 0
+  count = local.is_production_environment ? 1 : 0
 
   source                   = "../modules/redshift"
   tags                     = module.tags.values
