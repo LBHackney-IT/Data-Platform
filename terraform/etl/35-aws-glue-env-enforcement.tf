@@ -1,4 +1,3 @@
-
 module "noisework_complaints_to_refined" {
   source                    = "../modules/aws-glue-job"
   is_live_environment       = local.is_live_environment
