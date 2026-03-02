@@ -188,3 +188,9 @@ resource "aws_iam_role_policy_attachment" "datahub_config_access_attachment" {
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.datahub_config_access_policy[0].arn
 }
+
+resource "aws_iam_role_policy_attachment" "noiseworks_access_attachment" {
+  count      = local.department_identifier == "env-enforcement" && var.noiseworks_bucket != null ? 1 : 0
+  role       = aws_iam_role.department_ecs_role.name
+  policy_arn = aws_iam_policy.noiseworks_access_policy[0].arn
+}

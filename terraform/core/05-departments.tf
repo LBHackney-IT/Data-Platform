@@ -207,6 +207,7 @@ module "department_env_enforcement" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
+  noiseworks_bucket               = module.noiseworks_data_storage
 }
 
 module "department_planning" {
