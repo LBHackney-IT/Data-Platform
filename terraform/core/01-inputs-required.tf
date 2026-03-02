@@ -74,3 +74,7 @@ variable "production_firewall_ip" {
   description = "The firewall production IP"
   type        = string
 }
+
+variable "datahub_url" {
+  type = string
+}

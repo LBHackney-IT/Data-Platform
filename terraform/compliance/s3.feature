@@ -14,6 +14,7 @@ Feature: S3
   @exclude_module.arcus_data_storage.aws_s3_bucket.bucket
   @exclude_module.user_uploads.aws_s3_bucket.bucket
   @exclude_module.datahub_config.aws_s3_bucket.bucket
+  @exclude_module.kafka_event_streaming\[0\].module.kafka_dependency_storage.aws_s3_bucket.bucket
 
   # This rule is in place for legacy buckets created with the deprecated block within the aws_s3_bucket resource
   Scenario: Data must be encrypted at rest for buckets created using server_side_encryption_configuration property within bucket resource
