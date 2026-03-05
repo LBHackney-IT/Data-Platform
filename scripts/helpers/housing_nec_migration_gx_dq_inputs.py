@@ -14,7 +14,7 @@ data_load_list = [
     "properties",
     "tenancies",
     "people",
-    "debit_breakdowns"
+    "debit_breakdowns",
     # "contacts",
     # "arrears_actions",
     # "revenue_accounts",
@@ -25,6 +25,7 @@ data_load_list = [
 table_list = {
     "properties": [
         "full_dq_full_dq_hem_pro_all_dq",
+        "hem_pro_hra_dwellings"
     ],
     "tenancies": [
         "full_dq_full_dq_hem_tcy_all_dq",
