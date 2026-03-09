@@ -27,7 +27,7 @@ module "housing_nec_migration_apply_gx_dq_tests" {
     "--s3_target_location_metadata"      = "s3://${module.raw_zone_data_source.bucket_id}/housing/nec-migration-data-quality-tests/metadata/"
     "--s3_target_location_results"       = "s3://${module.raw_zone_data_source.bucket_id}/housing/nec-migration-data-quality-tests/results/"
     "--s3_staging_location"              = "s3://${module.athena_storage_data_source.bucket_id}/housing/nec-migration-data-quality-tests/"
-    "--target_database"                  = "housing_nec_migration"
+    "--target_database"                  = "housing_nec_migration_live"
     "--target_table"                     = "housing_nec_data_loads_dq_tests"
     "--target_table_metadata"            = "housing_nec_data_loads_dq_metadata"
 
