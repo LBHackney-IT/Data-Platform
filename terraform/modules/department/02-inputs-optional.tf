@@ -68,6 +68,16 @@ variable "cloudtrail_bucket" {
   default = null
 }
 
+variable "noiseworks_bucket" {
+  description = "Noiseworks data storage S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+  default = null
+}
+
 variable "datahub_config_bucket" {
   description = "DataHub config S3 bucket"
   type = object({

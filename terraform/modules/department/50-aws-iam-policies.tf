@@ -1467,6 +1467,43 @@ resource "aws_iam_policy" "cloudtrail_access_policy" {
   policy      = data.aws_iam_policy_document.cloudtrail_access[0].json
 }
 
+// Read-only Noiseworks bucket access for Env Enforcement department only
+data "aws_iam_policy_document" "noiseworks_access" {
+  count = local.department_identifier == "env-enforcement" && var.noiseworks_bucket != null ? 1 : 0
+
+  statement {
+    sid    = "NoiseworksKmsReadAccess"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    resources = [var.noiseworks_bucket.kms_key_arn]
+  }
+
+  statement {
+    sid    = "NoiseworksS3ReadAccess"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket"
+    ]
+    resources = [
+      var.noiseworks_bucket.bucket_arn,
+      "${var.noiseworks_bucket.bucket_arn}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "noiseworks_access_policy" {
+  count       = local.department_identifier == "env-enforcement" && var.noiseworks_bucket != null ? 1 : 0
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-noiseworks-access-policy")
+  description = "Allows ${local.department_identifier} department read-only access to Noiseworks data storage bucket"
+  policy      = data.aws_iam_policy_document.noiseworks_access[0].json
+}
+
 // Write access to DataHub config bucket for Data and Insight department only
 data "aws_iam_policy_document" "datahub_config_access" {
   count = local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
