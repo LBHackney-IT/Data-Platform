@@ -244,11 +244,11 @@ module "Citypay_Import" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1KFHGN346B31Bxa6Bi1ksgOSuiaOeMi0x"
+  google_drive_document_id       = "1r3zJr_uGQ96Qc91mwDJ97uftIlAKUZd1"
   glue_job_name                  = "Citypay Import"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "CityPay_Payments/Citypay_import_feb_2026.csv"
+  input_file_name                = "CityPay_Payments/Citypay_import_feb_2026_update_10032026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
