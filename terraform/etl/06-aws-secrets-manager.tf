@@ -102,3 +102,23 @@ resource "aws_secretsmanager_secret_version" "parking_team_times" {
     ignore_changes = [secret_string]
   }
 }
+
+resource "aws_secretsmanager_secret" "unrestricted_geolive_boundaries" {
+  name        = "/unrestricted/geolive-boundaries"
+  description = "PostgreSQL credentials for geolive database boundaries ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "unrestricted_geolive_boundaries" {
+  secret_id = aws_secretsmanager_secret.unrestricted_geolive_boundaries.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "5432"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
