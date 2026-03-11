@@ -115,7 +115,7 @@ resource "aws_secretsmanager_secret_version" "unrestricted_geolive_boundaries" {
     username = "UPDATE_IN_CONSOLE"
     password = "UPDATE_IN_CONSOLE"
     host     = "UPDATE_IN_CONSOLE"
-    port     = "5432"
+    port     = "UPDATE_IN_CONSOLE"
   })
 
   lifecycle {
