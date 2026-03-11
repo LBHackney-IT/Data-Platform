@@ -103,14 +103,14 @@ resource "aws_secretsmanager_secret_version" "parking_team_times" {
   }
 }
 
-resource "aws_secretsmanager_secret" "unrestricted_geolive_boundaries" {
-  name        = "/unrestricted/geolive-boundaries"
+resource "aws_secretsmanager_secret" "data_and_insight_geolive_boundaries" {
+  name        = "/data-and-insight/geolive-boundaries"
   description = "PostgreSQL credentials for geolive database boundaries ingestion"
   tags        = module.tags.values
 }
 
-resource "aws_secretsmanager_secret_version" "unrestricted_geolive_boundaries" {
-  secret_id = aws_secretsmanager_secret.unrestricted_geolive_boundaries.id
+resource "aws_secretsmanager_secret_version" "data_and_insight_geolive_boundaries" {
+  secret_id = aws_secretsmanager_secret.data_and_insight_geolive_boundaries.id
   secret_string = jsonencode({
     username = "UPDATE_IN_CONSOLE"
     password = "UPDATE_IN_CONSOLE"
