@@ -25,9 +25,6 @@ module "spreadsheet_import" {
     s3_target_location = "s3://${var.raw_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}/${var.data_set_name}"
     configuration = jsonencode({
       Version = 1.0
-      Grouping = {
-        TableLevelConfiguration = 3
-      }
     })
     table_prefix = null
   }
