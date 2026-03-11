@@ -23,7 +23,8 @@ variable "glue_crawler_excluded_blobs" {
     "*.json",
     "*.txt",
     "*.zip",
-    "*.xlsx"
+    "*.xlsx",
+    "*_$folder$"
   ]
 }
 

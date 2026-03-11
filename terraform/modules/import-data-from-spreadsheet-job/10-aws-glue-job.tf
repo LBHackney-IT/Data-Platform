@@ -22,7 +22,7 @@ module "spreadsheet_import" {
   workflow_name              = aws_glue_workflow.workflow.name
   crawler_details = {
     database_name      = var.glue_catalog_database_name
-    s3_target_location = "s3://${var.raw_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}"
+    s3_target_location = "s3://${var.raw_zone_bucket_id}/${var.department.identifier}/${var.output_folder_name}/${var.data_set_name}"
     configuration = jsonencode({
       Version = 1.0
       Grouping = {
