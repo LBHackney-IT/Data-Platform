@@ -122,3 +122,24 @@ resource "aws_secretsmanager_secret_version" "data_and_insight_geolive_boundarie
     ignore_changes = [secret_string]
   }
 }
+
+resource "aws_secretsmanager_secret" "parking_geolive" {
+  name        = "/parking/geolive-parking"
+  description = "PostgreSQL credentials for geolive database parking ingestion"
+  tags        = module.tags.values
+}
+
+
+resource "aws_secretsmanager_secret_version" "parking_geolive" {
+  secret_id = aws_secretsmanager_secret.parking_geolive.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
