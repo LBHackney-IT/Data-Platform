@@ -143,3 +143,45 @@ resource "aws_secretsmanager_secret_version" "parking_geolive" {
     ignore_changes = [secret_string]
   }
 }
+
+
+resource "aws_secretsmanager_secret" "housing_income_collection_db_creds" {
+  name        = "/housing/housingfinancedbproduction-housing-income-collection"
+  description = "MySQL credentials for Housing Income Collection database ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "housing_income_collection_db_creds" {
+  secret_id = aws_secretsmanager_secret.housing_income_collection_db_creds.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+
+resource "aws_secretsmanager_secret" "housing_interim_finance_db_creds" {
+  name        = "/housing/SOW2b-housing-interim-finance"
+  description = "SQL Server credentials for Housing Interim Finance database ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "housing_interim_finance_db_creds" {
+  secret_id = aws_secretsmanager_secret.housing_interim_finance_db_creds.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
