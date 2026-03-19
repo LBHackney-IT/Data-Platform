@@ -46,6 +46,16 @@ resource "aws_glue_catalog_database" "housing_nec_migration_outputs_database" {
   }
 }
 
+resource "aws_glue_catalog_database" "housing_nec_migration_partition_databases" {
+  for_each = local.housing_nec_migration_partition_databases
+
+  name = each.value
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 resource "aws_glue_catalog_database" "ctax_raw_zone" {
   name = "ctax_raw_zone"
 
