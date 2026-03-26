@@ -185,3 +185,23 @@ resource "aws_secretsmanager_secret_version" "housing_interim_finance_db_creds" 
     ignore_changes = [secret_string]
   }
 }
+
+# Tascomi REST API public and private keys
+resource "aws_secretsmanager_secret" "planning_tascomi_api_key" {
+  name        = "/planning/tascomi-api-key"
+  description = "Tascomi API public_key and private_key for planning ingestion (X-Public / X-Hash)"
+  kms_key_id  = data.aws_kms_key.secrets_manager_key.arn
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "planning_tascomi_api_key" {
+  secret_id = aws_secretsmanager_secret.planning_tascomi_api_key.id
+  secret_string = jsonencode({
+    public_key  = "UPDATE_IN_CONSOLE"
+    private_key = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
