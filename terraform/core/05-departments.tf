@@ -244,8 +244,8 @@ module "department_planning" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
-    read_only  = ["${local.identifier_prefix}-tascomi*"]
-    read_write = []
+    read_only  = []
+    read_write = ["${local.identifier_prefix}-tascomi*"]
   }
 }
 
