@@ -225,6 +225,17 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     ])
   }
 
+  // Crawlers use arn:...:crawler/name; ListCrawls/GetCrawlerMetrics are not covered by AwsGlue ARNs.
+  statement {
+    sid    = "GlueCrawlerConsoleRead"
+    effect = "Allow"
+    actions = [
+      "glue:GetCrawlerMetrics",
+      "glue:ListCrawls",
+    ]
+    resources = ["*"]
+  }
+
   dynamic "statement" {
     for_each = {
       for k, v in {
@@ -691,6 +702,17 @@ data "aws_iam_policy_document" "glue_access_sso" {
     ])
   }
 
+  // Crawlers use arn:...:crawler/name; ListCrawls/GetCrawlerMetrics are not covered by AwsGlue ARNs.
+  statement {
+    sid    = "GlueCrawlerConsoleRead"
+    effect = "Allow"
+    actions = [
+      "glue:GetCrawlerMetrics",
+      "glue:ListCrawls",
+    ]
+    resources = ["*"]
+  }
+
   dynamic "statement" {
     for_each = {
       for k, v in {
@@ -719,9 +741,11 @@ data "aws_iam_policy_document" "glue_crawler_access_staging" {
     effect = "Allow"
     actions = [
       "glue:BatchGetCrawlers",
-      "glue:ListCrawlers",
       "glue:GetCrawler",
+      "glue:GetCrawlerMetrics",
       "glue:GetCrawlers",
+      "glue:ListCrawlers",
+      "glue:ListCrawls",
       "glue:StartCrawler",
       "glue:StopCrawler",
     ]
@@ -734,7 +758,7 @@ data "aws_iam_policy_document" "glue_crawler_access_staging" {
 resource "aws_iam_policy" "glue_crawler_access_staging" {
   tags        = var.tags
   name        = lower("${var.identifier_prefix}-${local.department_identifier}-glue-crawler-access-staging")
-  description = "IAM policy for staging environment to allow departments to list and run Glue crawlers for UAT testing"
+  description = "IAM policy for staging: list/run crawlers and view crawler run history (ListCrawls) in the console"
   policy      = data.aws_iam_policy_document.glue_crawler_access_staging.json
 }
 
