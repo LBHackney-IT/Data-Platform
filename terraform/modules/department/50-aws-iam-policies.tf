@@ -719,9 +719,11 @@ data "aws_iam_policy_document" "glue_crawler_access_staging" {
     effect = "Allow"
     actions = [
       "glue:BatchGetCrawlers",
-      "glue:ListCrawlers",
       "glue:GetCrawler",
+      "glue:GetCrawlerMetrics",
       "glue:GetCrawlers",
+      "glue:ListCrawlers",
+      "glue:ListCrawls",
       "glue:StartCrawler",
       "glue:StopCrawler",
     ]
