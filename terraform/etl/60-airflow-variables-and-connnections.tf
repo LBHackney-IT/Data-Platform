@@ -73,16 +73,31 @@ locals {
   }
 }
 
-resource "aws_secretsmanager_secret" "nec_migration_partition_date" {
-  name        = "airflow/variables/housing/nec_migration_partition_date"
+resource "aws_secretsmanager_secret" "nec_migration_snapshot_dates" {
+  name        = "airflow/variables/housing/nec_migration_snapshot_dates"
   description = "List of partition dates to be used in housing_nec_migration databases. Format should be a JSON array of yyyy-mm-dd strings."
   tags        = module.tags.values
 }
 
 
+resource "aws_secretsmanager_secret_version" "nec_migration_snapshot_dates" {
+  secret_id     = aws_secretsmanager_secret.nec_migration_snapshot_dates.id
+  secret_string = jsonencode(local.nec_migration_partition_dates)
+}
+
+resource "aws_secretsmanager_secret" "nec_migration_partition_date" {
+  name        = "airflow/variables/housing/nec_migration_partition_date"
+  description = "Manually managed value to set partition date to be used in housing_nec_migration database. Format should be yyyy-mm-dd."
+  tags        = module.tags.values
+}
+
 resource "aws_secretsmanager_secret_version" "nec_migration_partition_date" {
   secret_id     = aws_secretsmanager_secret.nec_migration_partition_date.id
-  secret_string = jsonencode(local.nec_migration_partition_dates)
+  secret_string = "UPDATE_IN_CONSOLE"
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
 }
 
 # Store the KMS key ARNs for the refined, raw, and trusted zones as airflow variables in Secrets Manager
