@@ -57,7 +57,7 @@ resource "aws_secretsmanager_secret_version" "alloy_connection" {
 locals {
   nec_migration_partition_dates = [
     "2025-12-19",
-    "2026-03-20",
+    "2026-03-27",
   ]
 
   nec_migration_partition_dates_by_suffix = {
