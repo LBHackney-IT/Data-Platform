@@ -97,3 +97,140 @@ resource "aws_glue_crawler" "arcus_archive" {
     path = "s3://${local.identifier_prefix}-arcus-data-storage/Hackney-Data-Extract/"
   }
 }
+
+// ==== TASCOMI DEBUG CRAWLERS ===========
+// These crawlers are retained for manual debugging only and are intentionally
+// detached from the removed Tascomi delete workflow jobs and triggers.
+
+resource "aws_glue_crawler" "tascomi_api_response_manual_debug" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.raw_zone_tascomi.name
+  name          = "${local.short_identifier_prefix}tascomi-api-response-manual-debug"
+  role          = module.department_planning_data_source.glue_role_arn
+  table_prefix  = "api_response_"
+
+  s3_target {
+    path = "s3://${module.raw_zone_data_source.bucket_id}/planning/tascomi/api-responses/"
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 5
+    }
+  })
+}
+
+resource "aws_glue_crawler" "tascomi_parsed_manual_debug" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.raw_zone_tascomi.name
+  name          = "${local.short_identifier_prefix}tascomi-parsed-manual-debug"
+  role          = module.department_planning_data_source.glue_role_arn
+
+  s3_target {
+    path       = "s3://${module.raw_zone_data_source.bucket_id}/planning/tascomi/parsed/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 5
+    }
+  })
+}
+
+resource "aws_glue_crawler" "tascomi_increment_manual_debug" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.refined_zone_tascomi.name
+  name          = "${local.short_identifier_prefix}tascomi-increment-manual-debug"
+  role          = module.department_planning_data_source.glue_role_arn
+  table_prefix  = "increment_"
+
+  s3_target {
+    path       = "s3://${module.refined_zone_data_source.bucket_id}/planning/tascomi/increment/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 5
+    }
+  })
+}
+
+resource "aws_glue_crawler" "tascomi_snapshot_manual_debug" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.refined_zone_tascomi.name
+  name          = "${local.short_identifier_prefix}tascomi-snapshot-manual-debug"
+  role          = module.department_planning_data_source.glue_role_arn
+
+  s3_target {
+    path       = "s3://${module.refined_zone_data_source.bucket_id}/planning/tascomi/snapshot/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+
+  configuration = jsonencode({
+    Version = 1.0
+    Grouping = {
+      TableLevelConfiguration = 5
+    }
+  })
+}
+
+resource "aws_glue_crawler" "tascomi_trusted_applications_manual_debug" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.trusted_zone_tascomi.name
+  name          = "${local.short_identifier_prefix}tascomi-trusted-applications-manual-debug"
+  role          = module.department_planning_data_source.glue_role_arn
+
+  s3_target {
+    path       = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/applications"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+}
+
+resource "aws_glue_crawler" "tascomi_trusted_officers_manual_debug" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.trusted_zone_tascomi.name
+  name          = "${local.short_identifier_prefix}tascomi-trusted-officers-manual-debug"
+  role          = module.department_planning_data_source.glue_role_arn
+
+  s3_target {
+    path       = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/officers"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+}
+
+resource "aws_glue_crawler" "tascomi_trusted_locations_manual_debug" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.trusted_zone_tascomi.name
+  name          = "${local.short_identifier_prefix}tascomi-trusted-locations-manual-debug"
+  role          = module.department_planning_data_source.glue_role_arn
+
+  s3_target {
+    path       = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/locations"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+}
+
+resource "aws_glue_crawler" "tascomi_trusted_subsidiary_tables_manual_debug" {
+  tags = module.tags.values
+
+  database_name = aws_glue_catalog_database.trusted_zone_tascomi.name
+  name          = "${local.short_identifier_prefix}tascomi-trusted-subsidiary-tables-manual-debug"
+  role          = module.department_planning_data_source.glue_role_arn
+
+  s3_target {
+    path       = "s3://${module.trusted_zone_data_source.bucket_id}/planning/tascomi/"
+    exclusions = local.glue_crawler_excluded_blobs
+  }
+}
