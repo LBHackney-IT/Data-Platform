@@ -28,8 +28,17 @@ locals {
     replace(module.department_unrestricted_data_source.trusted_zone_catalog_database_name, "-", "_")
   ]
 
-  housing_nec_migration_partition_redshift_schemas = [
-    for suffix in sort(keys(local.housing_nec_migration_partition_databases)) : replace(local.housing_nec_migration_partition_databases[suffix], "-", "_")
+  nec_migration_schema_catalog_databases = concat(
+    [
+      aws_glue_catalog_database.housing_nec_migration_database.name,
+      aws_glue_catalog_database.housing_nec_migration_outputs_database.name,
+    ],
+    values(aws_glue_catalog_database.housing_nec_migration_partition_databases)[*].name,
+    values(aws_glue_catalog_database.housing_nec_migration_output_databases)[*].name,
+  )
+
+  nec_migration_redshift_schemas = [
+    for database_name in local.nec_migration_schema_catalog_databases : replace(database_name, "-", "_")
   ]
 
   redshift_schemas = merge({
@@ -39,8 +48,6 @@ locals {
     replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_housing_repairs_data_source.raw_zone_catalog_database_name,
     replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_housing_repairs_data_source.refined_zone_catalog_database_name,
     replace(module.department_housing_repairs_data_source.trusted_zone_catalog_database_name, "-", "_") = module.department_housing_repairs_data_source.trusted_zone_catalog_database_name,
-    replace(aws_glue_catalog_database.housing_nec_migration_database.name, "-", "_")                    = aws_glue_catalog_database.housing_nec_migration_database.name,
-    replace(aws_glue_catalog_database.housing_nec_migration_outputs_database.name, "-", "_")            = aws_glue_catalog_database.housing_nec_migration_database.name,
 
     parking_raw_zone_liberator     = aws_glue_catalog_database.raw_zone_liberator.name,
     parking_refined_zone_liberator = aws_glue_catalog_database.refined_zone_liberator.name,
@@ -107,8 +114,10 @@ locals {
     replace(aws_glue_catalog_database.hackney_casemanagement_live.name, "-", "_") = aws_glue_catalog_database.hackney_casemanagement_live.name,
     replace(aws_glue_catalog_database.hackney_synergy_live.name, "-", "_")        = aws_glue_catalog_database.hackney_synergy_live.name
     }, {
-    for _, database_name in local.housing_nec_migration_partition_databases : replace(database_name, "-", "_") => database_name
-  })
+    for database_name in local.nec_migration_schema_catalog_databases : replace(database_name, "-", "_") => database_name
+    },
+  )
+
 
   redshift_users = [
     {
@@ -120,7 +129,7 @@ locals {
         replace(module.department_housing_repairs_data_source.trusted_zone_catalog_database_name, "-", "_"),
         replace(aws_glue_catalog_database.housing_nec_migration_database.name, "-", "_"),
         replace(aws_glue_catalog_database.housing_nec_migration_outputs_database.name, "-", "_"),
-      ], local.housing_nec_migration_partition_redshift_schemas, local.unrestricted_schemas)
+      ], local.unrestricted_schemas)
     },
     {
       user_name  = module.department_parking_data_source.identifier_snake_case
@@ -156,9 +165,7 @@ locals {
         replace(module.department_housing_repairs_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_repairs_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_repairs_data_source.trusted_zone_catalog_database_name, "-", "_"),
-        replace(aws_glue_catalog_database.housing_nec_migration_database.name, "-", "_"),
-        replace(aws_glue_catalog_database.housing_nec_migration_outputs_database.name, "-", "_"),
-        ], local.housing_nec_migration_partition_redshift_schemas, [
+        ], local.nec_migration_redshift_schemas, [
 
         "parking_raw_zone_liberator",
         "parking_refined_zone_liberator",
@@ -275,7 +282,7 @@ locals {
         replace(module.department_housing_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_"),
-      ], local.unrestricted_schemas)
+      ], local.nec_migration_redshift_schemas, local.unrestricted_schemas)
     },
     {
       user_name  = module.department_children_family_services_data_source.identifier_snake_case
@@ -386,10 +393,6 @@ locals {
         replace(module.department_housing_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_"),
 
-        replace(aws_glue_catalog_database.housing_nec_migration_database.name, "-", "_"),
-        replace(aws_glue_catalog_database.housing_nec_migration_outputs_database.name, "-", "_"),
-        ], local.housing_nec_migration_partition_redshift_schemas, [
-
         replace(module.department_children_family_services_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_children_family_services_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_children_family_services_data_source.trusted_zone_catalog_database_name, "-", "_"),
@@ -397,8 +400,7 @@ locals {
         replace(aws_glue_catalog_database.ctax_raw_zone.name, "-", "_"),
         replace(aws_glue_catalog_database.nndr_raw_zone.name, "-", "_"),
         replace(aws_glue_catalog_database.hben_raw_zone.name, "-", "_")
-
-      ])
+      ], local.nec_migration_redshift_schemas)
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name,
         "${module.department_housing_repairs_data_source.identifier_snake_case}_ro",
@@ -486,9 +488,7 @@ locals {
         replace(module.department_housing_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_housing_data_source.trusted_zone_catalog_database_name, "-", "_"),
-        replace(aws_glue_catalog_database.housing_nec_migration_database.name, "-", "_"),
-        replace(aws_glue_catalog_database.housing_nec_migration_outputs_database.name, "-", "_"),
-      ], local.housing_nec_migration_partition_redshift_schemas)
+      ], local.nec_migration_redshift_schemas)
       roles_to_inherit_permissions_from = [
         local.unrestricted_data_role_name
       ]
