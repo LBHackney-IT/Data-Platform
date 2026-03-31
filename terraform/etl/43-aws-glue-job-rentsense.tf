@@ -1,5 +1,18 @@
-data "aws_ssm_parameter" "ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name" {
-  name = "/${local.identifier_prefix}/glue_crawler/housing/ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name"
+data "aws_ssm_parameters_by_path" "housing_glue_crawlers" {
+  path      = "/${local.identifier_prefix}/glue_crawler/housing"
+  recursive = false
+}
+
+locals {
+  housing_glue_crawlers = zipmap(
+    data.aws_ssm_parameters_by_path.housing_glue_crawlers.names,
+    data.aws_ssm_parameters_by_path.housing_glue_crawlers.values,
+  )
+  ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name = lookup(
+    local.housing_glue_crawlers,
+    "/${local.identifier_prefix}/glue_crawler/housing/ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name",
+    null,
+  )
 }
 
 module "rentsense_output_to_landing_S3" {
@@ -28,7 +41,7 @@ module "rentsense_output_to_landing_S3" {
     "--conf"                    = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
   script_name          = "rentsense_to_refined_and_landing"
-  triggered_by_crawler = data.aws_ssm_parameter.ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name.value
+  triggered_by_crawler = local.ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name
   glue_crawler_excluded_blobs = ["*.json",
     "*.txt",
     "*.zip",
@@ -75,7 +88,7 @@ module "rentsense_former_tenant_output_to_refined_S3" {
     "--conf"                    = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
   script_name          = "rentsense_former_tenants_to_refined"
-  triggered_by_crawler = data.aws_ssm_parameter.ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name.value
+  triggered_by_crawler = local.ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name
   glue_crawler_excluded_blobs = ["*.json",
     "*.txt",
     "*.zip",
@@ -97,7 +110,6 @@ module "rentsense_former_tenant_output_to_refined_S3" {
   }
 
 }
-
 
 
 
