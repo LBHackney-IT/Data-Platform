@@ -67,6 +67,10 @@ locals {
   housing_nec_migration_partition_databases = {
     for suffix, _ in local.nec_migration_partition_dates_by_suffix : suffix => "housing_nec_migration_${suffix}"
   }
+
+  housing_nec_migration_output_databases = {
+    for suffix, _ in local.nec_migration_partition_dates_by_suffix : suffix => "housing_nec_migration_outputs_${suffix}"
+  }
 }
 
 resource "aws_secretsmanager_secret" "nec_migration_partition_date" {
