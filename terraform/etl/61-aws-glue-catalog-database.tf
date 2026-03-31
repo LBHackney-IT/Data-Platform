@@ -47,6 +47,7 @@ resource "aws_glue_catalog_database" "housing_nec_migration_outputs_database" {
 }
 
 resource "aws_glue_catalog_database" "housing_nec_migration_partition_databases" {
+  # Defined at terraform/etl/60-airflow-variables-and-connnections.tf
   for_each = local.housing_nec_migration_partition_databases
 
   name = each.value
