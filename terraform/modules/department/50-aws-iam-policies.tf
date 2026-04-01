@@ -1289,7 +1289,10 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "glue:CreateTable",
       "glue:UpdateTable",
       "glue:DeleteTable",
-      "glue:GetJobRuns"
+      "glue:GetJob",
+      "glue:GetJobRun",
+      "glue:GetJobRuns",
+      "glue:StartJobRun"
     ]
     resources = ["*"]
   }

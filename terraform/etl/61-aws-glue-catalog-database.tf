@@ -137,3 +137,28 @@ resource "aws_glue_catalog_database" "department_user_uploads" {
     prevent_destroy = true
   }
 }
+
+# Keep the Tascomi Glue catalog databases (extracted from the old 24-aws-glue-tascomi-data.tf)
+resource "aws_glue_catalog_database" "raw_zone_tascomi" {
+  name = "${local.identifier_prefix}-tascomi-raw-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_glue_catalog_database" "refined_zone_tascomi" {
+  name = "${local.identifier_prefix}-tascomi-refined-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_glue_catalog_database" "trusted_zone_tascomi" {
+  name = "${local.identifier_prefix}-tascomi-trusted-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
