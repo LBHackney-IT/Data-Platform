@@ -13,6 +13,7 @@ module "rentsense_output_to_landing_S3" {
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  tags                           = module.tags.values
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket"               = module.refined_zone_data_source.bucket_id
@@ -60,6 +61,7 @@ module "rentsense_former_tenant_output_to_refined_S3" {
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  tags                           = module.tags.values
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket"               = module.refined_zone_data_source.bucket_id
