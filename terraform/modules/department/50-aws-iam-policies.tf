@@ -1253,6 +1253,7 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "logs:CreateLogStream",
       "logs:CreateLogGroup",
       "logs:PutLogEvents",
+      "logs:FilterLogEvents",
       "logs:GetLogEvents",
       "logs:GetLogRecord",
       "logs:GetLogGroupFields",
