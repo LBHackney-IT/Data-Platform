@@ -7,7 +7,7 @@ resource "aws_athena_workgroup" "department_workgroup" {
   force_destroy = !var.is_live_environment
 
   configuration {
-    enforce_workgroup_configuration    = true
+    enforce_workgroup_configuration    = false
     publish_cloudwatch_metrics_enabled = true
 
     result_configuration {
