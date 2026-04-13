@@ -64,6 +64,12 @@ module "noiseworks_data_storage_data_source" {
   bucket_identifier = "noiseworks-data-storage"
 }
 
+module "housing_nec_migration_storage" {
+  source            = "../modules/data-sources/s3-bucket"
+  identifier_prefix = local.identifier_prefix
+  bucket_identifier = "housing-nec-migration-storage"
+}
+
 data "aws_s3_object" "helpers" {
   bucket = module.glue_scripts_data_source.bucket_id
   key    = "python-modules/data_platform_glue_job_helpers-1.0-py3-none-any.whl"
