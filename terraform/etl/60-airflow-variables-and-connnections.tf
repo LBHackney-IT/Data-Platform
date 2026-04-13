@@ -103,9 +103,9 @@ resource "aws_secretsmanager_secret_version" "nec_migration_partition_date" {
 # Store the KMS key ARNs for listed buckets as airflow variables in Secrets Manager
 locals {
   kms_keys = {
-    refined_zone         = module.refined_zone_data_source.kms_key_arn
-    raw_zone             = module.raw_zone_data_source.kms_key_arn
-    trusted_zone         = module.trusted_zone_data_source.kms_key_arn
+    refined_zone                  = module.refined_zone_data_source.kms_key_arn
+    raw_zone                      = module.raw_zone_data_source.kms_key_arn
+    trusted_zone                  = module.trusted_zone_data_source.kms_key_arn
     housing_nec_migration_storage = module.housing_nec_migration_storage.kms_key_arn
   }
 }
