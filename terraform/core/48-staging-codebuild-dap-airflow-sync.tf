@@ -7,16 +7,11 @@
 # - That build syncs the Airflow DAGs folder and the ETL scripts folder into the staging MWAA S3 buckets.
 # - The result is that the `stg` MWAA environment stays in sync with the latest `staging` branch code.
 #
-# Operational note for rotating webhook secrets:
-# - If the CE rotates the webhook secrets, DP or CE needs to delete both the AWS CodeConnections
-#    and the CodeBuild webhook from AWS, then redeploy them with Terraform.
-# - When Terraform recreates the CodeConnections, you will see the below error in GitHub Action logs:
-#   `api error OAuthProviderException: User is not authorized to access connection`
-# - This means CE must manually grant access in the AWS Console:
-#   `Developer Tools -> Connections -> Update pending connection`
-# - After CE completes above step,  the pending connection is showed "approved".
-# - Then rerun the Terraform workflow again, the webhook will be recreated.
-# - Everything should work as expected.
+# Operational note for rotating webhook secret:
+# - If this is required, DP or CE only needs to delete the existing CodeBuild webhook from AWS.
+# - The webhook can be deleted by using either the AWS CLI or the AWS Console.
+# - Then redeploy this Terraform workflow and it will recreate the webhook with the updated webhook secret.
+# - The AWS CodeConnections resource does not need to be deleted or re-approved.
 
 resource "aws_codestarconnections_connection" "dap_airflow_stg" {
   count = local.environment == "stg" ? 1 : 0
