@@ -1,4 +1,22 @@
-# Staging CodeBuild integration that syncs dap-airflow repository two folders to two MWAA S3 buckets.
+# Workflow overview:
+# - This staging-only Terraform creates the AWS CodeConnections, CodeBuild, IAM, CloudWatch Logs,
+#   and webhook resources needed to sync the `dap-airflow` GitHub repository into the staging MWAA buckets.
+# - When code is pushed to the `staging` branch in `dap-airflow`, the CodeBuild webhook starts a build.
+# - CodeBuild pulls the repository by using the AWS CodeConnections connection defined in this file.
+# - The build runs `github_workflow_scripts/mwaa-s3-sync-buildspec.yml` from the `dap-airflow` repository.
+# - That build syncs the Airflow DAGs folder and the ETL scripts folder into the staging MWAA S3 buckets.
+# - The result is that the `stg` MWAA environment stays in sync with the latest `staging` branch code.
+#
+# Operational note for rotating webhook secrets:
+# - If the CE rotates the webhook secrets, DP or CE needs to delete both the AWS CodeConnections
+#    and the CodeBuild webhook from AWS, then redeploy them with Terraform.
+# - When Terraform recreates the CodeConnections, you will see the below error in GitHub Action logs:
+#   `api error OAuthProviderException: User is not authorized to access connection`
+# - This means CE must manually grant access in the AWS Console:
+#   `Developer Tools -> Connections -> Update pending connection`
+# - After CE completes above step,  the pending connection is showed "approved".
+# - Then rerun the Terraform workflow again, the webhook will be recreated.
+# - Everything should work as expected.
 
 resource "aws_codestarconnections_connection" "dap_airflow_stg" {
   count = local.environment == "stg" ? 1 : 0
