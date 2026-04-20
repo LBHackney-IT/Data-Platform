@@ -141,7 +141,7 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       ]
       resources = concat(
         [additional_access_item.value.bucket_arn],
-        additional_access_item.value.paths == null ? [
+        try(length(additional_access_item.value.paths), 0) == 0 ? [
           "${additional_access_item.value.bucket_arn}/*"
           ] : [
           for path in additional_access_item.value.paths : "${additional_access_item.value.bucket_arn}/${path}/*"
@@ -373,7 +373,7 @@ data "aws_iam_policy_document" "s3_department_access" {
       actions = additional_access_item.value.actions
       resources = concat(
         [additional_access_item.value.bucket_arn],
-        additional_access_item.value.paths == null ? [
+        try(length(additional_access_item.value.paths), 0) == 0 ? [
           "${additional_access_item.value.bucket_arn}/*"
           ] : [
           for path in additional_access_item.value.paths : "${additional_access_item.value.bucket_arn}/${path}/*"
