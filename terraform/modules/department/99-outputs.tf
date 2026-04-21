@@ -77,3 +77,8 @@ output "environment" {
   description = "Environment e.g. dev, stg, prod"
   value       = var.environment
 }
+
+output "airflow_role_arn" {
+  description = "ARN of the departmental Airflow role when role-based auth is enabled"
+  value       = try(aws_iam_role.airflow_role[0].arn, null)
+}
