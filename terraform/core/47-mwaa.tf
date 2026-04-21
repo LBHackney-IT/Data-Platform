@@ -131,7 +131,7 @@ resource "aws_iam_role_policy" "mwaa_assume_role_policy" {
 }
 
 resource "aws_iam_role_policy" "mwaa_departmental_airflow_assume_role_policy" {
-  count = length(local.departmental_airflow_role_arns) > 0 ? 1 : 0
+  count = local.departmental_airflow_role ? 1 : 0
 
   name = "mwaa_departmental_airflow_assume_role_policy"
   role = aws_iam_role.mwaa_role.id
