@@ -141,11 +141,6 @@ variable "mwaa_key_arn" {
   type = string
 }
 
-variable "mwaa_execution_role_arn" {
-  description = "ARN of the MWAA execution role allowed to assume the departmental Airflow role"
-  type        = string
-}
-
 variable "user_uploads_bucket" {
   description = "User uploads S3 bucket"
   type = object({

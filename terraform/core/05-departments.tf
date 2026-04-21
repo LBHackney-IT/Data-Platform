@@ -5,9 +5,9 @@ data "aws_ssoadmin_instances" "sso_instances" {
 }
 
 locals {
-  sso_instance_arn                  = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].arns)[0], "")
-  identity_store_id                 = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].identity_store_ids)[0], "")
-  departmental_airflow_role_enabled = local.is_live_environment && !local.is_production_environment
+  sso_instance_arn          = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].arns)[0], "")
+  identity_store_id         = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].identity_store_ids)[0], "")
+  departmental_airflow_role = local.is_live_environment && !local.is_production_environment
 }
 
 module "department_housing_repairs" {
@@ -40,7 +40,6 @@ module "department_housing_repairs" {
   google_group_admin_display_name = local.google_group_admin_display_name
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
 }
 
@@ -50,35 +49,33 @@ module "department_parking" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Parking"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  google_group_display_name         = "saml-aws-data-platform-collaborator-parking@hackney.gov.uk"
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Parking"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-parking@hackney.gov.uk"
+  departmental_airflow_user       = true
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only = [
       "${local.identifier_prefix}-liberator-raw-zone",
@@ -121,7 +118,6 @@ module "department_finance" {
   google_group_admin_display_name = local.google_group_admin_display_name
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
 }
 
@@ -131,37 +127,35 @@ module "department_data_and_insight" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Data and Insight"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  google_group_display_name         = "saml-aws-data-platform-collaborator-datainsight@hackney.gov.uk"
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
-  cloudtrail_bucket                 = module.cloudtrail_storage
-  datahub_config_bucket             = module.datahub_config
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Data and Insight"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-datainsight@hackney.gov.uk"
+  departmental_airflow_user       = true
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
+  cloudtrail_bucket               = module.cloudtrail_storage
+  datahub_config_bucket           = module.datahub_config
   additional_glue_database_access = {
     read_only  = []
     read_write = ["arcus_archive", "metastore"]
@@ -188,35 +182,33 @@ module "department_env_enforcement" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Env Enforcement"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
-  noiseworks_bucket                 = module.noiseworks_data_storage
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Env Enforcement"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  departmental_airflow_user       = true
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
+  noiseworks_bucket               = module.noiseworks_data_storage
 }
 
 module "department_planning" {
@@ -225,35 +217,33 @@ module "department_planning" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Planning"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  google_group_display_name         = "saml-aws-data-platform-collaborator-planning@hackney.gov.uk"
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Planning"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-planning@hackney.gov.uk"
+  departmental_airflow_user       = true
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = []
     read_write = ["${local.identifier_prefix}-tascomi*"]
@@ -266,34 +256,34 @@ module "department_unrestricted" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Unrestricted"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Unrestricted"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_sandbox" {
@@ -327,7 +317,6 @@ module "department_sandbox" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-sandbox@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
 }
 
@@ -337,35 +326,33 @@ module "department_benefits_and_housing_needs" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Bens Housing Needs"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  google_group_display_name         = "saml-aws-data-platform-collaborator-benefits-housing-needs@hackney.gov.uk"
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Bens Housing Needs"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-benefits-housing-needs@hackney.gov.uk"
+  departmental_airflow_user       = true
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = ["hben_raw_zone"]
     read_write = []
@@ -378,35 +365,33 @@ module "department_revenues" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Revenues"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  google_group_display_name         = "saml-aws-data-platform-collaborator-revenues@hackney.gov.uk"
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Revenues"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-revenues@hackney.gov.uk"
+  departmental_airflow_user       = true
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only = [
       "nndr_raw_zone",
@@ -423,35 +408,33 @@ module "department_environmental_services" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Env Services"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  google_group_display_name         = "saml-aws-data-platform-collaborator-environmental-services@hackney.gov.uk"
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Env Services"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-environmental-services@hackney.gov.uk"
+  departmental_airflow_user       = true
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_housing" {
@@ -460,35 +443,33 @@ module "department_housing" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Housing"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  google_group_display_name         = "saml-aws-data-platform-collaborator-housing@hackney.gov.uk"
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Housing"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-housing@hackney.gov.uk"
+  departmental_airflow_user       = true
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
   additional_s3_access = [
     {
       bucket_arn  = module.housing_nec_migration_storage.bucket_arn
@@ -546,7 +527,6 @@ module "department_children_and_education" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-children-and-family-services@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
 }
 
@@ -581,7 +561,6 @@ module "department_customer_services" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-customer-services@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
 }
 
@@ -616,7 +595,6 @@ module "department_hr_and_od" {
   google_group_display_name       = "saml-aws-data-platform-collaborator-hr-and-od@hackney.gov.uk"
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
 }
 
@@ -626,35 +604,33 @@ module "department_streetscene" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Streetscene"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  google_group_display_name         = "saml-aws-data-platform-collaborator-streetscene@hackney.gov.uk"
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Streetscene"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-streetscene@hackney.gov.uk"
+  departmental_airflow_user       = true
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  user_uploads_bucket             = module.user_uploads
 }
 
 module "department_children_family_services" {
@@ -663,35 +639,35 @@ module "department_children_family_services" {
     aws.aws_hackit_account = aws.aws_hackit_account
   }
 
-  source                            = "../modules/department"
-  tags                              = module.tags.values
-  is_live_environment               = local.is_live_environment
-  environment                       = var.environment
-  application                       = local.application_snake
-  short_identifier_prefix           = local.short_identifier_prefix
-  identifier_prefix                 = local.identifier_prefix
-  name                              = "Child Fam Services"
-  landing_zone_bucket               = module.landing_zone
-  raw_zone_bucket                   = module.raw_zone
-  refined_zone_bucket               = module.refined_zone
-  trusted_zone_bucket               = module.trusted_zone
-  athena_storage_bucket             = module.athena_storage
-  glue_scripts_bucket               = module.glue_scripts
-  glue_temp_storage_bucket          = module.glue_temp_storage
-  spark_ui_output_storage_bucket    = module.spark_ui_output_storage
-  secrets_manager_kms_key           = aws_kms_key.secrets_manager_key
-  redshift_ip_addresses             = var.redshift_public_ips
-  redshift_port                     = var.redshift_port
-  sso_instance_arn                  = local.sso_instance_arn
-  identity_store_id                 = local.identity_store_id
-  google_group_admin_display_name   = local.google_group_admin_display_name
-  google_group_display_name         = "saml-aws-data-platform-collaborator-cfs@hackney.gov.uk"
-  departmental_airflow_user         = true
-  departmental_airflow_role_enabled = local.departmental_airflow_role_enabled
-  mwaa_etl_scripts_bucket_arn       = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
-  mwaa_key_arn                      = aws_kms_key.mwaa_key.arn
-  mwaa_execution_role_arn           = aws_iam_role.mwaa_role.arn
-  user_uploads_bucket               = module.user_uploads
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Child Fam Services"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-cfs@hackney.gov.uk"
+  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
+  user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
     read_write = []
@@ -700,16 +676,7 @@ module "department_children_family_services" {
 
 locals {
   departmental_airflow_role_arns = compact([
-    module.department_parking.airflow_role_arn,
-    module.department_data_and_insight.airflow_role_arn,
-    module.department_env_enforcement.airflow_role_arn,
-    module.department_planning.airflow_role_arn,
     module.department_unrestricted.airflow_role_arn,
-    module.department_benefits_and_housing_needs.airflow_role_arn,
-    module.department_revenues.airflow_role_arn,
-    module.department_environmental_services.airflow_role_arn,
-    module.department_housing.airflow_role_arn,
-    module.department_streetscene.airflow_role_arn,
     module.department_children_family_services.airflow_role_arn,
   ])
 }

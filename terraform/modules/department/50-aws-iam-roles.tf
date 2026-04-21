@@ -108,8 +108,8 @@ locals {
     department_ecs_passrole   = aws_iam_policy.department_ecs_passrole.arn
   }
 
-  use_airflow_user = var.departmental_airflow_user && !var.departmental_airflow_role_enabled
-  use_airflow_role = var.departmental_airflow_user && var.departmental_airflow_role_enabled
+  use_airflow_user = var.departmental_airflow_user && !var.departmental_airflow_role
+  use_airflow_role = var.departmental_airflow_user && var.departmental_airflow_role
 }
 
 # IAM user and permission for departmental airflow user
@@ -137,6 +137,8 @@ resource "aws_iam_access_key" "airflow_user_key" {
 }
 
 data "aws_iam_policy_document" "airflow_role_assume_role" {
+  count = local.use_airflow_role ? 1 : 0
+
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -151,7 +153,7 @@ resource "aws_iam_role" "airflow_role" {
   count = local.use_airflow_role ? 1 : 0
 
   name               = "${local.department_identifier}-airflow-role"
-  assume_role_policy = data.aws_iam_policy_document.airflow_role_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.airflow_role_assume_role[0].json
   tags               = var.tags
 }
 
@@ -170,10 +172,8 @@ resource "aws_iam_role_policy_attachment" "airflow_role_datahub_config_access" {
 
 # Store airflow user credentials in Secrets Manager with required format
 resource "aws_secretsmanager_secret" "airflow_user_secret" {
-  count      = var.departmental_airflow_user ? 1 : 0
-  name       = "airflow/connections/${local.department_identifier}-airflow-aws-default"
-  kms_key_id = var.secrets_manager_kms_key.key_id
-  tags       = var.tags
+  count = var.departmental_airflow_user ? 1 : 0
+  name  = "airflow/connections/${local.department_identifier}-airflow-aws-default"
 }
 
 resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {

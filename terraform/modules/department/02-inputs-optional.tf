@@ -37,10 +37,16 @@ variable "departmental_airflow_user" {
   default     = false
 }
 
-variable "departmental_airflow_role_enabled" {
+variable "departmental_airflow_role" {
   description = "Enable departmental Airflow role-based authentication instead of IAM-user credentials"
   type        = bool
   default     = false
+}
+
+variable "mwaa_execution_role_arn" {
+  description = "ARN of the MWAA execution role allowed to assume the departmental Airflow role"
+  type        = string
+  default     = null
 }
 
 variable "region" {
