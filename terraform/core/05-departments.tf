@@ -5,8 +5,9 @@ data "aws_ssoadmin_instances" "sso_instances" {
 }
 
 locals {
-  sso_instance_arn  = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].arns)[0], "")
-  identity_store_id = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].identity_store_ids)[0], "")
+  sso_instance_arn          = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].arns)[0], "")
+  identity_store_id         = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].identity_store_ids)[0], "")
+  departmental_airflow_role = local.is_live_environment && !local.is_production_environment
 }
 
 module "department_housing_repairs" {
@@ -278,8 +279,10 @@ module "department_unrestricted" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
 }
 
@@ -660,11 +663,20 @@ module "department_children_family_services" {
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-cfs@hackney.gov.uk"
   departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
     read_write = []
   }
+}
+
+locals {
+  departmental_airflow_role_arns = compact([
+    module.department_unrestricted.airflow_role_arn,
+    module.department_children_family_services.airflow_role_arn,
+  ])
 }
