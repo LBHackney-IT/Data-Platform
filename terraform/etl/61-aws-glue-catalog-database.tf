@@ -68,6 +68,14 @@ resource "aws_glue_catalog_database" "housing_nec_migration_output_databases" {
   }
 }
 
+resource "aws_glue_catalog_database" "housing_nec_migration_data_quality" {
+  name = "housing_nec_migration_data_quality"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 resource "aws_glue_catalog_database" "ctax_raw_zone" {
   name = "ctax_raw_zone"
 
