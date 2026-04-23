@@ -107,37 +107,10 @@ locals {
     airflow_base_policy       = aws_iam_policy.airflow_base_policy.arn,
     department_ecs_passrole   = aws_iam_policy.department_ecs_passrole.arn
   }
-
-  use_airflow_user = var.departmental_airflow_user && !var.departmental_airflow_role
-  use_airflow_role = var.departmental_airflow_user && var.departmental_airflow_role
-}
-
-# IAM user and permission for departmental airflow user
-resource "aws_iam_user" "airflow_user" {
-  count = local.use_airflow_user ? 1 : 0
-  name  = "${local.department_identifier}-airflow-user"
-  tags  = var.tags
-}
-
-resource "aws_iam_user_policy_attachment" "airflow_user_policy_attachment" {
-  for_each   = local.use_airflow_user ? local.airflow_policy_map : {}
-  user       = aws_iam_user.airflow_user[0].name
-  policy_arn = each.value
-}
-
-resource "aws_iam_user_policy_attachment" "airflow_user_datahub_config_access" {
-  count      = local.use_airflow_user && local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
-  user       = aws_iam_user.airflow_user[0].name
-  policy_arn = aws_iam_policy.datahub_config_access_policy[0].arn
-}
-
-resource "aws_iam_access_key" "airflow_user_key" {
-  count = local.use_airflow_user ? 1 : 0
-  user  = aws_iam_user.airflow_user[0].name
 }
 
 data "aws_iam_policy_document" "airflow_role_assume_role" {
-  count = local.use_airflow_role ? 1 : 0
+  count = var.departmental_airflow_role ? 1 : 0
 
   statement {
     actions = ["sts:AssumeRole"]
@@ -150,7 +123,7 @@ data "aws_iam_policy_document" "airflow_role_assume_role" {
 }
 
 resource "aws_iam_role" "airflow_role" {
-  count = local.use_airflow_role ? 1 : 0
+  count = var.departmental_airflow_role ? 1 : 0
 
   name               = "${local.department_identifier}-airflow-role"
   assume_role_policy = data.aws_iam_policy_document.airflow_role_assume_role[0].json
@@ -158,38 +131,33 @@ resource "aws_iam_role" "airflow_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "airflow_role_policy_attachment" {
-  for_each = local.use_airflow_role ? local.airflow_policy_map : {}
+  for_each = var.departmental_airflow_role ? local.airflow_policy_map : {}
 
   role       = aws_iam_role.airflow_role[0].name
   policy_arn = each.value
 }
 
 resource "aws_iam_role_policy_attachment" "airflow_role_datahub_config_access" {
-  count      = local.use_airflow_role && local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
+  count      = var.departmental_airflow_role && local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
   role       = aws_iam_role.airflow_role[0].name
   policy_arn = aws_iam_policy.datahub_config_access_policy[0].arn
 }
 
-# Store airflow user credentials in Secrets Manager with required format
+# Store the departmental Airflow AWS connection in Secrets Manager.
 resource "aws_secretsmanager_secret" "airflow_user_secret" {
-  count = var.departmental_airflow_user ? 1 : 0
+  count = var.departmental_airflow_role ? 1 : 0
   name  = "airflow/connections/${local.department_identifier}-airflow-aws-default"
 }
 
 resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
-  count     = var.departmental_airflow_user ? 1 : 0
+  count     = var.departmental_airflow_role ? 1 : 0
   secret_id = aws_secretsmanager_secret.airflow_user_secret[0].id
-  secret_string = local.use_airflow_role ? jsonencode({
+  secret_string = jsonencode({
     conn_type = "aws",
     extra = jsonencode({
       region_name = var.region,
       role_arn    = aws_iam_role.airflow_role[0].arn
     })
-    }) : jsonencode({
-    conn_type = "aws",
-    login     = aws_iam_access_key.airflow_user_key[0].id,
-    password  = aws_iam_access_key.airflow_user_key[0].secret,
-    extra     = jsonencode({ region_name = var.region })
   })
 }
 

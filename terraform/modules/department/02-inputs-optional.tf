@@ -31,12 +31,6 @@ variable "notebook_instance" {
   default = null
 }
 
-variable "departmental_airflow_user" {
-  description = "Flag to create departmental Airflow user"
-  type        = bool
-  default     = false
-}
-
 variable "departmental_airflow_role" {
   description = "Enable departmental Airflow role-based authentication instead of IAM-user credentials"
   type        = bool
