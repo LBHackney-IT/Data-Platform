@@ -7,7 +7,7 @@ data "aws_ssoadmin_instances" "sso_instances" {
 locals {
   sso_instance_arn          = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].arns)[0], "")
   identity_store_id         = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].identity_store_ids)[0], "")
-  departmental_airflow_role = local.is_live_environment && !local.is_production_environment
+  departmental_airflow_role = local.is_live_environment
 }
 
 module "department_housing_repairs" {
