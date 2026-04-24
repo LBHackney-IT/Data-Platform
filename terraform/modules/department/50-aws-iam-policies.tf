@@ -246,32 +246,6 @@ data "aws_iam_policy_document" "read_only_glue_access" {
       ])
     }
   }
-
-  statement {
-    sid    = "SparkUiKmsAccess"
-    effect = "Allow"
-    actions = [
-      "kms:Decrypt",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey",
-    ]
-    resources = [
-      var.spark_ui_output_storage_bucket.kms_key_arn,
-    ]
-  }
-
-  statement {
-    sid    = "SparkUiS3Access"
-    effect = "Allow"
-    actions = [
-      "s3:Get*",
-      "s3:List*",
-    ]
-    resources = [
-      var.spark_ui_output_storage_bucket.bucket_arn,
-      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*",
-    ]
-  }
 }
 
 resource "aws_iam_policy" "read_only_glue_access" {
@@ -741,32 +715,6 @@ data "aws_iam_policy_document" "glue_access_sso" {
         [for db in access_level.value : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
       ])
     }
-  }
-
-  statement {
-    sid    = "SparkUiKmsAccess"
-    effect = "Allow"
-    actions = [
-      "kms:Decrypt",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey",
-    ]
-    resources = [
-      var.spark_ui_output_storage_bucket.kms_key_arn,
-    ]
-  }
-
-  statement {
-    sid    = "SparkUiS3Access"
-    effect = "Allow"
-    actions = [
-      "s3:Get*",
-      "s3:List*",
-    ]
-    resources = [
-      var.spark_ui_output_storage_bucket.bucket_arn,
-      "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*",
-    ]
   }
 }
 
