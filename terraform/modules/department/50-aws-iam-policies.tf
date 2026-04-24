@@ -221,7 +221,9 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     resources = flatten([
       ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
       [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
-      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:job/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:crawler/*"]
     ])
   }
 
@@ -576,7 +578,9 @@ data "aws_iam_policy_document" "glue_access" {
     resources = flatten([
       ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
       [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
-      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:job/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:crawler/*"]
     ])
   }
 
@@ -687,7 +691,9 @@ data "aws_iam_policy_document" "glue_access_sso" {
     resources = flatten([
       ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
       [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
-      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:job/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:crawler/*"]
     ])
   }
 
