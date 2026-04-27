@@ -221,7 +221,9 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     resources = flatten([
       ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
       [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
-      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:job/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:crawler/*"]
     ])
   }
 
@@ -576,7 +578,9 @@ data "aws_iam_policy_document" "glue_access" {
     resources = flatten([
       ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
       [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
-      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:job/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:crawler/*"]
     ])
   }
 
@@ -687,7 +691,9 @@ data "aws_iam_policy_document" "glue_access_sso" {
     resources = flatten([
       ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
       [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
-      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:job/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:crawler/*"]
     ])
   }
 
@@ -842,6 +848,46 @@ resource "aws_iam_policy" "departmental_cloudwatch_and_ecs_logs_access" {
   name        = lower("${var.identifier_prefix}-${local.department_identifier}-cloudwatch-ecs-logs-access")
   description = "Allows departmental access to CloudWatch metrics and department-specific ECS log groups"
   policy      = data.aws_iam_policy_document.departmental_cloudwatch_and_ecs_logs_access.json
+}
+
+// Glue console list and Spark UI access policy for departmental SSO users
+data "aws_iam_policy_document" "departmental_glue_console_list_and_spark_ui_access" {
+  statement {
+    sid    = "GlueConsoleListAndSparkUiAccess"
+    effect = "Allow"
+    actions = [
+      "glue:BatchGetStageFiles",
+      "glue:GetCrawlerMetrics",
+      "glue:GetCrawlers",
+      "glue:GetEnvironment",
+      "glue:GetExecutors",
+      "glue:GetExecutorsThreads",
+      "glue:GetJobs",
+      "glue:GetLogParsingStatus",
+      "glue:GetQueries",
+      "glue:GetQuery",
+      "glue:GetStage",
+      "glue:GetStageAttempt",
+      "glue:GetStageAttemptTaskList",
+      "glue:GetStageAttemptTaskSummary",
+      "glue:GetStageFiles",
+      "glue:GetStages",
+      "glue:GetStorage",
+      "glue:GetStorageUnit",
+      "glue:ListCrawlers",
+      "glue:ListJobs",
+      "glue:RequestLogParsing",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "departmental_glue_console_list_and_spark_ui_access" {
+  tags = var.tags
+
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-glue-console-list-spark-ui-access")
+  description = "Allows departmental SSO users to list Glue jobs and crawlers and access Glue Spark UI"
+  policy      = data.aws_iam_policy_document.departmental_glue_console_list_and_spark_ui_access.json
 }
 
 // Glue Agent Read only policy for glue scripts and mwaa bucket and run athena
