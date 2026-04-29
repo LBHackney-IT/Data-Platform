@@ -69,7 +69,7 @@ terraform {
     }
     google = {
       source  = "hashicorp/google"
-      version = "~> 4.0"
+      version = "~> 6.0"
     }
   }
   backend "s3" {
