@@ -84,8 +84,8 @@ variable "noiseworks_bucket" {
   default = null
 }
 
-variable "datahub_config_bucket" {
-  description = "DataHub config S3 bucket"
+variable "datahub_ingestion_bucket" {
+  description = "DataHub ingestion S3 bucket for ETL scripts and YAML configuration files"
   type = object({
     bucket_id   = string
     bucket_arn  = string

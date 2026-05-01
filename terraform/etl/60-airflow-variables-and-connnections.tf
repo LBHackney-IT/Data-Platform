@@ -141,14 +141,14 @@ resource "aws_secretsmanager_secret_version" "mtfh_secrets" {
   }
 }
 
-resource "aws_secretsmanager_secret" "datahub_config" {
-  name        = "airflow/variables/datahub_config"
-  description = "Configuration for DataHub integration. Includes DataHub cluster_name, task_defination, gms_url, and network."
+resource "aws_secretsmanager_secret" "datahub_ingestion" {
+  name        = "airflow/variables/datahub_ingestion"
+  description = "Configuration for DataHub ingestion. Includes DataHub cluster_name, task_defination, gms_url, and network."
   tags        = module.tags.values
 }
 
-resource "aws_secretsmanager_secret_version" "datahub_config" {
-  secret_id = aws_secretsmanager_secret.datahub_config.id
+resource "aws_secretsmanager_secret_version" "datahub_ingestion" {
+  secret_id = aws_secretsmanager_secret.datahub_ingestion.id
   secret_string = jsonencode({
     value = "UPDATE_IN_CONSOLE"
   })
