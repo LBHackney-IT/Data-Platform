@@ -165,18 +165,23 @@ module "user_uploads" {
 }
 
 #===============================================================================
-# DataHub Config Bucket to store the DataHub YAML configuration files
+# DataHub Ingestion Bucket to store ETL scripts and YAML configuration files
 #===============================================================================
 
-module "datahub_config" {
+module "datahub_ingestion" {
   source                     = "../modules/s3-bucket"
   tags                       = module.tags.values
   project                    = var.project
   environment                = var.environment
   identifier_prefix          = local.identifier_prefix
-  bucket_name                = "datahub-config"
-  bucket_identifier          = "datahub-config"
+  bucket_name                = "datahub-ingestion"
+  bucket_identifier          = "datahub-ingestion"
   include_backup_policy_tags = false
+}
+
+moved {
+  from = module.datahub_config
+  to   = module.datahub_ingestion
 }
 
 #===============================================================================
