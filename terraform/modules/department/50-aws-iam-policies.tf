@@ -1556,12 +1556,12 @@ resource "aws_iam_policy" "noiseworks_access_policy" {
   policy      = data.aws_iam_policy_document.noiseworks_access[0].json
 }
 
-// Write access to DataHub config bucket for Data and Insight department only
-data "aws_iam_policy_document" "datahub_config_access" {
-  count = local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
+// Write access to DataHub ingestion bucket for Data and Insight department only
+data "aws_iam_policy_document" "datahub_ingestion_access" {
+  count = local.department_identifier == "data-and-insight" && var.datahub_ingestion_bucket != null ? 1 : 0
 
   statement {
-    sid    = "DataHubConfigKmsAccess"
+    sid    = "DataHubIngestionKmsAccess"
     effect = "Allow"
     actions = [
       "kms:Encrypt",
@@ -1570,11 +1570,11 @@ data "aws_iam_policy_document" "datahub_config_access" {
       "kms:GenerateDataKey*",
       "kms:DescribeKey"
     ]
-    resources = [var.datahub_config_bucket.kms_key_arn]
+    resources = [var.datahub_ingestion_bucket.kms_key_arn]
   }
 
   statement {
-    sid    = "DataHubConfigS3WriteAccess"
+    sid    = "DataHubIngestionS3WriteAccess"
     effect = "Allow"
     actions = [
       "s3:GetObject",
@@ -1585,15 +1585,15 @@ data "aws_iam_policy_document" "datahub_config_access" {
       "s3:DeleteObject"
     ]
     resources = [
-      var.datahub_config_bucket.bucket_arn,
-      "${var.datahub_config_bucket.bucket_arn}/*"
+      var.datahub_ingestion_bucket.bucket_arn,
+      "${var.datahub_ingestion_bucket.bucket_arn}/*"
     ]
   }
 }
 
-resource "aws_iam_policy" "datahub_config_access_policy" {
-  count       = local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
-  name        = lower("${var.identifier_prefix}-${local.department_identifier}-datahub-config-access-policy")
-  description = "Allows ${local.department_identifier} department write access to DataHub config bucket"
-  policy      = data.aws_iam_policy_document.datahub_config_access[0].json
+resource "aws_iam_policy" "datahub_ingestion_access_policy" {
+  count       = local.department_identifier == "data-and-insight" && var.datahub_ingestion_bucket != null ? 1 : 0
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-datahub-ingestion-access-policy")
+  description = "Allows ${local.department_identifier} department write access to DataHub ingestion bucket"
+  policy      = data.aws_iam_policy_document.datahub_ingestion_access[0].json
 }

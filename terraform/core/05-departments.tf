@@ -157,7 +157,7 @@ module "department_data_and_insight" {
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   cloudtrail_bucket               = module.cloudtrail_storage
-  datahub_config_bucket           = module.datahub_config
+  datahub_ingestion_bucket        = module.datahub_ingestion
   additional_glue_database_access = {
     read_only  = []
     read_write = ["arcus_archive", "metastore"]
@@ -170,8 +170,8 @@ module "department_data_and_insight" {
       actions     = ["s3:Get*", "s3:List*", ]
     },
     {
-      bucket_arn  = module.datahub_config.bucket_arn
-      kms_key_arn = module.datahub_config.kms_key_arn
+      bucket_arn  = module.datahub_ingestion.bucket_arn
+      kms_key_arn = module.datahub_ingestion.kms_key_arn
       paths       = []
       actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
     },

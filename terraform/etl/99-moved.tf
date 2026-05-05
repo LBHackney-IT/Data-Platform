@@ -40,3 +40,13 @@ moved {
   to   = module.data_and_insight_hb_combined[0].module.import_file_from_g_drive.aws_cloudwatch_event_target.run_lambda
 }
 
+moved {
+  from = aws_secretsmanager_secret.datahub_config
+  to   = aws_secretsmanager_secret.datahub_ingestion
+}
+
+moved {
+  from = aws_secretsmanager_secret_version.datahub_config
+  to   = aws_secretsmanager_secret_version.datahub_ingestion
+}
+

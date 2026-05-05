@@ -68,9 +68,9 @@ resource "aws_ssoadmin_customer_managed_policy_attachment" "cloudtrail_access" {
   }
 }
 
-# Attach DataHub config access policy to SSO (data-and-insight only)
-resource "aws_ssoadmin_customer_managed_policy_attachment" "datahub_config_access" {
-  count = local.deploy_sso && local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
+# Attach DataHub ingestion access policy to SSO (data-and-insight only)
+resource "aws_ssoadmin_customer_managed_policy_attachment" "datahub_ingestion_access" {
+  count = local.deploy_sso && local.department_identifier == "data-and-insight" && var.datahub_ingestion_bucket != null ? 1 : 0
 
   provider = aws.aws_hackit_account
 
@@ -78,7 +78,7 @@ resource "aws_ssoadmin_customer_managed_policy_attachment" "datahub_config_acces
   permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
 
   customer_managed_policy_reference {
-    name = aws_iam_policy.datahub_config_access_policy[0].name
+    name = aws_iam_policy.datahub_ingestion_access_policy[0].name
     path = "/"
   }
 }
