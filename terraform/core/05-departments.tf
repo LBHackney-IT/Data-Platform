@@ -159,32 +159,10 @@ module "department_data_and_insight" {
   cloudtrail_bucket               = module.cloudtrail_storage
   datahub_config_bucket           = module.datahub_config
   additional_glue_database_access = {
-    read_only = [
-      module.department_env_enforcement.raw_zone_catalog_database_name,
-      module.department_env_enforcement.refined_zone_catalog_database_name,
-      module.department_env_enforcement.trusted_zone_catalog_database_name,
-    ]
+    read_only  = []
     read_write = ["arcus_archive", "metastore"]
   }
   additional_s3_access = [
-    {
-      bucket_arn  = module.raw_zone.bucket_arn
-      kms_key_arn = module.raw_zone.kms_key_arn
-      paths       = ["env-enforcement"]
-      actions     = ["s3:Get*", "s3:List*"]
-    },
-    {
-      bucket_arn  = module.refined_zone.bucket_arn
-      kms_key_arn = module.refined_zone.kms_key_arn
-      paths       = ["env-enforcement"]
-      actions     = ["s3:Get*", "s3:List*"]
-    },
-    {
-      bucket_arn  = module.trusted_zone.bucket_arn
-      kms_key_arn = module.trusted_zone.kms_key_arn
-      paths       = ["env-enforcement"]
-      actions     = ["s3:Get*", "s3:List*"]
-    },
     {
       bucket_arn  = module.arcus_data_storage.bucket_arn
       kms_key_arn = module.arcus_data_storage.kms_key_arn
