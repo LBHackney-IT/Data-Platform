@@ -4,7 +4,7 @@
 #   DataHub ingestion bucket.
 # - When code is pushed to the `staging` branch in `dap-datahub-tools`, the CodeBuild webhook starts a build.
 # - CodeBuild pulls the repository by using the AWS CodeConnections connection defined in this file.
-# - The build runs `github_workflow_scripts/datahub-tools-s3-sync-buildspec.yml` from the
+# - The build runs `github_workflow_scripts/datahub-tools-s3-sync-buildspec.yaml` from the
 #   `dap-datahub-tools` repository.
 # - That build syncs the DataHub YAML config and ETL scripts folders into the staging DataHub ingestion bucket.
 # - The result is that the `stg` DataHub ingestion bucket can be tested with the latest `staging` branch code.
@@ -145,7 +145,7 @@ resource "aws_codebuild_project" "dap_datahub_tools_staging_sync" {
     type                = "GITHUB"
     location            = "https://github.com/LBHackney-IT/dap-datahub-tools.git"
     git_clone_depth     = 1
-    buildspec           = "github_workflow_scripts/datahub-tools-s3-sync-buildspec.yml" # Stored in dap-datahub-tools repo
+    buildspec           = "github_workflow_scripts/datahub-tools-s3-sync-buildspec.yaml" # Stored in dap-datahub-tools repo
     report_build_status = false
 
     auth {
