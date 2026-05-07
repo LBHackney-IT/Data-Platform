@@ -11,7 +11,6 @@
 
 resource "aws_codestarconnections_connection" "dap_datahub_tools_stg" {
   count = local.environment == "stg" ? 1 : 0
-
   name          = "${local.identifier_prefix}-datahub-tools"
   provider_type = "GitHub"
   tags          = module.tags.values
