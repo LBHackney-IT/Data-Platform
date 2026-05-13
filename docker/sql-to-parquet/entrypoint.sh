@@ -39,7 +39,19 @@ cd flatfile
 
 echo "Copying zip file from s3 bucket to disk..."
 SQL_OBJECT_KEY="parking/${FILENAME}.zip"
-aws s3 cp s3://"${BUCKET_NAME}"/"${SQL_OBJECT_KEY}" .
+S3_COPY_MAX_ATTEMPTS=3
+S3_COPY_RETRY_DELAY_SECONDS=10
+S3_COPY_ATTEMPT=1
+until aws s3 cp s3://"${BUCKET_NAME}"/"${SQL_OBJECT_KEY}" .; do
+  if [ "$S3_COPY_ATTEMPT" -ge "$S3_COPY_MAX_ATTEMPTS" ]; then
+    echo "Failed to copy ${SQL_OBJECT_KEY} from s3 after ${S3_COPY_ATTEMPT} attempts"
+    exit 1
+  fi
+
+  echo "Failed to copy ${SQL_OBJECT_KEY} from s3 on attempt ${S3_COPY_ATTEMPT}. Retrying in ${S3_COPY_RETRY_DELAY_SECONDS} seconds..."
+  sleep "$S3_COPY_RETRY_DELAY_SECONDS"
+  S3_COPY_ATTEMPT=$((S3_COPY_ATTEMPT + 1))
+done
 
 # This sleep was added because of an apparent race condition between
 # the download and unzipping, where unzip would give an error reading
@@ -60,4 +72,3 @@ echo "Taking snapshot of RDS database..."
 aws rds create-db-snapshot --db-instance-identifier "${RDS_INSTANCE_ID}" --db-snapshot-identifier "${SNAPSHOT_ID}"
 
 echo "Done"
-
