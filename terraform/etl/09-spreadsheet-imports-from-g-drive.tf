@@ -1164,11 +1164,11 @@ module "ops_dashboard_link" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1LT8kpndsFPi3bP4ldioDCG1EK5TcSvOI"
+  google_drive_document_id       = "1-TqdLu3vQ11nx0CQHzeIOx6nlSSHLnfo"
   glue_job_name                  = "ops_dashboard_link"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "ops_button/ops_dashboard_link_11-05-2026.csv"
+  input_file_name                = "ops_button/ops_dashboard_link_14-05-2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
@@ -1416,11 +1416,11 @@ module "smt_dashboard_link" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "19hebNWsoLj-elivkUqhkHNj-OwFjIHem"
+  google_drive_document_id       = "1sc-cvZF8mReWw8SX2ZPdLi3GzX2oqD_5"
   glue_job_name                  = "smt_dashboard_link"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "smt_button/smt_dashboard_link_11_05_2026.csv"
+  input_file_name                = "smt_button/smt_dashboard_link_14_05_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
