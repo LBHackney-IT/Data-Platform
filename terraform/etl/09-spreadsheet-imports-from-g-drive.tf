@@ -1430,6 +1430,8 @@ module "smt_dashboard_link" {
       worksheet_name    = "smt_dashboard_link"
     }
   }
+}
+
 module "hackney_carpark" {
   count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
