@@ -1,17 +1,17 @@
 # Workflow overview:
-# - This staging-only Terraform creates the AWS CodeConnections, CodeBuild, IAM, CloudWatch Logs,
-#   and webhook resources needed to sync the `dap-airflow` GitHub repository into the staging MWAA buckets.
-# - When code is pushed to the `staging` branch in `dap-airflow`, the CodeBuild webhook starts a build.
+# - This staging-only Terraform creates the AWS CodeConnections, CodeBuild, IAM, and CloudWatch Logs
+#   resources needed to sync the `dap-airflow` GitHub repository into the staging MWAA buckets.
+# - When code is pushed to the `staging` branch in `dap-airflow`, a GitHub Actions workflow starts
+#   this CodeBuild project explicitly.
 # - CodeBuild pulls the repository by using the AWS CodeConnections connection defined in this file.
 # - The build runs `github_workflow_scripts/mwaa-s3-sync-buildspec.yml` from the `dap-airflow` repository.
 # - That build syncs the Airflow DAGs folder and the ETL scripts folder into the staging MWAA S3 buckets.
 # - The result is that the `stg` MWAA environment stays in sync with the latest `staging` branch code.
 #
-# Operational note for rotating webhook secret:
-# - If this is required, DP or CE only needs to delete the existing CodeBuild webhook from AWS.
-# - The webhook can be deleted by using either the AWS CLI or the AWS Console.
-# - Then redeploy this Terraform workflow and it will recreate the webhook with the updated webhook secret.
-# - The AWS CodeConnections resource does not need to be deleted or re-approved.
+# Operational note:
+# - The CodeBuild project is intentionally not connected to GitHub with a native CodeBuild webhook.
+# - The staging GitHub Actions workflow starts CodeBuild only for pushes to the `staging` branch.
+# - This avoids PR, main, and autofix commits being sent to the CodeBuild webhook endpoint.
 
 resource "aws_codestarconnections_connection" "dap_airflow_stg" {
   count = local.environment == "stg" ? 1 : 0
@@ -113,6 +113,27 @@ resource "aws_iam_role_policy" "codebuild_dap_airflow_staging_policy" {
   })
 }
 
+resource "aws_iam_role_policy" "github_actions_start_dap_airflow_codebuild_sync" {
+  count = local.environment == "stg" ? 1 : 0
+
+  name = "${local.identifier_prefix}-github-actions-start-dap-airflow-sync"
+  role = var.aws_deploy_iam_role_name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "codebuild:StartBuild",
+          "codebuild:BatchGetBuilds"
+        ]
+        Resource = aws_codebuild_project.dap_airflow_staging_sync[0].arn
+      }
+    ]
+  })
+}
+
 resource "aws_codebuild_project" "dap_airflow_staging_sync" {
   count = local.environment == "stg" ? 1 : 0
 
@@ -164,23 +185,4 @@ resource "aws_cloudwatch_log_group" "codebuild_dap_airflow_staging" {
   name              = "/aws/codebuild/${local.identifier_prefix}-dap-airflow-sync"
   retention_in_days = 30
   tags              = module.tags.values
-}
-
-resource "aws_codebuild_webhook" "dap_airflow_staging_webhook" {
-  count = local.environment == "stg" ? 1 : 0
-
-  project_name = aws_codebuild_project.dap_airflow_staging_sync[0].name
-  build_type   = "BUILD"
-
-  filter_group {
-    filter {
-      type    = "EVENT"
-      pattern = "PUSH"
-    }
-
-    filter {
-      type    = "HEAD_REF"
-      pattern = "^refs/heads/staging$"
-    }
-  }
 }
