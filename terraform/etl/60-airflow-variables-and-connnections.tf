@@ -54,12 +54,42 @@ resource "aws_secretsmanager_secret_version" "alloy_connection" {
 
 # NEC Migration
 
-resource "aws_secretsmanager_secret" "nec_migration_partition_date" {
-  name        = "airflow/variables/housing/nec_migration_partition_date"
-  description = "Value to set partition date to be used in housing_nec_migration database. Format should be yyyy-mm-dd."
+locals {
+  nec_migration_partition_dates = [
+    "2025-12-19",
+    "2026-03-27",
+  ]
+
+  nec_migration_partition_dates_by_suffix = {
+    for date in local.nec_migration_partition_dates : replace(date, "-", "") => date
+  }
+
+  housing_nec_migration_partition_databases = {
+    for suffix, _ in local.nec_migration_partition_dates_by_suffix : suffix => "housing_nec_migration_${suffix}"
+  }
+
+  housing_nec_migration_output_databases = {
+    for suffix, _ in local.nec_migration_partition_dates_by_suffix : suffix => "housing_nec_migration_outputs_${suffix}"
+  }
+}
+
+resource "aws_secretsmanager_secret" "nec_migration_snapshot_dates" {
+  name        = "airflow/variables/housing/nec_migration_snapshot_dates"
+  description = "List of partition dates to be used in housing_nec_migration databases. Format should be a JSON array of yyyy-mm-dd strings."
   tags        = module.tags.values
 }
 
+
+resource "aws_secretsmanager_secret_version" "nec_migration_snapshot_dates" {
+  secret_id     = aws_secretsmanager_secret.nec_migration_snapshot_dates.id
+  secret_string = jsonencode(local.nec_migration_partition_dates)
+}
+
+resource "aws_secretsmanager_secret" "nec_migration_partition_date" {
+  name        = "airflow/variables/housing/nec_migration_partition_date"
+  description = "Manually managed value to set partition date to be used in housing_nec_migration database. Format should be yyyy-mm-dd."
+  tags        = module.tags.values
+}
 
 resource "aws_secretsmanager_secret_version" "nec_migration_partition_date" {
   secret_id     = aws_secretsmanager_secret.nec_migration_partition_date.id
@@ -70,12 +100,13 @@ resource "aws_secretsmanager_secret_version" "nec_migration_partition_date" {
   }
 }
 
-# Store the KMS key ARNs for the refined, raw, and trusted zones as airflow variables in Secrets Manager
+# Store the KMS key ARNs for listed buckets as airflow variables in Secrets Manager
 locals {
   kms_keys = {
-    refined_zone = module.refined_zone_data_source.kms_key_arn
-    raw_zone     = module.raw_zone_data_source.kms_key_arn
-    trusted_zone = module.trusted_zone_data_source.kms_key_arn
+    refined_zone                  = module.refined_zone_data_source.kms_key_arn
+    raw_zone                      = module.raw_zone_data_source.kms_key_arn
+    trusted_zone                  = module.trusted_zone_data_source.kms_key_arn
+    housing_nec_migration_storage = module.housing_nec_migration_storage.kms_key_arn
   }
 }
 
@@ -110,14 +141,14 @@ resource "aws_secretsmanager_secret_version" "mtfh_secrets" {
   }
 }
 
-resource "aws_secretsmanager_secret" "datahub_config" {
-  name        = "airflow/variables/datahub_config"
-  description = "Configuration for DataHub integration. Includes DataHub cluster_name, task_defination, gms_url, and network."
+resource "aws_secretsmanager_secret" "datahub_ingestion" {
+  name        = "airflow/variables/datahub_ingestion"
+  description = "Configuration for DataHub ingestion. Includes DataHub cluster_name, task_defination, gms_url, and network."
   tags        = module.tags.values
 }
 
-resource "aws_secretsmanager_secret_version" "datahub_config" {
-  secret_id = aws_secretsmanager_secret.datahub_config.id
+resource "aws_secretsmanager_secret_version" "datahub_ingestion" {
+  secret_id = aws_secretsmanager_secret.datahub_ingestion.id
   secret_string = jsonencode({
     value = "UPDATE_IN_CONSOLE"
   })

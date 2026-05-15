@@ -31,10 +31,16 @@ variable "notebook_instance" {
   default = null
 }
 
-variable "departmental_airflow_user" {
-  description = "Flag to create departmental Airflow user"
+variable "departmental_airflow_role" {
+  description = "Enable departmental Airflow role-based authentication instead of IAM-user credentials"
   type        = bool
   default     = false
+}
+
+variable "mwaa_execution_role_arn" {
+  description = "ARN of the MWAA execution role allowed to assume the departmental Airflow role"
+  type        = string
+  default     = null
 }
 
 variable "region" {
@@ -68,8 +74,18 @@ variable "cloudtrail_bucket" {
   default = null
 }
 
-variable "datahub_config_bucket" {
-  description = "DataHub config S3 bucket"
+variable "noiseworks_bucket" {
+  description = "Noiseworks data storage S3 bucket"
+  type = object({
+    bucket_id   = string
+    bucket_arn  = string
+    kms_key_arn = string
+  })
+  default = null
+}
+
+variable "datahub_ingestion_bucket" {
+  description = "DataHub ingestion S3 bucket for ETL scripts and YAML configuration files"
   type = object({
     bucket_id   = string
     bucket_arn  = string

@@ -5,8 +5,9 @@ data "aws_ssoadmin_instances" "sso_instances" {
 }
 
 locals {
-  sso_instance_arn  = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].arns)[0], "")
-  identity_store_id = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].identity_store_ids)[0], "")
+  sso_instance_arn          = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].arns)[0], "")
+  identity_store_id         = try(tolist(data.aws_ssoadmin_instances.sso_instances[0].identity_store_ids)[0], "")
+  departmental_airflow_role = local.is_live_environment
 }
 
 module "department_housing_repairs" {
@@ -71,9 +72,10 @@ module "department_parking" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-parking@hackney.gov.uk"
-  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only = [
@@ -149,12 +151,13 @@ module "department_data_and_insight" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-datainsight@hackney.gov.uk"
-  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   cloudtrail_bucket               = module.cloudtrail_storage
-  datahub_config_bucket           = module.datahub_config
+  datahub_ingestion_bucket        = module.datahub_ingestion
   additional_glue_database_access = {
     read_only  = []
     read_write = ["arcus_archive", "metastore"]
@@ -167,8 +170,8 @@ module "department_data_and_insight" {
       actions     = ["s3:Get*", "s3:List*", ]
     },
     {
-      bucket_arn  = module.datahub_config.bucket_arn
-      kms_key_arn = module.datahub_config.kms_key_arn
+      bucket_arn  = module.datahub_ingestion.bucket_arn
+      kms_key_arn = module.datahub_ingestion.kms_key_arn
       paths       = []
       actions     = ["s3:Get*", "s3:List*", "s3:Put*", "s3:Delete*"]
     },
@@ -203,10 +206,12 @@ module "department_env_enforcement" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  noiseworks_bucket               = module.noiseworks_data_storage
 }
 
 module "department_planning" {
@@ -238,12 +243,14 @@ module "department_planning" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-planning@hackney.gov.uk"
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
-    read_only  = ["${local.identifier_prefix}-tascomi*"]
-    read_write = []
+    read_only  = []
+    read_write = ["${local.identifier_prefix}-tascomi*"]
   }
 }
 
@@ -275,9 +282,10 @@ module "department_unrestricted" {
   sso_instance_arn                = local.sso_instance_arn
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
-  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
 }
 
@@ -344,9 +352,10 @@ module "department_benefits_and_housing_needs" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-benefits-housing-needs@hackney.gov.uk"
-  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = ["hben_raw_zone"]
@@ -383,9 +392,10 @@ module "department_revenues" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-revenues@hackney.gov.uk"
-  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only = [
@@ -426,9 +436,10 @@ module "department_environmental_services" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-environmental-services@hackney.gov.uk"
-  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
 }
 
@@ -461,9 +472,10 @@ module "department_housing" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-housing@hackney.gov.uk"
-  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   additional_s3_access = [
     {
@@ -622,9 +634,10 @@ module "department_streetscene" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-streetscene@hackney.gov.uk"
-  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
 }
 
@@ -657,12 +670,29 @@ module "department_children_family_services" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-cfs@hackney.gov.uk"
-  departmental_airflow_user       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
     read_write = []
   }
+}
+
+locals {
+  departmental_airflow_role_arns = compact([
+    module.department_benefits_and_housing_needs.airflow_role_arn,
+    module.department_children_family_services.airflow_role_arn,
+    module.department_data_and_insight.airflow_role_arn,
+    module.department_env_enforcement.airflow_role_arn,
+    module.department_environmental_services.airflow_role_arn,
+    module.department_housing.airflow_role_arn,
+    module.department_parking.airflow_role_arn,
+    module.department_planning.airflow_role_arn,
+    module.department_revenues.airflow_role_arn,
+    module.department_streetscene.airflow_role_arn,
+    module.department_unrestricted.airflow_role_arn,
+  ])
 }

@@ -46,6 +46,36 @@ resource "aws_glue_catalog_database" "housing_nec_migration_outputs_database" {
   }
 }
 
+resource "aws_glue_catalog_database" "housing_nec_migration_partition_databases" {
+  # Defined at terraform/etl/60-airflow-variables-and-connnections.tf
+  for_each = local.housing_nec_migration_partition_databases
+
+  name = each.value
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_glue_catalog_database" "housing_nec_migration_output_databases" {
+  # Defined at terraform/etl/60-airflow-variables-and-connnections.tf
+  for_each = local.housing_nec_migration_output_databases
+
+  name = each.value
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_glue_catalog_database" "housing_nec_migration_data_quality" {
+  name = "housing_nec_migration_data_quality"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 resource "aws_glue_catalog_database" "ctax_raw_zone" {
   name = "ctax_raw_zone"
 
@@ -110,6 +140,31 @@ resource "aws_glue_catalog_database" "department_user_uploads" {
   for_each = local.department_user_uploads_databases
 
   name = each.value
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+# Keep the Tascomi Glue catalog databases (extracted from the old 24-aws-glue-tascomi-data.tf)
+resource "aws_glue_catalog_database" "raw_zone_tascomi" {
+  name = "${local.identifier_prefix}-tascomi-raw-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_glue_catalog_database" "refined_zone_tascomi" {
+  name = "${local.identifier_prefix}-tascomi-refined-zone"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_glue_catalog_database" "trusted_zone_tascomi" {
+  name = "${local.identifier_prefix}-tascomi-trusted-zone"
 
   lifecycle {
     prevent_destroy = true

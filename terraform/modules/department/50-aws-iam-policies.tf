@@ -141,7 +141,7 @@ data "aws_iam_policy_document" "read_only_s3_department_access" {
       ]
       resources = concat(
         [additional_access_item.value.bucket_arn],
-        additional_access_item.value.paths == null ? [
+        try(length(additional_access_item.value.paths), 0) == 0 ? [
           "${additional_access_item.value.bucket_arn}/*"
           ] : [
           for path in additional_access_item.value.paths : "${additional_access_item.value.bucket_arn}/${path}/*"
@@ -221,7 +221,9 @@ data "aws_iam_policy_document" "read_only_glue_access" {
     resources = flatten([
       ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
       [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
-      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:job/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:crawler/*"]
     ])
   }
 
@@ -373,7 +375,7 @@ data "aws_iam_policy_document" "s3_department_access" {
       actions = additional_access_item.value.actions
       resources = concat(
         [additional_access_item.value.bucket_arn],
-        additional_access_item.value.paths == null ? [
+        try(length(additional_access_item.value.paths), 0) == 0 ? [
           "${additional_access_item.value.bucket_arn}/*"
           ] : [
           for path in additional_access_item.value.paths : "${additional_access_item.value.bucket_arn}/${path}/*"
@@ -576,7 +578,9 @@ data "aws_iam_policy_document" "glue_access" {
     resources = flatten([
       ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
       [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
-      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:job/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:crawler/*"]
     ])
   }
 
@@ -687,7 +691,9 @@ data "aws_iam_policy_document" "glue_access_sso" {
     resources = flatten([
       ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:catalog"],
       [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:database/${db}"],
-      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"]
+      [for db in local.common_department_databases : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${db}/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:job/*"],
+      ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:crawler/*"]
     ])
   }
 
@@ -719,9 +725,11 @@ data "aws_iam_policy_document" "glue_crawler_access_staging" {
     effect = "Allow"
     actions = [
       "glue:BatchGetCrawlers",
-      "glue:ListCrawlers",
       "glue:GetCrawler",
+      "glue:GetCrawlerMetrics",
       "glue:GetCrawlers",
+      "glue:ListCrawlers",
+      "glue:ListCrawls",
       "glue:StartCrawler",
       "glue:StopCrawler",
     ]
@@ -840,6 +848,46 @@ resource "aws_iam_policy" "departmental_cloudwatch_and_ecs_logs_access" {
   name        = lower("${var.identifier_prefix}-${local.department_identifier}-cloudwatch-ecs-logs-access")
   description = "Allows departmental access to CloudWatch metrics and department-specific ECS log groups"
   policy      = data.aws_iam_policy_document.departmental_cloudwatch_and_ecs_logs_access.json
+}
+
+// Glue console list and Spark UI access policy for departmental SSO users
+data "aws_iam_policy_document" "departmental_glue_console_list_and_spark_ui_access" {
+  statement {
+    sid    = "GlueConsoleListAndSparkUiAccess"
+    effect = "Allow"
+    actions = [
+      "glue:BatchGetStageFiles",
+      "glue:GetCrawlerMetrics",
+      "glue:GetCrawlers",
+      "glue:GetEnvironment",
+      "glue:GetExecutors",
+      "glue:GetExecutorsThreads",
+      "glue:GetJobs",
+      "glue:GetLogParsingStatus",
+      "glue:GetQueries",
+      "glue:GetQuery",
+      "glue:GetStage",
+      "glue:GetStageAttempt",
+      "glue:GetStageAttemptTaskList",
+      "glue:GetStageAttemptTaskSummary",
+      "glue:GetStageFiles",
+      "glue:GetStages",
+      "glue:GetStorage",
+      "glue:GetStorageUnit",
+      "glue:ListCrawlers",
+      "glue:ListJobs",
+      "glue:RequestLogParsing",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "departmental_glue_console_list_and_spark_ui_access" {
+  tags = var.tags
+
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-glue-console-list-spark-ui-access")
+  description = "Allows departmental SSO users to list Glue jobs and crawlers and access Glue Spark UI"
+  policy      = data.aws_iam_policy_document.departmental_glue_console_list_and_spark_ui_access.json
 }
 
 // Glue Agent Read only policy for glue scripts and mwaa bucket and run athena
@@ -1251,6 +1299,7 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "logs:CreateLogStream",
       "logs:CreateLogGroup",
       "logs:PutLogEvents",
+      "logs:FilterLogEvents",
       "logs:GetLogEvents",
       "logs:GetLogRecord",
       "logs:GetLogGroupFields",
@@ -1287,7 +1336,10 @@ data "aws_iam_policy_document" "airflow_base_policy" {
       "glue:CreateTable",
       "glue:UpdateTable",
       "glue:DeleteTable",
-      "glue:GetJobRuns"
+      "glue:GetJob",
+      "glue:GetJobRun",
+      "glue:GetJobRuns",
+      "glue:StartJobRun"
     ]
     resources = ["*"]
   }
@@ -1467,12 +1519,49 @@ resource "aws_iam_policy" "cloudtrail_access_policy" {
   policy      = data.aws_iam_policy_document.cloudtrail_access[0].json
 }
 
-// Write access to DataHub config bucket for Data and Insight department only
-data "aws_iam_policy_document" "datahub_config_access" {
-  count = local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
+// Read-only Noiseworks bucket access for Env Enforcement department only
+data "aws_iam_policy_document" "noiseworks_access" {
+  count = local.department_identifier == "env-enforcement" && var.noiseworks_bucket != null ? 1 : 0
 
   statement {
-    sid    = "DataHubConfigKmsAccess"
+    sid    = "NoiseworksKmsReadAccess"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    resources = [var.noiseworks_bucket.kms_key_arn]
+  }
+
+  statement {
+    sid    = "NoiseworksS3ReadAccess"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket"
+    ]
+    resources = [
+      var.noiseworks_bucket.bucket_arn,
+      "${var.noiseworks_bucket.bucket_arn}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "noiseworks_access_policy" {
+  count       = local.department_identifier == "env-enforcement" && var.noiseworks_bucket != null ? 1 : 0
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-noiseworks-access-policy")
+  description = "Allows ${local.department_identifier} department read-only access to Noiseworks data storage bucket"
+  policy      = data.aws_iam_policy_document.noiseworks_access[0].json
+}
+
+// Write access to DataHub ingestion bucket for Data and Insight department only
+data "aws_iam_policy_document" "datahub_ingestion_access" {
+  count = local.department_identifier == "data-and-insight" && var.datahub_ingestion_bucket != null ? 1 : 0
+
+  statement {
+    sid    = "DataHubIngestionKmsAccess"
     effect = "Allow"
     actions = [
       "kms:Encrypt",
@@ -1481,11 +1570,11 @@ data "aws_iam_policy_document" "datahub_config_access" {
       "kms:GenerateDataKey*",
       "kms:DescribeKey"
     ]
-    resources = [var.datahub_config_bucket.kms_key_arn]
+    resources = [var.datahub_ingestion_bucket.kms_key_arn]
   }
 
   statement {
-    sid    = "DataHubConfigS3WriteAccess"
+    sid    = "DataHubIngestionS3WriteAccess"
     effect = "Allow"
     actions = [
       "s3:GetObject",
@@ -1496,15 +1585,15 @@ data "aws_iam_policy_document" "datahub_config_access" {
       "s3:DeleteObject"
     ]
     resources = [
-      var.datahub_config_bucket.bucket_arn,
-      "${var.datahub_config_bucket.bucket_arn}/*"
+      var.datahub_ingestion_bucket.bucket_arn,
+      "${var.datahub_ingestion_bucket.bucket_arn}/*"
     ]
   }
 }
 
-resource "aws_iam_policy" "datahub_config_access_policy" {
-  count       = local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
-  name        = lower("${var.identifier_prefix}-${local.department_identifier}-datahub-config-access-policy")
-  description = "Allows ${local.department_identifier} department write access to DataHub config bucket"
-  policy      = data.aws_iam_policy_document.datahub_config_access[0].json
+resource "aws_iam_policy" "datahub_ingestion_access_policy" {
+  count       = local.department_identifier == "data-and-insight" && var.datahub_ingestion_bucket != null ? 1 : 0
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-datahub-ingestion-access-policy")
+  description = "Allows ${local.department_identifier} department write access to DataHub ingestion bucket"
+  policy      = data.aws_iam_policy_document.datahub_ingestion_access[0].json
 }

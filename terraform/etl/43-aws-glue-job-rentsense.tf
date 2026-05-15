@@ -1,7 +1,3 @@
-data "aws_ssm_parameter" "ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name" {
-  name = "/${local.identifier_prefix}/glue_crawler/housing/ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name"
-}
-
 module "rentsense_output_to_landing_S3" {
   source                         = "../modules/aws-glue-job"
   is_production_environment      = local.is_production_environment
@@ -12,11 +8,12 @@ module "rentsense_output_to_landing_S3" {
   glue_role_arn                  = data.aws_iam_role.glue_role.arn
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = 8
-  max_retries                    = 3
+  max_retries                    = 0
   glue_version                   = "4.0"
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  tags                           = module.tags.values
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket"               = module.refined_zone_data_source.bucket_id
@@ -28,7 +25,7 @@ module "rentsense_output_to_landing_S3" {
     "--conf"                    = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
   script_name          = "rentsense_to_refined_and_landing"
-  triggered_by_crawler = data.aws_ssm_parameter.ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name.value
+  triggered_by_crawler = null
   glue_crawler_excluded_blobs = ["*.json",
     "*.txt",
     "*.zip",
@@ -59,11 +56,12 @@ module "rentsense_former_tenant_output_to_refined_S3" {
   glue_role_arn                  = data.aws_iam_role.glue_role.arn
   glue_job_worker_type           = "G.1X"
   number_of_workers_for_glue_job = 8
-  max_retries                    = 3
+  max_retries                    = 0
   glue_version                   = "4.0"
   helper_module_key              = data.aws_s3_object.helpers.key
   pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
   spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  tags                           = module.tags.values
   job_parameters = {
     "--job-bookmark-option"     = "job-bookmark-enable"
     "--s3_bucket"               = module.refined_zone_data_source.bucket_id
@@ -75,7 +73,7 @@ module "rentsense_former_tenant_output_to_refined_S3" {
     "--conf"                    = "spark.sql.legacy.timeParserPolicy=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.int96RebaseModeInWrite=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInRead=LEGACY --conf spark.sql.legacy.parquet.datetimeRebaseModeInWrite=LEGACY"
   }
   script_name          = "rentsense_former_tenants_to_refined"
-  triggered_by_crawler = data.aws_ssm_parameter.ingest_housing_interim_finance_database_to_housing_raw_zone_crawler_name.value
+  triggered_by_crawler = null
   glue_crawler_excluded_blobs = ["*.json",
     "*.txt",
     "*.zip",
@@ -97,7 +95,3 @@ module "rentsense_former_tenant_output_to_refined_S3" {
   }
 
 }
-
-
-
-

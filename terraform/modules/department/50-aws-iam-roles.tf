@@ -109,44 +109,55 @@ locals {
   }
 }
 
-# IAM user and permission for departmetnal airflow user
-resource "aws_iam_user" "airflow_user" {
-  count = var.departmental_airflow_user ? 1 : 0
-  name  = "${local.department_identifier}-airflow-user"
-  tags  = var.tags
+data "aws_iam_policy_document" "airflow_role_assume_role" {
+  count = var.departmental_airflow_role ? 1 : 0
+
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [var.mwaa_execution_role_arn]
+    }
+  }
 }
 
-resource "aws_iam_user_policy_attachment" "airflow_user_policy_attachment" {
-  for_each   = var.departmental_airflow_user ? local.airflow_policy_map : {}
-  user       = aws_iam_user.airflow_user[0].name
+resource "aws_iam_role" "airflow_role" {
+  count = var.departmental_airflow_role ? 1 : 0
+
+  name               = "${local.department_identifier}-airflow-role"
+  assume_role_policy = data.aws_iam_policy_document.airflow_role_assume_role[0].json
+  tags               = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "airflow_role_policy_attachment" {
+  for_each = var.departmental_airflow_role ? local.airflow_policy_map : {}
+
+  role       = aws_iam_role.airflow_role[0].name
   policy_arn = each.value
 }
 
-resource "aws_iam_user_policy_attachment" "airflow_user_datahub_config_access" {
-  count      = var.departmental_airflow_user && local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
-  user       = aws_iam_user.airflow_user[0].name
-  policy_arn = aws_iam_policy.datahub_config_access_policy[0].arn
+resource "aws_iam_role_policy_attachment" "airflow_role_datahub_ingestion_access" {
+  count      = var.departmental_airflow_role && local.department_identifier == "data-and-insight" && var.datahub_ingestion_bucket != null ? 1 : 0
+  role       = aws_iam_role.airflow_role[0].name
+  policy_arn = aws_iam_policy.datahub_ingestion_access_policy[0].arn
 }
 
-resource "aws_iam_access_key" "airflow_user_key" {
-  count = var.departmental_airflow_user ? 1 : 0
-  user  = aws_iam_user.airflow_user[0].name
-}
-
-# Store airflow user credentials in Secrets Manager with required format
+# Store the departmental Airflow AWS connection in Secrets Manager.
 resource "aws_secretsmanager_secret" "airflow_user_secret" {
-  count = var.departmental_airflow_user ? 1 : 0
+  count = var.departmental_airflow_role ? 1 : 0
   name  = "airflow/connections/${local.department_identifier}-airflow-aws-default"
 }
 
 resource "aws_secretsmanager_secret_version" "airflow_user_secret_version" {
-  count     = var.departmental_airflow_user ? 1 : 0
+  count     = var.departmental_airflow_role ? 1 : 0
   secret_id = aws_secretsmanager_secret.airflow_user_secret[0].id
   secret_string = jsonencode({
     conn_type = "aws",
-    login     = aws_iam_access_key.airflow_user_key[0].id,
-    password  = aws_iam_access_key.airflow_user_key[0].secret,
-    extra     = jsonencode({ region_name = var.region })
+    extra = jsonencode({
+      region_name = var.region,
+      role_arn    = aws_iam_role.airflow_role[0].arn
+    })
   })
 }
 
@@ -183,8 +194,14 @@ resource "aws_iam_role_policy_attachment" "ecs_parameter_store_access" {
   policy_arn = aws_iam_policy.parameter_store_read_only.arn
 }
 
-resource "aws_iam_role_policy_attachment" "datahub_config_access_attachment" {
-  count      = local.department_identifier == "data-and-insight" && var.datahub_config_bucket != null ? 1 : 0
+resource "aws_iam_role_policy_attachment" "datahub_ingestion_access_attachment" {
+  count      = local.department_identifier == "data-and-insight" && var.datahub_ingestion_bucket != null ? 1 : 0
   role       = aws_iam_role.department_ecs_role.name
-  policy_arn = aws_iam_policy.datahub_config_access_policy[0].arn
+  policy_arn = aws_iam_policy.datahub_ingestion_access_policy[0].arn
+}
+
+resource "aws_iam_role_policy_attachment" "noiseworks_access_attachment" {
+  count      = local.department_identifier == "env-enforcement" && var.noiseworks_bucket != null ? 1 : 0
+  role       = aws_iam_role.department_ecs_role.name
+  policy_arn = aws_iam_policy.noiseworks_access_policy[0].arn
 }

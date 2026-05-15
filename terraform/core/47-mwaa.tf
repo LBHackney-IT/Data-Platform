@@ -130,6 +130,24 @@ resource "aws_iam_role_policy" "mwaa_assume_role_policy" {
   })
 }
 
+resource "aws_iam_role_policy" "mwaa_departmental_airflow_assume_role_policy" {
+  count = local.departmental_airflow_role ? 1 : 0
+
+  name = "mwaa_departmental_airflow_assume_role_policy"
+  role = aws_iam_role.mwaa_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "sts:AssumeRole",
+        Resource = local.departmental_airflow_role_arns
+      }
+    ]
+  })
+}
+
 # Security group for MWAA - self-referencing and allowing all traffic out
 # This is recommended in the doc, Matt recommended at current stage.
 # https://docs.aws.amazon.com/mwaa/latest/userguide/vpc-security.html

@@ -102,3 +102,106 @@ resource "aws_secretsmanager_secret_version" "parking_team_times" {
     ignore_changes = [secret_string]
   }
 }
+
+resource "aws_secretsmanager_secret" "data_and_insight_geolive_boundaries" {
+  name        = "/data-and-insight/geolive-boundaries"
+  description = "PostgreSQL credentials for geolive database boundaries ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "data_and_insight_geolive_boundaries" {
+  secret_id = aws_secretsmanager_secret.data_and_insight_geolive_boundaries.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+resource "aws_secretsmanager_secret" "parking_geolive" {
+  name        = "/parking/geolive-parking"
+  description = "PostgreSQL credentials for geolive database parking ingestion"
+  tags        = module.tags.values
+}
+
+
+resource "aws_secretsmanager_secret_version" "parking_geolive" {
+  secret_id = aws_secretsmanager_secret.parking_geolive.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+
+resource "aws_secretsmanager_secret" "housing_income_collection_db_creds" {
+  name        = "/housing/housingfinancedbproduction-housing-income-collection"
+  description = "MySQL credentials for Housing Income Collection database ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "housing_income_collection_db_creds" {
+  secret_id = aws_secretsmanager_secret.housing_income_collection_db_creds.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+
+resource "aws_secretsmanager_secret" "housing_interim_finance_db_creds" {
+  name        = "/housing/SOW2b-housing-interim-finance"
+  description = "SQL Server credentials for Housing Interim Finance database ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "housing_interim_finance_db_creds" {
+  secret_id = aws_secretsmanager_secret.housing_interim_finance_db_creds.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+# Tascomi REST API public and private keys
+resource "aws_secretsmanager_secret" "planning_tascomi_api_key" {
+  name        = "/planning/tascomi-api-key"
+  description = "Tascomi API public_key and private_key for planning ingestion (X-Public / X-Hash)"
+  kms_key_id  = data.aws_kms_key.secrets_manager_key.arn
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "planning_tascomi_api_key" {
+  secret_id = aws_secretsmanager_secret.planning_tascomi_api_key.id
+  secret_string = jsonencode({
+    public_key  = "UPDATE_IN_CONSOLE"
+    private_key = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
