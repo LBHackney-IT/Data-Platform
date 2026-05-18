@@ -1431,7 +1431,7 @@ module "smt_dashboard_link" {
     }
   }
 }
-    
+
 module "hackney_carpark" {
   count                          = local.is_live_environment ? 1 : 0
   source                         = "../modules/import-spreadsheet-file-from-g-drive"
@@ -1467,7 +1467,7 @@ module "hackney_carpark" {
       worksheet_name    = "hackney_carpark"
     }
   }
-}   
+}
 
 module "land_reg_registered_leases_greater_london_2026_04" {
   count                          = local.is_live_environment ? 1 : 0
@@ -1500,7 +1500,7 @@ module "land_reg_registered_leases_greater_london_2026_04" {
   worksheets = {
     sheet1 : {
       header_row_number = 0
-      worksheet_name    = "Sheet 1"
+      worksheet_name    = "land_reg_registered_leases_greater_london_2026_04"
     }
   }
 }
