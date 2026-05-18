@@ -1494,7 +1494,7 @@ module "land_reg_registered_leases_greater_london_2026_04" {
   glue_job_name                  = "land_reg_registered_leases_greater_london_2026_04"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "LAND_REG_GREATER_LONDON_REGISTERED_LEASES_FULL_2026_04.csv"
+  input_file_name                = "land_reg_registered_leases_greater_london_2026_04/LAND_REG_GREATER_LONDON_REGISTERED_LEASES_FULL_2026_04.csv"
   enable_bookmarking             = true
   tags                           = module.tags.values
   worksheets = {
