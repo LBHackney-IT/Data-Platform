@@ -3,7 +3,7 @@ output "job_name" {
 }
 
 output "catalog_table" {
-  value = replace("${var.department.identifier}_${var.data_set_name}", "-", "_")
+  value = local.catalog_table
 }
 
 output "worksheet_key" {
