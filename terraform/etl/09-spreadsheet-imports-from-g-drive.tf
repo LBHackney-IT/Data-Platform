@@ -1457,7 +1457,7 @@ module "hackney_carpark" {
   glue_job_name                  = "hackney_carpark"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "hackney_carpark/hackney_carparks_13052026.csv"
+  input_file_name                = "hackney_carparks/hackney_carparks_13052026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
