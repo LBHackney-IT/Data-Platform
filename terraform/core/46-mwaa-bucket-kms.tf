@@ -3,7 +3,7 @@ data "aws_caller_identity" "current" {}
 locals {
   custom_key_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       {
         Sid    = "Allow CloudWatch Logs to use the KMS key"
         Effect = "Allow"
@@ -45,7 +45,7 @@ locals {
         ]
         Resource = "*"
       }
-    ]
+    ], local.environment == "stg" ? [local.dap_airflow_dev_to_stg_mwaa_replication_kms_policy_statement] : [])
   })
 }
 
@@ -62,4 +62,3 @@ resource "aws_kms_alias" "mwaa_key_alias" {
   name          = "alias/mwaa-key"
   target_key_id = aws_kms_key.mwaa_key.key_id
 }
-
