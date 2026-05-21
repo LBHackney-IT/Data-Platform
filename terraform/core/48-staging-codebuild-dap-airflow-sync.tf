@@ -1,3 +1,9 @@
+# GitHub webhook UI note:
+# - After Terraform creates the CodeBuild webhook, manually untick the Pull requests
+#   trigger checkbox in the GitHub repository webhook settings.
+# - Then scroll to the bottom, and click "Update webhook" so
+#   YAML auto-fix pull request activity does not trigger the CodeBuild webhook.
+
 # Workflow overview:
 # - This staging-only Terraform creates the AWS CodeConnections, CodeBuild, IAM, CloudWatch Logs,
 #   and webhook resources needed to sync the `dap-airflow` GitHub repository into the staging MWAA buckets.
