@@ -62,7 +62,7 @@ locals {
 }
 
 resource "aws_lakeformation_permissions" "governance_database_describe" {
-  for_each = local.is_production_environment ? toset(local.governance_glue_database_names) : toset([])
+  for_each = local.is_production_environment ? nonsensitive(toset(local.governance_glue_database_names)) : toset([])
 
   principal                     = var.governance_production_account_id
   permissions                   = ["DESCRIBE"]
@@ -74,7 +74,7 @@ resource "aws_lakeformation_permissions" "governance_database_describe" {
 }
 
 resource "aws_lakeformation_permissions" "governance_table_describe_select" {
-  for_each = local.is_production_environment ? toset(local.governance_glue_database_names) : toset([])
+  for_each = local.is_production_environment ? nonsensitive(toset(local.governance_glue_database_names)) : toset([])
 
   depends_on = [aws_lakeformation_permissions.governance_database_describe]
 
