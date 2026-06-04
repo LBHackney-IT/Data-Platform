@@ -100,3 +100,15 @@ variable "team_email" {
   type        = string
   default     = "data.insight@hackney.gov.uk"
 }
+
+variable "governance_production_account_id" {
+  description = "AWS account id for DataPlatform-Governance-Production"
+  type        = string
+  default     = "010545334712"
+}
+
+variable "analytics_production_account_id" {
+  description = "AWS account id for DataPlatform-Analytics-Production"
+  type        = string
+  default     = "577817260960"
+}
