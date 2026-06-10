@@ -170,3 +170,10 @@ resource "aws_glue_catalog_database" "trusted_zone_tascomi" {
     prevent_destroy = true
   }
 }
+
+resource "aws_glue_catalog_database" "private_sector_housing_metastreet" {
+  name = "private_sector_housing_metastreet"
+  lifecycle {
+    prevent_destroy = true
+  }
+}

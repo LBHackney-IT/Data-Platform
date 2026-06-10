@@ -187,7 +187,7 @@ resource "aws_secretsmanager_secret_version" "housing_interim_finance_db_creds" 
 }
 
 resource "aws_secretsmanager_secret" "metastreet_db_creds" {
-  name        = "/housing/metastreet"
+  name        = "/data-and-insight/metastreet"
   description = "SQL Server credentials for MetaStreet database ingestion"
   tags        = module.tags.values
 }
