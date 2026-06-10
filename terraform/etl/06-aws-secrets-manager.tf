@@ -186,6 +186,26 @@ resource "aws_secretsmanager_secret_version" "housing_interim_finance_db_creds" 
   }
 }
 
+resource "aws_secretsmanager_secret" "metastreet_db_creds" {
+  name        = "/housing/metastreet"
+  description = "SQL Server credentials for MetaStreet database ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "metastreet_db_creds" {
+  secret_id = aws_secretsmanager_secret.metastreet_db_creds.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
 # Tascomi REST API public and private keys
 resource "aws_secretsmanager_secret" "planning_tascomi_api_key" {
   name        = "/planning/tascomi-api-key"
