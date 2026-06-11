@@ -160,7 +160,7 @@ module "department_data_and_insight" {
   datahub_ingestion_bucket        = module.datahub_ingestion
   additional_glue_database_access = {
     read_only  = []
-    read_write = ["arcus_archive", "metastore"]
+    read_write = ["arcus_archive", "metastore", "private_sector_housing_metastreet"]
   }
   additional_s3_access = [
     {
