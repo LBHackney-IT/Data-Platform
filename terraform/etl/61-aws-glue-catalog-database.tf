@@ -170,3 +170,12 @@ resource "aws_glue_catalog_database" "trusted_zone_tascomi" {
     prevent_destroy = true
   }
 }
+
+resource "aws_glue_catalog_database" "private_sector_housing_metastreet" {
+  name        = "private_sector_housing_metastreet"
+  description = "Data will be used by the Data and Insight team, not the Housing department."
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
