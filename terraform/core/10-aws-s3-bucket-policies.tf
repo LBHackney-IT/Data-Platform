@@ -104,6 +104,16 @@ locals {
     "kms:CreateGrant"
   ]
 
+  lakeformation_registration_role_arn = "arn:aws:iam::${data.aws_secretsmanager_secret_version.pre_production_account_id.secret_string}:role/dap-lf-location-registration"
+
+  lakeformation_registration_kms_actions = [
+    "kms:Decrypt",
+    "kms:DescribeKey",
+    "kms:Encrypt",
+    "kms:GenerateDataKey*",
+    "kms:ReEncrypt*"
+  ]
+
   prod_to_preprod_s3_actions = [
     "s3:ListBucket",
     "s3:PutObject*",
@@ -159,6 +169,16 @@ locals {
     principals = {
       type        = "AWS"
       identifiers = [local.prod_to_preprod_sync_role_arn]
+    }
+  }
+
+  lakeformation_registration_key_statement_for_pre_prod = {
+    sid     = "LakeFormationRegistrationKeyAccess"
+    effect  = "Allow"
+    actions = local.lakeformation_registration_kms_actions
+    principals = {
+      type        = "AWS"
+      identifiers = [local.lakeformation_registration_role_arn]
     }
   }
 
