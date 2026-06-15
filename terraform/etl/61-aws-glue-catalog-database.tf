@@ -171,8 +171,8 @@ resource "aws_glue_catalog_database" "trusted_zone_tascomi" {
   }
 }
 
-resource "aws_glue_catalog_database" "raw_private_sector_housing" {
-  name        = "raw_private_sector_housing"
+resource "aws_glue_catalog_database" "private_sector_housing_raw" {
+  name        = "private_sector_housing_raw"
   description = "Data will be used by the Data and Insight team, not the Housing department."
 
   lifecycle {
