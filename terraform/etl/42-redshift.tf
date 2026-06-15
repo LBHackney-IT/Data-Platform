@@ -69,7 +69,6 @@ locals {
     replace(module.department_data_and_insight_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_data_and_insight_data_source.raw_zone_catalog_database_name,
     replace(module.department_data_and_insight_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_data_and_insight_data_source.refined_zone_catalog_database_name,
     replace(module.department_data_and_insight_data_source.trusted_zone_catalog_database_name, "-", "_") = module.department_data_and_insight_data_source.trusted_zone_catalog_database_name,
-    replace(aws_glue_catalog_database.raw_private_sector_housing.name, "-", "_")                        = aws_glue_catalog_database.raw_private_sector_housing.name,
 
     replace(module.department_env_enforcement_data_source.raw_zone_catalog_database_name, "-", "_")     = module.department_env_enforcement_data_source.raw_zone_catalog_database_name,
     replace(module.department_env_enforcement_data_source.refined_zone_catalog_database_name, "-", "_") = module.department_env_enforcement_data_source.refined_zone_catalog_database_name,
@@ -182,7 +181,6 @@ locals {
         replace(module.department_data_and_insight_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_data_and_insight_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_data_and_insight_data_source.trusted_zone_catalog_database_name, "-", "_"),
-        replace(aws_glue_catalog_database.raw_private_sector_housing.name, "-", "_"),
 
         replace(module.department_env_enforcement_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_env_enforcement_data_source.refined_zone_catalog_database_name, "-", "_"),
@@ -366,7 +364,6 @@ locals {
         replace(module.department_data_and_insight_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_data_and_insight_data_source.refined_zone_catalog_database_name, "-", "_"),
         replace(module.department_data_and_insight_data_source.trusted_zone_catalog_database_name, "-", "_"),
-        replace(aws_glue_catalog_database.raw_private_sector_housing.name, "-", "_"),
 
         replace(module.department_env_enforcement_data_source.raw_zone_catalog_database_name, "-", "_"),
         replace(module.department_env_enforcement_data_source.refined_zone_catalog_database_name, "-", "_"),
