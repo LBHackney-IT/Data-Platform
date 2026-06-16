@@ -192,6 +192,26 @@ resource "aws_secretsmanager_secret" "metastreet_db_creds" {
   tags        = module.tags.values
 }
 
+resource "aws_secretsmanager_secret" "housing_uh_mirror_live_archive" {
+  name        = "/housing/uh_mirror_live_archive_creds"
+  description = "SQL Server credentials for UH Mirror Live archive databse ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "housing_uh_mirror_live_archive" {
+  secret_id = aws_secretsmanager_secret.housing_uh_mirror_live_archive.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
 resource "aws_secretsmanager_secret_version" "metastreet_db_creds" {
   secret_id = aws_secretsmanager_secret.metastreet_db_creds.id
   secret_string = jsonencode({
