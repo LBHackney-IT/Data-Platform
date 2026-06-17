@@ -247,8 +247,8 @@ resource "aws_secretsmanager_secret_version" "planning_tascomi_api_key" {
 }
 
 resource "aws_secretsmanager_secret" "fsa_api_creds" {
-  name        = "/env-services/fsa-api-creds"
-  description = "FSA API Credentials for Regulatory Services"
+  name        = "/data-and-insight/fsa-api-creds"
+  description = "FSA API Credentials for D&I on behalf of Regulatory Services"
   tags        = module.tags.values
 }
 
