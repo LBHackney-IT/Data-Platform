@@ -21,6 +21,9 @@ are kept within the output dataset but flagged in this column, so they can be fi
 # Outstanding improvements
 - Calculate Council Tax ID without using party_ref
 - do something with the completeness check output
+
+# changes:
+AG 22/06/2026: updated paths to snapshot files to avoid use of pushdown predicate
 """
 
 import argparse
@@ -56,7 +59,7 @@ def main():
     source_catalog_table_ctax_non_liability_person_glue_arg = "source_catalog_table_ctax_non_liability_person"
     source_catalog_table_ctax_occupation_glue_arg = "source_catalog_table_ctax_occupation"
     source_catalog_table_ctax_property_glue_arg = "source_catalog_table_ctax_property"
-    source_catalog_database_housing_benefit_glue_arg = "source_catalog_database_housing_benefit"
+    source_catalog_database_benefits_glue_arg = "source_catalog_database_benefits"
     source_catalog_table_hb_member_glue_arg = "source_catalog_table_hb_member"
     source_catalog_table_hb_household_glue_arg = "source_catalog_table_hb_household"
     source_catalog_table_hb_rent_assessment_glue_arg = "source_catalog_table_hb_rent_assessment"
@@ -75,7 +78,7 @@ def main():
                  source_catalog_table_ctax_non_liability_person_glue_arg,
                  source_catalog_table_ctax_occupation_glue_arg,
                  source_catalog_table_ctax_property_glue_arg,
-                 source_catalog_database_housing_benefit_glue_arg,
+                 source_catalog_database_benefits_glue_arg,
                  source_catalog_table_hb_member_glue_arg,
                  source_catalog_table_hb_household_glue_arg,
                  source_catalog_table_hb_rent_assessment_glue_arg,
@@ -103,22 +106,13 @@ def main():
             source_catalog_table_tenure_reshape_glue_arg)
 
         person_df = execution_context.get_dataframe(name_space=source_catalog_database_housing,
-                                                    table_name=source_catalog_table_person_reshape,
-                                                    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                        source_catalog_database_housing,
-                                                        source_catalog_table_person_reshape, 'import_date'))
+                                                    table_name=source_catalog_table_person_reshape)
 
         assets_df = execution_context.get_dataframe(name_space=source_catalog_database_housing,
-                                                    table_name=source_catalog_table_assets_reshape,
-                                                    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                        source_catalog_database_housing,
-                                                        source_catalog_table_assets_reshape, 'import_date'))
+                                                    table_name=source_catalog_table_assets_reshape)
 
         tenure_df = execution_context.get_dataframe(name_space=source_catalog_database_housing,
-                                                    table_name=source_catalog_table_tenure_reshape,
-                                                    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                        source_catalog_database_housing,
-                                                        source_catalog_table_tenure_reshape, 'import_date'))
+                                                    table_name=source_catalog_table_tenure_reshape)
 
         housing_cleaned = prepare_clean_housing_data(person_df, assets_df, tenure_df)
         housing_cleaned = remove_deceased(housing_cleaned)
@@ -139,38 +133,21 @@ def main():
             source_catalog_table_ctax_property_glue_arg)
 
         council_tax_account_df = execution_context.get_dataframe(name_space=source_catalog_database_council_tax,
-                                                                 table_name=source_catalog_table_ctax_account,
-                                                                 push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                                     source_catalog_database_council_tax,
-                                                                     source_catalog_table_ctax_account, 'import_date'))
+                                                                 table_name=source_catalog_table_ctax_account)
 
         council_tax_liability_person_df = execution_context.get_dataframe(
             name_space=source_catalog_database_council_tax,
-            table_name=source_catalog_table_ctax_liability_person,
-            push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                source_catalog_database_council_tax,
-                source_catalog_table_ctax_liability_person, 'import_date'))
+            table_name=source_catalog_table_ctax_liability_person)
 
         council_tax_non_liability_person_df = execution_context.get_dataframe(
             name_space=source_catalog_database_council_tax,
-            table_name=source_catalog_table_ctax_non_liability_person,
-            push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                source_catalog_database_council_tax,
-                source_catalog_table_ctax_non_liability_person, 'import_date'))
+            table_name=source_catalog_table_ctax_non_liability_person)
 
         council_tax_occupation_df = execution_context.get_dataframe(name_space=source_catalog_database_council_tax,
-                                                                    table_name=source_catalog_table_ctax_occupation,
-                                                                    push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                                        source_catalog_database_council_tax,
-                                                                        source_catalog_table_ctax_occupation,
-                                                                        'import_date'))
+                                                                    table_name=source_catalog_table_ctax_occupation)
 
         council_tax_property_df = execution_context.get_dataframe(name_space=source_catalog_database_council_tax,
-                                                                  table_name=source_catalog_table_ctax_property,
-                                                                  push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                                      source_catalog_database_council_tax,
-                                                                      source_catalog_table_ctax_property,
-                                                                      'import_date'))
+                                                                  table_name=source_catalog_table_ctax_property)
 
         council_tax_cleaned = prepare_clean_council_tax_data(spark, council_tax_account_df,
                                                              council_tax_liability_person_df,
@@ -182,8 +159,8 @@ def main():
         logger.info(f'council_tax df cleaned and standardised')
 
         # get housing benefit data
-        source_catalog_database_housing_benefit = execution_context.get_input_args(
-            source_catalog_database_housing_benefit_glue_arg)
+        source_catalog_database_benefits = execution_context.get_input_args(
+            source_catalog_database_benefits_glue_arg)
         source_catalog_table_hb_member = execution_context.get_input_args(source_catalog_table_hb_member_glue_arg)
         source_catalog_table_hb_household = execution_context.get_input_args(source_catalog_table_hb_household_glue_arg)
         source_catalog_table_hb_rent_assessment = execution_context.get_input_args(
@@ -191,28 +168,14 @@ def main():
         source_catalog_table_hb_ctax_assessment = execution_context.get_input_args(
             source_catalog_table_hb_ctax_assessment_glue_arg)
 
-        hb_member_df = execution_context.get_dataframe(name_space=source_catalog_database_housing_benefit,
-                                                       table_name=source_catalog_table_hb_member,
-                                                       push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                           source_catalog_database_housing_benefit,
-                                                           source_catalog_table_hb_member, 'import_date'))
-        hb_household_df = execution_context.get_dataframe(name_space=source_catalog_database_housing_benefit,
-                                                          table_name=source_catalog_table_hb_household,
-                                                          push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                              source_catalog_database_housing_benefit,
-                                                              source_catalog_table_hb_household, 'import_date'))
-        hb_rent_assessment_df = execution_context.get_dataframe(name_space=source_catalog_database_housing_benefit,
-                                                                table_name=source_catalog_table_hb_rent_assessment,
-                                                                push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                                    source_catalog_database_housing_benefit,
-                                                                    source_catalog_table_hb_rent_assessment,
-                                                                    'import_date'))
-        hb_ctax_assessment_df = execution_context.get_dataframe(name_space=source_catalog_database_housing_benefit,
-                                                                table_name=source_catalog_table_hb_ctax_assessment,
-                                                                push_down_predicate=create_pushdown_predicate_for_max_date_partition_value(
-                                                                    source_catalog_database_housing_benefit,
-                                                                    source_catalog_table_hb_ctax_assessment,
-                                                                    'import_date'))
+        hb_member_df = execution_context.get_dataframe(name_space=source_catalog_database_benefits,
+                                                       table_name=source_catalog_table_hb_member)
+        hb_household_df = execution_context.get_dataframe(name_space=source_catalog_database_benefits,
+                                                          table_name=source_catalog_table_hb_household)
+        hb_rent_assessment_df = execution_context.get_dataframe(name_space=source_catalog_database_benefits,
+                                                                table_name=source_catalog_table_hb_rent_assessment)
+        hb_ctax_assessment_df = execution_context.get_dataframe(name_space=source_catalog_database_benefits,
+                                                                table_name=source_catalog_table_hb_ctax_assessment)
 
         housing_benefit_cleaned = prepare_clean_housing_benefit_data(hb_member_df,
                                                                      hb_household_df,
@@ -228,10 +191,7 @@ def main():
             source_catalog_table_parking_permit_glue_arg)
 
         parking_permit_df = execution_context.get_dataframe(name_space=source_catalog_database_parking,
-                                                            table_name=source_catalog_table_parking_permit,
-                                                            push_down_predicate=create_pushdown_predicate_for_latest_written_partition(
-                                                                database_name=source_catalog_database_parking,
-                                                                table_name=source_catalog_table_parking_permit))
+                                                            table_name=source_catalog_table_parking_permit)
 
         parking_permit_cleaned = prepare_clean_parking_permit_data(parking_permit_df)
 
