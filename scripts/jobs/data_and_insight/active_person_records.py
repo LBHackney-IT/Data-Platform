@@ -50,10 +50,7 @@ from scripts.jobs.data_and_insight.person_matching_module import (
 )
 from scripts.helpers.helpers import (
     add_import_time_columns,
-    PARTITION_KEYS,
-    create_pushdown_predicate_for_latest_written_partition,
-    create_pushdown_predicate_for_max_date_partition_value,
-)
+    PARTITION_KEYS)
 
 
 def main():
