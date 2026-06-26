@@ -121,7 +121,7 @@ data "aws_iam_policy_document" "fme_access_to_s3" {
       ],
       [
         for folder in [
-          "child-fam-services",
+          "child-fam-services/mosaic",
           "unrestricted",
           "data-and-insight",
           "env-enforcement",
