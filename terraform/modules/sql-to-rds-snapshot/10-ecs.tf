@@ -60,6 +60,7 @@ module "sql_to_parquet" {
   ecs_task_role_policy_document = data.aws_iam_policy_document.task_role.json
   aws_subnet_ids                = var.aws_subnet_ids
   ecs_cluster_arn               = var.ecs_cluster_arn
+  enable_eventbridge_trigger    = var.enable_eventbridge_trigger
   tasks = [
     {
       cloudwatch_rule_event_pattern       = local.event_pattern

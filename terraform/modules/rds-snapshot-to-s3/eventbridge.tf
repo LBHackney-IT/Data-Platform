@@ -10,6 +10,7 @@ resource "aws_cloudwatch_event_rule" "rds_snapshot_created_event_rule" {
 
   name        = "rds-event-rule-${each.value.id}-snapshot-created"
   description = "Capture RDS Event 0042 (Snapshot Created) for ${each.value.id}"
+  state       = var.enable_eventbridge_trigger ? "ENABLED" : "DISABLED"
 
   event_pattern = jsonencode({
     source = ["aws.rds"],
@@ -36,6 +37,7 @@ resource "aws_cloudwatch_event_rule" "rds_snapshot_exported_event_rule" {
 
   name        = "rds-event-rule-${each.value.id}-snapshot-exported"
   description = "Capture RDS Event 0161 (Snapshot Exported) for ${each.value.id}"
+  state       = var.enable_eventbridge_trigger ? "ENABLED" : "DISABLED"
 
   event_pattern = jsonencode({
     source = ["aws.rds"],

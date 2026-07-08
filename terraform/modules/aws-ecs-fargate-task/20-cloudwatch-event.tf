@@ -27,4 +27,5 @@ resource "aws_cloudwatch_event_rule" "ecs_task" {
   description         = "Runs Fargate task ${each.value.task_id}${var.operation_name}"
   schedule_expression = each.value.cloudwatch_rule_schedule_expression == null ? null : each.value.cloudwatch_rule_schedule_expression
   event_pattern       = each.value.cloudwatch_rule_event_pattern == null ? null : each.value.cloudwatch_rule_event_pattern
+  state               = var.enable_eventbridge_trigger ? "ENABLED" : "DISABLED"
 }

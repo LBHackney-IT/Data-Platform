@@ -39,3 +39,15 @@ variable "target_prefix" {
   type        = string
   default     = ""
 }
+
+variable "enable_eventbridge_trigger" {
+  description = "Whether RDS EventBridge triggers for export and copy Lambdas are enabled"
+  type        = bool
+  default     = true
+}
+
+variable "enable_workflow_start" {
+  description = "Whether the copier Lambda should start the configured Glue workflows"
+  type        = bool
+  default     = true
+}
