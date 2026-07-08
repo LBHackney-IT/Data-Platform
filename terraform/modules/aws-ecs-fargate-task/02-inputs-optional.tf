@@ -3,3 +3,9 @@ variable "security_groups" {
   type        = list(string)
   default     = []
 }
+
+variable "enable_eventbridge_trigger" {
+  description = "Whether EventBridge rules for the ECS tasks are enabled"
+  type        = bool
+  default     = true
+}

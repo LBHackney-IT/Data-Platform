@@ -31,12 +31,16 @@ module "rds_snapshot_s3_to_s3_copier" {
   s3_key                         = "rds-export-s3-to-s3-copier.zip"
   identifier_prefix              = var.identifier_prefix
   tags                           = var.tags
-  environment_variables = {
-    "SOURCE_BUCKET"           = var.rds_export_bucket_id
-    "TARGET_BUCKET"           = var.target_bucket_id
-    "SOURCE_PREFIX"           = var.source_prefix
-    "TARGET_PREFIX"           = var.target_prefix
-    "WORKFLOW_NAME"           = var.workflow_name
-    "BACKDATED_WORKFLOW_NAME" = var.backdated_workflow_name
-  }
+  environment_variables = merge(
+    {
+      "SOURCE_BUCKET" = var.rds_export_bucket_id
+      "TARGET_BUCKET" = var.target_bucket_id
+      "SOURCE_PREFIX" = var.source_prefix
+      "TARGET_PREFIX" = var.target_prefix
+    },
+    var.enable_copier_glue_workflow_start ? {
+      "WORKFLOW_NAME"           = var.workflow_name
+      "BACKDATED_WORKFLOW_NAME" = var.backdated_workflow_name
+    } : {}
+  )
 }
