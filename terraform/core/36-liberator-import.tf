@@ -28,6 +28,7 @@ module "liberator_dump_to_rds_snapshot" {
   cloudtrail_bucket_id       = module.cloudtrail_storage.bucket_id
   cloudtrail_bucket_arn      = module.cloudtrail_storage.bucket_arn
   cloudtrail_kms_key_arn     = module.cloudtrail_storage.kms_key_arn
+  enable_eventbridge_trigger = local.environment != "stg"
 }
 
 resource "aws_glue_workflow" "parking_liberator_data" {
@@ -62,29 +63,31 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 }
 
 module "liberator_rds_snapshot_to_s3" {
-  count                          = local.is_live_environment ? 1 : 0
-  source                         = "../modules/rds-snapshot-to-s3"
-  tags                           = module.tags.values
-  identifier_prefix              = local.identifier_prefix
-  project                        = var.project
-  environment                    = var.environment
-  lambda_artefact_storage_bucket = module.lambda_artefact_storage.bucket_id
-  rds_export_bucket_arn          = module.rds_export_storage.bucket_arn
-  rds_export_bucket_id           = module.rds_export_storage.bucket_id
-  rds_export_storage_kms_key_arn = module.rds_export_storage.kms_key_arn
-  rds_export_storage_kms_key_id  = module.rds_export_storage.kms_key_id
-  target_bucket_arn              = module.landing_zone.bucket_arn
-  target_bucket_id               = module.landing_zone.bucket_id
-  target_bucket_kms_key_arn      = module.landing_zone.kms_key_arn
-  target_bucket_kms_key_id       = module.landing_zone.kms_key_id
-  target_prefix                  = "parking"
-  service_area                   = "parking"
-  rds_instance_ids               = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_id]
-  rds_instance_arns              = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_arn]
-  workflow_name                  = aws_glue_workflow.parking_liberator_data.name
-  workflow_arn                   = aws_glue_workflow.parking_liberator_data.arn
-  backdated_workflow_name        = aws_glue_workflow.parking_liberator_backdated_data.name
-  backdated_workflow_arn         = aws_glue_workflow.parking_liberator_backdated_data.arn
+  count                             = local.is_live_environment ? 1 : 0
+  source                            = "../modules/rds-snapshot-to-s3"
+  tags                              = module.tags.values
+  identifier_prefix                 = local.identifier_prefix
+  project                           = var.project
+  environment                       = var.environment
+  lambda_artefact_storage_bucket    = module.lambda_artefact_storage.bucket_id
+  rds_export_bucket_arn             = module.rds_export_storage.bucket_arn
+  rds_export_bucket_id              = module.rds_export_storage.bucket_id
+  rds_export_storage_kms_key_arn    = module.rds_export_storage.kms_key_arn
+  rds_export_storage_kms_key_id     = module.rds_export_storage.kms_key_id
+  target_bucket_arn                 = module.landing_zone.bucket_arn
+  target_bucket_id                  = module.landing_zone.bucket_id
+  target_bucket_kms_key_arn         = module.landing_zone.kms_key_arn
+  target_bucket_kms_key_id          = module.landing_zone.kms_key_id
+  target_prefix                     = "parking"
+  service_area                      = "parking"
+  rds_instance_ids                  = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_id]
+  rds_instance_arns                 = [for item in module.liberator_dump_to_rds_snapshot : item.rds_instance_arn]
+  workflow_name                     = aws_glue_workflow.parking_liberator_data.name
+  workflow_arn                      = aws_glue_workflow.parking_liberator_data.arn
+  backdated_workflow_name           = aws_glue_workflow.parking_liberator_backdated_data.name
+  backdated_workflow_arn            = aws_glue_workflow.parking_liberator_backdated_data.arn
+  enable_eventbridge_trigger        = local.environment != "stg"
+  enable_copier_glue_workflow_start = local.environment != "stg"
 }
 
 moved {
