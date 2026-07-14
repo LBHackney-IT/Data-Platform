@@ -3,13 +3,12 @@ set -eu -o pipefail
 
 # If the import date is not passed in then use today's date - normal process
 if [ -z "${IMPORT_DATE_OVERRIDE+x}" ]; then
-  DATE=$(date +"%y%m%d")
+  DATE=$(date +"%Y%m%d")
   SNAPSHOT_DATE=$(date +"%y-%m-%d-%H%M%S")
 # Else if the import date is passed in then use that - back dated ingestion
 else
-# Remove hypens and trim first two characters of date to get year in short format
+# Remove hyphens to match the YYYYMMDD filename format
   DATE="${IMPORT_DATE_OVERRIDE//-/}"
-  DATE=${DATE:2}
   SNAPSHOT_DATE="${IMPORT_DATE_OVERRIDE}-backdated"
 fi
 
