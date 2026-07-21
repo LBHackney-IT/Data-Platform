@@ -85,6 +85,27 @@ resource "aws_secretsmanager_secret_version" "qlik_cloud" {
   }
 }
 
+
+resource "aws_secretsmanager_secret" "tableau_cloud" {
+  name        = "/${module.department_data_and_insight_data_source.identifier}/tableau-cloud"
+  description = "Tableau Cloud connection configuration and PAT credentials"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "tableau_cloud" {
+  secret_id = aws_secretsmanager_secret.tableau_cloud.id
+  secret_string = jsonencode({
+    connect_uri = "UPDATE_IN_CONSOLE"
+    site        = "UPDATE_IN_CONSOLE"
+    token_name  = "UPDATE_IN_CONSOLE"
+    token_value = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
 resource "aws_secretsmanager_secret" "parking_team_times" {
   name        = "/parking/team-times-api"
   description = "Team Times API endpoint and key"
