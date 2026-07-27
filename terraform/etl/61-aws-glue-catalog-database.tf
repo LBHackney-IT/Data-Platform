@@ -125,6 +125,7 @@ resource "aws_glue_catalog_database" "arcus_archive" {
 }
 
 locals {
+  # The protected Unrestricted database is retained, but its uploads and user access are disabled.
   department_user_uploads_databases = {
     parking            = "parking_user_uploads_db"
     housing            = "housing_user_uploads_db"

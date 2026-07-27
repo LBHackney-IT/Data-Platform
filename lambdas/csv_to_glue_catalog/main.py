@@ -1,7 +1,15 @@
-"""
-Automatically creates/deletes Glue Catalog tables when CSV files are uploaded/deleted in S3.
+"""Synchronize user-uploaded CSV files with AWS Glue Catalog tables.
 
-Note: all column types of the created tables are defined as strings and please be aware when using them downstream.
+Inputs:
+    Receives S3 object-created and object-removed events through SQS.
+
+Outputs:
+    Creates, updates, or deletes Glue Catalog tables for supported uploads.
+
+Operational notes:
+    All generated columns use the Glue ``string`` type. The recommended S3 key
+    format is ``<department>/<project>/<table>/<file.csv>``. The legacy
+    ``<department>/<project>/<file.csv>`` format remains supported.
 """
 
 import json
@@ -19,33 +27,39 @@ logger.setLevel(logging.INFO)
 
 
 def parse_s3_key(s3_key: str) -> tuple[str, str, str]:
-    """Parse S3 key to extract department, user_name, and file_name.
+    """Extract the department, project, and table-name component from an S3 key.
 
-    Expected format: <department>/<user_name>/<file.csv>
-    Example: parking/davina/test_1.csv
+    The recommended format uses a dedicated folder for each table:
+    ``<department>/<project>/<table>/<file.csv>``. For backward compatibility,
+    ``<department>/<project>/<file.csv>`` uses the file name as the table-name
+    component.
 
     Args:
-        s3_key: URL-encoded S3 object key
+        s3_key: URL-encoded S3 object key.
 
     Returns:
-        Tuple of (department, user_name, file_base_name)
+        Department, project name, and table-name component.
+
+    Raises:
+        ValueError: If the key does not use a supported path or file format.
     """
     decoded_key = unquote_plus(s3_key)
     path = PurePosixPath(decoded_key)
 
-    if len(path.parts) < 3:
+    if len(path.parts) not in (3, 4):
         raise ValueError(
-            f"Invalid S3 key format: {s3_key}. Expected format: <department>/<user_name>/<file.csv>"
+            f"Invalid S3 key format: {s3_key}. Expected "
+            "<department>/<project>/<table>/<file.csv>"
         )
 
     if path.suffix != ".csv":
         raise ValueError(f"File must be a CSV file: {path.name}")
 
     department = path.parts[0]
-    user_name = path.parts[1]
-    file_base_name = path.stem
+    project_name = path.parts[1]
+    table_name_component = path.parts[2] if len(path.parts) == 4 else path.stem
 
-    return department, user_name, file_base_name
+    return department, project_name, table_name_component
 
 
 def normalize_name(name: str, lowercase: bool = True) -> str:
@@ -149,7 +163,7 @@ def create_glue_table(
     bucket: str,
     s3_key: str,
     columns_types: dict[str, str],
-):
+) -> None:
     """Create or recreate Glue Catalog table using AWS Data Wrangler.
 
     Args:
@@ -177,7 +191,7 @@ def create_glue_table(
     )
 
 
-def delete_glue_table(database_name: str, table_name: str):
+def delete_glue_table(database_name: str, table_name: str) -> None:
     """Delete Glue Catalog table using AWS Data Wrangler.
 
     Args:
@@ -217,8 +231,10 @@ def process_single_event_record(
     decoded_s3_key = unquote_plus(s3_key)
     logger.info(f"Processing event: {event_name} for s3://{bucket}/{decoded_s3_key}")
 
-    _, user_name, file_base_name = parse_s3_key(s3_key)
-    table_name = f"{normalize_name(user_name)}_{normalize_name(file_base_name)}"
+    _, project_name, table_name_component = parse_s3_key(s3_key)
+    table_name = (
+        f"{normalize_name(project_name)}_{normalize_name(table_name_component)}"
+    )
 
     if event_name.startswith("ObjectCreated"):
         logger.info(f"Creating/updating table: {table_name}")

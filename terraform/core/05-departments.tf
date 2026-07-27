@@ -288,7 +288,6 @@ module "department_unrestricted" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
-  user_uploads_catalog_enabled    = true
 }
 
 module "department_sandbox" {
