@@ -26,6 +26,10 @@ locals {
     "unrestricted-*-zone",
     "${var.identifier_prefix}-raw-zone-unrestricted-address-api"
   ]
+
+  department_user_uploads_databases = var.user_uploads_catalog_enabled ? [
+    "${replace(local.department_identifier, "-", "_")}_user_uploads_db"
+  ] : []
 }
 
 // S3 read only access policy
@@ -230,7 +234,7 @@ data "aws_iam_policy_document" "read_only_glue_access" {
   dynamic "statement" {
     for_each = {
       for k, v in {
-        read_only  = var.additional_glue_database_access.read_only
+        read_only  = concat(local.department_user_uploads_databases, var.additional_glue_database_access.read_only)
         read_write = var.additional_glue_database_access.read_write
       } : k => v if length(v) > 0
     }
@@ -587,7 +591,7 @@ data "aws_iam_policy_document" "glue_access" {
   dynamic "statement" {
     for_each = {
       for k, v in {
-        read_only  = var.additional_glue_database_access.read_only
+        read_only  = concat(local.department_user_uploads_databases, var.additional_glue_database_access.read_only)
         read_write = var.additional_glue_database_access.read_write
       } : k => v if length(v) > 0
     }
@@ -700,7 +704,7 @@ data "aws_iam_policy_document" "glue_access_sso" {
   dynamic "statement" {
     for_each = {
       for k, v in {
-        read_only  = var.additional_glue_database_access.read_only
+        read_only  = concat(local.department_user_uploads_databases, var.additional_glue_database_access.read_only)
         read_write = var.additional_glue_database_access.read_write
       } : k => v if length(v) > 0
     }

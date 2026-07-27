@@ -7,9 +7,13 @@ locals {
     housing            = "housing/"
     data_and_insight   = "data-and-insight/"
     child_fam_services = "child-fam-services/"
-    unrestricted       = "unrestricted/"
     env_services       = "env-services/"
     revenues           = "revenues/"
+  }
+
+  enabled_department_user_uploads_databases = {
+    for department in keys(local.department_user_uploads_prefixes) :
+    department => local.department_user_uploads_databases[department]
   }
 }
 
@@ -48,8 +52,8 @@ data "aws_iam_policy_document" "csv_to_glue_catalog_lambda_execution" {
     ]
     resources = concat(
       ["arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:catalog"],
-      [for db_name in values(local.department_user_uploads_databases) : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:database/${db_name}"],
-      [for db_name in values(local.department_user_uploads_databases) : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:table/${db_name}/*"]
+      [for db_name in values(local.enabled_department_user_uploads_databases) : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:database/${db_name}"],
+      [for db_name in values(local.enabled_department_user_uploads_databases) : "arn:aws:glue:${data.aws_region.current.name}:${data.aws_caller_identity.data_platform.account_id}:table/${db_name}/*"]
     )
   }
 
@@ -60,7 +64,8 @@ data "aws_iam_policy_document" "csv_to_glue_catalog_lambda_execution" {
       "s3:GetObjectVersion",
     ]
     resources = [
-      "${module.user_uploads_data_source.bucket_arn}/*",
+      for prefix in values(local.department_user_uploads_prefixes) :
+      "${module.user_uploads_data_source.bucket_arn}/${prefix}*"
     ]
   }
 
@@ -72,6 +77,15 @@ data "aws_iam_policy_document" "csv_to_glue_catalog_lambda_execution" {
     resources = [
       module.user_uploads_data_source.bucket_arn,
     ]
+
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values = [
+        for prefix in values(local.department_user_uploads_prefixes) :
+        "${prefix}*"
+      ]
+    }
   }
 
   statement {

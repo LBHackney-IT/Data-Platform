@@ -77,13 +77,13 @@ module "department_parking" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
   additional_glue_database_access = {
     read_only = [
       "${local.identifier_prefix}-liberator-raw-zone",
       "${local.identifier_prefix}-liberator-refined-zone",
       "${local.identifier_prefix}-liberator-trusted-zone",
       "parking-ringgo-sftp-raw-zone",
-      "parking_user_uploads_db",
     ]
     read_write = []
   }
@@ -156,6 +156,7 @@ module "department_data_and_insight" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
   cloudtrail_bucket               = module.cloudtrail_storage
   datahub_ingestion_bucket        = module.datahub_ingestion
   additional_glue_database_access = {
@@ -397,11 +398,11 @@ module "department_revenues" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
   additional_glue_database_access = {
     read_only = [
       "nndr_raw_zone",
       "ctax_raw_zone",
-      "revenues_user_uploads_db",
     ]
     read_write = []
   }
@@ -441,6 +442,7 @@ module "department_environmental_services" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
 }
 
 module "department_housing" {
@@ -477,6 +479,7 @@ module "department_housing" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
   additional_s3_access = [
     {
       bucket_arn  = module.housing_nec_migration_storage.bucket_arn
@@ -711,6 +714,7 @@ module "department_children_family_services" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
   additional_glue_database_access = {
     read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
     read_write = []

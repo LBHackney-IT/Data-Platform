@@ -118,3 +118,9 @@ variable "additional_glue_database_access" {
     read_write = []
   }
 }
+
+variable "user_uploads_catalog_enabled" {
+  description = "Grant read-only access to the department's automatically managed user uploads Glue database"
+  type        = bool
+  default     = false
+}

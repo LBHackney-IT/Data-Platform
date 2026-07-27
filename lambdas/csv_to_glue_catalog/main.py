@@ -1,7 +1,15 @@
-"""
-Automatically creates/deletes Glue Catalog tables when CSV files are uploaded/deleted in S3.
+"""Synchronize user-uploaded CSV files with AWS Glue Catalog tables.
 
-Note: all column types of the created tables are defined as strings and please be aware when using them downstream.
+Inputs:
+    Receives S3 object-created and object-removed events through SQS.
+
+Outputs:
+    Creates, updates, or deletes Glue Catalog tables for supported uploads.
+
+Operational notes:
+    All generated columns use the Glue ``string`` type. The recommended S3 key
+    format is ``<department>/<target_table_name>/<file.csv>``. Every CSV in a
+    target table folder contributes data to the same Glue table.
 """
 
 import json
@@ -18,34 +26,38 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def parse_s3_key(s3_key: str) -> tuple[str, str, str]:
-    """Parse S3 key to extract department, user_name, and file_name.
+def parse_s3_key(s3_key: str) -> tuple[str, str]:
+    """Extract the department and target table name from an S3 key.
 
-    Expected format: <department>/<user_name>/<file.csv>
-    Example: parking/davina/test_1.csv
+    The required format is
+    ``<department>/<target_table_name>/<file.csv>``. The CSV file name does not
+    contribute to the Glue table name.
 
     Args:
-        s3_key: URL-encoded S3 object key
+        s3_key: URL-encoded S3 object key.
 
     Returns:
-        Tuple of (department, user_name, file_base_name)
+        Department and target table folder name.
+
+    Raises:
+        ValueError: If the key does not use a supported path or file format.
     """
     decoded_key = unquote_plus(s3_key)
     path = PurePosixPath(decoded_key)
 
-    if len(path.parts) < 3:
+    if len(path.parts) != 3:
         raise ValueError(
-            f"Invalid S3 key format: {s3_key}. Expected format: <department>/<user_name>/<file.csv>"
+            f"Invalid S3 key format: {s3_key}. Expected "
+            "<department>/<target_table_name>/<file.csv>"
         )
 
     if path.suffix != ".csv":
         raise ValueError(f"File must be a CSV file: {path.name}")
 
     department = path.parts[0]
-    user_name = path.parts[1]
-    file_base_name = path.stem
+    target_table_name = path.parts[1]
 
-    return department, user_name, file_base_name
+    return department, target_table_name
 
 
 def normalize_name(name: str, lowercase: bool = True) -> str:
@@ -138,7 +150,8 @@ def extract_csv_column_definitions(bucket: str, key: str) -> dict[str, str]:
         columns_types[col_name] = "string"
 
     logger.info(
-        f"A total of {len(columns_types)} column definitions were extracted from CSV header"
+        f"A total of {len(columns_types)} column definitions were extracted "
+        "from the CSV header"
     )
     return columns_types
 
@@ -149,7 +162,7 @@ def create_glue_table(
     bucket: str,
     s3_key: str,
     columns_types: dict[str, str],
-):
+) -> None:
     """Create or recreate Glue Catalog table using AWS Data Wrangler.
 
     Args:
@@ -159,10 +172,7 @@ def create_glue_table(
         s3_key: S3 object key (file path)
         columns_types: Dictionary mapping column names to types
     """
-    # Extract directory path: s3://bucket/parking/user/file.csv -> s3://bucket/parking/user/
-    s3_path_parts = s3_key.rsplit("/", 1)
-    s3_directory = f"{s3_path_parts[0]}/" if len(s3_path_parts) > 1 else ""
-    s3_location = f"s3://{bucket}/{s3_directory}"
+    s3_location = build_s3_directory_location(bucket, s3_key)
 
     wr.catalog.create_csv_table(
         database=database_name,
@@ -177,7 +187,21 @@ def create_glue_table(
     )
 
 
-def delete_glue_table(database_name: str, table_name: str):
+def build_s3_directory_location(bucket: str, s3_key: str) -> str:
+    """Build the S3 URI for the directory containing an object.
+
+    Args:
+        bucket: S3 bucket name.
+        s3_key: S3 object key.
+
+    Returns:
+        S3 directory URI with a trailing slash.
+    """
+    s3_directory = s3_key.rsplit("/", 1)[0]
+    return f"s3://{bucket}/{s3_directory}/"
+
+
+def delete_glue_table(database_name: str, table_name: str) -> None:
     """Delete Glue Catalog table using AWS Data Wrangler.
 
     Args:
@@ -217,8 +241,13 @@ def process_single_event_record(
     decoded_s3_key = unquote_plus(s3_key)
     logger.info(f"Processing event: {event_name} for s3://{bucket}/{decoded_s3_key}")
 
-    _, user_name, file_base_name = parse_s3_key(s3_key)
-    table_name = f"{normalize_name(user_name)}_{normalize_name(file_base_name)}"
+    _, target_table_name = parse_s3_key(s3_key)
+    table_name = normalize_name(target_table_name)
+
+    if not table_name:
+        raise ValueError(
+            f"Target table folder must contain alphanumeric characters: {s3_key}"
+        )
 
     if event_name.startswith("ObjectCreated"):
         logger.info(f"Creating/updating table: {table_name}")
@@ -239,12 +268,26 @@ def process_single_event_record(
         return True, False
 
     elif event_name.startswith("ObjectRemoved"):
+        s3_location = build_s3_directory_location(bucket, decoded_s3_key)
+        remaining_csv_files = wr.s3.list_objects(
+            path=s3_location,
+            suffix=".csv",
+        )
+
+        if remaining_csv_files:
+            logger.info(
+                f"Keeping table: {table_name}; "
+                f"{len(remaining_csv_files)} CSV file(s) remain in {s3_location}"
+            )
+            return True, False
+
         logger.info(f"Deleting table: {table_name}")
 
         delete_glue_table(database_name=database_name, table_name=table_name)
 
         logger.info(
-            f"Successfully processed deletion: {decoded_s3_key} -> deleted table: {table_name}"
+            f"Successfully processed deletion: {decoded_s3_key} "
+            f"-> deleted table: {table_name}"
         )
         return True, False
 
@@ -308,7 +351,7 @@ def handle_sqs_event(event: dict[str, Any]) -> dict[str, Any]:
             logger.info(f"Processing file from message {message_id}: {s3_key}")
 
             # Extract and normalize department from S3 path to construct database name
-            department, _, _ = parse_s3_key(s3_key)
+            department, _ = parse_s3_key(s3_key)
             normalized_dept = department.replace("-", "_")
             database_name = f"{normalized_dept}_user_uploads_db"
             logger.info(
@@ -333,7 +376,8 @@ def handle_sqs_event(event: dict[str, Any]) -> dict[str, Any]:
 
     logger.info(
         f"Processing summary: {processed_count} processed, "
-        f"{skipped_count} skipped, {len(failed_message_ids)} failed, {total_records} total"
+        f"{skipped_count} skipped, {len(failed_message_ids)} failed, "
+        f"{total_records} total"
     )
 
     return {
