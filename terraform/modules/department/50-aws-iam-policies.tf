@@ -722,6 +722,15 @@ data "aws_iam_policy_document" "glue_access_sso" {
   }
 }
 
+resource "aws_iam_policy" "glue_access_sso" {
+  count = var.environment == "stg" ? 1 : 0
+
+  tags = var.tags
+
+  name   = lower("${var.identifier_prefix}-${local.department_identifier}-glue-sso-access")
+  policy = data.aws_iam_policy_document.glue_access_sso.json
+}
+
 // Glue crawler access policy for staging environment only
 data "aws_iam_policy_document" "glue_crawler_access_staging" {
   statement {
