@@ -20,6 +20,10 @@ resource "aws_ssoadmin_permission_set_inline_policy" "department" {
 
   provider = aws.aws_hackit_account
 
+  depends_on = [
+    aws_ssoadmin_customer_managed_policy_attachment.departmental_glue_access
+  ]
+
   inline_policy      = var.environment == "stg" ? data.aws_iam_policy_document.sso_staging_user_policy.json : data.aws_iam_policy_document.sso_production_user_policy.json
   instance_arn       = var.sso_instance_arn
   permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
