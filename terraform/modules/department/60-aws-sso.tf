@@ -53,6 +53,20 @@ resource "aws_ssoadmin_customer_managed_policy_attachment" "departmental_glue_co
   }
 }
 
+resource "aws_ssoadmin_customer_managed_policy_attachment" "departmental_glue_access" {
+  count = local.deploy_sso ? 1 : 0
+
+  provider = aws.aws_hackit_account
+
+  instance_arn       = var.sso_instance_arn
+  permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
+
+  customer_managed_policy_reference {
+    name = var.environment == "stg" ? aws_iam_policy.glue_access_sso[0].name : aws_iam_policy.read_only_glue_access.name
+    path = "/"
+  }
+}
+
 # Attach CloudTrail access policy to SSO (data-and-insight only)
 resource "aws_ssoadmin_customer_managed_policy_attachment" "cloudtrail_access" {
   count = local.deploy_sso && local.department_identifier == "data-and-insight" && var.cloudtrail_bucket != null ? 1 : 0
