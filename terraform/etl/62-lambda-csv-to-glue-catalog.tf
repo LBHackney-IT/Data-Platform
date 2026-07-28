@@ -1,5 +1,5 @@
 # Lambda function to automatically create/delete Glue Catalog tables
-# Workflow: S3 CSV upload/delete → SQS → Lambda → Glue Catalog table create/delete (retry once on failure → DLQ)
+# Workflow: S3 CSV/TSV upload/delete → SQS → Lambda → Glue Catalog table create/delete (retry once on failure → DLQ)
 
 locals {
   department_user_uploads_prefixes = {
@@ -9,6 +9,18 @@ locals {
     child_fam_services = "child-fam-services/"
     env_services       = "env-services/"
     revenues           = "revenues/"
+  }
+
+  supported_user_uploads_file_extensions = [".csv", ".tsv"]
+
+  user_uploads_notification_filters = {
+    for filter in setproduct(
+      keys(local.department_user_uploads_prefixes),
+      local.supported_user_uploads_file_extensions
+      ) : "${filter[0]}_${trimprefix(filter[1], ".")}" => {
+      prefix = local.department_user_uploads_prefixes[filter[0]]
+      suffix = filter[1]
+    }
   }
 
   enabled_department_user_uploads_databases = {
@@ -146,9 +158,9 @@ module "csv_to_glue_catalog_lambda" {
   layers = [
     "arn:aws:lambda:${data.aws_region.current.name}:336392948345:layer:AWSSDKPandas-Python311:20"
   ]
-  description = "Automatically creates/deletes Glue Catalog tables when CSV files are uploaded/deleted in user_uploads bucket"
+  description = "Automatically creates/deletes Glue Catalog tables when CSV or TSV files are uploaded/deleted in user_uploads bucket"
   environment_variables = {
-    GLUE_DATABASE_NAME = "parking_user_uploads_db"
+    EXPECTED_BUCKET_OWNER = data.aws_caller_identity.data_platform.account_id
   }
   tags = module.tags.values
 }
@@ -203,12 +215,12 @@ resource "aws_s3_bucket_notification" "user_uploads_csv_notification" {
   bucket = module.user_uploads_data_source.bucket_id
 
   dynamic "queue" {
-    for_each = local.department_user_uploads_prefixes
+    for_each = local.user_uploads_notification_filters
     content {
       queue_arn     = aws_sqs_queue.csv_to_glue_catalog_events.arn
       events        = ["s3:ObjectCreated:*", "s3:ObjectRemoved:*"]
-      filter_prefix = queue.value
-      filter_suffix = ".csv"
+      filter_prefix = queue.value.prefix
+      filter_suffix = queue.value.suffix
     }
   }
 
