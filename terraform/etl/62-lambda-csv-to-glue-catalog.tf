@@ -160,7 +160,7 @@ module "csv_to_glue_catalog_lambda" {
   ]
   description = "Automatically creates/deletes Glue Catalog tables when CSV or TSV files are uploaded/deleted in user_uploads bucket"
   environment_variables = {
-    GLUE_DATABASE_NAME = "parking_user_uploads_db"
+    EXPECTED_BUCKET_OWNER = data.aws_caller_identity.data_platform.account_id
   }
   tags = module.tags.values
 }

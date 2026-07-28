@@ -16,6 +16,7 @@ Operational notes:
 import csv
 import json
 import logging
+import os
 import re
 import unicodedata
 from pathlib import PurePosixPath
@@ -24,6 +25,7 @@ from urllib.parse import unquote_plus
 
 import awswrangler as wr
 import boto3
+from botocore.config import Config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -35,11 +37,19 @@ CSV_SAMPLE_BYTE_COUNT = 65_536
 DEFAULT_CSV_DELIMITER = ","
 SUPPORTED_CSV_DELIMITERS = (",", "\t", "|")
 SUPPORTED_FILE_EXTENSIONS = (".csv", ".tsv")
+EXPECTED_BUCKET_OWNER = os.environ["EXPECTED_BUCKET_OWNER"]
 DELIMITER_NAMES = {
     ",": "comma",
     "\t": "tab",
     "|": "pipe",
 }
+S3_CLIENT = boto3.client(
+    "s3",
+    config=Config(
+        connect_timeout=3,
+        read_timeout=10,
+    ),
+)
 
 
 def read_csv_sample(bucket: str, key: str) -> str:
@@ -56,15 +66,16 @@ def read_csv_sample(bucket: str, key: str) -> str:
         ValueError: If the sample cannot be downloaded or decoded.
     """
     try:
-        response = boto3.client("s3").get_object(
+        response = S3_CLIENT.get_object(
             Bucket=bucket,
             Key=key,
             Range=f"bytes=0-{CSV_SAMPLE_BYTE_COUNT - 1}",
+            ExpectedBucketOwner=EXPECTED_BUCKET_OWNER,
         )
         sample_bytes = response["Body"].read()
         return sample_bytes.decode("utf-8-sig")
     except Exception as error:
-        logger.error("Failed to sample CSV from S3: %s", error)
+        logger.exception("Failed to sample CSV from S3")
         raise ValueError(f"Unable to sample CSV file: {error}") from error
 
 

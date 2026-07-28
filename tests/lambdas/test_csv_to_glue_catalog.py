@@ -1,6 +1,7 @@
 """Tests for the user-uploaded CSV and TSV to Glue Catalog Lambda."""
 
 import json
+import os
 from importlib.util import module_from_spec, spec_from_file_location
 from io import StringIO
 from pathlib import Path
@@ -15,18 +16,34 @@ LAMBDA_PATH = (
 )
 
 
-def load_lambda_module() -> ModuleType:
+def load_lambda_module() -> tuple[ModuleType, MagicMock]:
     """Load the Lambda module without relying on its directory in sys.path."""
     spec = spec_from_file_location("csv_to_glue_catalog_main", LAMBDA_PATH)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Could not load Lambda module from {LAMBDA_PATH}")
 
     module = module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    with (
+        patch.dict(
+            os.environ,
+            {"EXPECTED_BUCKET_OWNER": "123456789012"},
+        ),
+        patch("boto3.client") as boto3_client,
+    ):
+        spec.loader.exec_module(module)
+    return module, boto3_client
 
 
-main = load_lambda_module()
+main, boto3_client = load_lambda_module()
+
+
+def test_s3_client_is_initialized_once_with_explicit_timeouts() -> None:
+    """Configure the reusable S3 client with bounded network timeouts."""
+    boto3_client.assert_called_once()
+    assert boto3_client.call_args.args == ("s3",)
+    config = boto3_client.call_args.kwargs["config"]
+    assert config.connect_timeout == 3
+    assert config.read_timeout == 10
 
 
 def test_parse_s3_key_uses_target_table_folder() -> None:
@@ -109,14 +126,13 @@ def test_detect_delimiter_rejects_semicolon_delimited_content() -> None:
         main.detect_delimiter_from_sample(sample)
 
 
-@patch.object(main.boto3, "client")
+@patch.object(main, "S3_CLIENT")
 def test_read_csv_sample_uses_bounded_s3_range(
-    boto3_client: MagicMock,
+    s3_client: MagicMock,
 ) -> None:
-    """Read only the first 64 KiB and decode an optional UTF-8 BOM."""
+    """Read a bounded sample from the expected bucket owner."""
     body = MagicMock()
     body.read.return_value = b"\xef\xbb\xbfid|description\n"
-    s3_client = boto3_client.return_value
     s3_client.get_object.return_value = {"Body": body}
 
     sample = main.read_csv_sample(
@@ -129,6 +145,7 @@ def test_read_csv_sample_uses_bounded_s3_range(
         Bucket="dataplatform-prod-user-uploads",
         Key="parking/notes/notes.csv",
         Range="bytes=0-65535",
+        ExpectedBucketOwner="123456789012",
     )
 
 
