@@ -302,7 +302,7 @@ def extract_csv_column_definitions(
             on_bad_lines="skip",
         )
     except Exception as error:
-        logger.error("Failed to read delimited file from S3: %s", error)
+        logger.exception("Failed to read delimited file from S3")
         raise ValueError(f"Unable to read delimited file: {error}") from error
 
     if len(df.columns) == 0:
@@ -677,9 +677,8 @@ def handle_sqs_event(event: dict[str, Any]) -> dict[str, Any]:
                 skipped_count += 1
                 logger.info(f"Skipped message {message_id}")
 
-        except Exception as e:
-            error_msg = f"Error processing SQS message {message_id}: {str(e)}"
-            logger.error(error_msg, exc_info=True)
+        except Exception:
+            logger.exception("Error processing SQS message %s", message_id)
             failed_message_ids.append(message_id)
 
     logger.info(
