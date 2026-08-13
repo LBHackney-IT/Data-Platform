@@ -22,8 +22,8 @@
     </dependency>
     <dependency>
       <groupId>com.crealytics</groupId>
-      <artifactId>spark-excel_2.11</artifactId>
-      <version>0.13.7</version>
+      <artifactId>spark-excel_2.12</artifactId>
+      <version>3.3.4_0.20.4</version>
     </dependency>
   </dependencies>
 
