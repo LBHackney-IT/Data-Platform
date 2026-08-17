@@ -54,11 +54,8 @@ if __name__ == "__main__":
 
     args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
-    # Configure Spark to prioritize user-supplied JARs over Glue default classpath
     from pyspark.conf import SparkConf
     conf = SparkConf()
-    conf.set("spark.driver.extraClassPath", "/tmp/*")
-    conf.set("spark.executor.extraClassPath", "/tmp/*")
     conf.set("spark.sql.legacy.timeParserPolicy", "CORRECTED")
 
     sc = SparkContext(conf=conf)
