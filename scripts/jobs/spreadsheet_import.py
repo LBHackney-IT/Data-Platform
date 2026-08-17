@@ -1,12 +1,10 @@
 import sys
 import os
-from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
-from pyspark.sql import SQLContext
 
 from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, clean_column_names, PARTITION_KEYS
 
