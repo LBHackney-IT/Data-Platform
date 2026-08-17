@@ -16,6 +16,7 @@ def create_dataframe_from_xlsx(sql_context, worksheet_name, header_row_number, f
         .option("header", "true") \
         .option("inferSchema", "true") \
         .option("dataAddress", f'\'{worksheet_name}\'!A{int(header_row_number)}') \
+        .option("maxByteArraySize", 500000000) \
         .load(file_path)
     dataframe = clean_and_enhance_dataframe(dataframe)
     return dataframe
@@ -53,16 +54,24 @@ if __name__ == "__main__":
     s3_bucket_target = get_glue_env_var('s3_bucket_target', '')
     s3_bucket_source = get_glue_env_var('s3_bucket_source', '')
 
-    ## @params: [JOB_NAME]
     args = getResolvedOptions(sys.argv, ['JOB_NAME'])
-    sc = SparkContext()
+
+    # Configure Spark to prioritize user-supplied JARs over Glue default classpath
+    from pyspark.conf import SparkConf
+    conf = SparkConf()
+    conf.set("spark.driver.extraClassPath", "/tmp/*")
+    conf.set("spark.executor.extraClassPath", "/tmp/*")
+    conf.set("spark.sql.legacy.timeParserPolicy", "CORRECTED")
+
+    sc = SparkContext(conf=conf)
     glueContext = GlueContext(sc)
     spark = glueContext.spark_session
     job = Job(glueContext)
     job.init(args['JOB_NAME'], args)
 
     file_type = infer_file_type(s3_bucket_source)
-    df = load_file(file_type, SQLContext(sc), get_glue_env_var('worksheet_name', ''), get_glue_env_var('header_row_number', 0), s3_bucket_source)
+    # Use glueContext.spark_session instead of SQLContext(sc) for PySpark 3.x+ compatibility
+    df = load_file(file_type, spark, get_glue_env_var('worksheet_name', ''), get_glue_env_var('header_row_number', 0), s3_bucket_source)
 
     frame = DynamicFrame.fromDF(df, glueContext, "DataFrame")
 
