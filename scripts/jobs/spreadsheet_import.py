@@ -4,7 +4,6 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from awsglue.dynamicframe import DynamicFrame
 
 from scripts.helpers.helpers import get_glue_env_var, add_import_time_columns, clean_column_names, PARTITION_KEYS
 
@@ -14,6 +13,7 @@ def create_dataframe_from_xlsx(sql_context, worksheet_name, header_row_number, f
         .option("header", "true") \
         .option("inferSchema", "true") \
         .option("dataAddress", f'\'{worksheet_name}\'!A{int(header_row_number)}') \
+        .option("maxRowsInMemory", 100) \
         .option("maxByteArraySize", 500000000) \
         .load(file_path)
     dataframe = clean_and_enhance_dataframe(dataframe)
@@ -68,17 +68,6 @@ if __name__ == "__main__":
     # Use glueContext.spark_session instead of SQLContext(sc) for PySpark 3.x+ compatibility
     df = load_file(file_type, spark, get_glue_env_var('worksheet_name', ''), get_glue_env_var('header_row_number', 0), s3_bucket_source)
 
-    frame = DynamicFrame.fromDF(df, glueContext, "DataFrame")
-
-    parquet_data = glueContext.write_dynamic_frame.from_options(
-        frame=frame,
-        connection_type="s3",
-        format="parquet",
-        connection_options={
-            "path": s3_bucket_target,
-            "partitionKeys": PARTITION_KEYS
-        },
-        transformation_ctx="parquet_data"
-    )
+    df.write.mode("append").partitionBy(*PARTITION_KEYS).parquet(s3_bucket_target)
 
     job.commit()
