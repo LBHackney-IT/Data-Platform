@@ -95,7 +95,7 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   database_name                = "data_platform"
   master_username              = "data_engineers"
   master_password              = random_password.redshift_cluster_master_password.result
-  node_type                    = "dc2.large"
+  node_type                    = "rg.large"
   cluster_type                 = "multi-node"
   number_of_nodes              = 3
   cluster_parameter_group_name = aws_redshift_parameter_group.require_ssl.name
