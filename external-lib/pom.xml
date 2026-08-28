@@ -22,8 +22,8 @@
     </dependency>
     <dependency>
       <groupId>com.crealytics</groupId>
-      <artifactId>spark-excel_2.11</artifactId>
-      <version>0.13.7</version>
+      <artifactId>spark-excel_2.12</artifactId>
+      <version>3.3.4_0.20.4</version>
     </dependency>
   </dependencies>
 
@@ -34,9 +34,9 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.3.0</version>
         <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
+          <descriptors>
+            <descriptor>src/assembly/glue-jar-with-dependencies.xml</descriptor>
+          </descriptors>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
@@ -44,7 +44,6 @@
           </archive>
           <appendAssemblyId>true</appendAssemblyId>
           <ignoreDirFormatExtensions>false</ignoreDirFormatExtensions>
-          <includeProjectArtifact>false</includeProjectArtifact>
         </configuration>
         <executions>
           <execution>

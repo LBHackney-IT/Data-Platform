@@ -85,6 +85,27 @@ resource "aws_secretsmanager_secret_version" "qlik_cloud" {
   }
 }
 
+
+resource "aws_secretsmanager_secret" "tableau_cloud" {
+  name        = "/${module.department_data_and_insight_data_source.identifier}/tableau-cloud"
+  description = "Tableau Cloud connection configuration and PAT credentials"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "tableau_cloud" {
+  secret_id = aws_secretsmanager_secret.tableau_cloud.id
+  secret_string = jsonencode({
+    connect_uri = "UPDATE_IN_CONSOLE"
+    site        = "UPDATE_IN_CONSOLE"
+    token_name  = "UPDATE_IN_CONSOLE"
+    token_value = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
 resource "aws_secretsmanager_secret" "parking_team_times" {
   name        = "/parking/team-times-api"
   description = "Team Times API endpoint and key"
@@ -186,6 +207,46 @@ resource "aws_secretsmanager_secret_version" "housing_interim_finance_db_creds" 
   }
 }
 
+resource "aws_secretsmanager_secret" "metastreet_db_creds" {
+  name        = "/data-and-insight/metastreet"
+  description = "SQL Server credentials for MetaStreet database ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret" "housing_uhtlive_archive" {
+  name        = "/housing/uhtlive_archive_creds"
+  description = "SQL Server credentials for uhtlive archive databse ingestion"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "housing_uhtlive_archive" {
+  secret_id = aws_secretsmanager_secret.housing_uhtlive_archive.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "metastreet_db_creds" {
+  secret_id = aws_secretsmanager_secret.metastreet_db_creds.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
 # Tascomi REST API public and private keys
 resource "aws_secretsmanager_secret" "planning_tascomi_api_key" {
   name        = "/planning/tascomi-api-key"
@@ -199,6 +260,24 @@ resource "aws_secretsmanager_secret_version" "planning_tascomi_api_key" {
   secret_string = jsonencode({
     public_key  = "UPDATE_IN_CONSOLE"
     private_key = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+resource "aws_secretsmanager_secret" "fsa_api_creds" {
+  name        = "/data-and-insight/fsa-api-creds"
+  description = "FSA API Credentials for D&I on behalf of Regulatory Services"
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "fsa_api_creds" {
+  secret_id = aws_secretsmanager_secret.fsa_api_creds.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
   })
 
   lifecycle {

@@ -20,6 +20,10 @@ resource "aws_ssoadmin_permission_set_inline_policy" "department" {
 
   provider = aws.aws_hackit_account
 
+  depends_on = [
+    aws_ssoadmin_customer_managed_policy_attachment.departmental_glue_access
+  ]
+
   inline_policy      = var.environment == "stg" ? data.aws_iam_policy_document.sso_staging_user_policy.json : data.aws_iam_policy_document.sso_production_user_policy.json
   instance_arn       = var.sso_instance_arn
   permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
@@ -49,6 +53,20 @@ resource "aws_ssoadmin_customer_managed_policy_attachment" "departmental_glue_co
 
   customer_managed_policy_reference {
     name = aws_iam_policy.departmental_glue_console_list_and_spark_ui_access.name
+    path = "/"
+  }
+}
+
+resource "aws_ssoadmin_customer_managed_policy_attachment" "departmental_glue_access" {
+  count = local.deploy_sso ? 1 : 0
+
+  provider = aws.aws_hackit_account
+
+  instance_arn       = var.sso_instance_arn
+  permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
+
+  customer_managed_policy_reference {
+    name = var.environment == "stg" ? aws_iam_policy.glue_access_sso[0].name : aws_iam_policy.read_only_glue_access.name
     path = "/"
   }
 }

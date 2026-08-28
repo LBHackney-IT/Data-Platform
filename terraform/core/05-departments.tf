@@ -77,13 +77,13 @@ module "department_parking" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
   additional_glue_database_access = {
     read_only = [
       "${local.identifier_prefix}-liberator-raw-zone",
       "${local.identifier_prefix}-liberator-refined-zone",
       "${local.identifier_prefix}-liberator-trusted-zone",
       "parking-ringgo-sftp-raw-zone",
-      "parking_user_uploads_db",
     ]
     read_write = []
   }
@@ -156,11 +156,12 @@ module "department_data_and_insight" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
   cloudtrail_bucket               = module.cloudtrail_storage
   datahub_ingestion_bucket        = module.datahub_ingestion
   additional_glue_database_access = {
     read_only  = []
-    read_write = ["arcus_archive", "metastore"]
+    read_write = ["arcus_archive", "metastore", "private_sector_housing_raw"]
   }
   additional_s3_access = [
     {
@@ -397,11 +398,11 @@ module "department_revenues" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
   additional_glue_database_access = {
     read_only = [
       "nndr_raw_zone",
       "ctax_raw_zone",
-      "revenues_user_uploads_db",
     ]
     read_write = []
   }
@@ -441,6 +442,7 @@ module "department_environmental_services" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
 }
 
 module "department_housing" {
@@ -477,6 +479,7 @@ module "department_housing" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
   additional_s3_access = [
     {
       bucket_arn  = module.housing_nec_migration_storage.bucket_arn
@@ -641,6 +644,42 @@ module "department_streetscene" {
   user_uploads_bucket             = module.user_uploads
 }
 
+module "department_adult_social_care" {
+  providers = {
+    aws                    = aws
+    aws.aws_hackit_account = aws.aws_hackit_account
+  }
+
+  source                          = "../modules/department"
+  tags                            = module.tags.values
+  is_live_environment             = local.is_live_environment
+  environment                     = var.environment
+  application                     = local.application_snake
+  short_identifier_prefix         = local.short_identifier_prefix
+  identifier_prefix               = local.identifier_prefix
+  name                            = "Adult Social Care"
+  landing_zone_bucket             = module.landing_zone
+  raw_zone_bucket                 = module.raw_zone
+  refined_zone_bucket             = module.refined_zone
+  trusted_zone_bucket             = module.trusted_zone
+  athena_storage_bucket           = module.athena_storage
+  glue_scripts_bucket             = module.glue_scripts
+  glue_temp_storage_bucket        = module.glue_temp_storage
+  spark_ui_output_storage_bucket  = module.spark_ui_output_storage
+  secrets_manager_kms_key         = aws_kms_key.secrets_manager_key
+  redshift_ip_addresses           = var.redshift_public_ips
+  redshift_port                   = var.redshift_port
+  sso_instance_arn                = local.sso_instance_arn
+  identity_store_id               = local.identity_store_id
+  google_group_admin_display_name = local.google_group_admin_display_name
+  google_group_display_name       = "saml-aws-data-platform-collaborator-asc@hackney.gov.uk"
+  departmental_airflow_role       = local.departmental_airflow_role
+  mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
+  mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
+  user_uploads_bucket             = module.user_uploads
+}
+
 module "department_children_family_services" {
   providers = {
     aws                    = aws
@@ -675,6 +714,7 @@ module "department_children_family_services" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  user_uploads_catalog_enabled    = true
   additional_glue_database_access = {
     read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live"]
     read_write = []
@@ -683,6 +723,7 @@ module "department_children_family_services" {
 
 locals {
   departmental_airflow_role_arns = compact([
+    module.department_adult_social_care.airflow_role_arn,
     module.department_benefits_and_housing_needs.airflow_role_arn,
     module.department_children_family_services.airflow_role_arn,
     module.department_data_and_insight.airflow_role_arn,

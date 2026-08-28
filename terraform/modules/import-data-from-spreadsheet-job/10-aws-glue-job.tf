@@ -15,6 +15,7 @@ module "spreadsheet_import" {
     "--header_row_number"   = var.header_row_number
     "--worksheet_name"      = var.worksheet_name
     "--job_bookmark_option" = local.job_bookmark_option
+    "--user-jars-first"     = "true"
   }
   script_s3_object_key       = var.spreadsheet_import_script_key
   spark_ui_output_storage_id = var.spark_ui_output_storage_id

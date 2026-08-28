@@ -136,11 +136,11 @@ module "Cash_Collection_Date" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1xM5IEzCngVscpPt2ChKPtkB_BEunIEzl"
+  google_drive_document_id       = "1iAE9yI7e6ccWwXWNo8Kz_OX33GJ7KmZX"
   glue_job_name                  = "Cash Collection Date"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Cash_Collection/cash_collection_mar_2026.csv"
+  input_file_name                = "Cash_Collection/cash_collection_July_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -172,11 +172,11 @@ module "Cedar_Backing_Data" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "13I-gnoXVCEJtqP_lM4VL2HNLNL6qnXrd"
+  google_drive_document_id       = "1p0KG9xRc1u_ZmxPdmaIllZknJ4DVskqg"
   glue_job_name                  = "Cedar Backing Data"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Cedar_Backing_Data/cedarbacking_apr_2026.csv"
+  input_file_name                = "Cedar_Backing_Data/cedarbacking_july_2026_update.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -208,11 +208,11 @@ module "Cedar_Parking_Payments" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "10lrxiLN1Rw87xwwjDAz5nyNwGMSTMljj"
+  google_drive_document_id       = "1xhdt6uO7YNsMmCBJlWI3O7vUYMkTk2uH"
   glue_job_name                  = "Cedar Parking Payments"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Cedar_Parking_Payments/Cedar_Parking_Payments_apr_2026.csv"
+  input_file_name                = "Cedar_Parking_Payments/Cedar_Parking_Payments_july_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -244,11 +244,11 @@ module "Citypay_Import" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1NaKczUik8E1ThK5oaRrqHXmbvxEjqtFV"
+  google_drive_document_id       = "1DRQXNs5NjBJvgaDngcf84oP7vLgLJ8xp"
   glue_job_name                  = "Citypay Import"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "CityPay_Payments/Citypay_import_apr_2026.csv"
+  input_file_name                = "CityPay_Payments/Citypay_import_july_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -280,11 +280,11 @@ module "Ringgo_Daily_Transactions" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1WutJXndKmF4XQJqkFs23-iFlHQfBpCYG"
+  google_drive_document_id       = "1SDMHtFoJMPqyk8xw9zRys2sWVYp6E5xT"
   glue_job_name                  = "Ringgo Daily Transactions"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "Ringgo_Daily/ringgo_apr_2026.csv"
+  input_file_name                = "Ringgo_Daily/ringgo_july_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   worksheets = {
@@ -948,11 +948,11 @@ module "parking_ringgo_fuel_type_monthly" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1U-3Wy1bYsfCL4AZS7RhsvBV9YzDFc-wx"
+  google_drive_document_id       = "1KPzT9o8o6-6RKwoJjEh3QwgAzk22fNnt"
   glue_job_name                  = "parking_ringgo_fuel_type_monthly"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "parking_ringgo_fuel_type_monthly/parking_ringgo_fuel_type_monthly_oct_2025.csv"
+  input_file_name                = "parking_ringgo_fuel_type_monthly/parking_ringgo_fuel_type_monthly_june_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
@@ -984,11 +984,11 @@ module "parking_visitor_voucher_monthly_review" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1XJT9X63PQThb8WH7eLMROZ2ZS9xzvEK2"
+  google_drive_document_id       = "12QUQ2cV7VhErrnlxcFocBr4eWrLdO5qV"
   glue_job_name                  = "parking_visitor_voucher_monthly_review"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "parking_visitor_voucher_monthly_review/Parking_Visitor_Voucher_Monthly_Review_oct_2025.csv"
+  input_file_name                = "parking_visitor_voucher_monthly_review/Parking_Visitor_Voucher_Monthly_Review_june_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
@@ -1020,11 +1020,11 @@ module "parking_trends_co2_emissions_monthly" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "16VnD2z3pL53iCNzlvX-3m6J5WBFgzjyY"
+  google_drive_document_id       = "1H6YoEpUfop5LLzKN-kHyGoM-lcfCCqKo"
   glue_job_name                  = "parking_trends_co2_emissions_monthly"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "parking_trends_co2_emissions_monthly/Parking_Trends_CO2_emissions_Monthly_oct_2025.csv"
+  input_file_name                = "parking_trends_co2_emissions_monthly/Parking_Trends_CO2_emissions_Monthly_june_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
@@ -1056,11 +1056,11 @@ module "parking_permit_diesel_trends_as_of_1st_of_month" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1TWEA8XRwOOXv0c1Dn6atMD8w1zZBDgnU"
+  google_drive_document_id       = "1siKmraAz_Y70mHPEXRg6PMAb7CAxQ5qw"
   glue_job_name                  = "parking_permit_diesel_trends_as_of_1st_of_month"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "parking_permit_diesel_trends_as_of_1st_of_month/Parking_Permit_diesel_Trends_as_of_1st_of_month_oct_2025.csv"
+  input_file_name                = "parking_permit_diesel_trends_as_of_1st_of_month/Parking_Permit_diesel_Trends_as_of_1st_of_month_june_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
@@ -1092,11 +1092,11 @@ module "parking_permit_co2_gt_150_by_month" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1kGJYwV87ve6fxpVVPcpq_ImJg6QCyYuY"
+  google_drive_document_id       = "1E-axUHX2u1tqkFJLzZreSoOMPUbwHDmt"
   glue_job_name                  = "parking_permit_co2_gt_150_by_month"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "parking_permit_co2_gt_150_by_month/Parking_Permit_Co2_GT_150_By_Month_oct_2025.csv"
+  input_file_name                = "parking_permit_co2_gt_150_by_month/Parking_Permit_Co2_GT_150_By_Month_june_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
@@ -1128,11 +1128,11 @@ module "parking_permit_by_emmission_band" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1KvjRjKA_IE_IHKLWHfMr3x-Me1TpF8pC"
+  google_drive_document_id       = "1UJJHgcQokYUhz0wgTuR5eH5NFOsLAwYc"
   glue_job_name                  = "parking_permit_by_emmission_band"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "parking_permit_by_emmission_band/Parking_Permit_by_emmission_band_oct_2025_update.csv"
+  input_file_name                = "parking_permit_by_emmission_band/Parking_Permit_by_emmission_band_june_2026_update.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
@@ -1164,11 +1164,11 @@ module "ops_dashboard_link" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1-TqdLu3vQ11nx0CQHzeIOx6nlSSHLnfo"
+  google_drive_document_id       = "19DHmh60rAMiDlgyClB02TmD4wa1MI0i1"
   glue_job_name                  = "ops_dashboard_link"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "ops_button/ops_dashboard_link_14-05-2026.csv"
+  input_file_name                = "ops_button/ops_dashboard_link_29-06-2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
@@ -1200,11 +1200,11 @@ module "forecast_dashboard_link" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1AjZRiLGlcClaNo0p0VA3Sxu7YWbKEvmW"
+  google_drive_document_id       = "1pt9cfVsgTV92_BfcuAyDJF8vOBPOk9b0"
   glue_job_name                  = "forecast_dashboard_link"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "forecasting_button/forecasting_dashboard_link_09_12_2025.csv"
+  input_file_name                = "forecasting_button/forecasting_dashboard_link_30_07_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
@@ -1416,11 +1416,11 @@ module "smt_dashboard_link" {
   landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
   landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
   landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
-  google_drive_document_id       = "1sc-cvZF8mReWw8SX2ZPdLi3GzX2oqD_5"
+  google_drive_document_id       = "1ShvSnls0OUHJD6_UFlLG8mkHZLl1FCez"
   glue_job_name                  = "smt_dashboard_link"
   output_folder_name             = "g-drive"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
-  input_file_name                = "smt_button/smt_dashboard_link_14_05_2026.csv"
+  input_file_name                = "smt_button/smt_dashboard_link_29_06_2026.csv"
   ingestion_schedule             = "cron(0 21 * * ? *)"
   enable_bookmarking             = true
   tags                           = module.tags.values
@@ -1501,6 +1501,186 @@ module "land_reg_registered_leases_greater_london_2026_04" {
     sheet1 : {
       header_row_number = 0
       worksheet_name    = "land_reg_registered_leases_greater_london_2026_04"
+    }
+  }
+}
+
+module "housing_sc22_23_block_repairs" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_housing_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_housing_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1-B4I65olhGAnisOeIfeMAsgPCgGGSkvB"
+  glue_job_name                  = "housing_sc22_23_block_repairs"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Block_Repairs.xlsx"
+  enable_bookmarking             = true
+  tags                           = module.tags.values
+  worksheets = {
+    sheet1 : {
+      header_row_number = 1
+      worksheet_name    = "Block_Repairs"
+    }
+  }
+}
+
+module "housing_sc22_23_estate_repairs" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_housing_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_housing_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1ZpwDLeMtYznAM8SV90FcFvJKjmmtJp-y"
+  glue_job_name                  = "housing_sc22_23_estate_repairs"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Estate_Repairs.xlsx"
+  enable_bookmarking             = true
+  tags                           = module.tags.values
+  worksheets = {
+    sheet1 : {
+      header_row_number = 1
+      worksheet_name    = "Estate_Repairs"
+    }
+  }
+}
+
+module "housing_sc22_23_estate_roads" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_housing_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_housing_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1LASQcabTrNQGMdCxvivN2y3t6ajh3aJq"
+  glue_job_name                  = "housing_sc22_23_estate_roads"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Estate_Roads.xlsx"
+  enable_bookmarking             = true
+  tags                           = module.tags.values
+  worksheets = {
+    sheet1 : {
+      header_row_number = 1
+      worksheet_name    = "Estate_Roads"
+    }
+  }
+}
+
+module "housing_sc22_23_lift_maint_by_block" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_housing_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_housing_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "1Sni7ZVaI1jHteL6XtGCUvuyweuWepCEA"
+  glue_job_name                  = "housing_sc22_23_lift_maint_by_block"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Lift_Maintenance_by_Block.xlsx"
+  enable_bookmarking             = true
+  tags                           = module.tags.values
+  worksheets = {
+    sheet1 : {
+      header_row_number = 1
+      worksheet_name    = "Lift_Maintenance_by_Block"
+    }
+  }
+}
+
+module "housing_sc22_23_lift_maint_by_lift" {
+  count                          = local.is_live_environment ? 1 : 0
+  source                         = "../modules/import-spreadsheet-file-from-g-drive"
+  is_production_environment      = local.is_production_environment
+  is_live_environment            = local.is_live_environment
+  department                     = module.department_housing_data_source
+  glue_scripts_bucket_id         = module.glue_scripts_data_source.bucket_id
+  glue_catalog_database_name     = module.department_housing_data_source.raw_zone_catalog_database_name
+  glue_temp_storage_bucket_id    = module.glue_temp_storage_data_source.bucket_url
+  spark_ui_output_storage_id     = module.spark_ui_output_storage_data_source.bucket_id
+  secrets_manager_kms_key        = data.aws_kms_key.secrets_manager_key
+  glue_role_arn                  = data.aws_iam_role.glue_role.arn
+  helper_module_key              = data.aws_s3_object.helpers.key
+  pydeequ_zip_key                = data.aws_s3_object.pydeequ.key
+  jars_key                       = data.aws_s3_object.jars.key
+  spreadsheet_import_script_key  = aws_s3_object.spreadsheet_import_script.key
+  identifier_prefix              = local.short_identifier_prefix
+  lambda_artefact_storage_bucket = module.lambda_artefact_storage_data_source.bucket_id
+  landing_zone_bucket_id         = module.landing_zone_data_source.bucket_id
+  landing_zone_kms_key_arn       = module.landing_zone_data_source.kms_key_arn
+  landing_zone_bucket_arn        = module.landing_zone_data_source.bucket_arn
+  google_drive_document_id       = "15gW2_YgWa1qphOzTispysdTiILXK-DEi"
+  glue_job_name                  = "housing_sc22_23_lift_maint_by_lift"
+  output_folder_name             = "g-drive"
+  raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
+  input_file_name                = "Lift_Maintenance_by_Lift.xlsx"
+  enable_bookmarking             = true
+  tags                           = module.tags.values
+  worksheets = {
+    sheet1 : {
+      header_row_number = 1
+      worksheet_name    = "Lift_Maintenance_by_Lift"
     }
   }
 }

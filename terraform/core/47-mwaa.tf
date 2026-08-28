@@ -242,7 +242,7 @@ resource "aws_mwaa_environment" "mwaa" {
   # https://docs.aws.amazon.com/mwaa/latest/userguide/t-create-update-environment.html#t-network-failure
   webserver_access_mode           = "PUBLIC_ONLY"                             # Default is PRIVATE_ONLY
   max_workers                     = local.is_production_environment ? 20 : 10 # The default for mw1.medium is 10 for mw1.samll is 5
-  min_workers                     = 1                                         # Default 1
+  min_workers                     = local.is_production_environment ? 2 : 1   # Default 1
   schedulers                      = 2                                         # Must be between 2 and 5
   kms_key                         = aws_kms_key.mwaa_key.arn
   tags                            = module.tags.values

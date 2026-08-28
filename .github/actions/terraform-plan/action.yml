@@ -102,3 +102,9 @@ runs:
         echo -e "\n"
       shell: bash
       working-directory: "${{ inputs.build_path }}"
+
+    - name: Check SSO inline policy sizes
+      run: |
+        bash "${{ github.action_path }}/../.helpers/check-sso-inline-policy-size.sh" plan.out
+      shell: bash
+      working-directory: "${{ inputs.build_path }}"
