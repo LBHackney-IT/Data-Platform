@@ -61,22 +61,13 @@ module "raw_zone" {
   bucket_name       = "Raw Zone"
   bucket_identifier = "raw-zone"
 
-  bucket_policy_statements = concat(
-    local.is_production_environment ? [
-      local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement
-    ] : [],
-    local.is_preprod_env ? [
-      local.prod_to_pre_prod_raw_zone_data_sync_statement_for_pre_prod
-    ] : []
-  )
+  bucket_policy_statements = local.is_production_environment ? [
+    local.s3_to_s3_copier_for_addresses_api_write_access_to_raw_zone_statement
+  ] : []
   bucket_key_policy_statements = concat(
     [local.allow_s3_batch_copy_kms_access_raw_zone],
     local.is_production_environment ? [
       local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement
-    ] : [],
-    local.is_preprod_env ? [
-      local.prod_to_pre_prod_data_sync_access_to_raw_zone_key_statement_for_pre_prod,
-      local.lakeformation_registration_key_statement_for_pre_prod
     ] : []
   )
   include_backup_policy_tags = false
@@ -92,23 +83,12 @@ module "refined_zone" {
   bucket_name       = "Refined Zone"
   bucket_identifier = "refined-zone"
 
-  bucket_policy_statements = concat(
-    [local.rentsense_refined_zone_access_statement],
-    local.is_preprod_env ? [
-      local.prod_to_pre_prod_refined_zone_data_sync_statement_for_pre_prod
-    ] : []
-  )
+  bucket_policy_statements = [local.rentsense_refined_zone_access_statement]
 
-  bucket_key_policy_statements = concat(
-    [
-      local.rentsense_refined_zone_key_statement,
-      local.allow_s3_batch_copy_kms_access_refined_zone
-    ],
-    local.is_preprod_env ? [
-      local.prod_to_pre_prod_data_sync_access_to_refined_zone_key_statement_for_pre_prod,
-      local.lakeformation_registration_key_statement_for_pre_prod
-    ] : []
-  )
+  bucket_key_policy_statements = [
+    local.rentsense_refined_zone_key_statement,
+    local.allow_s3_batch_copy_kms_access_refined_zone
+  ]
   include_backup_policy_tags = false
   enable_intelligent_tiering = true
 }
@@ -122,16 +102,8 @@ module "trusted_zone" {
   bucket_name       = "Trusted Zone"
   bucket_identifier = "trusted-zone"
 
-  bucket_policy_statements = local.is_preprod_env ? [
-    local.prod_to_pre_prod_trusted_zone_data_sync_statement_for_pre_prod
-  ] : []
-
-  bucket_key_policy_statements = concat(
-    [local.allow_s3_batch_copy_kms_access_trusted_zone],
-    local.is_preprod_env ? [
-      local.prod_to_pre_prod_data_sync_access_to_trusted_zone_key_statement_for_pre_prod
-    ] : []
-  )
-  include_backup_policy_tags = false
-  enable_intelligent_tiering = true
+  bucket_policy_statements     = []
+  bucket_key_policy_statements = [local.allow_s3_batch_copy_kms_access_trusted_zone]
+  include_backup_policy_tags   = false
+  enable_intelligent_tiering   = true
 }
