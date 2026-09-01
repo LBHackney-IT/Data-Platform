@@ -97,7 +97,7 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   master_password              = random_password.redshift_cluster_master_password.result
   node_type                    = "rg.large"
   cluster_type                 = "multi-node"
-  number_of_nodes              = 3
+  number_of_nodes              = 4
   cluster_parameter_group_name = aws_redshift_parameter_group.require_ssl.name
   iam_roles                    = local.iam_role_arns
   cluster_subnet_group_name    = aws_redshift_subnet_group.redshift.name
