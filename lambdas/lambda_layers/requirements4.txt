@@ -1,2 +1,2 @@
 # numpy 2.5.x and greater require python 3.12
-numpy==2.3.5
+numpy==2.5.2
