@@ -179,3 +179,12 @@ resource "aws_glue_catalog_database" "private_sector_housing_raw" {
     prevent_destroy = true
   }
 }
+
+resource "aws_glue_catalog_database" "mosaic" {
+  name        = "mosaic"
+  description = "Mosaic data used by CFS and ASC."
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
