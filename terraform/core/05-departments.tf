@@ -244,6 +244,7 @@ module "department_planning" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-planning@hackney.gov.uk"
+  create_sso_permission_set       = false
   departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
@@ -569,6 +570,7 @@ module "department_customer_services" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-customer-services@hackney.gov.uk"
+  create_sso_permission_set       = false
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
@@ -603,6 +605,7 @@ module "department_hr_and_od" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-hr-and-od@hackney.gov.uk"
+  create_sso_permission_set       = false
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
@@ -637,6 +640,7 @@ module "department_streetscene" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-streetscene@hackney.gov.uk"
+  create_sso_permission_set       = false
   departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
