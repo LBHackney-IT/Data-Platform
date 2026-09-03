@@ -72,6 +72,7 @@ module "department_parking" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-parking@hackney.gov.uk"
+  create_sso_permission_set       = true
   departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
@@ -151,6 +152,7 @@ module "department_data_and_insight" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-datainsight@hackney.gov.uk"
+  create_sso_permission_set       = true
   departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
@@ -320,6 +322,7 @@ module "department_sandbox" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-sandbox@hackney.gov.uk"
+  create_sso_permission_set       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
@@ -354,6 +357,7 @@ module "department_benefits_and_housing_needs" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-benefits-housing-needs@hackney.gov.uk"
+  create_sso_permission_set       = true
   departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
@@ -394,6 +398,7 @@ module "department_revenues" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-revenues@hackney.gov.uk"
+  create_sso_permission_set       = true
   departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
@@ -438,6 +443,7 @@ module "department_environmental_services" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-environmental-services@hackney.gov.uk"
+  create_sso_permission_set       = true
   departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
@@ -475,6 +481,7 @@ module "department_housing" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-housing@hackney.gov.uk"
+  create_sso_permission_set       = true
   departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
@@ -536,6 +543,7 @@ module "department_children_and_education" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-children-and-family-services@hackney.gov.uk"
+  create_sso_permission_set       = true
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
@@ -677,6 +685,7 @@ module "department_adult_social_care" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-asc@hackney.gov.uk"
+  create_sso_permission_set       = true
   departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
@@ -713,6 +722,7 @@ module "department_children_family_services" {
   identity_store_id               = local.identity_store_id
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-cfs@hackney.gov.uk"
+  create_sso_permission_set       = true
   departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
