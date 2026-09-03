@@ -11,6 +11,12 @@ variable "google_group_display_name" {
   default     = null
 }
 
+variable "create_sso_permission_set" {
+  description = "Whether to create the department's legacy SSO permission set and account assignment"
+  type        = bool
+  default     = false
+}
+
 variable "google_group_admin_display_name" {
   description = <<EOF
     The google group display name for the admin group.
