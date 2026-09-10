@@ -250,6 +250,8 @@ resource "aws_mwaa_environment" "mwaa" {
 
   airflow_configuration_options = {
     "core.default_timezone"               = "Europe/London"
+    "core.max_active_tasks_per_dag"       = "8"
+    "core.max_active_runs_per_dag"        = "1"
     "webserver.warn_deployment_exposure"  = "False"
     "webserver.auto_refresh"              = "True"
     "scheduler.min_file_process_interval" = "180"
