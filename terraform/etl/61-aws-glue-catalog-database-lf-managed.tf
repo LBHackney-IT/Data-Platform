@@ -1,5 +1,4 @@
-# Lake Formation registration, grants and hybrid opt-ins are managed in
-# dap-infrastructure and must be in place before the new ingestion is enabled.
+# Lake Formation registration, grants and hybrid opt-ins are managed in dap-infrastructure
 resource "aws_glue_catalog_database" "mosaic_raw" {
   name         = "mosaic_raw"
   description  = "Mosaic SQL Server full-ingestion history and latest datasets."
