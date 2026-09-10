@@ -284,3 +284,24 @@ resource "aws_secretsmanager_secret_version" "fsa_api_creds" {
     ignore_changes = [secret_string]
   }
 }
+
+resource "aws_secretsmanager_secret" "mosaic" {
+  name        = "mosaic"
+  description = "SQL Server credentials for Mosaic ingestion."
+  kms_key_id  = data.aws_kms_key.secrets_manager_key.arn
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "mosaic" {
+  secret_id = aws_secretsmanager_secret.mosaic.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
