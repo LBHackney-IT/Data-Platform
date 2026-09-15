@@ -42,9 +42,40 @@ data "aws_iam_policy_document" "mosaic_ingestion" {
     sid = "WriteMosaicRawData"
     actions = [
       "s3:PutObject",
+      "s3:DeleteObject",
       "s3:AbortMultipartUpload",
     ]
     resources = ["${module.raw_zone_data_source.bucket_arn}/projects/mosaic/*"]
+  }
+
+  statement {
+    sid       = "ListMosaicRawData"
+    actions   = ["s3:ListBucket"]
+    resources = [module.raw_zone_data_source.bucket_arn]
+
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values   = ["projects/mosaic/*"]
+    }
+  }
+
+  statement {
+    sid = "ManageMosaicRawCatalog"
+    actions = [
+      "glue:GetTable",
+      "glue:CreateTable",
+      "glue:UpdateTable",
+      "glue:DeleteTable",
+      "glue:GetPartitions",
+      "glue:BatchCreatePartition",
+      "glue:BatchDeletePartition",
+    ]
+    resources = [
+      "arn:aws:glue:${var.aws_deploy_region}:${data.aws_caller_identity.data_platform.account_id}:catalog",
+      aws_glue_catalog_database.mosaic_raw.arn,
+      "arn:aws:glue:${var.aws_deploy_region}:${data.aws_caller_identity.data_platform.account_id}:table/${aws_glue_catalog_database.mosaic_raw.name}/*",
+    ]
   }
 
   statement {
