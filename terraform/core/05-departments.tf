@@ -778,6 +778,7 @@ locals {
     module.department_children_family_services.airflow_role_arn,
     module.department_data_and_insight.airflow_role_arn,
     module.department_env_enforcement.airflow_role_arn,
+    module.department_environmental_health.airflow_role_arn,
     module.department_environmental_services.airflow_role_arn,
     module.department_housing.airflow_role_arn,
     module.department_parking.airflow_role_arn,

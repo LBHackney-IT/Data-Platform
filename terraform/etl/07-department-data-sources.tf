@@ -185,6 +185,23 @@ module "department_environmental_services_data_source" {
   glue_temp_storage_bucket = module.glue_temp_storage_data_source
 }
 
+module "department_environmental_health_data_source" {
+  providers = {
+    aws                    = aws
+    aws.aws_hackit_account = aws.aws_hackit_account
+  }
+
+  source                   = "../modules/data-sources/department"
+  tags                     = module.tags.values
+  is_live_environment      = local.is_live_environment
+  environment              = var.environment
+  short_identifier_prefix  = local.short_identifier_prefix
+  identifier_prefix        = local.identifier_prefix
+  name                     = "Environmental Health"
+  glue_scripts_bucket      = module.glue_scripts_data_source
+  glue_temp_storage_bucket = module.glue_temp_storage_data_source
+}
+
 module "department_housing_data_source" {
   providers = {
     aws                    = aws
