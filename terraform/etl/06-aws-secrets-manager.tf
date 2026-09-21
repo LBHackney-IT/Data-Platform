@@ -267,24 +267,6 @@ resource "aws_secretsmanager_secret_version" "planning_tascomi_api_key" {
   }
 }
 
-resource "aws_secretsmanager_secret" "fsa_api_creds" {
-  name        = "/data-and-insight/fsa-api-creds"
-  description = "FSA API Credentials for D&I on behalf of Regulatory Services"
-  tags        = module.tags.values
-}
-
-resource "aws_secretsmanager_secret_version" "fsa_api_creds" {
-  secret_id = aws_secretsmanager_secret.fsa_api_creds.id
-  secret_string = jsonencode({
-    username = "UPDATE_IN_CONSOLE"
-    password = "UPDATE_IN_CONSOLE"
-  })
-
-  lifecycle {
-    ignore_changes = [secret_string]
-  }
-}
-
 resource "aws_secretsmanager_secret" "environmental_health_fsa_api_creds" {
   name        = "/${module.department_environmental_health_data_source.identifier}/fsa-api-creds"
   description = "FSA API Credentials for Environmental Health"
