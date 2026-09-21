@@ -64,7 +64,8 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
       "s3:PutObject",
     ]
     resources = [
-      "${module.athena_storage.bucket_arn}/*"
+      "${module.athena_storage.bucket_arn}/*",
+      "${module.raw_zone.bucket_arn}/qlik_dump/*"
     ]
   }
 
