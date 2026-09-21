@@ -3,4 +3,4 @@ freezegun
 pytest-mock
 pydeequ
 # Explicitly set urllib3 version compatible with botocore to pass CI tests
-urllib3>=1.25.4,<2.7 # glue 4 is using urllib3==1.25.11 so don't need add to requirements.build.txt
+urllib3>=2.8.0,<2.9 # glue 4 is using urllib3==1.25.11 so don't need add to requirements.build.txt
