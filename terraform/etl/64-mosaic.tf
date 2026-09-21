@@ -297,7 +297,7 @@ resource "aws_iam_role_policy" "cfs_mosaic_transformations" {
         Sid      = "ReadCfsMosaicSql"
         Effect   = "Allow"
         Action   = "s3:GetObject"
-        Resource = "arn:aws:s3:::${local.identifier_prefix}-mwaa-bucket/dags/child_fam_services/child_fam_services_refined_table_transformation_dag/*"
+        Resource = "arn:aws:s3:::${local.identifier_prefix}-mwaa-bucket/dags/child_fam_services/refined_zone_transformation_dag/*"
       },
     ]
   })
