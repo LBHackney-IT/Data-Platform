@@ -452,7 +452,7 @@ module "department_environmental_services" {
   user_uploads_catalog_enabled    = true
 }
 
-module "department_environmental_health" {
+module "department_env_health" {
   providers = {
     aws                    = aws
     aws.aws_hackit_account = aws.aws_hackit_account
@@ -466,7 +466,7 @@ module "department_environmental_health" {
   short_identifier_prefix         = local.short_identifier_prefix
   identifier_prefix               = local.identifier_prefix
   landing_zone_bucket             = module.landing_zone
-  name                            = "Environmental Health"
+  name                            = "Env Health"
   raw_zone_bucket                 = module.raw_zone
   refined_zone_bucket             = module.refined_zone
   trusted_zone_bucket             = module.trusted_zone
@@ -778,7 +778,7 @@ locals {
     module.department_children_family_services.airflow_role_arn,
     module.department_data_and_insight.airflow_role_arn,
     module.department_env_enforcement.airflow_role_arn,
-    module.department_environmental_health.airflow_role_arn,
+    module.department_env_health.airflow_role_arn,
     module.department_environmental_services.airflow_role_arn,
     module.department_housing.airflow_role_arn,
     module.department_parking.airflow_role_arn,
