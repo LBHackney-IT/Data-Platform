@@ -14,9 +14,10 @@ resource "aws_ssm_parameter" "raw_zone_catalog_database_name" {
 resource "aws_glue_catalog_database" "refined_zone_catalog_database" {
   name = "${var.short_identifier_prefix}${local.department_identifier}-refined-zone"
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # Temporarily disabled to allow the Environmental Health database rename.
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "aws_ssm_parameter" "refined_zone_catalog_database_name" {
@@ -31,9 +32,10 @@ resource "aws_ssm_parameter" "refined_zone_catalog_database_name" {
 resource "aws_glue_catalog_database" "trusted_zone_catalog_database" {
   name = "${var.short_identifier_prefix}${local.department_identifier}-trusted-zone"
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # Temporarily disabled to allow the Environmental Health database rename.
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "aws_ssm_parameter" "trusted_zone_catalog_database_name" {
