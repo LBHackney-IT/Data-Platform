@@ -93,13 +93,13 @@ resource "aws_glue_crawler" "streetscene_street_systems_raw_zone" {
 
 locals {
   departments = {
-    parking            = module.department_parking_data_source
-    housing            = module.department_housing_data_source
-    data_and_insight   = module.department_data_and_insight_data_source
-    child_fam_services = module.department_children_family_services_data_source
-    unrestricted       = module.department_unrestricted_data_source
-    env_services       = module.department_environmental_services_data_source
-    env_health         = module.department_env_health_data_source
+    parking              = module.department_parking_data_source
+    housing              = module.department_housing_data_source
+    data_and_insight     = module.department_data_and_insight_data_source
+    child_fam_services   = module.department_children_family_services_data_source
+    unrestricted         = module.department_unrestricted_data_source
+    env_services         = module.department_environmental_services_data_source
+    environmental_health = module.department_environmental_health_data_source
   }
 }
 
