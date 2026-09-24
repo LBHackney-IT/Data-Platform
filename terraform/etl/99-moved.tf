@@ -50,3 +50,17 @@ moved {
   to   = aws_secretsmanager_secret_version.datahub_ingestion
 }
 
+moved {
+  from = module.department_environmental_health_data_source
+  to   = module.department_env_health_data_source
+}
+
+moved {
+  from = aws_secretsmanager_secret.environmental_health_fsa_api_creds
+  to   = aws_secretsmanager_secret.env_health_fsa_api_creds
+}
+
+moved {
+  from = aws_secretsmanager_secret_version.environmental_health_fsa_api_creds
+  to   = aws_secretsmanager_secret_version.env_health_fsa_api_creds
+}
