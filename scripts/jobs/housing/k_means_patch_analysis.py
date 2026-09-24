@@ -1,15 +1,16 @@
+# flake8: noqa: F821
+import os
+
 import geopandas as gpd
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 
-#  import local variables
 
-
-# 1. Load Data
-file_path = FILE_PATH
-shapefile_path = SHP_PATH
+file_path = os.getenv("FILE_PATH")
+shapefile_path = os.getenv("SHP_PATH")
+out_path = os.getenv("OUT_PATH")
 
 df = pd.read_csv(file_path, low_memory=False)
 boundaries = gpd.read_file(shapefile_path)
@@ -306,6 +307,6 @@ plt.axis("equal")
 plt.subplots_adjust(right=0.75)
 
 # If you want to save it to a file, this guarantees the legend is included in the image
-plt.savefig(OUT_PATH, dpi=300, bbox_inches="tight")
+plt.savefig(out_path, dpi=300, bbox_inches="tight")
 
 plt.show()
