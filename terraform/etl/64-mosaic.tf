@@ -278,3 +278,27 @@ resource "aws_iam_role_policy" "mosaic_transformations" {
     ]
   })
 }
+
+# Allow the CFS ECS task role to build its refined products from Mosaic raw data.
+resource "aws_iam_role_policy" "cfs_mosaic_transformations" {
+  name = "${local.identifier_prefix}-cfs-mosaic-transformations"
+  role = "${local.identifier_prefix}-child-fam-services-ecs-task-role"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "ReadMosaicRawData"
+        Effect   = "Allow"
+        Action   = "s3:GetObject"
+        Resource = "${module.raw_zone_data_source.bucket_arn}/projects/mosaic/*"
+      },
+      {
+        Sid      = "ReadCfsMosaicSql"
+        Effect   = "Allow"
+        Action   = "s3:GetObject"
+        Resource = "arn:aws:s3:::${local.identifier_prefix}-mwaa-bucket/dags/child_fam_services/refined_zone_transformation_dag/*"
+      },
+    ]
+  })
+}
