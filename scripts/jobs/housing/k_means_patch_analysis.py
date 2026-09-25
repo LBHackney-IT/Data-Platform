@@ -7,7 +7,6 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 
-
 file_path = os.getenv("FILE_PATH")
 shapefile_path = os.getenv("SHP_PATH")
 out_path = os.getenv("OUT_PATH")
@@ -21,78 +20,67 @@ df = df[
     & (df["out_of_borough_flag"] == False)
     & (df["tmo_flag"] == False)
     & (df["leasehold_flag"] == False)
-]
+].copy()
 
 processed_groups = []
 
 for area_name, group_df in df.groupby("neighbourhood_area"):
+    group_df = group_df.copy()
 
-    # 1. SPLIT DATA
-    has_estate = group_df[group_df["estate_name"].notna()].copy()
-    no_estate = group_df[group_df["estate_name"].isna()].copy()
+    # 1. UNIFIED DATA PREPARATION (Treat non-estate properties as size-1 estates)
+    missing_estate = group_df["estate_name"].isna()
+    group_df["grouping_key"] = group_df["estate_name"]
 
-    if len(has_estate) == 0:
-        has_estate = no_estate.copy()
-        has_estate["estate_name"] = "Standalone_" + has_estate.index.astype(str)
-        no_estate = pd.DataFrame(columns=group_df.columns)
+    # Assign standalone IDs so non-estate units participate in balancing
+    group_df.loc[missing_estate, "grouping_key"] = "Standalone_" + group_df.loc[
+        missing_estate, "property_reference"
+    ].astype(str)
+
+    k = 4
+    total_properties_in_area = len(group_df)
+    target_capacity = total_properties_in_area / k
 
     # --- DYNAMIC MULTI-LEVEL SPLITTING FOR LARGE ESTATES ---
-    k = 4
-    target_capacity = len(has_estate) / k
+    # Calculate sizes of actual estates (excluding standalones)
+    actual_estates = group_df[~missing_estate]
+    estate_counts = actual_estates["estate_name"].value_counts()
 
-    # Calculate how big each estate is
-    estate_counts = has_estate["estate_name"].value_counts()
+    # LOWER EFFECT OF LARGE ESTATES
+    # Estates taking > 25% of target cluster capacity get split into blocks/sub-blocks
+    oversized_estates = estate_counts[estate_counts > (target_capacity * 0.25)].index
+    is_oversized = group_df["estate_name"].isin(oversized_estates) & (~missing_estate)
 
-    # Lowered threshold to 50% so more large estates get broken down into manageable geographic chunks
-    oversized_estates = estate_counts[estate_counts > (target_capacity * 0.4)].index
-
-    # Base grouping key is the estate name
-    has_estate["grouping_key"] = has_estate["estate_name"]
-    is_oversized = has_estate["estate_name"].isin(oversized_estates)
-
-    # Prepare fallback text for missing blocks and sub-blocks
-    block_str = has_estate["block_name"].fillna("Unspecified_Block").astype(str)
-
-    # If there is no sub-block, fall all the way back to the individual property reference.
-    # This guarantees the oversized estate is broken down to the finest possible level.
-    if "sub_block_name" in has_estate.columns:
+    block_str = group_df["block_name"].fillna("Unspecified_Block").astype(str)
+    if "sub_block_name" in group_df.columns:
         sub_block_str = (
-            has_estate["sub_block_name"]
-            .fillna("Standalone_" + has_estate["property_reference"].astype(str))
+            group_df["sub_block_name"]
+            .fillna("Standalone_" + group_df["property_reference"].astype(str))
             .astype(str)
         )
     else:
-        # Safety net just in case the column is named differently
-        sub_block_str = "Standalone_" + has_estate["property_reference"].astype(str)
+        sub_block_str = "Standalone_" + group_df["property_reference"].astype(str)
 
-    # Build the ultra-granular grouping key for oversized estates
-    has_estate.loc[is_oversized, "grouping_key"] = (
-        has_estate.loc[is_oversized, "estate_name"].astype(str)
+    # Shatter massive estates down to block/sub-block level
+    group_df.loc[is_oversized, "grouping_key"] = (
+        group_df.loc[is_oversized, "estate_name"].astype(str)
         + " - B: "
         + block_str.loc[is_oversized]
         + " - SB: "
         + sub_block_str.loc[is_oversized]
     )
 
-    # 2. PRE-AGGREGATION (Using 'grouping_key')
-    estate_groups = has_estate.groupby("grouping_key")
+    # 2. PRE-AGGREGATION (100% of properties are included)
+    estate_groups = group_df.groupby("grouping_key")
 
     agg_data = []
     for g_key, e_df in estate_groups:
         prop_count = e_df["property_reference"].count()
-        if prop_count > 0:
-            avg_easting = e_df["eastings"].mean()
-            avg_northing = e_df["northings"].mean()
-        else:
-            avg_easting = e_df["eastings"].mean()
-            avg_northing = e_df["northings"].mean()
-
         agg_data.append(
             {
                 "grouping_key": g_key,
                 "total_properties": prop_count,
-                "Agg_easting": avg_easting,
-                "Agg_northing": avg_northing,
+                "Agg_easting": e_df["eastings"].mean(),
+                "Agg_northing": e_df["northings"].mean(),
             }
         )
 
@@ -102,46 +90,31 @@ for area_name, group_df in df.groupby("neighbourhood_area"):
         .reset_index(drop=True)
     )
 
-    # 3. CLUSTERING
+    # 3. CAPACITY-BALANCED CLUSTERING
     if len(agg_df) < k:
-        # Edge case: Less than 4 units total
         agg_df["Subgroup_ID"] = [(i % k) + 1 for i in range(len(agg_df))]
-        has_estate = has_estate.merge(
+        group_df = group_df.merge(
             agg_df[["grouping_key", "Subgroup_ID"]], on="grouping_key", how="left"
         )
-
-        centroids = np.zeros((k, 2))
-        for j in range(k):
-            sub_pts = has_estate[has_estate["Subgroup_ID"] == j + 1]
-            if len(sub_pts) > 0:
-                centroids[j] = sub_pts[["eastings", "northings"]].mean().values
-            else:
-                centroids[j] = has_estate[["eastings", "northings"]].mean().values
     else:
         coords = agg_df[["Agg_easting", "Agg_northing"]].values
         counts = agg_df["total_properties"].values
 
-        # --- NEW GEOGRAPHIC INITIALIZATION (4 Extreme Corners) ---
+        # 4 Extreme Corners Initialization
         center = coords.mean(axis=0)
         c1 = coords[np.argmax(np.linalg.norm(coords - center, axis=1))]
-
         dist_c1 = np.linalg.norm(coords - c1, axis=1)
         c2 = coords[np.argmax(dist_c1)]
-
         dist_c2 = np.linalg.norm(coords - c2, axis=1)
         c3 = coords[np.argmax(np.minimum(dist_c1, dist_c2))]
-
         dist_c3 = np.linalg.norm(coords - c3, axis=1)
         c4 = coords[np.argmax(np.minimum(np.minimum(dist_c1, dist_c2), dist_c3))]
 
         centroids = np.array([c1, c2, c3, c4])
-        # ---------------------------------------------------------
-
-        target_capacity = counts.sum() / k
         cluster_multipliers = np.ones(k)
-        learning_rate = 0.05  # Lower learning rate for smoother boundaries
+        learning_rate = 0.2  # Increased responsiveness
 
-        for iteration in range(200):
+        for iteration in range(300):
             distances = np.linalg.norm(
                 coords[:, np.newaxis, :] - centroids[np.newaxis, :, :], axis=2
             )
@@ -149,8 +122,25 @@ for area_name, group_df in df.groupby("neighbourhood_area"):
             penalized_distances = distances * cluster_multipliers
             labels = np.argmin(penalized_distances, axis=1)
 
+            # Prevent empty clusters (Rescue logic)
+            for j in range(k):
+                if not np.any(labels == j):
+                    current_weights = np.array(
+                        [counts[labels == c].sum() for c in range(k)]
+                    )
+                    heaviest = np.argmax(current_weights)
+                    heaviest_pts = np.where(labels == heaviest)[0]
+                    if len(heaviest_pts) > 0:
+                        farthest = heaviest_pts[
+                            np.argmax(distances[heaviest_pts, heaviest])
+                        ]
+                        centroids[j] = coords[farthest]
+                        labels[farthest] = j
+                        cluster_multipliers[j] = 0.5
+
             cluster_weights = np.array([counts[labels == j].sum() for j in range(k)])
 
+            # Update Centroids
             new_centroids = np.array(
                 [
                     coords[labels == j].mean(axis=0)
@@ -161,42 +151,27 @@ for area_name, group_df in df.groupby("neighbourhood_area"):
             )
             centroids = new_centroids
 
+            # Exponential Multiplier Scaling (Fast & direct balancing)
             ratio = cluster_weights / target_capacity
-            cluster_multipliers = cluster_multipliers * (
-                1 + learning_rate * (ratio - 1)
-            )
+            cluster_multipliers = cluster_multipliers * (ratio**learning_rate)
 
-            # Tighter penalty limits to prevent overlapping islands
-            cluster_multipliers = np.clip(cluster_multipliers, 0.5, 2.0)
+            # Bounds: 0.4 to 2.5 keeps shapes contiguous without overlapping islands
+            cluster_multipliers = np.clip(cluster_multipliers, 0.4, 2.5)
 
-        # Apply labels back to properties using grouping_key
+        # Apply labels back to ALL properties
         agg_df["Subgroup_ID"] = labels + 1
-        has_estate = has_estate.merge(
+        group_df = group_df.merge(
             agg_df[["grouping_key", "Subgroup_ID"]], on="grouping_key", how="left"
         )
 
-    # 4. ASSIGN ISOLATED PROPERTIES TO THE NEAREST CLUSTER
-    if len(no_estate) > 0:
-        unassigned_coords = no_estate[["eastings", "northings"]].values
+    processed_groups.append(group_df)
 
-        point_distances = np.linalg.norm(
-            unassigned_coords[:, np.newaxis, :] - centroids[np.newaxis, :, :], axis=2
-        )
 
-        no_estate["Subgroup_ID"] = np.argmin(point_distances, axis=1) + 1
+# MAPPING
 
-    # 5. RECOMBINE FOR THIS AREA
-    final_group_df = pd.concat([has_estate, no_estate], ignore_index=True)
-    processed_groups.append(final_group_df)
-
-# ==========================================
-# POST-PROCESSING & MAPPING (OUTSIDE LOOP)
-# ==========================================
-
-# 1. Combine all areas together
 final_df = pd.concat(processed_groups, ignore_index=True)
 
-# 2. Generate the Summary Table FIRST (so we have the counts for the legend)
+# Generate Summary Table
 df_group = (
     final_df.groupby(["neighbourhood_area", "Subgroup_ID"])["property_reference"]
     .count()
@@ -206,8 +181,7 @@ print("--- Patch Summary ---")
 print(df_group)
 print("---------------------\n")
 
-# 3. Create Global Cluster IDs (1 through 16)
-# We apply this to both the main dataframe and our summary table so they link up perfectly
+# Assign Global Cluster IDs (1 through 16)
 final_df["Global_Cluster_ID"] = (
     final_df.groupby(["neighbourhood_area", "Subgroup_ID"]).ngroup() + 1
 )
@@ -215,8 +189,6 @@ df_group["Global_Cluster_ID"] = (
     df_group.groupby(["neighbourhood_area", "Subgroup_ID"]).ngroup() + 1
 )
 
-# 4. Construct the Legend Labels using the counts from the summary table
-# This formats the text as: "North West - Patch 1 (2500)"
 df_group["Legend_Label"] = (
     df_group["neighbourhood_area"]
     + " - Patch "
@@ -226,67 +198,53 @@ df_group["Legend_Label"] = (
     + ")"
 )
 
-# Create a dictionary to map the Global_Cluster_ID to this new rich label
 patch_mapping = df_group.set_index("Global_Cluster_ID")["Legend_Label"].to_dict()
-
-# 5. Clean up for plotting
 plot_df = final_df.dropna(subset=["Subgroup_ID"])
 
-# 6. Visualise the Entire City
-fig, ax = plt.subplots(
-    figsize=(16, 12)
-)  # Adjusted ratio slightly to leave room for legend
+fig, ax = plt.subplots(figsize=(16, 12))
 
 boundaries.plot(
     ax=ax, facecolor="none", edgecolor="dimgrey", linewidth=1.5, linestyle="--"
 )
 
-## 16 highly distinct, high-contrast colors
+# colours for each cluster
 custom_hex_colors = [
-    "#E6194B",  # Vivid Red
-    "#3CB44B",  # Green
-    "#FFE119",  # Yellow
-    "#4363D8",  # Blue
-    "#F58231",  # Orange
-    "#911EB4",  # Purple
-    "#42D4F4",  # Cyan
-    "#F032E6",  # Magenta
-    "#BFEEF4",  # Light Blue
-    "#FABEBE",  # Pink
-    "#469990",  # Teal
-    "#E6BEFF",  # Lavender
-    "#9A6324",  # Brown
-    "#FFFAC8",  # Beige
-    "#800000",  # Maroon
-    "#AAFFC3",  # Mint
+    "#FFE600",  # Vivid Yellow (Ultra Bright)
+    "#0011B8",  # Deep Royal Blue (Very Dark Blue)
+    "#FF0055",  # Electric Neon Pink (Warm Bright)
+    "#00FF66",  # Hyper Lime (Light Cool Green)
+    "#D800FF",  # Bright Neon Magenta-Purple (Warm Purple)
+    "#00E5FF",  # Electric Cyan (Bright Light Blue)
+    "#FF5500",  # Vivid Orange (Warm Bright)
+    "#3A007D",  # Midnight Purple (Deep Dark Purple)
+    "#76FF03",  # Bright Chartreuse (Yellow-Green)
+    "#FF00AA",  # Hot Magenta (Vivid Pink)
+    "#008941",  # Deep Emerald Green (Dark Green)
+    "#FFB700",  # Bright Amber (Warm Yellow-Orange)
+    "#99D5FF",  # Ice Blue (Very Light Pastel Blue)
+    "#FF0000",  # Bright Pure Red (Warm)
+    "#00F5D4",  # Electric Mint (Bright Aqua-Green)
+    "#7000FF",  # Electric Violet-Blue (Indigo)
 ]
-# Convert the hex list into a Matplotlib colormap
+
 custom_cmap = ListedColormap(custom_hex_colors)
 
-# Map Points
 scatter = ax.scatter(
     plot_df["eastings"],
     plot_df["northings"],
     c=plot_df["Global_Cluster_ID"],
-    cmap=custom_cmap,  # <--- Apply the new custom colormap here
+    cmap=custom_cmap,
     s=15,
-    alpha=0.8,  # Increased opacity slightly to make colors pop
-    edgecolors="black",
-    linewidth=0.3,
+    alpha=0.8,
+    edgecolors="gray",
+    linewidth=0.1,
     zorder=5,
 )
 
-# --- NEW LEGEND LOGIC ---
-# 1. Get the exact list of unique IDs first (all 16 of them)
 unique_ids = sorted(plot_df["Global_Cluster_ID"].unique())
-
-# 2. FORCE Matplotlib to generate a color handle for every single ID in that list
 handles, _ = scatter.legend_elements(num=unique_ids)
-
-# 3. Retrieve the matching text label with the property count for each ID
 custom_labels = [patch_mapping[uid] for uid in unique_ids]
 
-# 4. Build the legend outside the plot area on the right
 legend = ax.legend(
     handles,
     custom_labels,
@@ -299,6 +257,51 @@ legend = ax.legend(
 )
 ax.add_artist(legend)
 
+area_col = (
+    "neighbourhood_area"
+    if "neighbourhood_area" in boundaries.columns
+    else ("NAME" if "NAME" in boundaries.columns else boundaries.columns[0])
+)
+
+# add specific locations for labels
+label_positions = {
+    "North West": (531500, 186000),
+    "North East": (536100, 187000),
+    "Central": (536000, 183500),
+    "South": (532100, 182500),
+}
+
+for idx, row in boundaries.iterrows():
+    area_name = str(row[area_col])
+
+    # Check if custom coordinates exist for this area
+    if area_name in label_positions:
+        text_x, text_y = label_positions[area_name]
+    else:
+        # Fallback: Placed just outside the top-left of the bounding box if not in dictionary
+        minx, miny, maxx, maxy = row.geometry.bounds
+        text_x = minx
+        text_y = maxy + ((maxy - miny) * 0.03)
+
+    ax.text(
+        text_x,
+        text_y,
+        s=area_name,
+        fontsize=11,
+        fontweight="bold",
+        color="black",
+        ha="center",
+        va="center",
+        bbox=dict(
+            boxstyle="round,pad=0.4",
+            facecolor="white",
+            edgecolor="dimgrey",
+            alpha=0.9,
+            linewidth=1,
+        ),
+        zorder=10,
+    )
+
 plt.title("Spatial Clustering Balance: All Neighbourhood Areas")
 plt.xlabel("Easting")
 plt.ylabel("Northing")
@@ -306,7 +309,9 @@ plt.grid(True, linestyle=":", alpha=0.5)
 plt.axis("equal")
 plt.subplots_adjust(right=0.75)
 
-# If you want to save it to a file, this guarantees the legend is included in the image
-plt.savefig(out_path, dpi=300, bbox_inches="tight")
+if out_path:
+    plt.savefig(
+        f"{out_path}neighbourhood_areas_clusters_v1.png", dpi=300, bbox_inches="tight"
+    )
 
 plt.show()
