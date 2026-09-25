@@ -8,9 +8,9 @@ role to SageMaker. The encrypted, versioned ML storage bucket is declared in
 10-aws-s3-special-buckets.tf.
 
 In production, this creates a standalone ECS task role with scoped Glue,
-Athena, S3, KMS, and Lake Formation permissions to read the three source tables
-required by the Additional Needs workload. Existing Housing ECS task
-definitions remain unchanged.
+Athena, S3, KMS, and Lake Formation permissions and hybrid opt-ins to read the
+three source tables required by the Additional Needs workload. Existing Housing
+ECS task definitions remain unchanged.
 */
 
 locals {
@@ -394,4 +394,42 @@ resource "aws_lakeformation_permissions" "housing_additional_needs_table_read" {
     database_name = each.value.database
     name          = each.value.table
   }
+}
+
+resource "aws_lakeformation_opt_in" "housing_additional_needs_database" {
+  for_each = local.housing_additional_needs_ml_production ? toset(["housing-raw-zone", "housing-refined-zone"]) : toset([])
+
+  principal {
+    data_lake_principal_identifier = aws_iam_role.housing_additional_needs_ecs_task[0].arn
+  }
+
+  resource_data {
+    database {
+      catalog_id = var.aws_deploy_account_id
+      name       = each.value
+    }
+  }
+
+  depends_on = [aws_lakeformation_permissions.housing_additional_needs_database_describe]
+}
+
+resource "aws_lakeformation_opt_in" "housing_additional_needs_table" {
+  for_each = local.housing_additional_needs_ml_production ? local.housing_additional_needs_ml_source_tables : {}
+
+  principal {
+    data_lake_principal_identifier = aws_iam_role.housing_additional_needs_ecs_task[0].arn
+  }
+
+  resource_data {
+    table {
+      catalog_id    = var.aws_deploy_account_id
+      database_name = each.value.database
+      name          = each.value.table
+    }
+  }
+
+  depends_on = [
+    aws_lakeformation_permissions.housing_additional_needs_table_read,
+    aws_lakeformation_opt_in.housing_additional_needs_database,
+  ]
 }
