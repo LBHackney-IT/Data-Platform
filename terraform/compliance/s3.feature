@@ -7,6 +7,7 @@ Feature: S3
   @exclude_aws_s3_bucket.mwaa_bucket
   @exclude_aws_s3_bucket.mwaa_etl_scripts_bucket
   @exclude_module.housing_nec_migration_storage.aws_s3_bucket.bucket
+  @exclude_module.housing_additional_needs_ml_storage\[0\].aws_s3_bucket.bucket
   @exclude_module.admin_bucket.aws_s3_bucket.bucket
   @exclude_module.cloudtrail_storage.aws_s3_bucket.bucket
   @exclude_module.file_sync_destination_nec.aws_s3_bucket.bucket

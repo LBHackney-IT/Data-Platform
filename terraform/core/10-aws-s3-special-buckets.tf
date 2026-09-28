@@ -42,6 +42,18 @@ module "housing_nec_migration_storage" {
   include_backup_policy_tags = false
 }
 
+module "housing_additional_needs_ml_storage" {
+  count              = local.housing_additional_needs_ml_staging ? 1 : 0
+  source             = "../modules/s3-bucket"
+  tags               = module.tags.values
+  project            = var.project
+  environment        = var.environment
+  identifier_prefix  = local.identifier_prefix
+  bucket_name        = "Housing Additional Needs ML Storage"
+  bucket_identifier  = "housing-additional-needs-ml-storage"
+  versioning_enabled = true
+}
+
 module "admin_bucket" {
   source                   = "../modules/s3-bucket"
   tags                     = module.tags.values
