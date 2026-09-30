@@ -1,12 +1,36 @@
 version: 2
 updates:
+  # Lambda layers. Dependabot resolves against lambdas/.python-version but can't
+  # see the runtime's glibc; the CI - Lambda Layers workflow builds each bump on
+  # the Lambda runtime image to catch that.
   - package-ecosystem: "pip"
-    directories:
-      - "*"
+    directory: "/lambdas"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "08:00"
+    ignore:
+      # python3.11 Lambdas run on Amazon Linux 2 (glibc 2.26) and numpy 2.3+ only
+      # publishes wheels needing glibc 2.27+. Remove after moving to python3.12+.
+      - dependency-name: "numpy"
+        versions: [">=2.3"]
+    groups:
+      straightforward-dependencies:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
+  # Glue job helpers. Tests run in the Glue 1.0 image (Python 3.6), which
+  # Dependabot can't resolve against, so its urllib3 bumps can never install.
+  - package-ecosystem: "pip"
+    directory: "/scripts"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    ignore:
+      - dependency-name: "urllib3"
     groups:
       straightforward-dependencies:
         applies-to: version-updates
