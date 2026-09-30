@@ -102,19 +102,6 @@ data "archive_file" "lambda" {
   type        = "zip"
   source_dir  = "../../lambdas/g_drive_to_s3"
   output_path = "../../lambdas/g_drive_to_s3.zip"
-  depends_on  = [null_resource.run_install_requirements]
-}
-
-resource "null_resource" "run_install_requirements" {
-  triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset(path.module, "../../../lambdas/g_drive_to_s3/*") : filesha1("${path.module}/${f}")]))
-  }
-
-  #   provisioner "local-exec" {
-  #     interpreter = ["bash", "-c"]
-  #     command     = "make install-requirements"
-  #     working_dir = "${path.module}/../../../lambdas/g_drive_to_s3/"
-  #   }
 }
 
 resource "aws_s3_object" "g_drive_to_s3_copier_lambda" {
@@ -138,12 +125,8 @@ resource "aws_lambda_function" "g_drive_to_s3_copier_lambda" {
   s3_bucket        = var.lambda_artefact_storage_bucket
   s3_key           = aws_s3_object.g_drive_to_s3_copier_lambda.key
   source_code_hash = data.archive_file.lambda.output_base64sha256
-  layers = [
-    data.aws_lambda_layer_version.google_apis_layer.arn,
-    data.aws_lambda_layer_version.urllib3_layer.arn
-  ]
-  timeout     = local.lambda_timeout
-  memory_size = local.lambda_memory_size
+  timeout          = local.lambda_timeout
+  memory_size      = local.lambda_memory_size
 
   environment {
     variables = {
