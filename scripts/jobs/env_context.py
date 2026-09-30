@@ -37,7 +37,7 @@ class ExecutionContextProvider:
                                          connection_options={"path": "s3://path",
                                                              "partitionKeys": ["col1", "col2", "col3"]},
                                          transformation_ctx="parquetData")
-        See Also: for usage please see: scripts/jobs/levenshtein_address_matching.py
+        See Also: for usage please see: scripts/jobs/data_and_insight/address_cleaning.py
 
     """
 
@@ -72,7 +72,7 @@ class ExecutionContextProvider:
                 .set("mapred.output.committer.class", "org.apache.hadoop.mapred.DirectFileOutputCommitter")
             sc = SparkContext(conf=conf)
         self.__glue_context = GlueContext(sc) if self.mode == DEFAULT_MODE_AWS else None
-        
+
         self.__spark_session = self.__glue_context.spark_session if self.mode == DEFAULT_MODE_AWS else SparkSession \
             .builder \
             .config("spark.sql.debug.maxToStringFields", "10000") \

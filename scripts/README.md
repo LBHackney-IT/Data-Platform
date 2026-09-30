@@ -14,7 +14,7 @@ From within this (the /scripts) folder run:
   - `make test` to run all the tests
   - `make test-watch` to run all the tests, in a loop whenever a file changes
 
-You can add a filename option to either of these commands to only run one test file, for example `make filename=test_address_cleaning.py test`
+You can add a filename option to either of these commands to only run one test file, for example `make filename=tests/test_spreadsheet_import.py test`
 
 ## On Windows
 There are three different options for running the tests, all must be run from inside the /scripts folder.
