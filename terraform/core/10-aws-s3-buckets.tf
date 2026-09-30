@@ -70,8 +70,9 @@ module "raw_zone" {
       local.s3_to_s3_copier_for_addresses_api_raw_zone_key_statement
     ] : []
   )
-  include_backup_policy_tags = false
-  enable_intelligent_tiering = true
+  include_backup_policy_tags     = false
+  expire_noncurrent_objects_days = 7
+  enable_intelligent_tiering     = true
 }
 
 module "refined_zone" {
@@ -89,8 +90,9 @@ module "refined_zone" {
     local.rentsense_refined_zone_key_statement,
     local.allow_s3_batch_copy_kms_access_refined_zone
   ]
-  include_backup_policy_tags = false
-  enable_intelligent_tiering = true
+  include_backup_policy_tags     = false
+  expire_noncurrent_objects_days = 7
+  enable_intelligent_tiering     = true
 }
 
 module "trusted_zone" {
@@ -102,8 +104,9 @@ module "trusted_zone" {
   bucket_name       = "Trusted Zone"
   bucket_identifier = "trusted-zone"
 
-  bucket_policy_statements     = []
-  bucket_key_policy_statements = [local.allow_s3_batch_copy_kms_access_trusted_zone]
-  include_backup_policy_tags   = false
-  enable_intelligent_tiering   = true
+  bucket_policy_statements       = []
+  bucket_key_policy_statements   = [local.allow_s3_batch_copy_kms_access_trusted_zone]
+  include_backup_policy_tags     = false
+  expire_noncurrent_objects_days = 7
+  enable_intelligent_tiering     = true
 }
