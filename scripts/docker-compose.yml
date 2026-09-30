@@ -2,10 +2,11 @@ version: "3.9"
 services:
   unit_tests:
     container_name: unit_test_runner
-    image: amazon/aws-glue-libs@sha256:365ff50d6aae7774b491aa17b2eec9a07a8bcda5e2ad7f64df69f8fba2bf5d56
-    working_dir: /root/scripts
+    # Glue 4.0 (Python 3.10, Spark 3.3), matching the jobs' glue_version
+    image: amazon/aws-glue-libs@sha256:96328b13eb3f1d1328bbc790714e0ece2360400ac791c5c5c65cd49e9e178712
+    working_dir: /home/glue_user/workspace/scripts
     ports:
       - "4041:4040"
-    entrypoint: bash -c "pip install -r ./requirements.test.txt && /home/aws-glue-libs/bin/gluepytest ./${filename}"
+    entrypoint: bash -c "python3 -m pip install -r ./requirements.test.txt && python3 -m pytest ./${filename}"
     volumes:
-      - .:/root/scripts
+      - .:/home/glue_user/workspace/scripts
