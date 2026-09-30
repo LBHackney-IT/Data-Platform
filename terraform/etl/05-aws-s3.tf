@@ -90,44 +90,12 @@ data "aws_s3_object" "copy_json_data_landing_to_raw" {
   key    = "scripts/copy_json_data_landing_to_raw.py"
 }
 
-resource "aws_s3_object" "google_sheets_import_script" {
-  bucket      = module.glue_scripts_data_source.bucket_id
-  key         = "scripts/google_sheets_import.py"
-  acl         = "private"
-  source      = "../../scripts/jobs/google_sheets_import.py"
-  source_hash = filemd5("../../scripts/jobs/google_sheets_import.py")
-}
-
-resource "aws_s3_object" "address_matching" {
-  bucket      = module.glue_scripts_data_source.bucket_id
-  key         = "scripts/address_matching.py"
-  acl         = "private"
-  source      = "../../scripts/jobs/address_matching.py"
-  source_hash = filemd5("../../scripts/jobs/address_matching.py")
-}
-
-resource "aws_s3_object" "levenshtein_address_matching" {
-  bucket      = module.glue_scripts_data_source.bucket_id
-  key         = "scripts/levenshtein_address_matching.py"
-  acl         = "private"
-  source      = "../../scripts/jobs/levenshtein_address_matching.py"
-  source_hash = filemd5("../../scripts/jobs/levenshtein_address_matching.py")
-}
-
 resource "aws_s3_object" "copy_manually_uploaded_csv_data_to_raw" {
   bucket      = module.glue_scripts_data_source.bucket_id
   key         = "scripts/copy_manually_uploaded_csv_data_to_raw.py"
   acl         = "private"
   source      = "../../scripts/jobs/copy_manually_uploaded_csv_data_to_raw.py"
   source_hash = filemd5("../../scripts/jobs/copy_manually_uploaded_csv_data_to_raw.py")
-}
-
-resource "aws_s3_object" "address_cleaning" {
-  bucket      = module.glue_scripts_data_source.bucket_id
-  key         = "scripts/address_cleaning.py"
-  acl         = "private"
-  source      = "../../scripts/jobs/address_cleaning.py"
-  source_hash = filemd5("../../scripts/jobs/address_cleaning.py")
 }
 
 resource "aws_s3_object" "convertbng" {

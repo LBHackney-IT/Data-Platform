@@ -37,7 +37,7 @@ class ExecutionContextProvider:
                                          connection_options={"path": "s3://path",
                                                              "partitionKeys": ["col1", "col2", "col3"]},
                                          transformation_ctx="parquetData")
-        See Also: for usage please see: scripts/jobs/levenshtein_address_matching.py
+        See Also: for usage please see: scripts/jobs/data_and_insight/address_cleaning.py
 
     """
 
