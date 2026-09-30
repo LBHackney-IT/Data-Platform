@@ -34,10 +34,13 @@ Production data access through the S3 SDK
 
 Access boundaries
 
-  - Housing SSO users remain in staging and have no direct production S3 access.
+  - Housing SSO users work from staging and can query the three approved
+    production tables through Athena, Glue resource links, and Lake Formation.
+  - They have no production account login or direct production S3 access.
+  - Direct production S3 SDK access is limited to the SageMaker execution role
+    through the scoped production data reader role.
   - dap-infrastructure owns the cross-account database shares and Glue links.
-  - Additional Needs trusted-zone data exists only in staging; no production
-    trusted-zone resource is shared.
+  - Additional Needs trusted-zone data exists only in staging;
   - Project-specific access resources are kept in this file for later removal.
 */
 
