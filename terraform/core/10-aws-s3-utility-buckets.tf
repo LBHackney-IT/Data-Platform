@@ -25,14 +25,19 @@ module "glue_temp_storage" {
 }
 
 module "athena_storage" {
-  source                     = "../modules/s3-bucket"
-  tags                       = module.tags.values
-  project                    = var.project
-  environment                = var.environment
-  identifier_prefix          = local.identifier_prefix
-  bucket_name                = "Athena Storage"
-  bucket_identifier          = "athena-storage"
-  include_backup_policy_tags = false
+  source              = "../modules/s3-bucket"
+  tags                = module.tags.values
+  project             = var.project
+  environment         = var.environment
+  identifier_prefix   = local.identifier_prefix
+  bucket_name         = "Athena Storage"
+  bucket_identifier   = "athena-storage"
+  expire_objects_days = 30
+  # Expiration creates delete markers; remove retained versions promptly to stop storage charges.
+  expire_noncurrent_objects_days = 1
+  expired_object_delete_marker   = true
+  abort_multipart_days           = 7
+  include_backup_policy_tags     = false
 }
 
 module "spark_ui_output_storage" {
