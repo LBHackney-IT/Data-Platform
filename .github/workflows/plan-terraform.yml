@@ -97,6 +97,10 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
+      - name: Install Lambda runtime dependencies
+        working-directory: "./lambdas"
+        run: make runtime-deps
+
       - name: Download external dependencies
         working-directory: "./external-lib"
         run: make all
