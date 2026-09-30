@@ -7,6 +7,11 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "08:00"
+    ignore:
+      # The python3.11 Lambda runtime is Amazon Linux 2 (glibc 2.26) and numpy 2.3+
+      # only publishes wheels needing glibc 2.27+. Remove after moving to python3.12+.
+      - dependency-name: "numpy"
+        versions: [">=2.3"]
     groups:
       straightforward-dependencies:
         applies-to: version-updates
