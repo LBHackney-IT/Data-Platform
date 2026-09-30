@@ -11,7 +11,7 @@ Job orchestration in staging
     -> pulls the processing image from housing-additional-needs-ml ECR
     -> reads and writes code, artefacts, and outputs in the encrypted ML bucket
 
-Production data access through Athena
+Production data access only through Athena
 
   DataPlatformHousingStg users or the SageMaker execution role
     -> use the existing housing Athena workgroup
@@ -25,30 +25,20 @@ Production data access through Athena
     -> default to s3://dataplatform-stg-athena-storage/housing/
     -> may be directed to any prefix in the Additional Needs ML bucket
 
-Production data access through the S3 SDK
-
-  SageMaker execution role
-    -> assumes dataplatform-prod-housing-additional-needs-data-reader-role
-    -> reads only the three approved production S3 prefixes and KMS keys
-
 Access boundaries
 
   - Housing SSO users work from staging and can query production Housing raw
     and refined tables through Athena, Glue resource links, and Lake Formation.
   - They have no production account login or direct production S3 access.
-  - Direct production S3 SDK access is limited to the SageMaker execution role
-    through the scoped production data reader role.
+  - SageMaker also queries production tables through Athena from staging;
+    it does not assume a production role or directly read production S3.
   - dap-infrastructure owns the cross-account database shares and Glue links.
   - Additional Needs trusted-zone data exists only in staging.
   - Project-specific access resources are kept in this file for later removal.
 */
 
 locals {
-  housing_additional_needs_ml_staging    = local.is_live_environment && local.environment == "stg"
-  housing_additional_needs_ml_production = local.is_live_environment && local.environment == "prod"
-
-  housing_additional_needs_staging_account_id         = "120038763019"
-  housing_additional_needs_staging_sagemaker_role_arn = "arn:aws:iam::${local.housing_additional_needs_staging_account_id}:role/housing-additional-needs-sagemaker-execution-role"
+  housing_additional_needs_ml_staging = local.is_live_environment && local.environment == "stg"
 
   # dap-infrastructure creates these resource links in staging. This map links
   # each existing local name to its target database in the production catalog.
@@ -122,12 +112,6 @@ data "aws_iam_policy_document" "housing_additional_needs_sagemaker_execution" {
       "kms:DescribeKey"
     ]
     resources = [module.housing_additional_needs_ml_storage[0].kms_key_arn]
-  }
-
-  statement {
-    sid       = "AssumeProductionDataReader"
-    actions   = ["sts:AssumeRole"]
-    resources = ["arn:aws:iam::${data.aws_secretsmanager_secret_version.production_account_id.secret_string}:role/dataplatform-prod-housing-additional-needs-data-reader-role"]
   }
 
   statement {
@@ -399,105 +383,6 @@ resource "aws_iam_role_policy" "housing_additional_needs_airflow" {
   role       = "housing-airflow-role"
   policy     = data.aws_iam_policy_document.housing_additional_needs_airflow[0].json
   depends_on = [module.department_housing]
-}
-
-data "aws_iam_policy_document" "housing_additional_needs_production_data_reader_assume" {
-  count = local.housing_additional_needs_ml_production ? 1 : 0
-
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${local.housing_additional_needs_staging_account_id}:root"]
-    }
-
-    condition {
-      test     = "ArnEquals"
-      variable = "aws:PrincipalArn"
-      values   = [local.housing_additional_needs_staging_sagemaker_role_arn]
-    }
-  }
-}
-
-resource "aws_iam_role" "housing_additional_needs_production_data_reader" {
-  count = local.housing_additional_needs_ml_production ? 1 : 0
-
-  name               = "dataplatform-prod-housing-additional-needs-data-reader-role"
-  description        = "Allows the staging Additional Needs SageMaker job to read the three approved production data prefixes"
-  assume_role_policy = data.aws_iam_policy_document.housing_additional_needs_production_data_reader_assume[0].json
-  tags               = module.tags.values
-}
-
-data "aws_iam_policy_document" "housing_additional_needs_production_data_reader" {
-  count = local.housing_additional_needs_ml_production ? 1 : 0
-
-  statement {
-    sid       = "LocateSourceBuckets"
-    actions   = ["s3:GetBucketLocation"]
-    resources = [module.raw_zone.bucket_arn, module.refined_zone.bucket_arn]
-  }
-
-  statement {
-    sid       = "ListRawSourceTables"
-    actions   = ["s3:ListBucket"]
-    resources = [module.raw_zone.bucket_arn]
-
-    condition {
-      test     = "StringLike"
-      variable = "s3:prefix"
-      values = [
-        "housing/mtfh/mtfh_notes",
-        "housing/mtfh/mtfh_notes/*",
-        "housing/mtfh/mtfh_tenureinformation",
-        "housing/mtfh/mtfh_tenureinformation/*",
-      ]
-    }
-  }
-
-  statement {
-    sid     = "ReadRawSourceTables"
-    actions = ["s3:GetObject", "s3:GetObjectVersion"]
-    resources = [
-      "${module.raw_zone.bucket_arn}/housing/mtfh/mtfh_notes/*",
-      "${module.raw_zone.bucket_arn}/housing/mtfh/mtfh_tenureinformation/*",
-    ]
-  }
-
-  statement {
-    sid       = "ListRefinedSourceTable"
-    actions   = ["s3:ListBucket"]
-    resources = [module.refined_zone.bucket_arn]
-
-    condition {
-      test     = "StringLike"
-      variable = "s3:prefix"
-      values = [
-        "housing/additional_needs/additional_needs_notes_reshaped",
-        "housing/additional_needs/additional_needs_notes_reshaped/*",
-      ]
-    }
-  }
-
-  statement {
-    sid       = "ReadRefinedSourceTable"
-    actions   = ["s3:GetObject", "s3:GetObjectVersion"]
-    resources = ["${module.refined_zone.bucket_arn}/housing/additional_needs/additional_needs_notes_reshaped/*"]
-  }
-
-  statement {
-    sid       = "DecryptSourceTables"
-    actions   = ["kms:Decrypt", "kms:DescribeKey"]
-    resources = [module.raw_zone.kms_key_arn, module.refined_zone.kms_key_arn]
-  }
-}
-
-resource "aws_iam_role_policy" "housing_additional_needs_production_data_reader" {
-  count = local.housing_additional_needs_ml_production ? 1 : 0
-
-  name   = "housing-additional-needs-production-data-read"
-  role   = aws_iam_role.housing_additional_needs_production_data_reader[0].id
-  policy = data.aws_iam_policy_document.housing_additional_needs_production_data_reader[0].json
 }
 
 data "aws_iam_roles" "housing_additional_needs_staging_sso" {
