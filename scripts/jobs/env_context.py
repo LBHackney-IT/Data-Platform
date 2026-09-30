@@ -72,7 +72,7 @@ class ExecutionContextProvider:
                 .set("mapred.output.committer.class", "org.apache.hadoop.mapred.DirectFileOutputCommitter")
             sc = SparkContext(conf=conf)
         self.__glue_context = GlueContext(sc) if self.mode == DEFAULT_MODE_AWS else None
-        
+
         self.__spark_session = self.__glue_context.spark_session if self.mode == DEFAULT_MODE_AWS else SparkSession \
             .builder \
             .config("spark.sql.debug.maxToStringFields", "10000") \
