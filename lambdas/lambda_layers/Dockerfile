@@ -1,33 +1,24 @@
-# 
-# Use the Ubuntu latest image
-FROM ubuntu:22.04
+# Build on the Lambda python3.11 base image (Amazon Linux 2, glibc 2.26) so pip
+# only selects wheels the runtime can load. Keep in step with the layers'
+# compatible_runtimes and lambdas/.python-version.
+FROM public.ecr.aws/lambda/python:3.11
 
 # Define a build-time variable
 ARG L_N
 
-# Install system dependencies and zip
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y zip python3.11 python3-pip
-
-# Install pip
-RUN python3.11 -m pip install --upgrade pip
-
-# Create a non-root user and group
-RUN addgroup --system docker_users \
-    && adduser --system --ingroup docker_users docker_user
-
-# Switch to non-root user
-USER docker_user
-
-# Set the working directory in the container
+# Set the working directory in the container, owned by a non-root user
 WORKDIR /app
+RUN chown 1000 /app
+USER 1000
 
-# Copy the first requirements.txt to the container
-COPY requirements${L_N}.txt /app/requirements${L_N}.txt
+COPY requirements${L_N}.txt smoke_test.py /app/
 
-# Install Python dependencies for the first layer
+# Install the layer's dependencies, check they import on this runtime, then zip
 RUN mkdir -p /app/layer${L_N}/python && \
-    pip install -t /app/layer${L_N}/python -r requirements${L_N}.txt && \
+    pip install --no-cache-dir --prefer-binary -t /app/layer${L_N}/python -r requirements${L_N}.txt && \
+    PYTHONPATH=/app/layer${L_N}/python python3 smoke_test.py requirements${L_N}.txt && \
     cd /app/layer${L_N} && \
-    zip -r /app/layer${L_N}.zip .
+    python3 -m zipfile -c /app/layer${L_N}.zip python
+
+# Reset the Lambda entrypoint so `docker run <image> env` exits immediately
+ENTRYPOINT []

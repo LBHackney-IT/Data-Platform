@@ -1,2 +1,3 @@
-# numpy 2.5.x and greater require python 3.12
-numpy==2.4.6
+# numpy 2.3.x and greater only publish wheels needing glibc 2.27+, but the
+# python3.11 Lambda runtime is Amazon Linux 2 (glibc 2.26)
+numpy==2.2.6
