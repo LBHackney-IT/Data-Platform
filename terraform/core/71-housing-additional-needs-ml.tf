@@ -1,21 +1,44 @@
 /*
-Additional Needs ML infrastructure.
+Additional Needs ML access workflow
 
-In staging, this creates the ECR repository and SageMaker execution role used
-by Additional Needs processing jobs. Athena queries use the existing Housing
-workgroup, while callers can override its default result destination with any
-prefix in the ML storage bucket. The existing Housing Airflow role can start
-and monitor those jobs and pass the execution role to SageMaker. The encrypted,
-versioned ML storage bucket is declared in 10-aws-s3-special-buckets.tf.
+Job orchestration in staging
 
-In production, this creates a data reader role for SDK access to the three
-approved source-table S3 prefixes. The existing dap-infrastructure Lake
-Formation publication and prod__ resource links expose the production Housing
-catalog in staging. This file grants the SageMaker execution role and Housing
-SSO role access to only the three required tables, while the SageMaker role can
-assume the production reader role without granting users a Production account
-login or direct Production S3 access. Additional Needs trusted-zone data exists
-only in staging, so no production trusted-zone resource is shared.
+  housing-airflow-role
+    -> starts and monitors a SageMaker Processing job
+    -> passes housing-additional-needs-sagemaker-execution-role to SageMaker
+
+  SageMaker Processing job
+    -> pulls the processing image from housing-additional-needs-ml ECR
+    -> reads and writes code, artefacts, and outputs in the encrypted ML bucket
+
+Production data access through Athena
+
+  DataPlatformHousingStg users or the SageMaker execution role
+    -> use the existing housing Athena workgroup
+    -> use the prod__housing-raw-zone and prod__housing-refined-zone Glue links
+    -> receive Lake Formation access to the shared production catalog
+    -> query only:
+       - housing-raw-zone.mtfh_notes
+       - housing-raw-zone.mtfh_tenureinformation
+       - housing-refined-zone.additional_needs_notes_reshaped
+
+  Query results
+    -> default to s3://dataplatform-stg-athena-storage/housing/
+    -> may be directed to any prefix in the Additional Needs ML bucket
+
+Production data access through the S3 SDK
+
+  SageMaker execution role
+    -> assumes dataplatform-prod-housing-additional-needs-data-reader-role
+    -> reads only the three approved production S3 prefixes and KMS keys
+
+Access boundaries
+
+  - Housing SSO users remain in staging and have no direct production S3 access.
+  - dap-infrastructure owns the cross-account database shares and Glue links.
+  - Additional Needs trusted-zone data exists only in staging; no production
+    trusted-zone resource is shared.
+  - Project-specific access resources are kept in this file for later removal.
 */
 
 locals {
