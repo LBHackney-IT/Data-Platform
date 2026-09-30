@@ -71,7 +71,7 @@ module "raw_zone" {
     ] : []
   )
   include_backup_policy_tags     = false
-  expire_noncurrent_objects_days = 7
+  expire_noncurrent_objects_days = 30
   enable_intelligent_tiering     = true
 }
 
@@ -91,7 +91,7 @@ module "refined_zone" {
     local.allow_s3_batch_copy_kms_access_refined_zone
   ]
   include_backup_policy_tags     = false
-  expire_noncurrent_objects_days = 7
+  expire_noncurrent_objects_days = 30
   enable_intelligent_tiering     = true
 }
 
@@ -107,6 +107,6 @@ module "trusted_zone" {
   bucket_policy_statements       = []
   bucket_key_policy_statements   = [local.allow_s3_batch_copy_kms_access_trusted_zone]
   include_backup_policy_tags     = false
-  expire_noncurrent_objects_days = 7
+  expire_noncurrent_objects_days = 30
   enable_intelligent_tiering     = true
 }
