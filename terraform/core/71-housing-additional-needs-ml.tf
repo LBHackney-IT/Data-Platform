@@ -16,11 +16,10 @@ Production data access through Athena
   DataPlatformHousingStg users or the SageMaker execution role
     -> use the existing housing Athena workgroup
     -> use the prod__housing-raw-zone and prod__housing-refined-zone Glue links
-    -> receive Lake Formation access to the shared production catalog
-    -> query only:
-       - housing-raw-zone.mtfh_notes
-       - housing-raw-zone.mtfh_tenureinformation
-       - housing-refined-zone.additional_needs_notes_reshaped
+    -> receive Lake Formation access through the shared production LF-Tags
+       department=housing and zone=raw/refined
+    -> can query tables in the production housing-raw-zone and
+       housing-refined-zone databases, including future matching tables
 
   Query results
     -> default to s3://dataplatform-stg-athena-storage/housing/
@@ -34,13 +33,13 @@ Production data access through the S3 SDK
 
 Access boundaries
 
-  - Housing SSO users work from staging and can query the three approved
-    production tables through Athena, Glue resource links, and Lake Formation.
+  - Housing SSO users work from staging and can query production Housing raw
+    and refined tables through Athena, Glue resource links, and Lake Formation.
   - They have no production account login or direct production S3 access.
   - Direct production S3 SDK access is limited to the SageMaker execution role
     through the scoped production data reader role.
   - dap-infrastructure owns the cross-account database shares and Glue links.
-  - Additional Needs trusted-zone data exists only in staging;
+  - Additional Needs trusted-zone data exists only in staging.
   - Project-specific access resources are kept in this file for later removal.
 */
 
@@ -56,21 +55,6 @@ locals {
   housing_additional_needs_existing_production_resource_links = {
     "prod__housing-raw-zone"     = "housing-raw-zone"
     "prod__housing-refined-zone" = "housing-refined-zone"
-  }
-
-  housing_additional_needs_ml_source_tables = {
-    mtfh_notes = {
-      database = "housing-raw-zone"
-      table    = "mtfh_notes"
-    }
-    mtfh_tenureinformation = {
-      database = "housing-raw-zone"
-      table    = "mtfh_tenureinformation"
-    }
-    additional_needs_notes_reshaped = {
-      database = "housing-refined-zone"
-      table    = "additional_needs_notes_reshaped"
-    }
   }
 }
 
@@ -165,7 +149,7 @@ data "aws_iam_policy_document" "housing_additional_needs_sagemaker_execution" {
       [for database in keys(local.housing_additional_needs_existing_production_resource_links) : "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:database/${database}"],
       [for database in keys(local.housing_additional_needs_existing_production_resource_links) : "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:table/${database}/*"],
       [for database in values(local.housing_additional_needs_existing_production_resource_links) : "arn:aws:glue:${var.aws_deploy_region}:${data.aws_secretsmanager_secret_version.production_account_id.secret_string}:database/${database}"],
-      [for source in values(local.housing_additional_needs_ml_source_tables) : "arn:aws:glue:${var.aws_deploy_region}:${data.aws_secretsmanager_secret_version.production_account_id.secret_string}:table/${source.database}/${source.table}"],
+      [for database in values(local.housing_additional_needs_existing_production_resource_links) : "arn:aws:glue:${var.aws_deploy_region}:${data.aws_secretsmanager_secret_version.production_account_id.secret_string}:table/${database}/*"],
     )
   }
 
@@ -297,7 +281,7 @@ data "aws_iam_policy_document" "housing_additional_needs_staging_sso" {
       [for database in keys(local.housing_additional_needs_existing_production_resource_links) : "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:database/${database}"],
       [for database in keys(local.housing_additional_needs_existing_production_resource_links) : "arn:aws:glue:${var.aws_deploy_region}:${var.aws_deploy_account_id}:table/${database}/*"],
       [for database in values(local.housing_additional_needs_existing_production_resource_links) : "arn:aws:glue:${var.aws_deploy_region}:${data.aws_secretsmanager_secret_version.production_account_id.secret_string}:database/${database}"],
-      [for source in values(local.housing_additional_needs_ml_source_tables) : "arn:aws:glue:${var.aws_deploy_region}:${data.aws_secretsmanager_secret_version.production_account_id.secret_string}:table/${source.database}/${source.table}"],
+      [for database in values(local.housing_additional_needs_existing_production_resource_links) : "arn:aws:glue:${var.aws_deploy_region}:${data.aws_secretsmanager_secret_version.production_account_id.secret_string}:table/${database}/*"],
     )
   }
 
@@ -524,6 +508,11 @@ data "aws_iam_roles" "housing_additional_needs_staging_sso" {
 }
 
 locals {
+  housing_additional_needs_staging_lf_tags = {
+    department = ["housing"]
+    zone       = ["raw", "refined"]
+  }
+
   housing_additional_needs_staging_principals = local.housing_additional_needs_ml_staging ? {
     sagemaker_execution = aws_iam_role.housing_additional_needs_sagemaker_execution[0].arn
     housing_sso         = one(data.aws_iam_roles.housing_additional_needs_staging_sso[0].arns)
@@ -540,43 +529,76 @@ locals {
     }
   ]...)
 
-  housing_additional_needs_staging_table_grants = merge([
+  housing_additional_needs_staging_lf_tag_grants = merge([
     for principal_name, principal_arn in local.housing_additional_needs_staging_principals : {
-      for table_name, source in local.housing_additional_needs_ml_source_tables :
-      "${principal_name}-${table_name}" => {
-        database      = source.database
-        table         = source.table
+      for tag_key, tag_values in local.housing_additional_needs_staging_lf_tags :
+      "${principal_name}-${tag_key}" => {
         principal_arn = principal_arn
+        tag_key       = tag_key
+        tag_values    = tag_values
       }
     }
   ]...)
 }
 
-resource "aws_lakeformation_permissions" "housing_additional_needs_staging_shared_database" {
-  for_each = local.housing_additional_needs_staging_database_grants
+resource "aws_lakeformation_permissions" "housing_additional_needs_staging_lf_tag_describe" {
+  for_each = local.housing_additional_needs_staging_lf_tag_grants
 
   principal   = each.value.principal_arn
   permissions = ["DESCRIBE"]
 
-  database {
+  # Regrant in the staging catalog; only the LF-Tag itself belongs to production.
+  lf_tag {
     catalog_id = data.aws_secretsmanager_secret_version.production_account_id.secret_string
-    name       = each.value.source_database
+    key        = each.value.tag_key
+    values     = each.value.tag_values
   }
 }
 
-resource "aws_lakeformation_permissions" "housing_additional_needs_staging_shared_table" {
-  for_each = local.housing_additional_needs_staging_table_grants
+resource "aws_lakeformation_permissions" "housing_additional_needs_staging_lf_tag_database" {
+  for_each = local.housing_additional_needs_staging_principals
 
-  principal   = each.value.principal_arn
-  permissions = ["DESCRIBE", "SELECT"]
+  principal   = each.value
+  permissions = ["DESCRIBE"]
 
-  table {
+  lf_tag_policy {
     catalog_id    = data.aws_secretsmanager_secret_version.production_account_id.secret_string
-    database_name = each.value.database
-    name          = each.value.table
+    resource_type = "DATABASE"
+
+    dynamic "expression" {
+      for_each = local.housing_additional_needs_staging_lf_tags
+
+      content {
+        key    = expression.key
+        values = expression.value
+      }
+    }
   }
 
-  depends_on = [aws_lakeformation_permissions.housing_additional_needs_staging_shared_database]
+  depends_on = [aws_lakeformation_permissions.housing_additional_needs_staging_lf_tag_describe]
+}
+
+resource "aws_lakeformation_permissions" "housing_additional_needs_staging_lf_tag_table" {
+  for_each = local.housing_additional_needs_staging_principals
+
+  principal   = each.value
+  permissions = ["DESCRIBE", "SELECT"]
+
+  lf_tag_policy {
+    catalog_id    = data.aws_secretsmanager_secret_version.production_account_id.secret_string
+    resource_type = "TABLE"
+
+    dynamic "expression" {
+      for_each = local.housing_additional_needs_staging_lf_tags
+
+      content {
+        key    = expression.key
+        values = expression.value
+      }
+    }
+  }
+
+  depends_on = [aws_lakeformation_permissions.housing_additional_needs_staging_lf_tag_describe]
 }
 
 resource "aws_lakeformation_permissions" "housing_additional_needs_staging_resource_link" {
@@ -608,11 +630,14 @@ resource "aws_lakeformation_opt_in" "housing_additional_needs_staging_shared_dat
     }
   }
 
-  depends_on = [aws_lakeformation_permissions.housing_additional_needs_staging_shared_database]
+  depends_on = [
+    aws_lakeformation_permissions.housing_additional_needs_staging_lf_tag_database,
+    aws_lakeformation_permissions.housing_additional_needs_staging_lf_tag_table,
+  ]
 }
 
 resource "aws_lakeformation_opt_in" "housing_additional_needs_staging_shared_table" {
-  for_each = local.housing_additional_needs_staging_table_grants
+  for_each = local.housing_additional_needs_staging_database_grants
 
   principal {
     data_lake_principal_identifier = each.value.principal_arn
@@ -621,13 +646,12 @@ resource "aws_lakeformation_opt_in" "housing_additional_needs_staging_shared_tab
   resource_data {
     table {
       catalog_id    = data.aws_secretsmanager_secret_version.production_account_id.secret_string
-      database_name = each.value.database
-      name          = each.value.table
+      database_name = each.value.source_database
+      wildcard      = true
     }
   }
 
   depends_on = [
-    aws_lakeformation_permissions.housing_additional_needs_staging_shared_table,
     aws_lakeformation_opt_in.housing_additional_needs_staging_shared_database,
   ]
 }
