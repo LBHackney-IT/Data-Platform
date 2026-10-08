@@ -60,9 +60,13 @@ resource "aws_iam_role_policy_attachment" "glue_agents_secrets_manager_read_only
   policy_arn = aws_iam_policy.glue_can_write_to_cloudwatch.arn
 }
 
-resource "aws_iam_role_policy_attachment" "read_glue_scripts_and_mwaa_and_athena" {
+resource "aws_iam_role_policy_attachment" "read_glue_scripts_and_athena" {
   role       = aws_iam_role.glue_agent.name
-  policy_arn = aws_iam_policy.read_glue_scripts_and_mwaa_and_athena.arn
+  policy_arn = aws_iam_policy.read_glue_scripts_and_athena.arn
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "glue_agent_glue_can_write_to_cloudwatch" {
