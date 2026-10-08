@@ -358,17 +358,34 @@ data "aws_iam_policy_document" "s3_department_access" {
       var.spark_ui_output_storage_bucket.bucket_arn,
       "${var.spark_ui_output_storage_bucket.bucket_arn}/${local.department_identifier}/*",
 
-      var.mwaa_etl_scripts_bucket_arn,
-      "${var.mwaa_etl_scripts_bucket_arn}/${replace(local.department_identifier, "-", "_")}/*",
-      "${var.mwaa_etl_scripts_bucket_arn}/unrestricted/*",
-      "${var.mwaa_etl_scripts_bucket_arn}/shared/*",
-
       var.user_uploads_bucket.bucket_arn,
       "${var.user_uploads_bucket.bucket_arn}/${local.department_identifier}/*"
     ]
   }
 
 
+
+  # List both buckets; read only department, shared and unrestricted files.
+  statement {
+    sid    = "ReadDepartmentMwaaFiles"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket",
+    ]
+    resources = [
+      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket",
+      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket/dags/${replace(local.department_identifier, "-", "_")}/*",
+      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket/dags/unrestricted/*",
+      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket/dags/shared/*",
+
+      var.mwaa_etl_scripts_bucket_arn,
+      "${var.mwaa_etl_scripts_bucket_arn}/${replace(local.department_identifier, "-", "_")}/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/unrestricted/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/shared/*",
+    ]
+  }
 
   dynamic "statement" {
     for_each = var.additional_s3_access
@@ -903,8 +920,8 @@ resource "aws_iam_policy" "departmental_glue_console_list_and_spark_ui_access" {
   policy      = data.aws_iam_policy_document.departmental_glue_console_list_and_spark_ui_access.json
 }
 
-// Glue Agent Read only policy for glue scripts and mwaa bucket and run athena
-data "aws_iam_policy_document" "read_glue_scripts_and_mwaa_and_athena" {
+// Glue agent policy for read-only access to Glue scripts and running Athena queries.
+data "aws_iam_policy_document" "read_glue_scripts_and_athena" {
   statement {
     sid    = "GlueAthenaAccess"
     effect = "Allow"
@@ -920,18 +937,6 @@ data "aws_iam_policy_document" "read_glue_scripts_and_mwaa_and_athena" {
     resources = ["*"]
   }
 
-  # statement {
-  #   sid    = "MWAAS3ReadAccess"
-  #   effect = "Allow"
-  #   actions = [
-  #     "s3:GetObject",
-  #     "s3:ListBucket"
-  #   ]
-  #   resources = [
-  #     "arn:aws:s3:::dataplatform-${var.environment}-mwaa-bucket",
-  #     "arn:aws:s3:::dataplatform-${var.environment}-mwaa-bucket/*"
-  #   ]
-  # }
 
   statement {
     sid    = "GlueScriptsReadOnly"
@@ -957,12 +962,16 @@ data "aws_iam_policy_document" "read_glue_scripts_and_mwaa_and_athena" {
   }
 }
 
-resource "aws_iam_policy" "read_glue_scripts_and_mwaa_and_athena" {
-  name        = lower("${var.identifier_prefix}-${local.department_identifier}-read-glue-scripts-and-mwaa-and-athena")
-  description = "IAM policy for Glue scripts read-only, specific Athena actions, and read access to MWAA S3 bucket"
+resource "aws_iam_policy" "read_glue_scripts_and_athena" {
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-read-glue-scripts-and-athena")
+  description = "IAM policy for read-only access to Glue scripts and running Athena queries"
   tags        = var.tags
 
-  policy = data.aws_iam_policy_document.read_glue_scripts_and_mwaa_and_athena.json
+  policy = data.aws_iam_policy_document.read_glue_scripts_and_athena.json
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 // Glue Agent write to cloudwatch policy
@@ -1447,7 +1456,7 @@ resource "aws_iam_policy" "department_ecs_passrole" {
 data "aws_iam_policy_document" "ecs_department_policy" {
   source_policy_documents = [
     data.aws_iam_policy_document.secrets_manager_read_only.json,
-    data.aws_iam_policy_document.read_glue_scripts_and_mwaa_and_athena.json,
+    data.aws_iam_policy_document.read_glue_scripts_and_athena.json,
     data.aws_iam_policy_document.crawler_can_access_jdbc_connection.json
   ]
 }

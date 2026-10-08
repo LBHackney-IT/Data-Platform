@@ -1,4 +1,14 @@
 moved {
+  from = aws_iam_policy.read_glue_scripts_and_mwaa_and_athena
+  to   = aws_iam_policy.read_glue_scripts_and_athena
+}
+
+moved {
+  from = aws_iam_role_policy_attachment.read_glue_scripts_and_mwaa_and_athena
+  to   = aws_iam_role_policy_attachment.read_glue_scripts_and_athena
+}
+
+moved {
   from = aws_iam_role_policy_attachment.airflow_role_datahub_config_access
   to   = aws_iam_role_policy_attachment.airflow_role_datahub_ingestion_access
 }
