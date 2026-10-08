@@ -174,6 +174,11 @@ resource "aws_iam_role_policy_attachment" "department_ecs_policy" {
   policy_arn = aws_iam_policy.department_ecs_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "ecs_mwaa_read_access" {
+  role       = aws_iam_role.department_ecs_role.name
+  policy_arn = aws_iam_policy.department_mwaa_read_access.arn
+}
+
 resource "aws_iam_role_policy_attachment" "glue_access_attachment_to_ecs_role" {
   role       = aws_iam_role.department_ecs_role.name
   policy_arn = aws_iam_policy.glue_access.arn

@@ -24,11 +24,28 @@ resource "aws_ssoadmin_permission_set_inline_policy" "department" {
   depends_on = [
     aws_ssoadmin_account_assignment.permission_set_attachment,
     aws_ssoadmin_customer_managed_policy_attachment.departmental_glue_access,
+    aws_ssoadmin_customer_managed_policy_attachment.department_mwaa_read_access,
   ]
 
   inline_policy      = var.environment == "stg" ? data.aws_iam_policy_document.sso_staging_user_policy.json : data.aws_iam_policy_document.sso_production_user_policy.json
   instance_arn       = var.sso_instance_arn
   permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
+}
+
+resource "aws_ssoadmin_customer_managed_policy_attachment" "department_mwaa_read_access" {
+  count = local.deploy_sso && var.environment == "stg" ? 1 : 0
+
+  provider = aws.aws_hackit_account
+
+  depends_on = [aws_ssoadmin_account_assignment.permission_set_attachment]
+
+  instance_arn       = var.sso_instance_arn
+  permission_set_arn = aws_ssoadmin_permission_set.department[0].arn
+
+  customer_managed_policy_reference {
+    name = aws_iam_policy.department_mwaa_read_access.name
+    path = "/"
+  }
 }
 
 resource "aws_ssoadmin_customer_managed_policy_attachment" "departmental_cloudwatch_ecs_logs" {

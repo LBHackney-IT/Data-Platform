@@ -365,28 +365,6 @@ data "aws_iam_policy_document" "s3_department_access" {
 
 
 
-  # List both buckets; read only department, shared and unrestricted files.
-  statement {
-    sid    = "ReadDepartmentMwaaFiles"
-    effect = "Allow"
-    actions = [
-      "s3:GetObject",
-      "s3:GetObjectVersion",
-      "s3:ListBucket",
-    ]
-    resources = [
-      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket",
-      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket/dags/${replace(local.department_identifier, "-", "_")}/*",
-      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket/dags/unrestricted/*",
-      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket/dags/shared/*",
-
-      var.mwaa_etl_scripts_bucket_arn,
-      "${var.mwaa_etl_scripts_bucket_arn}/${replace(local.department_identifier, "-", "_")}/*",
-      "${var.mwaa_etl_scripts_bucket_arn}/unrestricted/*",
-      "${var.mwaa_etl_scripts_bucket_arn}/shared/*",
-    ]
-  }
-
   dynamic "statement" {
     for_each = var.additional_s3_access
     iterator = additional_access_item
@@ -463,6 +441,52 @@ resource "aws_iam_policy" "s3_access" {
 
   name   = lower("${var.identifier_prefix}-${local.department_identifier}-s3-department-access")
   policy = data.aws_iam_policy_document.s3_department_access.json
+
+  lifecycle {
+    precondition {
+      condition     = length(jsonencode(jsondecode(data.aws_iam_policy_document.s3_department_access.json))) <= 6144
+      error_message = "Departmental S3 managed policy exceeds 6,144 characters. Split permissions into separate managed policies."
+    }
+  }
+}
+
+// Keep DAG and ETL access separate from the size-limited departmental S3 policy.
+data "aws_iam_policy_document" "department_mwaa_read_access" {
+  # List both buckets; read only department, shared and unrestricted files.
+  statement {
+    sid    = "ReadDepartmentMwaaFiles"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket",
+    ]
+    resources = [
+      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket",
+      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket/dags/${replace(local.department_identifier, "-", "_")}/*",
+      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket/dags/unrestricted/*",
+      "arn:aws:s3:::${var.identifier_prefix}-mwaa-bucket/dags/shared/*",
+
+      var.mwaa_etl_scripts_bucket_arn,
+      "${var.mwaa_etl_scripts_bucket_arn}/${replace(local.department_identifier, "-", "_")}/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/unrestricted/*",
+      "${var.mwaa_etl_scripts_bucket_arn}/shared/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "department_mwaa_read_access" {
+  name        = lower("${var.identifier_prefix}-${local.department_identifier}-mwaa-read-access")
+  description = "Read departmental, shared and unrestricted DAGs and ETL scripts"
+  policy      = data.aws_iam_policy_document.department_mwaa_read_access.json
+  tags        = var.tags
+
+  lifecycle {
+    precondition {
+      condition     = length(jsonencode(jsondecode(data.aws_iam_policy_document.department_mwaa_read_access.json))) <= 6144
+      error_message = "Departmental MWAA read managed policy exceeds 6,144 characters."
+    }
+  }
 }
 
 // Prod departmental S3 access policy to write to athena storage
