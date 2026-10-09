@@ -727,6 +727,10 @@ module "department_adult_social_care" {
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
+  additional_glue_database_access = {
+    read_only  = ["mosaic_raw", "mosaic_refined"]
+    read_write = []
+  }
 }
 
 module "department_children_family_services" {
