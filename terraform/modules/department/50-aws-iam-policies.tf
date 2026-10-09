@@ -610,6 +610,7 @@ data "aws_iam_policy_document" "glue_access" {
       "glue:TagResource",
       "glue:UpdateDevEndpoint",
       "glue:UpdateJob",
+      "glue:UpdatePartition",
       "glue:UpdateTable",
       "glue:CreateTable",
       "glue:DeleteTable",

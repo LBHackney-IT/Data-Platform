@@ -731,6 +731,14 @@ module "department_adult_social_care" {
     read_only  = ["mosaic_raw", "mosaic_refined"]
     read_write = []
   }
+  additional_s3_access = [
+    {
+      bucket_arn  = module.raw_zone.bucket_arn
+      kms_key_arn = module.raw_zone.kms_key_arn
+      paths       = ["projects/mosaic"]
+      actions     = ["s3:GetObject", "s3:ListBucket", "s3:GetBucketLocation"]
+    }
+  ]
 }
 
 module "department_children_family_services" {
@@ -773,6 +781,14 @@ module "department_children_family_services" {
     read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live", "mosaic_raw", "mosaic_refined"]
     read_write = []
   }
+  additional_s3_access = [
+    {
+      bucket_arn  = module.raw_zone.bucket_arn
+      kms_key_arn = module.raw_zone.kms_key_arn
+      paths       = ["projects/mosaic"]
+      actions     = ["s3:GetObject", "s3:ListBucket", "s3:GetBucketLocation"]
+    }
+  ]
 }
 
 locals {
