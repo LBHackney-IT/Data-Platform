@@ -364,8 +364,8 @@ module "department_benefits_and_housing_needs" {
   mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
-    read_only  = ["hben_raw_zone"]
-    read_write = []
+    read_only  = []
+    read_write = ["hben_raw_zone"]
   }
 }
 
@@ -406,11 +406,11 @@ module "department_revenues" {
   user_uploads_bucket             = module.user_uploads
   user_uploads_catalog_enabled    = true
   additional_glue_database_access = {
-    read_only = [
+    read_only = []
+    read_write = [
       "nndr_raw_zone",
       "ctax_raw_zone",
     ]
-    read_write = []
   }
 }
 
