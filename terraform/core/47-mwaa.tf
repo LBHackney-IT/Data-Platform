@@ -138,6 +138,31 @@ resource "aws_iam_role_policy" "mwaa_mosaic_ingestion" {
   })
 }
 
+resource "aws_iam_role_policy" "mwaa_synergy_ingestion" {
+  name = "mwaa_synergy_ingestion"
+  role = aws_iam_role.mwaa_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "PassSynergyEcsRoles"
+        Effect = "Allow"
+        Action = "iam:PassRole"
+        Resource = [
+          "arn:aws:iam::${var.aws_deploy_account_id}:role/${local.identifier_prefix}-synergy-ecs-task-role",
+          "arn:aws:iam::${var.aws_deploy_account_id}:role/synergy-ecs-execution-role",
+        ]
+        Condition = {
+          StringEquals = {
+            "iam:PassedToService" = "ecs-tasks.amazonaws.com"
+          }
+        }
+      },
+    ]
+  })
+}
+
 # To allow the MWAA execution role to assume the housing reporting role and export
 # MTFH tables to S3
 resource "aws_iam_role_policy" "mwaa_assume_role_policy" {
