@@ -583,6 +583,18 @@ module "department_children_and_education" {
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
   user_uploads_bucket             = module.user_uploads
+  additional_glue_database_access = {
+    read_only  = ["hackney_casemanagement_live", "hackney_synergy_live", "mosaic_raw", "mosaic_refined"]
+    read_write = []
+  }
+  additional_s3_access = [
+    {
+      bucket_arn  = module.raw_zone.bucket_arn
+      kms_key_arn = module.raw_zone.kms_key_arn
+      paths       = ["projects/mosaic", "projects/synergy"]
+      actions     = ["s3:GetObject", "s3:ListBucket", "s3:GetBucketLocation"]
+    },
+  ]
 }
 
 module "department_customer_services" {
@@ -785,9 +797,9 @@ module "department_children_family_services" {
     {
       bucket_arn  = module.raw_zone.bucket_arn
       kms_key_arn = module.raw_zone.kms_key_arn
-      paths       = ["projects/mosaic"]
+      paths       = ["projects/mosaic", "projects/synergy"]
       actions     = ["s3:GetObject", "s3:ListBucket", "s3:GetBucketLocation"]
-    }
+    },
   ]
 }
 
