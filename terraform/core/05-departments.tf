@@ -778,7 +778,7 @@ module "department_children_family_services" {
   user_uploads_bucket             = module.user_uploads
   user_uploads_catalog_enabled    = true
   additional_glue_database_access = {
-    read_only  = ["child_edu_refined", "hackney_casemanagement_live", "hackney_synergy_live", "mosaic_raw", "mosaic_refined"]
+    read_only  = ["hackney_casemanagement_live", "hackney_synergy_live", "mosaic_raw", "mosaic_refined"]
     read_write = []
   }
   additional_s3_access = [

@@ -33,7 +33,6 @@ locals {
       #  aws_glue_catalog_database.refined_zone_liberator.name,
       #  aws_glue_catalog_database.hackney_synergy_live.name,
       #  aws_glue_catalog_database.hackney_casemanagement_live.name,
-      #  aws_glue_catalog_database.child_edu_refined.name,
       #  aws_glue_catalog_database.housing_nec_migration_database.name,
       #  aws_glue_catalog_database.housing_nec_migration_live_database.name,
       #  aws_glue_catalog_database.housing_nec_migration_outputs_database.name,
