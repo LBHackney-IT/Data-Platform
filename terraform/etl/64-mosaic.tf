@@ -103,7 +103,7 @@ data "aws_iam_policy_document" "mosaic_ingestion" {
   statement {
     sid       = "ReadMosaicCredentials"
     actions   = ["secretsmanager:GetSecretValue"]
-    resources = [aws_secretsmanager_secret.mosaic.arn]
+    resources = [aws_secretsmanager_secret.mosaic_conn.arn]
   }
 
   statement {

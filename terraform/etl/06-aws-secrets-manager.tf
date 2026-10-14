@@ -285,15 +285,38 @@ resource "aws_secretsmanager_secret_version" "env_health_fsa_api_creds" {
   }
 }
 
-resource "aws_secretsmanager_secret" "mosaic" {
-  name        = "mosaic"
+
+
+resource "aws_secretsmanager_secret" "mosaic_conn" {
+  name        = "projects/mosaic_conn"
   description = "SQL Server credentials for Mosaic ingestion."
   kms_key_id  = data.aws_kms_key.secrets_manager_key.arn
   tags        = module.tags.values
 }
 
-resource "aws_secretsmanager_secret_version" "mosaic" {
-  secret_id = aws_secretsmanager_secret.mosaic.id
+resource "aws_secretsmanager_secret_version" "mosaic_conn" {
+  secret_id = aws_secretsmanager_secret.mosaic_conn.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+resource "aws_secretsmanager_secret" "synergy_conn" {
+  name        = "projects/synergy_conn"
+  description = "SQL Server credentials for Synergy ingestion."
+  kms_key_id  = data.aws_kms_key.secrets_manager_key.arn
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "synergy_conn" {
+  secret_id = aws_secretsmanager_secret.synergy_conn.id
   secret_string = jsonencode({
     username = "UPDATE_IN_CONSOLE"
     password = "UPDATE_IN_CONSOLE"
