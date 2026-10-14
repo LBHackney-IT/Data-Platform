@@ -1718,5 +1718,9 @@ module "data_and_insight_top_users_this_month" {
       header_row_number = 1
       worksheet_name    = "tian-test"
     }
+    sheet2 : {
+      header_row_number = 1
+      worksheet_name    = "second sheet"
+    }
   }
 }
