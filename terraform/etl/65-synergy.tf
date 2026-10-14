@@ -113,11 +113,9 @@ data "aws_iam_policy_document" "synergy_ingestion" {
   }
 
   statement {
-    sid     = "ReadSynergyCredentials"
-    actions = ["secretsmanager:GetSecretValue"]
-    resources = [
-      "arn:aws:secretsmanager:${var.aws_deploy_region}:${data.aws_caller_identity.data_platform.account_id}:secret:/child-fam-services/cfs_synergy_database_conn-*",
-    ]
+    sid       = "ReadSynergyCredentials"
+    actions   = ["secretsmanager:GetSecretValue"]
+    resources = [aws_secretsmanager_secret.synergy_conn.arn]
   }
 
   statement {
