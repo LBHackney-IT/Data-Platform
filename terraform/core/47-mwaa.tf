@@ -306,6 +306,7 @@ resource "aws_mwaa_environment" "mwaa" {
     "webserver.warn_deployment_exposure"  = "False"
     "webserver.auto_refresh"              = "True"
     "scheduler.min_file_process_interval" = "180"
+    "secrets.use_cache"                   = "True"
     "secrets.backend"                     = "airflow.providers.amazon.aws.secrets.secrets_manager.SecretsManagerBackend"
     "secrets.backend_kwargs" = jsonencode({
       "connections_prefix" : "airflow/connections",
