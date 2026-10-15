@@ -259,8 +259,6 @@ data "aws_s3_object" "mwaa_requirements" {
 
   bucket = aws_s3_bucket.mwaa_bucket.bucket
   key    = "requirements/requirements.txt"
-
-  depends_on = [aws_s3_bucket_versioning.mwaa_bucket]
 }
 
 resource "aws_mwaa_environment" "mwaa" {
