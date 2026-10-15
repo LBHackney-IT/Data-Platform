@@ -252,16 +252,26 @@ resource "aws_s3_object" "requirements_placeholder" {
   acl          = "private"
 }
 
+# Requirements are uploaded outside this stack. Resolve the current version on
+# each plan so MWAA updates do not reuse a stale version ID.
+data "aws_s3_object" "mwaa_requirements" {
+  count = local.is_live_environment ? 1 : 0
+
+  bucket = aws_s3_bucket.mwaa_bucket.bucket
+  key    = "requirements/requirements.txt"
+}
+
 resource "aws_mwaa_environment" "mwaa" {
-  count                = local.is_live_environment ? 1 : 0
-  name                 = "${local.identifier_prefix}-mwaa-environment"
-  airflow_version      = "2.10.3" # Latest MWAA on 2025-01-13, preinstall python 3.11
-  environment_class    = local.is_production_environment ? "mw1.medium" : "mw1.small"
-  execution_role_arn   = aws_iam_role.mwaa_role.arn
-  source_bucket_arn    = aws_s3_bucket.mwaa_bucket.arn
-  dag_s3_path          = "dags"
-  plugins_s3_path      = "plugins/plugins.zip"           # Optional
-  requirements_s3_path = "requirements/requirements.txt" # Optional
+  count                          = local.is_live_environment ? 1 : 0
+  name                           = "${local.identifier_prefix}-mwaa-environment"
+  airflow_version                = "2.10.3" # Latest MWAA on 2025-01-13, preinstall python 3.11
+  environment_class              = local.is_production_environment ? "mw1.medium" : "mw1.small"
+  execution_role_arn             = aws_iam_role.mwaa_role.arn
+  source_bucket_arn              = aws_s3_bucket.mwaa_bucket.arn
+  dag_s3_path                    = "dags"
+  plugins_s3_path                = "plugins/plugins.zip"           # Optional
+  requirements_s3_path           = "requirements/requirements.txt" # Optional
+  requirements_s3_object_version = data.aws_s3_object.mwaa_requirements[0].version_id
   network_configuration {
     security_group_ids = [aws_security_group.mwaa_sg.id]
     subnet_ids         = slice(data.aws_subnets.network.ids, 0, 2) # Must contain no more than 2 subnet IDs.
