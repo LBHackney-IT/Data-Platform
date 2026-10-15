@@ -177,9 +177,7 @@ module "gov-notify-ingestion-housing-repairs" {
     CRAWLER_NAME_RAW         = "${local.short_identifier_prefix}GovNotify Housing Repairs Raw Zone"
   }
   layers = [
-    "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python39:13",
-    data.aws_lambda_layer_version.notifications_python_client_layer.arn,
-    data.aws_lambda_layer_version.urllib3_layer.arn
+    "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311:25"
   ]
 }
 
