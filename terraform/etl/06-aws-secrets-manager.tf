@@ -328,3 +328,24 @@ resource "aws_secretsmanager_secret_version" "synergy_conn" {
     ignore_changes = [secret_string]
   }
 }
+
+resource "aws_secretsmanager_secret" "misa_db_conn" {
+  name        = "/children-and-edu/misa_db_conn"
+  description = "SQL Server credentials for MISA Database ingestion"
+  kms_key_id  = data.aws_kms_key.secrets_manager_key.arn
+  tags        = module.tags.values
+}
+
+resource "aws_secretsmanager_secret_version" "misa_db_conn" {
+  secret_id = aws_secretsmanager_secret.misa_db_conn.id
+  secret_string = jsonencode({
+    username = "UPDATE_IN_CONSOLE"
+    password = "UPDATE_IN_CONSOLE"
+    host     = "UPDATE_IN_CONSOLE"
+    port     = "UPDATE_IN_CONSOLE"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
