@@ -1712,6 +1712,7 @@ module "data_and_insight_top_users_this_month" {
   output_folder_name             = "top-users-this-month"
   raw_zone_bucket_id             = module.raw_zone_data_source.bucket_id
   input_file_name                = "Top users (this month).xlsx"
+  tags                           = module.tags.values
 
   worksheets = {
     sheet1 : {
