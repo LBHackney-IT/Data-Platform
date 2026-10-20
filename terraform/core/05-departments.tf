@@ -587,7 +587,7 @@ module "department_children_and_education" {
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = ["hackney_casemanagement_live", "hackney_synergy_live", "mosaic_raw", "mosaic_refined"]
-    read_write = ["hackney_education"]
+    read_write = ["hackney_education_raw"]
   }
   additional_s3_access = [
     {
