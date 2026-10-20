@@ -580,12 +580,14 @@ module "department_children_and_education" {
   google_group_admin_display_name = local.google_group_admin_display_name
   google_group_display_name       = "saml-aws-data-platform-collaborator-children-and-family-services@hackney.gov.uk"
   create_sso_permission_set       = true
+  departmental_airflow_role       = local.departmental_airflow_role
   mwaa_etl_scripts_bucket_arn     = aws_s3_bucket.mwaa_etl_scripts_bucket.arn
   mwaa_key_arn                    = aws_kms_key.mwaa_key.arn
+  mwaa_execution_role_arn         = aws_iam_role.mwaa_role.arn
   user_uploads_bucket             = module.user_uploads
   additional_glue_database_access = {
     read_only  = ["hackney_casemanagement_live", "hackney_synergy_live", "mosaic_raw", "mosaic_refined"]
-    read_write = []
+    read_write = ["hackney_education"]
   }
   additional_s3_access = [
     {
@@ -807,6 +809,7 @@ locals {
   departmental_airflow_role_arns = compact([
     module.department_adult_social_care.airflow_role_arn,
     module.department_benefits_and_housing_needs.airflow_role_arn,
+    module.department_children_and_education.airflow_role_arn,
     module.department_children_family_services.airflow_role_arn,
     module.department_data_and_insight.airflow_role_arn,
     module.department_env_enforcement.airflow_role_arn,

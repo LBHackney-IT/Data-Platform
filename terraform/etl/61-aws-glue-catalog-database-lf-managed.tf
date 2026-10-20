@@ -1,4 +1,15 @@
 # Lake Formation registration, grants and hybrid opt-ins are managed in dap-infrastructure
+resource "aws_glue_catalog_database" "hackney_education" {
+  name         = "hackney_education"
+  description  = "Hackney Education SQL Server full-ingestion history and latest datasets."
+  location_uri = "s3://${module.raw_zone_data_source.bucket_id}/children-and-edu/hackney_education/"
+  tags         = module.tags.values
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 resource "aws_glue_catalog_database" "mosaic_raw" {
   name         = "mosaic_raw"
   description  = "Mosaic SQL Server full-ingestion history and latest datasets."
