@@ -1,0 +1,36 @@
+name: 'CI - Lambda Layers'
+# Builds every layer with the same Dockerfile terraform uses. It runs on the
+# Lambda runtime image and imports each package, so bumps the runtime can't
+# load (Python version, glibc) fail here rather than after deployment.
+on:
+  push:
+    branches-ignore:
+      - "main"
+    paths:
+      - 'lambdas/lambda_layers/**'
+      - '.github/workflows/ci-lambda-layers.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Lambda Layers
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Build layers on the Lambda runtime image
+        working-directory: lambdas/lambda_layers
+        run: |
+          failed=()
+          for requirements in requirements*.txt; do
+            layer="${requirements//[!0-9]/}"
+            echo "::group::Layer ${layer}"
+            docker build --build-arg L_N="${layer}" . || failed+=("${layer}")
+            echo "::endgroup::"
+          done
+          if [ ${#failed[@]} -gt 0 ]; then
+            echo "::error::Layers that failed to build or import on the Lambda runtime: ${failed[*]}"
+            exit 1
+          fi
