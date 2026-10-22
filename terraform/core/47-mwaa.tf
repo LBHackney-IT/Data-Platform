@@ -199,6 +199,52 @@ resource "aws_iam_role_policy" "mwaa_departmental_airflow_assume_role_policy" {
   })
 }
 
+# To allow table tasks to run as their project's workflow role
+# (dap-<team>-<project>-workflow, created in dap-infrastructure)
+resource "aws_iam_role_policy" "mwaa_workflow_assume_role_policy" {
+  name = "mwaa_workflow_assume_role_policy"
+  role = aws_iam_role.mwaa_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "sts:AssumeRole",
+        Resource = "arn:aws:iam::${var.aws_deploy_account_id}:role/dap-*-workflow"
+      }
+    ]
+  })
+}
+
+# To allow Python tasks to start the project's dap-ecs service with its workflow
+# role as the task role. Execution roles are created by dap-ecs as
+# <service>-ecs-execution-role and only carry the ECS task execution policy.
+resource "aws_iam_role_policy" "mwaa_workflow_pass_role_policy" {
+  name = "mwaa_workflow_pass_role_policy"
+  role = aws_iam_role.mwaa_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "PassWorkflowEcsRoles"
+        Effect = "Allow"
+        Action = "iam:PassRole"
+        Resource = [
+          "arn:aws:iam::${var.aws_deploy_account_id}:role/dap-*-workflow",
+          "arn:aws:iam::${var.aws_deploy_account_id}:role/*-ecs-execution-role",
+        ]
+        Condition = {
+          StringEquals = {
+            "iam:PassedToService" = "ecs-tasks.amazonaws.com"
+          }
+        }
+      },
+    ]
+  })
+}
+
 # Security group for MWAA - self-referencing and allowing all traffic out
 # This is recommended in the doc, Matt recommended at current stage.
 # https://docs.aws.amazon.com/mwaa/latest/userguide/vpc-security.html
