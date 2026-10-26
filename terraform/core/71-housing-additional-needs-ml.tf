@@ -243,6 +243,38 @@ resource "aws_iam_role_policy" "housing_additional_needs_sagemaker_execution" {
   policy = data.aws_iam_policy_document.housing_additional_needs_sagemaker_execution[0].json
 }
 
+data "aws_iam_policy_document" "housing_additional_needs_ecs_read" {
+  count = local.housing_additional_needs_ml_staging ? 1 : 0
+
+  statement {
+    sid = "ListMLStorage"
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+    ]
+    resources = [module.housing_additional_needs_ml_storage[0].bucket_arn]
+  }
+
+  statement {
+    sid = "ReadMLStoragePredictions"
+    actions = ["s3:GetObject"]
+    resources = ["${module.housing_additional_needs_ml_storage[0].bucket_arn}/predictions/*"]
+  }
+
+  statement {
+    sid = "DecryptMLStorage"
+    actions = ["kms:Decrypt"]
+    resources = [module.housing_additional_needs_ml_storage[0].kms_key_arn]
+  }
+}
+
+resource "aws_iam_role_policy" "housing_additional_needs_ecs_read" {
+  count  = local.housing_additional_needs_ml_staging ? 1 : 0
+  name   = "housing-additional-needs-ecs-read"
+  role   = "${var.identifier_prefix}-${local.department_identifier}-ecs-task-role"
+  policy = data.aws_iam_policy_document.housing_additional_needs_ecs_read[0].json
+}
+
 data "aws_iam_policy_document" "housing_additional_needs_staging_sso" {
   count = local.housing_additional_needs_ml_staging ? 1 : 0
 
