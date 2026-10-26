@@ -11,13 +11,18 @@ from io import BytesIO
 import json
 import logging
 from os import getenv
+from pathlib import Path
 import re
+import sys
 
-from botocore.exceptions import ClientError
-import boto3
-from notifications_python_client.notifications import NotificationsAPIClient
-from notifications_python_client.errors import HTTPError
-import pandas as pd
+# Runtime dependencies are bundled into lib/ by `make runtime-deps`.
+sys.path.insert(0, str(Path(__file__).parent / "lib"))
+
+from botocore.exceptions import ClientError  # noqa: E402
+import boto3  # noqa: E402
+from notifications_python_client.notifications import NotificationsAPIClient  # noqa: E402
+from notifications_python_client.errors import HTTPError  # noqa: E402
+import pandas as pd  # noqa: E402
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
