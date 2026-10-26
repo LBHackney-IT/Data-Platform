@@ -271,7 +271,7 @@ data "aws_iam_policy_document" "housing_additional_needs_ecs_read" {
 resource "aws_iam_role_policy" "housing_additional_needs_ecs_read" {
   count  = local.housing_additional_needs_ml_staging ? 1 : 0
   name   = "housing-additional-needs-ecs-read"
-  role   = "${var.identifier_prefix}-${local.department_identifier}-ecs-task-role"
+  role   = "dataplatform-stg-housing-ecs-task-role"
   policy = data.aws_iam_policy_document.housing_additional_needs_ecs_read[0].json
 }
 
