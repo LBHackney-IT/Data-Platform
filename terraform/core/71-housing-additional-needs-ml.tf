@@ -247,6 +247,24 @@ data "aws_iam_policy_document" "housing_additional_needs_staging_sso" {
   count = local.housing_additional_needs_ml_staging ? 1 : 0
 
   statement {
+    sid = "InspectAndStopAdditionalNeedsProcessing"
+    actions = [
+      "sagemaker:DescribeProcessingJob",
+      "sagemaker:ListTags",
+      "sagemaker:StopProcessingJob",
+    ]
+    resources = [
+      "arn:aws:sagemaker:${var.aws_deploy_region}:${var.aws_deploy_account_id}:processing-job/housing-additional-needs-*"
+    ]
+  }
+
+  statement {
+    sid       = "ListProcessingJobs"
+    actions   = ["sagemaker:ListProcessingJobs"]
+    resources = ["*"]
+  }
+
+  statement {
     sid = "ReadSharedProductionCatalog"
     actions = [
       "glue:GetDatabase",
