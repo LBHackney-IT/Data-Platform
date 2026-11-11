@@ -10,7 +10,8 @@
 # - When code is pushed to the `staging` branch in `dap-airflow`, the CodeBuild webhook starts a build.
 # - CodeBuild pulls the repository by using the AWS CodeConnections connection defined in this file.
 # - The build runs `github_workflow_scripts/mwaa-s3-sync-buildspec.yml` from the `dap-airflow` repository.
-# - That build syncs the Airflow DAGs folder and the ETL scripts folder into the staging MWAA S3 buckets.
+# - That build pushes any images in `dap_airflow_staging_image_repositories` to ECR, then syncs the
+#   Airflow DAGs folder and the ETL scripts folder into the staging MWAA S3 buckets.
 # - The result is that the `stg` MWAA environment stays in sync with the latest `staging` branch code.
 #
 # Operational note for rotating webhook secret:
@@ -18,6 +19,11 @@
 # - The webhook can be deleted by using either the AWS CLI or the AWS Console.
 # - Then redeploy this Terraform workflow and it will recreate the webhook with the updated webhook secret.
 # - The AWS CodeConnections resource does not need to be deleted or re-approved.
+
+locals {
+  # ECR repositories (created in dap-ecs) that the staging build may push images to.
+  dap_airflow_staging_image_repositories = ["google-drive"]
+}
 
 resource "aws_codestarconnections_connection" "dap_airflow_stg" {
   count = local.environment == "stg" ? 1 : 0
@@ -83,6 +89,27 @@ resource "aws_iam_role_policy" "codebuild_dap_airflow_staging_policy" {
         Resource = aws_kms_key.mwaa_key.arn
       },
       {
+        Effect   = "Allow"
+        Action   = "ecr:GetAuthorizationToken"
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:CompleteLayerUpload",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
+        ]
+        Resource = [
+          for repository in local.dap_airflow_staging_image_repositories :
+          "arn:aws:ecr:${var.aws_deploy_region}:${var.aws_deploy_account_id}:repository/${repository}"
+        ]
+      },
+      {
         Effect = "Allow"
         Action = [
           "logs:CreateLogGroup",
@@ -126,7 +153,7 @@ resource "aws_codebuild_project" "dap_airflow_staging_sync" {
   description    = "Sync dap-airflow repository folders to MWAA S3 buckets for staging"
   service_role   = aws_iam_role.codebuild_dap_airflow_staging_role[0].arn
   badge_enabled  = false
-  build_timeout  = 5  # 5 minutes (default is 60 minutes)
+  build_timeout  = 15 # 15 minutes, enough for image builds (default is 60 minutes)
   queued_timeout = 30 # 30 minutes (default is 480 minutes)
 
   artifacts {
@@ -138,6 +165,7 @@ resource "aws_codebuild_project" "dap_airflow_staging_sync" {
     image                       = "aws/codebuild/standard:7.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
+    privileged_mode             = true # Required to run Docker for image builds
   }
 
   source {
