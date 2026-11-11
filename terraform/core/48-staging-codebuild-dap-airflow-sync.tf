@@ -22,7 +22,7 @@
 
 locals {
   # ECR repositories (created in dap-ecs) that the staging build may push images to.
-  dap_airflow_staging_image_repositories = ["google-drive"]
+  dap_airflow_staging_image_repositories = ["google-drive-ingestion"]
 }
 
 resource "aws_codestarconnections_connection" "dap_airflow_stg" {
