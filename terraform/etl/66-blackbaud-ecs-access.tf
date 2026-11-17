@@ -28,7 +28,7 @@ resource "aws_security_group_rule" "blackbaud_from_ecs" {
 }
 
 # ECS discovers the RDS endpoint and reads its RDS-managed administrator secret
-# to submit native restores. The RDS restore role reads the backup from S3.
+# to submit native restores.
 resource "aws_iam_role_policy" "blackbaud_ecs_restore" {
   count = local.blackbaud_migration_enabled ? 1 : 0
   name  = "${local.blackbaud_migration_name}-ecs-restore"
