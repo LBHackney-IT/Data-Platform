@@ -101,7 +101,7 @@ resource "aws_iam_role_policy" "blackbaud_restore" {
       },
       {
         Effect   = "Allow"
-        Action   = ["kms:Decrypt", "kms:DescribeKey"]
+        Action   = ["kms:Decrypt", "kms:DescribeKey", "kms:GenerateDataKey"]
         Resource = module.landing_zone_data_source.kms_key_arn
       }
     ]
