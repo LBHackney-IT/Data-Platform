@@ -10,8 +10,8 @@ Upload each backup to the corresponding prefix and restore it separately:
 - data-and-insight/manual/blackbaud/first_backup/<filename>.bak -> blackbaud_first_backup
 - data-and-insight/manual/blackbaud/cutover_backup/<filename>.bak -> blackbaud_cutover_backup
 
-All three databases share instance compute and storage. SQL Server 2022
-Express limits each database to 10 GB.
+All three databases share instance compute and storage. SQL Server 2025
+Express limits each database to 50 GB.
 */
 
 # Common configuration
@@ -59,7 +59,7 @@ resource "aws_iam_role" "blackbaud_restore" {
           ArnEquals = {
             "aws:SourceArn" = [
               "arn:aws:rds:${var.aws_deploy_region}:${var.aws_deploy_account_id}:db:${local.blackbaud_migration_name}",
-              "arn:aws:rds:${var.aws_deploy_region}:${var.aws_deploy_account_id}:og:${local.blackbaud_migration_name}"
+              "arn:aws:rds:${var.aws_deploy_region}:${var.aws_deploy_account_id}:og:${local.blackbaud_migration_name}-sqlserver-2025"
             ]
           }
         }
@@ -111,10 +111,10 @@ resource "aws_iam_role_policy" "blackbaud_restore" {
 # Native .bak restoration
 resource "aws_db_option_group" "blackbaud_restore" {
   count                    = local.blackbaud_migration_enabled ? 1 : 0
-  name                     = local.blackbaud_migration_name
+  name                     = "${local.blackbaud_migration_name}-sqlserver-2025"
   option_group_description = "Native restoration of Blackbaud SQL Server backups"
   engine_name              = "sqlserver-ex"
-  major_engine_version     = "16.00"
+  major_engine_version     = "17.00"
   tags                     = local.blackbaud_migration_tags
 
   option {
@@ -127,6 +127,10 @@ resource "aws_db_option_group" "blackbaud_restore" {
   }
 
   depends_on = [aws_iam_role_policy.blackbaud_restore]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # SQL Server instance
@@ -139,14 +143,16 @@ module "blackbaud_migration_rds" {
   db_identifier           = local.blackbaud_migration_name
   db_subnet_group_name    = local.blackbaud_migration_name
   db_engine               = "sqlserver-ex"
-  db_engine_version       = "16.00.4305.5.v1"
-  db_family               = "sqlserver-ex-16.0"
-  db_major_engine_version = "16.00"
+  db_engine_version       = "17.00.5035.5.v1"
+  db_family               = "sqlserver-ex-17.0"
+  db_major_engine_version = "17.00"
   db_instance_class       = "db.t3.small"
   db_port                 = "1433"
   db_username             = "dbadmin"
 
-  # SQL Server 2022 Express has a 10 GB per-database limit, independent of storage.
+  db_allow_major_version_upgrade = true
+
+  # SQL Server 2025 Express has a 50 GB per-database limit, independent of storage.
   db_allocated_storage        = 20
   db_max_allocated_storage    = 50
   db_multi_az                 = false
