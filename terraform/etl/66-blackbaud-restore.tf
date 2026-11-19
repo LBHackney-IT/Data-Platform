@@ -132,7 +132,7 @@ resource "aws_db_option_group" "blackbaud_restore" {
 # SQL Server instance
 module "blackbaud_migration_rds" {
   count  = local.blackbaud_migration_enabled ? 1 : 0
-  source = "git::https://github.com/LBHackney-IT/aws-rds-lbh.git?ref=31bbceeb3da007096f81122804bc1fe962f802c5"
+  source = "git::https://github.com/LBHackney-IT/aws-rds-lbh.git?ref=f11da6d3eb4fd7ad5ebfcce67ed29b6a90606781" # v2.2.0
 
   application             = local.blackbaud_migration_name
   environment             = var.environment
@@ -160,6 +160,5 @@ module "blackbaud_migration_rds" {
   create_db_option_group             = false
   option_group_name                  = aws_db_option_group.blackbaud_restore[0].name
   tags                               = local.blackbaud_migration_tags
-  allowed_security_group_ids         = []
   allowed_security_group_name_filter = data.aws_security_group.blackbaud_ecs[0].name
 }
