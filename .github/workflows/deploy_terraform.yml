@@ -150,6 +150,8 @@ jobs:
           aws_deploy_region: ${{ env.aws_deploy_region }}
           terraform_state_s3_key_prefix: ${{ inputs.terraform_state_s3_key_prefix }}
           terraform_state_file_name: ${{ inputs.terraform_state_file_name }}
+          terraform_remove: ${{ inputs.terraform_infra_remove }}
+          terraform_import: ${{ inputs.terraform_infra_import }}
           build_path: ${{ inputs.build_path }}
           automation_build_url: ${{ inputs.automation_build_url }}
           environment: ${{ inputs.environment }}
