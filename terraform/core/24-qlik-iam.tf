@@ -25,12 +25,24 @@ resource "aws_secretsmanager_secret_version" "qlik_user_access_key_version" {
 }
 
 resource "aws_iam_user_policy" "qlik_user_policy" {
-  name   = "${local.short_identifier_prefix}qlik-user-policy"
-  user   = aws_iam_user.qlik_user.name
-  policy = data.aws_iam_policy_document.qlik_can_read_from_s3_and_athena.json
+  name       = "${local.short_identifier_prefix}qlik-user-policy"
+  user       = aws_iam_user.qlik_user.name
+  policy     = data.aws_iam_policy_document.qlik_access_to_s3_and_kms.json
+  depends_on = [aws_iam_user_policy_attachment.qlik_user_glue_athena_access_policy]
 }
 
-data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
+resource "aws_iam_policy" "qlik_user_glue_athena_access_policy" {
+  name   = "${local.short_identifier_prefix}qlik-user-glue-athena-access-policy"
+  policy = data.aws_iam_policy_document.qlik_access_to_athena_and_glue.json
+  tags   = module.tags.values
+}
+
+resource "aws_iam_user_policy_attachment" "qlik_user_glue_athena_access_policy" {
+  user       = aws_iam_user.qlik_user.name
+  policy_arn = aws_iam_policy.qlik_user_glue_athena_access_policy.arn
+}
+
+data "aws_iam_policy_document" "qlik_access_to_s3_and_kms" {
   statement {
     effect = "Allow"
     actions = [
@@ -54,7 +66,8 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
       "${module.refined_zone.bucket_arn}/*",
       "${module.trusted_zone.bucket_arn}/*",
       "${module.athena_storage.bucket_arn}/*",
-      "${module.cloudtrail_storage.bucket_arn}/*"
+      "${module.cloudtrail_storage.bucket_arn}/*",
+      "${module.housing_nec_migration_storage.bucket_arn}/*"
     ]
   }
 
@@ -81,10 +94,13 @@ data "aws_iam_policy_document" "qlik_can_read_from_s3_and_athena" {
       module.raw_zone.kms_key_arn,
       module.refined_zone.kms_key_arn,
       module.trusted_zone.kms_key_arn,
-      module.cloudtrail_storage.kms_key_arn
+      module.cloudtrail_storage.kms_key_arn,
+      module.housing_nec_migration_storage.kms_key_arn
     ]
   }
+}
 
+data "aws_iam_policy_document" "qlik_access_to_athena_and_glue" {
   statement {
     effect = "Allow"
     actions = [
